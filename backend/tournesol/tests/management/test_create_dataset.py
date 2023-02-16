@@ -37,7 +37,7 @@ class CreateDatasetTestCase(TestCase):
         output = StringIO()
         today = timezone.localdate().strftime("%Y%m%d")
 
-        # The datasets' dir should not exist by default.
+        # The dir "datasets" should not exist by default.
         datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
         self.assertFalse(datasets_dir.exists())
 

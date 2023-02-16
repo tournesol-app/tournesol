@@ -5,6 +5,7 @@ import re
 import shutil
 import zipfile
 from collections import ChainMap
+from pathlib import Path
 from tempfile import gettempdir
 
 from django.conf import settings
@@ -272,6 +273,25 @@ class ExportTest(TestCase):
                 self.assertEqual(len(user_rows), 1)
                 user_row = user_rows[0]
                 self.assertEqual(user_row["trust_score"], "0.5844")
+
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
+        ),
+    )
+    def test_anon_cant_download_non_existing_dataset(self):
+        """
+        Anonymous and authenticated users cannot download a dataset when no
+        dataset is available on the server.
+        """
+        # The dir "datasets" should not exist by default.
+        datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
+        self.assertFalse(datasets_dir.exists())
+
+        response = self.client.get("/exports/all/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.headers["Content-Type"], "application/json")
 
     @override_settings(
         MEDIA_ROOT=gettempdir(),
