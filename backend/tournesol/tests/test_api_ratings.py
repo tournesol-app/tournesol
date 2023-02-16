@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+from core.utils.time import time_ago, time_ahead
 from tournesol.models import Comparison, ContributorRating, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
@@ -330,13 +331,9 @@ class RatingApi(TestCase):
             entity_2=video_recent2,
         )
 
-        ten_days_ago = self.comparison_user2.datetime_lastedit - timedelta(days=10)
-        ten_days_ahead = self.comparison_user2.datetime_lastedit + timedelta(days=10)
         # update() allows to bypass the auto_now=True of the `datetime_lastedit` field.
-        Comparison.objects.filter(pk=comp_old.pk).update(datetime_lastedit=ten_days_ago)
-        Comparison.objects.filter(pk=comp_recent.pk).update(
-            datetime_lastedit=ten_days_ahead
-        )
+        Comparison.objects.filter(pk=comp_old.pk).update(datetime_lastedit=time_ago(days=10))
+        Comparison.objects.filter(pk=comp_recent.pk).update(datetime_lastedit=time_ahead(days=10))
 
         self.client.force_authenticate(user=self.user2)
 
