@@ -3,6 +3,7 @@ from collections import ChainMap
 from io import StringIO
 from pathlib import Path
 from tempfile import gettempdir
+from time import sleep
 
 from django.conf import settings
 from django.core.management import call_command
@@ -27,6 +28,19 @@ class CreateDatasetTestCase(TestCase):
             shutil.rmtree(Path(gettempdir()).joinpath("ts_api_test_datasets"))
         except FileNotFoundError:
             pass
+
+    def _create_dataset_dir(self, dataset_build_dir):
+        dataset_dir = Path(gettempdir()).joinpath(dataset_build_dir)
+        dataset_dir.mkdir()
+        return dataset_dir
+
+    def _create_fake_datasets(self, nbr, location):
+        """
+        Create `nbr` text files that act as fake datasets.
+        """
+        for num in range(nbr):
+            location.joinpath(f"{self.dataset_base_name}{num}.zip").write_text("tst")
+            sleep(0.01)
 
     def test_cmd_create_new_file(self):
         """
@@ -54,7 +68,7 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(datasets[0].name, f"{self.dataset_base_name}{today}.zip")
 
         # The archive path should appear in the logs.
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
         self.assertIn(f"archive created at {archive_path}", output_str)
         self.assertIn("success", output_str)
 
@@ -65,12 +79,9 @@ class CreateDatasetTestCase(TestCase):
         """
         output = StringIO()
         today = timezone.localdate().strftime("%Y%m%d")
-        datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
-        datasets_dir.mkdir()
+        datasets_dir = self._create_dataset_dir("ts_api_test_datasets")
 
-        for num in range(12):
-            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
-
+        self._create_fake_datasets(12, datasets_dir)
         datasets = list(datasets_dir.iterdir())
         self.assertEqual(len(datasets), 12)
 
@@ -87,6 +98,10 @@ class CreateDatasetTestCase(TestCase):
 
         # The deleted archives should appear in the logs.
         self.assertEqual(output_str.count("deleted old"), 3)
+        dataset_name = datasets_dir.joinpath(self.dataset_base_name)
+        self.assertIn(f"deleted old {dataset_name}0.zip", output_str)
+        self.assertIn(f"deleted old {dataset_name}1.zip", output_str)
+        self.assertIn(f"deleted old {dataset_name}2.zip", output_str)
         self.assertIn("success", output_str)
 
     def test_cmd_keep_only_option(self):
@@ -96,14 +111,11 @@ class CreateDatasetTestCase(TestCase):
         """
         output = StringIO()
         today = timezone.localdate().strftime("%Y%m%d")
-        datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
-        datasets_dir.mkdir()
+        datasets_dir = self._create_dataset_dir("ts_api_test_datasets")
 
-        for num in range(10):
-            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
-
+        self._create_fake_datasets(8, datasets_dir)
         datasets = list(datasets_dir.iterdir())
-        self.assertEqual(len(datasets), 10)
+        self.assertEqual(len(datasets), 8)
 
         call_command("create_dataset", keep_only=4, stdout=output)
         archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
@@ -117,7 +129,13 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 4)
 
         # The deleted archives should appear in the logs.
-        self.assertEqual(output_str.count("deleted old"), 7)
+        self.assertEqual(output_str.count("deleted old"), 5)
+        dataset_name = datasets_dir.joinpath(self.dataset_base_name)
+        self.assertIn(f"deleted old {dataset_name}0.zip", output_str)
+        self.assertIn(f"deleted old {dataset_name}1.zip", output_str)
+        self.assertIn(f"deleted old {dataset_name}2.zip", output_str)
+        self.assertIn(f"deleted old {dataset_name}3.zip", output_str)
+        self.assertIn(f"deleted old {dataset_name}4.zip", output_str)
         self.assertIn("success", output_str)
 
     def test_cmd_keep_all_option(self):
@@ -127,14 +145,11 @@ class CreateDatasetTestCase(TestCase):
         """
         output = StringIO()
         today = timezone.localdate().strftime("%Y%m%d")
-        datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
-        datasets_dir.mkdir()
+        datasets_dir = self._create_dataset_dir("ts_api_test_datasets")
 
-        for num in range(11):
-            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
-
+        self._create_fake_datasets(12, datasets_dir)
         datasets = list(datasets_dir.iterdir())
-        self.assertEqual(len(datasets), 11)
+        self.assertEqual(len(datasets), 12)
 
         call_command("create_dataset", keep_all=True, stdout=output)
         archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
@@ -145,7 +160,7 @@ class CreateDatasetTestCase(TestCase):
 
         # 10 datasets should have been kept by default
         datasets = list(datasets_dir.iterdir())
-        self.assertEqual(len(datasets), 12)
+        self.assertEqual(len(datasets), 13)
 
         # The option --keep-all should appear in the logs.
         self.assertIn("the option --keep-all is set, old datasets won't be deleted", output_str)
