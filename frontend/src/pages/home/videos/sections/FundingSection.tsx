@@ -8,11 +8,15 @@ import { VolunteerActivism } from '@mui/icons-material';
 
 import SectionTitle from './SectionTitle';
 
-interface FundingSectionLink {
+interface FundingSectionProps {
   linkToSupportPage?: boolean;
+  fullWidth?: boolean;
 }
 
-const FundingSection = ({ linkToSupportPage = true }: FundingSectionLink) => {
+const FundingSection = ({
+  linkToSupportPage = true,
+  fullWidth = false,
+}: FundingSectionProps) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -25,7 +29,10 @@ const FundingSection = ({ linkToSupportPage = true }: FundingSectionLink) => {
 
   return (
     <>
-      <SectionTitle title={t('fundingSection.supportUs')} />
+      <SectionTitle
+        title={t('fundingSection.supportUs')}
+        dividerWidthXl={fullWidth ? '100%' : undefined}
+      />
       <Box display="flex" justifyContent="center" mb={6}>
         <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
           <Typography variant="h3" textAlign="center" letterSpacing="0.8px">
@@ -34,7 +41,7 @@ const FundingSection = ({ linkToSupportPage = true }: FundingSectionLink) => {
         </Box>
       </Box>
       <Grid2 container spacing={4} justifyContent="center">
-        <Grid2 sm={12} md={4} lg={4} xl={3}>
+        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
           <Paper elevation={0}>
             <Box
               p={2}
@@ -59,7 +66,7 @@ const FundingSection = ({ linkToSupportPage = true }: FundingSectionLink) => {
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 sm={12} md={4} lg={4} xl={3}>
+        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
           <Paper elevation={0}>
             <Box
               p={2}
@@ -84,7 +91,7 @@ const FundingSection = ({ linkToSupportPage = true }: FundingSectionLink) => {
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 sm={12} md={4} lg={4} xl={3}>
+        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
           <Paper elevation={0}>
             <Box
               p={2}
