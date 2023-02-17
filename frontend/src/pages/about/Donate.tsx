@@ -37,8 +37,8 @@ const DonatePage = () => {
   return (
     <>
       <ContentHeader title={t('about.donate')} />
-      <FundingSection linkToSupportPage={false} />
       <ContentBox maxWidth="lg">
+        <FundingSection linkToSupportPage={false} />
         <Typography paragraph>
           <Trans t={t} i18nKey="about.donateWeAreASmallTeam">
             Because we are a small team of mostly volunteers, the development of
