@@ -133,7 +133,7 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
     An individual criteria score is a score computed by the algorithm for
     a specific criterion, previously rated by a user for a specific entity.
 
-        User X Entity X Computed criteria score
+        User X Entity X Computed individual criteria score
     """
     from tournesol.models import (  # pylint: disable=import-outside-toplevel
         ContributorRatingCriteriaScore,
@@ -180,6 +180,15 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
 
 
 def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
+    """
+    Retrieve the collective criteria scores computed for each entity and
+    return a non-evaluated Django `RawQuerySet`.
+
+    A collective criteria score is a score computed by the algorithm for a
+    specific criterion of a specific entity.
+
+        Entity X Computed collective criteria score
+    """
     from tournesol.models.entity_score import (  # pylint: disable=import-outside-toplevel
         EntityCriteriaScore,
         ScoreMode,
