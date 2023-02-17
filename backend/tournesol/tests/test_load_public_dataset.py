@@ -8,13 +8,13 @@ from core.models import User
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Comparison, ContributorRating, Entity
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory
-from tournesol.tests.utils.datetime import FixDatetime
+from tournesol.tests.utils.mock_now import MockNow
 
 
 class TestLoadPublicDataset(TransactionTestCase):
     serialized_rollback = True
 
-    @FixDatetime()
+    @MockNow.Context()
     def setUp(self):
         self.client = APIClient()
 

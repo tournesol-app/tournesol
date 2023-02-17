@@ -1,10 +1,15 @@
 import csv
 import io
+import random
 import re
 import zipfile
 
+from datetime import datetime, timedelta
+
 from django.core.cache import cache
 from django.test import TestCase
+from django.utils import timezone
+
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -18,12 +23,12 @@ from tournesol.models import (
 )
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
-from tournesol.tests.utils.datetime import FixDatetime
+from tournesol.tests.utils.mock_now import MockNow
 
 
 class ExportTest(TestCase):
 
-    @FixDatetime()
+    @MockNow.Context()
     def setUp(self) -> None:
         self.poll_videos = Poll.default_poll()
         self.user_with_comparisons = User.objects.create_user(
@@ -102,12 +107,16 @@ class ExportTest(TestCase):
             entity=video2,
             is_public=is_public,
         )
-        ComparisonFactory(
+        comparison = ComparisonFactory(
             poll=self.poll_videos,
             user=user,
             entity_1=video1,
             entity_2=video2,
         )
+        ComparisonCriteriaScoreFactory(
+            comparison=comparison, score=5, criteria="largely_recommended"
+        )
+        
 
     def extract_export_root(self, response):
         content_disposition = response.headers["Content-Disposition"]
@@ -168,7 +177,7 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[0]["video_a"], self.video_public_1.video_id)
         self.assertEqual(comparison_list[0]["video_b"], self.video_public_2.video_id)
 
-    @FixDatetime()
+    @MockNow.Context()
     def test_not_authenticated_can_download_public_comparisons_multiple_users(self):
         self.public_comparisons2 = UserFactory()
         self.video_public_3 = VideoFactory()
@@ -378,3 +387,53 @@ class ExportTest(TestCase):
                 usernames = [row["public_username"] for row in rows]
                 self.assertEqual("a", usernames[0])
                 self.assertEqual("z", usernames[-1])
+
+    def test_all_export_comparisons_sorted_by_username_and_weekdate(self):
+        first_user = UserFactory(username="zoe")
+        last_user = UserFactory(username="alain")
+        
+        # comparisons#1, on a given Monday
+        with MockNow.Context(datetime(2023, 1, 16, tzinfo=timezone.utc)) as mock_date_1:
+            self.add_comparison(user=first_user, is_public=True)
+            self.add_comparison(user=last_user, is_public=True)
+
+        # comparisons#2, the same week on a Sunday
+        with MockNow.Context(datetime(2023, 1, 22, tzinfo=timezone.utc)) as mock_date_2:
+            self.add_comparison(user=first_user, is_public=True)
+            self.add_comparison(user=last_user, is_public=True)
+
+        # comparisons#3. random date in current week
+        random_date_this_week = datetime.now()
+        random_date_this_week = random_date_this_week - timedelta(random_date_this_week.weekday()) + timedelta(random.randint(0, 6))
+        self.add_comparison(user=first_user, is_public=True)
+        self.add_comparison(user=last_user, is_public=True)
+
+        response = self.client.get("/exports/all/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "application/zip")
+        root = self.extract_export_root(response)
+
+        zip_content = io.BytesIO(response.content)
+
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
+            with zip_file.open(root + "/comparisons.csv", "r") as file:
+                content = file.read().decode("utf-8")
+                csv_file = csv.DictReader(io.StringIO(content))
+                rows = list(csv_file)
+
+                # should not export comparisons#3
+                self.assertEqual(5, len(rows))
+
+                # ensure sorted by username
+                self.assertEqual("alain", rows[0]["public_username"])
+                self.assertEqual("alain", rows[1]["public_username"])
+                self.assertEqual("public_comparisons", rows[2]["public_username"])
+                self.assertEqual("zoe", rows[3]["public_username"])
+                self.assertEqual("zoe", rows[4]["public_username"])
+
+                # ensure dates are truncated to first day of the week
+                self.assertEqual("2023-01-16", rows[0]["week_date"])
+                self.assertEqual("2023-01-16", rows[1]["week_date"])
+                self.assertEqual("2019-12-30", rows[2]["week_date"])
+                self.assertEqual("2023-01-16", rows[3]["week_date"])
+                self.assertEqual("2023-01-16", rows[4]["week_date"])
