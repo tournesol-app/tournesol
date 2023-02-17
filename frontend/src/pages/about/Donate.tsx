@@ -1,16 +1,11 @@
 import React from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import { Typography, Link, Stack } from '@mui/material';
 
 import { ContentHeader, ContentBox } from 'src/components';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
-import {
-  discordTournesolInviteUrl,
-  githubTournesolUrl,
-  utipTournesolUrl,
-  paypalDonateTournesolUrl,
-} from 'src/utils/url';
+import { utipTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -41,6 +36,9 @@ const DonatePage = () => {
       <ContentBox maxWidth="lg">
         <Stack spacing={2}>
           <FundingSection linkToSupportPage={false} fullWidth />
+          <Typography variant="h2" component="h2" textAlign="center">
+            {t('about.donateHowTo')}
+          </Typography>
           <Stack
             flexWrap="wrap"
             direction="row"
@@ -59,10 +57,6 @@ const DonatePage = () => {
               <img src="/logos/Paypal_Logo.svg" style={{ height: 110 }} />
             </Link>
           </Stack>
-
-          <Typography variant="h4" sx={{ fontStyle: 'italic' }}>
-            {t('about.donateHowTo')}
-          </Typography>
 
           <div className={classes.box}>
             <Typography variant="h5" sx={{ marginBottom: 1 }}>
