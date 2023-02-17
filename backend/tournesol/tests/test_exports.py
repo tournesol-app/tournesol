@@ -242,6 +242,7 @@ class ExportTest(TestCase):
                 root + "/users.csv",
                 root + "/comparisons.csv",
                 root + "/individual_criteria_scores.csv",
+                root + "/collective_criteria_scores.csv",
             ]
 
             self.assertEqual(zip_file.namelist(), expected_files)
