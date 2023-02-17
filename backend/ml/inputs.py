@@ -100,7 +100,6 @@ class MlInputFromPublicDataset(MlInput):
         scaling_calibration_user_ids = (
             dtf[dtf.trust_score > self.SCALING_CALIBRATION_MIN_TRUST_SCORE]["user_id"]
             .value_counts(sort=True)[: self.MAX_SCALING_CALIBRATION_USERS]
-            .loc[lambda count: count >= self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE]
             .index
         )
         dtf["is_scaling_calibration_user"] = dtf["user_id"].isin(scaling_calibration_user_ids)
