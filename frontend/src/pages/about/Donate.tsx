@@ -9,6 +9,7 @@ import {
   discordTournesolInviteUrl,
   githubTournesolUrl,
   utipTournesolUrl,
+  paypalDonateTournesolUrl,
 } from 'src/utils/url';
 
 const useStyles = makeStyles((theme) => ({
@@ -40,68 +41,29 @@ const DonatePage = () => {
       <ContentBox maxWidth="lg">
         <Stack spacing={2}>
           <FundingSection linkToSupportPage={false} fullWidth />
-          <Typography paragraph>
-            <Trans t={t} i18nKey="about.donateWeAreASmallTeam">
-              Because we are a small team of mostly volunteers, the development
-              of Tournesol is slower than we would like it to be. If you can,
-              please consider helping us, through coding or through donations.
-              Check-out our{' '}
-              <a
-                href={githubTournesolUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={classes.link}
-              >
-                open source code
-              </a>
-              , or join our{' '}
-              <a
-                href={discordTournesolInviteUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={classes.link}
-              >
-                Discord
-              </a>
-              .
-            </Trans>
-          </Typography>
+          <Stack
+            flexWrap="wrap"
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent="space-evenly"
+          >
+            <Link href={utipTournesolUrl} rel="noopener" target="_blank">
+              <img src="/logos/800px-UTip_Logo.png" style={{ height: 180 }} />
+            </Link>
+            <Link
+              href={paypalDonateTournesolUrl}
+              rel="noopener"
+              target="_blank"
+            >
+              <img src="/logos/Paypal_Logo.svg" style={{ height: 110 }} />
+            </Link>
+          </Stack>
 
           <Typography variant="h4" sx={{ fontStyle: 'italic' }}>
             {t('about.donateHowTo')}
           </Typography>
-          <Link
-            href={utipTournesolUrl}
-            rel="noopener"
-            target="_blank"
-            underline="none"
-            color="inherit"
-            variant="inherit"
-          >
-            <div className={classes.box}>
-              <img
-                src="/logos/UTip_Logo.png"
-                style={{ height: 42, position: 'absolute', top: 0, right: 6 }}
-              />
-              <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                {t('about.donateWithUtipTitle')}
-              </Typography>
-              <Typography>
-                <Trans t={t} i18nKey="about.donateWithUtipDescription">
-                  uTip is an online crowdfunding platform. Visit our{' '}
-                  <a
-                    href={utipTournesolUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={classes.link}
-                  >
-                    Utip page
-                  </a>{' '}
-                  to make a one-time or recurring donation
-                </Trans>
-              </Typography>
-            </div>
-          </Link>
+
           <div className={classes.box}>
             <Typography variant="h5" sx={{ marginBottom: 1 }}>
               {t('about.donateByDirectTransferEUR')}
@@ -124,37 +86,6 @@ const DonatePage = () => {
               IBAN: CH42 0900 0000 1569 4102 5
             </pre>
             <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-          </div>
-
-          <div className={classes.box}>
-            <Typography variant="h5" sx={{ marginBottom: 1 }}>
-              {t('about.donateByPaypal')}
-            </Typography>
-            <form
-              action="https://www.paypal.com/donate"
-              method="post"
-              target="_top"
-              style={{ marginTop: 8 }}
-            >
-              <input
-                type="hidden"
-                name="hosted_button_id"
-                value="22T84YR7TZ762"
-              />
-              <input
-                type="image"
-                src="https://www.paypalobjects.com/en_US/CH/i/btn/btn_donateCC_LG.gif"
-                name="submit"
-                title="PayPal - The safer, easier way to pay online!"
-                alt="Donate with PayPal button"
-              />
-              <img
-                alt=""
-                src="https://www.paypal.com/en_CH/i/scr/pixel.gif"
-                width="1"
-                height="1"
-              />
-            </form>
           </div>
         </Stack>
       </ContentBox>
