@@ -466,6 +466,8 @@ class ExportTest(TestCase):
         self.add_comparison(user=first_user, is_public=True)
         self.add_comparison(user=last_user, is_public=True)
 
+        call_command("create_dataset")
+
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "application/zip")
