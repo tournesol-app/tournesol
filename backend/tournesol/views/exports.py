@@ -31,7 +31,7 @@ def write_logged_user_comparisons_file(request, write_target):
 
     Comparisons from all polls are included.
     """
-    fieldnames = ["video_a", "video_b", "criteria", "weight", "score"]
+    fieldnames = ["video_a", "video_b", "criteria", "weight", "score", "week_date"]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
     comparisons = (
@@ -105,6 +105,8 @@ class ExportAllView(APIView):
     def get(self, request):
         # Folder name in ZIP archive which contains the above files
         zip_root = f"export_{request.user.username}"
+
+        print("LALALALALA")
 
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
