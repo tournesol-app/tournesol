@@ -1,6 +1,5 @@
 from datetime import timedelta
 from unittest import mock
-from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 from django.utils import timezone
@@ -163,7 +162,7 @@ class TestTournesolBot(TestCase):
         with self.assertRaises(ValueError):
             get_best_criteria(self.videos[8], 15) == criteria_in_order
 
-    @patch("twitterbot.tournesolbot.get_twitter_account_from_video_id")
+    @mock.patch("twitterbot.tournesolbot.get_twitter_account_from_video_id")
     def test_prepare_tweet(self, mock_get_twitter_account_from_video_id):
 
         tweet_text = (

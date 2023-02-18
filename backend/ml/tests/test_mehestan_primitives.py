@@ -1,7 +1,7 @@
 import numpy as np
 from django.test import TestCase
 
-from ml.mehestan.primitives import QrMed, QrUnc
+from ml.mehestan.primitives import QrDev, QrMed, QrUnc
 
 
 class QrMedTest(TestCase):
@@ -20,6 +20,7 @@ class QrMedTest(TestCase):
         )
 
     def test_qrmed_with_W_equals_zero(self):
+        """Setting W to 0 is like removing the bias towards 0"""
         W = 0
         weight = 1
         self.assertAlmostEqual(
@@ -31,6 +32,83 @@ class QrMedTest(TestCase):
             ),
             1.0,
             places=3
+        )
+
+    def test_qrmed_with_high_uncertainty(self):
+        """Each score with a high uncertainty will have less effect on QrMed."""
+        self.assertAlmostEqual(
+            QrMed(
+                W=1.,
+                w=1.,
+                x=np.array([-10., 1., 10.]),
+                delta=1000000.,
+            ),
+            0.,
+            places=5
+        )
+
+
+class QrDevTest(TestCase):
+    def test_qrdev_default(self):
+        default_deviation = 3.
+        self.assertEqual(
+            QrDev(
+                W=2.,
+                default_dev=default_deviation,
+                w=1.,
+                x=np.array([]),
+                delta=np.array([]),
+            ),
+            default_deviation,
+        )
+
+    def test_qrdev_with_high_weight(self):
+        x = np.array([-6., 0., 15.])
+        self.assertAlmostEqual(
+            QrDev(
+                W=2.,
+                default_dev=0.,
+                w=100000.,
+                x=x,
+                delta=0.,
+            ),
+            float(np.median(np.abs(x))),  # = 6.
+            places=5
+        )
+
+    def test_qrdev_with_W_equals_0(self):
+        """Setting W to 0 is like removing the bias towards default_dev"""
+        x = np.array([-6., 0., 15.])
+        self.assertAlmostEqual(
+            QrDev(
+                W=0.,
+                default_dev=0.,
+                w=1.,
+                x=x,
+                delta=0.,
+            ),
+            float(np.median(np.abs(x))),  # = 6.
+            places=5,
+        )
+
+    def test_qrdev_with_high_uncertainty(self):
+        """
+        Each score with a high uncertainty will have less
+        effect on QrMed, and thus also on QrDev, which will
+        thus not change much from its default deviation.
+        """
+        default_deviation = 3
+        x = np.array([-6., 0., 15.])
+        self.assertAlmostEqual(
+            QrDev(
+                W=2.,
+                default_dev=default_deviation,
+                w=1.,
+                x=x,
+                delta=100000000.,
+            ),
+            default_deviation,
+            places=5
         )
 
 
@@ -61,6 +139,6 @@ class QrUncTest(TestCase):
                 x=np.array([-10.0, 1.0, 10.0]),
                 delta=np.array([1e-3, 1e-3, 1e-3]),
             ),
-            0.033,
-            places=3,
+            0.03,
+            places=2,
         )

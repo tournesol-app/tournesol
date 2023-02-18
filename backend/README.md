@@ -8,6 +8,7 @@ The API of the Tournesol platform, made with Python and Django.
     - [Automatic installation (recommended)](#automatic-installation-recommended)
     - [Manual installation](#manual-installation-advanced)
     - [Set up a Google API key](#set-up-a-google-api-key)
+- [Management commands](#management-commands)
 - [Tests](#tests)
 - [Code Quality](#code-quality)
 - [F.A.Q.](#faq)
@@ -144,6 +145,23 @@ Restart the back end.
 
 The back end is now ready to automatically update the videos' metadata when
 new videos are added using the API, and when using the force refresh action.
+
+## Management commands
+
+`python manage.py create_dataset`
+
+This command creates an up-to-date dataset archive on the disk.
+
+It requires the setting `MEDIA_ROOT` to be configured with an absolute
+filesystem path readable and writable by the user running the command.
+
+```shell
+# with a manually installed back end
+python manage.py create_dataset
+
+# with an automatically installed back end with Docker
+docker exec tournesol-dev-api python manage.py create_dataset
+```
 
 ## Tests
 

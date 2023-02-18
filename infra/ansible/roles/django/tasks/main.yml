@@ -130,6 +130,14 @@
     src: gunicorn.socket
     dest: /etc/systemd/system/gunicorn.socket
 
+- name: Create Django media directory
+  file:
+    path: /var/www/html/media
+    owner: gunicorn
+    group: gunicorn
+    mode: u=rwx,g=rx,o=rx
+    state: directory
+
 - name: Create static assets directory
   file:
     path: /var/www/html/static
@@ -184,6 +192,25 @@
 - name: Enable and start ML training timer
   systemd:
     name: ml-train.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# scheduled task: create dataset
+
+- name: Copy Tournesol API create dataset service
+  template:
+    dest: /etc/systemd/system/tournesol-api-create-dataset.service
+    src: tournesol-api-create-dataset.service.j2
+
+- name: Copy Tournesol API create dataset timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-create-dataset.timer
+    src: tournesol-api-create-dataset.timer.j2
+
+- name: Enable and start Tournesol API create dataset timer
+  systemd:
+    name: tournesol-api-create-dataset.timer
     state: started
     enabled: yes
     daemon_reload: yes
@@ -245,7 +272,7 @@
     enabled: yes
     daemon_reload: yes
 
-# scheduled task: Twitterbot
+# scheduled task: Twitterbot daily tweet
 
 - name: Copy twitterbot service
   template:
@@ -262,6 +289,25 @@
     name: tournesol-twitterbot.timer
     state: "{{ 'started' if tournesol_twitterbot_schedule is defined else 'stopped' }}"
     enabled: "{{ 'yes' if tournesol_twitterbot_schedule is defined else 'no' }}"
+    daemon_reload: yes
+
+# scheduled task: Twitterbot monthly top contributors tweet
+
+- name: Copy twitterbot top contributors service
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot-top-contributors.service
+    src: tournesol-twitterbot-top-contributors.service.j2
+
+- name: Copy twitterbot top contributor timer
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot-top-contributors.timer
+    src: tournesol-twitterbot-top-contributors.timer.j2
+
+- name: Enable and start Tournesol twitterbot top contributors timer
+  systemd:
+    name: tournesol-twitterbot-top-contributors.timer
+    state: "{{ 'started' if tournesol_twitterbot_top_contributors_schedule is defined else 'stopped' }}"
+    enabled: "{{ 'yes' if tournesol_twitterbot_top_contributors_schedule is defined else 'no' }}"
     daemon_reload: yes
 
 # scheduled task: Sync Youtube playlists
