@@ -106,8 +106,6 @@ class ExportAllView(APIView):
         # Folder name in ZIP archive which contains the above files
         zip_root = f"export_{request.user.username}"
 
-        print("LALALALALA")
-
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
 
