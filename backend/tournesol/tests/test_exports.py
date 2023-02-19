@@ -19,6 +19,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
+from core.utils.time import time_ahead
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -451,20 +452,19 @@ class ExportTest(TestCase):
         last_user = UserFactory(username="alain")
         
         # comparisons#1, on a given Monday
-        with MockNow.Context(datetime(2023, 1, 16, tzinfo=timezone.utc)) as mock_date_1:
+        with MockNow.Context(datetime(2023, 1, 16, tzinfo=timezone.utc)):
             self.add_comparison(user=first_user, is_public=True)
             self.add_comparison(user=last_user, is_public=True)
 
         # comparisons#2, the same week on a Sunday
-        with MockNow.Context(datetime(2023, 1, 22, tzinfo=timezone.utc)) as mock_date_2:
+        with MockNow.Context(datetime(2023, 1, 22, tzinfo=timezone.utc)):
             self.add_comparison(user=first_user, is_public=True)
             self.add_comparison(user=last_user, is_public=True)
 
         # comparisons#3. random date in current week
-        random_date_this_week = datetime.now()
-        random_date_this_week = random_date_this_week - timedelta(random_date_this_week.weekday()) + timedelta(random.randint(0, 6))
-        self.add_comparison(user=first_user, is_public=True)
-        self.add_comparison(user=last_user, is_public=True)
+        with MockNow.Context(time_ahead(days=random.randint(0, 6))):
+            self.add_comparison(user=first_user, is_public=True)
+            self.add_comparison(user=last_user, is_public=True)
 
         call_command("create_dataset")
 
