@@ -255,7 +255,11 @@ class Graph(CompleteGraph):
         """
         # First try to increase the scaling accuracy of the user if necessary
         scale_uncertainty = self.local_user_scaling.scale_uncertainty
+        if scale_uncertainty is None:
+            scale_uncertainty = 1
         translation_uncertainty = self.local_user_scaling.translation_uncertainty
+        if translation_uncertainty is None:
+            translation_uncertainty = 0
 
         weighted_scaling_uncertainty = scale_uncertainty * self.local_user_mean
         actual_scaling_uncertainty = weighted_scaling_uncertainty + translation_uncertainty
