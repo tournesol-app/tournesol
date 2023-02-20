@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
-import { Typography, Link, Stack } from '@mui/material';
+import { Typography, Link, Stack, Button } from '@mui/material';
 
 import { ContentHeader, ContentBox } from 'src/components';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
@@ -43,19 +43,50 @@ const DonatePage = () => {
             flexWrap="wrap"
             direction="row"
             spacing={2}
-            alignItems="center"
+            py={2}
+            alignItems="stretch"
             justifyContent="space-evenly"
           >
-            <Link href={utipTournesolUrl} rel="noopener" target="_blank">
-              <img src="/logos/800px-UTip_Logo.png" style={{ height: 180 }} />
-            </Link>
-            <Link
-              href={paypalDonateTournesolUrl}
-              rel="noopener"
-              target="_blank"
+            <Stack
+              direction="column"
+              spacing={2}
+              alignItems="center"
+              justify-content="space-between"
             >
-              <img src="/logos/Paypal_Logo.svg" style={{ height: 110 }} />
-            </Link>
+              <Link href={utipTournesolUrl} rel="noopener" target="_blank">
+                <img src="/logos/800px-UTip_Logo.png" style={{ height: 110 }} />
+              </Link>
+              <Link
+                href={utipTournesolUrl}
+                rel="noopener"
+                target="_blank"
+                underline="none"
+              >
+                <Button variant="contained">Faire un don avec UTip</Button>
+              </Link>
+            </Stack>
+            <Stack
+              direction="column"
+              spacing={2}
+              alignItems="center"
+              justify-content="space-between"
+            >
+              <Link
+                href={paypalDonateTournesolUrl}
+                rel="noopener"
+                target="_blank"
+              >
+                <img src="/logos/Paypal_Logo.svg" style={{ height: 110 }} />
+              </Link>
+              <Link
+                href={paypalDonateTournesolUrl}
+                rel="noopener"
+                target="_blank"
+                underline="none"
+              >
+                <Button variant="contained">Faire un don avec Paypal</Button>
+              </Link>
+            </Stack>
           </Stack>
 
           <div className={classes.box}>
