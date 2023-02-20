@@ -151,7 +151,8 @@
     "myRateLaterList": "À comparer plus tard",
     "myResults": "Mes résultats",
     "faq": "FAQ",
-    "about": "À propos"
+    "about": "À propos",
+    "donate": "Faire un don"
   },
   "frame": {
     "onChromeOrDerivatives": "Sur Chrome, Chromium, ou dérivés",
@@ -360,7 +361,6 @@
     "partnershipWithKleisDetail": "Nous avons pu bénéficier de l'accompagnement de l'entreprise Kleis Technology pour définir nos processus organisationnels, et adopter des pratiques de développement efficaces. Notre partenariat avec Kleis est extrêmement structurant pour le développement de la vision de notre produit et nous apporte des solutions pour réaliser des choix techniques essentiels. Merci beaucoup !",
     "openSourceContributions": "Contributions Bénévoles",
     "openSourceContributors": "Tournesol étant un projet de développement ouvert, nous avons la chance de pouvoir bénéficier des contributions de nombreux volontaires. Consultez la liste de nos merveilleux contributeurs sur <2>leur page Github</2>.",
-    "donate": "À propos > Faire un don",
     "donateHowTo": "Comment faire un don ?",
     "donateByDirectTransferEUR": "Par virement direct en Euros (EUR)",
     "donateByDirectTransferCHF": "Par virement direct en Francs Suisses (CHF)",

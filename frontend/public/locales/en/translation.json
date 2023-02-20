@@ -146,7 +146,8 @@
     "myRateLaterList": "My rate later list",
     "myResults": "My results",
     "faq": "FAQ",
-    "about": "About"
+    "about": "About",
+    "donate": "Donate"
   },
   "frame": {
     "onChromeOrDerivatives": "On Chrome, Chromium, or derivatives",
@@ -354,7 +355,6 @@
     "partnershipWithKleisDetail": "We received support from the technology and consulting company Kleis to help us shape our organizational processes and adopt efficient development practices. Our partnership with Kleis is extremely structuring for the development of our vision for the product and to bring perspective for foundational technical choices.",
     "openSourceContributions": "Open Source Contributions",
     "openSourceContributors": "As Tournesol is an open source project, we have been lucky to benefit from contributions by multiple volunteers. Find our wonderful contributors on <2>GitHub</2>",
-    "donate": "About > Donate",
     "donateHowTo": "How to make a donation?",
     "donateByDirectTransferEUR": "By direct transfer in Euros (EUR)",
     "donateByDirectTransferCHF": "By direct transfer in Swiss Francs (CHF)",

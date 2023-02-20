@@ -39,7 +39,7 @@ const DonatePage = () => {
 
   return (
     <>
-      <ContentHeader title={t('about.donate')} />
+      <ContentHeader title={`${t('menu.about')} > ${t('menu.donate')}`} />
       <ContentBox maxWidth="lg">
         <Grid2
           container
