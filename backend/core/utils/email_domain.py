@@ -35,7 +35,7 @@ def get_email_domain_with_recent_new_users(
         FROM core_emaildomain AS e
 
         JOIN (
-            SELECT *, regexp_replace("email", '(.*)(@.*$)', '\\2') AS user_domain 
+            SELECT *, regexp_replace("email", '(.*)(@.*$)', '\\2') AS user_domain
             FROM core_user
         ) AS u ON e.domain=u.user_domain
 

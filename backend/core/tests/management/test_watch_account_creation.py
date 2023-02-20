@@ -16,6 +16,7 @@ class WatchAccountCreationTestCase(TestCase):
         
         out = StringIO()
 
+        # Test which must trigger the alert
         EmailDomain.objects.create(domain="@verified.test", status=EmailDomain.STATUS_ACCEPTED)
         UserFactory(email="user1@verified.test", date_joined=time_ago(minutes=5))
 
@@ -24,8 +25,16 @@ class WatchAccountCreationTestCase(TestCase):
         
         self.assertIn("1 accounts were created during the last 1 hour(s) "
                       "with the domain '@verified.test'", output)
-        
         self.assertIn("success", output)
-
         self.assertEqual(write_in_channel_mock.call_count, 1)
+
+        # Test which must not trigger the alert
+        UserFactory(email="user2@verified.test", date_joined=time_ago(minutes=65))
+        UserFactory(email="user3@verified.test", date_joined=time_ago(minutes=65))
+
+        call_command("watch_account_creation", since-n-hours=1, n-accounts=2, stdout=out)
+        output = out.getvalue()
+
+        self.assertIn("success", output)
+        self.assertEqual(write_in_channel_mock.call_count, 0)
   
