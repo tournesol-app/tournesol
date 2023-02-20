@@ -35,16 +35,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
 
-        created_after = time_ago(hours=options["since-n-hours"])
+        created_after = time_ago(hours=options["since_n_hours"])
 
         email_domains_alert_qs = get_email_domain_with_recent_new_users(
-            created_after, EmailDomain.STATUS_ACCEPTED, options["n-accounts"]
+            created_after, EmailDomain.STATUS_ACCEPTED, options["n_accounts"]
         )
 
         for domain in email_domains_alert_qs:
 
             msg = (f"{domain.cnt} accounts were created during the last "
-                   f"{options['since-n-hours']} hour(s) with the domain '{domain.domain}'")
+                   f"{options['since_n_hours']} hour(s) with the domain '{domain.domain}'")
 
             self.stdout.write(msg)
 

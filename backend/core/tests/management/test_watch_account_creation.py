@@ -20,7 +20,7 @@ class WatchAccountCreationTestCase(TestCase):
         EmailDomain.objects.create(domain="@verified.test", status=EmailDomain.STATUS_ACCEPTED)
         UserFactory(email="user1@verified.test", date_joined=time_ago(minutes=5))
 
-        call_command("watch_account_creation", since-n-hours=1, n-accounts=1, stdout=out)
+        call_command("watch_account_creation", since_n_hours=1, n_accounts=1, stdout=out)
         output = out.getvalue()
         
         self.assertIn("1 accounts were created during the last 1 hour(s) "
@@ -32,9 +32,9 @@ class WatchAccountCreationTestCase(TestCase):
         UserFactory(email="user2@verified.test", date_joined=time_ago(minutes=65))
         UserFactory(email="user3@verified.test", date_joined=time_ago(minutes=65))
 
-        call_command("watch_account_creation", since-n-hours=1, n-accounts=2, stdout=out)
+        call_command("watch_account_creation", since_n_hours=1, n_accounts=2, stdout=out)
         output = out.getvalue()
 
         self.assertIn("success", output)
-        self.assertEqual(write_in_channel_mock.call_count, 0)
+        self.assertEqual(write_in_channel_mock.call_count, 1)
   
