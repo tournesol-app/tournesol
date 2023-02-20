@@ -11,7 +11,8 @@ from core.utils.time import time_ago
 
 
 class Command(BaseCommand):
-    help = "Alert when a certain of accounts are created with the same trusted mail domain."
+    help = "Send an alert on Discord when X users have created accounts using" \
+           " email addresses considered trusted during the last Y hours."
 
     def add_arguments(self, parser):
 
