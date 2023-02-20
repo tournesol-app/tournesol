@@ -29,7 +29,7 @@ class Command(BaseCommand):
             "--n-accounts",
             type=int,
             default=1,
-            help="Number of account to raise alerting (default 1)",
+            help="Minimum number of created accounts required to raise an alert.",
         )
 
     def handle(self, *args, **options):
