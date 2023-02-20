@@ -43,8 +43,9 @@ class Command(BaseCommand):
 
         for domain in email_domains_alert_qs:
 
-            msg = (f"{domain.cnt} accounts created an account with '{domain.domain}' "
-                   f"email domain in the last {options['since-n-hours']} hour(s)")
+            msg = (f"{domain.cnt} accounts were created during the last "
+                   f"{options['since-n-hours']} hour(s) with the domain '{domain.domain}'")
+           
             self.stdout.write(msg)
 
             # Post the alert on Discord
