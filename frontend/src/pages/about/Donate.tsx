@@ -53,63 +53,72 @@ const DonatePage = () => {
           </Grid2>
           <Grid2 sx={donateSectionSx}>
             <TitledPaper title={t('about.donateHowTo')}>
-              <Stack
-                spacing={4}
-                flexWrap="wrap"
-                direction="row"
+              <Grid2
+                container
+                gap={2}
                 alignItems="stretch"
                 justifyContent="space-evenly"
               >
-                <Stack
-                  spacing={2}
-                  direction="column"
-                  alignItems="center"
-                  justify-content="space-between"
-                >
-                  <Link href={utipTournesolUrl} rel="noopener" target="_blank">
-                    <img
-                      src="/logos/uTip_Logo.png"
-                      alt="uTip logo"
-                      height="110px"
-                    />
-                  </Link>
+                <Grid2 width="100%" xs={12} sm={12} md={5}>
+                  <Stack
+                    spacing={2}
+                    direction="column"
+                    alignItems="center"
+                    justify-content="space-between"
+                  >
+                    <Link
+                      href={utipTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                    >
+                      <img
+                        src="/logos/uTip_Logo.png"
+                        alt="uTip logo"
+                        height="110px"
+                      />
+                    </Link>
 
-                  <Button
-                    variant="contained"
-                    href={utipTournesolUrl}
-                    rel="noopener"
-                    target="_blank"
+                    <Button
+                      variant="contained"
+                      href={utipTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                    >
+                      {t('donate.donateWithUtip')}
+                    </Button>
+                  </Stack>
+                </Grid2>
+                <Grid2 width="100%" xs={12} sm={12} md={5}>
+                  <Stack
+                    spacing={2}
+                    direction="column"
+                    alignItems="center"
+                    justify-content="space-between"
                   >
-                    {t('donate.donateWithUtip')}
-                  </Button>
-                </Stack>
-                <Stack
-                  spacing={2}
-                  direction="column"
-                  alignItems="center"
-                  justify-content="space-between"
-                >
-                  <Link
-                    href={paypalDonateTournesolUrl}
-                    rel="noopener"
-                    target="_blank"
-                  >
-                    <img
-                      src="/logos/PayPal_Logo.svg"
-                      alt="PayPal logo"
-                      height="110px"
-                    />
-                  </Link>
-                  <Button
-                    variant="contained"
-                    href={paypalDonateTournesolUrl}
-                    rel="noopener"
-                    target="_blank"
-                  >
-                    {t('donate.donateWithPaypal')}
-                  </Button>
-                </Stack>
-              </Stack>
+                    <Link
+                      href={paypalDonateTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                      width="100%"
+                    >
+                      <img
+                        src="/logos/PayPal_Logo.svg"
+                        alt="PayPal logo"
+                        height="110px"
+                        width="100%"
+                      />
+                    </Link>
+                    <Button
+                      variant="contained"
+                      href={paypalDonateTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                    >
+                      {t('donate.donateWithPaypal')}
+                    </Button>
+                  </Stack>
+                </Grid2>
+              </Grid2>
             </TitledPaper>
           </Grid2>
           <Grid2 sx={donateSectionSx}>
