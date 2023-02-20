@@ -67,7 +67,11 @@ const DonatePage = () => {
                   justify-content="space-between"
                 >
                   <Link href={utipTournesolUrl} rel="noopener" target="_blank">
-                    <img src="/logos/800px-UTip_Logo.png" height="110px" />
+                    <img
+                      src="/logos/uTip_Logo.png"
+                      alt="uTip logo"
+                      height="110px"
+                    />
                   </Link>
 
                   <Button
@@ -90,7 +94,11 @@ const DonatePage = () => {
                     rel="noopener"
                     target="_blank"
                   >
-                    <img src="/logos/Paypal_Logo.svg" height="110px" />
+                    <img
+                      src="/logos/PayPal_Logo.svg"
+                      alt="PayPal logo"
+                      height="110px"
+                    />
                   </Link>
                   <Button
                     variant="contained"
