@@ -1,5 +1,6 @@
 """
-Watch and alert when a certain number of accounts are created with the same trusted domaine.
+Send an alert on Discord when too many users have created accounts using email
+addresses considered trusted during the last hours.
 """
 from django.core.management.base import BaseCommand
 
