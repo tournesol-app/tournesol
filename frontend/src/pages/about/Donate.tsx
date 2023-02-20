@@ -69,16 +69,15 @@ const DonatePage = () => {
                   <Link href={utipTournesolUrl} rel="noopener" target="_blank">
                     <img src="/logos/800px-UTip_Logo.png" height="110px" />
                   </Link>
-                  <Link
+
+                  <Button
+                    variant="contained"
                     href={utipTournesolUrl}
                     rel="noopener"
                     target="_blank"
-                    underline="none"
                   >
-                    <Button variant="contained">
-                      {t('donate.donateWithUtip')}
-                    </Button>
-                  </Link>
+                    {t('donate.donateWithUtip')}
+                  </Button>
                 </Stack>
                 <Stack
                   spacing={2}
@@ -93,16 +92,14 @@ const DonatePage = () => {
                   >
                     <img src="/logos/Paypal_Logo.svg" height="110px" />
                   </Link>
-                  <Link
+                  <Button
+                    variant="contained"
                     href={paypalDonateTournesolUrl}
                     rel="noopener"
                     target="_blank"
-                    underline="none"
                   >
-                    <Button variant="contained">
-                      {t('donate.donateWithPaypal')}
-                    </Button>
-                  </Link>
+                    {t('donate.donateWithPaypal')}
+                  </Button>
                 </Stack>
               </Stack>
             </TitledPaper>
