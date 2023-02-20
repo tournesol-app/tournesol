@@ -14,9 +14,6 @@ const useStyles = makeStyles((theme) => ({
   bankingInfo: {
     margin: 0,
   },
-  link: {
-    color: theme.palette.text.primary,
-  },
 }));
 
 const DonatePage = () => {
@@ -39,7 +36,7 @@ const DonatePage = () => {
           alignItems="center"
         >
           <Grid2 sx={donateSectionSx}>
-            <FundingSection linkToSupportPage={false} fullWidth />
+            <FundingSection linkToDonatePage={false} fullWidth />
           </Grid2>
           <Grid2 sx={donateSectionSx}>
             <TitledPaper title={t('about.donateHowTo')}>

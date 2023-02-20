@@ -9,12 +9,12 @@ import { VolunteerActivism } from '@mui/icons-material';
 import SectionTitle from './SectionTitle';
 
 interface FundingSectionProps {
-  linkToSupportPage?: boolean;
+  linkToDonatePage?: boolean;
   fullWidth?: boolean;
 }
 
 const FundingSection = ({
-  linkToSupportPage = true,
+  linkToDonatePage = true,
   fullWidth = false,
 }: FundingSectionProps) => {
   const theme = useTheme();
@@ -116,7 +116,7 @@ const FundingSection = ({
             </Box>
           </Paper>
         </Grid2>
-        {linkToSupportPage && (
+        {linkToDonatePage && (
           <Grid2 xs={9} display="flex" justifyContent="center">
             <Button
               variant="contained"
