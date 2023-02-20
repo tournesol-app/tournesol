@@ -1,6 +1,5 @@
 from typing import Optional
 import logging
-from typing import List
 import numpy as np
 
 from django.db.models import F, QuerySet
@@ -13,6 +12,7 @@ from tournesol.suggestions.suggested_video import SuggestedVideo
 import time
 
 logger = logging.getLogger(__name__)
+
 
 class SuggestionProvider:
     """
@@ -86,7 +86,6 @@ class SuggestionProvider:
             for comparison in supertrusted_comparisons
             for entity_uid in comparison
         )
-
 
         supertursted_compared_entities = [
             self._entity_to_video[uid]
@@ -195,10 +194,16 @@ class SuggestionProvider:
         # and append the ones that are not yet compared by the user
         considered_vid_list = self._prepare_video_list(user, None)
 
+        # TODO Get rate later videos for the user
+        rate_later = []
+
         max_vid_pref = 0
         # Todo : take into account the rate later list / already seen videos ?
         for v in considered_vid_list:
             v.user_pref = max(v.nb_comparison_with.values()) / v.comparison_nb
+            v.user_pref += v.score/100
+            if v in rate_later:
+                v.user_pref += 0.5
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
@@ -241,9 +246,15 @@ class SuggestionProvider:
         # the ones that are not yet compared by the user
         considered_vid_list = self._prepare_video_list(user, first_video)
 
+        # TODO Get rate later videos for the user
+        rate_later = []
+
         max_vid_pref = 0
         for v in considered_vid_list:
             v.user_pref = v.nb_comparison_with[first_video_id] / v.comparison_nb
+            v.user_pref += v.score/100
+            if v in rate_later:
+                v.user_pref += 0.5
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
