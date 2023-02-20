@@ -1,9 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Button, Link, Stack, Typography } from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
-import { Typography, Link, Stack, Button } from '@mui/material';
 
 import { ContentHeader, ContentBox } from 'src/components';
+import TitledPaper from 'src/components/TitledPaper';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import { utipTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
 
@@ -27,92 +30,108 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DonatePage = () => {
+  const classes = useStyles();
   const { t } = useTranslation();
 
-  const classes = useStyles();
+  const donateSectionSx = {
+    width: '100%',
+  };
+
   return (
     <>
       <ContentHeader title={t('about.donate')} />
       <ContentBox maxWidth="lg">
-        <Stack spacing={2}>
-          <FundingSection linkToSupportPage={false} fullWidth />
-          <Typography variant="h2" component="h2" textAlign="center">
-            {t('about.donateHowTo')}
-          </Typography>
-          <Stack
-            flexWrap="wrap"
-            direction="row"
-            spacing={2}
-            py={2}
-            alignItems="stretch"
-            justifyContent="space-evenly"
-          >
-            <Stack
-              direction="column"
-              spacing={2}
-              alignItems="center"
-              justify-content="space-between"
-            >
-              <Link href={utipTournesolUrl} rel="noopener" target="_blank">
-                <img src="/logos/800px-UTip_Logo.png" style={{ height: 110 }} />
-              </Link>
-              <Link
-                href={utipTournesolUrl}
-                rel="noopener"
-                target="_blank"
-                underline="none"
+        <Grid2
+          container
+          width="100%"
+          gap={6}
+          flexDirection="column"
+          alignItems="center"
+        >
+          <Grid2 sx={donateSectionSx}>
+            <FundingSection linkToSupportPage={false} fullWidth />
+          </Grid2>
+          <Grid2 sx={donateSectionSx}>
+            <TitledPaper title={t('about.donateHowTo')}>
+              <Stack
+                spacing={4}
+                flexWrap="wrap"
+                direction="row"
+                alignItems="stretch"
+                justifyContent="space-evenly"
               >
-                <Button variant="contained">Faire un don avec UTip</Button>
-              </Link>
-            </Stack>
-            <Stack
-              direction="column"
-              spacing={2}
-              alignItems="center"
-              justify-content="space-between"
-            >
-              <Link
-                href={paypalDonateTournesolUrl}
-                rel="noopener"
-                target="_blank"
-              >
-                <img src="/logos/Paypal_Logo.svg" style={{ height: 110 }} />
-              </Link>
-              <Link
-                href={paypalDonateTournesolUrl}
-                rel="noopener"
-                target="_blank"
-                underline="none"
-              >
-                <Button variant="contained">Faire un don avec Paypal</Button>
-              </Link>
-            </Stack>
-          </Stack>
-
-          <div className={classes.box}>
-            <Typography variant="h5" sx={{ marginBottom: 1 }}>
-              {t('about.donateByDirectTransferEUR')}
-            </Typography>
-            <pre className={classes.bankingInfo}>Association Tournesol</pre>
-            <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
-            <pre className={classes.bankingInfo}>
-              IBAN: CH75 0900 0000 1570 7623 1
-            </pre>
-            <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-          </div>
-
-          <div className={classes.box}>
-            <Typography variant="h5" sx={{ marginBottom: 1 }}>
-              {t('about.donateByDirectTransferCHF')}
-            </Typography>
-            <pre className={classes.bankingInfo}>Association Tournesol</pre>
-            <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
-            <pre className={classes.bankingInfo}>
-              IBAN: CH42 0900 0000 1569 4102 5
-            </pre>
-            <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-          </div>
-        </Stack>
+                <Stack
+                  spacing={2}
+                  direction="column"
+                  alignItems="center"
+                  justify-content="space-between"
+                >
+                  <Link href={utipTournesolUrl} rel="noopener" target="_blank">
+                    <img src="/logos/800px-UTip_Logo.png" height="110px" />
+                  </Link>
+                  <Link
+                    href={utipTournesolUrl}
+                    rel="noopener"
+                    target="_blank"
+                    underline="none"
+                  >
+                    <Button variant="contained">
+                      {t('donate.donateWithUtip')}
+                    </Button>
+                  </Link>
+                </Stack>
+                <Stack
+                  spacing={2}
+                  direction="column"
+                  alignItems="center"
+                  justify-content="space-between"
+                >
+                  <Link
+                    href={paypalDonateTournesolUrl}
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    <img src="/logos/Paypal_Logo.svg" height="110px" />
+                  </Link>
+                  <Link
+                    href={paypalDonateTournesolUrl}
+                    rel="noopener"
+                    target="_blank"
+                    underline="none"
+                  >
+                    <Button variant="contained">
+                      {t('donate.donateWithPaypal')}
+                    </Button>
+                  </Link>
+                </Stack>
+              </Stack>
+            </TitledPaper>
+          </Grid2>
+          <Grid2 sx={donateSectionSx}>
+            <div className={classes.box}>
+              <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                {t('about.donateByDirectTransferEUR')}
+              </Typography>
+              <pre className={classes.bankingInfo}>Association Tournesol</pre>
+              <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
+              <pre className={classes.bankingInfo}>
+                IBAN: CH75 0900 0000 1570 7623 1
+              </pre>
+              <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+            </div>
+            <div className={classes.box}>
+              <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                {t('about.donateByDirectTransferCHF')}
+              </Typography>
+              <pre className={classes.bankingInfo}>Association Tournesol</pre>
+              <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
+              <pre className={classes.bankingInfo}>
+                IBAN: CH42 0900 0000 1569 4102 5
+              </pre>
+              <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+            </div>
+          </Grid2>
+        </Grid2>
       </ContentBox>
     </>
   );
