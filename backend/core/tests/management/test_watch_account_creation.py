@@ -19,7 +19,7 @@ class WatchAccountCreationTestCase(TestCase):
         EmailDomain.objects.create(domain="@verified.test", status=EmailDomain.STATUS_ACCEPTED)
         UserFactory(email="user1@verified.test", date_joined=time_ago(minutes=5))
 
-        call_command("watch_account_creation", since_n_hours=1, n_account=1, stdout=out)
+        call_command("watch_account_creation", since-n-hours=1, n-accounts=1, stdout=out)
         output = out.getvalue()
         
         self.assertIn("1 accounts created an account with '@verified.test' "

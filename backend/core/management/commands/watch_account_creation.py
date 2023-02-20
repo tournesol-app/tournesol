@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         parser.add_argument(
             "-s",
-            "--since_n_hours",
+            "--since-n-hours",
             type=int,
             help="Number of hours ago to watch",
         )
@@ -26,7 +26,7 @@ class Command(BaseCommand):
         # Optional
         parser.add_argument(
             "-n",
-            "--n_account",
+            "--n-accounts",
             type=int,
             default=1,
             help="Number of account to raise alerting (default 1)",
@@ -35,16 +35,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
 
-        created_after = time_ago(hours=options["since_n_hours"])
+        created_after = time_ago(hours=options["since-n-hours"])
 
         email_domains_alert_qs = get_email_domain_with_recent_new_users(
-            created_after, EmailDomain.STATUS_ACCEPTED, options["n_account"]
+            created_after, EmailDomain.STATUS_ACCEPTED, options["n-accounts"]
         )
 
         for domain in email_domains_alert_qs:
 
             msg = (f"{domain.cnt} accounts created an account with '{domain.domain}' "
-                   f"email domain in the last {options['since_n_hours']} hour(s)")
+                   f"email domain in the last {options['since-n-hours']} hour(s)")
             self.stdout.write(msg)
 
             # Post the alert on Discord
