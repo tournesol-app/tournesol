@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Link, Stack, Typography } from '@mui/material';
+import { Button, Link, Stack, Typography, Box, Divider } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -11,10 +11,6 @@ import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import { utipTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
 
 const useStyles = makeStyles((theme) => ({
-  box: {
-    padding: 8,
-    marginTop: 8,
-  },
   bankingInfo: {
     margin: 0,
   },
@@ -117,7 +113,7 @@ const DonatePage = () => {
           </Grid2>
           <Grid2 sx={donateSectionSx}>
             <TitledPaper title={t('donate.doYouPreferDirectTransfer')}>
-              <div className={classes.box}>
+              <Box>
                 <Typography variant="h5" sx={{ marginBottom: 1 }}>
                   {t('about.donateByDirectTransferEUR')}
                 </Typography>
@@ -127,8 +123,9 @@ const DonatePage = () => {
                   IBAN: CH75 0900 0000 1570 7623 1
                 </pre>
                 <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-              </div>
-              <div className={classes.box}>
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Box>
                 <Typography variant="h5" sx={{ marginBottom: 1 }}>
                   {t('about.donateByDirectTransferCHF')}
                 </Typography>
@@ -138,7 +135,7 @@ const DonatePage = () => {
                   IBAN: CH42 0900 0000 1569 4102 5
                 </pre>
                 <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-              </div>
+              </Box>
             </TitledPaper>
           </Grid2>
         </Grid2>

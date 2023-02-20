@@ -370,7 +370,7 @@
   "donate": {
     "donateWithUtip": "Donate with uTip",
     "donateWithPaypal": "Donate with PayPal",
-    "doYouPreferDirectTransfer": "Do you prefer direct transfer?"
+    "doYouPreferDirectTransfer": "You prefer direct transfers?"
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",
