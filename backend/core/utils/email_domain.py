@@ -31,12 +31,17 @@ def get_email_domain_with_recent_new_users(
             e.id,
             e.domain,
             count(*) as cnt
+
         FROM core_emaildomain AS e
-        INNER JOIN (SELECT *, regexp_replace("email", '(.*)(@.*$)', '\\2')
-        AS user_domain FROM core_user) AS u
-        ON e.domain=u.user_domain
+
+        JOIN (
+            SELECT *, regexp_replace("email", '(.*)(@.*$)', '\\2') AS user_domain 
+            FROM core_user
+        ) AS u ON e.domain=u.user_domain
+
         WHERE u.date_joined >= %(since)s
-        AND e.status = %(status)s
+          AND e.status = %(status)s
+
         GROUP BY e.domain, e.id
         HAVING count(*) >= %(n_account)s
         ORDER BY cnt DESC;
