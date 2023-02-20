@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
             msg = (f"{domain.cnt} accounts were created during the last "
                    f"{options['since-n-hours']} hour(s) with the domain '{domain.domain}'")
-           
+            
             self.stdout.write(msg)
 
             # Post the alert on Discord
