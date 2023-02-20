@@ -8,7 +8,7 @@ from django.db.models.query import RawQuerySet
 from core.models.user import EmailDomain
 
 
-def get_user_cnt_per_email_domain(
+def get_email_domain_with_recent_new_users(
     since: datetime.datetime, status: str = "ACK", n_account: int = 1
 ) -> RawQuerySet:
     """
@@ -22,7 +22,7 @@ def get_user_cnt_per_email_domain(
     n_account -- minimum number of account to be consider (default 1)
 
     Ex:
-        get_user_cnt_per_email_domain(datetime.datetime(2022,3,4), 10)
+        get_email_domain_with_recent_new_users(datetime.datetime(2022,3,4), 10)
         Return all the domain name with 10 or more users created since the 4th of March 2022
     """
     return EmailDomain.objects.raw(

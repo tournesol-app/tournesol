@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from core.models.user import EmailDomain
 from core.tests.factories.user import UserFactory
-from core.utils.email_domain import get_user_cnt_per_email_domain
+from core.utils.email_domain import get_email_domain_with_recent_new_users
 from core.utils.time import time_ago
 
 
@@ -33,26 +33,26 @@ class UtilsEmailDomainTestCase(TestCase):
         UserFactory(email="user13@rejected.test", date_joined=time_ago(hours=10))
         UserFactory(email="user14@rejected.test", date_joined=time_ago(days=2))
 
-    def test_get_user_cnt_per_email_domain(self):
+    def test_get_email_domain_with_recent_new_users(self):
         """Test get user count per email domain at different time"""
 
-        self.assertEqual(len(get_user_cnt_per_email_domain(time_ago(minutes=1), "ACK", 1)), 0)
+        self.assertEqual(len(get_email_domain_with_recent_new_users(time_ago(minutes=1), "ACK", 1)), 0)
 
-        email_accepted_10min = get_user_cnt_per_email_domain(time_ago(minutes=10), "ACK", 1)
+        email_accepted_10min = get_email_domain_with_recent_new_users(time_ago(minutes=10), "ACK", 1)
         self.assertEqual(len(email_accepted_10min), 2)
         self.assertEqual(email_accepted_10min[0].domain, "@verified2.test")
         self.assertEqual(email_accepted_10min[0].cnt, 2)
         self.assertEqual(email_accepted_10min[1].domain, "@verified.test")
         self.assertEqual(email_accepted_10min[1].cnt, 1)
 
-        email_accepted_2h = get_user_cnt_per_email_domain(time_ago(hours=2), "ACK", 2)
+        email_accepted_2h = get_email_domain_with_recent_new_users(time_ago(hours=2), "ACK", 2)
         self.assertEqual(email_accepted_2h[0].domain, "@verified.test")
         self.assertEqual(email_accepted_2h[0].cnt, 2)
 
-        email_pending_2h = get_user_cnt_per_email_domain(time_ago(hours=2), "PD", 3)
+        email_pending_2h = get_email_domain_with_recent_new_users(time_ago(hours=2), "PD", 3)
         self.assertEqual(email_pending_2h[0].domain, "@pending.test")
         self.assertEqual(email_pending_2h[0].cnt, 4)
 
-        email_rejected_1day = get_user_cnt_per_email_domain(time_ago(days=1), "RJ", 3)
+        email_rejected_1day = get_email_domain_with_recent_new_users(time_ago(days=1), "RJ", 3)
         self.assertEqual(email_rejected_1day[0].domain, "@rejected.test")
         self.assertEqual(email_rejected_1day[0].cnt, 3)
