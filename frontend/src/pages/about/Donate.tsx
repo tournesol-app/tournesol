@@ -10,7 +10,7 @@ import TitledPaper from 'src/components/TitledPaper';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import { utipTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   bankingInfo: {
     margin: 0,
   },
