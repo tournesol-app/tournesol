@@ -1,7 +1,8 @@
-from typing import Optional
 import logging
-import numpy as np
+import time
+from typing import Optional
 
+import numpy as np
 from django.db.models import F, QuerySet
 
 from core.models import User
@@ -9,7 +10,6 @@ from tournesol.models import Comparison, ComparisonCriteriaScore, Entity, Poll
 from tournesol.suggestions.graph import CompleteGraph, Graph
 from tournesol.suggestions.suggested_user import SuggestedUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
-import time
 
 logger = logging.getLogger(__name__)
 

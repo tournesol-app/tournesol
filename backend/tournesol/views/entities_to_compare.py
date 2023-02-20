@@ -1,18 +1,17 @@
+import logging
+import time
+
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-import logging
-import time
-
 from tournesol.models import Entity
 from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.suggestions.suggester_store import SuggesterStore
 from tournesol.views import PollScopedViewMixin
-
 
 logger = logging.getLogger(__name__)
 
