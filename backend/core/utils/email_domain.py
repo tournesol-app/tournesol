@@ -9,7 +9,7 @@ from core.models.user import EmailDomain
 
 
 def get_email_domain_with_recent_new_users(
-    since: datetime.datetime, status: str = "ACK", n_account: int = 1
+    since: datetime.datetime, status: str = EmailDomain.STATUS_ACCEPTED, n_account: int = 1
 ) -> RawQuerySet:
     """
     Return the email domain with the number of account created `since` date with atleast

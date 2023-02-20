@@ -4,6 +4,7 @@ Watch and alert when a certain number of accounts are created with the same trus
 from django.core.management.base import BaseCommand
 
 from core.lib.discord.api import write_in_channel
+from core.models.user import EmailDomain
 from core.utils.email_domain import get_email_domain_with_recent_new_users
 from core.utils.time import time_ago
 
@@ -35,7 +36,7 @@ class Command(BaseCommand):
         created_after = time_ago(hours=options["since_n_hours"])
 
         email_domains_alert_qs = get_email_domain_with_recent_new_users(
-            created_after, "ACK", options["n_account"]
+            created_after, EmailDomain.STATUS_ACCEPTED, options["n_account"]
         )
 
         for domain in email_domains_alert_qs:
