@@ -14,12 +14,6 @@ const useStyles = makeStyles((theme) => ({
   box: {
     padding: 8,
     marginTop: 8,
-    background: '#FFFFFF',
-    border: '1px solid #DCD8CB',
-    boxShadow:
-      '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
-    borderRadius: '4px',
-    position: 'relative',
   },
   bankingInfo: {
     margin: 0,
@@ -122,28 +116,30 @@ const DonatePage = () => {
             </TitledPaper>
           </Grid2>
           <Grid2 sx={donateSectionSx}>
-            <div className={classes.box}>
-              <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                {t('about.donateByDirectTransferEUR')}
-              </Typography>
-              <pre className={classes.bankingInfo}>Association Tournesol</pre>
-              <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
-              <pre className={classes.bankingInfo}>
-                IBAN: CH75 0900 0000 1570 7623 1
-              </pre>
-              <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-            </div>
-            <div className={classes.box}>
-              <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                {t('about.donateByDirectTransferCHF')}
-              </Typography>
-              <pre className={classes.bankingInfo}>Association Tournesol</pre>
-              <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
-              <pre className={classes.bankingInfo}>
-                IBAN: CH42 0900 0000 1569 4102 5
-              </pre>
-              <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-            </div>
+            <TitledPaper title={t('donate.doYouPreferDirectTransfer')}>
+              <div className={classes.box}>
+                <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                  {t('about.donateByDirectTransferEUR')}
+                </Typography>
+                <pre className={classes.bankingInfo}>Association Tournesol</pre>
+                <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
+                <pre className={classes.bankingInfo}>
+                  IBAN: CH75 0900 0000 1570 7623 1
+                </pre>
+                <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+              </div>
+              <div className={classes.box}>
+                <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                  {t('about.donateByDirectTransferCHF')}
+                </Typography>
+                <pre className={classes.bankingInfo}>Association Tournesol</pre>
+                <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
+                <pre className={classes.bankingInfo}>
+                  IBAN: CH42 0900 0000 1569 4102 5
+                </pre>
+                <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+              </div>
+            </TitledPaper>
           </Grid2>
         </Grid2>
       </ContentBox>

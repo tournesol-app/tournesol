@@ -369,7 +369,8 @@
   },
   "donate": {
     "donateWithUtip": "Donate with uTip",
-    "donateWithPaypal": "Donate with PayPal"
+    "donateWithPaypal": "Donate with PayPal",
+    "doYouPreferDirectTransfer": "Do you prefer direct transfer?"
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",
