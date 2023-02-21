@@ -70,10 +70,9 @@ class SuggestionProvider:
         uncertainties of the user are not high enough
         """
         # I want all entities from the current poll compared by supertrusted user
-        # todo create alias to properly detect supertrusted ?
         supertrusted_comparisons = Comparison.objects.filter(
             poll=self.poll,
-            user__in=User.supertrusted_seed_users()
+            user__in=User.with_trusted_email().filter(is_staff=True),
         ).values_list("entity_1__uid", "entity_2__uid")
 
         supertursted_compared_entities = set(

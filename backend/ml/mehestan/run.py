@@ -92,7 +92,7 @@ def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.
         False: VOTE_WEIGHT_PRIVATE_RATINGS,
     })
     if score_mode == ScoreMode.TRUSTED_ONLY:
-        ratings_df = ratings_df[ratings_df["is_trusted"]]
+        ratings_df = ratings_df[ratings_df["trust_score"] >= 0.8]
         ratings_df["voting_right"] = 1
     if score_mode == ScoreMode.ALL_EQUAL:
         ratings_df["voting_right"] = 1

@@ -11,26 +11,18 @@ from .primitives import BrMean, QrDev, QrMed, QrUnc
 # `W` is the Byzantine resilience parameter,
 # i.e the number of voting rights needed to modify a global score by 1 unit.
 W = 20.0
-
-SCALING_WEIGHT_SUPERTRUSTED = W
-SCALING_WEIGHT_TRUSTED = 1.0
-SCALING_WEIGHT_NONTRUSTED = 0.0
+SCALING_WEIGHT_CALIBRATION = W
 
 
 def get_user_scaling_weights(ml_input: MlInput):
     ratings_properties = ml_input.ratings_properties[
-        ["user_id", "is_trusted", "is_supertrusted"]
+        ["user_id", "trust_score", "is_scaling_calibration_user"]
     ].copy()
     df = ratings_properties.groupby("user_id").first()
-    df["scaling_weight"] = SCALING_WEIGHT_NONTRUSTED
+    df["scaling_weight"] = df["trust_score"]
     df["scaling_weight"].mask(
-        df.is_trusted,
-        SCALING_WEIGHT_TRUSTED,
-        inplace=True,
-    )
-    df["scaling_weight"].mask(
-        df.is_supertrusted,
-        SCALING_WEIGHT_SUPERTRUSTED,
+        df.is_scaling_calibration_user,
+        SCALING_WEIGHT_CALIBRATION,
         inplace=True,
     )
     return df["scaling_weight"].to_dict()
@@ -65,7 +57,7 @@ def compute_scaling(
     ml_input: MlInput,
     users_to_compute=None,
     reference_users=None,
-    compute_uncertainties=False,
+    calibration=False,
 ):
     scaling_weights = get_user_scaling_weights(ml_input)
     df = df.rename({"entity_id": "uid"}, axis=1)
@@ -134,7 +126,7 @@ def compute_scaling(
         theta_inf = np.max(user_scores.score.abs())
         s_nqm = np.array(s_nqm)
         delta_s_nqm = np.array(delta_s_nqm)
-        if compute_uncertainties:
+        if not calibration:
             qr_med = QrMed(8 * W * theta_inf, s_weights, s_nqm - 1, delta_s_nqm)
             s_dict[user_n] = 1 + qr_med
             delta_s_dict[user_n] = QrUnc(
@@ -185,7 +177,7 @@ def compute_scaling(
         tau_nqm = np.array(tau_nqm)
         delta_tau_nqm = np.array(delta_tau_nqm)
 
-        if compute_uncertainties:
+        if not calibration:
             qr_med = QrMed(8 * W, s_weights, tau_nqm, delta_tau_nqm)
             tau_dict[user_n] = qr_med
             delta_tau_dict[user_n] = QrUnc(
@@ -200,21 +192,21 @@ def compute_scaling(
             "tau": tau_dict,
             **(
                 {"delta_s": delta_s_dict, "delta_tau": delta_tau_dict}
-                if compute_uncertainties
+                if not calibration
                 else {}
             ),
         }
     )
 
 
-def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFrame):
+def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame):
     rp = ml_input.ratings_properties
     rp = rp.set_index(["user_id", "entity_id"])
-    rp = rp[rp.is_supertrusted]
+    rp = rp[rp.is_scaling_calibration_user]
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
     df["score"] = df["raw_score"]
     df["uncertainty"] = df["raw_uncertainty"]
-    return compute_scaling(df, ml_input=ml_input)
+    return compute_scaling(df, ml_input=ml_input, calibration=True)
 
 
 def compute_scaled_scores(
@@ -230,8 +222,7 @@ def compute_scaled_scores(
             * `score`
             * `uncertainty`
             * `is_public`
-            * `is_trusted`
-            * `is_supertrusted`
+            * `is_scaling_calibration_user`
         - scalings: DataFrame with index `entity_id` and columns:
             * `s`: scaling factor
             * `tau`: translation value
@@ -248,65 +239,63 @@ def compute_scaled_scores(
                 "score",
                 "uncertainty",
                 "is_public",
-                "is_trusted",
-                "is_supertrusted",
+                "is_scaling_calibration_user",
                 "trust_score",
             ]
         )
         scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
         return scores, scalings
-    supertrusted_scaling = get_scaling_for_supertrusted(ml_input, individual_scores)
+    calibration_scaling = get_scaling_for_calibration(ml_input, individual_scores)
     rp = ml_input.ratings_properties
 
-    non_supertrusted_users = rp["user_id"][~rp.is_supertrusted].unique()
-    supertrusted_users = rp["user_id"][rp.is_supertrusted].unique()
+    non_calibration_users = rp["user_id"][~rp.is_scaling_calibration_user].unique()
+    calibration_users = rp["user_id"][rp.is_scaling_calibration_user].unique()
     rp = rp.set_index(["user_id", "entity_id"])
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="left")
     df["is_public"].fillna(False, inplace=True)
-    df["is_trusted"].fillna(False, inplace=True)
-    df["is_supertrusted"].fillna(False, inplace=True)
+    df["is_scaling_calibration_user"].fillna(False, inplace=True)
 
-    # Apply scaling for supertrusted
-    df = df.join(supertrusted_scaling, on="user_id")
+    # Apply scaling for calibration users
+    df = df.join(calibration_scaling, on="user_id")
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
     df["score"] = df["s"] * df["raw_score"] + df["tau"]
     df["uncertainty"] = df["raw_uncertainty"] * df["s"]
     df.drop(["s", "tau"], axis=1, inplace=True)
 
-    # Apply scaling for non_supertrusted
-    logging.debug(
-        "Computing scaling for %s non_supertrusted, based on %s supertrusted",
-        len(non_supertrusted_users),
-        len(supertrusted_users),
+    # Apply scaling for non-calibration users
+    logging.info(
+        "Computing scaling for %s non-calibration users, based on %s calibration users",
+        len(non_calibration_users),
+        len(calibration_users),
     )
-    non_supertrusted_scaling = compute_scaling(
+    non_calibration_scaling = compute_scaling(
         df,
         ml_input=ml_input,
-        users_to_compute=non_supertrusted_users,
-        reference_users=supertrusted_users,
-        compute_uncertainties=True,
+        users_to_compute=non_calibration_users,
+        reference_users=calibration_users,
+        calibration=False,
     )
 
-    df = df.join(non_supertrusted_scaling, on="user_id")
-    df["is_supertrusted"].fillna(False, inplace=True)
+    df = df.join(non_calibration_scaling, on="user_id")
+    df["is_scaling_calibration_user"].fillna(False, inplace=True)
 
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
     df["delta_s"].fillna(0, inplace=True)
     df["delta_tau"].fillna(0, inplace=True)
-    df.loc[~df["is_supertrusted"], "uncertainty"] = (
+    df.loc[~df["is_scaling_calibration_user"], "uncertainty"] = (
         df["s"] * df["raw_uncertainty"]
         + df["delta_s"] * df["raw_score"].abs()
         + df["delta_tau"]
     )
-    df.loc[~df["is_supertrusted"], "score"] = df["raw_score"] * df["s"] + df["tau"]
+    df.loc[~df["is_scaling_calibration_user"], "score"] = df["raw_score"] * df["s"] + df["tau"]
     df.drop(
         ["s", "tau", "delta_s", "delta_tau"],
         axis=1,
         inplace=True,
     )
-    all_scalings = pd.concat([supertrusted_scaling, non_supertrusted_scaling])
+    all_scalings = pd.concat([calibration_scaling, non_calibration_scaling])
     return df, all_scalings
 
 
