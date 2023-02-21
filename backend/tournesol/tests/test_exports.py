@@ -5,7 +5,7 @@ import re
 import shutil
 import zipfile
 from collections import ChainMap
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict
@@ -21,7 +21,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
-from core.utils.time import time_ahead
+from core.utils.time import time_ago, time_ahead
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -235,9 +235,11 @@ class ExportTest(TestCase):
             entity_1=self.video_public_3,
             entity_2=self.video_public_4,
         )
-        ComparisonCriteriaScoreFactory(
-            comparison=self.comparison_public2, score=10, criteria="largely_recommended"
-        )
+
+        with MockNow.Context(time_ago(days=1)):
+            ComparisonCriteriaScoreFactory(
+                comparison=self.comparison_public2, score=10, criteria="largely_recommended"
+            )
         resp = self.client.get("/exports/comparisons/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Ensures the csv does not contain information that are not public comparisons
