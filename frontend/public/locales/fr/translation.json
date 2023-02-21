@@ -389,7 +389,11 @@
     "ifPossibleConsiderUsingDirectTransfers": "Si possible, préférez les virements directs (voir au-dessous). Cela permet à l'association de ne pas payer de frais supplémentaires, et permet de tirer le meilleur parti de vos dons.",
     "donateWithKKBB": "Faire un don avec KissKissBankBank",
     "donateWithPaypal": "Faire un don avec PayPal",
-    "doYouPreferDirectTransfer": "Vous préférez les virements directs ?"
+    "doYouPreferDirectTransfer": "Vous préférez les virements directs ?",
+    "whatDoWeDoQuestion": "Que faisons-nous avec les fonds de l'association?",
+    "whatWeWouldDoQuestion": "Que ferions-nous avec plus de fonds?",
+    "howMuchDoWeHaveQuestion": "Combien avons-nous actuellement?",
+    "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement?"
   },
   "privacyPolicy": {
     "privacyPolicy": "Politique de confidentialité",
