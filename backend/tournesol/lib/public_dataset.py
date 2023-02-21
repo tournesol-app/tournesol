@@ -14,7 +14,8 @@ from tournesol.entities.base import UID_DELIMITER
 def get_comparisons_data(poll_name: str) -> QuerySet:
     """
     Retrieve the public comparisons from the database and return a
-    non-evaluated Django `RawQuerySet`.
+    non-evaluated Django `RawQuerySet`. The comparisons made during current
+    week are excluded.
 
     A comparison is represented by a rating given by a user for a specific
     criterion and a couple of entities:
@@ -70,7 +71,7 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
-          -- excluse current week comparisons
+          -- exclude current week comparisons
           AND datetime_add < DATE_TRUNC('week', now())
 
         ORDER BY username, datetime_add
