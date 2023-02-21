@@ -368,7 +368,7 @@
     "trustedDomainsCurrentList": "Current list of domains considered trustworthy"
   },
   "donate": {
-    "forRegularDonationsConsiderUsingDirectTransfers": "For regular donations consider using direct tranfers instead (see below). This allows the association to avoid paying additional fees and makes the most of your contributions.",
+    "ifPossibleConsiderUsingDirectTransfers": "If possible, consider using direct tranfers instead (see below). This allows the association to not pay additional fees and makes the most of your contributions.",
     "donateWithUtip": "Donate with uTip",
     "donateWithPaypal": "Donate with PayPal",
     "doYouPreferDirectTransfer": "You prefer direct transfers?"

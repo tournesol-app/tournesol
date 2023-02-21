@@ -49,7 +49,7 @@ const DonatePage = () => {
           <Grid2 sx={donateSectionSx}>
             <TitledPaper title={t('about.donateHowTo')}>
               <Alert severity="info" sx={{ width: '100%', mb: 2 }}>
-                {t('donate.forRegularDonationsConsiderUsingDirectTransfers')}
+                {t('donate.ifPossibleConsiderUsingDirectTransfers')}
               </Alert>
               <Grid2
                 container
