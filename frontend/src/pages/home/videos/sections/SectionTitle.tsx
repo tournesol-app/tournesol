@@ -6,16 +6,22 @@ interface SectionTitleProps {
   title: string;
   color?: string;
   dividerColor?: string;
+  dividerWidthXl?: string;
 }
 
 /**
  * A title of an home page section.
  */
-const SectionTitle = ({ title, color, dividerColor }: SectionTitleProps) => {
+const SectionTitle = ({
+  title,
+  color,
+  dividerColor,
+  dividerWidthXl = '75%',
+}: SectionTitleProps) => {
   const theme = useTheme();
 
   let sx: SxProps = {
-    width: { xs: '100%', xl: '75%' },
+    width: { xs: '100%', xl: dividerWidthXl },
   };
 
   if (dividerColor) {

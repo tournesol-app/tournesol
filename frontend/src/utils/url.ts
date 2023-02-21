@@ -48,6 +48,9 @@ export const youtubePlaylistFrUrl =
 export const paypalTournesolUrl =
   'https://www.paypal.com/paypalme/tournesolapp';
 
+export const paypalDonateTournesolUrl =
+  'https://www.paypal.com/donate?hosted_button_id=22T84YR7TZ762';
+
 // uTip
 export const utipTournesolUrl = 'https://utip.io/tournesol';
 

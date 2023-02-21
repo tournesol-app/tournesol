@@ -1,170 +1,152 @@
 import React from 'react';
-import { useTranslation, Trans } from 'react-i18next';
-import makeStyles from '@mui/styles/makeStyles';
-import { Typography, Link } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
-import { ContentHeader } from 'src/components';
 import {
-  discordTournesolInviteUrl,
-  githubTournesolUrl,
-  utipTournesolUrl,
-} from 'src/utils/url';
+  Alert,
+  Box,
+  Button,
+  Divider,
+  Link,
+  Stack,
+  Typography,
+} from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  content: {
-    maxWidth: '100%',
-    width: 640,
-    padding: 24,
-  },
-  box: {
-    padding: 8,
-    marginTop: 8,
-    background: '#FFFFFF',
-    border: '1px solid #DCD8CB',
-    boxShadow:
-      '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
-    borderRadius: '4px',
-    position: 'relative',
-  },
+import { ContentHeader, ContentBox } from 'src/components';
+import TitledPaper from 'src/components/TitledPaper';
+import FundingSection from 'src/pages/home/videos/sections/FundingSection';
+import { utipTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
+
+const useStyles = makeStyles(() => ({
   bankingInfo: {
     margin: 0,
-  },
-  link: {
-    color: theme.palette.text.primary,
   },
 }));
 
 const DonatePage = () => {
-  const { t } = useTranslation();
   const classes = useStyles();
+  const { t } = useTranslation();
+
+  const donateSectionSx = {
+    width: '100%',
+  };
+
   return (
     <>
-      <ContentHeader title="About > Donate" />
-      <div className={classes.root}>
-        <div className={classes.content}>
-          <Typography paragraph>
-            <Trans t={t} i18nKey="about.donateWeAreASmallTeam">
-              Because we are a small team of mostly volunteers, the development
-              of Tournesol is slower than we would like it to be. If you can,
-              please consider helping us, through coding or through donations.
-              Check-out our{' '}
-              <a
-                href={githubTournesolUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={classes.link}
+      <ContentHeader title={`${t('menu.about')} > ${t('menu.donate')}`} />
+      <ContentBox maxWidth="lg">
+        <Grid2
+          container
+          width="100%"
+          gap={6}
+          flexDirection="column"
+          alignItems="center"
+        >
+          <Grid2 sx={donateSectionSx}>
+            <FundingSection linkToDonatePage={false} fullWidth />
+          </Grid2>
+          <Grid2 sx={donateSectionSx}>
+            <TitledPaper title={t('about.donateHowTo')}>
+              <Alert severity="info" sx={{ width: '100%', mb: 2 }}>
+                {t('donate.ifPossibleConsiderUsingDirectTransfers')}
+              </Alert>
+              <Grid2
+                container
+                gap={2}
+                alignItems="stretch"
+                justifyContent="space-evenly"
               >
-                open source code
-              </a>
-              , or join our{' '}
-              <a
-                href={discordTournesolInviteUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={classes.link}
-              >
-                Discord
-              </a>
-              .
-            </Trans>
-          </Typography>
-
-          <Typography variant="h4" sx={{ fontStyle: 'italic' }}>
-            {t('about.donateHowTo')}
-          </Typography>
-          <Link
-            href={utipTournesolUrl}
-            rel="noopener"
-            target="_blank"
-            underline="none"
-            color="inherit"
-            variant="inherit"
-          >
-            <div className={classes.box}>
-              <img
-                src="/logos/UTip_Logo.png"
-                style={{ height: 42, position: 'absolute', top: 0, right: 6 }}
-              />
-              <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                {t('about.donateWithUtipTitle')}
-              </Typography>
-              <Typography>
-                <Trans t={t} i18nKey="about.donateWithUtipDescription">
-                  uTip is an online crowdfunding platform. Visit our{' '}
-                  <a
-                    href={utipTournesolUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={classes.link}
+                <Grid2 width="100%" xs={12} sm={12} md={5}>
+                  <Stack
+                    spacing={2}
+                    direction="column"
+                    alignItems="center"
+                    justify-content="space-between"
                   >
-                    Utip page
-                  </a>{' '}
-                  to make a one-time or recurring donation
-                </Trans>
-              </Typography>
-            </div>
-          </Link>
-          <div className={classes.box}>
-            <Typography variant="h5" sx={{ marginBottom: 1 }}>
-              {t('about.donateByDirectTransferEUR')}
-            </Typography>
-            <pre className={classes.bankingInfo}>Association Tournesol</pre>
-            <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
-            <pre className={classes.bankingInfo}>
-              IBAN: CH75 0900 0000 1570 7623 1
-            </pre>
-            <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-          </div>
-
-          <div className={classes.box}>
-            <Typography variant="h5" sx={{ marginBottom: 1 }}>
-              {t('about.donateByDirectTransferCHF')}
-            </Typography>
-            <pre className={classes.bankingInfo}>Association Tournesol</pre>
-            <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
-            <pre className={classes.bankingInfo}>
-              IBAN: CH42 0900 0000 1569 4102 5
-            </pre>
-            <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
-          </div>
-
-          <div className={classes.box}>
-            <Typography variant="h5" sx={{ marginBottom: 1 }}>
-              {t('about.donateByPaypal')}
-            </Typography>
-            <form
-              action="https://www.paypal.com/donate"
-              method="post"
-              target="_top"
-              style={{ marginTop: 8 }}
-            >
-              <input
-                type="hidden"
-                name="hosted_button_id"
-                value="22T84YR7TZ762"
-              />
-              <input
-                type="image"
-                src="https://www.paypalobjects.com/en_US/CH/i/btn/btn_donateCC_LG.gif"
-                name="submit"
-                title="PayPal - The safer, easier way to pay online!"
-                alt="Donate with PayPal button"
-              />
-              <img
-                alt=""
-                src="https://www.paypal.com/en_CH/i/scr/pixel.gif"
-                width="1"
-                height="1"
-              />
-            </form>
-          </div>
-        </div>
-      </div>
+                    <Link
+                      href={utipTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                    >
+                      <img
+                        src="/logos/uTip_Logo.png"
+                        alt="uTip logo"
+                        height="90px"
+                      />
+                    </Link>
+                    <Button
+                      variant="contained"
+                      href={utipTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                    >
+                      {t('donate.donateWithUtip')}
+                    </Button>
+                  </Stack>
+                </Grid2>
+                <Grid2 width="100%" xs={12} sm={12} md={5}>
+                  <Stack
+                    spacing={2}
+                    direction="column"
+                    alignItems="center"
+                    justify-content="space-between"
+                  >
+                    <Link
+                      href={paypalDonateTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                      width="100%"
+                    >
+                      <img
+                        src="/logos/PayPal_Logo.svg"
+                        alt="PayPal logo"
+                        height="90px"
+                        width="100%"
+                      />
+                    </Link>
+                    <Button
+                      variant="contained"
+                      href={paypalDonateTournesolUrl}
+                      rel="noopener"
+                      target="_blank"
+                    >
+                      {t('donate.donateWithPaypal')}
+                    </Button>
+                  </Stack>
+                </Grid2>
+              </Grid2>
+            </TitledPaper>
+          </Grid2>
+          <Grid2 sx={donateSectionSx}>
+            <TitledPaper title={t('donate.doYouPreferDirectTransfer')}>
+              <Box>
+                <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                  {t('about.donateByDirectTransferEUR')}
+                </Typography>
+                <pre className={classes.bankingInfo}>Association Tournesol</pre>
+                <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
+                <pre className={classes.bankingInfo}>
+                  IBAN: CH75 0900 0000 1570 7623 1
+                </pre>
+                <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Box>
+                <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                  {t('about.donateByDirectTransferCHF')}
+                </Typography>
+                <pre className={classes.bankingInfo}>Association Tournesol</pre>
+                <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
+                <pre className={classes.bankingInfo}>
+                  IBAN: CH42 0900 0000 1569 4102 5
+                </pre>
+                <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+              </Box>
+            </TitledPaper>
+          </Grid2>
+        </Grid2>
+      </ContentBox>
     </>
   );
 };
