@@ -62,7 +62,9 @@ class ExportTest(TestCase):
         )
         self.user_without_comparisons = UserFactory(username="user_without_comparisons")
 
-        self.public_comparisons = UserFactory(username="public_comparisons", trust_score=0.5844)
+        self.user_with_public_comparisons = UserFactory(
+            username="public_comparisons", trust_score=0.5844
+        )
         self.video_public_1 = VideoFactory()
         self.video_public_2 = VideoFactory()
         self.video_private_3 = VideoFactory()
