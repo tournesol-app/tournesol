@@ -121,13 +121,3 @@ List of columns:
   individual scores. With a small number of contributors, this score would be
   reduced towards 0 such that it is not possible for a small number of users to
   give a very high collective score on a video.
-- publication_date:
-  The date at which the video was uploaded
-- views:
-  Number of views on the video. This field is only updated at the time of the
-  last comparison on the video, so the real number of views will be higher and
-  can be obtained from YouTube API.
-- name:
-  The title of the video.
-- uploader:
-  The name of the Channel that uploaded the video
