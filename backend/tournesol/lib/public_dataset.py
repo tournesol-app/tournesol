@@ -304,10 +304,6 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
         "video",
         "criteria",
         "score",
-        "publication_date",
-        "views",
-        "name",
-        "uploader",
     ]
 
     criteria_scores = get_collective_criteria_scores_data(poll_name).iterator()
@@ -317,10 +313,6 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
             "video": score["entity__metadata__video_id"],
             "criteria": score["criteria"],
             "score": score["score"],
-            "publication_date": score["entity__metadata__publication_date"],
-            "views": score["entity__metadata__views"],
-            "name": score["entity__metadata__name"],
-            "uploader": score["entity__metadata__uploader"],
         }
         for score in criteria_scores
     )

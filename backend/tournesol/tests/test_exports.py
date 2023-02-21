@@ -436,14 +436,19 @@ class ExportTest(TestCase):
 
     @export_test_override_settings
     def test_all_export_contains_collective_criteria_scores(self):
-        EntityCriteriaScoreFactory(criteria="h2g2", score=42, entity__metadata__name="DON'T PANIC")
+        e_criteria_score = EntityCriteriaScoreFactory(
+            criteria="h2g2",
+            score=42,
+            entity__metadata__name="DON'T PANIC"
+        )
+
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
         rows = self.parse_zipped_csv(response, "collective_criteria_scores.csv")
         self.assertEqual(len(rows), 1)
-        self.assertEqual(float(rows[0]["score"]), 42.)
+        self.assertEqual(rows[0]["video"], e_criteria_score.entity.uid.split(':')[1])
         self.assertEqual(rows[0]["criteria"], "h2g2")
-        self.assertEqual(rows[0]["name"], "DON'T PANIC")
+        self.assertEqual(float(rows[0]["score"]), 42.)
 
     @export_test_override_settings
     def test_collective_criteria_scores_is_empty_without_criteria_scores(self):
