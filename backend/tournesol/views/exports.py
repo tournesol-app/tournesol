@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db.models import Count, F
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiTypes, extend_schema
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import NotFound
@@ -15,6 +16,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.views import APIView
 
 from core.models import User
+from core.utils.time import time_ago
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.lib.public_dataset import write_comparisons_file
 from tournesol.models import Comparison, Poll
@@ -89,7 +91,8 @@ class ExportPublicComparisonsView(APIView):
     def get(self, request):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="tournesol_public_export.csv"'
-        write_comparisons_file(Poll.default_poll().name, response)
+        first_day_of_week = time_ago(days=timezone.now().weekday()).date()
+        write_comparisons_file(Poll.default_poll().name, response, first_day_of_week)
         return response
 
 

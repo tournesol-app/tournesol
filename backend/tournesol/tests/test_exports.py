@@ -218,28 +218,29 @@ class ExportTest(TestCase):
         self.public_comparisons2 = UserFactory()
         self.video_public_3 = VideoFactory()
         self.video_public_4 = VideoFactory()
-        ContributorRating.objects.create(
-            poll=self.poll_videos,
-            user=self.public_comparisons2,
-            entity=self.video_public_3,
-            is_public=True,
-        )
-        ContributorRating.objects.create(
-            poll=self.poll_videos,
-            user=self.public_comparisons2,
-            entity=self.video_public_4,
-            is_public=True,
-        )
-        self.comparison_public2 = ComparisonFactory(
-            user=self.public_comparisons2,
-            entity_1=self.video_public_3,
-            entity_2=self.video_public_4,
-        )
 
-        with MockNow.Context(time_ago(days=1)):
+        with MockNow.Context(time_ago(days=8)):
+            ContributorRating.objects.create(
+                poll=self.poll_videos,
+                user=self.public_comparisons2,
+                entity=self.video_public_3,
+                is_public=True,
+            )
+            ContributorRating.objects.create(
+                poll=self.poll_videos,
+                user=self.public_comparisons2,
+                entity=self.video_public_4,
+                is_public=True,
+            )
+            self.comparison_public2 = ComparisonFactory(
+                user=self.public_comparisons2,
+                entity_1=self.video_public_3,
+                entity_2=self.video_public_4,
+            )
             ComparisonCriteriaScoreFactory(
                 comparison=self.comparison_public2, score=10, criteria="largely_recommended"
             )
+
         resp = self.client.get("/exports/comparisons/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Ensures the csv does not contain information that are not public comparisons

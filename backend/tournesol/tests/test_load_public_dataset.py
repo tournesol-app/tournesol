@@ -18,7 +18,7 @@ class TestLoadPublicDataset(TransactionTestCase):
     def setUp(self):
         self.client = APIClient()
 
-        with MockNow.Context(time_ago(days=1)):
+        with MockNow.Context(time_ago(days=8)):
             ComparisonCriteriaScoreFactory()
             ContributorRating.objects.update(is_public=True)
 
