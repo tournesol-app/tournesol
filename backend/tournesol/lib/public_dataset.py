@@ -133,7 +133,7 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
     An individual criteria score is a score computed by the algorithm for
     a specific criterion, previously rated by a user for a specific entity.
 
-        User X Entity X Computed criteria score
+        User X Entity X Computed individual criteria score
     """
     from tournesol.models import (  # pylint: disable=import-outside-toplevel
         ContributorRatingCriteriaScore,
@@ -176,6 +176,36 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
             tournesol_contributorratingcriteriascore.criteria ASC
         """,
         {"poll_name": poll_name},
+    )
+
+
+def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
+    """
+    Retrieve the collective criteria scores computed for each entity and
+    return a non-evaluated Django `RawQuerySet`.
+
+    A collective criteria score is a score computed by the algorithm for a
+    specific criterion of a specific entity.
+
+        Entity X Computed collective criteria score
+    """
+    from tournesol.models.entity_score import (  # pylint: disable=import-outside-toplevel
+        EntityCriteriaScore,
+        ScoreMode,
+    )
+
+    return (
+        EntityCriteriaScore.objects.filter(poll__name=poll_name, score_mode=ScoreMode.DEFAULT)
+        .values(
+            "entity__metadata__video_id",
+            "criteria",
+            "score",
+            "entity__metadata__name",
+            "entity__metadata__publication_date",
+            "entity__metadata__views",
+            "entity__metadata__uploader",
+        )
+        .order_by("entity__uid", "criteria")
     )
 
 
@@ -255,6 +285,36 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
             "voting_right": criteria_score.voting_right,
         }
         for criteria_score in criteria_scores
+    )
+
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)
+
+
+def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
+    """
+    Write the output of `get_collective_criteria_scores_data` as CSV in
+    `write_target`, an object supporting the Python file API.
+    """
+
+    # If we want this function to be generic, the specific video column should
+    # be renamed entity.
+    fieldnames = [
+        "video",
+        "criteria",
+        "score",
+    ]
+
+    criteria_scores = get_collective_criteria_scores_data(poll_name).iterator()
+
+    rows = (
+        {
+            "video": score["entity__metadata__video_id"],
+            "criteria": score["criteria"],
+            "score": score["score"],
+        }
+        for score in criteria_scores
     )
 
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)

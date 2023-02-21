@@ -6,7 +6,9 @@ import zipfile
 from collections import ChainMap
 from pathlib import Path
 from tempfile import gettempdir
+from typing import Dict
 
+import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
@@ -20,11 +22,19 @@ from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
+    EntityCriteriaScore,
     Poll,
 )
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
 
+export_test_override_settings = override_settings(
+    MEDIA_ROOT=gettempdir(),
+    APP_TOURNESOL=ChainMap(
+        {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
+    ),
+)
 
 class ExportTest(TestCase):
     def setUp(self) -> None:
@@ -45,7 +55,7 @@ class ExportTest(TestCase):
         )
         self.user_without_comparisons = UserFactory(username="user_without_comparisons")
 
-        self.public_comparisons = UserFactory(
+        self.user_with_public_comparisons = UserFactory(
             username="public_comparisons", trust_score=0.5844
         )
         self.video_public_1 = VideoFactory()
@@ -53,25 +63,25 @@ class ExportTest(TestCase):
         self.video_private_3 = VideoFactory()
         ContributorRating.objects.create(
             poll=self.poll_videos,
-            user=self.public_comparisons,
+            user=self.user_with_public_comparisons,
             entity=self.video_public_1,
             is_public=True,
         )
         ContributorRating.objects.create(
             poll=self.poll_videos,
-            user=self.public_comparisons,
+            user=self.user_with_public_comparisons,
             entity=self.video_public_2,
             is_public=True,
         )
         ContributorRating.objects.create(
             poll=self.poll_videos,
-            user=self.public_comparisons,
+            user=self.user_with_public_comparisons,
             entity=self.video_private_3,
             is_public=False,
         )
         self.comparison_public = ComparisonFactory(
             poll=self.poll_videos,
-            user=self.public_comparisons,
+            user=self.user_with_public_comparisons,
             entity_1=self.video_public_1,
             entity_2=self.video_public_2,
         )
@@ -79,7 +89,7 @@ class ExportTest(TestCase):
             comparison=self.comparison_public, score=5, criteria="largely_recommended"
         )
         self.comparison_private = ComparisonFactory(
-            user=self.public_comparisons,
+            user=self.user_with_public_comparisons,
             entity_1=self.video_public_1,
             entity_2=self.video_private_3,
         )
@@ -131,6 +141,18 @@ class ExportTest(TestCase):
         self.assertIsNotNone(match)
         root = match.group(1)
         return root
+
+    def parse_zipped_csv(self, response: requests.models.Response, filename: str) -> Dict[str, str]:
+        content_disposition = response.headers["Content-Disposition"]
+        match = re.search("filename=(.+).zip", content_disposition)
+        root = Path(match.group(1))
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
+            with zip_file.open(str(root / filename), "r") as file:
+                content = file.read().decode("utf-8")
+                csv_file = csv.DictReader(io.StringIO(content))
+                rows = list(csv_file)
+        return rows
 
     def test_not_authenticated_cannot_download_comparisons(self):
         resp = self.client.get("/users/me/exports/comparisons/")
@@ -216,69 +238,84 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[1]["video_a"], self.video_public_3.video_id)
         self.assertEqual(comparison_list[1]["video_b"], self.video_public_4.video_id)
 
-    @override_settings(
-        MEDIA_ROOT=gettempdir(),
-        APP_TOURNESOL=ChainMap(
-            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
-        ),
-    )
-    def test_not_authenticated_can_download_all_exports(self):
-        # Make sure this user has multiple public comparisons so
-        # that we can verify they are only added once in the CSV
-        self.add_comparison(user=self.public_comparisons, is_public=True)
-
+    @export_test_override_settings
+    def test_non_authenticated_can_fetch_export_all_200(self):
         call_command("create_dataset")
-
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "application/zip")
 
-        root = self.extract_export_root(response)
-
+    @export_test_override_settings
+    def test_public_dataset_contains_all_expected_files(self):
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, "r") as zip_file:
-            expected_files = [
-                root + "/README.txt",
-                root + "/users.csv",
-                root + "/comparisons.csv",
-                root + "/individual_criteria_scores.csv",
+            expected_filenames = [
+                "README.txt",
+                "users.csv",
+                "comparisons.csv",
+                "individual_criteria_scores.csv",
+                "collective_criteria_scores.csv",
             ]
+            filenames = [filepath.rsplit("/", 1)[-1] for filepath in zip_file.namelist()]
+            self.assertEqual(filenames, expected_filenames)
 
-            self.assertEqual(zip_file.namelist(), expected_files)
-
+    @export_test_override_settings
+    def test_export_readme_equals_resources_readme(self):
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        root = self.extract_export_root(response)
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
             with zip_file.open(root + "/README.txt", "r") as file:
                 content = file.read()
                 with open("tournesol/resources/export_readme.txt", "rb") as readme_file:
                     expected_content = readme_file.read()
                 self.assertEqual(content, expected_content)
 
+    @export_test_override_settings
+    def test_export_all_comparisons_equal_export_comparisons(self):
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        root = self.extract_export_root(response)
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
             with zip_file.open(root + "/comparisons.csv", "r") as file:
-                content = file.read()
                 expected_content = self.client.get("/exports/comparisons/").content
-                self.assertEqual(content, expected_content)
+                self.assertEqual(file.read(), expected_content)
 
-            with zip_file.open(root + "/users.csv", "r") as file:
-                content = file.read().decode("utf-8")
-                csv_file = csv.DictReader(io.StringIO(content))
-                rows = list(csv_file)
+    @export_test_override_settings
+    def test_users_with_public_comparisons_uniquely_added_to_users_export(self):
+        # Make sure this user has multiple public comparisons so
+        # that we can verify they are only added once in the CSV
+        self.add_comparison(user=self.user_with_public_comparisons, is_public=True)
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        rows = self.parse_zipped_csv(response, "users.csv")
+        usernames = set(row["public_username"] for row in rows)
+        self.assertNotIn(self.user_with_comparisons.username, usernames)
+        self.assertNotIn(self.user_without_comparisons.username, usernames)
+        self.assertIn(self.user_with_public_comparisons.username, usernames)
+        username = self.user_with_public_comparisons.username
+        user_rows = [row for row in rows if row["public_username"] == username]
+        self.assertEqual(len(user_rows), 1)
+        user_row = user_rows[0]
+        self.assertEqual(user_row["trust_score"], "0.5844")
 
-                usernames = [row["public_username"] for row in rows]
-                self.assertNotIn(self.user_with_comparisons.username, usernames)
-                self.assertNotIn(self.user_without_comparisons.username, usernames)
-                self.assertIn(self.public_comparisons.username, usernames)
+    @export_test_override_settings
+    def test_user_with_only_private_comparisons_not_in_users(self):
+        user_with_only_private_comparisons = UserFactory(username="privacy_conscious")
+        self.add_comparison(user=user_with_only_private_comparisons, is_public=False)
+        self.add_comparison(user=user_with_only_private_comparisons, is_public=False)
+        self.add_comparison(user=user_with_only_private_comparisons, is_public=False)
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        rows = self.parse_zipped_csv(response, "users.csv")
+        usernames = set(row["public_username"] for row in rows)
+        self.assertNotIn(user_with_only_private_comparisons.username, usernames)
 
-                username = self.public_comparisons.username
-                user_rows = [row for row in rows if row["public_username"] == username]
-                self.assertEqual(len(user_rows), 1)
-                user_row = user_rows[0]
-                self.assertEqual(user_row["trust_score"], "0.5844")
-
-    @override_settings(
-        MEDIA_ROOT=gettempdir(),
-        APP_TOURNESOL=ChainMap(
-            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
-        ),
-    )
+    @export_test_override_settings
     def test_anon_cant_download_non_existing_dataset(self):
         """
         Anonymous and authenticated users cannot download a dataset when no
@@ -292,12 +329,7 @@ class ExportTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.headers["Content-Type"], "application/json")
 
-    @override_settings(
-        MEDIA_ROOT=gettempdir(),
-        APP_TOURNESOL=ChainMap(
-            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
-        ),
-    )
+    @export_test_override_settings
     def test_all_exports_voting_rights(self):
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
 
@@ -337,100 +369,91 @@ class ExportTest(TestCase):
         )
 
         # ContributorRatingCriteriaScore that should be exported
-        expected_exports = []
-        expected_exports.append(
+        expected_exports = [
             ContributorRatingCriteriaScore.objects.create(
                 contributor_rating=first_user_public_contributor_ratings[2],
                 criteria="criteria2",
                 voting_right=0.1234,
                 score=2.4567,
             ),
-        )
-        expected_exports.append(
             ContributorRatingCriteriaScore.objects.create(
                 contributor_rating=last_user_public_contributor_ratings[0],
                 criteria="criteria2",
                 voting_right=0.11,
                 score=-0.66,
             ),
-        )
-        expected_exports.append(
             ContributorRatingCriteriaScore.objects.create(
                 contributor_rating=first_user_public_contributor_ratings[0],
                 criteria="criteria1",
                 voting_right=0.8,
                 score=1.9,
             ),
-        )
+        ]
 
         # Expect results sorted first by username then by video id and finally by criteria
-        expected_exports = sorted(expected_exports, key=lambda x: x.criteria)
         expected_exports = sorted(
-            expected_exports,
-            key=lambda x: x.contributor_rating.entity.metadata["video_id"],
-        )
-        expected_exports = sorted(
-            expected_exports, key=lambda x: x.contributor_rating.user.username
+            expected_exports, key=lambda x: (
+            x.contributor_rating.user.username,
+            x.contributor_rating.entity.metadata["video_id"],
+            x.criteria
+            )
         )
 
         call_command("create_dataset")
-
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "application/zip")
-        root = self.extract_export_root(response)
+        rows = self.parse_zipped_csv(response, "individual_criteria_scores.csv")
 
-        zip_content = io.BytesIO(response.content)
-        with zipfile.ZipFile(zip_content, "r") as zip_file:
-            with zip_file.open(root + "/individual_criteria_scores.csv", "r") as file:
-                content = file.read().decode("utf-8")
-                csv_file = csv.DictReader(io.StringIO(content))
-                rows = list(csv_file)
+        for expected_export, row in zip(expected_exports, rows):
+            row = rows.pop(0)
+            self.assertEqual(
+                row["public_username"],
+                expected_export.contributor_rating.user.username,
+            )
+            self.assertEqual(
+                row["video"],
+                expected_export.contributor_rating.entity.metadata["video_id"],
+            )
+            self.assertEqual(row["criteria"], expected_export.criteria)
+            self.assertEqual(row["score"], str(expected_export.score))
+            self.assertEqual(row["voting_right"], str(expected_export.voting_right))
 
-                for expected_export in expected_exports:
-                    row = rows.pop(0)
-                    self.assertEqual(
-                        row["public_username"],
-                        expected_export.contributor_rating.user.username,
-                    )
-                    self.assertEqual(
-                        row["video"],
-                        expected_export.contributor_rating.entity.metadata["video_id"],
-                    )
-                    self.assertEqual(row["criteria"], expected_export.criteria)
-                    self.assertEqual(row["score"], str(expected_export.score))
-                    self.assertEqual(row["voting_right"], str(expected_export.voting_right))
-
-    @override_settings(
-        MEDIA_ROOT=gettempdir(),
-        APP_TOURNESOL=ChainMap(
-            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
-        ),
-    )
+    @export_test_override_settings
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
         first_user = UserFactory(username="a")
-
         self.add_comparison(user=last_user, is_public=True)
         self.add_comparison(user=first_user, is_public=True)
 
         call_command("create_dataset")
-
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        rows = self.parse_zipped_csv(response, "users.csv")
+        usernames = [row["public_username"] for row in rows]
+        self.assertEqual("a", usernames[0])
+        self.assertEqual("z", usernames[-1])
 
-        content_disposition = response.headers["Content-Disposition"]
-        match = re.search("filename=(.+).zip", content_disposition)
-        root = match.group(1)
+    @export_test_override_settings
+    def test_all_export_contains_collective_criteria_scores(self):
+        e_criteria_score = EntityCriteriaScoreFactory(
+            criteria="h2g2",
+            score=42,
+            entity__metadata__name="DON'T PANIC"
+        )
 
-        zip_content = io.BytesIO(response.content)
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        rows = self.parse_zipped_csv(response, "collective_criteria_scores.csv")
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["video"], e_criteria_score.entity.uid.split(':')[1])
+        self.assertEqual(rows[0]["criteria"], "h2g2")
+        self.assertEqual(float(rows[0]["score"]), 42.)
 
-        with zipfile.ZipFile(zip_content, "r") as zip_file:
-            with zip_file.open(root + "/users.csv", "r") as file:
-                content = file.read().decode("utf-8")
-                csv_file = csv.DictReader(io.StringIO(content))
-                rows = list(csv_file)
-
-                usernames = [row["public_username"] for row in rows]
-                self.assertEqual("a", usernames[0])
-                self.assertEqual("z", usernames[-1])
+    @export_test_override_settings
+    def test_collective_criteria_scores_is_empty_without_criteria_scores(self):
+        EntityCriteriaScore.objects.all().delete
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        rows = self.parse_zipped_csv(response, "collective_criteria_scores.csv")
+        self.assertEqual(len(rows), 0)
