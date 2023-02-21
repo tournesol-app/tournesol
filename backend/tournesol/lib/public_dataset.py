@@ -14,7 +14,8 @@ from tournesol.entities.base import UID_DELIMITER
 def get_comparisons_data(poll_name: str) -> QuerySet:
     """
     Retrieve the public comparisons from the database and return a
-    non-evaluated Django `RawQuerySet`.
+    non-evaluated Django `RawQuerySet`. The comparisons made during current
+    week are excluded.
 
     A comparison is represented by a rating given by a user for a specific
     criterion and a couple of entities:
@@ -33,7 +34,8 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
             entity_2.uid AS uid_b,
             comparisoncriteriascore.criteria,
             comparisoncriteriascore.weight,
-            comparisoncriteriascore.score
+            comparisoncriteriascore.score,
+            DATE(DATE_TRUNC('week', datetime_add)) AS week_date
 
         FROM tournesol_comparison
 
@@ -69,6 +71,10 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
+          -- exclude current week comparisons
+          AND datetime_add < DATE_TRUNC('week', now())
+
+        ORDER BY username, datetime_add
         """,
         {"poll_name": poll_name},
     )
@@ -223,6 +229,7 @@ def write_comparisons_file(poll_name: str, write_target) -> None:
         "video_b",
         "criteria",
         "score",
+        "week_date"
     ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
@@ -233,6 +240,7 @@ def write_comparisons_file(poll_name: str, write_target) -> None:
             "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
             "criteria": comparison.criteria,
             "score": int(round(comparison.score)),
+            "week_date": comparison.week_date
         }
         for comparison in get_comparisons_data(poll_name).iterator()
     )
