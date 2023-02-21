@@ -126,19 +126,14 @@ def compute_scaling(
         theta_inf = np.max(user_scores.score.abs())
         s_nqm = np.array(s_nqm)
         delta_s_nqm = np.array(delta_s_nqm)
-        if not calibration:
+        if calibration:
+            s_dict[user_n] = 1 + BrMean(8 * W * theta_inf, s_weights, s_nqm - 1, delta_s_nqm)
+            delta_s_dict[user_n] = QrUnc(8 * W * theta_inf, 1, s_weights, s_nqm - 1, delta_s_nqm)
+        else:
             qr_med = QrMed(8 * W * theta_inf, s_weights, s_nqm - 1, delta_s_nqm)
             s_dict[user_n] = 1 + qr_med
             delta_s_dict[user_n] = QrUnc(
                 8 * W * theta_inf, 1, s_weights, s_nqm - 1, delta_s_nqm, qr_med=qr_med
-            )
-        else:
-            # When dealing with a sufficiently trustworthy set of users
-            # and we don't need to compute uncertainties, `BrMean`can be used
-            # to be closer to the "sparse unanimity conditions" discussed in
-            # [Robust sparse voting](https://arxiv.org/abs/2202.08656)
-            s_dict[user_n] = 1 + BrMean(
-                8 * W * theta_inf, s_weights, s_nqm - 1, delta_s_nqm
             )
 
     tau_dict = {}
@@ -176,25 +171,22 @@ def compute_scaling(
         s_weights = np.array(s_weights)
         tau_nqm = np.array(tau_nqm)
         delta_tau_nqm = np.array(delta_tau_nqm)
-
-        if not calibration:
+        if calibration:
+            tau_dict[user_n] = BrMean(8 * W, s_weights, tau_nqm, delta_tau_nqm)
+            delta_tau_dict[user_n] = QrUnc(8 * W, 1, s_weights, tau_nqm, delta_tau_nqm)
+        else:
             qr_med = QrMed(8 * W, s_weights, tau_nqm, delta_tau_nqm)
             tau_dict[user_n] = qr_med
             delta_tau_dict[user_n] = QrUnc(
                 8 * W, 1, s_weights, tau_nqm, delta_tau_nqm, qr_med=qr_med
             )
-        else:
-            tau_dict[user_n] = BrMean(8 * W, s_weights, tau_nqm, delta_tau_nqm)
 
     return pd.DataFrame(
         {
             "s": s_dict,
             "tau": tau_dict,
-            **(
-                {"delta_s": delta_s_dict, "delta_tau": delta_tau_dict}
-                if not calibration
-                else {}
-            ),
+            "delta_s": delta_s_dict,
+            "delta_tau": delta_tau_dict,
         }
     )
 
@@ -259,9 +251,15 @@ def compute_scaled_scores(
     df = df.join(calibration_scaling, on="user_id")
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
+    df["delta_s"].fillna(0, inplace=True)
+    df["delta_tau"].fillna(0, inplace=True)
     df["score"] = df["s"] * df["raw_score"] + df["tau"]
-    df["uncertainty"] = df["raw_uncertainty"] * df["s"]
-    df.drop(["s", "tau"], axis=1, inplace=True)
+    df["uncertainty"] = (
+        df["s"] * df["raw_uncertainty"]
+        + df["delta_s"] * df["raw_score"].abs()
+        + df["delta_tau"]
+    )
+    df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
 
     # Apply scaling for non-calibration users
     logging.info(

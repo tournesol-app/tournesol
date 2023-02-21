@@ -123,9 +123,9 @@ class TestMlTrain(TransactionTestCase):
         calibration_scaling = ContributorScaling.objects.get(user=user1)
         self.assertAlmostEqual(calibration_scaling.scale, 1.0)
         self.assertAlmostEqual(calibration_scaling.translation, 0.0)
-        # Scaling uncertainties are not defined for scaling calibration users
-        self.assertIsNone(calibration_scaling.scale_uncertainty)
-        self.assertIsNone(calibration_scaling.translation_uncertainty)
+        # Scaling uncertainties are also defined for scaling calibration users
+        self.assertAlmostEqual(calibration_scaling.scale_uncertainty, 1.0)
+        self.assertAlmostEqual(calibration_scaling.translation_uncertainty, 1.0)
 
         # Check scaling values for user2
         scaling = ContributorScaling.objects.get(user=user2)
