@@ -11,6 +11,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from tournesol.lib.public_dataset import (
+    write_collective_criteria_scores_file,
     write_comparisons_file,
     write_individual_criteria_scores_file,
     write_users_file,
@@ -96,6 +97,14 @@ class Command(BaseCommand):
                     f"{archive_name}/individual_criteria_scores.csv", output.getvalue()
                 )
                 self.stdout.write("- individual_criteria_scores.csv written.")
+
+            with StringIO() as output:
+                self.stdout.write("retrieving collective criteria scores' data...")
+                write_collective_criteria_scores_file(poll_name, output)
+                zip_file.writestr(
+                    f"{archive_name}/collective_criteria_scores.csv", output.getvalue()
+                )
+                self.stdout.write("- collective_criteria_scores.csv written.")
 
         self.stdout.write(self.style.SUCCESS(f"archive created at {archive_abs_path}"))
 
