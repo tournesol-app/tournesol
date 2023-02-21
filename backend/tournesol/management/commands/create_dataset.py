@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from core.utils.time import time_ago
 from tournesol.lib.public_dataset import (
     write_collective_criteria_scores_file,
     write_comparisons_file,
@@ -86,7 +87,8 @@ class Command(BaseCommand):
 
             with StringIO() as output:
                 self.stdout.write("retrieving comparisons' data...")
-                write_comparisons_file(poll_name, output)
+                first_day_of_week = time_ago(days=timezone.now().weekday()).date()
+                write_comparisons_file(poll_name, output, until_=first_day_of_week)
                 zip_file.writestr(f"{archive_name}/comparisons.csv", output.getvalue())
                 self.stdout.write("- comparisons.csv written.")
 

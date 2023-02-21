@@ -40,6 +40,8 @@ export_test_override_settings = override_settings(
         {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
     ),
 )
+
+
 class ExportTest(TestCase):
     @MockNow.Context()
     def setUp(self) -> None:
@@ -212,7 +214,6 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[0]["video_a"], self.video_public_1.video_id)
         self.assertEqual(comparison_list[0]["video_b"], self.video_public_2.video_id)
 
-    @MockNow.Context()
     def test_not_authenticated_can_download_public_comparisons_multiple_users(self):
         self.public_comparisons2 = UserFactory()
         self.video_public_3 = VideoFactory()

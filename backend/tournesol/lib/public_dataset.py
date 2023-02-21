@@ -5,17 +5,19 @@ This module contains functions to retrieve data from the database and
 shortcuts to write these data in file-like objects.
 """
 import csv
+from datetime import datetime
+from typing import Optional
 
 from django.db.models import QuerySet
+from django.utils import timezone
 
 from tournesol.entities.base import UID_DELIMITER
 
 
-def get_comparisons_data(poll_name: str) -> QuerySet:
+def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
     """
     Retrieve the public comparisons from the database and return a
-    non-evaluated Django `RawQuerySet`. The comparisons made during current
-    week are excluded.
+    non-evaluated Django `RawQuerySet`.
 
     A comparison is represented by a rating given by a user for a specific
     criterion and a couple of entities:
@@ -71,12 +73,12 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
-          -- exclude current week comparisons
-          AND datetime_add < DATE_TRUNC('week', now())
+          -- keep only comparisons made before this datetime
+          AND datetime_add < %(until)s
 
         ORDER BY username, datetime_add
         """,
-        {"poll_name": poll_name},
+        {"poll_name": poll_name, "until": until_},
     )
 
 
@@ -215,22 +217,19 @@ def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
     )
 
 
-def write_comparisons_file(poll_name: str, write_target) -> None:
+def write_comparisons_file(
+    poll_name: str, write_target, until_: Optional[datetime] = None
+) -> None:
     """
     Write the output of `get_comparisons_data` as CSV in `write_target`, an
     object supporting the Python file API.
     """
+    if not until_:
+        until_ = timezone.now()
 
     # If we want this function to be generic, the specific video_a and video_b
     # columns should be renamed entity_a and entity_b.
-    fieldnames = [
-        "public_username",
-        "video_a",
-        "video_b",
-        "criteria",
-        "score",
-        "week_date"
-    ]
+    fieldnames = ["public_username", "video_a", "video_b", "criteria", "score", "week_date"]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(
@@ -240,9 +239,9 @@ def write_comparisons_file(poll_name: str, write_target) -> None:
             "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
             "criteria": comparison.criteria,
             "score": int(round(comparison.score)),
-            "week_date": comparison.week_date
+            "week_date": comparison.week_date,
         }
-        for comparison in get_comparisons_data(poll_name).iterator()
+        for comparison in get_comparisons_data(poll_name, until_).iterator()
     )
 
 
