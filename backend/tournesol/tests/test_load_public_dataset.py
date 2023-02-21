@@ -5,9 +5,11 @@ from django.test import TransactionTestCase, override_settings
 from rest_framework.test import APIClient
 
 from core.models import User
+from core.utils.time import time_ago
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Comparison, ContributorRating, Entity
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory
+from tournesol.tests.utils.mock_now import MockNow
 
 
 class TestLoadPublicDataset(TransactionTestCase):
@@ -16,8 +18,9 @@ class TestLoadPublicDataset(TransactionTestCase):
     def setUp(self):
         self.client = APIClient()
 
-        ComparisonCriteriaScoreFactory()
-        ContributorRating.objects.update(is_public=True)
+        with MockNow.Context(time_ago(days=1)):
+            ComparisonCriteriaScoreFactory()
+            ContributorRating.objects.update(is_public=True)
 
         public_comparisons_resp = self.client.get("/exports/comparisons/")
         with tempfile.NamedTemporaryFile(mode="wb", delete=False) as comparisons_file:
