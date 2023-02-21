@@ -370,7 +370,11 @@
   "donate": {
     "donateWithUtip": "Donate with uTip",
     "donateWithPaypal": "Donate with PayPal",
-    "doYouPreferDirectTransfer": "You prefer direct transfers?"
+    "doYouPreferDirectTransfer": "You prefer direct transfers?",
+    "whatDoWeDoQuestion": "What do we do with the funds of the association?",
+    "whatWeWouldDoQuestion": "What we would do with more funds?",
+    "howMuchDoWeHaveQuestion": "How much we currently have?",
+    "howMuchWeCurrentlySpendQuestion": "How much we currently spend?"
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",

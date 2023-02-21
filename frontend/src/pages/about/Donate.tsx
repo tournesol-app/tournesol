@@ -1,7 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Link, Stack, Typography, Box, Divider } from '@mui/material';
+import {
+  Button,
+  Link,
+  Stack,
+  Typography,
+  Box,
+  Divider,
+  Paper,
+} from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -134,6 +142,168 @@ const DonatePage = () => {
                 <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
               </Box>
             </TitledPaper>
+          </Grid2>
+        </Grid2>
+        <Grid2 py={4}>
+          <Grid2
+            py={2}
+            container
+            spacing={4}
+            justifyContent="center"
+            alignItems="stretch"
+          >
+            <Grid2 xs={12} md={5}>
+              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
+                <Box
+                  p={3}
+                  height="100%"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  color="#fff"
+                  bgcolor="background.emphatic"
+                  borderRadius={20}
+                  sx={{ borderRadius: 1 }}
+                >
+                  <Typography variant="h5" align="center">
+                    {t('donate.whatDoWeDoQuestion')}
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid2>
+            <Grid2 xs={12} md={7}>
+              <Paper
+                elevation={1}
+                sx={{ borderRadius: 1, p: 2, height: '100%' }}
+              >
+                <Typography fontWeight={600}>
+                  What we do with our donations:
+                  <br />
+                  - Pay for servers / Infrastructure. Tournesol utilise
+                  aujourd'hui un serveur unique, un service d'envoie d'emails,
+                  ..., mais alors que le projet grandit les coûts de maintenance
+                  augmentent aussi
+                  <br />
+                  - Promote Tournesol with advertising on Youtube of promoted
+                  videos
+                  <br />- Hire software Engineers to develop the Tournesol
+                  website
+                </Typography>
+              </Paper>
+            </Grid2>
+          </Grid2>
+          <Grid2
+            py={2}
+            container
+            spacing={4}
+            justifyContent="center"
+            alignItems="stretch"
+          >
+            <Grid2 xs={12} md={5}>
+              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
+                <Box
+                  p={3}
+                  height="100%"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  color="#fff"
+                  bgcolor="background.emphatic"
+                  borderRadius={20}
+                  sx={{ borderRadius: 1 }}
+                >
+                  <Typography variant="h5" align="center">
+                    {t('donate.whatWeWouldDoQuestion')}
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid2>
+            <Grid2 xs={12} md={7}>
+              <Paper
+                elevation={1}
+                sx={{ borderRadius: 1, p: 2, height: '100%' }}
+              >
+                <Typography fontWeight={600}>
+                  More promotion and hiring more team members, either focuses on
+                  growing the association and funding or engineers that would
+                  develop the website either with expertise in UX/Design or in
+                  Machine Learning
+                </Typography>
+              </Paper>
+            </Grid2>
+          </Grid2>
+          <Grid2
+            py={2}
+            container
+            spacing={4}
+            justifyContent="center"
+            alignItems="stretch"
+          >
+            <Grid2 xs={12} md={5}>
+              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
+                <Box
+                  p={3}
+                  height="100%"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  color="#fff"
+                  bgcolor="background.emphatic"
+                  borderRadius={20}
+                  sx={{ borderRadius: 1 }}
+                >
+                  <Typography variant="h5" align="center">
+                    {t('donate.howMuchDoWeHaveQuestion')}
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid2>
+            <Grid2 xs={12} md={7}>
+              <Paper
+                elevation={1}
+                sx={{ borderRadius: 1, p: 2, height: '100%' }}
+              >
+                <Typography fontWeight={600}>
+                  Started with 60'000 two years ago thanks to large donations,
+                  we are now receiving about 700€/month
+                </Typography>
+              </Paper>
+            </Grid2>
+          </Grid2>
+          <Grid2
+            py={2}
+            container
+            spacing={4}
+            justifyContent="center"
+            alignItems="stretch"
+          >
+            <Grid2 xs={12} md={5}>
+              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
+                <Box
+                  p={3}
+                  height="100%"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  color="#fff"
+                  bgcolor="background.emphatic"
+                  borderRadius={20}
+                  sx={{ borderRadius: 1 }}
+                >
+                  <Typography variant="h5" align="center">
+                    {t('donate.howMuchWeCurrentlySpendQuestion')}
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid2>
+            <Grid2 xs={12} md={7}>
+              <Paper
+                elevation={1}
+                sx={{ borderRadius: 1, p: 2, height: '100%' }}
+              >
+                <Typography fontWeight={600}>Roughly 4000€/month</Typography>
+              </Paper>
+            </Grid2>
           </Grid2>
         </Grid2>
       </ContentBox>

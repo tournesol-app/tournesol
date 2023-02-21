@@ -376,7 +376,11 @@
   "donate": {
     "donateWithUtip": "Faire un don avec uTip",
     "donateWithPaypal": "Faire un don avec PayPal",
-    "doYouPreferDirectTransfer": "Vous préférez les virements directs ?"
+    "doYouPreferDirectTransfer": "Vous préférez les virements directs ?",
+    "whatDoWeDoQuestion": "Que faisons-nous avec les fonds de l'association?",
+    "whatWeWouldDoQuestion": "Que ferions-nous avec plus de fonds?",
+    "howMuchDoWeHaveQuestion": "Combien avons-nous actuellement?",
+    "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement?"
   },
   "privacyPolicy": {
     "privacyPolicy": "Politique de confidentialité",
