@@ -1,7 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Link, Stack, Typography, Box, Divider } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  Link,
+  Stack,
+  Typography,
+} from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -40,6 +48,9 @@ const DonatePage = () => {
           </Grid2>
           <Grid2 sx={donateSectionSx}>
             <TitledPaper title={t('about.donateHowTo')}>
+              <Alert severity="info" sx={{ width: '100%', mb: 2 }}>
+                {t('donate.forRegularDonationsConsiderUsingDirectTransfers')}
+              </Alert>
               <Grid2
                 container
                 gap={2}
@@ -61,10 +72,9 @@ const DonatePage = () => {
                       <img
                         src="/logos/uTip_Logo.png"
                         alt="uTip logo"
-                        height="110px"
+                        height="90px"
                       />
                     </Link>
-
                     <Button
                       variant="contained"
                       href={utipTournesolUrl}
@@ -91,7 +101,7 @@ const DonatePage = () => {
                       <img
                         src="/logos/PayPal_Logo.svg"
                         alt="PayPal logo"
-                        height="110px"
+                        height="90px"
                         width="100%"
                       />
                     </Link>
