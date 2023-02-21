@@ -4,16 +4,18 @@ import pandas as pd
 from tournesol.utils.constants import COMPARISON_MAX
 
 R_MAX = COMPARISON_MAX  # Maximum score for a comparison in the input
-ALPHA = 1.0  # Signal-to-noise hyperparameter
+DEFAULT_ALPHA = 1.0  # Signal-to-noise hyperparameter
 
 
-def compute_individual_score(scores: pd.DataFrame):
+def compute_individual_score(scores: pd.DataFrame, alpha=None):
     """
     Computation of contributor scores and score uncertainties,
     based on their comparisons.
 
     At this stage, scores will not be normalized between contributors.
     """
+    if alpha is None:
+        alpha = DEFAULT_ALPHA
     scores = scores[["entity_a", "entity_b", "score"]]
     scores_sym = pd.concat(
         [
@@ -40,7 +42,7 @@ def compute_individual_score(scores: pd.DataFrame):
 
     L = k.mul(l).sum(axis=1)
     K_diag = pd.DataFrame(
-        data=np.diag(k.sum(axis=1) + ALPHA),
+        data=np.diag(k.sum(axis=1) + alpha),
         index=k.index,
         columns=k.index,
     )

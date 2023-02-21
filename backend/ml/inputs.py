@@ -46,6 +46,12 @@ class MlInput(ABC):
         """
         raise NotImplementedError
 
+    def get_alpha(self) -> Optional[float]:
+        """Signal-to-noise hyperparameter when computing individual scores based on comparisons.
+        Use this method to override default value defined in mehestan/individual.
+        """
+        return None
+
 
 class MlInputFromPublicDataset(MlInput):
     def __init__(self, csv_file):
@@ -89,8 +95,9 @@ class MlInputFromDb(MlInput):
     SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE = 20
     MAX_SUPERTRUSTED_USERS = 100
 
-    def __init__(self, poll_name: str):
+    def __init__(self, poll_name: str, alpha: Optional[float] = None):
         self.poll_name = poll_name
+        self.alpha = alpha
 
     def get_supertrusted_users(self) -> QuerySet[User]:
         n_alternatives = (
@@ -248,3 +255,6 @@ class MlInputFromDb(MlInput):
                 ]
             )
         return pd.DataFrame(values)
+
+    def get_alpha(self):
+        return self.alpha

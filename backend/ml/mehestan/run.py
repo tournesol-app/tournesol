@@ -43,7 +43,7 @@ def get_individual_scores(
 
     individual_scores = []
     for (user_id, user_comparisons) in comparisons_df.groupby("user_id"):
-        scores = compute_individual_score(user_comparisons)
+        scores = compute_individual_score(user_comparisons, alpha=ml_input.get_alpha())
         if scores is None:
             continue
         scores["user_id"] = user_id
@@ -201,7 +201,7 @@ def run_mehestan_for_criterion(
     )
 
 
-def run_mehestan(ml_input: MlInput, poll: Poll):
+def run_mehestan(ml_input: MlInput, poll: Poll, main_criterion_only=False):
     """
     This function use multiprocessing.
 
@@ -243,15 +243,16 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
         update_poll_scaling=True,
     )
 
-    # compute each criterion in parallel
-    remaining_criteria = [c for c in criteria if c != poll.main_criteria]
-    cpu_count = os.cpu_count() or 1
-    with Pool(processes=max(1, cpu_count - 1)) as pool:
-        for _ in pool.imap_unordered(
-            partial(run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
-            remaining_criteria,
-        ):
-            pass
+    if not main_criterion_only:
+        # compute each criterion in parallel
+        remaining_criteria = [c for c in criteria if c != poll.main_criteria]
+        cpu_count = os.cpu_count() or 1
+        with Pool(processes=max(1, cpu_count - 1)) as pool:
+            for _ in pool.imap_unordered(
+                partial(run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
+                remaining_criteria,
+            ):
+                pass
 
     save_tournesol_scores(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)
