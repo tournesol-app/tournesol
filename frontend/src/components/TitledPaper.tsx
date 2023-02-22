@@ -4,6 +4,7 @@ import { Box, Paper, Typography, SxProps } from '@mui/material';
 
 interface TitledPaperProps {
   title: string;
+  titleId?: string;
   children: React.ReactNode;
   sx?: SxProps;
   contentBoxPadding?: number;
@@ -14,12 +15,13 @@ interface TitledPaperProps {
  */
 const TitledPaper = ({
   title,
+  titleId,
   children,
   sx,
   contentBoxPadding = 2,
 }: TitledPaperProps) => {
   return (
-    <Paper sx={sx}>
+    <Paper sx={sx} id={titleId}>
       <Box
         p={2}
         color="#fff"

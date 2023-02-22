@@ -63,7 +63,10 @@ const Footer = () => {
       id: 'support-us',
       title: t('footer.supportUs'),
       items: [
-        { name: t('footer.directTransfer'), to: '/about/donate' },
+        {
+          name: t('footer.directTransfer'),
+          to: '/about/donate#direct_transfer',
+        },
         { name: 'uTip', to: utipTournesolUrl },
         { name: 'PayPal', to: paypalTournesolUrl },
         { name: t('footer.compareVideos'), to: '/comparison' },

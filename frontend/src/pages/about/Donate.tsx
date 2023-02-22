@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import {
   Alert,
@@ -13,8 +14,7 @@ import {
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
 
-import { ContentHeader, ContentBox } from 'src/components';
-import TitledPaper from 'src/components/TitledPaper';
+import { ContentHeader, ContentBox, TitledPaper } from 'src/components';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import { utipTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
 
@@ -25,12 +25,29 @@ const useStyles = makeStyles(() => ({
 }));
 
 const DonatePage = () => {
+  const { hash } = useLocation();
+  const alreadyScrolled = React.useRef(false);
+
   const classes = useStyles();
   const { t } = useTranslation();
 
   const donateSectionSx = {
     width: '100%',
   };
+
+  useEffect(() => {
+    // Do not scroll when it's not required.
+    if (hash) {
+      // Scroll only one time.
+      if (!alreadyScrolled.current) {
+        const element = document.getElementById(hash.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          alreadyScrolled.current = true;
+        }
+      }
+    }
+  }, [hash]);
 
   return (
     <>
@@ -119,7 +136,10 @@ const DonatePage = () => {
             </TitledPaper>
           </Grid2>
           <Grid2 sx={donateSectionSx}>
-            <TitledPaper title={t('donate.doYouPreferDirectTransfer')}>
+            <TitledPaper
+              title={t('donate.doYouPreferDirectTransfer')}
+              titleId="direct_transfer"
+            >
               <Box>
                 <Typography variant="h5" sx={{ marginBottom: 1 }}>
                   {t('about.donateByDirectTransferEUR')}
