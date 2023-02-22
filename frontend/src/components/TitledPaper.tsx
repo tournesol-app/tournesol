@@ -21,7 +21,7 @@ const TitledPaper = ({
   contentBoxPadding = 2,
 }: TitledPaperProps) => {
   return (
-    <Paper sx={sx} id={titleId}>
+    <Paper sx={sx}>
       <Box
         p={2}
         color="#fff"
@@ -31,7 +31,9 @@ const TitledPaper = ({
           borderTopRightRadius: 'inherit',
         }}
       >
-        <Typography variant="h4">{title}</Typography>
+        <Typography variant="h4" id={titleId}>
+          {title}
+        </Typography>
       </Box>
       <Box p={contentBoxPadding}>{children}</Box>
     </Paper>
