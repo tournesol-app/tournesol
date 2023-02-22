@@ -12,3 +12,4 @@ export { default as SettingsSection } from './SettingsSection';
 export { default as MenuButton } from './MenuButton';
 export { default as LanguageSelector } from './LanguageSelector';
 export { default as CriteriaIcon } from './CriteriaIcon';
+export { default as TitledPaper } from './TitledPaper';
