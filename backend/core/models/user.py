@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 class User(AbstractUser):
     """
     Administrative, social and profile information about users.
-    (most of these fields are actually still unused)
 
-    Contains methods for retrieving trusted and supertrusted users.
+    This model also contains application settings for each user,
+    and methods related to email validation.
     """
 
     # Fields used by django-rest-registation to find a user.
@@ -73,10 +73,6 @@ class User(AbstractUser):
             .alias(is_trusted=Exists(accepted_domain))
             .filter(is_trusted=True)
         )
-
-    @classmethod
-    def supertrusted_seed_users(cls) -> QuerySet["User"]:
-        return cls.with_trusted_email().filter(is_staff=True)
 
     @classmethod
     def validate_email_unique_with_plus(cls, email: str, username="") -> str:

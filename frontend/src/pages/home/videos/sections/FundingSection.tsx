@@ -8,7 +8,15 @@ import { VolunteerActivism } from '@mui/icons-material';
 
 import SectionTitle from './SectionTitle';
 
-const FundingSection = () => {
+interface FundingSectionProps {
+  linkToDonatePage?: boolean;
+  fullWidth?: boolean;
+}
+
+const FundingSection = ({
+  linkToDonatePage = true,
+  fullWidth = false,
+}: FundingSectionProps) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -21,7 +29,10 @@ const FundingSection = () => {
 
   return (
     <>
-      <SectionTitle title={t('fundingSection.supportUs')} />
+      <SectionTitle
+        title={t('fundingSection.supportUs')}
+        dividerWidthXl={fullWidth ? '100%' : undefined}
+      />
       <Box display="flex" justifyContent="center" mb={6}>
         <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
           <Typography variant="h3" textAlign="center" letterSpacing="0.8px">
@@ -30,7 +41,7 @@ const FundingSection = () => {
         </Box>
       </Box>
       <Grid2 container spacing={4} justifyContent="center">
-        <Grid2 sm={12} md={4} lg={4} xl={3}>
+        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
           <Paper elevation={0}>
             <Box
               p={2}
@@ -55,7 +66,7 @@ const FundingSection = () => {
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 sm={12} md={4} lg={4} xl={3}>
+        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
           <Paper elevation={0}>
             <Box
               p={2}
@@ -80,7 +91,7 @@ const FundingSection = () => {
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 sm={12} md={4} lg={4} xl={3}>
+        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
           <Paper elevation={0}>
             <Box
               p={2}
@@ -105,17 +116,19 @@ const FundingSection = () => {
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 xs={9} display="flex" justifyContent="center">
-          <Button
-            variant="contained"
-            size="large"
-            component={Link}
-            to="/about/donate"
-            endIcon={<VolunteerActivism />}
-          >
-            {t('fundingSection.iSupport')}
-          </Button>
-        </Grid2>
+        {linkToDonatePage && (
+          <Grid2 xs={9} display="flex" justifyContent="center">
+            <Button
+              variant="contained"
+              size="large"
+              component={Link}
+              to="/about/donate"
+              endIcon={<VolunteerActivism />}
+            >
+              {t('fundingSection.iSupport')}
+            </Button>
+          </Grid2>
+        )}
       </Grid2>
     </>
   );

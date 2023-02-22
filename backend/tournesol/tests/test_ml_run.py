@@ -99,8 +99,8 @@ class TestMlTrain(TransactionTestCase):
 
 
     def test_individual_scaling_are_computed(self):
-        # User 1 will belong to supertrusted users (as staff member)
-        user1 = UserFactory(email="user@verified.test", is_staff=True)
+        # User 1 will belong to calibration users (as the most active trusted user)
+        user1 = UserFactory(email="user@verified.test")
         user2 = UserFactory()
 
         for user in [user1, user2]:
@@ -120,12 +120,12 @@ class TestMlTrain(TransactionTestCase):
         self.assertEqual(ContributorScaling.objects.count(), 2)
 
         # Check scaling values for user1
-        supertrusted_scaling = ContributorScaling.objects.get(user=user1)
-        self.assertAlmostEqual(supertrusted_scaling.scale, 1.0)
-        self.assertAlmostEqual(supertrusted_scaling.translation, 0.0)
-        # Scaling uncertainties are not defined for supertrusted users
-        self.assertIsNone(supertrusted_scaling.scale_uncertainty)
-        self.assertIsNone(supertrusted_scaling.translation_uncertainty)
+        calibration_scaling = ContributorScaling.objects.get(user=user1)
+        self.assertAlmostEqual(calibration_scaling.scale, 1.0)
+        self.assertAlmostEqual(calibration_scaling.translation, 0.0)
+        # Scaling uncertainties are also defined for scaling calibration users
+        self.assertAlmostEqual(calibration_scaling.scale_uncertainty, 1.0)
+        self.assertAlmostEqual(calibration_scaling.translation_uncertainty, 1.0)
 
         # Check scaling values for user2
         scaling = ContributorScaling.objects.get(user=user2)
