@@ -267,6 +267,7 @@ class ExportTest(TestCase):
         with zipfile.ZipFile(zip_content, "r") as zip_file:
             expected_filenames = [
                 "README.txt",
+                "LICENSE.txt",
                 "users.csv",
                 "comparisons.csv",
                 "individual_criteria_scores.csv",
