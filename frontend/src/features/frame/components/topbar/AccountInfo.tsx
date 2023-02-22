@@ -122,8 +122,7 @@ const AccountInfo = () => {
     <Grid
       item
       md={4}
-      sm={8}
-      xs={7}
+      xs={'auto'}
       sx={{
         display: 'flex',
         alignItems: 'center',
