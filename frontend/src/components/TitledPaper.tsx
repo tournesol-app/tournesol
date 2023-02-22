@@ -31,7 +31,7 @@ const TitledPaper = ({
           borderTopRightRadius: 'inherit',
         }}
       >
-        <Typography variant="h4" id={titleId}>
+        <Typography id={titleId} variant="h4">
           {title}
         </Typography>
       </Box>
