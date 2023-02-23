@@ -13,6 +13,17 @@ from django.utils import timezone
 
 from tournesol.entities.base import UID_DELIMITER
 
+# The standard decimal precision of floating point numbers appearing in the
+# dataset. Very small numbers can use a higher precision.
+FLOAT_PRECISION = 2
+
+
+def _round_or_none(value: float, precision: int = FLOAT_PRECISION):
+    if value is None:
+        return None
+
+    return round(value, precision)
+
 
 def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
     """
@@ -259,7 +270,7 @@ def write_users_file(poll_name: str, write_target) -> None:
     writer.writerows(
         {
             "public_username": user.username,
-            "trust_score": user.trust_score,
+            "trust_score": _round_or_none(user.trust_score),
         }
         for user in get_users_data(poll_name).iterator()
     )
@@ -288,8 +299,10 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
             "public_username": criteria_score.username,
             "video": criteria_score.uid.split(UID_DELIMITER)[1],
             "criteria": criteria_score.criteria,
-            "score": criteria_score.score,
-            "voting_right": criteria_score.voting_right,
+            "score": round(criteria_score.score, FLOAT_PRECISION),
+            # The voting rights can be very small and reach numbers like 10e-3
+            # or even 10e-4. Thus, we round them with more precision.
+            "voting_right": round(criteria_score.voting_right, 3),
         }
         for criteria_score in criteria_scores
     )
@@ -319,7 +332,7 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
         {
             "video": score["entity__metadata__video_id"],
             "criteria": score["criteria"],
-            "score": score["score"],
+            "score": round(score["score"], FLOAT_PRECISION),
         }
         for score in criteria_scores
     )

@@ -313,7 +313,7 @@ class ExportTest(TestCase):
         user_rows = [row for row in rows if row["public_username"] == username]
         self.assertEqual(len(user_rows), 1)
         user_row = user_rows[0]
-        self.assertEqual(user_row["trust_score"], "0.5844")
+        self.assertEqual(user_row["trust_score"], "0.58")
 
     def test_user_with_only_private_comparisons_not_in_users(self):
         user_with_only_private_comparisons = UserFactory(username="privacy_conscious")
@@ -425,8 +425,8 @@ class ExportTest(TestCase):
                 expected_export.contributor_rating.entity.metadata["video_id"],
             )
             self.assertEqual(row["criteria"], expected_export.criteria)
-            self.assertEqual(row["score"], str(expected_export.score))
-            self.assertEqual(row["voting_right"], str(expected_export.voting_right))
+            self.assertEqual(row["score"], str(round(expected_export.score, 2)))
+            self.assertEqual(row["voting_right"], str(round(expected_export.voting_right, 3)))
 
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
