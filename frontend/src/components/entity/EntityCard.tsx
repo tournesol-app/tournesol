@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -22,6 +22,7 @@ import EntityCardScores from './EntityCardScores';
 import EntityImagery from './EntityImagery';
 import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import { entityCardMainSx } from './style';
+import { idFromUid } from 'src/utils/video';
 
 const EntityCard = ({
   entity,
@@ -44,6 +45,7 @@ const EntityCard = ({
     noSsr: true,
   });
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
+  const [isAvailable, setIsAvailable] = useState(true);
 
   const displayEntityCardScores = () => {
     if ('tournesol_score' in entity && !compact) {
@@ -57,6 +59,18 @@ const EntityCard = ({
     }
     return null;
   };
+
+  useEffect(() => {
+    if (entity.uid) {
+      const img = new Image();
+      img.src = `https://i.ytimg.com/vi/${idFromUid(entity.uid)}/mqdefault.jpg`;
+      img.onload = function () {
+        setIsAvailable(img.width !== 120);
+      };
+    }
+
+    console.log('change');
+  }, [entity]);
 
   return (
     <Grid container sx={entityCardMainSx}>
@@ -89,7 +103,9 @@ const EntityCard = ({
       >
         <EntityCardTitle
           uid={entity.uid}
-          title={entity.metadata.name}
+          title={
+            isAvailable ? entity.metadata.name : t('video.notAvailableAnymore')
+          }
           compact={compact}
         />
         <EntityMetadata entity={entity} />
