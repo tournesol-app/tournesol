@@ -72,12 +72,17 @@ class Command(BaseCommand):
 
         archive_name = f"{dataset_base_name}{timezone.now().strftime('%Y%m%d')}"
         archive_abs_path = datasets_build_dir.joinpath(archive_name).with_suffix(".zip")
+
         readme_path = Path("tournesol/resources/export_readme.txt")
+        license_path = Path("tournesol/resources/export_odc_by_1.0_public_text.txt")
 
         # BUILDING phase
         with zipfile.ZipFile(archive_abs_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
-            with open(readme_path, "r", encoding="utf-8") as readme_file:
-                zip_file.writestr(f"{archive_name}/README.txt", readme_file.read())
+            with open(readme_path, "r", encoding="utf-8") as readme:
+                zip_file.writestr(f"{archive_name}/README.txt", readme.read())
+
+            with open(license_path, "r", encoding="utf-8") as license_:
+                zip_file.writestr(f"{archive_name}/LICENSE.txt", license_.read())
 
             with StringIO() as output:
                 self.stdout.write("retrieving users' data...")

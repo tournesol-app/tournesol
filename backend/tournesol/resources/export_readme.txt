@@ -10,7 +10,29 @@ License
 All files are available under the terms of the Open Data Commons Attribution
 License (ODC-By) v1.0.
 
-See: https://opendatacommons.org/licenses/by/odc_by_1.0_public_text.txt
+Human-readable summary
+----------------------
+
+You are free:
+
+- To share: To copy, distribute and use the database.
+- To create: To produce works from the database.
+- To adapt: To modify, transform and build upon the database.
+
+As long as you:
+
+- Attribute: You must attribute any public use of the database, or works
+  produced from the database, in the manner specified in the license. For any
+  use or redistribution of the database, or works produced from it, you must
+  make clear to others the license of the database and keep intact any notices
+  on the original database.
+
+Full license text
+-----------------
+
+See the `LICENSE.txt` file distributed in this archive.
+
+See the online version at https://opendatacommons.org/licenses/by/odc_by_1.0_public_text.txt
 
 List of files
 =============
@@ -48,8 +70,8 @@ List of columns:
 
 - score:
 
-  The score is a integer between -10 and +10. Negative values indicate that the
-  user considers the video_a better, and positive values indicate that
+  The score is an integer between -10 and +10. Negative values indicate that
+  the user considers the video_a better, and positive values indicate that
   they prefer the video_b. A score of 0 or close to 0 means that they find the
   two videos similar.
 
@@ -57,13 +79,13 @@ List of columns:
 
   The date of the Monday of the week during which the comparison was first
   submitted. Note that it is possible that the comparison is updated at a later
-  time but it is rather rare.
+  time, but it is rather rare.
 
 users.csv
 ---------
 
 This file contains the list of users who appear in the comparisons.csv file and
-the trust scores evaluated by Tournesol based on the two mechanisms: 
+the trust scores evaluated by Tournesol based on the two mechanisms:
   1. trusted domain for email addresses
   2. vouching system
 
@@ -72,7 +94,7 @@ List of columns:
 
 - public_username:
 
-  The public username of the user 
+  The public username of the user.
 
 - trust_score:
 
@@ -114,7 +136,7 @@ List of columns:
   between -100.0 and +100.0. Individual scores are computed based on all the
   comparisons submitted by a user. Additionally individual scores of all users
   are globally scaled such that they are meaningfully comparable and can be
-  aggregated.  
+  aggregated.
 
 - voting_right:
 
@@ -142,13 +164,13 @@ List of columns:
 
 - criteria:
 
-  The name of the criterion on which the score applies
+  The name of the criterion on which the score applies.
 
 - score:
 
   This field is computed by Tournesol's algorithms. This score is obtained by
   considering all the individual scores on the same video and criterion. With a
-  lot of contributors this scores should be close to the median of their
+  lot of contributors these scores should be close to the median of their
   individual scores. With a small number of contributors, this score would be
   reduced towards 0 such that it is not possible for a small number of users to
   give a very high collective score on a video.
