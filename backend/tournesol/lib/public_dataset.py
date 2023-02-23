@@ -13,16 +13,16 @@ from django.utils import timezone
 
 from tournesol.entities.base import UID_DELIMITER
 
-# The maximal decimal precision of floating point numbers appearing in the
-# dataset.
+# The standard decimal precision of floating point numbers appearing in the
+# dataset. Very small numbers can use a higher precision.
 FLOAT_PRECISION = 2
 
 
-def _round_or_none(value: float):
+def _round_or_none(value: float, precision: int = FLOAT_PRECISION):
     if value is None:
         return None
 
-    return round(value, FLOAT_PRECISION)
+    return round(value, precision)
 
 
 def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
@@ -300,7 +300,9 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
             "video": criteria_score.uid.split(UID_DELIMITER)[1],
             "criteria": criteria_score.criteria,
             "score": round(criteria_score.score, FLOAT_PRECISION),
-            "voting_right": criteria_score.voting_right,
+            # The voting rights can be very small and reach numbers like 10e-3
+            # or even 10e-4. Thus, we round them with more precision.
+            "voting_right": round(criteria_score.voting_right, 3),
         }
         for criteria_score in criteria_scores
     )

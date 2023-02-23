@@ -425,7 +425,7 @@ class ExportTest(TestCase):
             )
             self.assertEqual(row["criteria"], expected_export.criteria)
             self.assertEqual(row["score"], str(round(expected_export.score, 2)))
-            self.assertEqual(row["voting_right"], str(expected_export.voting_right))
+            self.assertEqual(row["voting_right"], str(round(expected_export.voting_right, 3)))
 
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
