@@ -34,7 +34,7 @@ function rateNowAction(event) {
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
-        url: `https://tournesol.app/comparison/?videoA=${videoId}`,
+        url: `https://tournesol.app/comparison/?uidA=yt:${videoId}`,
       });
     },
     () => {
