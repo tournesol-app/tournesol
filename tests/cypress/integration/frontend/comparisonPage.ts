@@ -265,5 +265,24 @@ describe('Comparison page', () => {
       cy.get('input[placeholder="Paste URL or Video ID"]').last()
         .should('have.value', `yt:${videoBId}`);
     });
+
+    it('auto-fills selector correctly when one of the video uses a legacy param', () => {
+      const videoAId = 'u83A7DUNMHs';
+      const videoBId = '6jK9bFWE--g';
+
+      cy.visit(`/comparison/?videoA=${videoAId}&uidB=yt:${videoBId}`);
+      cy.focused().type('user1');
+      cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+
+      cy.wait(1000);
+
+      cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
+      cy.location('search').should('contain', `uidB=yt%3A${videoBId}`)
+
+      cy.get('input[placeholder="Paste URL or Video ID"]').first()
+        .should('have.value', `yt:${videoAId}`);
+      cy.get('input[placeholder="Paste URL or Video ID"]').last()
+        .should('have.value', `yt:${videoBId}`);
+    });
   })
 });
