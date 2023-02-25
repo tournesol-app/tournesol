@@ -272,6 +272,25 @@
     enabled: yes
     daemon_reload: yes
 
+# scheduled task: watch account creation
+
+- name: Copy Tournesol API watch-account-creation-1h service
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-creation-1h.service
+    src: tournesol-api-watch-account-creation-1h.service.j2
+
+- name: Copy Tournesol API watch-account-creation-1h timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-creation-1h.timer
+    src: tournesol-api-watch-account-creation-1h.timer.j2
+
+- name: Enable and start Tournesol API watch-account-creation-1h timer
+  systemd:
+    name: tournesol-api-watch-account-creation-1h.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
 # scheduled task: Twitterbot daily tweet
 
 - name: Copy twitterbot service
