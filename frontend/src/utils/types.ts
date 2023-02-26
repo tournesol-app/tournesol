@@ -54,6 +54,7 @@ export enum RouteID {
   EntityAnalysis = 'entityAnalysis',
   FAQ = 'FAQ',
   About = 'about',
+  Criteria = 'criteria',
   // public yet personal routes
   PublicPersonalRecommendationsPage = 'publicPersonalRecommendations',
   // private and personal routes

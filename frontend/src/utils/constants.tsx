@@ -86,21 +86,6 @@ export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
   }[criteria];
 };
 
-export const criteriaLinks: Record<string, string> = {
-  reliability: 'https://wiki.tournesol.app/wiki/Reliable_and_not_misleading',
-  pedagogy: 'https://wiki.tournesol.app/wiki/Clear_and_pedagogical',
-  importance: 'https://wiki.tournesol.app/wiki/Important_and_actionable',
-  layman_friendly: 'https://wiki.tournesol.app/wiki/Layman-friendly',
-  entertaining_relaxing:
-    'https://wiki.tournesol.app/wiki/Entertaining_and_relaxing',
-  engaging: 'https://wiki.tournesol.app/wiki/Engaging_and_thought-provoking',
-  diversity_inclusion:
-    'https://wiki.tournesol.app/wiki/Diversity_and_inclusion',
-  better_habits: 'https://wiki.tournesol.app/wiki/Encourages_better_habits',
-  backfire_risk:
-    'https://wiki.tournesol.app/wiki/Resilience_to_backfiring_risks',
-};
-
 export const getPollName = (t: TFunction, pollName: string) => {
   switch (pollName) {
     case PRESIDENTIELLE_2022_POLL_NAME:
@@ -179,7 +164,11 @@ export const polls: Array<SelectablePoll> = [
           displayOrder: 20,
           mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
-          disabledRouteIds: [RouteID.MyRateLaterList, RouteID.MyComparedItems],
+          disabledRouteIds: [
+            RouteID.MyRateLaterList,
+            RouteID.MyComparedItems,
+            RouteID.Criteria,
+          ],
           iconComponent: HowToVote,
           withSearchBar: false,
           topBarBackground:

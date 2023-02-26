@@ -5,6 +5,7 @@ import PublicRoute from 'src/features/login/PublicRoute';
 import PrivateRoute from 'src/features/login/PrivateRoute';
 import PageNotFound from 'src/pages/404/PageNotFound';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
+import CriteriaPage from 'src/pages/criteria/CriteriaPage';
 import FeedbackPage from 'src/pages/personal/feedback/FeedbackPage';
 import EntityAnalysisPage from 'src/pages/entities/EntityAnalysisPage';
 import HomePage from 'src/pages/home/Home';
@@ -95,6 +96,12 @@ const PollRoutes = ({ pollName }: Props) => {
       url: 'personal/feedback',
       page: FeedbackPage,
       type: PrivateRoute,
+    },
+    {
+      id: RouteID.Criteria,
+      url: 'criteria',
+      page: CriteriaPage,
+      type: PublicRoute,
     },
   ];
 
