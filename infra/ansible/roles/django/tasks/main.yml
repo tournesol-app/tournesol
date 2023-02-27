@@ -277,7 +277,10 @@
 - name: Copy Tournesol API watch-account-creation-1h service
   template:
     dest: /etc/systemd/system/tournesol-api-watch-account-creation-1h.service
-    src: tournesol-api-watch-account-creation-1h.service.j2
+    src: tournesol-api-watch-account-creation.service.j2
+  vars:
+    since_n_hours: 1
+    n_accounts: 5
 
 - name: Copy Tournesol API watch-account-creation-1h timer
   template:
@@ -296,7 +299,10 @@
 - name: Copy Tournesol API watch-account-creation-24h service
   template:
     dest: /etc/systemd/system/tournesol-api-watch-account-creation-24h.service
-    src: tournesol-api-watch-account-creation-24h.service.j2
+    src: tournesol-api-watch-account-creation.service.j2
+  vars:
+    since_n_hours: 24
+    n_accounts: 10
 
 - name: Copy Tournesol API watch-account-creation-24h timer
   template:
