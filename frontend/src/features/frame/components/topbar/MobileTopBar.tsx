@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
+import { Grid, IconButton } from '@mui/material';
+import { Close, Search } from '@mui/icons-material';
 
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-
-import AccountInfo from './AccountInfo';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import Search from './Search';
+import AccountInfo from './AccountInfo';
 import Logo from './Logo';
+import { default as SearchBar } from './Search';
 
 const MobileTopBar = () => {
   const { options } = useCurrentPoll();
@@ -24,15 +21,15 @@ const MobileTopBar = () => {
     <>
       {mobileSearchOpen ? (
         <Grid container width="100%" px={1} justifyContent="center">
-          <Grid item xs={11} sm={8}>
-            {options?.withSearchBar && <Search />}
+          <Grid item xs={11}>
+            {options?.withSearchBar && <SearchBar />}
           </Grid>
           <Grid item xs={1}>
             <IconButton
               aria-label="Close the searchbar"
               onClick={() => searchOpeningHandler(false)}
             >
-              <CloseIcon />
+              <Close />
             </IconButton>
           </Grid>
         </Grid>
@@ -43,7 +40,7 @@ const MobileTopBar = () => {
             aria-label="Open the searchbar"
             onClick={() => searchOpeningHandler(true)}
           >
-            <SearchIcon fontSize="large" />
+            <Search fontSize="large" />
           </IconButton>
           <AccountInfo />
         </>

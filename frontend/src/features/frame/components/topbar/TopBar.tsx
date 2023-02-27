@@ -38,7 +38,7 @@ const TopBar = () => {
           padding: '4px !important',
         }}
       >
-        <Grid container sx={{ width: '100%', maxWidth: '100%' }}>
+        <Grid container sx={{ width: '100%' }}>
           <Hidden mdDown>
             <LargeScreenTopBar />
           </Hidden>

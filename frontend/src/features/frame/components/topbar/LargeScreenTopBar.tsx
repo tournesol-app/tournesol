@@ -2,8 +2,8 @@ import React from 'react';
 
 import Grid from '@mui/material/Grid';
 
-import AccountInfo from './AccountInfo';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import AccountInfo from './AccountInfo';
 import Search from './Search';
 import Logo from './Logo';
 
