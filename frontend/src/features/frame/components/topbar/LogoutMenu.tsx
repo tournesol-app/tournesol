@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, ListItemText, Menu, MenuList, MenuItem } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
-const LargeLogoutMenu = () => {
+const LoggedOutActionButtons = () => {
   const { t } = useTranslation();
   return (
     <>
@@ -46,7 +46,7 @@ const LargeLogoutMenu = () => {
   );
 };
 
-export const MobileLogoutMenu = ({
+export const LoggedOutActionMenu = ({
   menuAnchor,
   open,
   onOpen,
@@ -117,4 +117,4 @@ export const MobileLogoutMenu = ({
   );
 };
 
-export default LargeLogoutMenu;
+export default LoggedOutActionButtons;

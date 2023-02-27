@@ -7,7 +7,7 @@ import { AccountCircle, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
 import PersonalMenu from './PersonalMenu';
-import LargeLogoutMenu, { MobileLogoutMenu } from './LogoutMenu';
+import LoggedOutActionButtons, { LoggedOutActionMenu } from './LogoutMenu';
 
 const accountLoginButtonSx = {
   borderColor: 'rgba(0, 0, 0, 0.23)',
@@ -87,7 +87,7 @@ const LoggedOutActions = () => {
     if (menuAnchor === null) {
       setMenuAnchor(event.currentTarget);
     }
-    console.log(menuAnchor);
+
     setIsMenuOpen(true);
   };
 
@@ -98,10 +98,10 @@ const LoggedOutActions = () => {
   return (
     <>
       <Hidden smDown>
-        <LargeLogoutMenu />
+        <LoggedOutActionButtons />
       </Hidden>
       <Hidden smUp>
-        <MobileLogoutMenu
+        <LoggedOutActionMenu
           menuAnchor={menuAnchor}
           open={isMenuOpen}
           onOpen={handleMenuOpen}
