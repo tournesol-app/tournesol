@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol API watch accounts created during the last 24 hour
+
+[Timer]
+OnCalendar={{tournesol_api_watch_account_creation_24h_schedule}}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target

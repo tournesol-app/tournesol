@@ -54,6 +54,10 @@ all:
           tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
           tournesol_api_clearsessions_schedule: "*-*-* 02:40:00" # daily at 2:40am
 
+          # Watch account creation
+          tournesol_api_watch_account_creation_1h_schedule: "*-*-* *:01:00"
+          tournesol_api_watch_account_creation_24h_schedule: "*-*-* 00:01:10"
+
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
           tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
 
@@ -115,6 +119,10 @@ all:
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
           tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
           tournesol_api_clearsessions_schedule: "*-*-* 02:40:00" # daily at 2:40am
+
+          # Watch account creation
+          tournesol_api_watch_account_creation_1h_schedule: "*-*-* *:01:00"
+          tournesol_api_watch_account_creation_24h_schedule: "*-*-* 00:01:10"
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
           tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
@@ -181,6 +189,10 @@ all:
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
           tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
           tournesol_api_clearsessions_schedule: "*-*-* 02:40:00" # daily at 2:40am
+
+          # Watch account creation
+          tournesol_api_watch_account_creation_1h_schedule: "*-*-* *:01:00"
+          tournesol_api_watch_account_creation_24h_schedule: "*-*-* 00:01:10"
 
           # twitterbot: the service script is responsible for running the bot in
           # different languages depending on the day of the week.
