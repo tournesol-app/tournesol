@@ -27,6 +27,18 @@ button.tournesol-rate-button:disabled {
   background: #ffc800;
 }
 
+@media (min-width: 656px) and (max-width: 990px) {
+  button.tournesol-rate-button {
+    font-size: 0;
+  }
+}
+
+@media (min-width: 1017px) and (max-width: 1366px) {
+  button.tournesol-rate-button {
+    font-size: 0;
+  }
+}
+
 img.tournesol-button-image {
   margin-left: -6px;
   margin-right: 6px;
