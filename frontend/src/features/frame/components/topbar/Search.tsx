@@ -9,7 +9,6 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     height: '100%',
   },
   searchTerm: {
@@ -26,7 +25,7 @@ const useStyles = makeStyles(() => ({
     fontWeight: 400,
     fontSize: '18px',
     lineHeight: '28px',
-    width: 472,
+    width: '100%',
     maxWidth: 'calc(100% - 76px)',
   },
   searchButton: {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Grid, IconButton } from '@mui/material';
+import { Box, Grid, IconButton } from '@mui/material';
 import { Close, Search } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -20,17 +20,19 @@ const MobileTopBar = () => {
   return (
     <>
       {mobileSearchOpen ? (
-        <Grid container width="100%" px={1} justifyContent="center">
+        <Grid container width="100%" px={1} justifyContent="flex-start">
           <Grid item xs={11}>
             {options?.withSearchBar && <SearchBar />}
           </Grid>
           <Grid item xs={1}>
-            <IconButton
-              aria-label="Close the searchbar"
-              onClick={() => searchOpeningHandler(false)}
-            >
-              <Close />
-            </IconButton>
+            <Box display="flex" justifyContent="center">
+              <IconButton
+                aria-label="Close the searchbar"
+                onClick={() => searchOpeningHandler(false)}
+              >
+                <Close />
+              </IconButton>
+            </Box>
           </Grid>
         </Grid>
       ) : (
