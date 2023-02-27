@@ -7,7 +7,7 @@ import AccountInfo from './AccountInfo';
 import Search from './Search';
 import Logo from './Logo';
 
-const LargeScreenTopBar = () => {
+const TopBarDesktop = () => {
   const { options } = useCurrentPoll();
 
   return (
@@ -21,4 +21,4 @@ const LargeScreenTopBar = () => {
   );
 };
 
-export default LargeScreenTopBar;
+export default TopBarDesktop;

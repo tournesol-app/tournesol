@@ -8,8 +8,8 @@ import Toolbar from '@mui/material/Toolbar';
 import { useTheme } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-import LargeScreenTopBar from './LargeScreenTopBar';
-import MobileTopBar from './MobileTopBar';
+import TopBarDesktop from './TopBarDesktop';
+import TopBarMobile from './TopBarMobile';
 
 // Allow to position contents like the footer relatively to the top of the
 // page.
@@ -38,12 +38,12 @@ const TopBar = () => {
           padding: '4px !important',
         }}
       >
-        <Grid container sx={{ width: '100%' }}>
+        <Grid container sx={{ width: '100%' }} alignItems="center">
           <Hidden mdDown>
-            <LargeScreenTopBar />
+            <TopBarDesktop />
           </Hidden>
           <Hidden mdUp>
-            <MobileTopBar />
+            <TopBarMobile />
           </Hidden>
         </Grid>
       </Toolbar>

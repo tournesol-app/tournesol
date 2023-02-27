@@ -8,7 +8,11 @@ import AccountInfo from './AccountInfo';
 import Logo from './Logo';
 import { default as SearchBar } from './Search';
 
-const MobileTopBar = () => {
+/**
+ * Contrary to `<TopBarDesktop>`, this component displays the search bar only
+ * if the user clicks on the search button.
+ */
+const TopBarMobile = () => {
   const { options } = useCurrentPoll();
 
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -38,12 +42,14 @@ const MobileTopBar = () => {
       ) : (
         <>
           <Logo />
-          <IconButton
-            aria-label="Open the searchbar"
-            onClick={() => searchOpeningHandler(true)}
-          >
-            <Search fontSize="large" />
-          </IconButton>
+          <Grid item>
+            <IconButton
+              aria-label="Open the searchbar"
+              onClick={() => searchOpeningHandler(true)}
+            >
+              <Search fontSize="large" />
+            </IconButton>
+          </Grid>
           <AccountInfo />
         </>
       )}
@@ -51,4 +57,4 @@ const MobileTopBar = () => {
   );
 };
 
-export default MobileTopBar;
+export default TopBarMobile;

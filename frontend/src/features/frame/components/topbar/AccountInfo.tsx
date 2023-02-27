@@ -87,7 +87,6 @@ const AccountInfo = () => {
       xs={'auto'}
       sx={{
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'flex-end',
         padding: '8px',
         gap: '8px',
