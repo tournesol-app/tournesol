@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Grid, Hidden } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { AccountCircle, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useLoginState, useNotifications } from 'src/hooks';
-import { revokeAccessToken } from '../../../login/loginAPI';
+import { revokeAccessToken } from 'src/features/login/loginAPI';
+import { LoggedOutActions } from './LogoutActions';
 import PersonalMenu from './PersonalMenu';
-import LoggedOutActionButtons, { LoggedOutActionMenu } from './LogoutMenu';
 
 const accountLoginButtonSx = {
   borderColor: 'rgba(0, 0, 0, 0.23)',
@@ -27,8 +27,6 @@ const LoggedInActions = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // Dynamically define the anchor the first time the user click on the
-    // profile button.
     if (menuAnchor === null) {
       setMenuAnchor(event.currentTarget);
     }
@@ -75,39 +73,6 @@ const LoggedInActions = () => {
         onItemClick={handleMenuClose}
         onLogoutClick={logoutProcess}
       />
-    </>
-  );
-};
-
-const LoggedOutActions = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (menuAnchor === null) {
-      setMenuAnchor(event.currentTarget);
-    }
-
-    setIsMenuOpen(true);
-  };
-
-  const handleMenuClose = () => {
-    setIsMenuOpen(false);
-  };
-
-  return (
-    <>
-      <Hidden smDown>
-        <LoggedOutActionButtons />
-      </Hidden>
-      <Hidden smUp>
-        <LoggedOutActionMenu
-          menuAnchor={menuAnchor}
-          open={isMenuOpen}
-          onOpen={handleMenuOpen}
-          onClose={handleMenuClose}
-        />
-      </Hidden>
     </>
   );
 };

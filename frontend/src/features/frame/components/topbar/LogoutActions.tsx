@@ -1,10 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, ListItemText, Menu, MenuList, MenuItem } from '@mui/material';
+import {
+  Button,
+  Hidden,
+  ListItemText,
+  Menu,
+  MenuList,
+  MenuItem,
+} from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
+/**
+ * Display actions available for anonymous users.
+ */
+export const LoggedOutActions = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (menuAnchor === null) {
+      setMenuAnchor(event.currentTarget);
+    }
+
+    setIsMenuOpen(true);
+  };
+
+  const handleMenuClose = () => {
+    setIsMenuOpen(false);
+  };
+
+  return (
+    <>
+      <Hidden smDown>
+        <LoggedOutActionButtons />
+      </Hidden>
+      <Hidden smUp>
+        <LoggedOutActionMenu
+          menuAnchor={menuAnchor}
+          open={isMenuOpen}
+          onOpen={handleMenuOpen}
+          onClose={handleMenuClose}
+        />
+      </Hidden>
+    </>
+  );
+};
+
+/**
+ * Actions available for anonymous users displayed as buttons.
+ */
 const LoggedOutActionButtons = () => {
   const { t } = useTranslation();
   return (
@@ -46,6 +92,9 @@ const LoggedOutActionButtons = () => {
   );
 };
 
+/**
+ * Actions available for anonymous users displayed as a menu.
+ */
 export const LoggedOutActionMenu = ({
   menuAnchor,
   open,
@@ -93,7 +142,6 @@ export const LoggedOutActionMenu = ({
           }}
         >
           <MenuList dense sx={{ py: 0 }}>
-            {/* -- my things section -- */}
             <MenuItem
               key="login"
               component={Link}
