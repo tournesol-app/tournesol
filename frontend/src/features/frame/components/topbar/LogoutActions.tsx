@@ -5,12 +5,18 @@ import { useTranslation } from 'react-i18next';
 import {
   Button,
   Hidden,
+  ListItemIcon,
   ListItemText,
   Menu,
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  Login,
+  PersonAdd,
+} from '@mui/icons-material';
 
 /**
  * Display actions available for anonymous users.
@@ -148,6 +154,9 @@ export const LoggedOutActionMenu = ({
               to="/login"
               onClick={onClose}
             >
+              <ListItemIcon>
+                <Login />
+              </ListItemIcon>
               <ListItemText>{t('loginButton')}</ListItemText>
             </MenuItem>
             <MenuItem
@@ -156,6 +165,9 @@ export const LoggedOutActionMenu = ({
               to="/signup"
               onClick={onClose}
             >
+              <ListItemIcon>
+                <PersonAdd />
+              </ListItemIcon>
               <ListItemText>{t('joinUsButton')}</ListItemText>
             </MenuItem>
           </MenuList>

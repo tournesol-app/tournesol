@@ -24,7 +24,13 @@ const TopBarMobile = () => {
   return (
     <>
       {mobileSearchOpen ? (
-        <Grid container width="100%" px={1} justifyContent="flex-start">
+        <Grid
+          container
+          width="100%"
+          px={1}
+          spacing={2}
+          justifyContent="flex-start"
+        >
           <Grid item xs={11}>
             {options?.withSearchBar && <SearchBar />}
           </Grid>
