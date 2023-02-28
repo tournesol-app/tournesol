@@ -72,7 +72,10 @@ function App() {
   }, [loginState, i18n]);
 
   useEffect(() => {
-    enableAutoPageviews();
+    const cleanup = enableAutoPageviews();
+    return () => {
+      cleanup();
+    };
   }, [enableAutoPageviews]);
 
   return (
