@@ -23,7 +23,7 @@ class WatchAccountCreationTestCase(TestCase):
         call_command("watch_account_creation", since_n_hours=1, n_accounts=1, stdout=out)
         output = out.getvalue()
         
-        self.assertIn("1 accounts were created during the last 1 hour(s) "
+        self.assertIn("- 1 accounts were created during the last 1 hour(s) "
                       "with the domain '@verified.test'", output)
         self.assertIn("success", output)
         self.assertEqual(write_in_channel_mock.call_count, 1)
