@@ -32,7 +32,7 @@ export const VideoMetadata = ({
     const date = new Date(publicationDate);
     displayedDate = `${date.getUTCFullYear()}-${toPaddedString(
       date.getUTCMonth()
-    )}-${toPaddedString(date.getUTCDay())}`;
+    )}-${toPaddedString(date.getUTCDate())}`;
   }
 
   return (
