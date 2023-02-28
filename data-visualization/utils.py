@@ -43,7 +43,7 @@ thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
 
 
 @st.cache_data
-def set_df(users=[]):
+def set_df():
     """Set up the dataframe"""
 
     r = requests.get(dataset_url)
@@ -64,15 +64,12 @@ def set_df(users=[]):
     for crit in CRITERIA:
         df[crit] = df[crit].astype("float16")
 
-    if users:
-        df = df[df["public_username"].isin(users)]
-
     return df
 
 
 def get_unique_video_list(df):
 
-    return list(set(df["video_a"].tolist() + df["video_b"].tolist()))
+    return list(set(df["video_a"]) | set(df["video_b"]))
 
 
 def get_score(row, crit):
