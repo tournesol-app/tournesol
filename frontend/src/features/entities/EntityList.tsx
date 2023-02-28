@@ -15,6 +15,7 @@ interface Props {
   settings?: ActionList;
   emptyMessage?: React.ReactNode;
   personalScores?: { [uid: string]: number };
+  unavailableActions?: ActionList;
 }
 
 /**
@@ -33,6 +34,7 @@ function EntityList({
   settings = [],
   // personalScores,
   emptyMessage,
+  unavailableActions,
 }: Props) {
   const { isLoggedIn } = useLoginState();
   const { options } = useCurrentPoll();
@@ -40,12 +42,18 @@ function EntityList({
   const defaultEntityActions = isLoggedIn
     ? options?.defaultAuthEntityActions
     : options?.defaultAnonEntityActions;
+  console.log(entities);
 
   return (
     <>
       {entities && entities.length ? (
         entities.map((entity: Recommendation | RelatedEntityObject) => (
-          <AvailableEntity key={entity.uid} uid={entity.uid} type={entity.type}>
+          <AvailableEntity
+            key={entity.uid}
+            uid={entity.uid}
+            type={entity.type}
+            unavailableActions={unavailableActions}
+          >
             <Box mx={1} my={2}>
               <EntityCard
                 entity={entity}

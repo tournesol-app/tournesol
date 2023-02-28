@@ -178,7 +178,11 @@ const RateLaterPage = () => {
 
           <Box width="100%" textAlign="center">
             <LoaderWrapper isLoading={isLoading}>
-              <EntityList entities={entities} actions={rateLaterPageActions} />
+              <EntityList
+                entities={entities}
+                actions={rateLaterPageActions}
+                unavailableActions={[RemoveFromRateLater(loadList)]}
+              />
             </LoaderWrapper>
           </Box>
           {!!entityCount && (
