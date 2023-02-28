@@ -62,6 +62,7 @@ def add_expander_statistics():
         df_stats = (
             df["public_username"]
             .value_counts()
+            .pipe(lambda x: x[x>0])
             .reset_index()
             .rename(
                 columns={
@@ -70,11 +71,9 @@ def add_expander_statistics():
                 }
             )
         )
-
-        groups = df.groupby("public_username")
+        
         df_stats["Nb of video"] = df_stats["public_username"].apply(
-            lambda x: len(get_unique_video_list(groups.get_group(x)))
-        )
+            lambda x: len(get_unique_video_list(df[df["public_username"] == x])))
 
         col1, col2, col3 = st.columns(3)
         col1.metric("Users", df["public_username"].nunique())
