@@ -5,6 +5,10 @@ import { Box, Tooltip, Link } from '@mui/material';
 import { TypeEnum } from 'src/services/openapi';
 import { RelatedEntityObject } from 'src/utils/types';
 
+const toPaddedString = (num: number): string => {
+  return num.toString().padStart(2, '0');
+};
+
 export const VideoMetadata = ({
   views,
   publicationDate,
@@ -17,6 +21,19 @@ export const VideoMetadata = ({
   withLinks?: boolean;
 }) => {
   const { t, i18n } = useTranslation();
+
+  let displayedDate;
+  // Instead of displaying the date in the same format for every user, we
+  // could choose to display date.toLocaleDateString(i18n.resolvedLanguage)
+  // instead. See:
+  //
+  //    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
+  if (publicationDate) {
+    const date = new Date(publicationDate);
+    displayedDate = `${date.getUTCFullYear()}-${toPaddedString(
+      date.getUTCMonth()
+    )}-${toPaddedString(date.getUTCDay())}`;
+  }
 
   return (
     <Box
@@ -41,7 +58,7 @@ export const VideoMetadata = ({
           </Trans>
         </Box>
       )}
-      {publicationDate && <Box component="span">{publicationDate}</Box>}
+      {publicationDate && <Box component="span">{displayedDate}</Box>}
 
       {uploader &&
         (withLinks ? (
