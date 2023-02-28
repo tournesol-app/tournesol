@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Switch, Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
-import Plausible from 'plausible-tracker';
 
-import { useLoginState } from './hooks';
+import { useLoginState, useWebAnalytics } from './hooks';
 import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
 import SettingsProfilePage from './pages/settings/profile/Profile';
@@ -64,6 +63,7 @@ const ScrollToTop = () => {
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
+  const { enableAutoPageviews } = useWebAnalytics();
 
   // `useState` is used here to call initializeOpenAPI before first render
   useState(() => initializeOpenAPI(loginState, i18n));
@@ -71,12 +71,7 @@ function App() {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
 
-  // Plausible will not make HTTP requests to track events when
-  // `localtion.hostname` is "localhost".
-  const plausible = Plausible({
-    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
-  });
-  plausible.enableAutoPageviews();
+  enableAutoPageviews();
 
   return (
     <PollProvider>

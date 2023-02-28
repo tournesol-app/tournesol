@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
-import Plausible from 'plausible-tracker';
 
 import { Container, Step, StepLabel, Stepper } from '@mui/material';
 
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { useCurrentPoll, useWebAnalytics } from 'src/hooks';
 import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS } from 'src/utils/analytics';
@@ -57,9 +56,7 @@ const ComparisonSeries = ({
   const location = useLocation();
 
   const { name: pollName } = useCurrentPoll();
-  const { trackEvent } = Plausible({
-    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
-  });
+  const { trackEvent } = useWebAnalytics();
 
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected once the series has started

@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import Plausible from 'plausible-tracker';
 
 import { TextField, Typography, Button, useTheme } from '@mui/material';
 
-import { useLoginState } from 'src/hooks';
+import { useLoginState, useWebAnalytics } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
 import { TRACKED_EVENTS } from 'src/utils/analytics';
 
 const DELETE_ACCOUNT_KEYWORD = 'delete account';
 
 const DeleteAccountForm = () => {
-  const { trackEvent } = Plausible({
-    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
-  });
+  const { trackEvent } = useWebAnalytics();
 
   const { t } = useTranslation();
   const theme = useTheme();

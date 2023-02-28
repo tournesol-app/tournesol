@@ -7,14 +7,13 @@ import {
   Lines,
   FormTextField,
 } from 'src/components';
-import { useNotifications } from 'src/hooks';
+import { useNotifications, useWebAnalytics } from 'src/hooks';
 import {
   AccountsService,
   ApiError,
   RegisterUserRequest,
 } from 'src/services/openapi';
 import { Link } from 'react-router-dom';
-import Plausible from 'plausible-tracker';
 
 import { TRACKED_EVENTS } from 'src/utils/analytics';
 
@@ -31,9 +30,7 @@ const SignupSuccess = ({ email }: { email: string }) => {
 };
 
 const Signup = () => {
-  const { trackEvent } = Plausible({
-    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
-  });
+  const { trackEvent } = useWebAnalytics();
 
   const { t } = useTranslation();
 

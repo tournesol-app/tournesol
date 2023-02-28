@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
-import Plausible from 'plausible-tracker';
 
 import { CircularProgress, Typography, Box, Button } from '@mui/material';
 
@@ -11,7 +10,7 @@ import {
   VerifyEmail,
 } from 'src/services/openapi';
 import { ContentHeader, ContentBox } from 'src/components';
-import { useCurrentPoll, useSearchParams } from 'src/hooks';
+import { useCurrentPoll, useSearchParams, useWebAnalytics } from 'src/hooks';
 import useLastPoll from 'src/hooks/useLastPoll';
 import { TRACKED_EVENTS } from 'src/utils/analytics';
 
@@ -41,9 +40,7 @@ const executeVerifyEmail = async (searchParams: Record<string, string>) => {
 };
 
 const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
-  const { trackEvent } = Plausible({
-    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
-  });
+  const { trackEvent } = useWebAnalytics();
 
   useLastPoll();
   const { t } = useTranslation();
