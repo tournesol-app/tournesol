@@ -71,7 +71,9 @@ function App() {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
 
-  enableAutoPageviews();
+  useEffect(() => {
+    enableAutoPageviews();
+  }, [enableAutoPageviews]);
 
   return (
     <PollProvider>

@@ -10,7 +10,7 @@ import Plausible from 'plausible-tracker';
  * See: https://github.com/plausible/plausible-tracker
  */
 export const useWebAnalytics = () => {
-  const [client, setClient] = useState(
+  const [client] = useState(
     Plausible({ apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL })
   );
 
