@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
 
-import { Box, Typography, Grid } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import EntityCard from 'src/components/entity/EntityCard';
+import AvailableEntity from '../../components/entity/AvailableEntity';
+
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi/models/Recommendation';
 import { ActionList, RelatedEntityObject } from 'src/utils/types';
-import { idFromUid } from 'src/utils/video';
-import { entityCardMainSx } from '../../components/entity/style';
 
 interface Props {
   entities: RelatedEntityObject[] | Recommendation[] | undefined;
@@ -17,45 +16,6 @@ interface Props {
   emptyMessage?: React.ReactNode;
   personalScores?: { [uid: string]: number };
 }
-
-const AvailableEntity = ({
-  children,
-  uid,
-  errorElement,
-  type,
-}: {
-  children: React.ReactNode;
-  uid: string;
-  errorElement?: React.ReactNode;
-  type: string;
-}) => {
-  const { t } = useTranslation();
-  const [isAvailable, setIsAvailable] = useState(false);
-
-  const errorElementDisplay = errorElement ?? (
-    <Box mx={1} my={2}>
-      <Grid container sx={entityCardMainSx}>
-        <Box mx={1} my={2}>
-          {t('video.notAvailableAnymore')}
-        </Box>
-      </Grid>
-    </Box>
-  );
-
-  useEffect(() => {
-    if (type != 'video') {
-      setIsAvailable(true);
-    } else {
-      const img = new Image();
-      img.src = `https://i.ytimg.com/vi/${idFromUid(uid)}/mqdefault.jpg`;
-      img.onload = function () {
-        setIsAvailable(img.width !== 120);
-      };
-    }
-  }, [uid,type]);
-
-  return isAvailable ? <>{children}</> : <>{errorElementDisplay}</>;
-};
 
 /**
  * Display a list of entities.
