@@ -10,7 +10,7 @@ class VideoMetadata(serializers.Serializer):
     description = serializers.CharField(allow_blank=True, default="")
     uploader = serializers.CharField(allow_blank=True, default="")
     channel_id = serializers.CharField(allow_null=True, default=None)
-    publication_date = serializers.DateField(allow_null=True, default=None)
+    publication_date = serializers.DateTimeField(allow_null=True, default=None)
     duration = serializers.IntegerField(
         allow_null=True,
         default=None,
