@@ -31,7 +31,7 @@ export const VideoMetadata = ({
   if (publicationDate) {
     const date = new Date(publicationDate);
     displayedDate = `${date.getUTCFullYear()}-${toPaddedString(
-      date.getUTCMonth()
+      date.getUTCMonth() + 1
     )}-${toPaddedString(date.getUTCDate())}`;
   }
 
