@@ -71,7 +71,7 @@ def add_expander_statistics():
                 }
             )
         )
-        
+
         df_stats["Nb of video"] = df_stats["public_username"].apply(
             lambda x: len(get_unique_video_list(df[df["public_username"] == x])))
 
