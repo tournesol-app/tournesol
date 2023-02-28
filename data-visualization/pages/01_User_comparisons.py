@@ -81,7 +81,7 @@ def add_expander_statistics():
         col3.metric("Comparisons", df["video_a"].size)
 
         st.write("Number of public comparisons by user:")
-        st.write(df_stats[df_stats["public_username"].isin(df["public_username"].unique())])
+        st.write(df_stats)
 
 
 def add_expander_correlation_coefficients():

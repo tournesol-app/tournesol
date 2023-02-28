@@ -55,11 +55,9 @@ def set_df(users=[]):
                 df_tmp = pd.read_csv(f)
                 break
 
+    df_tmp["criteria"] = df_tmp["criteria"].astype("category")
+
     index = ["video_a", "video_b", "public_username"]
-
-    for idx in index + ["criteria"]:
-        df_tmp[idx] = df_tmp[idx].astype("category")
-
     df = df_tmp.pivot(index=index, columns="criteria", values="score")
     df.reset_index(inplace=True)
 
