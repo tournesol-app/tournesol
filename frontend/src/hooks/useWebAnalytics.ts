@@ -16,14 +16,14 @@ export const useWebAnalytics = () => {
       : null
   );
 
-  // Do nothing not tracking API has been configured.
+  // Do nothing when no tracking API has been configured.
   const enableAutoPageviews = useCallback(() => {
     if (client) {
       return client.enableAutoPageviews();
     }
   }, [client]);
 
-  // Do nothing not tracking API has been configured.
+  // Do nothing when no tracking API has been configured.
   const trackEvent = useCallback(
     (
       eventName: string,
