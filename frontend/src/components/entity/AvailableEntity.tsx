@@ -33,9 +33,7 @@ export const EntityNotAvailable = ({
           alignItems="center"
         >
           <Grid ml={1} my={2}>
-            <Typography >
-              {t('video.notAvailableAnymore')}
-            </Typography>
+            <Typography>{t('video.notAvailableAnymore')}</Typography>
           </Grid>
           <Grid justifyContent="center" alignItems="flex-end">
             {unavailableActions &&
