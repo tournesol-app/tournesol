@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import Plausible from 'plausible-tracker';
+import Plausible, { EventOptions, PlausibleOptions } from 'plausible-tracker';
 
 /**
- * A hook that returns a web analytics client.
+ * A hook that returns a web analytics client, and several tracking functions.
  *
  * We currently use plausible-tracker, a Plausible Analytics client.
  *
@@ -11,12 +11,35 @@ import Plausible from 'plausible-tracker';
  */
 export const useWebAnalytics = () => {
   const [client] = useState(
-    Plausible({ apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL })
+    process.env.REACT_APP_WEBSITE_ANALYTICS_URL
+      ? Plausible({ apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL })
+      : null
+  );
+
+  // Do nothing not tracking API has been configured.
+  const enableAutoPageviews = useCallback(() => {
+    if (client) {
+      return client.enableAutoPageviews();
+    }
+  }, [client]);
+
+  // Do nothing not tracking API has been configured.
+  const trackEvent = useCallback(
+    (
+      eventName: string,
+      options?: EventOptions,
+      eventData?: PlausibleOptions
+    ) => {
+      if (client) {
+        client.trackEvent(eventName, options, eventData);
+      }
+    },
+    [client]
   );
 
   return {
     client: client,
-    enableAutoPageviews: client.enableAutoPageviews,
-    trackEvent: client.trackEvent,
+    enableAutoPageviews: enableAutoPageviews,
+    trackEvent: trackEvent,
   };
 };

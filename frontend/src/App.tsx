@@ -74,7 +74,9 @@ function App() {
   useEffect(() => {
     const cleanup = enableAutoPageviews();
     return () => {
-      cleanup();
+      if (cleanup) {
+        cleanup();
+      }
     };
   }, [enableAutoPageviews]);
 
