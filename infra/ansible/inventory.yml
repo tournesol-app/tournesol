@@ -49,6 +49,7 @@ all:
 
           grafana_domain_name: tournesol-grafana
           grafana_scheme: http
+          plausible_hosting_tag: "2023.02.09"
 
           # Daily clean-up of the back end's expired items.
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
@@ -116,6 +117,7 @@ all:
 
           grafana_domain_name: "grafana.{{domain_name}}"
           grafana_scheme: https
+          plausible_hosting_tag: "2023.02.09"
 
           # Daily clean-up of the back end's expired items.
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
@@ -187,6 +189,7 @@ all:
 
           grafana_domain_name: "grafana.{{domain_name}}"
           grafana_scheme: https
+          plausible_hosting_tag: "2023.02.09"
 
           # Daily clean-up of the back end's expired items.
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am

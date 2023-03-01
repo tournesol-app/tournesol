@@ -23,6 +23,6 @@
   git:
     repo: 'https://github.com/tournesol-app/plausible-self-hosting'
     dest: /home/git/plausible_hosting
-    version: tournesol-deployment
+    version: "{{ plausible_hosting_tag }}"
   become: yes
   become_user: git
