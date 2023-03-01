@@ -8,16 +8,17 @@ import { ActionList } from 'src/utils/types';
 import { TypeEnum } from 'src/services/openapi';
 
 /*
- * return a different error element related to the type of the entity and actions
+ * This component can be returned instead of <EntityCard> when the entity
+ * doesn't seem to be available online at its original location.
  */
 export const EntityNotAvailable = ({
+  uid,
   type,
   unavailableActions,
-  uid,
 }: {
+  uid: string;
   type: string;
   unavailableActions?: ActionList;
-  uid: string;
 }) => {
   const { t } = useTranslation();
 
@@ -25,17 +26,15 @@ export const EntityNotAvailable = ({
     return (
       <Box mx={1} my={2}>
         <Grid
-          mx={1}
-          my={2}
           container
-          sx={entityCardMainSx}
           justifyContent="space-between"
           alignItems="center"
+          sx={entityCardMainSx}
         >
-          <Grid ml={1} my={2}>
+          <Grid item px={1} py={2}>
             <Typography>{t('video.notAvailableAnymore')}</Typography>
           </Grid>
-          <Grid>
+          <Grid item>
             {unavailableActions &&
               unavailableActions.map((Action, index) =>
                 typeof Action === 'function' ? (
