@@ -2,6 +2,7 @@
 Send an alert on Discord when too many users have created accounts using email
 addresses considered trusted during the last hours.
 """
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from core.lib.discord.api import write_in_channel
@@ -43,7 +44,7 @@ class Command(BaseCommand):
 
         for domain in email_domains_alert_qs:
 
-            msg = (f"{domain.cnt} accounts were created during the last "
+            msg = (f"**{settings.MAIN_URL}** - {domain.cnt} accounts were created during the last "
                    f"{options['since_n_hours']} hour(s) with the domain '{domain.domain}'")
 
             self.stdout.write(msg)

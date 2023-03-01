@@ -1,6 +1,7 @@
 from io import StringIO
 from unittest import mock
 
+from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
 
@@ -10,10 +11,9 @@ from core.utils.time import time_ago
 
 
 class WatchAccountCreationTestCase(TestCase):
-
     @mock.patch("core.lib.discord.api.write_in_channel")
     def test_cmd_watch_account_creation(self, write_in_channel_mock):
-        
+
         out = StringIO()
 
         # Test which must trigger the alert
@@ -22,9 +22,13 @@ class WatchAccountCreationTestCase(TestCase):
 
         call_command("watch_account_creation", since_n_hours=1, n_accounts=1, stdout=out)
         output = out.getvalue()
-        
-        self.assertIn("1 accounts were created during the last 1 hour(s) "
-                      "with the domain '@verified.test'", output)
+
+        self.assertIn(
+            f"**{settings.MAIN_URL}** - 1 accounts were created "
+            "during the last 1 hour(s) with the domain "
+            "'@verified.test'",
+            output,
+        )
         self.assertIn("success", output)
         self.assertEqual(write_in_channel_mock.call_count, 1)
 
@@ -37,4 +41,3 @@ class WatchAccountCreationTestCase(TestCase):
 
         self.assertIn("success", output)
         self.assertEqual(write_in_channel_mock.call_count, 1)
-  
