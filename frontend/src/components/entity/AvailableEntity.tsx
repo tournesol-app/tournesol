@@ -33,7 +33,7 @@ export const EntityNotAvailable = ({
           alignItems="center"
           sx={entityCardMainSx}
         >
-          <Grid item px={1} py={2}>
+          <Grid item pl={1} py={2}>
             <Typography>{t('video.notAvailableAnymore')}</Typography>
           </Grid>
           <Grid item>
