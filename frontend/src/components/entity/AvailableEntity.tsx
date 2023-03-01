@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Typography } from '@mui/material';
-import { idFromUid } from '../../utils/video';
-import { entityCardMainSx } from './style';
-import { ActionList } from 'src/utils/types';
+
 import { TypeEnum } from 'src/services/openapi';
+import { ActionList } from 'src/utils/types';
+import { idFromUid } from 'src/utils/video';
+import { entityCardMainSx } from './style';
 
 /*
  * This component can be returned instead of <EntityCard> when the entity
