@@ -35,7 +35,7 @@ export const EntityNotAvailable = ({
           <Grid ml={1} my={2}>
             <Typography>{t('video.notAvailableAnymore')}</Typography>
           </Grid>
-          <Grid justifyContent="center" alignItems="flex-end">
+          <Grid >
             {unavailableActions &&
               unavailableActions.map((Action, index) =>
                 typeof Action === 'function' ? (
