@@ -36,7 +36,7 @@ TCOLOR = [
 MSG_NO_DATA = "You should first load the public dataset at the top of the page."
 MSG_NOT_ENOUGH_DATA = "Not enough data to show this section with the selected filters."
 
-dataset_url = "https://api.tournesol.app/exports/all/"
+DATASET_URL = "https://api.tournesol.app/exports/all/"
 
 # URL to get YouTube thumbnail in high quality
 thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
@@ -46,7 +46,7 @@ thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
 def set_df():
     """Set up the dataframe"""
 
-    r = requests.get(dataset_url)
+    r = requests.get(DATASET_URL)
     z = zipfile.ZipFile(io.BytesIO(r.content))
 
     for file in z.namelist():
