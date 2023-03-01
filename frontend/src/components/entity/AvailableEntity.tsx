@@ -22,7 +22,7 @@ export const EntityNotAvailable = ({
 }) => {
   const { t } = useTranslation();
 
-  if (type == TypeEnum.VIDEO) {
+  if (type === TypeEnum.VIDEO) {
     return (
       <Box mx={1} my={2}>
         <Grid
@@ -52,25 +52,31 @@ export const EntityNotAvailable = ({
   return null;
 };
 
-/*
- * Check if an entity is available
- * It returns children if it is available either it returns an error element
+/**
+ * Return an <EntityNotAvailable> if the entity doesn't seem to be available
+ * online at its original location, return the given children component
+ * instead.
  */
 const AvailableEntity = ({
-  children,
   uid,
   type,
+  children,
   unavailableActions,
 }: {
-  children: React.ReactNode;
   uid: string;
   type: string;
+  children: React.ReactNode;
   unavailableActions?: ActionList;
 }) => {
   const [isAvailable, setIsAvailable] = useState(false);
 
+  /**
+   * Check if the entity is available.
+   *
+   * The behaviour "is available" could be factorized in a custom hook.
+   */
   useEffect(() => {
-    if (type != 'video') {
+    if (type !== TypeEnum.VIDEO) {
       setIsAvailable(true);
     } else {
       const img = new Image();
@@ -85,9 +91,9 @@ const AvailableEntity = ({
     <>{children}</>
   ) : (
     <EntityNotAvailable
+      uid={uid}
       type={type}
       unavailableActions={unavailableActions}
-      uid={uid}
     />
   );
 };
