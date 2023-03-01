@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Typography } from '@mui/material';
 
+import LoaderWrapper from 'src/components/LoaderWrapper';
 import { TypeEnum } from 'src/services/openapi';
 import { ActionList } from 'src/utils/types';
 import { idFromUid } from 'src/utils/video';
@@ -69,6 +70,7 @@ const AvailableEntity = ({
   children: React.ReactNode;
   actionsIfUnavailable?: ActionList;
 }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [isAvailable, setIsAvailable] = useState(false);
 
   /**
@@ -78,24 +80,30 @@ const AvailableEntity = ({
    */
   useEffect(() => {
     if (type !== TypeEnum.VIDEO) {
+      setIsLoading(false);
       setIsAvailable(true);
     } else {
       const img = new Image();
       img.src = `https://i.ytimg.com/vi/${idFromUid(uid)}/mqdefault.jpg`;
       img.onload = function () {
+        setIsLoading(false);
         setIsAvailable(img.width !== 120);
       };
     }
   }, [uid, type]);
 
-  return isAvailable ? (
-    <>{children}</>
-  ) : (
-    <EntityNotAvailable
-      uid={uid}
-      type={type}
-      actionsIfUnavailable={actionsIfUnavailable}
-    />
+  return (
+    <LoaderWrapper isLoading={isLoading}>
+      {isAvailable ? (
+        <>{children}</>
+      ) : (
+        <EntityNotAvailable
+          uid={uid}
+          type={type}
+          actionsIfUnavailable={actionsIfUnavailable}
+        />
+      )}
+    </LoaderWrapper>
   );
 };
 
