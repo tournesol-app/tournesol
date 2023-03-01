@@ -42,7 +42,6 @@ function EntityList({
   const defaultEntityActions = isLoggedIn
     ? options?.defaultAuthEntityActions
     : options?.defaultAnonEntityActions;
-  console.log(entities);
 
   return (
     <>
