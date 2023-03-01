@@ -27,18 +27,6 @@ button.tournesol-rate-button:disabled {
   background: #ffc800;
 }
 
-@media (min-width: 656px) and (max-width: 990px) {
-  button.tournesol-rate-button {
-    font-size: 0;
-  }
-}
-
-@media (min-width: 1017px) and (max-width: 1366px) {
-  button.tournesol-rate-button {
-    font-size: 0;
-  }
-}
-
 img.tournesol-button-image {
   margin-left: -6px;
   margin-right: 6px;
@@ -48,4 +36,32 @@ img.tournesol-button-image.tournesol-rate-later {
   /* Compensate the extra margins inside the Material UI "Add" icon */
   margin-left: -10px;
   margin-right: 2px;
+}
+
+@media (min-width: 656px) and (max-width: 990px) {
+  button.tournesol-rate-button {
+    font-size: 0;
+  }
+
+  img.tournesol-button-image {
+    margin: 0;
+  }
+
+  img.tournesol-button-image.tournesol-rate-later {
+    margin: 0;
+  }
+}
+
+@media (min-width: 1017px) and (max-width: 1366px) {
+  button.tournesol-rate-button {
+    font-size: 0;
+  }
+
+  img.tournesol-button-image {
+    margin: 0;
+  }
+
+  img.tournesol-button-image.tournesol-rate-later {
+    margin: 0;
+  }
 }
