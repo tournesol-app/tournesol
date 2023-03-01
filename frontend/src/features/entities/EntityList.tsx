@@ -15,7 +15,7 @@ interface Props {
   settings?: ActionList;
   emptyMessage?: React.ReactNode;
   personalScores?: { [uid: string]: number };
-  unavailableActions?: ActionList;
+  actionsIfUnavailable?: ActionList;
 }
 
 /**
@@ -34,7 +34,7 @@ function EntityList({
   settings = [],
   // personalScores,
   emptyMessage,
-  unavailableActions,
+  actionsIfUnavailable,
 }: Props) {
   const { isLoggedIn } = useLoginState();
   const { options } = useCurrentPoll();
@@ -51,7 +51,7 @@ function EntityList({
             key={entity.uid}
             uid={entity.uid}
             type={entity.type}
-            unavailableActions={unavailableActions}
+            actionsIfUnavailable={actionsIfUnavailable}
           >
             <Box mx={1} my={2}>
               <EntityCard

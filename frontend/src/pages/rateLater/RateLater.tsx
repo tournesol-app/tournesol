@@ -181,7 +181,7 @@ const RateLaterPage = () => {
               <EntityList
                 entities={entities}
                 actions={rateLaterPageActions}
-                unavailableActions={[RemoveFromRateLater(loadList)]}
+                actionsIfUnavailable={[RemoveFromRateLater(loadList)]}
               />
             </LoaderWrapper>
           </Box>

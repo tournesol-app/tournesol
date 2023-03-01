@@ -15,11 +15,11 @@ import { entityCardMainSx } from './style';
 export const EntityNotAvailable = ({
   uid,
   type,
-  unavailableActions,
+  actionsIfUnavailable,
 }: {
   uid: string;
   type: string;
-  unavailableActions?: ActionList;
+  actionsIfUnavailable?: ActionList;
 }) => {
   const { t } = useTranslation();
 
@@ -36,8 +36,8 @@ export const EntityNotAvailable = ({
             <Typography>{t('video.notAvailableAnymore')}</Typography>
           </Grid>
           <Grid item>
-            {unavailableActions &&
-              unavailableActions.map((Action, index) =>
+            {actionsIfUnavailable &&
+              actionsIfUnavailable.map((Action, index) =>
                 typeof Action === 'function' ? (
                   <Action key={index} uid={uid} />
                 ) : (
@@ -62,12 +62,12 @@ const AvailableEntity = ({
   uid,
   type,
   children,
-  unavailableActions,
+  actionsIfUnavailable,
 }: {
   uid: string;
   type: string;
   children: React.ReactNode;
-  unavailableActions?: ActionList;
+  actionsIfUnavailable?: ActionList;
 }) => {
   const [isAvailable, setIsAvailable] = useState(false);
 
@@ -94,7 +94,7 @@ const AvailableEntity = ({
     <EntityNotAvailable
       uid={uid}
       type={type}
-      unavailableActions={unavailableActions}
+      actionsIfUnavailable={actionsIfUnavailable}
     />
   );
 };
