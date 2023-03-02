@@ -369,12 +369,14 @@ class ExportTest(TestCase):
             criteria="criteria2",
             voting_right=0.4855,
             score=0.5214,
+            uncertainty=0.777,
         )
         ContributorRatingCriteriaScore.objects.create(
             contributor_rating=first_user_private_contributor_ratings[1],
             criteria="criteria1",
             voting_right=0.4444,
             score=-5.5555,
+            uncertainty=1.666,
         )
 
         # ContributorRatingCriteriaScore that should be exported
@@ -384,18 +386,21 @@ class ExportTest(TestCase):
                 criteria="criteria2",
                 voting_right=0.1234,
                 score=2.4567,
+                uncertainty=1.111,
             ),
             ContributorRatingCriteriaScore.objects.create(
                 contributor_rating=last_user_public_contributor_ratings[0],
                 criteria="criteria2",
                 voting_right=0.11,
                 score=-0.66,
+                uncertainty=1.666,
             ),
             ContributorRatingCriteriaScore.objects.create(
                 contributor_rating=first_user_public_contributor_ratings[0],
                 criteria="criteria1",
                 voting_right=0.8,
                 score=1.9,
+                uncertainty=1.8,
             ),
         ]
 
@@ -426,6 +431,7 @@ class ExportTest(TestCase):
             )
             self.assertEqual(row["criteria"], expected_export.criteria)
             self.assertEqual(row["score"], str(round(expected_export.score, 2)))
+            self.assertEqual(row["uncertainty"], str(round(expected_export.uncertainty, 2)))
             self.assertEqual(row["voting_right"], str(round(expected_export.voting_right, 3)))
 
     def test_all_export_sorts_by_username(self):
@@ -446,6 +452,7 @@ class ExportTest(TestCase):
         e_criteria_score = EntityCriteriaScoreFactory(
             criteria="h2g2",
             score=42,
+            uncertainty=99.99,
             entity__metadata__name="DON'T PANIC"
         )
 
@@ -456,6 +463,7 @@ class ExportTest(TestCase):
         self.assertEqual(rows[0]["video"], e_criteria_score.entity.uid.split(':')[1])
         self.assertEqual(rows[0]["criteria"], "h2g2")
         self.assertEqual(float(rows[0]["score"]), 42.)
+        self.assertEqual(float(rows[0]["uncertainty"]), 99.99)
 
     def test_collective_criteria_scores_is_empty_without_criteria_scores(self):
         EntityCriteriaScore.objects.all().delete
