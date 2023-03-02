@@ -11,6 +11,16 @@ describe('Recommendations page', () => {
         cy.location('pathname').should('equal', '/');
       });
 
+      it('expand filters and backward navigation works', () => {
+        cy.visit('/');
+        cy.location('pathname').should('equal', '/');
+        cy.contains('Recommendations').click();
+        cy.contains('Filters', {matchCase: false}).click();
+        cy.contains('Duration (minutes)', {matchCase: false}).should('be.visible');
+        cy.go('back');
+        cy.location('pathname').should('equal', '/');
+      });
+
       describe('Filter - upload date', () => {
         it('must propose 5 timedelta', () => {
           cy.visit('/');
