@@ -6,10 +6,10 @@ import { Container, Step, StepLabel, Stepper } from '@mui/material';
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
-import { useCurrentPoll, useWebAnalytics } from 'src/hooks';
+import { useCurrentPoll } from 'src/hooks';
 import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
-import { TRACKED_EVENTS } from 'src/utils/analytics';
+import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 
@@ -56,7 +56,6 @@ const ComparisonSeries = ({
   const location = useLocation();
 
   const { name: pollName } = useCurrentPoll();
-  const { trackEvent } = useWebAnalytics();
 
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected once the series has started

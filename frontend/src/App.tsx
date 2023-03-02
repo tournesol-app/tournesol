@@ -3,7 +3,7 @@ import { Switch, Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
 
-import { useLoginState, useWebAnalytics } from './hooks';
+import { useLoginState } from './hooks';
 import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
 import SettingsProfilePage from './pages/settings/profile/Profile';
@@ -63,22 +63,12 @@ const ScrollToTop = () => {
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
-  const { enableAutoPageviews } = useWebAnalytics();
 
   // `useState` is used here to call initializeOpenAPI before first render
   useState(() => initializeOpenAPI(loginState, i18n));
   useEffect(() => {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
-
-  useEffect(() => {
-    const cleanup = enableAutoPageviews();
-    return () => {
-      if (cleanup) {
-        cleanup();
-      }
-    };
-  }, [enableAutoPageviews]);
 
   return (
     <PollProvider>

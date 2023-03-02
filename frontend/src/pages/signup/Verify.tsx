@@ -10,9 +10,9 @@ import {
   VerifyEmail,
 } from 'src/services/openapi';
 import { ContentHeader, ContentBox } from 'src/components';
-import { useCurrentPoll, useSearchParams, useWebAnalytics } from 'src/hooks';
+import { useCurrentPoll, useSearchParams } from 'src/hooks';
 import useLastPoll from 'src/hooks/useLastPoll';
-import { TRACKED_EVENTS } from 'src/utils/analytics';
+import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 
 const executeVerifyUser = async (searchParams: Record<string, string>) => {
   const { user_id, timestamp, signature } = searchParams;
@@ -40,8 +40,6 @@ const executeVerifyEmail = async (searchParams: Record<string, string>) => {
 };
 
 const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
-  const { trackEvent } = useWebAnalytics();
-
   useLastPoll();
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();

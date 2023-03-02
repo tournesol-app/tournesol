@@ -7,7 +7,7 @@ import {
   Lines,
   FormTextField,
 } from 'src/components';
-import { useNotifications, useWebAnalytics } from 'src/hooks';
+import { useNotifications } from 'src/hooks';
 import {
   AccountsService,
   ApiError,
@@ -15,7 +15,7 @@ import {
 } from 'src/services/openapi';
 import { Link } from 'react-router-dom';
 
-import { TRACKED_EVENTS } from 'src/utils/analytics';
+import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
@@ -30,8 +30,6 @@ const SignupSuccess = ({ email }: { email: string }) => {
 };
 
 const Signup = () => {
-  const { trackEvent } = useWebAnalytics();
-
   const { t } = useTranslation();
 
   const [apiError, setApiError] = useState<ApiError | null>(null);

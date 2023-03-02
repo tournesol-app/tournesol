@@ -4,15 +4,13 @@ import { useHistory } from 'react-router-dom';
 
 import { TextField, Typography, Button, useTheme } from '@mui/material';
 
-import { useLoginState, useWebAnalytics } from 'src/hooks';
+import { useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
-import { TRACKED_EVENTS } from 'src/utils/analytics';
+import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 
 const DELETE_ACCOUNT_KEYWORD = 'delete account';
 
 const DeleteAccountForm = () => {
-  const { trackEvent } = useWebAnalytics();
-
   const { t } = useTranslation();
   const theme = useTheme();
   const [keyword, setKeyword] = useState('');
