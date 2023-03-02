@@ -138,6 +138,13 @@ List of columns:
   are globally scaled such that they are meaningfully comparable and can be
   aggregated.
 
+- uncertainty:
+
+  This field is computed by Tournesol's algorithms. It should represent the 
+  uncertainty on the score value. Be careful, due to the score scaling which it
+  may seem very large. For more detail, check out the algorithms implementation 
+  or the paper which describe them https://arxiv.org/abs/2211.01179
+
 - voting_right:
 
   This field is computed by Tournesol's algorithms. The voting right is a
@@ -174,3 +181,10 @@ List of columns:
   individual scores. With a small number of contributors, this score would be
   reduced towards 0 such that it is not possible for a small number of users to
   give a very high collective score on a video.
+
+- uncertainty:
+
+  This field is computed by Tournesol's algorithms. It should represent the 
+  uncertainty on the score value. Be careful, due to the score scaling which it
+  may seem very large. For more detail, check out the algorithms implementation 
+  or the paper which describe them https://arxiv.org/abs/2211.01179
