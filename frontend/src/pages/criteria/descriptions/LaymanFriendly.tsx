@@ -22,7 +22,7 @@ const LaymanFriendlyDesc = () => (
     <p>
       An example of a very pedagogical video that may not be very
       layman-friendly is{' '}
-      <a href="https://www.youtube.com/watch?v=X8jsijhllIA">
+      <a href="https://tournesol.app/entities/yt:X8jsijhllIA">
         this video by 3Blue1Brown
       </a>
       .

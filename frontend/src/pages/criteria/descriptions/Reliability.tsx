@@ -25,11 +25,11 @@ const ReliabilityDesc = () => (
     <p>
       The multiplicity and diversity of sources and evidence plays an important
       role in the reliability of a content. It should ideally be also backed by{' '}
-      <a href="https://www.youtube.com/watch?v=DWzKI4WhSPQ">
+      <a href="https://tournesol.app/entities/yt:DWzKI4WhSPQ">
         peer-reviewed scientific publications
       </a>
       . However, as explained in{' '}
-      <a href="https://www.youtube.com/watch?v=42QuXLucH3Q">
+      <a href="https://tournesol.app/entities/yt:42QuXLucH3Q">
         this video by Veritasium
       </a>
       , even published research usually has major shortcomings. More reliable

@@ -16,7 +16,9 @@ const BackfireRiskDesc = () => (
         (<a href="https://www.pnas.org/content/115/37/9216">BailABBC+-18</a>)
       </sup>
       . Note, however, that this{' '}
-      <a href="https://www.youtube.com/watch?v=eVtCO84MDj8">Veritasium video</a>{' '}
+      <a href="https://tournesol.app/entities/yt:eVtCO84MDj8">
+        Veritasium video
+      </a>{' '}
       (based on his{' '}
       <a href="http://www.physics.usyd.edu.au/super/theses/PhD(Muller).pdf">
         PhD thesis

@@ -26,7 +26,9 @@ const EngagingDesc = () => (
     </p>
     <p>
       This{' '}
-      <a href="https://www.youtube.com/watch?v=QLIKgT-OSLQ">Veritasium video</a>{' '}
+      <a href="https://tournesol.app/entities/yt:QLIKgT-OSLQ">
+        Veritasium video
+      </a>{' '}
       presents advice for more engaging science videos.
     </p>
     <h3>Thought-provoking</h3>

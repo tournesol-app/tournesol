@@ -11,7 +11,7 @@ const ImportanceDesc = () => (
       This criterion aims to combat the problem of <em>mute news</em>, which are
       information that do not have the attention that they should have for the
       good of humanity and beyond. As an example, as explained by{' '}
-      <a href="https://www.youtube.com/watch?v=KdiA12KeSL0">
+      <a href="https://tournesol.app/entities/yt:KdiA12KeSL0">
         this PBS Hot Mess video
       </a>
       , when it comes to mitigating climate change, asking viewers to switch off

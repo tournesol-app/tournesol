@@ -9,7 +9,9 @@ const PedagogyDesc = () => (
     <p>
       This criterion aims to measure the clarity of the explanations of a
       content. More importantly, this{' '}
-      <a href="https://www.youtube.com/watch?v=GEmuEWjHr5c">Veritasium video</a>{' '}
+      <a href="https://tournesol.app/entities/yt:GEmuEWjHr5c">
+        Veritasium video
+      </a>{' '}
       argues that what really matters is what is going on in the viewer&apos;s
       head as they watch the video. A pedagogical content should thus accompany
       the viewers adequately along every challenging step of an argument or of
