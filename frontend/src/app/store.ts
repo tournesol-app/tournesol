@@ -5,8 +5,8 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
 import drawerOpenReducer from '../features/frame/drawerOpenSlice';
 import loginReducer from '../features/login/loginSlice';
+import loginSuccessfulListener from 'src/features/login/loginSuccessfulListener';
 import userSettingsReducer from 'src/features/settings/userSettingsSlice';
-import { listenSuccessfulLogin } from 'src/features/settings/userSettingsListener';
 
 const persistConfig = {
   key: 'root',
@@ -27,7 +27,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],
       },
-    }).prepend(listenSuccessfulLogin.middleware),
+    }).prepend(loginSuccessfulListener.middleware),
 });
 
 export const persistor = persistStore(store);

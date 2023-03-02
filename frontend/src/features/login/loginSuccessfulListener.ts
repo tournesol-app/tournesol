@@ -4,7 +4,7 @@ import { RootState } from 'src/app/store';
 import { isLoggedIn } from 'src/features/login/loginUtils';
 import { fetchUserSettings } from 'src/features/settings/userSettingsSlice';
 
-export const listenSuccessfulLogin = createListenerMiddleware();
+const loginSuccessfulListener = createListenerMiddleware();
 
 /**
  * A Redux middleware that listens to successful log in.
@@ -12,7 +12,7 @@ export const listenSuccessfulLogin = createListenerMiddleware();
  * After a login, fetch the user's settings from the API and save them in the
  * store.
  */
-listenSuccessfulLogin.startListening({
+loginSuccessfulListener.startListening({
   predicate: (action, currentState, previousState) => {
     if (
       (currentState as RootState).token.status === 'idle' &&
@@ -28,3 +28,5 @@ listenSuccessfulLogin.startListening({
     listenerApi.dispatch(fetchUserSettings());
   },
 });
+
+export default loginSuccessfulListener;
