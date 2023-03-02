@@ -15,7 +15,7 @@ describe('Recommendations page', () => {
         cy.visit('/');
         cy.location('pathname').should('equal', '/');
         cy.contains('Recommendations').click();
-        cy.contains('Filters').click();
+        cy.contains('Filters', {matchCase: false}).click();
         cy.contains('Duration (minutes)', {matchCase: false}).should('be.visible');
         cy.go('back');
         cy.location('pathname').should('equal', '/');
