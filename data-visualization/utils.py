@@ -1,7 +1,9 @@
+import io
+import zipfile
+
 import pandas as pd
 import requests
 import streamlit as st
-
 
 CRITERIA = [
     "largely_recommended",
@@ -34,16 +36,24 @@ TCOLOR = [
 MSG_NO_DATA = "You should first load the public dataset at the top of the page."
 MSG_NOT_ENOUGH_DATA = "Not enough data to show this section with the selected filters."
 
+DATASET_URL = "https://api.tournesol.app/exports/all/"
+
 # URL to get YouTube thumbnail in high quality
 thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
 
 
 @st.cache_data
-def set_df(users=[]):
+def set_df():
     """Set up the dataframe"""
 
-    url = "https://api.tournesol.app/exports/comparisons/"
-    df_tmp = pd.read_csv(url)
+    r = requests.get(DATASET_URL)
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+
+    for file in z.namelist():
+        if "comparisons.csv" in file:
+            with z.open(file) as f:
+                df_tmp = pd.read_csv(f)
+                break
 
     index = ["video_a", "video_b", "public_username"]
 
@@ -56,15 +66,12 @@ def set_df(users=[]):
     for crit in CRITERIA:
         df[crit] = df[crit].astype("float16")
 
-    if users:
-        df = df[df["public_username"].isin(users)]
-
     return df
 
 
 def get_unique_video_list(df):
 
-    return list(set(df["video_a"].tolist() + df["video_b"].tolist()))
+    return list(set(df["video_a"]) | set(df["video_b"]))
 
 
 def get_score(row, crit):
