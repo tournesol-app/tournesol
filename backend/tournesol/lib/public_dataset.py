@@ -219,6 +219,7 @@ def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
             "entity__metadata__video_id",
             "criteria",
             "score",
+            "uncertainty",
             "entity__metadata__name",
             "entity__metadata__publication_date",
             "entity__metadata__views",
@@ -326,6 +327,7 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
         "video",
         "criteria",
         "score",
+        "uncertainty",
     ]
 
     criteria_scores = get_collective_criteria_scores_data(poll_name).iterator()
@@ -335,6 +337,7 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
             "video": score["entity__metadata__video_id"],
             "criteria": score["criteria"],
             "score": round(score["score"], FLOAT_PRECISION),
+            "uncertainty": round(score["uncertainty"], FLOAT_PRECISION),
         }
         for score in criteria_scores
     )
