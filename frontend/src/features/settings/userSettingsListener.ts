@@ -1,6 +1,7 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 
 import { RootState } from 'src/app/store';
+import { isLoggedIn } from 'src/features/login/loginUtils';
 import { fetchUserSettings } from 'src/features/settings/userSettingsSlice';
 
 export const listenSuccessfulLogin = createListenerMiddleware();
@@ -12,13 +13,14 @@ export const listenSuccessfulLogin = createListenerMiddleware();
  * store.
  */
 listenSuccessfulLogin.startListening({
-  // Trigger the effect only after a successful log in.
   predicate: (action, currentState, previousState) => {
     if (
       (currentState as RootState).token.status === 'idle' &&
       (previousState as RootState).token.status === 'loading'
     ) {
-      return true;
+      if (isLoggedIn((currentState as RootState).token)) {
+        return true;
+      }
     }
     return false;
   },
