@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+
 import { CircularProgress, Typography, Box, Button } from '@mui/material';
+
 import {
   AccountsService,
   VerifyRegistration,
@@ -10,6 +12,7 @@ import {
 import { ContentHeader, ContentBox } from 'src/components';
 import { useCurrentPoll, useSearchParams } from 'src/hooks';
 import useLastPoll from 'src/hooks/useLastPoll';
+import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 
 const executeVerifyUser = async (searchParams: Record<string, string>) => {
   const { user_id, timestamp, signature } = searchParams;
@@ -63,6 +66,7 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
       try {
         await executeVerify(searchParams);
         setVerificationState('success');
+        trackEvent(TRACKED_EVENTS.signup, { props: { state: 'verified' } });
       } catch (err) {
         console.error(err);
         setVerificationState('fail');

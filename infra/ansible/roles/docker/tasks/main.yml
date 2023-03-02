@@ -1,0 +1,69 @@
+# Docker
+#
+# These tasks install Docker and a set of plugins.
+#
+# [DOC]
+#
+#   - https://docs.docker.com/engine/install/debian/
+#   - https://docs.docker.com/config/containers/logging/configure/
+#
+# [DESC]
+#
+# The default logging driver for all containers is set to "journald". Log
+# entries can be retrieved using the `journalctl` command, through use of
+# the journal API, or using the docker logs command.
+#
+
+#
+# Configure the settings
+#
+
+- name: Create the Docker settings directory
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+
+- name: Copy the Docker settings
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: 0644
+  notify:
+    - Restart Docker
+
+#
+# Install Docker and its requirements
+#
+
+- name: Install Docker requirements
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    install_recommends: no
+    update_cache: yes
+
+- name: Add Docker repository signing key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/debian bullseye stable
+    state: present
+
+- name: Install Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    install_recommends: no
+    update_cache: yes
+  notify: Restart Docker

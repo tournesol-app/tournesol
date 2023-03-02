@@ -1,0 +1,5 @@
+- name: Restart Tournesol website analytics
+  systemd:
+    name: tournesol-website-analytics
+    state: restarted
+    daemon_reload: true
