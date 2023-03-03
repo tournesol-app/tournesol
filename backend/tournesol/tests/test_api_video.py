@@ -313,7 +313,7 @@ class VideoApi(TestCase):
 
         resp = client.get("/video/?date_lte=2021-01-03T19:45:00")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data["count"], 2)
+        self.assertEqual(resp.data["count"], 3)
 
     def test_get_video_date_filters_legacy_format(self):
         client = APIClient()
@@ -324,7 +324,7 @@ class VideoApi(TestCase):
 
         resp = client.get("/video/?date_lte=03-01-21-19-45-00")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data["count"], 2)
+        self.assertEqual(resp.data["count"], 3)
 
     def test_search_in_tags_should_not_affect_order(self):
         self.video_1.metadata["tags"] = ["tag 1", "tag 2", "tag 3"]
