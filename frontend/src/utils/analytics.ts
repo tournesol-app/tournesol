@@ -12,9 +12,11 @@ export const TRACKED_EVENTS = {
   accountDeleted: 'account deleted',
 };
 
-const analyticsClient = process.env.REACT_APP_WEBSITE_ANALYTICS_URL
-  ? Plausible({ apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL })
-  : null;
+const doNotTrack = new URLSearchParams(location.search).get('dnt') === '1';
+const analyticsClient =
+  process.env.REACT_APP_WEBSITE_ANALYTICS_URL && !doNotTrack
+    ? Plausible({ apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL })
+    : null;
 
 if (analyticsClient) {
   analyticsClient.enableAutoPageviews();

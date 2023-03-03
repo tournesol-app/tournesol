@@ -34,7 +34,7 @@ function rateNowAction(event) {
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
-        url: `https://tournesol.app/comparison/?uidA=yt:${videoId}`,
+        url: `https://tournesol.app/comparison?uidA=yt:${videoId}&utm_source=extension&utm_medium=menu`,
       });
     },
     () => {
@@ -91,7 +91,7 @@ function openAnalysisPageAction(event) {
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
-        url: `https://tournesol.app/entities/yt:${videoId}`,
+        url: `https://tournesol.app/entities/yt:${videoId}?utm_source=extension&utm_medium=menu`,
       });
     },
     () => {
