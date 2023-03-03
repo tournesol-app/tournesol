@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Typography } from '@mui/material';
 
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import { TypeEnum } from 'src/services/openapi';
 import { ActionList } from 'src/utils/types';
-import { idFromUid } from 'src/utils/video';
 import { entityCardMainSx } from './style';
+import useIsAvailable from '../../hooks/useIsAvailable';
 
 /*
  * This component can be returned instead of <EntityCard> when the entity
@@ -15,16 +14,14 @@ import { entityCardMainSx } from './style';
  */
 export const EntityNotAvailable = ({
   uid,
-  type,
   actionsIfUnavailable,
 }: {
   uid: string;
-  type: string;
   actionsIfUnavailable?: ActionList;
 }) => {
   const { t } = useTranslation();
 
-  if (type === TypeEnum.VIDEO) {
+  if (uid.indexOf('yt:') !== -1) {
     return (
       <Box mx={1} my={2}>
         <Grid
@@ -61,45 +58,22 @@ export const EntityNotAvailable = ({
  */
 const AvailableEntity = ({
   uid,
-  type,
   children,
   actionsIfUnavailable,
 }: {
   uid: string;
-  type: string;
   children: React.ReactNode;
   actionsIfUnavailable?: ActionList;
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAvailable, setIsAvailable] = useState(false);
-
-  /**
-   * Check if the entity is available.
-   *
-   * The behaviour "is available" could be factorized in a custom hook.
-   */
-  useEffect(() => {
-    if (type !== TypeEnum.VIDEO) {
-      setIsLoading(false);
-      setIsAvailable(true);
-    } else {
-      const img = new Image();
-      img.src = `https://i.ytimg.com/vi/${idFromUid(uid)}/mqdefault.jpg`;
-      img.onload = function () {
-        setIsLoading(false);
-        setIsAvailable(img.width !== 120);
-      };
-    }
-  }, [uid, type]);
+  const { entityIsChecking, entityIsAvailable } = useIsAvailable(uid);
 
   return (
-    <LoaderWrapper isLoading={isLoading}>
-      {isAvailable ? (
+    <LoaderWrapper isLoading={entityIsChecking}>
+      {entityIsAvailable ? (
         <>{children}</>
       ) : (
         <EntityNotAvailable
           uid={uid}
-          type={type}
           actionsIfUnavailable={actionsIfUnavailable}
         />
       )}

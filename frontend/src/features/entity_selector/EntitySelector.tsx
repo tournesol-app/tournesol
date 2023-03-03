@@ -21,6 +21,9 @@ import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
 import { useLoginState } from 'src/hooks';
 
+import useIsAvailable from '../../hooks/useIsAvailable';
+import { getVideoForComparison } from 'src/utils/video';
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
@@ -136,6 +139,11 @@ const EntitySelectorInnerAuth = ({
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
 
+  const { entityIsChecking, entityIsAvailable } = useIsAvailable(
+    value.uid ?? ''
+  );
+  const [newEntityIsLoading, setNewEntityIsLoading] = useState(false);
+  const needToLoadAnother = !entityIsAvailable && !entityIsChecking;
   let showEntityInput = true;
   let showRatingControl = true;
 
@@ -145,50 +153,73 @@ const EntitySelectorInnerAuth = ({
       showRatingControl = false;
   }
 
-  const loadRating = useCallback(async () => {
-    setLoading(true);
-    try {
-      const contributorRating =
-        await UsersService.usersMeContributorRatingsRetrieve({
-          pollName,
-          uid: uid || '',
+  useEffect(() => {
+    if (needToLoadAnother) {
+      if (!newEntityIsLoading) {
+        setNewEntityIsLoading(true);
+
+        getVideoForComparison(otherUid, value.uid).then((newUid) => {
+          onChange({ uid: 'yt:' + newUid, rating: null });
+          setNewEntityIsLoading(false);
         });
-      onChange({
-        uid,
-        rating: contributorRating,
-        ratingIsExpired: false,
-      });
-    } catch (err) {
-      if (err?.status === 404) {
-        try {
-          const contributorRating =
-            await UsersService.usersMeContributorRatingsCreate({
-              pollName,
-              requestBody: {
-                uid: uid || '',
-                is_public: options?.comparisonsCanBePublic === true,
-              },
-            });
-          onChange({
-            uid,
-            rating: contributorRating,
-            ratingIsExpired: false,
-          });
-        } catch (err) {
-          console.error('Failed to initialize contributor rating.', err);
-        }
-      } else {
-        console.error('Failed to retrieve contributor rating.', err);
       }
     }
-    setLoading(false);
-  }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
+  }, [value.uid, needToLoadAnother, newEntityIsLoading, otherUid, onChange]);
+
+  const loadRating = useCallback(async () => {
+    setLoading(true);
+    if (!needToLoadAnother) {
+      try {
+        const contributorRating =
+          await UsersService.usersMeContributorRatingsRetrieve({
+            pollName,
+            uid: uid || '',
+          });
+        onChange({
+          uid,
+          rating: contributorRating,
+          ratingIsExpired: false,
+        });
+      } catch (err) {
+        if (err?.status === 404) {
+          try {
+            const contributorRating =
+              await UsersService.usersMeContributorRatingsCreate({
+                pollName,
+                requestBody: {
+                  uid: uid || '',
+                  is_public: options?.comparisonsCanBePublic === true,
+                },
+              });
+            onChange({
+              uid,
+              rating: contributorRating,
+              ratingIsExpired: false,
+            });
+          } catch (err) {
+            console.error('Failed to initialize contributor rating.', err);
+          }
+        } else {
+          console.error('Failed to retrieve contributor rating.', err);
+        }
+      }
+      setLoading(false);
+    }
+  }, [
+    needToLoadAnother,
+    onChange,
+    options?.comparisonsCanBePublic,
+    pollName,
+    uid,
+  ]);
 
   useEffect(() => {
-    if (isUidValid(uid) && rating == null) {
-      loadRating();
+    if (entityIsAvailable) {
+      if (isUidValid(uid) && rating == null) {
+        loadRating();
+      }
     }
-  }, [loadRating, rating, uid]);
+  }, [entityIsAvailable, loadRating, rating, uid]);
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
@@ -199,6 +230,7 @@ const EntitySelectorInnerAuth = ({
 
   useEffect(() => {
     // Update input value when "uid" has been changed by the parent component
+
     setInputValue((previousValue) => {
       if (previousValue !== uid) {
         return uid;
@@ -297,14 +329,14 @@ const EntitySelectorInnerAuth = ({
         </>
       )}
 
-      {rating ? (
+      {rating && entityIsAvailable ? (
         <EntityCard
           compact
           entity={rating.entity}
           settings={showRatingControl ? toggleAction : undefined}
         />
       ) : (
-        <EmptyEntityCard compact loading={loading} />
+        <EmptyEntityCard compact loading={loading || !entityIsAvailable} />
       )}
     </>
   );
