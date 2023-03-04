@@ -16,7 +16,7 @@ const ImportanceDesc = () => (
       </a>
       , when it comes to mitigating climate change, asking viewers to switch off
       the light when not at home is orders of magnitude less important than,
-      say, avoid flying to countries far away.
+      say, avoiding air travel.
     </p>
     <p>
       Contents that score high on &quot;important and actionable&quot; should
