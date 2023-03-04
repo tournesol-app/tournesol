@@ -55,8 +55,7 @@ def set_df():
                 df_tmp = pd.read_csv(f)
                 break
 
-    index = ["video_a", "video_b", "public_username"]
-
+    index = ["video_a", "video_b", "public_username", "week_date"]
     for idx in index + ["criteria"]:
         df_tmp[idx] = df_tmp[idx].astype("category")
 
@@ -65,12 +64,10 @@ def set_df():
 
     for crit in CRITERIA:
         df[crit] = df[crit].astype("float16")
-
     return df
 
 
 def get_unique_video_list(df):
-
     return list(set(df["video_a"]) | set(df["video_b"]))
 
 
@@ -84,7 +81,9 @@ def get_score(row, crit):
 def api_get_tournesol_scores():
     """Get a dataframe with all videos from tournesol.."""
 
-    response = requests.get(f"https://api.tournesol.app/video/?limit=99999&unsafe=true").json()
+    response = requests.get(
+        f"https://api.tournesol.app/video/?limit=99999&unsafe=true"
+    ).json()
 
     df = pd.DataFrame.from_dict(response["results"])
 
