@@ -11,15 +11,10 @@ List of concepts:
         criteria.
 """
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
-import seaborn as sns
 import streamlit as st
-from sklearn.linear_model import LinearRegression
 
-from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
+from utils import set_df
 
 st.set_page_config(
     page_title="Tournesol - Community evolution",
