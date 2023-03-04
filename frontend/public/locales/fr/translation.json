@@ -104,9 +104,9 @@
     "emptyList": "Cette liste est vide."
   },
   "stackedCandidatesPaper": {
-    "title_one": "Votre classement des candidat.e.s",
-    "title_many": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
-    "title_other": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
+    "title_one": "Votre classement des candidat·es",
+    "title_many": "Votre classement des candidat·es d'après vos {{comparisonsNbr}} comparaisons",
+    "title_other": "Votre classement des candidat·es d'après vos {{comparisonsNbr}} comparaisons",
     "withNComparisons_one": "avec {{nComp}} comparaison",
     "withNComparisons_many": "avec {{nComp}} comparaisons",
     "withNComparisons_other": "avec {{nComp}} comparaisons",
@@ -122,7 +122,7 @@
       "intro": "J'ai comparé les candidat·e·s à la présidentielle sur @TournesolApp. Selon moi les critères les plus importants pour être président·e sont :",
       "conclusion": "Vous aussi, allez tester cette manière différente de voter !"
     },
-    "title": "Les critères les plus corrélés avec qui devrait être président.e selon vous",
+    "title": "Les critères les plus corrélés avec qui devrait être président·e selon vous",
     "ifYourRankingSeemsOff": "Si ces corrélations vous semblent incorrectes, vous pouvez ajouter de nouvelles comparaisons.",
     "addNewComparisons": "ajouter des comparaisons",
     "shareOnTwitter": "Partager sur Twitter"
@@ -698,8 +698,8 @@
         },
         "title6": "Comment ça fonctionne ?",
         "message6": {
-          "p10": "Tournesol calcule un score pour chaque candidat.e, en agrégeant les jugements des contributeurs et contributrices.",
-          "p20": "C'est comme si, en votant, chaque personne tirait le score d'un.e candidat.e vers le haut ou vers le bas.",
+          "p10": "Tournesol calcule un score pour chaque candidat·e, en agrégeant les jugements des contributeurs et contributrices.",
+          "p20": "C'est comme si, en votant, chaque personne tirait le score d'un·e candidat·e vers le haut ou vers le bas.",
           "p30": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes."
         },
         "title7": "Merci beaucoup !",
