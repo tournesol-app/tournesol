@@ -7,7 +7,8 @@ List of concepts:
         A new contributor is a user making his/her first public comparison.
 
     Comparison:
-        A comparison between two videos involves one or more quality criteria.
+        A public comparison between two videos involves one or more quality
+        criteria.
 """
 
 import matplotlib.pyplot as plt
@@ -43,6 +44,9 @@ def add_contributors_evolution():
     df = st.session_state.df
     st.markdown("Number of new contributors per week.")
     fig = df.groupby("public_username").first().groupby("week_date").size().plot()
+    fig.update_xaxes(title="Week")
+    fig.update_yaxes(title="New contributors (nbr)")
+    fig.update_layout(showlegend=False)
     st.plotly_chart(fig)
 
 
@@ -60,6 +64,9 @@ def add_contributors_cumulative_evolution():
         .cumsum()
         .plot()
     )
+    fig.update_xaxes(title="Week")
+    fig.update_yaxes(title="New contributors (nbr)")
+    fig.update_layout(showlegend=False)
     st.plotly_chart(fig)
 
 
@@ -70,6 +77,9 @@ def add_comparisons_evolution():
     df = st.session_state.df
     st.markdown("Number of public comparisons per week.")
     fig = df.groupby("week_date").size().plot()
+    fig.update_xaxes(title="Week")
+    fig.update_yaxes(title="Comparisons (nbr)")
+    fig.update_layout(showlegend=False)
     st.plotly_chart(fig)
 
 
@@ -80,6 +90,9 @@ def add_comparisons_cumulative_evolution():
     df = st.session_state.df
     st.markdown("Cumulated number of public comparisons per week")
     fig = df.groupby("week_date").size().cumsum().plot()
+    fig.update_xaxes(title="Week")
+    fig.update_yaxes(title="Comparisons (nbr)")
+    fig.update_layout(showlegend=False)
     st.plotly_chart(fig)
 
 
