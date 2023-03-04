@@ -62,14 +62,24 @@ def add_contributors_cumulative_evolution():
     """
     df = st.session_state.df
     st.markdown("#### Cumulated number of new contributors per week.")
-    fig = (
-        df.groupby("public_username")
-        .first()
-        .groupby("week_date")
-        .size()
-        .cumsum()
-        .plot()
-    )
+
+    if st.checkbox("cumulative"):
+        fig = (
+            df.groupby("public_username")
+            .first()
+            .groupby("week_date")
+            .size()
+            .cumsum()
+            .plot()
+        )
+    else:
+        fig = (
+            df.groupby("public_username")
+            .first()
+            .groupby("week_date")
+            .size()
+            .plot(kind="bar")
+        )
     fig.update_xaxes(title="Week")
     fig.update_yaxes(title="New contributors (nbr)")
     fig.update_layout(showlegend=False)
