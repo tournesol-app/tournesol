@@ -8,16 +8,33 @@ on:
   # Allows to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -yq expect
+defaults:
+  runs-on: ubuntu-latest
 
+jobs:
+  e2e-browser-extension:
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - uses: cypress-io/github-action@v5
+        with:
+          command: yarn run cypress run --browser chrome --headed
+          working-directory: tests
+          wait-on: 'http://localhost:3000'
+          spec: "cypress/e2e/browser-extension/**/*"
+
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: tests/cypress/screenshots
+
+  e2e-frontend:
+    steps:
       - uses: actions/checkout@v3
 
       - name: Start dev env
@@ -31,10 +48,10 @@ jobs:
 
       - uses: cypress-io/github-action@v5
         with:
-          command: yarn run cypress run --browser chrome --headed
+          command: yarn run cypress run --browser chrome
           working-directory: tests
           wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
+          spec: "cypress/e2e/frontend/**/*"
 
       - name: Print dev-env logs
         if: failure()
