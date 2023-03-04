@@ -104,7 +104,7 @@ const ScientificLiteratureBox = () => {
     {
       name: 'Active learning for video recommendation system.',
       authors: "Marc Gay-Balmaz, EPFL Master's Thesis (2022).",
-      url: 'https://drive.google.com/file/d/1Sg_Wk-zCryF4fB_KMIEywg9lOMxWI9_e/view?usp=sharing',
+      url: 'https://drive.google.com/uc?id=1Sg_Wk-zCryF4fB_KMIEywg9lOMxWI9_e&export=download',
       icon: School,
     },
     {
@@ -112,13 +112,13 @@ const ScientificLiteratureBox = () => {
         'Byzantine-resilient account validation through vouching : research and application to' +
         ' Tournesol project.',
       authors: "Bérangère Colbois. EPFL Master's semester project (2022).",
-      url: 'https://drive.google.com/file/d/1aIld_UnkFNmQoFxbbFiN37DWKXdIkFqJ/view?usp=sharing',
+      url: 'https://drive.google.com/uc?id=1aIld_UnkFNmQoFxbbFiN37DWKXdIkFqJ&export=download',
       icon: School,
     },
     {
       name: 'Bayesian Byzantine Resistance.',
       authors: "Marc Vandelle. EPFL Master's semester project (2022).",
-      url: 'https://drive.google.com/file/d/1Q4TBKW8vKWf6CCL77qCSvo92MOShBEDN/view?usp=sharing',
+      url: 'https://drive.google.com/uc?id=1Q4TBKW8vKWf6CCL77qCSvo92MOShBEDN&export=download',
       icon: School,
     },
   ];
