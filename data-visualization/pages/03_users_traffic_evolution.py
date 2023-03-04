@@ -21,7 +21,10 @@ st.title("Community evolution (public dataset)")
 st.session_state.df = set_df().sort_values("week_date")
 
 
-assert st.session_state.df.week_date.is_monotonic_increasing, "dataframe should be ordered by increasing date"
+assert (
+    st.session_state.df.week_date.is_monotonic_increasing
+), "dataframe should be ordered by increasing date"
+
 
 # User evolution
 def add_contributor_evolution():
@@ -29,25 +32,35 @@ def add_contributor_evolution():
     st.markdown("Number of new contributors per week.")
     fig = df.groupby("public_username").first().groupby("week_date").size().plot()
     st.plotly_chart(fig)
-    
+
+
 def add_contributor_cumulative_evolution():
     df = st.session_state.df
     st.markdown("Cumulated Number of new contributors per week.")
-    fig = df.groupby("public_username").first().groupby("week_date").size().cumsum().plot()
+    fig = (
+        df.groupby("public_username")
+        .first()
+        .groupby("week_date")
+        .size()
+        .cumsum()
+        .plot()
+    )
     st.plotly_chart(fig)
 
 
 def add_vote_evolution():
     df = st.session_state.df
     st.markdown("Number of contributions per week.")
-    fig = df.query("criteria=='largely_recommended'").groupby("week_date").size().plot()
+    fig = df.groupby("week_date").size().plot()
     st.plotly_chart(fig)
+
 
 def add_vote_cumulative_evolution():
     df = st.session_state.df
     st.markdown("Cumulated number of contributions per week")
-    fig = df.query("criteria=='largely_recommended'").groupby("week_date").size().cumsum().plot()
+    fig = df.groupby("week_date").size().cumsum().plot()
     st.plotly_chart(fig)
+
 
 pd.options.plotting.backend = "plotly"
 # Cursor position
