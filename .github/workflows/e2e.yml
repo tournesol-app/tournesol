@@ -22,8 +22,10 @@ jobs:
 
       - name: Start dev env
         run: ./dev-env/run-docker-compose.sh
+        env:
+          FRONTEND_START_SCRIPT: "start:e2e"
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '18'
 
