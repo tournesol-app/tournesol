@@ -27,7 +27,7 @@ assert st.session_state.df.week_date.is_monotonic_increasing, "dataframe should 
 def add_contributor_evolution():
     df = st.session_state.df
     st.markdown("Number of new contributors per week.")
-    fig = df.query("").groupby("public_username").first().groupby("week_date").size().plot()
+    fig = df.groupby("public_username").first().groupby("week_date").size().plot()
     st.plotly_chart(fig)
     
 def add_contributor_cumulative_evolution():
