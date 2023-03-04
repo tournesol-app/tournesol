@@ -22,7 +22,7 @@ function get_current_tab_video_id() {
  */
 function openTournesolHome() {
   chrome.tabs.create({
-    url: `https://tournesol.app`,
+    url: `https://tournesol.app?utm_source=extension&utm_medium=menu`,
   });
 }
 
