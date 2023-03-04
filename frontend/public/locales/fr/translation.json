@@ -349,7 +349,7 @@
     "rolePresident": "Président",
     "roleTreasurer": "Trésorier",
     "roleSecretary": "Secrétaire",
-    "significantContributors": "Contributeur.rices important.es",
+    "significantContributors": "Contributeur·rices important·es",
     "weThankOurContributors": "Nous sommes extrêmement reconnaissant envers les contributrices et contributeurs qui ont eu un très grand impact sur le projet.",
     "sergiaDescription": "Sergia était une des quelques personnes qui ont décidé de développer le projet Tournesol. Elle a au début assumé la majorité des efforts de developpement pour le backend, les algorithmes et le frontend de la première vesion de la plateforme.",
     "sigmikeDescription": "Michael contribue volontairement au développement open source de beaucoup d'aspects du project comme le site web et l'extension navigateur.",
@@ -370,7 +370,7 @@
     "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
     "trustedEmailDomains": "Noms de domaine considérés comme fiables",
     "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un score de confiance limité aux nouveaux comptes créés.",
-    "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine considéré comme fiable</2>, ou lorsque d'autres personnes se portent garant.es pour vous.",
+    "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine considéré comme fiable</2>, ou lorsque d'autres personnes se portent garant·es pour vous.",
     "trustedDomainsValuable": "Dans tous les cas, vos contributions sont utiles car elles motiveront et aideront la recherche en éthique des algorithmes et de l'intelligence artificielle",
     "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
@@ -509,7 +509,7 @@
   },
   "recommendationsSection": {
     "recommendations": "Recommandations",
-    "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur.rices. Vous aussi, donnez votre avis afin d'améliorer ces recommandations.",
+    "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur·rices. Vous aussi, donnez votre avis afin d'améliorer ces recommandations.",
     "seeMore": "Voir plus"
   },
   "publicDataPublicCodeBox": {
@@ -555,9 +555,9 @@
       "notEnoughComparisons_many": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
       "notEnoughComparisons_other": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
       "continueComparisons": "Continuer vos comparaisons",
-      "thanksForComparingCandidates": "Merci d'avoir comparé des candidat.es sur notre plateforme",
+      "thanksForComparingCandidates": "Merci d'avoir comparé des candidat·es sur notre plateforme",
       "goToGlobalRanking": "Voir le classement global",
-      "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat.es.",
+      "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat·es.",
       "discoverTournesolVideos": "Découvrez maintenant Tournesol vidéos. Un endroit qui vous permet de donner votre avis sur les vidéos YouTube que vous avez regardées, afin d'améliorer les recommandations de tous."
     },
     "generic": {
@@ -581,7 +581,7 @@
       "title": "Score de confiance",
       "description": {
         "explanation": "Votre score de confiance détermine à quel point vos comparaisons influencent les recommandations de Tournesol.",
-        "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine considéré comme fiable ou lorsque d'autres personnes se portent garant.es pour vous.",
+        "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine considéré comme fiable ou lorsque d'autres personnes se portent garant·es pour vous.",
         "includedInPublicDatabase": "Votre score de confiance est inclus dans la base de données publique si vous avez au moins une comparaison publique."
       },
       "nullValue": "Indéterminé",
@@ -673,12 +673,12 @@
           "p10": "Ce tutoriel va vous guider pas à pas à travers une série de comparaisons.",
           "p20": "D'abord, déplacez les curseurs bleus et ajustez vos préférences en les positionnant plus ou moins loin, puis enregistrez quand votre choix est fait.",
           "p30": "Plus votre avis est tranché sur un critère plus le curseur devrait être proche de l'extrémité.",
-          "p40": "Si vous trouvez les candidat.es similaires, le curseur devrait rester proche du centre."
+          "p40": "Si vous trouvez les candidat·es similaires, le curseur devrait rester proche du centre."
         },
         "title2": "Bravo !",
         "message2": {
           "p10": "Vous avez effectué votre première comparaison 🥳.",
-          "p20": "Notez que vous pouvez choisir vous même les candidat.es. en utilisant les menus déroulants qui se trouvent au dessus de leurs photos."
+          "p20": "Notez que vous pouvez choisir vous même les candidat·es. en utilisant les menus déroulants qui se trouvent au dessus de leurs photos."
         },
         "title3": "Un conseil",
         "message3": {
@@ -688,12 +688,12 @@
         "title4": "Avez-vous remarqué ?",
         "message4": {
           "p10": "Il y a aussi des critères de comparaison optionnels sous les critères principaux.",
-          "p20": "Essayez de dérouler les critères optionnels pour donner un avis plus complet sur les candidat.es.",
+          "p20": "Essayez de dérouler les critères optionnels pour donner un avis plus complet sur les candidat·es.",
           "p30": "Il est tout a fait possible de décocher un ou plusieurs critères optionnels si vous ne souhaitez pas vous exprimer à leurs sujets."
         },
         "title5": "Mieux que de voter pour une seule personne ?",
         "message5": {
-          "p10": "Contrairement au système de vote classique en France, ici vous donnez votre avis sur plusieurs candidat.es.",
+          "p10": "Contrairement au système de vote classique en France, ici vous donnez votre avis sur plusieurs candidat·es.",
           "p20": "Ainsi il est possible d'exprimer ses véritables préférences. Cela permet d'éviter des problèmes comme « le vote utile », et ne favorise pas la polarisation des opinions politiques."
         },
         "title6": "Comment ça fonctionne ?",
@@ -705,7 +705,7 @@
         "title7": "Merci beaucoup !",
         "message7": {
           "p10": "Encore une dernière comparaison et vous pourrez enfin voir vos préférences actuelles.",
-          "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lesquelles vous soutenez certains candidat.es."
+          "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lesquelles vous soutenez certains candidat·es."
         }
       }
     }

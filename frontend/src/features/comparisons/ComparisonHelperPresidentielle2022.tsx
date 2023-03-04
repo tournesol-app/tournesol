@@ -27,7 +27,7 @@ const ComparisonHelperPresidentielle2022 = () => {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', p: 3 }}>
         <Typography paragraph>
-          Si vous ne connaissez pas suffisamment bien les candidat.es et leurs
+          Si vous ne connaissez pas suffisamment bien les candidat·es et leurs
           programmes, nous (l&apos;Association Tournesol) vous proposons
           ci-dessous differentes sources d&apos;information que nous avons
           trouvées utiles.
@@ -35,7 +35,7 @@ const ComparisonHelperPresidentielle2022 = () => {
         <Grid container justifyContent="space-between">
           <Grid item>
             <Typography variant="h4" color="secondary">
-              Sites web officiels des candidat.es
+              Sites web officiels des candidat·es
             </Typography>
             <ul>
               {' '}
@@ -116,7 +116,7 @@ const ComparisonHelperPresidentielle2022 = () => {
           </Grid>
         </Grid>
         <Typography variant="h4" color="secondary">
-          Pages Wikipedia des candidat.es
+          Pages Wikipedia des candidat·es
         </Typography>
         <ul>
           {' '}
