@@ -71,7 +71,7 @@ const getTournesolComponent = () => {
   // Add title
   const tournesol_link = document.createElement('a');
   tournesol_link.id = 'tournesol_link';
-  tournesol_link.href = 'https://tournesol.app';
+  tournesol_link.href = 'https://tournesol.app?utm_source=extension';
   tournesol_link.append('learn more');
   inline_div.append(tournesol_link);
 
