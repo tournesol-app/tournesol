@@ -8,7 +8,7 @@ const LaymanFriendlyDesc = () => (
       This criterion aims to identify contents that would be suitable to those
       with very limited prior knowledge. When judging this feature, contributors
       are encouraged to reflect on the suitability of the content to their
-      grandparents or to their 5-year-old nephew.
+      grandparents or to their children.
     </p>
     <p>
       Contents that score high on &quot;layman-friendly&quot; should be
