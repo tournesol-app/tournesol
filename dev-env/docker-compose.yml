@@ -53,6 +53,7 @@ services:
     environment:
       - DISABLE_ESLINT_PLUGIN=${CI:-false}  # Disable eslint plugin during e2e tests (where CI=true)
       - START_SCRIPT=${FRONTEND_START_SCRIPT:-start}
+      - GENERATE_SOURCEMAP=false
     command:
       - yarn install --frozen-lockfile && ./scripts/generate-services-from-openapi.sh && yarn run $$START_SCRIPT
     volumes:
