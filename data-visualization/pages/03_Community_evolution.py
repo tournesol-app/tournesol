@@ -4,11 +4,10 @@ A page dedicated to the evolution of the Tournesol community.
 List of concepts:
 
     New contributor:
-        A new contributor is a user making his/her first comparison.
+        A new contributor is a user making his/her first public comparison.
 
-    Contribution:
-        A contribution is comparison between two videos involving one or more
-        criteria.
+    Comparison:
+        A comparison between two videos involves one or more quality criteria.
 """
 
 import matplotlib.pyplot as plt
@@ -18,8 +17,8 @@ import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
 from sklearn.linear_model import LinearRegression
-from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
+from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
 st.set_page_config(
     page_title="Tournesol - Community evolution",
@@ -52,7 +51,7 @@ def add_contributors_cumulative_evolution():
     Display the cumulative number of new contributors per week.
     """
     df = st.session_state.df
-    st.markdown("Cumulated Number of new contributors per week.")
+    st.markdown("Cumulated number of new contributors per week.")
     fig = (
         df.groupby("public_username")
         .first()
@@ -64,22 +63,22 @@ def add_contributors_cumulative_evolution():
     st.plotly_chart(fig)
 
 
-def add_contributions_evolution():
+def add_comparisons_evolution():
     """
-    Display the number of contributions.
+    Display the number of comparisons.
     """
     df = st.session_state.df
-    st.markdown("Number of contributions per week.")
+    st.markdown("Number of public comparisons per week.")
     fig = df.groupby("week_date").size().plot()
     st.plotly_chart(fig)
 
 
-def add_contributions_cumulative_evolution():
+def add_comparisons_cumulative_evolution():
     """
-    Display the cumulative number of contributions.
+    Display the cumulative number of comparisons.
     """
     df = st.session_state.df
-    st.markdown("Cumulated number of contributions per week")
+    st.markdown("Cumulated number of public comparisons per week")
     fig = df.groupby("week_date").size().cumsum().plot()
     st.plotly_chart(fig)
 
@@ -88,5 +87,5 @@ pd.options.plotting.backend = "plotly"
 
 add_contributors_evolution()
 add_contributors_cumulative_evolution()
-add_contributions_evolution()
-add_contributions_cumulative_evolution()
+add_comparisons_evolution()
+add_comparisons_cumulative_evolution()
