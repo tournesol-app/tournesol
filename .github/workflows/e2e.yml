@@ -8,11 +8,9 @@ on:
   # Allows to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-defaults:
-  runs-on: ubuntu-latest
-
 jobs:
   e2e-browser-extension:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -22,10 +20,11 @@ jobs:
 
       - uses: cypress-io/github-action@v5
         with:
-          command: yarn run cypress run --browser chrome --headed
           working-directory: tests
-          wait-on: 'http://localhost:3000'
+          browser: chrome
+          headed: true
           spec: "cypress/e2e/browser-extension/**/*"
+          config: baseUrl=https://www.youtube.com
 
       - uses: actions/upload-artifact@v1
         if: failure()
@@ -34,6 +33,7 @@ jobs:
           path: tests/cypress/screenshots
 
   e2e-frontend:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -48,9 +48,9 @@ jobs:
 
       - uses: cypress-io/github-action@v5
         with:
-          command: yarn run cypress run --browser chrome
           working-directory: tests
           wait-on: 'http://localhost:3000'
+          browser: chrome
           spec: "cypress/e2e/frontend/**/*"
 
       - name: Print dev-env logs
