@@ -42,7 +42,7 @@ def add_contributors_evolution():
     Display the number of new contributors per week.
     """
     df = st.session_state.df
-    st.markdown("Number of new contributors per week.")
+    st.markdown("#### Number of new contributors per week.")
     fig = df.groupby("public_username").first().groupby("week_date").size().plot()
     fig.update_xaxes(title="Week")
     fig.update_yaxes(title="New contributors (nbr)")
@@ -55,7 +55,7 @@ def add_contributors_cumulative_evolution():
     Display the cumulative number of new contributors per week.
     """
     df = st.session_state.df
-    st.markdown("Cumulated number of new contributors per week.")
+    st.markdown("#### Cumulated number of new contributors per week.")
     fig = (
         df.groupby("public_username")
         .first()
@@ -75,7 +75,7 @@ def add_comparisons_evolution():
     Display the number of comparisons.
     """
     df = st.session_state.df
-    st.markdown("Number of public comparisons per week.")
+    st.markdown("#### Number of public comparisons per week")
     fig = df.groupby("week_date").size().plot()
     fig.update_xaxes(title="Week")
     fig.update_yaxes(title="Comparisons (nbr)")
@@ -88,7 +88,7 @@ def add_comparisons_cumulative_evolution():
     Display the cumulative number of comparisons.
     """
     df = st.session_state.df
-    st.markdown("Cumulated number of public comparisons per week")
+    st.markdown("#### Cumulated number of public comparisons per week")
     fig = df.groupby("week_date").size().cumsum().plot()
     fig.update_xaxes(title="Week")
     fig.update_yaxes(title="Comparisons (nbr)")
@@ -97,7 +97,6 @@ def add_comparisons_cumulative_evolution():
 
 
 pd.options.plotting.backend = "plotly"
-
 add_contributors_evolution()
 add_contributors_cumulative_evolution()
 add_comparisons_evolution()
