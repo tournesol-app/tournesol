@@ -5,8 +5,8 @@ This module contains functions to retrieve data from the database and
 shortcuts to write these data in file-like objects.
 """
 import csv
-from datetime import datetime
 import json
+from datetime import datetime
 from typing import Optional
 
 from django.db.models import QuerySet
@@ -229,13 +229,14 @@ def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
         .order_by("entity__uid", "criteria")
     )
 
+
 def write_metadata_file(write_target) -> None:
     """
     Write the metadata as JSON in `write_target`, an
     object supporting the Python file API.
     """
 
-    metadata_dict = {"test":"abc"}
+    metadata_dict = {"test": "abc"}
     json.dump(metadata_dict, write_target)
 
 
