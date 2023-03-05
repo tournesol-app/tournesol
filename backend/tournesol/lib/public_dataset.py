@@ -9,6 +9,7 @@ import json
 from datetime import datetime
 from typing import Optional
 
+from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
 
@@ -236,7 +237,11 @@ def write_metadata_file(write_target) -> None:
     object supporting the Python file API.
     """
 
-    metadata_dict = {"test": "abc"}
+    metadata_dict = {
+        "creation_date": timezone.now().isoformat(),
+        "generated_by":settings.MAIN_URL,
+        "license": "ODC-By-1.0",
+        "git_hash": "to_do",}
     json.dump(metadata_dict, write_target)
 
 
