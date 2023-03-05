@@ -23,6 +23,7 @@ const CriterionDescription = ({ criteriaName }: { criteriaName: string }) => {
     diversity_inclusion: descriptions.DiversityInclusion,
     better_habits: descriptions.BetterHabits,
     backfire_risk: descriptions.BackfireRisk,
+    topical_subject: descriptions.TopicalSubject
   };
   const Desc = descComponents[criteriaName];
   return Desc ? <Desc /> : null;

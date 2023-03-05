@@ -34,6 +34,7 @@ export const recommendationFilters = {
   diversity_inclusion: 'diversity_inclusion',
   better_habits: 'better_habits',
   backfire_risk: 'backfire_risk',
+  topical_subject: 'topical_subject'
 };
 
 export const defaultRecommendationFilters = {
@@ -50,6 +51,7 @@ export const defaultRecommendationFilters = {
   diversity_inclusion: '50',
   better_habits: '50',
   backfire_risk: '50',
+  topical_subject: '50',
 };
 
 export const criteriaToEmoji: Record<string, string> = {
@@ -82,6 +84,7 @@ export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
     diversity_inclusion: t('criteriaTooltips.diversity_inclusion'),
     better_habits: t('criteriaTooltips.better_habits'),
     backfire_risk: t('criteriaTooltips.backfire_risk'),
+    topical_subject: t('criteriaTooltips.topical_subject'),
     reliability: t('criteriaTooltips.reliability'),
   }[criteria];
 };

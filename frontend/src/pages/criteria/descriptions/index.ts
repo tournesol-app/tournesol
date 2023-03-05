@@ -8,3 +8,4 @@ export { default as Engaging } from './Engaging';
 export { default as DiversityInclusion } from './DiversityInclusion';
 export { default as BetterHabits } from './BetterHabits';
 export { default as BackfireRisk } from './BackfireRisk';
+export { default as TopicalSubject } from './TopicalSubject';
