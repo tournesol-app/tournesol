@@ -37,6 +37,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:e2e": "cp .env.development .env.production.local && react-scripts build && sirv build --host --single -p 3000",
     "build": "react-scripts build && precompress -t gz -i json,js,css,xml,svg,ttf build",
     "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
@@ -83,7 +84,8 @@
     "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.3.2",
     "react-test-renderer": "^17.0.2",
-    "redux-mock-store": "^1.5.4"
+    "redux-mock-store": "^1.5.4",
+    "sirv-cli": "^2.0.2"
   },
   "config": {
     "supported_languages": [
