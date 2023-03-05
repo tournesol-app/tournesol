@@ -15,6 +15,7 @@ from tournesol.lib.public_dataset import (
     write_collective_criteria_scores_file,
     write_comparisons_file,
     write_individual_criteria_scores_file,
+    write_metadata_file,
     write_users_file,
 )
 from tournesol.models.poll import Poll
@@ -83,6 +84,12 @@ class Command(BaseCommand):
 
             with open(license_path, "r", encoding="utf-8") as license_:
                 zip_file.writestr(f"{archive_name}/LICENSE.txt", license_.read())
+
+            with StringIO() as output:
+                self.stdout.write("building tournesol metadata...")
+                write_metadata_file(output)
+                zip_file.writestr(f"{archive_name}/metadata.json", output.getvalue())
+                self.stdout.write("- metadata.json written.")
 
             with StringIO() as output:
                 self.stdout.write("retrieving users' data...")
