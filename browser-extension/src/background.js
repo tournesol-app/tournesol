@@ -257,7 +257,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const threeWeeksAgo = getDateThreeWeeksAgo();
       // we truncate minutes, seconds and ms from the date in order to benefit
       // from caching at the API level.
-      threeWeeksAgo.setMinutes(0, 0, 0)
+      threeWeeksAgo.setMinutes(0, 0, 0);
 
       const languagesString = await recommendationsLanguages();
 
