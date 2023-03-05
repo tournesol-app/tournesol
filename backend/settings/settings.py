@@ -391,7 +391,13 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "default_cache_table",
         "OPTIONS": {
-            "MAX_ENTRIES": 3000, # default value is 300
+            # Default value for MAX_ENTRIES is 300.
+            # The heaviest entries in the cache are dynamic page previews or
+            # long lists of videos with their description. These weight in
+            # general between 300kb and 500kb. Another important use of the
+            # cache entries is the rate limiting.
+            # (This comment might be expired, please double check if needed)
+            "MAX_ENTRIES": 100000,
         }
     }
 }
