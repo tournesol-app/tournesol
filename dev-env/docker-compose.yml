@@ -52,8 +52,8 @@ services:
     entrypoint: bash -c
     environment:
       - DISABLE_ESLINT_PLUGIN=${CI:-false}  # Disable eslint plugin during e2e tests (where CI=true)
-      - START_SCRIPT=${FRONTEND_START_SCRIPT:-start}
-      - GENERATE_SOURCEMAP=false
+      - GENERATE_SOURCEMAP=false  # Faster build and require less memory when building .js in CI. Ignored when using the default webpack dev server.
+      - START_SCRIPT=${FRONTEND_START_SCRIPT:-start}  # Set "FRONTEND_START_SCRIPT=start:e2e" to serve static bundles instead of running webpack dev server.
     command:
       - yarn install --frozen-lockfile && ./scripts/generate-services-from-openapi.sh && yarn run $$START_SCRIPT
     volumes:
