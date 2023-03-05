@@ -141,9 +141,9 @@ List of columns:
 - uncertainty:
 
   This field is computed by Tournesol's algorithms. It should represent the 
-  uncertainty on the score value. Be careful, due to the score scaling which it
-  may seem very large. For more detail, check out the algorithms implementation 
-  or the paper which describe them https://arxiv.org/abs/2211.01179
+  uncertainty on the score value. For more detail, check out the algorithms
+  implementation or the paper which describe them
+  https://arxiv.org/abs/2211.01179
 
 - voting_right:
 
