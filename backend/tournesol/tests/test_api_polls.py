@@ -31,7 +31,7 @@ class PollsTestCase(TestCase):
         self.assertEqual(response_data["name"], "videos")
         self.assertEqual(response_data["active"], True)
         self.assertEqual(response_data["entity_type"], "video")
-        self.assertEqual(len(response_data["criterias"]), 10)
+        self.assertEqual(len(response_data["criterias"]), 11)
         self.assertEqual(
             response_data["criterias"][0],
             {
