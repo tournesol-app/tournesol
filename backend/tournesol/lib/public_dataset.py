@@ -13,7 +13,10 @@ from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
+from ml.mehestan.individual import ALPHA, R_MAX
 from tournesol.entities.base import UID_DELIMITER
+from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
 # The standard decimal precision of floating point numbers appearing in the
 # dataset. Very small numbers can use a higher precision.
@@ -239,9 +242,22 @@ def write_metadata_file(write_target) -> None:
 
     metadata_dict = {
         "creation_date": timezone.now().isoformat(),
-        "generated_by":settings.MAIN_URL,
+        "generated_by": settings.MAIN_URL,
         "license": "ODC-By-1.0",
-        "git_hash": "to_do",}
+        "git_hash": "to_do",
+        "algorithms_parameters": {
+            "byztrust" : {
+                "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
+                "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
+            },
+            "mehestan" : {
+                "ALPHA": ALPHA,
+                "R_MAX": R_MAX,
+                "W": W,
+                "SCALING_WEIGHT_CALIBRATION": SCALING_WEIGHT_CALIBRATION,
+            },
+          }
+        }
     json.dump(metadata_dict, write_target)
 
 
