@@ -219,6 +219,7 @@ def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
             "entity__metadata__video_id",
             "criteria",
             "score",
+            "uncertainty",
             "entity__metadata__name",
             "entity__metadata__publication_date",
             "entity__metadata__views",
@@ -289,6 +290,7 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
         "video",
         "criteria",
         "score",
+        "uncertainty",
         "voting_right",
     ]
 
@@ -300,6 +302,7 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
             "video": criteria_score.uid.split(UID_DELIMITER)[1],
             "criteria": criteria_score.criteria,
             "score": round(criteria_score.score, FLOAT_PRECISION),
+            "uncertainty": round(criteria_score.uncertainty, FLOAT_PRECISION),
             # The voting rights can be very small and reach numbers like 10e-3
             # or even 10e-4. Thus, we round them with more precision.
             "voting_right": round(criteria_score.voting_right, 3),
@@ -324,6 +327,7 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
         "video",
         "criteria",
         "score",
+        "uncertainty",
     ]
 
     criteria_scores = get_collective_criteria_scores_data(poll_name).iterator()
@@ -333,6 +337,7 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
             "video": score["entity__metadata__video_id"],
             "criteria": score["criteria"],
             "score": round(score["score"], FLOAT_PRECISION),
+            "uncertainty": round(score["uncertainty"], FLOAT_PRECISION),
         }
         for score in criteria_scores
     )
