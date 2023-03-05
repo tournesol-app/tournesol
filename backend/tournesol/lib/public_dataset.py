@@ -246,11 +246,11 @@ def write_metadata_file(write_target) -> None:
         "license": "ODC-By-1.0",
         "git_hash": "to_do",
         "algorithms_parameters": {
-            "byztrust" : {
+            "byztrust": {
                 "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
                 "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
             },
-            "mehestan" : {
+            "mehestan": {
                 "ALPHA": ALPHA,
                 "R_MAX": R_MAX,
                 "W": W,
