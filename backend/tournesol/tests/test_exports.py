@@ -268,6 +268,7 @@ class ExportTest(TestCase):
             expected_filenames = [
                 "README.txt",
                 "LICENSE.txt",
+                "metadata.json",
                 "users.csv",
                 "comparisons.csv",
                 "individual_criteria_scores.csv",
