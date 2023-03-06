@@ -47,13 +47,12 @@ function EntityList({
     <>
       {entities && entities.length ? (
         entities.map((entity: Recommendation | RelatedEntityObject) => (
-          <AvailableEntity
-            key={entity.uid}
-            uid={entity.uid}
-            type={entity.type}
-            actionsIfUnavailable={actionsIfUnavailable}
-          >
-            <Box mx={1} my={2}>
+          <Box key={entity.uid} mx={1} my={2}>
+            <AvailableEntity
+              uid={entity.uid}
+              type={entity.type}
+              actionsIfUnavailable={actionsIfUnavailable}
+            >
               <EntityCard
                 entity={entity}
                 actions={actions ?? defaultEntityActions}
@@ -61,8 +60,8 @@ function EntityList({
                 compact={false}
                 entityTypeConfig={{ video: { displayPlayer: false } }}
               />
-            </Box>
-          </AvailableEntity>
+            </AvailableEntity>
+          </Box>
         ))
       ) : (
         <Box m={2}>

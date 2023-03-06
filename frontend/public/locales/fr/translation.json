@@ -36,6 +36,9 @@
     "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
     "personalScore": "Score personnel\u00a0: {{score}}"
   },
+  "entityCard": {
+    "notAvailableAnymore": "Cette entité n'est plus disponible."
+  },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
   },

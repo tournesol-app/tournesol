@@ -33,6 +33,9 @@
     "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
     "personalScore": "Personal score: {{score}}"
   },
+  "entityCard": {
+    "notAvailableAnymore": "This entity is not available anymore."
+  },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
   },

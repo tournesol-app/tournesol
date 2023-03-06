@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -8,10 +8,13 @@ import {
   useTheme,
   useMediaQuery,
   Stack,
+  Typography,
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
+  ArrowDropDown,
+  ArrowDropUp,
 } from '@mui/icons-material';
 
 import { TypeEnum } from 'src/services/openapi';
@@ -29,11 +32,13 @@ const EntityCard = ({
   settings = [],
   compact = false,
   entityTypeConfig,
+  isAvailable = true,
 }: {
   entity: RelatedEntityObject;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
+  isAvailable?: boolean;
   // Configuration specific to the entity type.
   entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
 }) => {
@@ -44,6 +49,11 @@ const EntityCard = ({
     noSsr: true,
   });
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
+  const [entityVisible, setEntityVisible] = useState(true);
+
+  useEffect(() => {
+    setEntityVisible(isAvailable);
+  }, [isAvailable]);
 
   const displayEntityCardScores = () => {
     if ('tournesol_score' in entity && !compact) {
@@ -58,97 +68,127 @@ const EntityCard = ({
     return null;
   };
 
+  const toggleEntityVisibility = () => {
+    setEntityVisible((prevEntityVisibility) => !prevEntityVisibility);
+  };
+
   return (
     <Grid container sx={entityCardMainSx}>
-      <Grid
-        item
-        xs={12}
-        sm={compact ? 12 : 'auto'}
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          ...(compact ? {} : { minWidth: '240px', maxWidth: { sm: '240px' } }),
-        }}
-      >
-        <EntityImagery
-          entity={entity}
-          compact={compact}
-          config={entityTypeConfig}
-        />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={compact ? 12 : true}
-        sx={{
-          padding: 1,
-        }}
-        data-testid="video-card-info"
-        container
-        direction="column"
-      >
-        <EntityCardTitle
-          uid={entity.uid}
-          title={entity.metadata.name}
-          compact={compact}
-        />
-        <EntityMetadata entity={entity} />
-        {displayEntityCardScores()}
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={compact ? 12 : 1}
-        sx={{
-          display: 'flex',
-          alignItems: 'end',
-          justifyContent: 'space-between',
-          flexDirection: 'column',
-          [theme.breakpoints.down('sm')]: {
-            flexDirection: 'row',
-          },
-        }}
-      >
-        {actions.map((Action, index) =>
-          typeof Action === 'function' ? (
-            <Action key={index} uid={entity.uid} />
-          ) : (
-            Action
-          )
-        )}
-        {isSmallScreen && settings.length > 0 && (
-          <>
-            <Box flexGrow={1} />
-            <IconButton
-              size="small"
-              aria-label={t('video.labelShowSettings')}
-              onClick={() => setSettingsVisible(!settingsVisible)}
-            >
-              {settingsVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
-          </>
-        )}
-      </Grid>
-      {settings.length > 0 && (
-        <Grid item xs={12}>
-          <Collapse in={settingsVisible || !isSmallScreen}>
-            <Box
-              paddingY={1}
-              borderTop="1px solid rgba(0, 0, 0, 0.12)"
-              display="flex"
-              gap="16px"
-              color="text.secondary"
-            >
-              {settings.map((Action, index) =>
-                typeof Action === 'function' ? (
-                  <Action key={index} uid={entity.uid} />
-                ) : (
-                  Action
-                )
+      {!isAvailable && (
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item pl={1} py={2}>
+            <Typography>
+              {entity.type == TypeEnum.VIDEO
+                ? t('video.notAvailableAnymore')
+                : t('entityCard.notAvailableAnymore')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <IconButton size="small" onClick={toggleEntityVisibility}>
+              {entityVisible ? (
+                <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
+              ) : (
+                <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
               )}
-            </Box>
-          </Collapse>
+            </IconButton>
+          </Grid>
         </Grid>
+      )}
+      {entityVisible && (
+        <>
+          <Grid
+            item
+            xs={12}
+            sm={compact ? 12 : 'auto'}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              ...(compact
+                ? {}
+                : { minWidth: '240px', maxWidth: { sm: '240px' } }),
+            }}
+          >
+            <EntityImagery
+              entity={entity}
+              compact={compact}
+              config={entityTypeConfig}
+            />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            sm={compact ? 12 : true}
+            sx={{
+              padding: 1,
+            }}
+            data-testid="video-card-info"
+            container
+            direction="column"
+          >
+            <EntityCardTitle
+              uid={entity.uid}
+              title={entity.metadata.name}
+              compact={compact}
+            />
+            <EntityMetadata entity={entity} />
+            {displayEntityCardScores()}
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            sm={compact ? 12 : 1}
+            sx={{
+              display: 'flex',
+              alignItems: 'end',
+              justifyContent: 'space-between',
+              flexDirection: 'column',
+              [theme.breakpoints.down('sm')]: {
+                flexDirection: 'row',
+              },
+            }}
+          >
+            {actions.map((Action, index) =>
+              typeof Action === 'function' ? (
+                <Action key={index} uid={entity.uid} />
+              ) : (
+                Action
+              )
+            )}
+            {isSmallScreen && settings.length > 0 && (
+              <>
+                <Box flexGrow={1} />
+                <IconButton
+                  size="small"
+                  aria-label={t('video.labelShowSettings')}
+                  onClick={() => setSettingsVisible(!settingsVisible)}
+                >
+                  {settingsVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              </>
+            )}
+          </Grid>
+          {settings.length > 0 && (
+            <Grid item xs={12}>
+              <Collapse in={settingsVisible || !isSmallScreen}>
+                <Box
+                  paddingY={1}
+                  borderTop="1px solid rgba(0, 0, 0, 0.12)"
+                  display="flex"
+                  gap="16px"
+                  color="text.secondary"
+                >
+                  {settings.map((Action, index) =>
+                    typeof Action === 'function' ? (
+                      <Action key={index} uid={entity.uid} />
+                    ) : (
+                      Action
+                    )
+                  )}
+                </Box>
+              </Collapse>
+            </Grid>
+          )}
+        </>
       )}
     </Grid>
   );
