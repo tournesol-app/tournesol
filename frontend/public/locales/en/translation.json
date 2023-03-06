@@ -14,6 +14,7 @@
     "continue": "continue"
   },
   "video": {
+    "notAvailableAnymore": "This video is not available anymore.",
     "labelShowSettings": "Show settings related to this video",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
     "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
@@ -31,6 +32,9 @@
     "contributionsArePublicMessage": "Your contributions about this item are currently public. Comparisons appear in the public data associated to your profile only if you tag both items as public.",
     "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
     "personalScore": "Personal score: {{score}}"
+  },
+  "entityCard": {
+    "notAvailableAnymore": "This entity is not available anymore."
   },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
