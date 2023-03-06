@@ -143,7 +143,6 @@ const EntitySelectorInnerAuth = ({
     value.uid ?? ''
   );
   const [newEntityIsLoading, setNewEntityIsLoading] = useState(false);
-  const needToLoadAnother = !entityIsAvailable && !entityIsChecking;
   let showEntityInput = true;
   let showRatingControl = true;
 
@@ -154,64 +153,66 @@ const EntitySelectorInnerAuth = ({
   }
 
   useEffect(() => {
-    if (needToLoadAnother) {
+    if (!entityIsAvailable && !entityIsChecking) {
       if (!newEntityIsLoading) {
         setNewEntityIsLoading(true);
 
-        getVideoForComparison(otherUid, value.uid).then((newUid) => {
+        getVideoForComparison(otherUid, uid).then((newUid) => {
           onChange({ uid: 'yt:' + newUid, rating: null });
-          setNewEntityIsLoading(false);
+          setTimeout(() => {
+            setNewEntityIsLoading(false);
+          }, 1000);
         });
       }
     }
-  }, [value.uid, needToLoadAnother, newEntityIsLoading, otherUid, onChange]);
+  }, [
+    uid,
+    entityIsAvailable,
+    entityIsChecking,
+    newEntityIsLoading,
+    otherUid,
+    onChange,
+  ]);
 
   const loadRating = useCallback(async () => {
     setLoading(true);
-    if (!needToLoadAnother) {
-      try {
-        const contributorRating =
-          await UsersService.usersMeContributorRatingsRetrieve({
-            pollName,
-            uid: uid || '',
-          });
-        onChange({
-          uid,
-          rating: contributorRating,
-          ratingIsExpired: false,
+
+    try {
+      const contributorRating =
+        await UsersService.usersMeContributorRatingsRetrieve({
+          pollName,
+          uid: uid || '',
         });
-      } catch (err) {
-        if (err?.status === 404) {
-          try {
-            const contributorRating =
-              await UsersService.usersMeContributorRatingsCreate({
-                pollName,
-                requestBody: {
-                  uid: uid || '',
-                  is_public: options?.comparisonsCanBePublic === true,
-                },
-              });
-            onChange({
-              uid,
-              rating: contributorRating,
-              ratingIsExpired: false,
+      onChange({
+        uid,
+        rating: contributorRating,
+        ratingIsExpired: false,
+      });
+    } catch (err) {
+      if (err?.status === 404) {
+        try {
+          const contributorRating =
+            await UsersService.usersMeContributorRatingsCreate({
+              pollName,
+              requestBody: {
+                uid: uid || '',
+                is_public: options?.comparisonsCanBePublic === true,
+              },
             });
-          } catch (err) {
-            console.error('Failed to initialize contributor rating.', err);
-          }
-        } else {
-          console.error('Failed to retrieve contributor rating.', err);
+          onChange({
+            uid,
+            rating: contributorRating,
+            ratingIsExpired: false,
+          });
+        } catch (err) {
+          console.error('Failed to initialize contributor rating.', err);
         }
+      } else {
+        console.error('Failed to retrieve contributor rating.', err);
       }
-      setLoading(false);
     }
-  }, [
-    needToLoadAnother,
-    onChange,
-    options?.comparisonsCanBePublic,
-    pollName,
-    uid,
-  ]);
+    setLoading(false);
+  }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   useEffect(() => {
     if (entityIsAvailable) {
