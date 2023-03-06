@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import random
 import re
 import shutil
@@ -288,6 +289,20 @@ class ExportTest(TestCase):
                 with open("tournesol/resources/export_readme.txt", "rb") as readme_file:
                     expected_content = readme_file.read()
                 self.assertEqual(content, expected_content)
+    
+    def test_export_metadata(self):
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        root = self.extract_export_root(response)
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
+            with zip_file.open(root + "/metadata.json", "r") as file:
+                metadata = json.load(file).keys()
+                self.assertIn("creation_date", metadata)
+                self.assertIn("generated_by", metadata)
+                self.assertIn("license", metadata)
+                self.assertIn("algorithms_parameters", metadata)
+                # TODO: complete depending what we put in the metadata file
 
     def test_export_all_comparisons_equal_export_comparisons(self):
         call_command("create_dataset")
