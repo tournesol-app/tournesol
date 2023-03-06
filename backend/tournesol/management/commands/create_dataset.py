@@ -77,6 +77,8 @@ class Command(BaseCommand):
         readme_path = Path("tournesol/resources/export_readme.txt")
         license_path = Path("tournesol/resources/export_odc_by_1.0_public_text.txt")
 
+        first_day_of_week = time_ago(days=timezone.now().weekday()).date()
+
         # BUILDING phase
         with zipfile.ZipFile(archive_abs_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
             with open(readme_path, "r", encoding="utf-8") as readme:
@@ -87,7 +89,7 @@ class Command(BaseCommand):
 
             with StringIO() as output:
                 self.stdout.write("building tournesol metadata...")
-                write_metadata_file(output)
+                write_metadata_file(output, data_until=first_day_of_week)
                 zip_file.writestr(f"{archive_name}/metadata.json", output.getvalue())
                 self.stdout.write("- metadata.json written.")
 
@@ -99,7 +101,6 @@ class Command(BaseCommand):
 
             with StringIO() as output:
                 self.stdout.write("retrieving comparisons' data...")
-                first_day_of_week = time_ago(days=timezone.now().weekday()).date()
                 write_comparisons_file(poll_name, output, until_=first_day_of_week)
                 zip_file.writestr(f"{archive_name}/comparisons.csv", output.getvalue())
                 self.stdout.write("- comparisons.csv written.")

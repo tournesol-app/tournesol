@@ -234,14 +234,14 @@ def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
     )
 
 
-def write_metadata_file(write_target) -> None:
+def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> None:
     """
     Write the metadata as JSON in `write_target`, an
     object supporting the Python file API.
     """
 
     metadata_dict = {
-        "creation_date": timezone.now().isoformat(),
+        "data_included_until": data_until.isoformat(),
         "generated_by": settings.MAIN_URL,
         "tournesol_version": settings.TOURNESOL_VERSION,
         "license": "ODC-By-1.0",
