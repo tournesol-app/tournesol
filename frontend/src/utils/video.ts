@@ -1,4 +1,4 @@
-import { VideoService, UsersService, TypeEnum } from 'src/services/openapi';
+import { UsersService, TypeEnum, PollsService } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from './constants';
 import { RelatedEntityObject, VideoObject } from './types';
 
@@ -167,8 +167,15 @@ export async function getVideoForComparison(
     );
     if (videoFromComparisons) return videoFromComparisons;
   }
-  const videoResult = await VideoService.videoList({ limit: 100, offset: 0 });
-  const videoList = (videoResult?.results || []).map((v) => v.video_id);
+  const videoResult = await PollsService.pollsRecommendationsList({
+    name: 'videos',
+    limit: 100,
+    offset: 0,
+  });
+  // console.log(videoResult);
+  const videoList = (videoResult?.results || []).map((v) =>
+    v.uid.slice(3, v.uid.length)
+  );
   const videoId = await retryRandomPick(5, otherVideo, currentVideo, videoList);
   if (videoId) return videoId;
   return videoList ? pick(videoList) : null;
