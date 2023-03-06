@@ -212,15 +212,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
-  if (request.message == 'addRateLater') {
+  if (request.message == 'addRateLater') { 
     addRateLater(request.video_id).then(sendResponse);
     return true;
   } else if (request.message == 'getVideoStatistics') {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
-  } else if (request.message == 'getTournesolRecommendations') {
+  } else if (request.message == 'getTournesolRecommendations' ) {
     const poll_name = 'videos';
-    const api_url = `polls/${poll_name}/recommendations/`;
+
+    let api_url;
+    
+    if(request.message == 'getTournesolRecommendations'){
+      api_url = `polls/${poll_name}/recommendations/`;
+    }else{
+      api_url = `https://tournesol.app/recommendations/language=fr,en&search=${request.search}`;
+    }
+    
 
     const request_recommendations = async (options) => {
       const resp = await fetchTournesolApi(
@@ -341,6 +349,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     };
     process().then(sendResponse);
     return true;
+  } else if (request.message == 'getTournesolSearchRecommendations'){
+    sendResponse({ message: request.search }); 
   }
 });
 

@@ -12,8 +12,21 @@ let additionalVideos = [];
 let isPageLoaded = false;
 let areRecommandationsLoading = false;
 let areRecommendationsLoaded = false;
+let path = location.pathname;
+let search = location.search;
 
 loadRecommandations();
+
+setInterval(()=>{
+  
+  if(location.pathname != path || location.search != search){
+    
+    path = location.pathname;
+    search = location.search;
+    loadRecommandations();
+    
+  }
+}, 1000)
 
 document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
@@ -42,7 +55,7 @@ const getParentComponent = () => {
   }
 };
 
-const getTournesolComponent = () => {
+const getTournesolComponent = () => { 
   // Create new container
   const tournesol_container = document.createElement('div');
   tournesol_container.id = 'tournesol_container';
@@ -248,12 +261,34 @@ function handleResponse({ data: videosReponse }) {
 }
 
 function loadRecommandations() {
+  
   // Only enable on youtube.com/
-  if (location.pathname != '/') return;
-
+  if (location.pathname != '/' && location.pathname != '/results') return;
+  
   if (areRecommandationsLoading) return;
 
   areRecommandationsLoading = true;
+
+  if(location.pathname == '/results'){
+
+    
+    let searchQuery = search.substring(14);
+    chrome.runtime.sendMessage(
+      {
+        message: 'getTournesolSearchRecommendations',
+        search: searchQuery,
+        videosNumber: 2,
+        additionalVideosNumber: 0,
+      },
+      (message) =>{
+        console.log(message);
+        areRecommandationsLoading = false;
+        areRecommendationsLoaded = true;
+      }
+    );
+    
+    return;
+  }
 
   chrome.runtime.sendMessage(
     {
@@ -263,6 +298,7 @@ function loadRecommandations() {
     },
     handleResponse
   );
+  
 }
 
 function millifyViews(videoViews) {
