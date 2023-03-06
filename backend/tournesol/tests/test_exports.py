@@ -298,8 +298,9 @@ class ExportTest(TestCase):
         with zipfile.ZipFile(zip_content, "r") as zip_file:
             with zip_file.open(root + "/metadata.json", "r") as file:
                 metadata = json.load(file).keys()
-                self.assertIn("creation_date", metadata)
+                self.assertIn("data_included_until", metadata)
                 self.assertIn("generated_by", metadata)
+                self.assertIn("tournesol_version", metadata)
                 self.assertIn("license", metadata)
                 self.assertIn("algorithms_parameters", metadata)
                 # TODO: complete depending what we put in the metadata file
