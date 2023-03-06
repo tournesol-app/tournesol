@@ -243,8 +243,8 @@ def write_metadata_file(write_target) -> None:
     metadata_dict = {
         "creation_date": timezone.now().isoformat(),
         "generated_by": settings.MAIN_URL,
+        "tournesol_version": settings.TOURNESOL_VERSION,
         "license": "ODC-By-1.0",
-        "git_hash": "to_do",
         "algorithms_parameters": {
             "byztrust": {
                 "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
