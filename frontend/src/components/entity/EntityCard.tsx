@@ -48,11 +48,12 @@ const EntityCard = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
   });
+
+  const [contentDisplayed, setContentDisplayed] = useState(true);
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
-  const [entityVisible, setEntityVisible] = useState(true);
 
   useEffect(() => {
-    setEntityVisible(isAvailable);
+    setContentDisplayed(isAvailable);
   }, [isAvailable]);
 
   const displayEntityCardScores = () => {
@@ -69,7 +70,7 @@ const EntityCard = ({
   };
 
   const toggleEntityVisibility = () => {
-    setEntityVisible((prevEntityVisibility) => !prevEntityVisibility);
+    setContentDisplayed(!contentDisplayed);
   };
 
   return (
@@ -84,8 +85,8 @@ const EntityCard = ({
             </Typography>
           </Grid>
           <Grid item>
-            <IconButton size="small" onClick={toggleEntityVisibility}>
-              {entityVisible ? (
+            <IconButton onClick={toggleEntityVisibility}>
+              {contentDisplayed ? (
                 <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
               ) : (
                 <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
@@ -94,7 +95,7 @@ const EntityCard = ({
           </Grid>
         </Grid>
       )}
-      {entityVisible && (
+      {contentDisplayed && (
         <>
           <Grid
             item

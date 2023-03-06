@@ -6,9 +6,9 @@ import { ActionList } from 'src/utils/types';
 import { idFromUid } from 'src/utils/video';
 
 /**
- * Return an <EntityNotAvailable> if the entity doesn't seem to be available
- * online at its original location, return the given children component
- * instead.
+ * Return an <EntityCard> with isAvailable=false if the entity doesn't seem to
+ * be available online at its original location, return the given children
+ * components as-is instead.
  */
 const AvailableEntity = ({
   uid,
