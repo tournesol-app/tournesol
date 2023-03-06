@@ -69,6 +69,8 @@ MEDIA_ROOT = server_settings.get("MEDIA_ROOT", f"{base_folder}{MEDIA_URL}")
 
 MAIN_URL = server_settings.get("MAIN_URL", "http://localhost:8000/")
 
+TOURNESOL_VERSION = server_settings.get("TOURNESOL_VERSION", "")
+
 # Application definition
 
 INSTALLED_APPS = [
