@@ -17,6 +17,9 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
+from ml.mehestan.individual import ALPHA, R_MAX
+from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -297,14 +300,18 @@ class ExportTest(TestCase):
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, "r") as zip_file:
             with zip_file.open(root + "/metadata.json", "r") as file:
-                metadata = json.load(file).keys()
-                self.assertIn("data_included_until", metadata)
-                self.assertIn("generated_by", metadata)
-                self.assertIn("tournesol_version", metadata)
-                self.assertIn("license", metadata)
-                self.assertIn("algorithms_parameters", metadata)
-                # TODO: complete depending what we put in the metadata file
-
+                metadata = json.load(file)
+                self.assertIn("data_included_until", metadata.keys())
+                self.assertIn("license", metadata.keys())
+                self.assertEqual(metadata["generated_by"],settings.MAIN_URL)
+                self.assertEqual(metadata["tournesol_version"],settings.TOURNESOL_VERSION)
+                self.assertEqual(metadata["algorithms_parameters"]["byztrust"]["OVER_TRUST_BIAS"],OVER_TRUST_BIAS)
+                self.assertEqual(metadata["algorithms_parameters"]["byztrust"]["OVER_TRUST_SCALE"],OVER_TRUST_SCALE)
+                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["ALPHA"],ALPHA)
+                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["R_MAX"],R_MAX)
+                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["W"],W)
+                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["SCALING_WEIGHT_CALIBRATION"],SCALING_WEIGHT_CALIBRATION)
+                
     def test_export_all_comparisons_equal_export_comparisons(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
