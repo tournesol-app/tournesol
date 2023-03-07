@@ -17,9 +17,6 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.utils import timezone
-from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
-from ml.mehestan.individual import ALPHA, R_MAX
-from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -27,6 +24,8 @@ from core.models import User
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago, time_ahead
 from ml.inputs import MlInputFromPublicDataset
+from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
+from ml.mehestan.individual import ALPHA, R_MAX
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -38,6 +37,7 @@ from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory,
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
 from tournesol.tests.utils.mock_now import MockNow
+from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
 
 @override_settings(
