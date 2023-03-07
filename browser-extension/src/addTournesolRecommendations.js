@@ -45,9 +45,16 @@ const convertDurationToClockDuration = (duration) => {
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
-    const contents = document.querySelector(
-      '#primary > ytd-rich-grid-renderer'
-    );
+    let contents;
+    if(path != '/results'){
+      contents = document.querySelector(
+        '#primary > ytd-rich-grid-renderer'
+      );
+    }else{
+      contents = document.querySelector(
+        '#header-container'
+      );
+    }
     if (!contents || !contents.children[1]) return;
     return contents;
   } catch (error) {
@@ -59,6 +66,10 @@ const getTournesolComponent = () => {
   // Create new container
   const tournesol_container = document.createElement('div');
   tournesol_container.id = 'tournesol_container';
+
+  if(path == '/results'){
+    tournesol_container.classList.add('search');
+  }
 
   // Add inline-block div
   const inline_div = document.createElement('div');
@@ -164,26 +175,51 @@ const getTournesolComponent = () => {
     video_title.append(video.metadata.name);
     details_div.append(video_title);
 
+    const video_channel_details = document.createElement('div');
+    video_channel_details.classList.add('video_channel_details');
+
     const video_uploader = document.createElement('p');
     video_uploader.className = 'video_text';
     video_uploader.append(video.metadata.uploader);
-    details_div.append(video_uploader);
+    video_channel_details.append(video_uploader);
 
     const video_views_publication = document.createElement('p');
     video_views_publication.className = 'video_text';
     video_views_publication.innerHTML = `${millifyViews(
       video.metadata.views
-    )} views &nbsp•&nbsp ${viewPublishedDate(video.metadata.publication_date)}`;
-    details_div.append(video_views_publication);
+    )} views <span class="dot">&nbsp•&nbsp</span> ${viewPublishedDate(video.metadata.publication_date)}`;
+    video_channel_details.append(video_views_publication);
+    details_div.append(video_channel_details);
 
     const video_score = document.createElement('p');
     video_score.className = 'video_text';
-    video_score.innerHTML = `🌻 <strong>${video.tournesol_score.toFixed(
+    video_score.innerHTML = `<strong>🌻 ${video.tournesol_score.toFixed(
       0
-    )} &nbsp·&nbsp</strong>
-         ${video.n_comparisons} comparisons by ${video.n_contributors}
-         contributors`;
+    )} <span class="dot">&nbsp·&nbsp</span></strong>
+         <span>${video.n_comparisons} comparisons by </span>&nbsp<span class="contributors">${video.n_contributors}
+         contributors</span>`;
     details_div.append(video_score);
+
+    if(path == '/results'){
+
+      const video_criteria = document.createElement('div');
+      video_criteria.classList.add('video_criteria');
+      // backfire_risk,better_habits,diversity_inclusion,engaging,entertaining_relaxing,importance,layman_friendly,pedagogy,reliability
+
+      const sortedCriteria = video.criteria_scores.sort((a,b)=>a.score - b.score);
+      const lower = sortedCriteria[0];
+      const higher = sortedCriteria[sortedCriteria.length - 1];
+      
+      const lowerCriteriaTitle = `${lower.criteria}: ${Math.round(lower.score)}`;
+      const higherCriteriaTitle = `${higher.criteria}: ${Math.round(higher.score)}`;
+
+      const lowerCriteriaIcon = `https://tournesol.app/images/criteriaIcons/${lower.criteria.replaceAll('_', ' ')}.svg`;
+      const higherCriteriaIcon = `https://tournesol.app/images/criteriaIcons/${higher.criteria.replaceAll('_', ' ')}.svg`;
+
+      video_criteria.innerHTML = `Noté fortement: <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' /> Noté faiblement: <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`
+
+      details_div.append(video_criteria);
+    }
 
     const video_link = document.createElement('a');
     video_link.className = 'video_link';
@@ -260,6 +296,14 @@ function handleResponse({ data: videosReponse }) {
   }
 }
 
+// function handleSearchResponse({ data: videosReponse }){
+//   handleResponse({data: videosReponse}, displayRecommendations);
+// }
+
+// function handleHomeResponse({ data: videosReponse }){
+//   handleResponse({data: videosReponse}, displayRecommendations);
+// }
+
 function loadRecommandations() {
   
   // Only enable on youtube.com/
@@ -280,11 +324,7 @@ function loadRecommandations() {
         videosNumber: 2,
         additionalVideosNumber: 0,
       },
-      (message) =>{
-        console.log(message);
-        areRecommandationsLoading = false;
-        areRecommendationsLoaded = true;
-      }
+      handleResponse
     );
     
     return;

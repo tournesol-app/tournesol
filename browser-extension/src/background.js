@@ -218,18 +218,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.message == 'getVideoStatistics') {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
-  } else if (request.message == 'getTournesolRecommendations' ) {
+  } else if (request.message == 'getTournesolRecommendations' || request.message == 'getTournesolSearchRecommendations' ) {
     const poll_name = 'videos';
 
-    let api_url;
+    const api_url = `polls/${poll_name}/recommendations/`;
+  
     
-    if(request.message == 'getTournesolRecommendations'){
-      api_url = `polls/${poll_name}/recommendations/`;
-    }else{
-      api_url = `https://tournesol.app/recommendations/language=fr,en&search=${request.search}`;
-    }
-    
-
     const request_recommendations = async (options) => {
       const resp = await fetchTournesolApi(
         `${api_url}${options ? '?' : ''}${options}`,
@@ -241,6 +235,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       return [];
     };
+
+    
 
     // Compute the number of videos to load in each category
     const recentVideoToLoad = Math.round(
@@ -265,6 +261,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     );
 
     const process = async () => {
+
+      
+
       const threeWeeksAgo = getDateThreeWeeksAgo();
 
       const languagesString = await recommendationsLanguages();
@@ -281,6 +280,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
         ...languagesString.split(',').map((l) => ['metadata[language]', l]),
       ]);
+
+      if(request.message == 'getTournesolSearchRecommendations'){
+        recentParams.append('search', request.search);
+        oldParams.append('search', request.search);
+      }
 
       const [recent, old] = await Promise.all([
         request_recommendations(recentParams),
@@ -349,8 +353,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     };
     process().then(sendResponse);
     return true;
-  } else if (request.message == 'getTournesolSearchRecommendations'){
-    sendResponse({ message: request.search }); 
   }
 });
 
