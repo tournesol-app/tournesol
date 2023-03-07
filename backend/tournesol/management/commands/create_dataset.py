@@ -81,39 +81,39 @@ class Command(BaseCommand):
         # BUILDING phase
         with zipfile.ZipFile(archive_abs_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
             with open(readme_path, "r", encoding="utf-8") as readme:
-                zip_file.writestr(f"README.txt", readme.read())
+                zip_file.writestr("README.txt", readme.read())
 
             with open(license_path, "r", encoding="utf-8") as license_:
-                zip_file.writestr(f"LICENSE.txt", license_.read())
+                zip_file.writestr("LICENSE.txt", license_.read())
 
             with StringIO() as output:
                 self.stdout.write("building tournesol metadata...")
                 write_metadata_file(output, data_until=first_day_of_week)
-                zip_file.writestr(f"metadata.json", output.getvalue())
+                zip_file.writestr("metadata.json", output.getvalue())
                 self.stdout.write("- metadata.json written.")
 
             with StringIO() as output:
                 self.stdout.write("retrieving users' data...")
                 write_users_file(poll_name, output)
-                zip_file.writestr(f"users.csv", output.getvalue())
+                zip_file.writestr("users.csv", output.getvalue())
                 self.stdout.write("- users.csv written.")
 
             with StringIO() as output:
                 self.stdout.write("retrieving comparisons' data...")
                 write_comparisons_file(poll_name, output, until_=first_day_of_week)
-                zip_file.writestr(f"comparisons.csv", output.getvalue())
+                zip_file.writestr("comparisons.csv", output.getvalue())
                 self.stdout.write("- comparisons.csv written.")
 
             with StringIO() as output:
                 self.stdout.write("retrieving individual criteria scores' data...")
                 write_individual_criteria_scores_file(poll_name, output)
-                zip_file.writestr(f"individual_criteria_scores.csv", output.getvalue())
+                zip_file.writestr("individual_criteria_scores.csv", output.getvalue())
                 self.stdout.write("- individual_criteria_scores.csv written.")
 
             with StringIO() as output:
                 self.stdout.write("retrieving collective criteria scores' data...")
                 write_collective_criteria_scores_file(poll_name, output)
-                zip_file.writestr(f"collective_criteria_scores.csv", output.getvalue())
+                zip_file.writestr("collective_criteria_scores.csv", output.getvalue())
                 self.stdout.write("- collective_criteria_scores.csv written.")
 
         self.stdout.write(self.style.SUCCESS(f"archive created at {archive_abs_path}"))
