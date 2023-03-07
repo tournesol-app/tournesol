@@ -45,6 +45,7 @@ all:
           monitored_urls:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
+            - https://webanalytics.staging.tournesol.app/login
             - https://wiki.staging.tournesol.app/
 
           grafana_domain_name: tournesol-grafana
@@ -113,6 +114,7 @@ all:
           monitored_urls:
             - https://tournesol.app/
             - https://api.tournesol.app/admin
+            - https://webanalytics.tournesol.app/login
             - https://wiki.tournesol.app/
 
           grafana_domain_name: "grafana.{{domain_name}}"
@@ -185,6 +187,7 @@ all:
           monitored_urls:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
+            - https://webanalytics.staging.tournesol.app/login
             - https://wiki.staging.tournesol.app/
 
           grafana_domain_name: "grafana.{{domain_name}}"
