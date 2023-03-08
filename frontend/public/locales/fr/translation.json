@@ -28,6 +28,7 @@
     "criteriaRatedLow": "Noté faiblement :",
     "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+    "loadAnother": "Vidéo youtube indisponible. Veuillez charger une vidéo différente.",
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
     "nComparisonsByYou_many": "{{count}} comparaisons par vous",
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",

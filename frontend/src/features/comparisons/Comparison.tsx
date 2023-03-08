@@ -77,6 +77,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
+  const [firstEntityIsAvailable, setFirstEntityIsAvailable] = useState(true);
+  const [secondEntityIsAvailable, setSecondEntityIsAvailable] = useState(true);
   const [initialComparison, setInitialComparison] =
     useState<ComparisonRequest | null>(null);
 
@@ -128,6 +130,20 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
 
   const onChangeA = useMemo(() => onChange(UID_PARAMS.vidA), [onChange]);
   const onChangeB = useMemo(() => onChange(UID_PARAMS.vidB), [onChange]);
+
+  const switchFirstEntityToAvailable = useCallback(() => {
+    setFirstEntityIsAvailable(true);
+  }, []);
+  const switchSecondEntityToAvailable = useCallback(() => {
+    setSecondEntityIsAvailable(true);
+  }, []);
+
+  const switchFirstEntityToUnavailable = useCallback(() => {
+    setFirstEntityIsAvailable(false);
+  }, []);
+  const switchSecondEntityToUnavailable = useCallback(() => {
+    setSecondEntityIsAvailable(false);
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -235,6 +251,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
+          onEntityCheckedError={switchFirstEntityToUnavailable}
+          onEntityCheckedSuccess={switchFirstEntityToAvailable}
           autoFill
         />
       </Grid>
@@ -251,6 +269,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
+          onEntityCheckedError={switchSecondEntityToUnavailable}
+          onEntityCheckedSuccess={switchSecondEntityToAvailable}
           autoFill
         />
       </Grid>
@@ -284,7 +304,10 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         component={Card}
         elevation={2}
       >
-        {selectorA.rating && selectorB.rating ? (
+        {selectorA.rating &&
+        selectorB.rating &&
+        firstEntityIsAvailable &&
+        secondEntityIsAvailable ? (
           isLoading ? (
             <CircularProgress />
           ) : (
