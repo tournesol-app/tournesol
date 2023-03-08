@@ -363,16 +363,6 @@ const EntitySelectorInnerAuth = ({
           </Box>
         </>
       )}
-
-      {rating && entityIsAvailable ? (
-        <EntityCard
-          compact
-          entity={rating.entity}
-          settings={showRatingControl ? toggleAction : undefined}
-        />
-      ) : (
-        <EmptyEntityCard compact loading={loading || !entityIsAvailable} />
-      )}
       <Box position="relative">
         {rating && (entityIsAvailable || !seamlessLoad) ? (
           <EntityCard
