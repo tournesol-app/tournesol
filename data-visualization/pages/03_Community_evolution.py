@@ -70,14 +70,14 @@ def add_comparisons_evolution():
     with week_tab:
         fig = df.groupby("week_date").size().plot(kind="bar")
         fig.update_xaxes(title="Week")
-        fig.update_yaxes(title="Comparisons (nbr)")
+        fig.update_yaxes(title="Comparisons per week")
         fig.update_layout(showlegend=False)
         st.plotly_chart(fig)
 
     with total_tab:
         fig = df.groupby("week_date").size().cumsum().plot()
         fig.update_xaxes(title="Week")
-        fig.update_yaxes(title="Comparisons (nbr)")
+        fig.update_yaxes(title="Toral number of public comparisons")
         fig.update_layout(showlegend=False)
         st.plotly_chart(fig)
 
