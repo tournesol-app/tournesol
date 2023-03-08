@@ -26,6 +26,7 @@
     "criteriaRatedLow": "Rated low:",
     "nbViews": "{{nbViews}} views",
     "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
+    "loadAnother": "Youtube video not available. Please load another to compare",
     "nComparisonsByYou_one": "{{count}} comparison by you",
     "nComparisonsByYou_other": "{{count}} comparisons by you",
     "notYetComparedByYou": "Not yet compared by you",

@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
@@ -21,6 +23,9 @@ import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
 import { useLoginState } from 'src/hooks';
 
+import useIsAvailable from '../../hooks/useIsAvailable';
+import { getVideoForComparison } from 'src/utils/video';
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
@@ -36,6 +41,22 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontSize: '0.7rem',
     },
   },
+  overlay: {
+    display: 'flex',
+    // flexDirection="column"
+    aspectRatio: '16/9',
+    background: 'rgba(0,0,0,.5)',
+    position: 'absolute',
+    top: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    color: 'white',
+
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.8rem',
+    },
+  },
 }));
 
 interface Props {
@@ -45,6 +66,8 @@ interface Props {
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
   autoFill?: boolean;
+  onEntityCheckedError?: CallableFunction;
+  onEntityCheckedSuccess?: CallableFunction;
 }
 
 export interface SelectorValue {
@@ -63,6 +86,8 @@ const EntitySelector = ({
   otherUid,
   variant = 'regular',
   autoFill = false,
+  onEntityCheckedError,
+  onEntityCheckedSuccess,
 }: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
@@ -76,6 +101,8 @@ const EntitySelector = ({
           onChange={onChange}
           otherUid={otherUid}
           variant={variant}
+          onEntityCheckedError={onEntityCheckedError ?? undefined}
+          onEntityCheckedSuccess={onEntityCheckedSuccess ?? undefined}
           autoFill={autoFill}
         />
       ) : (
@@ -128,13 +155,23 @@ const EntitySelectorInnerAuth = ({
   otherUid,
   variant,
   autoFill,
+  onEntityCheckedError,
+  onEntityCheckedSuccess,
 }: Props) => {
+  const { t } = useTranslation();
+  const classes = useStyles();
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
+
+  const { entityIsChecking, entityIsAvailable } = useIsAvailable(
+    value.uid ?? ''
+  );
+  const [newEntityIsLoading, setNewEntityIsLoading] = useState(false);
+  const [seamlessLoad, setSeamlessLoad] = useState(true);
 
   let showEntityInput = true;
   let showRatingControl = true;
@@ -144,6 +181,31 @@ const EntitySelectorInnerAuth = ({
       showEntityInput = false;
       showRatingControl = false;
   }
+
+  useEffect(() => {
+    if (!entityIsAvailable && !entityIsChecking) {
+      if (onEntityCheckedError) onEntityCheckedError();
+      if (seamlessLoad && !newEntityIsLoading) {
+        setNewEntityIsLoading(true);
+
+        getVideoForComparison(otherUid, uid).then((newUid) => {
+          onChange({ uid: 'yt:' + newUid, rating: null });
+          setTimeout(() => {
+            setNewEntityIsLoading(false);
+          }, 1000);
+        });
+      }
+    }
+  }, [
+    uid,
+    entityIsAvailable,
+    entityIsChecking,
+    newEntityIsLoading,
+    onEntityCheckedError,
+    seamlessLoad,
+    otherUid,
+    onChange,
+  ]);
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -183,12 +245,14 @@ const EntitySelectorInnerAuth = ({
     }
     setLoading(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
-
   useEffect(() => {
-    if (isUidValid(uid) && rating == null) {
-      loadRating();
+    if (entityIsAvailable) {
+      if (onEntityCheckedSuccess) onEntityCheckedSuccess();
+      if (isUidValid(uid) && rating == null) {
+        loadRating();
+      }
     }
-  }, [loadRating, rating, uid]);
+  }, [entityIsAvailable, onEntityCheckedSuccess, loadRating, rating, uid]);
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
@@ -216,6 +280,8 @@ const EntitySelectorInnerAuth = ({
       });
       return;
     }
+
+    setSeamlessLoad(false);
 
     const videoIdFromValue =
       pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
@@ -277,6 +343,7 @@ const EntitySelectorInnerAuth = ({
               currentUid={uid}
               otherUid={otherUid}
               onClick={() => {
+                setSeamlessLoad(true);
                 setInputValue('');
                 setLoading(true);
               }}
@@ -297,15 +364,33 @@ const EntitySelectorInnerAuth = ({
         </>
       )}
 
-      {rating ? (
+      {rating && entityIsAvailable ? (
         <EntityCard
           compact
           entity={rating.entity}
           settings={showRatingControl ? toggleAction : undefined}
         />
       ) : (
-        <EmptyEntityCard compact loading={loading} />
+        <EmptyEntityCard compact loading={loading || !entityIsAvailable} />
       )}
+      <Box position="relative">
+        {rating && (entityIsAvailable || !seamlessLoad) ? (
+          <EntityCard
+            compact
+            entity={rating.entity}
+            settings={showRatingControl ? toggleAction : undefined}
+          ></EntityCard>
+        ) : (
+          <EmptyEntityCard compact loading={loading || !entityIsAvailable} />
+        )}
+        {rating && !entityIsAvailable && !seamlessLoad && (
+          <Box className={classes.overlay}>
+            <Typography textAlign="center" fontSize="inherit">
+              {t('video.loadAnother')}
+            </Typography>
+          </Box>
+        )}
+      </Box>
     </>
   );
 };
