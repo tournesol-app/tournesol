@@ -7,9 +7,9 @@ import { fetchUserSettings } from 'src/features/settings/userSettingsSlice';
 const loginSuccessfulListener = createListenerMiddleware();
 
 /**
- * A Redux middleware that listens to successful log in.
+ * A Redux middleware that listens to successful authentications.
  *
- * After a login, fetch the user's settings from the API and save them in the
+ * After a log-in, fetch the user's settings from the API and save them in the
  * store.
  */
 loginSuccessfulListener.startListening({
