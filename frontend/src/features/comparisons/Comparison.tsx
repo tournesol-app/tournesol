@@ -276,7 +276,10 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         component={Card}
         elevation={2}
       >
-        {selectorA.rating && selectorB.rating ? (
+        {selectorA.rating &&
+        selectorB.rating &&
+        firstEntityIsAvailable &&
+        secondEntityIsAvailable ? (
           isLoading ? (
             <CircularProgress />
           ) : (
