@@ -185,7 +185,7 @@ const RateLaterPage = () => {
               />
             </LoaderWrapper>
           </Box>
-          {!!entityCount && (
+          {!!entityCount && entityCount > limit && (
             <div className={classes.stickyPagination}>
               <Pagination
                 offset={offset}

@@ -45,9 +45,8 @@
   "pagination": {
     "videos": "vidéos",
     "previousButton": "{{limit}} prec.",
-    "showingCounts": "de {{firstShowing}} à {{lastShowing}} sur un total de {{total}} {{itemTypeText}}",
     "nextButton": "{{limit}} suiv.",
-    "comparisons": "comparaisons"
+    "page": "Page :"
   },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
