@@ -3885,7 +3885,7 @@ components:
           description: Video description, from YouTube
         publication_date:
           type: string
-          format: date
+          format: date-time
           readOnly: true
           nullable: true
         views:
@@ -3959,7 +3959,7 @@ components:
           description: Video description, from YouTube
         publication_date:
           type: string
-          format: date
+          format: date-time
           readOnly: true
           nullable: true
         views:
