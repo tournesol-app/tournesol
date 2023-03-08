@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
-import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection';
+import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
@@ -18,11 +19,18 @@ import TempStudyBanner from '../banners/TempStudyBanner';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
+
   const { isLoggedIn } = useLoginState();
   const { showWarningAlert } = useNotifications();
   const { baseUrl, active, name: pollName } = useCurrentPoll();
 
   const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
+
+  const homeSectionSx = {
+    width: '100%',
+    padding: 6,
+    px: { xs: 2, md: 6 },
+  };
 
   /**
    * Retrieve the Tournesol's statistics at the root of the home page to
@@ -45,9 +53,8 @@ const HomeVideosPage = () => {
 
   return (
     <>
-      {/* Temporary banner, hardcoded here as long as we don't have an API control them. */}
       <TempStudyBanner />
-      <AlternatingBackgroundColorSectionList lastItemIsPrimary>
+      <Box padding={4} color="white" bgcolor="background.emphatic">
         <TitleSection title={t('home.collaborativeContentRecommendations')}>
           <Typography paragraph fontSize="1.1em">
             {t('home.tournesolIsAParticipatoryResearchProject')}
@@ -113,22 +120,38 @@ const HomeVideosPage = () => {
             </Box>
           )}
         </TitleSection>
-        <ComparisonSection
-          comparisonStats={{
-            comparisonCount: stats.comparisonCount,
-            lastMonthComparisonCount: stats.lastMonthComparisonCount,
-          }}
-        />
-        <RecommendationsSection
-          comparedEntityStats={{
-            comparedEntityCount: stats.comparedEntityCount,
-            lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
-          }}
-        />
-        <ResearchSection />
-        <UsageStatsSection externalData={stats} />
-        <PollListSection />
-      </AlternatingBackgroundColorSectionList>
+      </Box>
+
+      <Grid2 container width="100%" flexDirection="column" alignItems="center">
+        <Grid2 sx={homeSectionSx}>
+          <ComparisonSection
+            comparisonStats={{
+              comparisonCount: stats.comparisonCount,
+              lastMonthComparisonCount: stats.lastMonthComparisonCount,
+            }}
+          />
+        </Grid2>
+        <Grid2 sx={homeSectionSx} bgcolor="background.emphatic">
+          <RecommendationsSection
+            comparedEntityStats={{
+              comparedEntityCount: stats.comparedEntityCount,
+              lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
+            }}
+          />
+        </Grid2>
+        <Grid2 sx={homeSectionSx}>
+          <FundingSection />
+        </Grid2>
+        <Grid2 sx={homeSectionSx}>
+          <ResearchSection />
+        </Grid2>
+        <Grid2 sx={homeSectionSx} bgcolor="rgba(0, 0, 0, 0.08)">
+          <UsageStatsSection externalData={stats} />
+        </Grid2>
+        <Grid2 sx={homeSectionSx} display="flex" justifyContent="center">
+          <PollListSection />
+        </Grid2>
+      </Grid2>
     </>
   );
 };

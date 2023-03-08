@@ -2,7 +2,7 @@
 
 Tournesol is a collective project made possible by the contributions of many
 donors and volunteers. We would love for you to help us in this adventure to
-make the project even better. 
+make the project even better.
 
 **Table of Content**
 
@@ -94,7 +94,7 @@ can be implemented and where it fits in the project's priorities.
 ### The development process / Asking for review
 
 You can track progress of the code development in the dedicated
-[kaban board][ts-github-kanban].
+[kanban board][ts-github-kanban].
 
 Anyone can submit ideas that seem relevant, by creating new issues and
 placing them inside the column `Ideas / Backlog`.
@@ -160,14 +160,13 @@ are defined and localized messages are updated, for English at least.
 Reviewers can help with the translation to French if necessary.
 
 On the frontend, translations are handled by `react-i18next`.
-* [This guide](https://react.i18next.com/guides/quick-start#translate-your-content)
-  may be useful to learn how to integrate translated content into React components. 
-* To extract the new translation keys, use [`yarn i18n:parse`](./frontend/README.md#yarn-i18nparse)
+
+- [This guide](https://react.i18next.com/guides/quick-start#translate-your-content)
+  may be useful to learn how to integrate translated content into React components.
+- To extract the new translation keys, use [`yarn i18n:parse`](./frontend/README.md#yarn-i18nparse)
 
 [ts-donate]: https://tournesol.app/about/donate
 [ts-compare]: https://tournesol.app/comparison
-
 [ts-github-repo]: https://github.com/tournesol-app/tournesol
 [ts-github-kanban]: https://github.com/tournesol-app/tournesol/projects/9
-
 [ts-discord-join]: https://discord.gg/WvcSG55Bf3

@@ -3,7 +3,6 @@ API endpoints to interact with the contributor's comparisons.
 """
 
 from django.conf import settings
-from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
@@ -101,7 +100,6 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
             raise InactivePollError
         return self.create(request, *args, **kwargs)
 
-    @transaction.atomic
     def perform_create(self, serializer):
         poll = serializer.context["poll"]
 

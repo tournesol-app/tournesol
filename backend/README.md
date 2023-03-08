@@ -8,6 +8,7 @@ The API of the Tournesol platform, made with Python and Django.
     - [Automatic installation (recommended)](#automatic-installation-recommended)
     - [Manual installation](#manual-installation-advanced)
     - [Set up a Google API key](#set-up-a-google-api-key)
+- [Management commands](#management-commands)
 - [Tests](#tests)
 - [Code Quality](#code-quality)
 - [F.A.Q.](#faq)
@@ -49,13 +50,19 @@ Django application; and how to install and configure a PostgreSQL server.
   [Linux](https://www.postgresqltutorial.com/install-postgresql-linux/)).
 
 - Create a config file named `settings-tournesol.yaml`. You can find an
-  [example](backend/documentation/settings-tournesol.yaml) in documentation
+  [example](documentation/settings-tournesol.yaml) in documentation
   folder. You can put this file in different locations:
     - `/etc/tournesol/settings-tournesol.yaml` (linux),
     - Anywhere but add the `path/to/file` in SETTINGS_FILE environment
       variable,
     - Anywhere but add the `path/to/file` in SETTINGS_FILE variable `.env`
       file.
+  
+- Configure the settings according to their documentation to match your
+  environment. For local developments you need to configure at least:
+  - `CORS_ALLOWED_ORIGINS`
+  - `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PASSWORD`
+  - `MEDIA_ROOT` and `STATIC_ROOT`
 
 - Create a python env and install the requirements
   `pip install -r requirements.txt`
@@ -144,6 +151,23 @@ Restart the back end.
 
 The back end is now ready to automatically update the videos' metadata when
 new videos are added using the API, and when using the force refresh action.
+
+## Management commands
+
+`python manage.py create_dataset`
+
+This command creates an up-to-date dataset archive on the disk.
+
+It requires the setting `MEDIA_ROOT` to be configured with an absolute
+filesystem path readable and writable by the user running the command.
+
+```shell
+# with a manually installed back end
+python manage.py create_dataset
+
+# with an automatically installed back end with Docker
+docker exec tournesol-dev-api python manage.py create_dataset
+```
 
 ## Tests
 

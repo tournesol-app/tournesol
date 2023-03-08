@@ -3,7 +3,8 @@ import React from 'react';
 import { Box, Paper, Typography, SxProps } from '@mui/material';
 
 interface TitledPaperProps {
-  title: string;
+  title: React.ReactNode;
+  titleId?: string;
   children: React.ReactNode;
   sx?: SxProps;
   contentBoxPadding?: number;
@@ -14,6 +15,7 @@ interface TitledPaperProps {
  */
 const TitledPaper = ({
   title,
+  titleId,
   children,
   sx,
   contentBoxPadding = 2,
@@ -21,15 +23,20 @@ const TitledPaper = ({
   return (
     <Paper sx={sx}>
       <Box
+        id={titleId}
         p={2}
         color="#fff"
-        bgcolor="#1282B2"
+        bgcolor="background.emphatic"
         sx={{
           borderTopLeftRadius: 'inherit',
           borderTopRightRadius: 'inherit',
         }}
       >
-        <Typography variant="h4">{title}</Typography>
+        {typeof title === 'string' ? (
+          <Typography variant="h4">{title}</Typography>
+        ) : (
+          title
+        )}
       </Box>
       <Box p={contentBoxPadding}>{children}</Box>
     </Paper>

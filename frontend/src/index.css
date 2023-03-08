@@ -45,4 +45,21 @@ html.embedded .SnackbarContainer-root.belowTopBar {
   top: 4px;
 }
 
+
+/* pkg: @mui/material */
+@media (pointer: coarse) {
+  /* On touch screens, disable touch events on the slider rail.
+     Only the slider "thumb" will remain interactive. */
+  .MuiSlider-root {
+    pointer-events: none;
+  }
+  .MuiSlider-root .MuiSlider-thumb {
+    pointer-events: auto;
+    /* `touch-action: none` is used internally by MUI on Slider to disable
+    scrolling and zooming on touch events. But it conflicts with
+    `pointer-events: none` on Firefox. So it's required here too. */
+    touch-action: none;
+  }
+}
+
 /* -- end: third-party packages customization -- */

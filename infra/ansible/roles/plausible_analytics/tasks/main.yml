@@ -1,0 +1,125 @@
+# Plausible Analytics
+#
+# These tasks install a self-hosted instance of Plausible Analytics.
+#
+# [DOC]
+#
+# For more information about how to run a self-hosted instance:
+#
+#   - https://plausible.io/docs/self-hosting
+#   - https://plausible.io/docs/self-hosting-configuration
+#
+# [REQUIREMENTS]
+#
+# They depend on other tasks like:
+#
+#   - docker
+#   - nginx
+#   - repository
+#   - etc.
+#
+# It also assumes the Plausible Analytics Git repository `plausible/hosting`
+# (or a fork) is available at /home/git/plausible_hosting.
+#
+
+- name: Copy Plausible Analytics secret key
+  template:
+    src: plausible_analytics_secret_key.j2
+    dest: /root/plausible_analytics_secret_key
+    mode: u=rw,g=,o=
+  notify: Restart Tournesol website analytics
+
+#
+# Set up the Plausible working directory
+#
+
+- name: Create Plausible Analytics directory
+  file:
+    path: /opt/plausible_analytics
+    state: directory
+
+- name: Copy Plausible Analytics self-hosting repository
+  synchronize:
+    src: "/home/git/plausible_hosting/"
+    dest: /opt/plausible_analytics
+    archive: no
+    recursive: yes
+    delete: yes
+    checksum: yes
+    rsync_opts:
+      - "--exclude=.git/"
+      - "--exclude=.github/"
+      - "--exclude=plausible-conf.env"
+  delegate_to: "{{ inventory_hostname }}"
+  become: yes
+  become_user: root
+  notify: Restart Tournesol website analytics
+
+#
+# Configure the Plausible settings
+#
+
+- name: Copy Plausible configuration
+  template:
+    dest: /opt/plausible_analytics/plausible-conf.env
+    src: plausible-conf.env.j2
+    mode: u=rw,g=,o=
+  notify: Restart Tournesol website analytics
+
+#
+# Install the systemd unit
+#
+
+- name: Copy tournesol-website-analytics service
+  template:
+    dest: /etc/systemd/system/tournesol-website-analytics.service
+    src: tournesol-website-analytics.service.j2
+  notify: Restart Tournesol website analytics
+
+- name: Enable and start tournesol-website-analytics service
+  systemd:
+    name: tournesol-website-analytics.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- meta: flush_handlers
+
+#
+# Install the TLS certificates
+#
+
+- name: Check if website analytics certificates are already present
+  stat:
+    path: /etc/letsencrypt/live/{{website_analytics_domain_name}}/fullchain.pem
+  register: website_analytics_cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop NGINX if website analytics certificates are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and website_analytics_cert_file.stat.exists == False
+
+- name: Run Certbot for website analytics domain
+  shell:
+    cmd: "certbot certonly --standalone -d {{website_analytics_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{website_analytics_domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
+#
+# Install the NGINX configuration
+#
+
+- name: Copy NGINX configuration
+  template:
+    src: website_analytics.j2
+    dest: /etc/nginx/sites-available/website_analytics
+  notify: Reload Nginx
+
+- name: Enable NGINX configuration
+  file:
+    src: /etc/nginx/sites-available/website_analytics
+    dest: /etc/nginx/sites-enabled/website_analytics
+    state: link
+  notify: Reload Nginx

@@ -1,6 +1,7 @@
 """
 Shortcut functions related to the contributors.
 """
+from datetime import timedelta
 
 from django.db.models.query import RawQuerySet
 from django.utils import timezone
@@ -16,13 +17,9 @@ def get_top_public_contributors_last_month(
 
     See: `get_top_public_contributors`.
     """
-    now = timezone.now()
-
-    last_month = now.month - 1
-    year = now.year
-
-    if last_month == 12:
-        year -= 1
+    last_month_dt = timezone.now().replace(day=1) - timedelta(days=1)
+    last_month = last_month_dt.month
+    year = last_month_dt.year
 
     return get_top_public_contributors(poll_name, year, last_month, top)
 

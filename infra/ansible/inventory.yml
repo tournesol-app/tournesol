@@ -8,6 +8,7 @@ all:
           machine_name: tournesol
           domain_name: tournesol-vm
           api_domain_name: tournesol-api
+          website_analytics_domain_name: tournesol-webanalytics
           api_scheme: http
 
           buster_mirror: http://debian.ethz.ch/debian/
@@ -30,6 +31,7 @@ all:
           npm_lts_version: fermium
           frontend_scheme: http
           frontend_csp_connect_src: https://noembed.com
+          frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
@@ -43,17 +45,24 @@ all:
           monitored_urls:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
+            - https://webanalytics.staging.tournesol.app/login
             - https://wiki.staging.tournesol.app/
 
           grafana_domain_name: tournesol-grafana
           grafana_scheme: http
+          plausible_hosting_tag: "2023.03.02"
 
           # Daily clean-up of the back end's expired items.
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
           tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
           tournesol_api_clearsessions_schedule: "*-*-* 02:40:00" # daily at 2:40am
 
+          # Watch account creation
+          tournesol_api_watch_account_creation_1h_schedule: "*-*-* *:01:00"
+          tournesol_api_watch_account_creation_24h_schedule: "*-*-* 00:01:10"
+
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
+          tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
 
           mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
 
@@ -65,6 +74,7 @@ all:
           machine_name: tournesol
           domain_name: staging.tournesol.app
           api_domain_name: "api.{{domain_name}}"
+          website_analytics_domain_name: "webanalytics.{{domain_name}}"
           api_scheme: https
 
           buster_mirror: http://debian.ethz.ch/debian/
@@ -87,6 +97,7 @@ all:
           npm_lts_version: fermium
           frontend_scheme: https
           frontend_csp_connect_src: https://noembed.com
+          frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
@@ -103,17 +114,24 @@ all:
           monitored_urls:
             - https://tournesol.app/
             - https://api.tournesol.app/admin
+            - https://webanalytics.tournesol.app/login
             - https://wiki.tournesol.app/
 
           grafana_domain_name: "grafana.{{domain_name}}"
           grafana_scheme: https
+          plausible_hosting_tag: "2023.03.02"
 
           # Daily clean-up of the back end's expired items.
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
           tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
           tournesol_api_clearsessions_schedule: "*-*-* 02:40:00" # daily at 2:40am
 
+          # Watch account creation
+          tournesol_api_watch_account_creation_1h_schedule: "*-*-* *:01:00"
+          tournesol_api_watch_account_creation_24h_schedule: "*-*-* 00:01:10"
+
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
+          tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
 
           mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
 
@@ -129,6 +147,7 @@ all:
           machine_name: tournesol
           domain_name: tournesol.app
           api_domain_name: "api.{{domain_name}}"
+          website_analytics_domain_name: "webanalytics.{{domain_name}}"
           api_scheme: https
 
           buster_mirror: http://debian.ethz.ch/debian/
@@ -151,6 +170,7 @@ all:
           npm_lts_version: fermium
           frontend_scheme: https
           frontend_csp_connect_src: https://noembed.com
+          frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
@@ -167,23 +187,31 @@ all:
           monitored_urls:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
+            - https://webanalytics.staging.tournesol.app/login
             - https://wiki.staging.tournesol.app/
 
           grafana_domain_name: "grafana.{{domain_name}}"
           grafana_scheme: https
+          plausible_hosting_tag: "2023.03.02"
 
           # Daily clean-up of the back end's expired items.
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
           tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
           tournesol_api_clearsessions_schedule: "*-*-* 02:40:00" # daily at 2:40am
 
+          # Watch account creation
+          tournesol_api_watch_account_creation_1h_schedule: "*-*-* *:01:00"
+          tournesol_api_watch_account_creation_24h_schedule: "*-*-* 00:01:10"
+
           # twitterbot: the service script is responsible for running the bot in
           # different languages depending on the day of the week.
-          tournesol_twitterbot_schedule: "*-*-* 18:03:00 Europe/Zurich" # daily.
+          tournesol_twitterbot_schedule: "*-*-* 18:04:00 Europe/Zurich" # daily
+          tournesol_twitterbot_top_contributors_schedule: "*-*-1 15:04:00 Europe/Zurich" # monthly
 
           tournesol_yt_playlists_schedule: "*-*-* 05:15:00" # daily
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
+          tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
 
           mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
 

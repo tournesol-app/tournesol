@@ -98,5 +98,8 @@ class UtilsContributorsTestCase(TestCase):
         self.assertEqual(top_contributors[0], (self.users[2].username, 5))
         self.assertEqual(top_contributors[1], (self.users[0].username, 3))
         self.assertEqual(top_contributors[2], (self.users[3].username, 2))
-        self.assertEqual(top_contributors[3], (self.users[1].username, 1))
-        self.assertEqual(top_contributors[4], (self.users[4].username, 1))
+        # The remaining users have both 1 comparison. The order is not deterministic.
+        self.assertEqual(
+            {top_contributors[3], top_contributors[4]},
+            {(self.users[1].username, 1), (self.users[4].username, 1)},
+        )

@@ -15,6 +15,8 @@ import {
 } from 'src/services/openapi';
 import { Link } from 'react-router-dom';
 
+import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
+
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
   return (
@@ -29,6 +31,7 @@ const SignupSuccess = ({ email }: { email: string }) => {
 
 const Signup = () => {
   const { t } = useTranslation();
+
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [successEmailAddress, setSuccessEmailAddress] = useState<string | null>(
     null
@@ -48,6 +51,7 @@ const Signup = () => {
         requestBody: formObject as RegisterUserRequest,
       });
       setSuccessEmailAddress(createdUser.email || '');
+      trackEvent(TRACKED_EVENTS.signup, { props: { state: 'created' } });
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {
@@ -83,6 +87,7 @@ const Signup = () => {
                 <FormTextField
                   name="email"
                   label={t('emailAddress')}
+                  autoComplete="email"
                   formError={formError}
                 />
               </Grid>
@@ -101,6 +106,7 @@ const Signup = () => {
                   name="password"
                   label={t('password')}
                   type="password"
+                  autoComplete="new-password"
                   formError={formError}
                 />
               </Grid>
@@ -109,6 +115,7 @@ const Signup = () => {
                   name="password_confirm"
                   label={t('confirmYourPassword')}
                   type="password"
+                  autoComplete="new-password"
                   formError={formError}
                 />
               </Grid>

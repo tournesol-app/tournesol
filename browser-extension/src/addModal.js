@@ -117,7 +117,7 @@ function displayModal({ src, height } = {}) {
 
   const display = function display() {
     modal.style.display = EXT_MODAL_VISIBLE_STATE;
-    iframe.removeEventListener('load', displayModal);
+    iframe.removeEventListener('load', display);
   };
 
   // prevent visual blink while refreshing the iframe

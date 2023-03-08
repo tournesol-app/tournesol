@@ -32,11 +32,17 @@
   file:
     path: /etc/tournesol
     state: directory
+    mode: 0750
+    owner: root
+    group: gunicorn
 
 - name: Copy Django settings
   template:
     src: settings.yaml.j2
     dest: /etc/tournesol/settings.yaml
+    mode: 0640
+    owner: root
+    group: gunicorn
     backup: true
   notify: Restart Gunicorn
 
@@ -124,6 +130,14 @@
     src: gunicorn.socket
     dest: /etc/systemd/system/gunicorn.socket
 
+- name: Create Django media directory
+  file:
+    path: /var/www/html/media
+    owner: gunicorn
+    group: gunicorn
+    mode: u=rwx,g=rx,o=rx
+    state: directory
+
 - name: Create static assets directory
   file:
     path: /var/www/html/static
@@ -178,6 +192,25 @@
 - name: Enable and start ML training timer
   systemd:
     name: ml-train.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# scheduled task: create dataset
+
+- name: Copy Tournesol API create dataset service
+  template:
+    dest: /etc/systemd/system/tournesol-api-create-dataset.service
+    src: tournesol-api-create-dataset.service.j2
+
+- name: Copy Tournesol API create dataset timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-create-dataset.timer
+    src: tournesol-api-create-dataset.timer.j2
+
+- name: Enable and start Tournesol API create dataset timer
+  systemd:
+    name: tournesol-api-create-dataset.timer
     state: started
     enabled: yes
     daemon_reload: yes
@@ -239,7 +272,51 @@
     enabled: yes
     daemon_reload: yes
 
-# scheduled task: Twitterbot
+# scheduled task: watch account creation hourly
+
+- name: Copy Tournesol API watch-account-creation-1h service
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-creation-1h.service
+    src: tournesol-api-watch-account-creation.service.j2
+  vars:
+    since_n_hours: 1
+    n_accounts: 5
+
+- name: Copy Tournesol API watch-account-creation-1h timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-creation-1h.timer
+    src: tournesol-api-watch-account-creation-1h.timer.j2
+
+- name: Enable and start Tournesol API watch-account-creation-1h timer
+  systemd:
+    name: tournesol-api-watch-account-creation-1h.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# scheduled task: watch account creation daily
+
+- name: Copy Tournesol API watch-account-creation-24h service
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-creation-24h.service
+    src: tournesol-api-watch-account-creation.service.j2
+  vars:
+    since_n_hours: 24
+    n_accounts: 10
+
+- name: Copy Tournesol API watch-account-creation-24h timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-creation-24h.timer
+    src: tournesol-api-watch-account-creation-24h.timer.j2
+
+- name: Enable and start Tournesol API watch-account-creation-24h timer
+  systemd:
+    name: tournesol-api-watch-account-creation-24h.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# scheduled task: Twitterbot daily tweet
 
 - name: Copy twitterbot service
   template:
@@ -256,6 +333,25 @@
     name: tournesol-twitterbot.timer
     state: "{{ 'started' if tournesol_twitterbot_schedule is defined else 'stopped' }}"
     enabled: "{{ 'yes' if tournesol_twitterbot_schedule is defined else 'no' }}"
+    daemon_reload: yes
+
+# scheduled task: Twitterbot monthly top contributors tweet
+
+- name: Copy twitterbot top contributors service
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot-top-contributors.service
+    src: tournesol-twitterbot-top-contributors.service.j2
+
+- name: Copy twitterbot top contributor timer
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot-top-contributors.timer
+    src: tournesol-twitterbot-top-contributors.timer.j2
+
+- name: Enable and start Tournesol twitterbot top contributors timer
+  systemd:
+    name: tournesol-twitterbot-top-contributors.timer
+    state: "{{ 'started' if tournesol_twitterbot_top_contributors_schedule is defined else 'stopped' }}"
+    enabled: "{{ 'yes' if tournesol_twitterbot_top_contributors_schedule is defined else 'no' }}"
     daemon_reload: yes
 
 # scheduled task: Sync Youtube playlists

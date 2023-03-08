@@ -112,6 +112,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
             pollName: YOUTUBE_POLL_NAME,
             uid: otherUid || '',
             limit: 20,
+            strict: false,
           });
           return response.results ?? [];
         },

@@ -54,6 +54,8 @@ urlpatterns = [
     path("", include(router.urls)),
     # User API
     path("users/me/", CurrentUserView.as_view(), name="users_me"),
+    # User settings API
+    path("users/me/", include("core.urls.user_settings")),
     # Voucher API
     path("users/me/", include("vouch.urls")),
     # Data exports

@@ -34,6 +34,12 @@ export const githubTournesolUrl = 'https://github.com/tournesol-app/tournesol';
 export const linkedInTournesolUrl =
   'https://www.linkedin.com/company/tournesol-app';
 
+// YouTube
+export const youtubePlaylistEnUrl =
+  'https://youtube.com/playlist?list=PLXX93NlSmUpayYeaNvKaeftX_QwEei3fU';
+export const youtubePlaylistFrUrl =
+  'https://youtube.com/playlist?list=PLXX93NlSmUpZkR9NaBXMaPlPalESb5tDv';
+
 /**
  * Support
  */
@@ -41,6 +47,9 @@ export const linkedInTournesolUrl =
 // PayPal
 export const paypalTournesolUrl =
   'https://www.paypal.com/paypalme/tournesolapp';
+
+export const paypalDonateTournesolUrl =
+  'https://www.paypal.com/donate?hosted_button_id=22T84YR7TZ762';
 
 // uTip
 export const utipTournesolUrl = 'https://utip.io/tournesol';

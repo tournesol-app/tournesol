@@ -6,7 +6,7 @@ export VM_USER="${2:-"$USER"}"
 function get_settings_value() {
     local jq_filter=$1;
     ssh "$VM_USER@$VM_ADDR" -- \
-    'python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'' \
+    'sudo python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'' \
     | jq -r' "'$jq_filter | values'"
 }
 
@@ -106,5 +106,11 @@ export TWBOT_ACCESS_TOKEN_SECRET_EN
 DISCORD_INFRA_ALERT_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.infra_alert)
 export DISCORD_INFRA_ALERT_WEBHOOK
 
+DISCORD_INFRA_ALERT_PRIVATE_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.infra_alert_private)
+export DISCORD_INFRA_ALERT_PRIVATE_WEBHOOK
+
 DISCORD_TWITTER_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.twitter)
 export DISCORD_TWITTER_WEBHOOK
+
+PLAUSIBLE_ANALYTICS_SECRET_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/plausible_analytics_secret_key)"
+export PLAUSIBLE_ANALYTICS_SECRET_KEY

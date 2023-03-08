@@ -187,6 +187,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
                 "video_id": self.valid_uid.split(":")[-1],
                 "name": "name",
                 "uploader": "uploader",
+                "duration": 1337
             },
         )
         response = self.client.get(f"{self.preview_url}{self.valid_uid}")
@@ -228,6 +229,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid.split(":")[-1],
                 "name": "name",
                 "uploader": "uploader",
+                "duration": 1337
             },
         )
         Entity.objects.create(
@@ -237,6 +239,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid2.split(":")[-1],
                 "name": "name2",
                 "uploader": "uploader2",
+                "duration": 1337
             },
         )
 
@@ -267,6 +270,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid.split(":")[-1],
                 "name": "name",
                 "uploader": "uploader",
+                "duration": 4242 # testing for >1 hour
             },
         )
         Entity.objects.create(
@@ -276,6 +280,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid2.split(":")[-1],
                 "name": "name2",
                 "uploader": "uploader2",
+                "duration": 1337 #testing for <1 hour
             },
         )
         response = self.client.get(

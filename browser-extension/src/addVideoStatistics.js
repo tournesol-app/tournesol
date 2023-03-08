@@ -87,7 +87,9 @@ function process() {
 
           // On click
           statisticsButton.onclick = () => {
-            open(`https://tournesol.app/entities/yt:${videoId}`);
+            open(
+              `https://tournesol.app/entities/yt:${videoId}?utm_source=extension`
+            );
           };
 
           var div =

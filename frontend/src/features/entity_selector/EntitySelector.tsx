@@ -44,15 +44,17 @@ interface Props {
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
+  autoFill?: boolean;
 }
 
 export interface SelectorValue {
-  uid: string;
+  uid: string | null;
   rating: ContributorRating | null;
   ratingIsExpired?: boolean;
 }
 
-const isUidValid = (uid: string) => uid.match(/\w+:.+/);
+const isUidValid = (uid: string | null) =>
+  uid === null ? false : uid.match(/\w+:.+/);
 
 const EntitySelector = ({
   title,
@@ -60,6 +62,7 @@ const EntitySelector = ({
   onChange,
   otherUid,
   variant = 'regular',
+  autoFill = false,
 }: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
@@ -73,6 +76,7 @@ const EntitySelector = ({
           onChange={onChange}
           otherUid={otherUid}
           variant={variant}
+          autoFill={autoFill}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -95,7 +99,10 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
 
   useEffect(() => {
     async function getEntity() {
-      return await PollsService.pollsEntitiesRetrieve({ name: pollName, uid });
+      return await PollsService.pollsEntitiesRetrieve({
+        name: pollName,
+        uid: uid || '',
+      });
     }
 
     // Wait for a not null / not empty UID before making an HTTP request.
@@ -120,6 +127,7 @@ const EntitySelectorInnerAuth = ({
   onChange,
   otherUid,
   variant,
+  autoFill,
 }: Props) => {
   const { name: pollName, options } = useCurrentPoll();
 
@@ -143,7 +151,7 @@ const EntitySelectorInnerAuth = ({
       const contributorRating =
         await UsersService.usersMeContributorRatingsRetrieve({
           pollName,
-          uid,
+          uid: uid || '',
         });
       onChange({
         uid,
@@ -157,7 +165,7 @@ const EntitySelectorInnerAuth = ({
             await UsersService.usersMeContributorRatingsCreate({
               pollName,
               requestBody: {
-                uid,
+                uid: uid || '',
                 is_public: options?.comparisonsCanBePublic === true,
               },
             });
@@ -275,12 +283,13 @@ const EntitySelectorInnerAuth = ({
               onResponse={(uid) => {
                 uid ? onChange({ uid, rating: null }) : setLoading(false);
               }}
+              autoFill={autoFill}
             />
           </Box>
 
           <Box mx={1} marginBottom={1}>
             <EntityInput
-              value={inputValue || uid}
+              value={inputValue || uid || ''}
               onChange={handleChange}
               otherUid={otherUid}
             />

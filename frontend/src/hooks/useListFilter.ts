@@ -19,16 +19,24 @@ export const useListFilter = ({
   });
 
   const setFilter = (key: string, value: string | null) => {
+    const oldValue = searchParams.get(key);
+    let modified = false;
     if (value || (setEmptyValues && value === '')) {
-      searchParams.set(key, value);
-    } else {
+      if (value !== oldValue) {
+        searchParams.set(key, value);
+        modified = true;
+      }
+    } else if (oldValue !== null) {
       searchParams.delete(key);
+      modified = true;
     }
-    // Reset pagination if filters change
-    if (key !== 'offset') {
-      searchParams.delete('offset');
+    if (modified) {
+      // Reset pagination if any filter has changed
+      if (key !== 'offset') {
+        searchParams.delete('offset');
+      }
+      history.push({ search: searchParams.toString() });
     }
-    history.push({ search: searchParams.toString() });
   };
 
   return [searchParams, setFilter];

@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol twitterbot top contributors schedule
+
+[Timer]
+OnCalendar={{tournesol_twitterbot_top_contributors_schedule | default('@0') }}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target

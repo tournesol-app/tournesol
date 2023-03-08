@@ -1,13 +1,39 @@
 """
 The public dataset library.
+
+This module contains functions to retrieve data from the database and
+shortcuts to write these data in file-like objects.
 """
+import csv
+from datetime import datetime
+from typing import Optional
+
 from django.db.models import QuerySet
+from django.utils import timezone
+
+from tournesol.entities.base import UID_DELIMITER
+
+# The standard decimal precision of floating point numbers appearing in the
+# dataset. Very small numbers can use a higher precision.
+FLOAT_PRECISION = 2
 
 
-def get_dataset(poll_name: str) -> QuerySet:
+def _round_or_none(value: float, precision: int = FLOAT_PRECISION):
+    if value is None:
+        return None
+
+    return round(value, precision)
+
+
+def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
     """
-    Retrieve the public dataset from the database and return a non-evaluated
-    Django `RawQuerySet`.
+    Retrieve the public comparisons from the database and return a
+    non-evaluated Django `RawQuerySet`.
+
+    A comparison is represented by a rating given by a user for a specific
+    criterion and a couple of entities:
+
+        User X (Entity A, Entity B) X Given criteria rating
     """
     from tournesol.models.comparisons import Comparison  # pylint: disable=import-outside-toplevel
 
@@ -21,7 +47,8 @@ def get_dataset(poll_name: str) -> QuerySet:
             entity_2.uid AS uid_b,
             comparisoncriteriascore.criteria,
             comparisoncriteriascore.weight,
-            comparisoncriteriascore.score
+            comparisoncriteriascore.score,
+            DATE(DATE_TRUNC('week', datetime_add)) AS week_date
 
         FROM tournesol_comparison
 
@@ -57,14 +84,18 @@ def get_dataset(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
+          -- keep only comparisons made before this datetime
+          AND datetime_add < %(until)s
+
+        ORDER BY username, datetime_add
         """,
-        {"poll_name": poll_name},
+        {"poll_name": poll_name, "until": until_},
     )
 
 
-def get_users_dataset(poll_name: str) -> QuerySet:
+def get_users_data(poll_name: str) -> QuerySet:
     """
-    Retrieve users with at least one public comparison and return a
+    Retrieve the users with at least one public comparison and return a
     non-evaluated Django `RawQuerySet`.
     """
     from core.models import User  # pylint: disable=import-outside-toplevel
@@ -111,3 +142,206 @@ def get_users_dataset(poll_name: str) -> QuerySet:
         """,
         {"poll_name": poll_name},
     )
+
+
+def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
+    """
+    Retrieve the individual criteria scores computed for each public rating
+    and return a non-evaluated Django `RawQuerySet`.
+
+    An individual criteria score is a score computed by the algorithm for
+    a specific criterion, previously rated by a user for a specific entity.
+
+        User X Entity X Computed individual criteria score
+    """
+    from tournesol.models import (  # pylint: disable=import-outside-toplevel
+        ContributorRatingCriteriaScore,
+    )
+
+    return ContributorRatingCriteriaScore.objects.raw(
+        """
+        SELECT
+            tournesol_contributorratingcriteriascore.id,
+            core_user.username,
+            tournesol_entity.uid,
+            tournesol_contributorratingcriteriascore.criteria,
+            tournesol_contributorratingcriteriascore.score,
+            tournesol_contributorratingcriteriascore.voting_right
+
+        FROM core_user
+
+        JOIN tournesol_contributorrating
+          ON tournesol_contributorrating.user_id = core_user.id
+
+        JOIN tournesol_poll
+          ON tournesol_poll.id = tournesol_contributorrating.poll_id
+
+        JOIN tournesol_entity
+          ON tournesol_entity.id = tournesol_contributorrating.entity_id
+
+        JOIN tournesol_contributorratingcriteriascore
+          ON tournesol_contributorrating.id
+           = tournesol_contributorratingcriteriascore.contributor_rating_id
+
+        WHERE tournesol_poll.name = %(poll_name)s
+          AND tournesol_contributorrating.is_public
+
+        -- this query can be significantly faster by keeping only the username
+        -- in the ORDER BY clause
+
+        ORDER BY
+            core_user.username ASC,
+            tournesol_entity.uid ASC,
+            tournesol_contributorratingcriteriascore.criteria ASC
+        """,
+        {"poll_name": poll_name},
+    )
+
+
+def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
+    """
+    Retrieve the collective criteria scores computed for each entity and
+    return a non-evaluated Django `RawQuerySet`.
+
+    A collective criteria score is a score computed by the algorithm for a
+    specific criterion of a specific entity.
+
+        Entity X Computed collective criteria score
+    """
+    from tournesol.models.entity_score import (  # pylint: disable=import-outside-toplevel
+        EntityCriteriaScore,
+        ScoreMode,
+    )
+
+    return (
+        EntityCriteriaScore.objects.filter(poll__name=poll_name, score_mode=ScoreMode.DEFAULT)
+        .values(
+            "entity__metadata__video_id",
+            "criteria",
+            "score",
+            "uncertainty",
+            "entity__metadata__name",
+            "entity__metadata__publication_date",
+            "entity__metadata__views",
+            "entity__metadata__uploader",
+        )
+        .order_by("entity__uid", "criteria")
+    )
+
+
+def write_comparisons_file(
+    poll_name: str, write_target, until_: Optional[datetime] = None
+) -> None:
+    """
+    Write the output of `get_comparisons_data` as CSV in `write_target`, an
+    object supporting the Python file API.
+    """
+    if not until_:
+        until_ = timezone.now()
+
+    # If we want this function to be generic, the specific video_a and video_b
+    # columns should be renamed entity_a and entity_b.
+    fieldnames = ["public_username", "video_a", "video_b", "criteria", "score", "week_date"]
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(
+        {
+            "public_username": comparison.username,
+            "video_a": comparison.uid_a.split(UID_DELIMITER)[1],
+            "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
+            "criteria": comparison.criteria,
+            "score": int(round(comparison.score)),
+            "week_date": comparison.week_date,
+        }
+        for comparison in get_comparisons_data(poll_name, until_).iterator()
+    )
+
+
+def write_users_file(poll_name: str, write_target) -> None:
+    """
+    Write the output of `get_users_data` as CSV in `write_target`, an object
+    supporting the Python file API.
+    """
+    fieldnames = [
+        "public_username",
+        "trust_score",
+    ]
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(
+        {
+            "public_username": user.username,
+            "trust_score": _round_or_none(user.trust_score),
+        }
+        for user in get_users_data(poll_name).iterator()
+    )
+
+
+def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
+    """
+    Write the output of `get_individual_criteria_scores_data` as CSV in
+    `write_target`, an object supporting the Python file API.
+    """
+
+    # If we want this function to be generic, the specific video column should
+    # be renamed entity.
+    fieldnames = [
+        "public_username",
+        "video",
+        "criteria",
+        "score",
+        "uncertainty",
+        "voting_right",
+    ]
+
+    criteria_scores = get_individual_criteria_scores_data(poll_name).iterator()
+
+    rows = (
+        {
+            "public_username": criteria_score.username,
+            "video": criteria_score.uid.split(UID_DELIMITER)[1],
+            "criteria": criteria_score.criteria,
+            "score": round(criteria_score.score, FLOAT_PRECISION),
+            "uncertainty": round(criteria_score.uncertainty, FLOAT_PRECISION),
+            # The voting rights can be very small and reach numbers like 10e-3
+            # or even 10e-4. Thus, we round them with more precision.
+            "voting_right": round(criteria_score.voting_right, 3),
+        }
+        for criteria_score in criteria_scores
+    )
+
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)
+
+
+def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
+    """
+    Write the output of `get_collective_criteria_scores_data` as CSV in
+    `write_target`, an object supporting the Python file API.
+    """
+
+    # If we want this function to be generic, the specific video column should
+    # be renamed entity.
+    fieldnames = [
+        "video",
+        "criteria",
+        "score",
+        "uncertainty",
+    ]
+
+    criteria_scores = get_collective_criteria_scores_data(poll_name).iterator()
+
+    rows = (
+        {
+            "video": score["entity__metadata__video_id"],
+            "criteria": score["criteria"],
+            "score": round(score["score"], FLOAT_PRECISION),
+            "uncertainty": round(score["uncertainty"], FLOAT_PRECISION),
+        }
+        for score in criteria_scores
+    )
+
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)

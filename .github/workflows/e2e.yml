@@ -9,30 +9,49 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  e2e-browser-extension:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -yq expect
+      - uses: actions/checkout@v3
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - uses: cypress-io/github-action@v5
+        with:
+          working-directory: tests
+          browser: chrome
+          headed: true
+          spec: "cypress/e2e/browser-extension/**/*"
+          config: baseUrl=https://www.youtube.com
+
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: tests/cypress/screenshots
+
+  e2e-frontend:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
 
       - name: Start dev env
         run: ./dev-env/run-docker-compose.sh
+        env:
+          FRONTEND_START_SCRIPT: "start:e2e"
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '18'
 
-      - uses: cypress-io/github-action@v2
+      - uses: cypress-io/github-action@v5
         with:
-          command: yarn run cypress run --browser chrome --headed
           working-directory: tests
           wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
+          browser: chrome
+          spec: "cypress/e2e/frontend/**/*"
 
       - name: Print dev-env logs
         if: failure()

@@ -44,3 +44,6 @@ export GRAFANA_OIDC_CLIENT_ID
 
 GRAFANA_OIDC_CLIENT_SECRET="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 128 | head -n 1)"
 export GRAFANA_OIDC_CLIENT_SECRET
+
+PLAUSIBLE_ANALYTICS_SECRET_KEY="$(openssl rand -base64 64 | tr -d '\n' ; echo | head -n 1)"
+export PLAUSIBLE_ANALYTICS_SECRET_KEY

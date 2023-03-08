@@ -1,12 +1,11 @@
-import datetime
 from io import StringIO
 
 from django.core.management import call_command
 from django.test import TestCase
-from django.utils import timezone
 
 from core.models.user import User
 from core.tests.factories.user import UserFactory
+from core.utils.time import time_ago
 
 
 class DeleteInactiveUsersTestCase(TestCase):
@@ -15,8 +14,8 @@ class DeleteInactiveUsersTestCase(TestCase):
     def test_cmd_delete_old_inactive_users(self):
         out = StringIO()
 
-        old_date = timezone.now() - datetime.timedelta(days=self.default_period + 1)
-        recent_date = timezone.now() - datetime.timedelta(days=self.default_period - 1)
+        old_date = time_ago(days=self.default_period + 1)
+        recent_date = time_ago(days=self.default_period - 1)
 
         # active users must not be deleted
         UserFactory(username="still_there_1", is_active=True, date_joined=old_date)
@@ -31,8 +30,7 @@ class DeleteInactiveUsersTestCase(TestCase):
         n_users_before = User.objects.count()
         n_users_to_delete = User.objects.filter(
             is_active=False,
-            date_joined__lt=timezone.now()
-            - datetime.timedelta(days=self.default_period),
+            date_joined__lt=time_ago(days=self.default_period),
         ).count()
 
         call_command("delete_inactive_users", stdout=out)

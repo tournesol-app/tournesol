@@ -1,18 +1,27 @@
 import React from 'react';
 
-import { Box, Divider, SxProps, Typography } from '@mui/material';
+import { Box, Divider, SxProps, Typography, useTheme } from '@mui/material';
 
 interface SectionTitleProps {
   title: string;
+  color?: string;
   dividerColor?: string;
+  dividerWidthXl?: string;
 }
 
 /**
  * A title of an home page section.
  */
-const SectionTitle = ({ title, dividerColor }: SectionTitleProps) => {
+const SectionTitle = ({
+  title,
+  color,
+  dividerColor,
+  dividerWidthXl = '75%',
+}: SectionTitleProps) => {
+  const theme = useTheme();
+
   let sx: SxProps = {
-    width: { xs: '100%', xl: '75%' },
+    width: { xs: '100%', xl: dividerWidthXl },
   };
 
   if (dividerColor) {
@@ -32,6 +41,7 @@ const SectionTitle = ({ title, dividerColor }: SectionTitleProps) => {
           variant="h1"
           component="h2"
           textAlign="center"
+          color={color || theme.palette.text.primary}
           pl={4}
           pr={4}
         >
