@@ -172,9 +172,7 @@ export async function getVideoForComparison(
     limit: 100,
     offset: 0,
   });
-  const videoList = (videoResult?.results || []).map((v) =>
-    v.uid.slice(3, v.uid.length)
-  );
+  const videoList = (videoResult?.results || []).map((v) => idFromUid(v.uid));
   const videoId = await retryRandomPick(5, otherVideo, currentVideo, videoList);
   if (videoId) return videoId;
   return videoList ? pick(videoList) : null;
