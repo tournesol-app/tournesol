@@ -32,7 +32,7 @@ assert (
 
 def add_contributors_evolution():
     """
-    Display the number of new contributors per week or cumulative sum of new contributor.
+    Display the number of new contributors per week or cumulative sum of new contributors.
     """
 
     st.markdown("#### New contributors")
@@ -58,7 +58,7 @@ def add_contributors_evolution():
 
 def add_comparisons_evolution():
     """
-    Display the number of public comparisons per week or cumulative sum of public comparison.
+    Display the number of public comparisons per week or cumulative sum of public comparisons.
     """
 
     st.markdown("#### Public comparisons")
