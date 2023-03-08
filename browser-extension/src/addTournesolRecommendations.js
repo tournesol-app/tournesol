@@ -6,7 +6,10 @@
 // TODO: these values are placeholder values that should be updated.
 const TS_BANNER_DATE_START = new Date('2022-01-01T00:00:00Z');
 const TS_BANNER_DATE_END = new Date('2024-01-01T00:00:00Z');
-const TS_BANNER_ACTION_URL = 'https://tournesol.app';
+const TS_BANNER_ACTION_FR_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLScQzlEKBSA3MqxI0kaPazbyIUnZ4PjFcrR8EFiikG1quyAoiw/viewform?usp=pp_url&entry.939413650=';
+const TS_BANNER_ACTION_EN_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSf9PXr-f8o9QqDR-Pi63xRZx4y4nOumNDdwi_jvUWc6LxZRAw/viewform?usp=pp_url&entry.1924714025=';
 const TS_BANNER_PROOF_KW = 'browser_extension_study_2023';
 
 const videosPerRow = 4;
@@ -150,7 +153,10 @@ const createBanner = () => {
   const actionButton = document.createElement('a');
   actionButton.textContent = getLocalizedActionButtonText();
   actionButton.className = 'tournesol_mui_like_button';
-  actionButton.setAttribute('href', TS_BANNER_ACTION_URL);
+  actionButton.setAttribute(
+    'href',
+    isNavigatorLang('fr') ? TS_BANNER_ACTION_FR_URL : TS_BANNER_ACTION_EN_URL
+  );
   actionButton.setAttribute('target', '_blank');
   actionButton.setAttribute('rel', 'noopener');
 
@@ -167,7 +173,9 @@ const createBanner = () => {
         (response) => {
           if (response.success) {
             resolve(
-              `${TS_BANNER_ACTION_URL}?user_proof=${response.body.signature}`
+              isNavigatorLang('fr')
+                ? `${TS_BANNER_ACTION_FR_URL}${response.body.signature}`
+                : `${TS_BANNER_ACTION_EN_URL}${response.body.signature}`
             );
           } else {
             reject(response);
