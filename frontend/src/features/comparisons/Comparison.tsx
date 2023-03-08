@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Location } from 'history';
 
 import { CircularProgress, Grid, Typography, Card } from '@mui/material';
 
@@ -28,26 +27,32 @@ const LEGACY_PARAMS: { vidA: string; vidB: string } = {
   vidB: 'videoB',
 };
 
-const getUidsFromLocation = (location: Location) => {
-  const searchParams = new URLSearchParams(location.search);
-  let uidA = searchParams.get(UID_PARAMS.vidA);
-  if (uidA === null) {
-    const legacyA = searchParams.get(LEGACY_PARAMS.vidA);
-    if (legacyA) {
-      uidA = UID_YT_NAMESPACE + legacyA;
-    }
+/**
+ * Return an URLSearchParams without legacy parameters.
+ */
+const rewriteLegacyParameters = (
+  uidA: string,
+  uidB: string,
+  legacyA: string | null,
+  legacyB: string | null,
+  paramVidA: string,
+  paramVidB: string
+) => {
+  const searchParams = new URLSearchParams();
+  searchParams.append(paramVidA, uidA);
+  searchParams.append(paramVidB, uidB);
+
+  if (legacyA && uidA === '') {
+    searchParams.delete(paramVidA);
+    searchParams.append(paramVidA, UID_YT_NAMESPACE + legacyA);
   }
-  let uidB = searchParams.get(UID_PARAMS.vidB);
-  if (uidB === null) {
-    const legacyB = searchParams.get(LEGACY_PARAMS.vidB);
-    if (legacyB) {
-      uidB = UID_YT_NAMESPACE + legacyB;
-    }
+
+  if (legacyB && uidB === '') {
+    searchParams.delete(paramVidB);
+    searchParams.append(paramVidB, UID_YT_NAMESPACE + legacyB);
   }
-  return {
-    uidA,
-    uidB,
-  };
+
+  return searchParams;
 };
 
 interface Props {
@@ -72,10 +77,27 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
+  const [firstEntityIsAvailable, setFirstEntityIsAvailable] = useState(true);
+  const [secondEntityIsAvailable, setSecondEntityIsAvailable] = useState(true);
   const [initialComparison, setInitialComparison] =
     useState<ComparisonRequest | null>(null);
 
-  const { uidA, uidB } = getUidsFromLocation(location);
+  const searchParams = new URLSearchParams(location.search);
+  const uidA: string | null = searchParams.get(UID_PARAMS.vidA);
+  const uidB: string | null = searchParams.get(UID_PARAMS.vidB);
+
+  // clean the URL by replacing legacy parameters by UIDs
+  const legacyA = searchParams.get(LEGACY_PARAMS.vidA);
+  const legacyB = searchParams.get(LEGACY_PARAMS.vidB);
+  const newSearchParams = rewriteLegacyParameters(
+    uidA || '',
+    uidB || '',
+    legacyA,
+    legacyB,
+    UID_PARAMS.vidA,
+    UID_PARAMS.vidB
+  );
+
   const [selectorA, setSelectorA] = useState<SelectorValue>({
     uid: uidA,
     rating: null,
@@ -86,30 +108,42 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   });
 
   const onChange = useCallback(
-    (vidKey: 'vidA' | 'vidB') => (newValue: SelectorValue) => {
+    (uidKey: string) => (newValue: SelectorValue) => {
       // `window.location` is used here, to avoid memoizing the location
       // defined in component state, which could be obsolete and cause a
       // race condition when the 2 selectors are updated concurrently.
       const searchParams = new URLSearchParams(window.location.search);
       const uid = newValue.uid;
 
-      const uidKey = UID_PARAMS[vidKey];
       if ((searchParams.get(uidKey) || '') !== uid) {
         searchParams.set(uidKey, uid || '');
-        searchParams.delete(LEGACY_PARAMS[vidKey]);
         history.replace({ search: searchParams.toString() });
       }
-      if (vidKey === 'vidA') {
+      if (uidKey === UID_PARAMS.vidA) {
         setSelectorA(newValue);
-      } else if (vidKey === 'vidB') {
+      } else if (uidKey === UID_PARAMS.vidB) {
         setSelectorB(newValue);
       }
     },
     [history]
   );
 
-  const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
-  const onChangeB = useMemo(() => onChange('vidB'), [onChange]);
+  const onChangeA = useMemo(() => onChange(UID_PARAMS.vidA), [onChange]);
+  const onChangeB = useMemo(() => onChange(UID_PARAMS.vidB), [onChange]);
+
+  const switchFirstEntityToAvailable = useCallback(() => {
+    setFirstEntityIsAvailable(true);
+  }, []);
+  const switchSecondEntityToAvailable = useCallback(() => {
+    setSecondEntityIsAvailable(true);
+  }, []);
+
+  const switchFirstEntityToUnavailable = useCallback(() => {
+    setFirstEntityIsAvailable(false);
+  }, []);
+  const switchSecondEntityToUnavailable = useCallback(() => {
+    setSecondEntityIsAvailable(false);
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -184,6 +218,16 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
+  // redirect the user if at least one legacy parameters has been used
+  // existing UIDs always prevail
+  if (legacyA != null || legacyB != null) {
+    return (
+      <Redirect
+        to={{ pathname: location.pathname, search: newSearchParams.toString() }}
+      />
+    );
+  }
+
   const entityName = getEntityName(t, pollName);
 
   return (
@@ -207,6 +251,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
+          onEntityCheckedError={switchFirstEntityToUnavailable}
+          onEntityCheckedSuccess={switchFirstEntityToAvailable}
           autoFill
         />
       </Grid>
@@ -223,6 +269,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
+          onEntityCheckedError={switchSecondEntityToUnavailable}
+          onEntityCheckedSuccess={switchSecondEntityToAvailable}
           autoFill
         />
       </Grid>
@@ -256,7 +304,10 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         component={Card}
         elevation={2}
       >
-        {selectorA.rating && selectorB.rating ? (
+        {selectorA.rating &&
+        selectorB.rating &&
+        firstEntityIsAvailable &&
+        secondEntityIsAvailable ? (
           isLoading ? (
             <CircularProgress />
           ) : (
