@@ -172,7 +172,6 @@ export async function getVideoForComparison(
     limit: 100,
     offset: 0,
   });
-  // console.log(videoResult);
   const videoList = (videoResult?.results || []).map((v) =>
     v.uid.slice(3, v.uid.length)
   );
