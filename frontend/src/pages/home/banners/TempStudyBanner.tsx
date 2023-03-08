@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Biotech, Campaign } from '@mui/icons-material';
 
-import { useLoginState } from 'src/hooks';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
 
 // TODO: these values are placeholders. Replace them with the correct dates.
@@ -25,7 +25,12 @@ const STUDY_DATE_END = new Date('2024-01-01T00:00:00Z');
 const PROOF_ID = 'browser_extension_study_2023';
 
 const ParticipateButton = ({ userProof }: { userProof: string }) => {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
+
+  const formUrl =
+    i18n.resolvedLanguage === 'fr'
+      ? 'https://docs.google.com/forms/d/e/1FAIpQLScQzlEKBSA3MqxI0kaPazbyIUnZ4PjFcrR8EFiikG1quyAoiw/viewform?usp=pp_url&entry.939413650='
+      : 'https://docs.google.com/forms/d/e/1FAIpQLSf9PXr-f8o9QqDR-Pi63xRZx4y4nOumNDdwi_jvUWc6LxZRAw/viewform?usp=pp_url&entry.1924714025=';
 
   return (
     <Button
@@ -33,7 +38,7 @@ const ParticipateButton = ({ userProof }: { userProof: string }) => {
       component={Link}
       target="_blank"
       rel="noopener"
-      href={`https://tournesol.app?user_proof=${userProof}`}
+      href={`${formUrl}${userProof}`}
       endIcon={<Biotech />}
     >
       {t('tempStudyBanner.join')}
@@ -67,6 +72,7 @@ const TempStudyBanner = () => {
   const theme = useTheme();
 
   const { isLoggedIn } = useLoginState();
+  const { name: pollName } = useCurrentPoll();
   const [userProof, setUserProof] = useState('');
 
   const mediaBelowXl = useMediaQuery(theme.breakpoints.down('xl'));
@@ -84,8 +90,8 @@ const TempStudyBanner = () => {
     }
 
     UsersService.usersMeProofRetrieve({
-      pollName: PROOF_ID,
-      keyword: 'activated',
+      pollName: pollName,
+      keyword: PROOF_ID,
     })
       .then(({ signature }) => setUserProof(signature))
       .catch(console.error);
