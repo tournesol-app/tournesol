@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict
+from unittest.mock import ANY
 
 import requests
 from django.conf import settings
@@ -46,8 +47,6 @@ from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
         {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
     ),
 )
-
-
 class ExportTest(TestCase):
     @MockNow.Context()
     def setUp(self) -> None:
@@ -289,13 +288,32 @@ class ExportTest(TestCase):
                 self.assertIn("license", metadata.keys())
                 self.assertEqual(metadata["generated_by"],settings.MAIN_URL)
                 self.assertEqual(metadata["tournesol_version"],settings.TOURNESOL_VERSION)
-                self.assertEqual(metadata["algorithms_parameters"]["byztrust"]["OVER_TRUST_BIAS"],OVER_TRUST_BIAS)
-                self.assertEqual(metadata["algorithms_parameters"]["byztrust"]["OVER_TRUST_SCALE"],OVER_TRUST_SCALE)
-                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["ALPHA"],ALPHA)
-                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["R_MAX"],R_MAX)
-                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["W"],W)
-                self.assertEqual(metadata["algorithms_parameters"]["mehestan"]["SCALING_WEIGHT_CALIBRATION"],SCALING_WEIGHT_CALIBRATION)
-                
+                self.assertEqual(
+                    set(metadata["algorithms_parameters"]["byztrust"].keys()),
+                    {
+                        "SINK_VOUCH",
+                        "VOUCH_DECAY",
+                        "TRUSTED_EMAIL_PRETRUST",
+                    }
+                )
+                self.assertEqual(
+                    {
+                        "ALPHA": ALPHA,
+                        "R_MAX": R_MAX,
+                        "W": W,
+                        "SCALING_WEIGHT_CALIBRATION": SCALING_WEIGHT_CALIBRATION,
+                        "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
+                        "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
+                        "VOTE_WEIGHT_PUBLIC_RATINGS": ANY,
+                        "VOTE_WEIGHT_PRIVATE_RATINGS": ANY,
+                        "MAX_SCALED_SCORE": 100.0,
+                        "POLL_SCALING_MIN_CONTRIBUTORS": ANY,
+                        "POLL_SCALING_QUANTILE": ANY,
+                        "POLL_SCALING_SCORE_AT_QUANTILE": ANY,
+                    },
+                    metadata["algorithms_parameters"]["mehestan"]
+                )
+
     def test_export_all_comparisons_equal_export_comparisons(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
