@@ -42,13 +42,6 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
   },
-  "pagination": {
-    "videos": "vidéos",
-    "previousButton": "{{limit}} prec.",
-    "showingCounts": "de {{firstShowing}} à {{lastShowing}} sur un total de {{total}} {{itemTypeText}}",
-    "nextButton": "{{limit}} suiv.",
-    "comparisons": "comparaisons"
-  },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
