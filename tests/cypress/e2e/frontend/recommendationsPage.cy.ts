@@ -1,5 +1,16 @@
 describe('Recommendations page', () => {
   describe('Poll - videos', () => {
+
+    describe('Pagination', () => {
+      it('displays the pagination', () => {
+        cy.visit('/recommendations');
+        cy.contains('button', '< -10', {matchCase: false}).should('exist');
+        cy.contains('button', '< -1', {matchCase: false}).should('exist');
+        cy.contains('button', '+1 >', {matchCase: false}).should('exist');
+        cy.contains('button', '+10 >', {matchCase: false}).should('exist');
+      });
+    });
+
     describe('Search filters', () => {
       it('sets default languages properly and backward navigation works', () => {
         cy.visit('/');
@@ -59,13 +70,6 @@ describe('Recommendations page', () => {
 
           cy.location('search').should('contain', 'date=Year');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('not.exist');
-
-          // Pagination is display.
-          cy.contains('button', '< Previous 100', {matchCase: false}).should('exist');
-          cy.contains('button', '< Previous 10', {matchCase: false}).should('exist');
-          cy.contains('button', 'Next 10 >', {matchCase: false}).should('exist');
-          cy.contains('button', 'Next 100 >', {matchCase: false}).should('exist');
-          cy.contains('Page :', {matchCase: false}).should('exist');;
         });
 
         it('shows no videos for 1 day ago', () => {
@@ -86,13 +90,6 @@ describe('Recommendations page', () => {
           cy.get('input[type=checkbox][name=""]').should('be.checked');
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('not.exist');
-          
-          // Pagination is display.
-          cy.contains('button', '< Previous 100', {matchCase: false}).should('exist');
-          cy.contains('button', '< Previous 10', {matchCase: false}).should('exist');
-          cy.contains('button', 'Next 10 >', {matchCase: false}).should('exist');
-          cy.contains('button', 'Next 100 >', {matchCase: false}).should('exist');
-          cy.contains('Page :', {matchCase: false}).should('exist');
         })
       });
     });
