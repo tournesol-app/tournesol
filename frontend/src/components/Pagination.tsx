@@ -1,6 +1,6 @@
 import React from 'react';
+
 import {
-  Typography,
   Button,
   Paper,
   Pagination as PaginationComponent,
@@ -9,7 +9,6 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { useTranslation, Trans } from 'react-i18next';
 import { scrollToTop } from 'src/utils/ui';
 
 interface PaginationProps {
@@ -25,15 +24,14 @@ const Pagination = ({
   onOffsetChange,
   count,
 }: PaginationProps) => {
-  const { t } = useTranslation();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'), {
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'), {
     noSsr: true,
   });
   const [currentPage, setCurrentPage] = React.useState(
     (offset + limit) / limit
   );
-  const [pageSearch, setPageSearch] = React.useState('');
   const totalPages = Math.floor(count / limit) + (count % limit === 0 ? 0 : 1);
 
   const handleChangePage = (
@@ -43,19 +41,6 @@ const Pagination = ({
     scrollToTop();
     setCurrentPage(page);
     onOffsetChange(Math.max(0, (page - 1) * limit));
-  };
-  const handlePageSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPageSearch(event.target.value);
-  };
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && /^\d+$/.test(pageSearch)) {
-      const page = parseInt(pageSearch, 10);
-      if (page > 0 && page <= totalPages) {
-        scrollToTop();
-        onOffsetChange(Math.max(page * limit - limit, 0));
-        setCurrentPage(page);
-      }
-    }
   };
 
   const previousPageStep = (step: number) => {
@@ -81,7 +66,8 @@ const Pagination = ({
       square
       variant="outlined"
       sx={{
-        padding: '10px',
+        padding: 2,
+        gap: 1,
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
@@ -89,136 +75,91 @@ const Pagination = ({
         flexWrap: 'wrap',
       }}
     >
-      {isSmallScreen && (
-        <PaginationComponent
-          count={totalPages}
-          page={currentPage}
-          onChange={handleChangePage}
-          hidePrevButton
-          hideNextButton
-          sx={{
-            flexBasis: {
-              xs: '100%',
-              sm: 'auto',
-            },
-            display: 'flex',
-            justifyContent: 'center',
-            '& ul': {
-              justifyContent: 'center',
-            },
-          }}
-        />
-      )}
+      <PaginationComponent
+        count={totalPages}
+        page={currentPage}
+        siblingCount={isSmallScreen ? 1 : 3}
+        boundaryCount={isSmallScreen ? 1 : 2}
+        onChange={handleChangePage}
+        hidePrevButton
+        hideNextButton
+      />
       <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: isSmallScreen ? 'space-around' : 'center',
-          alignItems: 'center',
-          marginTop: isSmallScreen ? '8px' : '0px',
-          '& button': {
-            whiteSpace: 'nowrap',
-          },
-        }}
+        width="100%"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        flexWrap="wrap"
+        gap={1}
       >
         <Button
-          variant="contained"
-          color="primary"
+          id="pagination_1_prev"
           size="small"
-          id="id_rate_later_100_prev"
-          sx={{ marginRight: !isSmallScreen ? '8px' : '0px' }}
-          onClick={() => previousPageStep(100)}
+          variant="contained"
+          onClick={() => previousPageStep(1)}
         >
-          {'< '}
-          {isSmallScreen ? (
-            '-100'
-          ) : (
-            <Trans t={t} i18nKey="pagination.previousButton">
-              Previous {{ limit: 100 }}
-            </Trans>
-          )}
+          {'< -1'}
         </Button>
         <Button
-          variant="contained"
-          color="primary"
+          id="pagination_10_prev"
           size="small"
-          id="id_rate_later_10_prev"
+          variant="outlined"
+          sx={{
+            color: theme.palette.text.primary,
+            borderColor: theme.palette.text.primary,
+          }}
           onClick={() => previousPageStep(10)}
         >
-          {'< '}
-          {isSmallScreen ? (
-            '-10'
-          ) : (
-            <Trans t={t} i18nKey="pagination.previousButton">
-              Previous {{ limit: 10 }}
-            </Trans>
-          )}
+          {'< -10'}
         </Button>
-        {!isSmallScreen && (
-          <PaginationComponent
-            count={totalPages}
-            page={currentPage}
-            siblingCount={3}
-            boundaryCount={2}
-            onChange={handleChangePage}
-            hidePrevButton
-            hideNextButton
-            sx={{
-              '& .MuiPagination-ul': {
-                flexWrap: 'nowrap',
-              },
-            }}
-          />
+        {totalPages > 100 && (
+          <>
+            <Button
+              id="pagination_100_prev"
+              size="small"
+              variant="outlined"
+              sx={{
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.primary,
+              }}
+              onClick={() => previousPageStep(100)}
+            >
+              {'< -100'}
+            </Button>
+            <Button
+              id="pagination_100_next"
+              size="small"
+              variant="outlined"
+              sx={{
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.primary,
+              }}
+              onClick={() => nextPageStep(100)}
+            >
+              {'+100 >'}
+            </Button>
+          </>
         )}
         <Button
-          variant="contained"
-          color="primary"
+          id="pagination_10_next"
           size="small"
-          id="id_rate_later_10_next"
-          sx={{ marginRight: !isSmallScreen ? '8px' : '0px' }}
+          variant="outlined"
+          sx={{
+            color: theme.palette.text.primary,
+            borderColor: theme.palette.text.primary,
+          }}
           onClick={() => nextPageStep(10)}
         >
-          {isSmallScreen ? (
-            '+10'
-          ) : (
-            <Trans t={t} i18nKey="pagination.nextButton">
-              Next {{ limit: 10 }}
-            </Trans>
-          )}
-          {' >'}
+          {'+10 >'}
         </Button>
         <Button
-          variant="contained"
-          color="primary"
+          id="pagination_1_next"
           size="small"
-          id="id_rate_later_100_next"
-          onClick={() => nextPageStep(100)}
+          variant="contained"
+          onClick={() => nextPageStep(1)}
         >
-          {isSmallScreen ? (
-            '+100'
-          ) : (
-            <Trans t={t} i18nKey="pagination.nextButton">
-              Next {{ limit: 100 }}
-            </Trans>
-          )}
-          {' >'}
+          {'+1 >'}
         </Button>
-        {!isSmallScreen && (
-          <Box display="flex" alignItems="center" style={{ height: '100%' }}>
-            <Typography variant="body2" mx={2} style={{ whiteSpace: 'nowrap' }}>
-              <Trans t={t} i18nKey="pagination.page">
-                Page :
-              </Trans>
-            </Typography>
-            <input
-              type="text"
-              id="searchPageInput"
-              size={3}
-              onChange={handlePageSearch}
-              onKeyDown={handleKeyDown}
-            ></input>
-          </Box>
-        )}
       </Box>
     </Paper>
   );
