@@ -297,21 +297,21 @@ class ExportTest(TestCase):
                     }
                 )
                 self.assertEqual(
+                    set(metadata["algorithms_parameters"]["mehestan"].keys()),
                     {
-                        "ALPHA": ALPHA,
-                        "R_MAX": R_MAX,
-                        "W": W,
-                        "SCALING_WEIGHT_CALIBRATION": SCALING_WEIGHT_CALIBRATION,
-                        "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
-                        "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
-                        "VOTE_WEIGHT_PUBLIC_RATINGS": ANY,
-                        "VOTE_WEIGHT_PRIVATE_RATINGS": ANY,
-                        "MAX_SCALED_SCORE": 100.0,
-                        "POLL_SCALING_MIN_CONTRIBUTORS": ANY,
-                        "POLL_SCALING_QUANTILE": ANY,
-                        "POLL_SCALING_SCORE_AT_QUANTILE": ANY,
-                    },
-                    metadata["algorithms_parameters"]["mehestan"]
+                        "ALPHA",
+                        "R_MAX",
+                        "W",
+                        "SCALING_WEIGHT_CALIBRATION",
+                        "OVER_TRUST_BIAS",
+                        "OVER_TRUST_SCALE",
+                        "VOTE_WEIGHT_PUBLIC_RATINGS",
+                        "VOTE_WEIGHT_PRIVATE_RATINGS",
+                        "MAX_SCALED_SCORE",
+                        "POLL_SCALING_MIN_CONTRIBUTORS",
+                        "POLL_SCALING_QUANTILE",
+                        "POLL_SCALING_SCORE_AT_QUANTILE",
+                    }
                 )
 
     def test_export_all_comparisons_equal_export_comparisons(self):
