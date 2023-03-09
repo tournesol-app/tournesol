@@ -26,9 +26,13 @@ const Pagination = ({
 }: PaginationProps) => {
   const theme = useTheme();
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'), {
+  const lessThanSm = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
   });
+  const lessThanLg = useMediaQuery(theme.breakpoints.down('lg'), {
+    noSsr: true,
+  });
+
   const currentPage = (offset + limit) / limit;
   const totalPages = Math.floor(count / limit) + (count % limit === 0 ? 0 : 1);
 
@@ -73,8 +77,8 @@ const Pagination = ({
       <PaginationComponent
         count={totalPages}
         page={currentPage}
-        siblingCount={isSmallScreen ? 1 : 3}
-        boundaryCount={isSmallScreen ? 1 : 2}
+        siblingCount={lessThanLg ? 1 : 3}
+        boundaryCount={lessThanLg ? 1 : 2}
         onChange={handleChangePage}
         hidePrevButton
         hideNextButton
@@ -109,7 +113,7 @@ const Pagination = ({
         >
           {'< -10'}
         </Button>
-        {totalPages > 100 && (
+        {totalPages > 100 && !lessThanSm && (
           <>
             <Button
               id="pagination_100_prev"
