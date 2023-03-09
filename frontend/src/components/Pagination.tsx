@@ -29,9 +29,7 @@ const Pagination = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'), {
     noSsr: true,
   });
-  const [currentPage, setCurrentPage] = React.useState(
-    (offset + limit) / limit
-  );
+  const currentPage = (offset + limit) / limit;
   const totalPages = Math.floor(count / limit) + (count % limit === 0 ? 0 : 1);
 
   const handleChangePage = (
@@ -39,7 +37,6 @@ const Pagination = ({
     page: number
   ) => {
     scrollToTop();
-    setCurrentPage(page);
     onOffsetChange(Math.max(0, (page - 1) * limit));
   };
 
@@ -47,7 +44,6 @@ const Pagination = ({
     if (currentPage > 1) {
       scrollToTop();
       const page = Math.max(1, currentPage - step);
-      setCurrentPage(page);
       onOffsetChange(Math.max(page * limit - limit, 0));
     }
   };
@@ -56,7 +52,6 @@ const Pagination = ({
     if (currentPage < Math.ceil(count / limit)) {
       scrollToTop();
       const page = Math.min(totalPages, currentPage + step);
-      setCurrentPage(page);
       onOffsetChange(page * limit - limit);
     }
   };
@@ -96,6 +91,7 @@ const Pagination = ({
           id="pagination_1_prev"
           size="small"
           variant="contained"
+          disabled={currentPage <= 1}
           onClick={() => previousPageStep(1)}
         >
           {'< -1'}
@@ -104,6 +100,7 @@ const Pagination = ({
           id="pagination_10_prev"
           size="small"
           variant="outlined"
+          disabled={currentPage <= 1}
           sx={{
             color: theme.palette.text.primary,
             borderColor: theme.palette.text.primary,
@@ -118,6 +115,7 @@ const Pagination = ({
               id="pagination_100_prev"
               size="small"
               variant="outlined"
+              disabled={currentPage <= 1}
               sx={{
                 color: theme.palette.text.primary,
                 borderColor: theme.palette.text.primary,
@@ -130,6 +128,7 @@ const Pagination = ({
               id="pagination_100_next"
               size="small"
               variant="outlined"
+              disabled={currentPage >= totalPages}
               sx={{
                 color: theme.palette.text.primary,
                 borderColor: theme.palette.text.primary,
@@ -144,6 +143,7 @@ const Pagination = ({
           id="pagination_10_next"
           size="small"
           variant="outlined"
+          disabled={currentPage >= totalPages}
           sx={{
             color: theme.palette.text.primary,
             borderColor: theme.palette.text.primary,
@@ -156,6 +156,7 @@ const Pagination = ({
           id="pagination_1_next"
           size="small"
           variant="contained"
+          disabled={currentPage >= totalPages}
           onClick={() => nextPageStep(1)}
         >
           {'+1 >'}
