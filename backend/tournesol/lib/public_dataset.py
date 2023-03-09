@@ -72,7 +72,6 @@ def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
 
         JOIN core_user
           ON core_user.id = tournesol_comparison.user_id
-          AND core_user.is_active
 
         JOIN tournesol_comparisoncriteriascore AS comparisoncriteriascore
           ON comparisoncriteriascore.comparison_id = tournesol_comparison.id
@@ -101,6 +100,8 @@ def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
           AND rating_2.is_public = true
           -- keep only comparisons made before this datetime
           AND datetime_add < %(until)s
+          -- ignore comparisons by users who deleted their account recently
+          AND core_user.is_active
 
         ORDER BY username, datetime_add
         """,

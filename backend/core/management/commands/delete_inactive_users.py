@@ -2,6 +2,7 @@
 Delete users that have not activated their account.
 """
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 
 from core.models.user import User
