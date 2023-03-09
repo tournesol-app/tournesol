@@ -8,7 +8,6 @@ from time import sleep
 from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-from django.utils import timezone
 
 
 @override_settings(
@@ -49,7 +48,6 @@ class CreateDatasetTestCase(TestCase):
             - create exactly one dataset
         """
         output = StringIO()
-        today = timezone.localdate().strftime("%Y%m%d")
 
         # The dir "datasets" should not exist by default.
         datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
@@ -65,10 +63,10 @@ class CreateDatasetTestCase(TestCase):
         # Exactly one dataset has been created.
         self.assertEqual(len(datasets), 1)
         # The dataset should have been created with the expected name.
-        self.assertEqual(datasets[0].name, f"{self.dataset_base_name}{today}.zip")
+        self.assertEqual(datasets[0].name, f"{self.dataset_base_name}.zip")
 
         # The archive path should appear in the logs.
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}.zip")
         self.assertIn(f"archive created at {archive_path}", output_str)
         self.assertIn("success", output_str)
 
@@ -78,7 +76,6 @@ class CreateDatasetTestCase(TestCase):
         10 most recent files in the `DATASETS_BUILD_DIR`.
         """
         output = StringIO()
-        today = timezone.localdate().strftime("%Y%m%d")
         datasets_dir = self._create_dataset_dir("ts_api_test_datasets")
 
         self._create_fake_datasets(12, datasets_dir)
@@ -86,7 +83,7 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 12)
 
         call_command("create_dataset", stdout=output)
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}.zip")
         output_str = output.getvalue()
 
         # The new dataset should have been created.
@@ -110,7 +107,6 @@ class CreateDatasetTestCase(TestCase):
         only the specified number of recent files in the `DATASETS_BUILD_DIR`.
         """
         output = StringIO()
-        today = timezone.localdate().strftime("%Y%m%d")
         datasets_dir = self._create_dataset_dir("ts_api_test_datasets")
 
         self._create_fake_datasets(8, datasets_dir)
@@ -118,7 +114,7 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 8)
 
         call_command("create_dataset", keep_only=4, stdout=output)
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}.zip")
         output_str = output.getvalue()
 
         # The new dataset should have been created.
@@ -144,7 +140,6 @@ class CreateDatasetTestCase(TestCase):
         remove any file in the `DATASETS_BUILD_DIR`.
         """
         output = StringIO()
-        today = timezone.localdate().strftime("%Y%m%d")
         datasets_dir = self._create_dataset_dir("ts_api_test_datasets")
 
         self._create_fake_datasets(12, datasets_dir)
@@ -152,7 +147,7 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 12)
 
         call_command("create_dataset", keep_all=True, stdout=output)
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}.zip")
         output_str = output.getvalue()
 
         # The new dataset should have been created.

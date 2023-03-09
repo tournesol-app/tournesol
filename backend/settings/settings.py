@@ -69,6 +69,8 @@ MEDIA_ROOT = server_settings.get("MEDIA_ROOT", f"{base_folder}{MEDIA_URL}")
 
 MAIN_URL = server_settings.get("MAIN_URL", "http://localhost:8000/")
 
+TOURNESOL_VERSION = server_settings.get("TOURNESOL_VERSION", "")
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -417,7 +419,7 @@ APP_CORE = {
 APP_TOURNESOL = {
     # The created datasets will use this name, and the creation date will be
     # appended.
-    "DATASET_BASE_NAME": "tournesol_dataset_",
+    "DATASET_BASE_NAME": "tournesol_dataset",
     # The mgmt command create_dataset will create the datasets in
     # `MEDIA_ROOT/DATASETS_BUILD_DIR`.
     "DATASETS_BUILD_DIR": "datasets",
