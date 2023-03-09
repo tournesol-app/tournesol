@@ -1,7 +1,8 @@
 import React from 'react';
 
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import useIsAvailable from 'src/hooks/useIsAvailable';
+import { useEntityAvailable } from 'src/hooks';
+import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 import { ActionList } from 'src/utils/types';
 
 /**
@@ -18,16 +19,16 @@ const AvailableEntity = ({
   children: React.ReactElement;
   actionsIfUnavailable?: ActionList;
 }) => {
-  const { entityIsChecking, entityIsAvailable } = useIsAvailable(uid);
+  const { availability } = useEntityAvailable(uid);
 
   return (
-    <LoaderWrapper isLoading={entityIsChecking}>
-      {entityIsAvailable ? (
+    <LoaderWrapper isLoading={availability === ENTITY_AVAILABILITY.UNKNOWN}>
+      {availability === ENTITY_AVAILABILITY.AVAILABLE ? (
         <>{children}</>
       ) : (
         <>
           {React.cloneElement(children, {
-            isAvailable: entityIsAvailable,
+            isAvailable: false,
             actions: actionsIfUnavailable,
           })}
         </>

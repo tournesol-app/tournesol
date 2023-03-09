@@ -5,7 +5,7 @@ import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
 
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { useCurrentPoll, useEntityAvailable } from 'src/hooks';
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
@@ -23,8 +23,8 @@ import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
 import { useLoginState } from 'src/hooks';
 
-import useIsAvailable from '../../hooks/useIsAvailable';
 import { getVideoForComparison } from 'src/utils/video';
+import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -167,7 +167,7 @@ const EntitySelectorInnerAuth = ({
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
 
-  const { entityIsChecking, entityIsAvailable } = useIsAvailable(
+  const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
   );
   const [newEntityIsLoading, setNewEntityIsLoading] = useState(false);
@@ -183,8 +183,9 @@ const EntitySelectorInnerAuth = ({
   }
 
   useEffect(() => {
-    if (!entityIsAvailable && !entityIsChecking) {
+    if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
       if (onEntityCheckedError) onEntityCheckedError();
+
       if (seamlessLoad && !newEntityIsLoading) {
         setNewEntityIsLoading(true);
 
@@ -198,8 +199,7 @@ const EntitySelectorInnerAuth = ({
     }
   }, [
     uid,
-    entityIsAvailable,
-    entityIsChecking,
+    entityAvailability,
     newEntityIsLoading,
     onEntityCheckedError,
     seamlessLoad,
@@ -245,14 +245,15 @@ const EntitySelectorInnerAuth = ({
     }
     setLoading(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
+
   useEffect(() => {
-    if (entityIsAvailable) {
+    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE) {
       if (onEntityCheckedSuccess) onEntityCheckedSuccess();
       if (isUidValid(uid) && rating == null) {
         loadRating();
       }
     }
-  }, [entityIsAvailable, onEntityCheckedSuccess, loadRating, rating, uid]);
+  }, [entityAvailability, onEntityCheckedSuccess, loadRating, rating, uid]);
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
@@ -364,22 +365,31 @@ const EntitySelectorInnerAuth = ({
         </>
       )}
       <Box position="relative">
-        {rating && (entityIsAvailable || !seamlessLoad) ? (
+        {rating &&
+        (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE ||
+          !seamlessLoad) ? (
           <EntityCard
             compact
             entity={rating.entity}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
         ) : (
-          <EmptyEntityCard compact loading={loading || !entityIsAvailable} />
+          <EmptyEntityCard
+            compact
+            loading={
+              loading || entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
+            }
+          />
         )}
-        {rating && !entityIsAvailable && !seamlessLoad && (
-          <Box className={classes.overlay}>
-            <Typography textAlign="center" fontSize="inherit">
-              {t('video.loadAnother')}
-            </Typography>
-          </Box>
-        )}
+        {rating &&
+          entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE &&
+          !seamlessLoad && (
+            <Box className={classes.overlay}>
+              <Typography textAlign="center" fontSize="inherit">
+                {t('video.loadAnother')}
+              </Typography>
+            </Box>
+          )}
       </Box>
     </>
   );
