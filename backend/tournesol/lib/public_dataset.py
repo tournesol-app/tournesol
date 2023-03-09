@@ -72,6 +72,7 @@ def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
 
         JOIN core_user
           ON core_user.id = tournesol_comparison.user_id
+          AND core_user.is_active
 
         JOIN tournesol_comparisoncriteriascore AS comparisoncriteriascore
           ON comparisoncriteriascore.comparison_id = tournesol_comparison.id
@@ -151,6 +152,7 @@ def get_users_data(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
+          AND core_user.is_active
 
         ORDER BY core_user.username
         """,
@@ -199,6 +201,7 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
 
         WHERE tournesol_poll.name = %(poll_name)s
           AND tournesol_contributorrating.is_public
+          AND core_user.is_active
 
         -- this query can be significantly faster by keeping only the username
         -- in the ORDER BY clause

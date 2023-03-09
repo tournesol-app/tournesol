@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth import logout
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +22,10 @@ class CurrentUserView(APIView):
         All related resources are also deleted: comparisons, rate-later list, access tokens, etc.
         """
         user = request.user
-        user.delete()
+        user.is_active = False
+        user.last_login = timezone.now()
+        user.save(update_fields=["is_active", "last_login"])
+
         logout(request)
         logger.info(
             "User '%s' with email '%s' has been deleted.", user.username, user.email
