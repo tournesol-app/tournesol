@@ -2,11 +2,39 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
+from tournesol.models.poll import Poll
+
 
 class GenericPollUserSettingsSerializer(serializers.Serializer):
     """
     The settings common to all polls.
     """
+
+    criteria__display_order = serializers.ListField(child=serializers.CharField(), default=list)
+
+    def validate_criteria__display_order(self, criteria_list):
+        
+        poll = Poll.default_poll()
+
+        if len(criteria_list) != len(set(criteria_list)):
+            raise ValidationError(
+                _("Duplicate criteria in the list"),
+                code='invalid',
+            )  
+                 
+        if poll.main_criteria in criteria_list:
+            raise ValidationError(
+                _("Main poll criteria shouldn't be in the list"),
+                code='invalid',
+            )   
+        for criteria in criteria_list:
+            if criteria not in poll.criterias_list:
+                raise ValidationError(
+                    _(f"Invalid criteria: {criteria}"),
+                    code='invalid',
+                )
+                
+        return criteria_list
 
     rate_later__auto_remove = serializers.IntegerField(required=False)
 
