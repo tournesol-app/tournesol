@@ -49,6 +49,9 @@ const buildDateURLParameter = (
 
       if (date != 'Any') {
         const param_date = new Date(Date.now() - conversionTime.get(date));
+        // we truncate minutes, seconds and ms from the date in order to benefit
+        // from caching at the API level.
+        param_date.setMinutes(0, 0, 0);
         params.append('date_gte', param_date.toISOString());
       }
     }
