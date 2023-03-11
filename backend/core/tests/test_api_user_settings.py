@@ -16,7 +16,7 @@ class UserSettingsDetailTestCase(TestCase):
         self.valid_settings = {
             "videos": {
                 "rate_later__auto_remove": 16,
-                "criteria__display_order": [],
+                "criteria__display_order": ["reliability"],
             }
         }
 
@@ -36,7 +36,12 @@ class UserSettingsDetailTestCase(TestCase):
         self.assertDictEqual(response.data, {})
 
         # When the user have settings, the API should return them.
-        new_settings = {"videos": {"rate_later__auto_remove": 99, "criteria__display_order": []}}
+        new_settings = {
+            "videos": {
+                "rate_later__auto_remove": 99,
+                "criteria__display_order": ["criteria"],
+            }
+        }
         self.user.settings = new_settings
         self.user.save(update_fields=["settings"])
         response = self.client.get(self.settings_base_url)
@@ -95,7 +100,7 @@ class UserSettingsDetailTestCase(TestCase):
 
         # [WHEN] The user updates its settings by new ones containing only one
         # scope and no extre key.
-        new_settings = {"videos": {"rate_later__auto_remove": 99, "criteria__display_order": []}}
+        new_settings = {"videos": {"rate_later__auto_remove": 99}}
         response = self.client.patch(self.settings_base_url, data=new_settings, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -108,7 +113,7 @@ class UserSettingsDetailTestCase(TestCase):
         # The API return the settings according ot its serializer...
         self.assertDictEqual(
             response.data,
-            {"videos": {"rate_later__auto_remove": 99, "criteria__display_order": []}},
+            {"videos": {"rate_later__auto_remove": 99}},
         )
         # ... but the database contains all saved settings.
         self.user.refresh_from_db()
@@ -120,14 +125,35 @@ class UserSettingsDetailTestCase(TestCase):
         """
         self.client.force_authenticate(self.user)
 
-        self.user.settings = {"videos": {"rate_later__auto_remove": 4}}
+        self.user.settings = {
+            "videos": {
+                "rate_later__auto_remove": 4,
+                "criteria__display_order": ["reliability"],
+            }
+        }
         self.user.save(update_fields=["settings"])
 
         invalid_settings = {"videos": {"rate_later__auto_remove": 0}}
         response = self.client.patch(self.settings_base_url, data=invalid_settings, format="json")
-
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("videos", response.data)
         self.assertIn("rate_later__auto_remove", response.data["videos"])
+
+        invalid_settings_2 = {"videos": {"criteria__display_order": ["not_a_criteria"]}}
+        response = self.client.patch(
+            self.settings_base_url, data=invalid_settings_2, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("videos", response.data)
+        self.assertIn("criteria__display_order", response.data["videos"])
+
         self.user.refresh_from_db()
-        self.assertDictEqual(self.user.settings, {"videos": {"rate_later__auto_remove": 4}})
+        self.assertDictEqual(
+            self.user.settings,
+            {
+                "videos": {
+                    "rate_later__auto_remove": 4,
+                    "criteria__display_order": ["reliability"],
+                }
+            },
+        )
