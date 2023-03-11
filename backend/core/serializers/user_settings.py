@@ -10,7 +10,7 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     The settings common to all polls.
     """
 
-    criteria__display_order = serializers.ListField(child=serializers.CharField(), default=list)
+    criteria__display_order = serializers.ListField(child=serializers.CharField(), required=False)
 
     def validate_criteria__display_order(self, criteria_list):
 
@@ -19,19 +19,19 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
         if len(criteria_list) != len(set(criteria_list)):
             raise ValidationError(
                 _("Duplicate criteria in the list"),
-                code='invalid',
+                code="invalid",
             )
 
         if poll.main_criteria in criteria_list:
             raise ValidationError(
                 _("Main poll criteria shouldn't be in the list"),
-                code='invalid',
+                code="invalid",
             )
         for criteria in criteria_list:
             if criteria not in poll.criterias_list:
                 raise ValidationError(
                     _(f"Invalid criteria: {criteria}"),
-                    code='invalid',
+                    code="invalid",
                 )
 
         return criteria_list
