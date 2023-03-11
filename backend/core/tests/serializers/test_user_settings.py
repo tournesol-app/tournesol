@@ -11,7 +11,7 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
     TestCase of the `GenericPollUserSettingsSerializer` serializer.
     """
 
-    def test_validate_validate_criteria__display_order(self):
+    def test_validate_criteria__display_order(self):
         """
         The `validate_criteria__display_order` setting must match existing poll criteria.
         """
@@ -36,7 +36,7 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
             data={"criteria__display_order": []}
         )
         self.assertEqual(serializer.is_valid(), True)
-        
+
         serializer = GenericPollUserSettingsSerializer(
             data={"criteria__display_order": [secondary_criteria_list[1]]}
         )
