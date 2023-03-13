@@ -5,10 +5,12 @@ import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
 
-import { useCurrentPoll, useEntityAvailable } from 'src/hooks';
+import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
+import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
+import { theme } from 'src/theme';
 import { ActionList } from 'src/utils/types';
 import { extractVideoId } from 'src/utils/video';
 import {
@@ -18,13 +20,10 @@ import {
   Recommendation,
 } from 'src/services/openapi';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { getVideoForComparison } from 'src/utils/video';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
-import { useLoginState } from 'src/hooks';
-
-import { getVideoForComparison } from 'src/utils/video';
-import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -39,22 +38,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   input: {
     [theme.breakpoints.down('sm')]: {
       fontSize: '0.7rem',
-    },
-  },
-  overlay: {
-    display: 'flex',
-    // flexDirection="column"
-    aspectRatio: '16/9',
-    background: 'rgba(0,0,0,.5)',
-    position: 'absolute',
-    top: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    color: 'white',
-
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '0.8rem',
     },
   },
 }));
@@ -159,7 +142,6 @@ const EntitySelectorInnerAuth = ({
   onEntityUnavailable,
 }: Props) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
@@ -424,9 +406,23 @@ const EntitySelectorInnerAuth = ({
         {rating &&
           entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE &&
           !autoReload && (
-            <Box className={classes.overlay}>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              position="absolute"
+              top="0"
+              color="white"
+              bgcolor="rgba(0,0,0,.6)"
+              sx={{
+                aspectRatio: '16/9',
+                [theme.breakpoints.down('sm')]: {
+                  fontSize: '0.8rem',
+                },
+              }}
+            >
               <Typography textAlign="center" fontSize="inherit">
-                {t('video.loadAnother')}
+                {t('entitySelector.youtubeVideoUnavailale')}
               </Typography>
             </Box>
           )}
