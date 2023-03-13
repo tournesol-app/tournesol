@@ -66,8 +66,8 @@ interface Props {
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
   autoFill?: boolean;
-  onEntityCheckedError?: CallableFunction;
-  onEntityCheckedSuccess?: CallableFunction;
+  onEntityAvailable?: CallableFunction;
+  onEntityUnavailable?: CallableFunction;
 }
 
 export interface SelectorValue {
@@ -86,8 +86,8 @@ const EntitySelector = ({
   otherUid,
   variant = 'regular',
   autoFill = false,
-  onEntityCheckedError,
-  onEntityCheckedSuccess,
+  onEntityAvailable,
+  onEntityUnavailable,
 }: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
@@ -101,8 +101,8 @@ const EntitySelector = ({
           onChange={onChange}
           otherUid={otherUid}
           variant={variant}
-          onEntityCheckedError={onEntityCheckedError ?? undefined}
-          onEntityCheckedSuccess={onEntityCheckedSuccess ?? undefined}
+          onEntityAvailable={onEntityAvailable ?? undefined}
+          onEntityUnavailable={onEntityUnavailable ?? undefined}
           autoFill={autoFill}
         />
       ) : (
@@ -155,8 +155,8 @@ const EntitySelectorInnerAuth = ({
   otherUid,
   variant,
   autoFill,
-  onEntityCheckedError,
-  onEntityCheckedSuccess,
+  onEntityAvailable,
+  onEntityUnavailable,
 }: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -170,7 +170,7 @@ const EntitySelectorInnerAuth = ({
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
   );
-  const [seamlessLoad, setSeamlessLoad] = useState(true);
+  const [autoReload, setAutoReload] = useState(true);
 
   let showEntityInput = true;
   let showRatingControl = true;
@@ -180,30 +180,6 @@ const EntitySelectorInnerAuth = ({
       showEntityInput = false;
       showRatingControl = false;
   }
-
-  useEffect(() => {
-    if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
-      if (onEntityCheckedError) onEntityCheckedError();
-      if (seamlessLoad && !loading) {
-        setLoading(true);
-
-        getVideoForComparison(otherUid, uid).then((newUid) => {
-          onChange({ uid: `${UID_YT_NAMESPACE}${newUid}`, rating: null });
-          setTimeout(() => {
-            setLoading(false);
-          }, 1000);
-        });
-      }
-    }
-  }, [
-    uid,
-    entityAvailability,
-    loading,
-    onEntityCheckedError,
-    seamlessLoad,
-    otherUid,
-    onChange,
-  ]);
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -244,38 +220,82 @@ const EntitySelectorInnerAuth = ({
     setLoading(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
+  /**
+   * When the entity is available and no auto-reload has been asked.
+   *
+   * Load the user's rating.
+   */
   useEffect(() => {
-    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE || !seamlessLoad) {
+    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE || !autoReload) {
       if (
         entityAvailability === ENTITY_AVAILABILITY.AVAILABLE &&
-        onEntityCheckedSuccess
-      )
-        onEntityCheckedSuccess();
-      else if (onEntityCheckedError) onEntityCheckedError();
+        onEntityAvailable
+      ) {
+        onEntityAvailable();
+      } else if (onEntityUnavailable) {
+        onEntityUnavailable();
+      }
+
       if (isUidValid(uid) && rating == null) {
         loadRating();
       }
     }
   }, [
+    autoReload,
     entityAvailability,
-    onEntityCheckedSuccess,
-    onEntityCheckedError,
-    seamlessLoad,
     loadRating,
+    onEntityAvailable,
+    onEntityUnavailable,
     rating,
     uid,
   ]);
 
+  /**
+   * When the entity is not available:
+   *
+   * First notify the parent component that the entity is not available.
+   *
+   * Then reload a new entity if an auto-reload is asked.
+   */
   useEffect(() => {
-    // Reload rating after the parent (comparison) form has been submitted.
+    if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
+      if (onEntityUnavailable) {
+        onEntityUnavailable();
+      }
 
+      if (autoReload && !loading) {
+        setLoading(true);
+        getVideoForComparison(otherUid, uid).then((newUid) => {
+          onChange({ uid: `${UID_YT_NAMESPACE}${newUid}`, rating: null });
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
+        });
+      }
+    }
+  }, [
+    autoReload,
+    entityAvailability,
+    loading,
+    onChange,
+    onEntityUnavailable,
+    otherUid,
+    uid,
+  ]);
+
+  /**
+   * Reload rating after the parent (comparison) form has been submitted.
+   */
+  useEffect(() => {
     if (ratingIsExpired) {
       loadRating();
     }
   }, [loadRating, ratingIsExpired]);
 
+  /**
+   * Update input value when "uid" has been changed by the parent component.
+   */
   useEffect(() => {
-    // Update input value when "uid" has been changed by the parent component
     setInputValue((previousValue) => {
       if (previousValue !== uid) {
         return uid;
@@ -285,7 +305,7 @@ const EntitySelectorInnerAuth = ({
   }, [uid]);
 
   const handleChange = (value: string) => {
-    setSeamlessLoad(false);
+    setAutoReload(false);
 
     if (value === '') {
       setInputValue('');
@@ -363,13 +383,13 @@ const EntitySelectorInnerAuth = ({
               otherUid={otherUid}
               onClick={() => {
                 setLoading(true);
-                setSeamlessLoad(true);
+                setAutoReload(true);
                 setInputValue('');
               }}
               onResponse={(uid) => {
                 uid
                   ? onChange({ uid, rating: null })
-                  : (setLoading(false), setSeamlessLoad(true));
+                  : (setLoading(false), setAutoReload(true));
               }}
               autoFill={autoFill}
             />
@@ -387,7 +407,7 @@ const EntitySelectorInnerAuth = ({
       <Box position="relative">
         {(rating &&
           (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE ||
-            !seamlessLoad) && (
+            !autoReload) && (
             <EntityCard
               compact
               entity={rating.entity}
@@ -403,7 +423,7 @@ const EntitySelectorInnerAuth = ({
         )}
         {rating &&
           entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE &&
-          !seamlessLoad && (
+          !autoReload && (
             <Box className={classes.overlay}>
               <Typography textAlign="center" fontSize="inherit">
                 {t('video.loadAnother')}

@@ -72,12 +72,14 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
-  const [firstEntityIsAvailable, setFirstEntityIsAvailable] = useState(true);
-  const [secondEntityIsAvailable, setSecondEntityIsAvailable] = useState(true);
+
   const [initialComparison, setInitialComparison] =
     useState<ComparisonRequest | null>(null);
 
   const { uidA, uidB } = getUidsFromLocation(location);
+  const [entityAisAvailable, setEntityAisAvailable] = useState(true);
+  const [entityBisAvailable, setEntityBisAvailable] = useState(true);
+
   const [selectorA, setSelectorA] = useState<SelectorValue>({
     uid: uidA,
     rating: null,
@@ -113,18 +115,18 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
   const onChangeB = useMemo(() => onChange('vidB'), [onChange]);
 
-  const switchFirstEntityToAvailable = useCallback(() => {
-    setFirstEntityIsAvailable(true);
+  const makeEntityAAvailable = useCallback(() => {
+    setEntityAisAvailable(true);
   }, []);
-  const switchSecondEntityToAvailable = useCallback(() => {
-    setSecondEntityIsAvailable(true);
+  const makeEntityBAvailable = useCallback(() => {
+    setEntityBisAvailable(true);
   }, []);
 
-  const switchFirstEntityToUnavailable = useCallback(() => {
-    setFirstEntityIsAvailable(false);
+  const makeEntityAUnavailable = useCallback(() => {
+    setEntityAisAvailable(false);
   }, []);
-  const switchSecondEntityToUnavailable = useCallback(() => {
-    setSecondEntityIsAvailable(false);
+  const makeEntityBUnavailable = useCallback(() => {
+    setEntityBisAvailable(false);
   }, []);
 
   useEffect(() => {
@@ -223,8 +225,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          onEntityCheckedError={switchFirstEntityToUnavailable}
-          onEntityCheckedSuccess={switchFirstEntityToAvailable}
+          onEntityAvailable={makeEntityAAvailable}
+          onEntityUnavailable={makeEntityAUnavailable}
           autoFill
         />
       </Grid>
@@ -241,8 +243,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          onEntityCheckedError={switchSecondEntityToUnavailable}
-          onEntityCheckedSuccess={switchSecondEntityToAvailable}
+          onEntityAvailable={makeEntityBAvailable}
+          onEntityUnavailable={makeEntityBUnavailable}
           autoFill
         />
       </Grid>
@@ -278,8 +280,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
       >
         {selectorA.rating &&
         selectorB.rating &&
-        firstEntityIsAvailable &&
-        secondEntityIsAvailable ? (
+        entityAisAvailable &&
+        entityBisAvailable ? (
           isLoading ? (
             <CircularProgress />
           ) : (
