@@ -64,6 +64,11 @@
   left: 0px;
 }
 
+.tournesol_comparison_logo{
+  width: 16px;
+  margin-right: 4px;
+}
+
 .tournesol_simple_button {
   fill: var(--yt-spec-text-secondary);
   width: 20px;
@@ -217,7 +222,6 @@
 }
 
 #tournesol_container.search{
-  width: 80%;
   min-width: 320px;
   margin-left: auto;
   margin-right: auto;
@@ -228,18 +232,26 @@
   min-height: auto;
 }
 
-#tournesol_container.search .thumb_div{
+#tournesol_container.search .tournesol_comparison_logo{
+  width: auto;
+}
+
+#tournesol_container.search .thumb_div,
+#tournesol_container.search .thumb_div img,
+#tournesol_container.search .video_link{
+  min-width: 35%;
   width: 35%;
   margin: 0;
+  height: 100%;
 }
 
 #tournesol_container.search .thumb_div img,
 #tournesol_container.search .video_link
 {
-  width: 35%;
   border-radius: 4px 0 0 4px;
-  margin: 0;
-  height: 100%;
+}
+
+#tournesol_container.search .thumb_div img{
   width: 100%;
 }
 

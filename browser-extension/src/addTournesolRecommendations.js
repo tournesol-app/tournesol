@@ -7,6 +7,9 @@ const videosPerRow = 4;
 const rowsWhenExpanded = 3;
 let isExpanded = false;
 
+const searchRecommandationNumber = 2;
+const searchRecommandationAdditionalNumber = 0;
+
 let videos = [];
 let additionalVideos = [];
 let isPageLoaded = false;
@@ -17,16 +20,13 @@ let search = location.search;
 
 loadRecommandations();
 
-setInterval(()=>{
-  
-  if(location.pathname != path || location.search != search){
-    
+setInterval(() => {
+  if (location.pathname != path || location.search != search) {
     path = location.pathname;
     search = location.search;
     loadRecommandations();
-    
   }
-}, 1000)
+}, 1000);
 
 document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
@@ -46,14 +46,10 @@ const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
     let contents;
-    if(path != '/results'){
-      contents = document.querySelector(
-        '#primary > ytd-rich-grid-renderer'
-      );
-    }else{
-      contents = document.querySelector(
-        '#header-container'
-      );
+    if (path != '/results') {
+      contents = document.querySelector('#primary > ytd-rich-grid-renderer');
+    } else {
+      contents = document.querySelector('#header-container');
     }
     if (!contents || !contents.children[1]) return;
     return contents;
@@ -62,12 +58,12 @@ const getParentComponent = () => {
   }
 };
 
-const getTournesolComponent = () => { 
+const getTournesolComponent = () => {
   // Create new container
   const tournesol_container = document.createElement('div');
   tournesol_container.id = 'tournesol_container';
 
-  if(path == '/results'){
+  if (path == '/results') {
     tournesol_container.classList.add('search');
   }
 
@@ -187,38 +183,68 @@ const getTournesolComponent = () => {
     video_views_publication.className = 'video_text';
     video_views_publication.innerHTML = `${millifyViews(
       video.metadata.views
-    )} views <span class="dot">&nbsp•&nbsp</span> ${viewPublishedDate(video.metadata.publication_date)}`;
+    )} views <span class="dot">&nbsp•&nbsp</span> ${viewPublishedDate(
+      video.metadata.publication_date
+    )}`;
     video_channel_details.append(video_views_publication);
     details_div.append(video_channel_details);
 
     const video_score = document.createElement('p');
     video_score.className = 'video_text';
-    video_score.innerHTML = `<strong>🌻 ${video.tournesol_score.toFixed(
+    video_score.innerHTML = `<img class="tournesol_comparison_logo" src="https://tournesol.app/svg/tournesol.svg" alt"logo tournesol" /><strong>${video.tournesol_score.toFixed(
       0
     )} <span class="dot">&nbsp·&nbsp</span></strong>
-         <span>${video.n_comparisons} comparisons by </span>&nbsp<span class="contributors">${video.n_contributors}
+         <span>${
+           video.n_comparisons
+         } comparisons by </span>&nbsp<span class="contributors">${
+      video.n_contributors
+    }
          contributors</span>`;
     details_div.append(video_score);
 
-    if(path == '/results'){
-
+    if (path == '/results') {
       const video_criteria = document.createElement('div');
       video_criteria.classList.add('video_criteria');
       // backfire_risk,better_habits,diversity_inclusion,engaging,entertaining_relaxing,importance,layman_friendly,pedagogy,reliability
 
-      const sortedCriteria = video.criteria_scores.sort((a,b)=>a.score - b.score);
+      const sortedCriteria = video.criteria_scores
+        .filter((criteria) => criteria.criteria != 'largely_recommended')
+        .sort((a, b) => a.score - b.score);
       const lower = sortedCriteria[0];
       const higher = sortedCriteria[sortedCriteria.length - 1];
-      
-      const lowerCriteriaTitle = `${lower.criteria}: ${Math.round(lower.score)}`;
-      const higherCriteriaTitle = `${higher.criteria}: ${Math.round(higher.score)}`;
 
-      const lowerCriteriaIcon = `https://tournesol.app/images/criteriaIcons/${lower.criteria.replaceAll('_', ' ')}.svg`;
-      const higherCriteriaIcon = `https://tournesol.app/images/criteriaIcons/${higher.criteria.replaceAll('_', ' ')}.svg`;
+      const lowerCriteriaTitle = `${lower.criteria.replaceAll(
+        '_',
+        ' '
+      )}: ${Math.round(lower.score)}`;
+      const higherCriteriaTitle = `${higher.criteria.replaceAll(
+        '_',
+        ' '
+      )}: ${Math.round(higher.score)}`;
 
-      video_criteria.innerHTML = `Noté fortement: <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' /> Noté faiblement: <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`
+      const lowerCriteriaIconUrl = `images/criteriaIcons/${lower.criteria}.svg`;
+      const higherCriteriaIconUrl = `images/criteriaIcons/${higher.criteria}.svg`;
+      let lowerCriteriaIcon;
+      let higherCriteriaIcon;
 
-      details_div.append(video_criteria);
+      fetch(chrome.runtime.getURL(lowerCriteriaIconUrl))
+        .then((r) => r.text())
+        .then((svg) => {
+          lowerCriteriaIcon = 'data:image/svg+xml;base64,' + window.btoa(svg);
+
+          fetch(chrome.runtime.getURL(higherCriteriaIconUrl))
+            .then((r) => r.text())
+            .then(
+              (svg) =>
+                (higherCriteriaIcon =
+                  'data:image/svg+xml;base64,' + window.btoa(svg))
+            )
+            .then(() => {
+              video_criteria.innerHTML = `Noté fortement: <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' /> Noté faiblement: <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`;
+
+              details_div.append(video_criteria);
+            });
+        });
     }
 
     const video_link = document.createElement('a');
@@ -305,28 +331,25 @@ function handleResponse({ data: videosReponse }) {
 // }
 
 function loadRecommandations() {
-  
   // Only enable on youtube.com/
   if (location.pathname != '/' && location.pathname != '/results') return;
-  
+
   if (areRecommandationsLoading) return;
 
   areRecommandationsLoading = true;
 
-  if(location.pathname == '/results'){
-
-    
+  if (location.pathname == '/results') {
     let searchQuery = search.substring(14);
     chrome.runtime.sendMessage(
       {
         message: 'getTournesolSearchRecommendations',
         search: searchQuery,
-        videosNumber: 2,
-        additionalVideosNumber: 0,
+        videosNumber: searchRecommandationNumber,
+        additionalVideosNumber: searchRecommandationAdditionalNumber,
       },
       handleResponse
     );
-    
+
     return;
   }
 
@@ -338,7 +361,6 @@ function loadRecommandations() {
     },
     handleResponse
   );
-  
 }
 
 function millifyViews(videoViews) {

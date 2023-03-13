@@ -212,18 +212,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
-  if (request.message == 'addRateLater') { 
+  if (request.message == 'addRateLater') {
     addRateLater(request.video_id).then(sendResponse);
     return true;
   } else if (request.message == 'getVideoStatistics') {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
-  } else if (request.message == 'getTournesolRecommendations' || request.message == 'getTournesolSearchRecommendations' ) {
+  } else if (
+    request.message == 'getTournesolRecommendations' ||
+    request.message == 'getTournesolSearchRecommendations'
+  ) {
     const poll_name = 'videos';
 
     const api_url = `polls/${poll_name}/recommendations/`;
-  
-    
+
     const request_recommendations = async (options) => {
       const resp = await fetchTournesolApi(
         `${api_url}${options ? '?' : ''}${options}`,
@@ -235,8 +237,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       return [];
     };
-
-    
 
     // Compute the number of videos to load in each category
     const recentVideoToLoad = Math.round(
@@ -261,9 +261,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     );
 
     const process = async () => {
-
-      
-
       const threeWeeksAgo = getDateThreeWeeksAgo();
 
       const languagesString = await recommendationsLanguages();
@@ -281,7 +278,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         ...languagesString.split(',').map((l) => ['metadata[language]', l]),
       ]);
 
-      if(request.message == 'getTournesolSearchRecommendations'){
+      if (request.message == 'getTournesolSearchRecommendations') {
         recentParams.append('search', request.search);
         oldParams.append('search', request.search);
       }
