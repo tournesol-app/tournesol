@@ -12,7 +12,7 @@ import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 import { theme } from 'src/theme';
 import { ActionList } from 'src/utils/types';
-import { extractVideoId } from 'src/utils/video';
+import { extractVideoId, idFromUid } from 'src/utils/video';
 import {
   UsersService,
   ContributorRating,
@@ -247,11 +247,14 @@ const EntitySelectorInnerAuth = ({
 
       if (autoReload && !loading) {
         setLoading(true);
-        getVideoForComparison(otherUid, uid).then((newUid) => {
+        getVideoForComparison(
+          idFromUid(otherUid || ''),
+          idFromUid(uid || '')
+        ).then((newUid) => {
           onChange({ uid: `${UID_YT_NAMESPACE}${newUid}`, rating: null });
           setTimeout(() => {
             setLoading(false);
-          }, 1000);
+          }, 800);
         });
       }
     }
