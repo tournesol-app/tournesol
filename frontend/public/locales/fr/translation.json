@@ -14,7 +14,7 @@
     "continue": "continuer"
   },
   "video": {
-    "notAvailableAnymore": "Cette vidéo n'est plus disponible.",
+    "notAvailableAnymore": "Cette vidéo n'est plus disponible sur youtube.",
     "labelShowSettings": "Voir les paramètres de cette video",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
     "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",

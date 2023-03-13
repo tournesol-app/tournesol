@@ -170,7 +170,6 @@ const EntitySelectorInnerAuth = ({
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
   );
-  const [newEntityIsLoading, setNewEntityIsLoading] = useState(false);
   const [seamlessLoad, setSeamlessLoad] = useState(true);
 
   let showEntityInput = true;
@@ -185,14 +184,13 @@ const EntitySelectorInnerAuth = ({
   useEffect(() => {
     if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
       if (onEntityCheckedError) onEntityCheckedError();
-
-      if (seamlessLoad && !newEntityIsLoading) {
-        setNewEntityIsLoading(true);
+      if (seamlessLoad && !loading) {
+        setLoading(true);
 
         getVideoForComparison(otherUid, uid).then((newUid) => {
-          onChange({ uid: 'yt:' + newUid, rating: null });
+          onChange({ uid: `${UID_YT_NAMESPACE}${newUid}`, rating: null });
           setTimeout(() => {
-            setNewEntityIsLoading(false);
+            setLoading(false);
           }, 1000);
         });
       }
@@ -200,7 +198,7 @@ const EntitySelectorInnerAuth = ({
   }, [
     uid,
     entityAvailability,
-    newEntityIsLoading,
+    loading,
     onEntityCheckedError,
     seamlessLoad,
     otherUid,
@@ -247,16 +245,30 @@ const EntitySelectorInnerAuth = ({
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   useEffect(() => {
-    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE) {
-      if (onEntityCheckedSuccess) onEntityCheckedSuccess();
+    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE || !seamlessLoad) {
+      if (
+        entityAvailability === ENTITY_AVAILABILITY.AVAILABLE &&
+        onEntityCheckedSuccess
+      )
+        onEntityCheckedSuccess();
+      else if (onEntityCheckedError) onEntityCheckedError();
       if (isUidValid(uid) && rating == null) {
         loadRating();
       }
     }
-  }, [entityAvailability, onEntityCheckedSuccess, loadRating, rating, uid]);
+  }, [
+    entityAvailability,
+    onEntityCheckedSuccess,
+    onEntityCheckedError,
+    seamlessLoad,
+    loadRating,
+    rating,
+    uid,
+  ]);
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
+
     if (ratingIsExpired) {
       loadRating();
     }
@@ -273,6 +285,8 @@ const EntitySelectorInnerAuth = ({
   }, [uid]);
 
   const handleChange = (value: string) => {
+    setSeamlessLoad(false);
+
     if (value === '') {
       setInputValue('');
       onChange({
@@ -282,7 +296,7 @@ const EntitySelectorInnerAuth = ({
       return;
     }
 
-    setSeamlessLoad(false);
+    setLoading(true);
 
     const videoIdFromValue =
       pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
@@ -294,6 +308,10 @@ const EntitySelectorInnerAuth = ({
       uid: newUid,
       rating: null,
     });
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   };
 
   const handleRatingUpdate = useCallback(
@@ -344,12 +362,14 @@ const EntitySelectorInnerAuth = ({
               currentUid={uid}
               otherUid={otherUid}
               onClick={() => {
+                setLoading(true);
                 setSeamlessLoad(true);
                 setInputValue('');
-                setLoading(true);
               }}
               onResponse={(uid) => {
-                uid ? onChange({ uid, rating: null }) : setLoading(false);
+                uid
+                  ? onChange({ uid, rating: null })
+                  : (setLoading(false), setSeamlessLoad(true));
               }}
               autoFill={autoFill}
             />
@@ -365,19 +385,19 @@ const EntitySelectorInnerAuth = ({
         </>
       )}
       <Box position="relative">
-        {rating &&
-        (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE ||
-          !seamlessLoad) ? (
-          <EntityCard
-            compact
-            entity={rating.entity}
-            settings={showRatingControl ? toggleAction : undefined}
-          ></EntityCard>
-        ) : (
+        {(rating &&
+          (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE ||
+            !seamlessLoad) && (
+            <EntityCard
+              compact
+              entity={rating.entity}
+              settings={showRatingControl ? toggleAction : undefined}
+            ></EntityCard>
+          )) || (
           <EmptyEntityCard
             compact
             loading={
-              loading || entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
+              loading || entityAvailability !== ENTITY_AVAILABILITY.AVAILABLE
             }
           />
         )}
