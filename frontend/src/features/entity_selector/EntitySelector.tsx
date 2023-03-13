@@ -203,21 +203,26 @@ const EntitySelectorInnerAuth = ({
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
-   * When the entity is available and no auto-reload has been asked.
-   *
    * Load the user's rating.
+   *
+   * Do not load anything if the entity availability is unknown, or if an
+   * entity auto-reload has been asked.
    */
   useEffect(() => {
-    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE || !autoReload) {
-      if (
-        entityAvailability === ENTITY_AVAILABILITY.AVAILABLE &&
-        onEntityAvailable
-      ) {
+    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE) {
+      if (onEntityAvailable) {
         onEntityAvailable();
-      } else if (onEntityUnavailable) {
+      }
+    } else if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
+      if (onEntityUnavailable) {
         onEntityUnavailable();
       }
+    }
 
+    if (
+      entityAvailability === ENTITY_AVAILABILITY.AVAILABLE ||
+      (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !autoReload)
+    ) {
       if (isUidValid(uid) && rating == null) {
         loadRating();
       }
@@ -233,18 +238,10 @@ const EntitySelectorInnerAuth = ({
   ]);
 
   /**
-   * When the entity is not available:
-   *
-   * First notify the parent component that the entity is not available.
-   *
-   * Then reload a new entity if an auto-reload is asked.
+   * Ask a new entity if an auto-reload has been asked.
    */
   useEffect(() => {
     if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
-      if (onEntityUnavailable) {
-        onEntityUnavailable();
-      }
-
       if (autoReload && !loading) {
         setLoading(true);
         getVideoForComparison(
