@@ -39,7 +39,7 @@
 
 - name: Notify frontend upgrade
   shell:
-    cmd: "wget -qO /dev/null --post-data='{\"content\": \"**{{domain_name}}** - {{ansible_user}} deployed new front end : {{git_reference}}\"}' --header='Content-Type:application/json' '{{discord_infra_alert_webhook}}?wait=true'"
+    cmd: "wget -qO /dev/null --post-data='{\"content\": \"**{{domain_name}}** - {{ansible_user_id}} deployed new front end : {{git_reference}}\"}' --header='Content-Type:application/json' '{{discord_infra_alert_webhook}}?wait=true'"
     executable: /usr/bin/bash
   when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
 
