@@ -19,42 +19,51 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
         poll = Poll.default_poll()
         secondary_criteria_list = poll.criterias_list.copy()
         secondary_criteria_list.remove(poll.main_criteria)
- 
+
+        context = {'poll_name': poll.name}
+
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": ["not_a_criteria"]}
         )
         self.assertEqual(serializer.is_valid(), False)
         self.assertIn("criteria__display_order", serializer.errors)
 
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": [secondary_criteria_list[0], "not_a_criteria"]}
         )
         self.assertEqual(serializer.is_valid(), False)
         self.assertIn("criteria__display_order", serializer.errors)
 
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": []}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": [secondary_criteria_list[1]]}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": secondary_criteria_list[0:3]}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         # Test main criteria should not be in the list
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": [poll.main_criteria]}
         )
         self.assertEqual(serializer.is_valid(), False)
 
         # Test one duplicate criteria
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": [secondary_criteria_list[0], secondary_criteria_list[0], secondary_criteria_list[1]]}
         )
         self.assertEqual(serializer.is_valid(), False)
@@ -62,6 +71,7 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
         # Test all criteria in random order
         random.shuffle(secondary_criteria_list)
         serializer = GenericPollUserSettingsSerializer(
+            context=context,
             data={"criteria__display_order": secondary_criteria_list}
 
         )

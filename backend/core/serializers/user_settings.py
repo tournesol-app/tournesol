@@ -11,10 +11,11 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     """
 
     criteria__display_order = serializers.ListField(child=serializers.CharField(), required=False)
+    rate_later__auto_remove = serializers.IntegerField(required=False)
 
     def validate_criteria__display_order(self, criteria_list):
 
-        poll = Poll.default_poll()
+        poll = Poll.objects.get(name=self.context['poll_name'])
 
         if len(criteria_list) != len(set(criteria_list)):
             raise ValidationError(
@@ -36,8 +37,6 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
 
         return criteria_list
 
-    rate_later__auto_remove = serializers.IntegerField(required=False)
-
     def validate_rate_later__auto_remove(self, value):
         if value < 1:
             raise ValidationError(_("This parameter cannot be lower than 1."))
@@ -51,7 +50,7 @@ class TournesolUserSettingsSerializer(serializers.Serializer):
     specific settings of each poll.
     """
 
-    videos = GenericPollUserSettingsSerializer(required=False)
+    videos = GenericPollUserSettingsSerializer(required=False, context={'poll_name':'videos'})
 
     def create(self, validated_data):
         return validated_data
