@@ -1,34 +1,59 @@
+# Full stack Web Framework used for Tournesol's backend
+# https://docs.djangoproject.com
 Django==4.0.10
-django-computed-property==0.3.0
+# Used for fields computed on save for Django models
+# See https://github.com/brechin/django-computed-property/
+django-computed-property==0.3.0  
+# CORS middleware
+# See https://github.com/adamchainz/django-cors-headers
 django-cors-headers==3.13.0
-django-countries==7.3.2
+# TODO
 django-filter==22.1
+# Used to support OAuth
+# See https://github.com/jazzband/django-oauth-toolkit
 django-oauth-toolkit==1.7.0
+# Used to provide django metrics for monitoring
+# See https://github.com/korfuri/django-prometheus
 django-prometheus==2.2.0
+# Registration, profile, password and email management
+# https://github.com/apragacz/django-rest-registration
 django-rest-registration==0.7.0
+# TODO
 django-sql-utils==0.6.1
+# Django REST Framework is used for most of the API routes
+# https://github.com/encode/django-rest-framework
 djangorestframework==3.13.1
+# Used to generate OpenAPI documentation exposed by Swagger UI
+# See https://github.com/tfranzel/drf-spectacular
 drf-spectacular==0.21.2
+# Pillow is used to generate the Previews for links shared on social media
 Pillow==9.3.0
+# Needed for postgres database
 psycopg2-binary==2.9.3
+# PyYAML is used for reading the settings 
 PyYAML==5.4.1
+# tqdm is used to display a progressbar in some slow ML algorithms
 tqdm==4.62.1
+# langdetect is used to detect the language of video
 langdetect==1.0.9
-
-# Shared with ML
+# Pandas is used extensively in the ML algorithms and for some data management
+# tasks such as building the public dataset
 pandas==1.4.1
+# Numpy is used extensively in the ML algorithms and in some other algorithms
+# such as computing comparison suggestions. See https://numpy.org/
 numpy==1.22.3
+# Scipy is used in some ML algorithms
 scipy==1.8.0
-numexpr==2.8.3
-
 # API Youtube data
 google-api-python-client==2.36.0
 google-auth-httplib2==0.1.0
-
-# TwitterBot
+# matplotlib is used to generate a graph that the twitter bot tweets every
+# month 
 matplotlib==3.6.3
+# requests is used to trigger a few external tools such as Discord or fetch
+# information 
 requests==2.27.1
+# Used for the twitter bots
 tweepy==3.10.0
-
 # dotenv for .env file
 python-dotenv==0.20.0
