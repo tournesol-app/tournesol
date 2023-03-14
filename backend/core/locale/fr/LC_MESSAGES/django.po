@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-30 16:13+0000\n"
+"POT-Creation-Date: 2023-03-14 12:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: core/admin.py:76
+#: core/admin.py:80
 msgid "Tournesol - trust"
 msgstr "Tournesol - confiance"
 
-#: core/admin.py:77
+#: core/admin.py:81
 msgid "Tournesol - preferences"
 msgstr "Tournesol - préférences"
 
@@ -34,7 +34,7 @@ msgstr "adresse e-mail"
 msgid "The user' preferences."
 msgstr "Les préférences de l'utilisateur."
 
-#: core/models/user.py:130
+#: core/models/user.py:126
 #, python-format
 msgid ""
 "A user with an email starting with '%(email)s' already exists in this domain."
@@ -42,7 +42,7 @@ msgstr ""
 "Un utilisateur avec un e-mail commençant par '%(email)s' existe déjà dans ce "
 "domaine."
 
-#: core/models/user.py:169 core/serializers/user.py:19
+#: core/models/user.py:165 core/serializers/user.py:19
 msgid "A user with this email address already exists."
 msgstr "Un utilisateur avec cet e-mail existe déjà."
 
@@ -55,7 +55,20 @@ msgstr "'%(name)s' est un nom d'utilisateur reservé"
 msgid "'@' is not allowed in username"
 msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
 
-#: core/serializers/user_settings.py:15
+#: core/serializers/user_settings.py:21
+msgid "The main criterion cannot be in the list."
+msgstr "Le critère principal ne peut pas être présent."
+
+#: core/serializers/user_settings.py:24
+msgid "The list cannot contain duplicates."
+msgstr "La liste ne peut pas contenir des doublons."
+
+#: core/serializers/user_settings.py:28
+#, python-brace-format
+msgid "Unknown criterion: {criterion}."
+msgstr "Critère inconnu: {criterion}."
+
+#: core/serializers/user_settings.py:34
 msgid "This parameter cannot be lower than 1."
 msgstr "Ce paramètre ne peut pas être inférieur à 1."
 

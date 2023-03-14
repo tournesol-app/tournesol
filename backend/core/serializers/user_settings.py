@@ -17,23 +17,15 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
         poll_name = self.context.get("poll_name", self._context["poll_name"])
         poll = Poll.objects.get(name=poll_name)
 
-        if len(criteria) != len(set(criteria)):
-            raise ValidationError(
-                _("Duplicate criteria in the list"),
-                code="invalid",
-            )
-
         if poll.main_criteria in criteria:
-            raise ValidationError(
-                _("Main poll criteria shouldn't be in the list"),
-                code="invalid",
-            )
+            raise ValidationError(_("The main criterion cannot be in the list."))
+
+        if len(criteria) != len(set(criteria)):
+            raise ValidationError(_("The list cannot contain duplicates."))
+
         for criterion in criteria:
             if criterion not in poll.criterias_list:
-                raise ValidationError(
-                    _(f"Invalid criterion: {criterion}"),
-                    code="invalid",
-                )
+                raise ValidationError(_(f"Unknown criterion: {criterion}."))
 
         return criteria
 
