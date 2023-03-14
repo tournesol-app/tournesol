@@ -16,7 +16,7 @@ class UserSettingsDetailTestCase(TestCase):
         self.valid_settings = {
             "videos": {
                 "rate_later__auto_remove": 16,
-                "criteria__display_order": ["reliability"],
+                "comparison__criteria_order": ["reliability"],
             }
         }
 
@@ -39,7 +39,7 @@ class UserSettingsDetailTestCase(TestCase):
         new_settings = {
             "videos": {
                 "rate_later__auto_remove": 99,
-                "criteria__display_order": ["reliability"],
+                "comparison__criteria_order": ["reliability"],
             }
         }
         self.user.settings = new_settings
@@ -126,7 +126,7 @@ class UserSettingsDetailTestCase(TestCase):
         The serializer used by the view should already be tested by its own
         test case. As a result, it's not necessary to check an HTTP 400 Bad
         Request is returned for each invalid field. Checking ony the fields
-        `rate_later__auto_remove` and `criteria__display_order` should give
+        `comparison__criteria_order` and `criteria__display_order` should give
         us enough trust in the fact that the correct and already tested
         serializer is used by the view.
         """
@@ -135,7 +135,7 @@ class UserSettingsDetailTestCase(TestCase):
         self.user.settings = {
             "videos": {
                 "rate_later__auto_remove": 4,
-                "criteria__display_order": ["reliability"],
+                "comparison__criteria_order": ["reliability"],
             }
         }
         self.user.save(update_fields=["settings"])
@@ -147,14 +147,14 @@ class UserSettingsDetailTestCase(TestCase):
         self.assertIn("videos", response.data)
         self.assertIn("rate_later__auto_remove", response.data["videos"])
 
-        # Invalid criteria__display_order
-        invalid_settings_2 = {"videos": {"criteria__display_order": ["not_a_criteria"]}}
+        # Invalid comparison__criteria_order
+        invalid_settings_2 = {"videos": {"comparison__criteria_order": ["not_a_criteria"]}}
         response = self.client.patch(
             self.settings_base_url, data=invalid_settings_2, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("videos", response.data)
-        self.assertIn("criteria__display_order", response.data["videos"])
+        self.assertIn("comparison__criteria_order", response.data["videos"])
 
         self.user.refresh_from_db()
         self.assertDictEqual(
@@ -162,7 +162,7 @@ class UserSettingsDetailTestCase(TestCase):
             {
                 "videos": {
                     "rate_later__auto_remove": 4,
-                    "criteria__display_order": ["reliability"],
+                    "comparison__criteria_order": ["reliability"],
                 }
             },
         )

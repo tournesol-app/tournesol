@@ -10,10 +10,12 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     The settings common to all polls.
     """
 
-    criteria__display_order = serializers.ListField(child=serializers.CharField(), required=False)
+    comparison__criteria_order = serializers.ListField(
+        child=serializers.CharField(), required=False
+    )
     rate_later__auto_remove = serializers.IntegerField(required=False)
 
-    def validate_criteria__display_order(self, criteria):
+    def validate_comparison__criteria_order(self, criteria):
         poll_name = self.context.get("poll_name", self._context["poll_name"])
         poll = Poll.objects.get(name=poll_name)
 

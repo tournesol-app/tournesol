@@ -11,9 +11,9 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
     TestCase of the `GenericPollUserSettingsSerializer` serializer.
     """
 
-    def test_validate_criteria__display_order(self):
+    def validate_comparison__criteria_order(self):
         """
-        The `validate_criteria__display_order` setting must match the related poll's criteria.
+        The `validate_comparison__criteria_order` setting must match the related poll's criteria.
         """
 
         poll = Poll.default_poll()
@@ -24,22 +24,22 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
 
         # A non-existing criterion should be invalid.
         serializer = GenericPollUserSettingsSerializer(
-            context=context, data={"criteria__display_order": ["not_a_criterion"]}
+            context=context, data={"comparison__criteria_order": ["not_a_criterion"]}
         )
         self.assertEqual(serializer.is_valid(), False)
-        self.assertIn("criteria__display_order", serializer.errors)
+        self.assertIn("comparison__criteria_order", serializer.errors)
 
         # A combination of existing and non-existing criteria should be invalid.
         serializer = GenericPollUserSettingsSerializer(
             context=context,
-            data={"criteria__display_order": [secondary_criteria_list[0], "not_a_criteria"]},
+            data={"comparison__criteria_order": [secondary_criteria_list[0], "not_a_criteria"]},
         )
         self.assertEqual(serializer.is_valid(), False)
-        self.assertIn("criteria__display_order", serializer.errors)
+        self.assertIn("comparison__criteria_order", serializer.errors)
 
         # The main criterion should be invalid.
         serializer = GenericPollUserSettingsSerializer(
-            context=context, data={"criteria__display_order": [poll.main_criteria]}
+            context=context, data={"comparison__criteria_order": [poll.main_criteria]}
         )
         self.assertEqual(serializer.is_valid(), False)
 
@@ -47,33 +47,36 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
         serializer = GenericPollUserSettingsSerializer(
             context=context,
             data={
-                "criteria__display_order": [secondary_criteria_list[0], secondary_criteria_list[0]]
+                "comparison__criteria_order": [
+                    secondary_criteria_list[0],
+                    secondary_criteria_list[0],
+                ]
             },
         )
         self.assertEqual(serializer.is_valid(), False)
 
         # An empty list is valid.
         serializer = GenericPollUserSettingsSerializer(
-            context=context, data={"criteria__display_order": []}
+            context=context, data={"comparison__criteria_order": []}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         # An existing criterion is valid.
         serializer = GenericPollUserSettingsSerializer(
-            context=context, data={"criteria__display_order": [secondary_criteria_list[0]]}
+            context=context, data={"comparison__criteria_order": [secondary_criteria_list[0]]}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         # A list of existing criterion is valid.
         serializer = GenericPollUserSettingsSerializer(
-            context=context, data={"criteria__display_order": secondary_criteria_list[0:3]}
+            context=context, data={"comparison__criteria_order": secondary_criteria_list[0:3]}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         # A random order of the existing criteria is valid.
         random.shuffle(secondary_criteria_list)
         serializer = GenericPollUserSettingsSerializer(
-            context=context, data={"criteria__display_order": secondary_criteria_list}
+            context=context, data={"comparison__criteria_order": secondary_criteria_list}
         )
         self.assertEqual(serializer.is_valid(), True)
 
