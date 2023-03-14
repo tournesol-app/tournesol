@@ -106,23 +106,7 @@ See the full legal code [AGPL-3.0-or-later][lic-frontend-agpl-3.0-or-later].
 
 ### Images
 
-#### Firefox Browser logo
-
-    Copyright 2019 Mozilla Corporation
-
-    Firefox Browser logo is licensed under the
-    Mozilla Public License Version 2.0 (MPL 2.0).
-
-    You should have received a copy of the license along with this
-    work. If not, see <https://www.mozilla.org/en-US/MPL/2.0/>.
-
-See the full legal code
-[Mozilla Public License Version 2.0][lic-frontend-mpl-2.0].
-
-Affected materials:
-- `public/logos/Fx-Browser-icon-fullColor.svg`
-
-#### Tournesol Criteria Icons
+#### Tournesol criteria icons
 
     Copyright 2021 Association Tournesol - Author Chris Vossen
 
@@ -155,3 +139,26 @@ Affected materials:
 [lic-frontend-agpl-3.0-or-later]: ./LICENSE.AGPL-3.0-or-later.txt
 [lic-frontend-cc-by-4.0]: ./LICENSE.CC-BY-4.0.txt
 [lic-frontend-mpl-2.0]: ./LICENSE.MPL-2.0.txt
+
+#### Firefox browser logo
+
+    Copyright 2019 Mozilla Corporation
+
+    Firefox Browser logo is licensed under the
+    Mozilla Public License Version 2.0 (MPL 2.0).
+
+    You should have received a copy of the license along with this
+    work. If not, see <https://www.mozilla.org/en-US/MPL/2.0/>.
+
+See the full legal code
+[Mozilla Public License Version 2.0][lic-frontend-mpl-2.0].
+
+Affected materials:
+- `public/logos/Fx-Browser-icon-fullColor.svg`
+
+#### Edge browser logo
+
+    Copyright 2019 Microsoft Corporation
+
+Affected materials:
+- `public/logos/Edge-Browser-icon-fullColor.svg`
