@@ -13,29 +13,29 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     criteria__display_order = serializers.ListField(child=serializers.CharField(), required=False)
     rate_later__auto_remove = serializers.IntegerField(required=False)
 
-    def validate_criteria__display_order(self, criteria_list):
+    def validate_criteria__display_order(self, criteria):
+        poll_name = self.context.get("poll_name", self._context["poll_name"])
+        poll = Poll.objects.get(name=poll_name)
 
-        poll = Poll.objects.get(name=self.context['poll_name'])
-
-        if len(criteria_list) != len(set(criteria_list)):
+        if len(criteria) != len(set(criteria)):
             raise ValidationError(
                 _("Duplicate criteria in the list"),
                 code="invalid",
             )
 
-        if poll.main_criteria in criteria_list:
+        if poll.main_criteria in criteria:
             raise ValidationError(
                 _("Main poll criteria shouldn't be in the list"),
                 code="invalid",
             )
-        for criteria in criteria_list:
-            if criteria not in poll.criterias_list:
+        for criterion in criteria:
+            if criterion not in poll.criterias_list:
                 raise ValidationError(
-                    _(f"Invalid criteria: {criteria}"),
+                    _(f"Invalid criterion: {criterion}"),
                     code="invalid",
                 )
 
-        return criteria_list
+        return criteria
 
     def validate_rate_later__auto_remove(self, value):
         if value < 1:
@@ -50,7 +50,7 @@ class TournesolUserSettingsSerializer(serializers.Serializer):
     specific settings of each poll.
     """
 
-    videos = GenericPollUserSettingsSerializer(required=False, context={'poll_name':'videos'})
+    videos = GenericPollUserSettingsSerializer(required=False, context={"poll_name": "videos"})
 
     def create(self, validated_data):
         return validated_data
