@@ -16,9 +16,7 @@ let isPageLoaded = false;
 let areRecommandationsLoading = false;
 let areRecommendationsLoaded = false;
 let path = location.pathname;
-let search = location.search;
-
-loadRecommandations();
+let search = '';
 
 setInterval(() => {
   if (location.pathname != path || location.search != search) {
@@ -176,7 +174,13 @@ const getTournesolComponent = () => {
 
     const video_uploader = document.createElement('p');
     video_uploader.className = 'video_text';
-    video_uploader.append(video.metadata.uploader);
+
+    const video_channel_link = document.createElement('a');
+    video_channel_link.classList.add('video_channel_link');
+    video_channel_link.textContent = video.metadata.uploader;
+    video_channel_link.href = `https://youtube.com/channel/${video.metadata.channel_id}`;
+
+    video_uploader.append(video_channel_link);
     video_channel_details.append(video_uploader);
 
     const video_views_publication = document.createElement('p');
@@ -322,14 +326,6 @@ function handleResponse({ data: videosReponse }) {
   }
 }
 
-// function handleSearchResponse({ data: videosReponse }){
-//   handleResponse({data: videosReponse}, displayRecommendations);
-// }
-
-// function handleHomeResponse({ data: videosReponse }){
-//   handleResponse({data: videosReponse}, displayRecommendations);
-// }
-
 function loadRecommandations() {
   // Only enable on youtube.com/
   if (location.pathname != '/' && location.pathname != '/results') return;
@@ -339,16 +335,24 @@ function loadRecommandations() {
   areRecommandationsLoading = true;
 
   if (location.pathname == '/results') {
-    let searchQuery = search.substring(14);
-    chrome.runtime.sendMessage(
-      {
-        message: 'getTournesolSearchRecommendations',
-        search: searchQuery,
-        videosNumber: searchRecommandationNumber,
-        additionalVideosNumber: searchRecommandationAdditionalNumber,
-      },
-      handleResponse
-    );
+    handleResponse({ data: [] });
+    const old_container = document.getElementById('tournesol_container');
+    if (old_container) old_container.remove();
+
+    chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
+      if (searchEnabled) {
+        let searchQuery = search.substring(14);
+        chrome.runtime.sendMessage(
+          {
+            message: 'getTournesolSearchRecommendations',
+            search: searchQuery,
+            videosNumber: searchRecommandationNumber,
+            additionalVideosNumber: searchRecommandationAdditionalNumber,
+          },
+          handleResponse
+        );
+      }
+    });
 
     return;
   }

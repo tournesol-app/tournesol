@@ -102,6 +102,31 @@ function openAnalysisPageAction(event) {
 }
 
 /**
+ * Handle the search button visual and the toggle between enable and disabled in the storage
+ */
+
+function handleUserSearchEnable() {
+  let enabled;
+
+  chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
+    enabled = searchEnabled;
+    if (enabled === undefined) {
+      chrome.storage.local.set({ searchEnabled: false });
+    }
+
+    if (enabled) {
+      document.getElementById('enable_search').classList.add('enabled');
+    }
+  });
+
+  return () => {
+    document.getElementById('enable_search').classList.toggle('enabled');
+    enabled = !enabled;
+    chrome.storage.local.set({ searchEnabled: enabled });
+  };
+}
+
+/**
  * Create the action menu.
  */
 document.addEventListener('DOMContentLoaded', function () {
@@ -115,4 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document
     .getElementById('analysis')
     .addEventListener('click', openAnalysisPageAction);
+  document
+    .getElementById('enable_search')
+    .addEventListener('click', handleUserSearchEnable());
 });

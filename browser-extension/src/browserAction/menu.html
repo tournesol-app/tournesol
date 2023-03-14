@@ -5,7 +5,7 @@
     <style>
       body {
         background: #ffc800;
-        width: 120px;
+        width: 140px;
         display: flex;
         flex-direction: column;
       }
@@ -13,7 +13,7 @@
         margin-bottom: 6px;
       }
       body > a > img {
-        width: 120px;
+        width: 140px;
       }
       button {
         background-color: #506ad4;
@@ -49,6 +49,45 @@
         box-shadow: none;
         background-color: #6980df;
       }
+
+      #enable_search{
+        position: relative;
+        background-color: #f44336;
+        color: transparent;
+      }
+
+      #enable_search{
+        background-color: #f44336;
+      }
+      
+      #enable_search.enabled{
+        background-color: #4caf50;
+      }
+
+      #enable_search:hover{
+        background-color: #f6695e;
+      }
+
+      #enable_search.enabled:hover{
+        background-color: #6fc072;
+      }
+
+
+      #enable_search::after{
+        content: 'Search Is Off';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        color: white;
+        top: 14%;
+      }
+      
+      #enable_search.enabled::after{
+        content: 'Search Is On';
+      }
+
     </style>
     <script type="module" src="menu.js"></script>
   </head>
@@ -59,5 +98,6 @@
     <button id="rate_now">Rate now</button>
     <button id="rate_later">Rate later</button>
     <button id="analysis">Analysis</button>
+    <button id="enable_search">Search</button>
   </body>
 </html>

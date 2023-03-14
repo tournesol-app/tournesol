@@ -64,6 +64,11 @@
   left: 0px;
 }
 
+.video_channel_link{
+  text-decoration: none;
+  color: inherit;
+}
+
 .tournesol_comparison_logo{
   width: 16px;
   margin-right: 4px;
@@ -230,6 +235,10 @@
 
 #tournesol_container.search h2{
   min-height: auto;
+}
+
+#tournesol_container.search .video_channel_link{
+  text-decoration: underline;
 }
 
 #tournesol_container.search .tournesol_comparison_logo{
