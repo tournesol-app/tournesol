@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-14 12:54+0000\n"
+"POT-Creation-Date: 2023-03-14 13:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,9 +64,8 @@ msgid "The list cannot contain duplicates."
 msgstr "La liste ne peut pas contenir des doublons."
 
 #: core/serializers/user_settings.py:28
-#, python-brace-format
-msgid "Unknown criterion: {criterion}."
-msgstr "Critère inconnu: {criterion}."
+msgid "Unknown criterion: %(criterion)s."
+msgstr "Critère inconnu: %(criterion)s."
 
 #: core/serializers/user_settings.py:34
 msgid "This parameter cannot be lower than 1."

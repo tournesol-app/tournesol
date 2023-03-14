@@ -25,7 +25,9 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
 
         for criterion in criteria:
             if criterion not in poll.criterias_list:
-                raise ValidationError(_(f"Unknown criterion: {criterion}."))
+                raise ValidationError(
+                    _("Unknown criterion: %(criterion)s.") % {"criterion": criterion}
+                )
 
         return criteria
 
