@@ -209,7 +209,7 @@ const EntitySelectorInnerAuth = ({
    * entity auto-reload has been asked.
    */
   useEffect(() => {
-    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE) {
+    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE || !autoReload) {
       if (onEntityAvailable) {
         onEntityAvailable();
       }
