@@ -550,8 +550,13 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "resetPasswordButton": "Reset password"
   },
+  "proofByKeyword": {
+    "proofByKeyword": "Proof by keyword",
+    "proofFor": "Proof for:"
+  },
   "myFeedbackPage": {
     "title": "My results",
+    "proofOfVoteHelperText": "This code will be helpful to complete <2>our survey.</2>",
     "presidentielle2022": {
       "welcomeOnYourResultPage": "Welcome on your result page",
       "notEnoughComparisons_one": "We need at least {{minComparisons}} different comparisons before being able to display your results. One last comparison is required. Click on the button below to continue.",
@@ -562,12 +567,14 @@
       "opinionsOnOnlineSharedContent": "We think your opinions on online shared contents are at least as equally important as your opinions on candidates.",
       "discoverTournesolVideos": "Discover Tournesol videos. A place where you can give your opinion on the YouTube videos you watch, to improve everyone's recommendations."
     },
+    "proofOfVote": "Proof of vote",
     "generic": {
       "whatsNext": "What's next?",
       "discoverTournesol": "Discover Tournesol"
-    },
-    "proofOfVoteHelperText": "This code will be helpful to complete <2>our survey.</2>",
-    "proofOfVote": "Proof of vote"
+    }
+  },
+  "proofOfVote": {
+    "proof": "Proof"
   },
   "personalVouchers": {
     "voucherCreated": "You successfuly vouched for \"{{username}}\".",

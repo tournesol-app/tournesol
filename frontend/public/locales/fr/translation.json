@@ -556,8 +556,13 @@
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
     "resetPasswordButton": "Réinitialiser le mot de passe"
   },
+  "proofByKeyword": {
+    "proofByKeyword": "Preuve par mot-clé",
+    "proofFor": "Preuve pour :"
+  },
   "myFeedbackPage": {
     "title": "Mes résultats",
+    "proofOfVoteHelperText": "Ce code sera utile afin de répondre à <2>notre sondage.</2>",
     "presidentielle2022": {
       "welcomeOnYourResultPage": "Bienvenue sur votre page de résultat",
       "notEnoughComparisons_one": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre une dernière à faire. Cliquez sur le bouton ci-dessous pour continuer.",
@@ -569,12 +574,14 @@
       "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat·es.",
       "discoverTournesolVideos": "Découvrez maintenant Tournesol vidéos. Un endroit qui vous permet de donner votre avis sur les vidéos YouTube que vous avez regardées, afin d'améliorer les recommandations de tous."
     },
+    "proofOfVote": "Preuve de participation",
     "generic": {
       "whatsNext": "Et maintenant ?",
       "discoverTournesol": "Découvrez Tournesol"
-    },
-    "proofOfVoteHelperText": "Ce code sera utile afin de répondre à <2>notre sondage.</2>",
-    "proofOfVote": "Preuve de participation"
+    }
+  },
+  "proofOfVote": {
+    "proof": "Preuve"
   },
   "personalVouchers": {
     "voucherCreated": "Vous vous portez garant pour «\u00a0{{username}}\u00a0».",
