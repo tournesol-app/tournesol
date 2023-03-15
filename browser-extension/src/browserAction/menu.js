@@ -105,7 +105,7 @@ function openAnalysisPageAction(event) {
  * Handle the search button visual and the toggle between enable and disabled in the storage
  */
 
-function handleUserSearchEnable() {
+function toggleSearchState() {
   let enabled;
 
   chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
@@ -142,5 +142,5 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('click', openAnalysisPageAction);
   document
     .getElementById('enable_search')
-    .addEventListener('click', handleUserSearchEnable());
+    .addEventListener('click', toggleSearchState());
 });
