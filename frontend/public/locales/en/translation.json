@@ -460,7 +460,7 @@
     "presidentielle2022": {
       "title": "Tournesol for France's presidential elections",
       "tournesolDescription": "Tournesol is an open source platform which proposes a tool for collaborative decision.",
-      "whyCompareCandidates": "Initially developed to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about your explicit preferences.",
+      "whyCompareCandidates": "Initially developed to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about the preferences you expressed.",
       "dataUsage": "Submitted data will never be revealed to other users, and will only be used to help research on the ethics of algorithms and artificial intelligence.",
       "respondToSurvey": "Respond to survey"
     },
