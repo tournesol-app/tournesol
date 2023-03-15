@@ -42,13 +42,6 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
   },
-  "pagination": {
-    "videos": "vidéos",
-    "previousButton": "{{limit}} prec.",
-    "showingCounts": "de {{firstShowing}} à {{lastShowing}} sur un total de {{total}} {{itemTypeText}}",
-    "nextButton": "{{limit}} suiv.",
-    "comparisons": "comparaisons"
-  },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
@@ -394,7 +387,7 @@
     "contributorProfile": "Profils des contributeurs",
     "whyTournesolCollectsContributorProfile": "Afin de distinguer l'expertise des différents contributeurs, Tournesol demande à ce que les contributeurs certifient leur adresse e-mail, décrivent leurs domaines de compétences et ajoutent des liens vers leurs profils publics. Nous pensons que de telles données peuvent avoir un intérêt scientifique et éthique pour construire des systèmes de recommandations plus robustement bénéfiques pour l'humanité.",
     "contactForm": "Formulaire de contact",
-    "thereIsNoContactForm": "Il n'y a actuellement pas de formulaire de contact. Pour nous contacter, veuillez utiliser l'adresse e-mail suivante: tournesol.application(at)gmail.com",
+    "thereIsNoContactForm": "Il n'y a actuellement pas de formulaire de contact. Pour nous contacter, veuillez utiliser l'adresse e-mail suivante: hello(at)tournesol.app",
     "loginInformation": "Données de connexion",
     "loginInformationDetails": "Si un contributeur possède un compte et se connecte à Tournesol, Tournesol déposera un jeton unique et temporaire afin d'authentifier la session de l'utilisateur auprès des serveurs de Tournesol. Ce jeton ne contient aucune données personnelle, et est utilisé exclusivement à but d'authentification. De plus, Tournesol peut également persister localement sur le navigateur des données relatives aux fonctionnalités de la plateforme, telles que des préférences d'affichage ou de langues. Lors de la déconnexion, les données de connexion sont supprimées. Tournesol n'utilise aucun cookie (ou autre dispositif) à des fins de pistage.",
     "embeddedContentFromOtherWebsites": "Contenu intégré provenant d'autres sites",

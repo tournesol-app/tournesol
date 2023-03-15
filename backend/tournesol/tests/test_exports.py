@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import random
 import re
 import shutil
@@ -9,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict
+from unittest.mock import ANY
 
 import requests
 from django.conf import settings
@@ -23,6 +25,8 @@ from core.models import User
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago, time_ahead
 from ml.inputs import MlInputFromPublicDataset
+from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
+from ml.mehestan.individual import ALPHA, R_MAX
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -34,6 +38,7 @@ from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory,
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
 from tournesol.tests.utils.mock_now import MockNow
+from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
 
 @override_settings(
@@ -42,8 +47,6 @@ from tournesol.tests.utils.mock_now import MockNow
         {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
     ),
 )
-
-
 class ExportTest(TestCase):
     @MockNow.Context()
     def setUp(self) -> None:
@@ -144,24 +147,10 @@ class ExportTest(TestCase):
             comparison=comparison, score=5, criteria="largely_recommended"
         )
 
-
-    def extract_export_root(self, response):
-        content_disposition = response.headers["Content-Disposition"]
-        match = re.search(
-            "attachment; filename=(tournesol_dataset_\\d{8}).zip",
-            content_disposition,
-        )
-        self.assertIsNotNone(match)
-        root = match.group(1)
-        return root
-
     def parse_zipped_csv(self, response: requests.models.Response, filename: str) -> Dict[str, str]:
-        content_disposition = response.headers["Content-Disposition"]
-        match = re.search("filename=(.+).zip", content_disposition)
-        root = Path(match.group(1))
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, "r") as zip_file:
-            with zip_file.open(str(root / filename), "r") as file:
+            with zip_file.open(filename, "r") as file:
                 content = file.read().decode("utf-8")
                 csv_file = csv.DictReader(io.StringIO(content))
                 rows = list(csv_file)
@@ -175,7 +164,7 @@ class ExportTest(TestCase):
         self.client.force_authenticate(self.user_with_comparisons)
         resp = self.client.get("/users/me/exports/comparisons/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        # Ensures that the csv contians a single row with the correct score
+        # Ensures that the csv contains a single row with the correct score
         csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
         comparison_list = list(csv_file)
         self.assertEqual(len(comparison_list), 1)
@@ -268,6 +257,7 @@ class ExportTest(TestCase):
             expected_filenames = [
                 "README.txt",
                 "LICENSE.txt",
+                "metadata.json",
                 "users.csv",
                 "comparisons.csv",
                 "individual_criteria_scores.csv",
@@ -279,22 +269,57 @@ class ExportTest(TestCase):
     def test_export_readme_equals_resources_readme(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
-        root = self.extract_export_root(response)
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, "r") as zip_file:
-            with zip_file.open(root + "/README.txt", "r") as file:
+            with zip_file.open("README.txt", "r") as file:
                 content = file.read()
                 with open("tournesol/resources/export_readme.txt", "rb") as readme_file:
                     expected_content = readme_file.read()
                 self.assertEqual(content, expected_content)
+    
+    def test_export_metadata(self):
+        call_command("create_dataset")
+        response = self.client.get("/exports/all/")
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
+            with zip_file.open("metadata.json", "r") as file:
+                metadata = json.load(file)
+                self.assertIn("data_included_until", metadata.keys())
+                self.assertIn("license", metadata.keys())
+                self.assertEqual(metadata["generated_by"],settings.MAIN_URL)
+                self.assertEqual(metadata["tournesol_version"],settings.TOURNESOL_VERSION)
+                self.assertEqual(
+                    set(metadata["algorithms_parameters"]["byztrust"].keys()),
+                    {
+                        "SINK_VOUCH",
+                        "VOUCH_DECAY",
+                        "TRUSTED_EMAIL_PRETRUST",
+                    }
+                )
+                self.assertEqual(
+                    set(metadata["algorithms_parameters"]["mehestan"].keys()),
+                    {
+                        "ALPHA",
+                        "R_MAX",
+                        "W",
+                        "SCALING_WEIGHT_CALIBRATION",
+                        "OVER_TRUST_BIAS",
+                        "OVER_TRUST_SCALE",
+                        "VOTE_WEIGHT_PUBLIC_RATINGS",
+                        "VOTE_WEIGHT_PRIVATE_RATINGS",
+                        "MAX_SCALED_SCORE",
+                        "POLL_SCALING_MIN_CONTRIBUTORS",
+                        "POLL_SCALING_QUANTILE",
+                        "POLL_SCALING_SCORE_AT_QUANTILE",
+                    }
+                )
 
     def test_export_all_comparisons_equal_export_comparisons(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
-        root = self.extract_export_root(response)
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, "r") as zip_file:
-            with zip_file.open(root + "/comparisons.csv", "r") as file:
+            with zip_file.open("comparisons.csv", "r") as file:
                 expected_content = self.client.get("/exports/comparisons/").content
                 self.assertEqual(file.read(), expected_content)
 

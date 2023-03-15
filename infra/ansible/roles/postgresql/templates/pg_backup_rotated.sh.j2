@@ -146,7 +146,7 @@ function perform_backups()
 			echo "Plain backup of $DATABASE"
 	 
 			set -o pipefail
-			if ! pg_dump -Fp -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" | gzip > $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress; then
+			if ! pg_dump -Fp -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" --exclude-table-data "$EXCLUDE_TABLE_DATA" | gzip > $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress; then
 				echo "[!!ERROR!!] Failed to produce plain backup database $DATABASE" 1>&2
 				return 1
 			else
@@ -160,7 +160,7 @@ function perform_backups()
 		then
 			echo "Custom backup of $DATABASE"
 	
-			if ! pg_dump -Fc -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" -f $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress; then
+			if ! pg_dump -Fc -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" --exclude-table-data "$EXCLUDE_TABLE_DATA" -f $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress; then
 				echo "[!!ERROR!!] Failed to produce custom backup database $DATABASE"
 				return 1
 			else

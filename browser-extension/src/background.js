@@ -90,6 +90,9 @@ chrome.webRequest.onHeadersReceived.addListener(
 function getDateThreeWeeksAgo() {
   // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12
   const threeWeeksAgo = new Date(Date.now() - 3 * 7 * 24 * 3600000);
+  // we truncate minutes, seconds and ms from the date in order to benefit
+  // from caching at the API level.
+  threeWeeksAgo.setMinutes(0, 0, 0);
   return threeWeeksAgo.toISOString();
 }
 

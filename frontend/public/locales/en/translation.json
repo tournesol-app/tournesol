@@ -39,13 +39,6 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
   },
-  "pagination": {
-    "videos": "videos",
-    "previousButton": "Previous {{limit}}",
-    "showingCounts": "Showing {{itemTypeText}} {{firstShowing}} to {{lastShowing}} of {{total}}",
-    "nextButton": "Next {{limit}}",
-    "comparisons": "comparisons"
-  },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "You must be logged in to display personal scores.",
@@ -388,7 +381,7 @@
     "contributorProfile": "Contributor profile",
     "whyTournesolCollectsContributorProfile": "In order to distinguish different contributors' expertise, Tournesol asks contributors to certify their emails, to report their fields of expertise and to link to their public profiles. We believe that such data have an important scientific and ethical value and will help make recommendation systems more robustly beneficial to humanity.",
     "contactForm": "Contact form",
-    "thereIsNoContactForm": "There is no contact form. If you need to contact us, please use the following email: tournesol.application(at)gmail.com",
+    "thereIsNoContactForm": "There is no contact form. If you need to contact us, please use the following email: hello(at)tournesol.app",
     "loginInformation": "Login information",
     "loginInformationDetails": "If a contributor has an account and logs in Tournesol, Tournesol will set a unique and temporary token to authenticate the user session when connecting to the Tournesol servers. This token contains no personal data, and is used only for authentication purposes. Moreover, Tournesol may also persist locally on the browser some data related to the platform features, such as display and language preferences. If they log out of their account, the login data will be removed. Tournesol does not use cookies (or any other measures) for tracking purposes.",
     "embeddedContentFromOtherWebsites": "Embedded content from other websites",

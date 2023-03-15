@@ -21,6 +21,11 @@ BACKUP_DIR=/backups/tournesol/db/
 # values will be considered candidates. (e.g. "system_log" will match "dev_system_log_2010-01")
 SCHEMA_ONLY_LIST=""
 
+# Do not dump data for any tables matching pattern.
+# This option is useful when you need the definition of a particular table even though you do
+# not need the data in it.
+EXCLUDE_TABLE_DATA=default_cache_table
+
 # Will produce a custom-format backup if set to "yes"
 ENABLE_CUSTOM_BACKUPS=yes
 
