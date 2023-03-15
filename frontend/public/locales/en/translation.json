@@ -478,7 +478,7 @@
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criteria.",
     "compareButton": "Compare now",
     "useOurExtension": "Use our extension!",
-    "webExtensionDescription": "The browser extension allows you to display videos recommended by the community directly on your YouTube home page. With just a few clicks you can rate each video or add videos to your rate-later list.",
+    "webExtensionDescription": "The browser extension allows you to display videos recommended by the community directly on your YouTube home page. With just a few clicks you can rate any video or add them to your rate-later list.",
     "getTheExtensionButton": "Get the extension",
     "extensionNotAvailableOnYourBrowser": "Unfortunately the extension is not available on your web browser. You may use it on <1>Firefox</1>, <3>Google Chrome</3>, <4>Microsoft Edge</4>, and similar browsers."
   },
