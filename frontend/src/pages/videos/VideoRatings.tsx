@@ -146,7 +146,7 @@ const VideoRatingsPage = () => {
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
           />
         </LoaderWrapper>
-        {!isLoading && videoCount > 0 && (
+        {!isLoading && videoCount > 0 && videoCount > limit && (
           <Pagination
             offset={offset}
             count={videoCount}

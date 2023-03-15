@@ -39,11 +39,11 @@ class VideoEntity(EntityType):
 
     @classmethod
     def filter_date_lte(cls, qs, max_date):
-        return qs.filter(metadata__publication_date__lte=max_date.date().isoformat())
+        return qs.filter(metadata__publication_date__lte=max_date.isoformat())
 
     @classmethod
     def filter_date_gte(cls, qs, min_date):
-        return qs.filter(metadata__publication_date__gte=min_date.date().isoformat())
+        return qs.filter(metadata__publication_date__gte=min_date.isoformat())
 
     @classmethod
     def get_uid_regex(cls, namespace: str) -> str:

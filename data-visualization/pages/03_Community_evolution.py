@@ -7,13 +7,11 @@ List of concepts:
         A new contributor is a user making his/her first public comparison.
 
     Comparison:
-        A public comparison between two videos involves one or more quality
-        criteria.
+        A public comparison between two videos involves one or more quality criteria.
 """
 
 import pandas as pd
 import streamlit as st
-
 from utils import set_df
 
 st.set_page_config(
@@ -34,71 +32,57 @@ assert (
 
 def add_contributors_evolution():
     """
-    Display the number of new contributors per week.
+    Display the number of new contributors per week or cumulative sum of new contributors.
     """
-    df = st.session_state.df
-    st.markdown("#### Number of new contributors per week.")
-    fig = (
-        df.groupby("public_username")
-        .first()
-        .groupby("week_date")
-        .size()
-        .plot(kind="bar")
-    )
-    fig.update_xaxes(title="Week")
-    fig.update_yaxes(title="New contributors (nbr)")
-    fig.update_layout(showlegend=False)
-    st.plotly_chart(fig)
 
+    st.markdown("#### New contributors")
 
-def add_contributors_cumulative_evolution():
-    """
-    Display the cumulative number of new contributors per week.
-    """
     df = st.session_state.df
-    st.markdown("#### Cumulated number of new contributors per week.")
-    fig = (
-        df.groupby("public_username")
-        .first()
-        .groupby("week_date")
-        .size()
-        .cumsum()
-        .plot()
-    )
-    fig.update_xaxes(title="Week")
-    fig.update_yaxes(title="New contributors (nbr)")
-    fig.update_layout(showlegend=False)
-    st.plotly_chart(fig)
+
+    week_tab, total_tab = st.tabs(["Per week", "Total"])
+
+    with week_tab:
+        fig = df.groupby("public_username").first().groupby("week_date").size().plot(kind="bar")
+        fig.update_xaxes(title="Week")
+        fig.update_yaxes(title="New contributors per week")
+        fig.update_layout(showlegend=False)
+        st.plotly_chart(fig)
+
+    with total_tab:
+        fig = (df.groupby("public_username").first().groupby("week_date").size().cumsum().plot())
+        fig.update_xaxes(title="Week")
+        fig.update_yaxes(title="Total number of public contributors")
+        fig.update_layout(showlegend=False)
+        st.plotly_chart(fig)
 
 
 def add_comparisons_evolution():
     """
-    Display the number of comparisons.
+    Display the number of public comparisons per week or cumulative sum of public comparisons.
     """
-    df = st.session_state.df
-    st.markdown("#### Number of public comparisons per week")
-    fig = df.groupby("week_date").size().plot(kind="bar")
-    fig.update_xaxes(title="Week")
-    fig.update_yaxes(title="Comparisons (nbr)")
-    fig.update_layout(showlegend=False)
-    st.plotly_chart(fig)
 
+    st.markdown("#### Public comparisons")
 
-def add_comparisons_cumulative_evolution():
-    """
-    Display the cumulative number of comparisons.
-    """
     df = st.session_state.df
-    st.markdown("#### Cumulated number of public comparisons per week")
-    fig = df.groupby("week_date").size().cumsum().plot()
-    fig.update_xaxes(title="Week")
-    fig.update_yaxes(title="Comparisons (nbr)")
-    fig.update_layout(showlegend=False)
-    st.plotly_chart(fig)
+
+    week_tab, total_tab = st.tabs(["Per week", "Total"])
+
+    with week_tab:
+        fig = df.groupby("week_date").size().plot(kind="bar")
+        fig.update_xaxes(title="Week")
+        fig.update_yaxes(title="Comparisons per week")
+        fig.update_layout(showlegend=False)
+        st.plotly_chart(fig)
+
+    with total_tab:
+        fig = df.groupby("week_date").size().cumsum().plot()
+        fig.update_xaxes(title="Week")
+        fig.update_yaxes(title="Toral number of public comparisons")
+        fig.update_layout(showlegend=False)
+        st.plotly_chart(fig)
 
 
 pd.options.plotting.backend = "plotly"
+
 add_contributors_evolution()
-add_contributors_cumulative_evolution()
 add_comparisons_evolution()
-add_comparisons_cumulative_evolution()

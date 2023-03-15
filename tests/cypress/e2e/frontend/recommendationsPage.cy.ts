@@ -1,5 +1,16 @@
 describe('Recommendations page', () => {
   describe('Poll - videos', () => {
+
+    describe('Pagination', () => {
+      it('displays the pagination', () => {
+        cy.visit('/recommendations');
+        cy.contains('button', '< -10', {matchCase: false}).should('exist');
+        cy.contains('button', '< -1', {matchCase: false}).should('exist');
+        cy.contains('button', '+1 >', {matchCase: false}).should('exist');
+        cy.contains('button', '+10 >', {matchCase: false}).should('exist');
+      });
+    });
+
     describe('Search filters', () => {
       it('sets default languages properly and backward navigation works', () => {
         cy.visit('/');
@@ -58,7 +69,6 @@ describe('Recommendations page', () => {
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
 
           cy.location('search').should('contain', 'date=Year');
-          cy.contains('Showing videos 1 to', {matchCase: false}).should('be.visible');
           cy.contains('No video corresponds to your search criteria.', {matchCase: false}).should('not.exist');
         });
 
@@ -79,8 +89,6 @@ describe('Recommendations page', () => {
           cy.contains('All time', {matchCase: false}).click();
           cy.get('input[type=checkbox][name=""]').should('be.checked');
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
-
-          cy.contains('Showing videos 1 to 20 of', {matchCase: false}).should('be.visible');
           cy.contains('No video corresponds to your search criteria.', {matchCase: false}).should('not.exist');
         })
       });

@@ -5,13 +5,27 @@ This module contains functions to retrieve data from the database and
 shortcuts to write these data in file-like objects.
 """
 import csv
+import json
 from datetime import datetime
 from typing import Optional
 
+from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
+from ml.mehestan.individual import ALPHA, R_MAX
+from ml.mehestan.run import (
+    MEHESTAN_MAX_SCALED_SCORE,
+    POLL_SCALING_MIN_CONTRIBUTORS,
+    POLL_SCALING_QUANTILE,
+    POLL_SCALING_SCORE_AT_QUANTILE,
+    VOTE_WEIGHT_PRIVATE_RATINGS,
+    VOTE_WEIGHT_PUBLIC_RATINGS,
+)
 from tournesol.entities.base import UID_DELIMITER
+from vouch.trust_algo import SINK_VOUCH, TRUSTED_EMAIL_PRETRUST, VOUCH_DECAY
+from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
 # The standard decimal precision of floating point numbers appearing in the
 # dataset. Very small numbers can use a higher precision.
@@ -227,6 +241,42 @@ def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
         )
         .order_by("entity__uid", "criteria")
     )
+
+
+def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> None:
+    """
+    Write the metadata as JSON in `write_target`, an
+    object supporting the Python file API.
+    """
+
+    metadata_dict = {
+        "data_included_until": data_until.isoformat(),
+        "generated_by": settings.MAIN_URL,
+        "tournesol_version": settings.TOURNESOL_VERSION,
+        "license": "ODC-By-1.0",
+        "algorithms_parameters": {
+            "byztrust": {
+                "SINK_VOUCH": SINK_VOUCH,
+                "TRUSTED_EMAIL_PRETRUST": TRUSTED_EMAIL_PRETRUST,
+                "VOUCH_DECAY": VOUCH_DECAY,
+            },
+            "mehestan": {
+                "ALPHA": ALPHA,
+                "R_MAX": R_MAX,
+                "W": W,
+                "SCALING_WEIGHT_CALIBRATION": SCALING_WEIGHT_CALIBRATION,
+                "VOTE_WEIGHT_PUBLIC_RATINGS": VOTE_WEIGHT_PUBLIC_RATINGS,
+                "VOTE_WEIGHT_PRIVATE_RATINGS": VOTE_WEIGHT_PRIVATE_RATINGS,
+                "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
+                "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
+                "MAX_SCALED_SCORE": MEHESTAN_MAX_SCALED_SCORE,
+                "POLL_SCALING_MIN_CONTRIBUTORS": POLL_SCALING_MIN_CONTRIBUTORS,
+                "POLL_SCALING_QUANTILE": POLL_SCALING_QUANTILE,
+                "POLL_SCALING_SCORE_AT_QUANTILE": POLL_SCALING_SCORE_AT_QUANTILE,
+            },
+        },
+    }
+    json.dump(metadata_dict, write_target)
 
 
 def write_comparisons_file(

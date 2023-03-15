@@ -8,8 +8,8 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    email = factory.LazyAttribute(
-        lambda a: '{}.{}@example.com'.format(a.first_name, a.last_name).lower()
+    email = factory.LazyAttributeSequence(
+        lambda a, n: '{}.{}.{}@example.com'.format(a.first_name, a.last_name, n).lower()
     )
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
