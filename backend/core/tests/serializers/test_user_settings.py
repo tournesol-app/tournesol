@@ -2,7 +2,10 @@ import random
 
 from django.test import TestCase
 
-from core.serializers.user_settings import GenericPollUserSettingsSerializer
+from core.serializers.user_settings import (
+    GenericPollUserSettingsSerializer,
+    VideosPollUserSettingsSerializer,
+)
 from tournesol.models.poll import Poll
 
 
@@ -97,3 +100,45 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
 
         serializer = GenericPollUserSettingsSerializer(data={"rate_later__auto_remove": 99})
         self.assertEqual(serializer.is_valid(), True)
+
+
+class VideosPollUserSettingsSerializerTestCase(TestCase):
+    """
+    TestCase of the `VideosPollUserSettingsSerializer` serializer.
+    """
+
+    def test_validate_recommendation__default_language(self):
+        """
+        The `validate_recommendation__default_language` setting must match the video poll.
+        """
+
+        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": []})
+        self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["fr"]})
+        self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["fr", "en"]})
+        self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["not_a_language"]})
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertIn("recommendation__default_language", serializer.errors)
+
+        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["en", "not_a_language"]})
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertIn("recommendation__default_language", serializer.errors)
+
+    def test_validate_recommendation__default_date(self):
+        """
+        The `validate_recommendation__default_date` setting must match the video poll.
+        """
+
+        for date in ["Today", "Week", "Month", "Year"]:
+            serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_date": date})
+            self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_date": ["not_a_valid_date"]})
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertIn("recommendation__default_date", serializer.errors)
+

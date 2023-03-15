@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
 from tournesol.models.poll import Poll
+from tournesol.utils.video_language import ACCEPTED_LANGUAGE_CODES
 
 
 class GenericPollUserSettingsSerializer(serializers.Serializer):
@@ -39,6 +40,31 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
         return value
 
 
+class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
+
+    recommendation__default_language = serializers.ListField(child=serializers.CharField(), required=False) 
+    recommendation__default_date = serializers.CharField(required=False)
+    recommendation__default_unsafe = serializers.BooleanField(required=False)
+
+    def validate_recommendation__default_language(self, default_language):
+
+        for lang in default_language:
+            if lang not in ACCEPTED_LANGUAGE_CODES:
+                raise ValidationError(
+                    _("Invalid language: %(language)s.") % {"language": lang}
+                )
+
+        return default_language
+
+    def validate_recommendation__default_date(self, default_date):
+
+        if default_date not in {"Today", "Week", "Month", "Year"}:
+            raise ValidationError(_("Invalid parameter: %(default_date)s.") % {"default_date": default_date})
+        
+        return default_date
+
+    
+
 class TournesolUserSettingsSerializer(serializers.Serializer):
     """A representation of all settings of the Tournesol project.
 
@@ -46,7 +72,7 @@ class TournesolUserSettingsSerializer(serializers.Serializer):
     specific settings of each poll.
     """
 
-    videos = GenericPollUserSettingsSerializer(required=False, context={"poll_name": "videos"})
+    videos = VideosPollUserSettingsSerializer(required=False, context={"poll_name": "videos"})
 
     def create(self, validated_data):
         return validated_data

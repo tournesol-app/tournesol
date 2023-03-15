@@ -17,6 +17,9 @@ class UserSettingsDetailTestCase(TestCase):
             "videos": {
                 "rate_later__auto_remove": 16,
                 "comparison__criteria_order": ["reliability"],
+                "recommendation__default_language": ["en"],
+                "recommendation__default_date": "Week",
+                "recommendation__default_unsage": False,
             }
         }
 
@@ -40,6 +43,9 @@ class UserSettingsDetailTestCase(TestCase):
             "videos": {
                 "rate_later__auto_remove": 99,
                 "comparison__criteria_order": ["reliability"],
+                # "recommendation__default_date": "Week",
+                # "recommendation__default_language": ["en"],
+                # "recommendation__default_unsage": False,
             }
         }
         self.user.settings = new_settings
