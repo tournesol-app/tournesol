@@ -50,6 +50,11 @@
     0px 1px 3px 0px rgb(0 0 0 / 12%);
 }
 
+html[dark] #tournesol_banner {
+  color: var(--yt-spec-text-primary);
+  background-color: var(--yt-spec-button-chip-background-hover);
+}
+
 #tournesol_banner p {
   letter-spacing: 0.2px;
 }
