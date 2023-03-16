@@ -188,9 +188,16 @@ const createBanner = () => {
         window.open(url, '_blank', 'noopener');
       })
       .catch((response) => {
-        // Handle the Unauthorized response, log all other errors.
+        // Anonymous users should be redirected to the form without
+        // participation proof. Other errors are logged.
         if (response.status === 401) {
-          chrome.runtime.sendMessage({ message: 'displayModal' });
+          window.open(
+            isNavigatorLang('fr')
+              ? TS_BANNER_ACTION_FR_URL
+              : TS_BANNER_ACTION_EN_URL,
+            '_blank',
+            'noopener'
+          );
         } else {
           console.error(
             `Failed to retrieve user proof with keyword: ${TS_BANNER_PROOF_KW}`
