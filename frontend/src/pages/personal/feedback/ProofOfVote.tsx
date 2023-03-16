@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, TextField } from '@mui/material';
+import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Check, ContentCopy } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
+
+// in milliseconds
+const FEEDBACK_DELAY = 1200;
 
 interface Props {
   keyword?: string;
@@ -19,7 +23,25 @@ const ProofOfVote = ({
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+
   const [code, setCode] = useState('');
+  const [feedback, setFeedback] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(code);
+
+    // Do not trigger any additionnal rendering when the user clicks
+    // repeatedly on the button.
+    if (feedback) {
+      return;
+    }
+
+    setFeedback(true);
+
+    setTimeout(() => {
+      setFeedback(false);
+    }, FEEDBACK_DELAY);
+  };
 
   useEffect(() => {
     UsersService.usersMeProofRetrieve({
@@ -45,6 +67,17 @@ const ProofOfVote = ({
               bgcolor: 'white',
               fontFamily: 'monospace',
             },
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={t('proofOfVote.copyTheProof')}
+                  edge="end"
+                  onClick={copyToClipboard}
+                >
+                  {feedback ? <Check /> : <ContentCopy />}
+                </IconButton>
+              </InputAdornment>
+            ),
           }}
           onFocus={(e) => e.target.select()}
         />
