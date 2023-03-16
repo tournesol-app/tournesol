@@ -64,7 +64,7 @@ html[dark] #tournesol_banner {
 }
 
 html[dark] #tournesol_banner_icon {
-  filter: invert(99%) sepia(99%) saturate(0%) hue-rotate(159deg) brightness(110%) contrast(100%);
+  filter: invert(99%) saturate(0%) brightness(140%);
 }
 
 #tournesol_videos_flexcontainer {
