@@ -2,7 +2,10 @@ import random
 
 from django.test import TestCase
 
-from core.serializers.user_settings import GenericPollUserSettingsSerializer
+from core.serializers.user_settings import (
+    GenericPollUserSettingsSerializer,
+    VideosPollUserSettingsSerializer,
+)
 from tournesol.models.poll import Poll
 
 
@@ -97,3 +100,64 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
 
         serializer = GenericPollUserSettingsSerializer(data={"rate_later__auto_remove": 99})
         self.assertEqual(serializer.is_valid(), True)
+
+
+class VideosPollUserSettingsSerializerTestCase(TestCase):
+    """
+    TestCase of the `VideosPollUserSettingsSerializer` serializer.
+    """
+
+    def test_validate_recommendations__default_language(self):
+        """
+        The `validate_recommendations__default_language` setting must raise
+        an error for unknown languages.
+        """
+
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendations__default_language": []}
+        )
+        self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendations__default_language": ["fr"]}
+        )
+        self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendations__default_language": ["fr", "en"]}
+        )
+        self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendations__default_language": ["not_a_language"]}
+        )
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertIn("recommendations__default_language", serializer.errors)
+
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendations__default_language": ["en", "not_a_language"]}
+        )
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertIn("recommendations__default_language", serializer.errors)
+
+    def test_validate_recommendations__default_date(self):
+        """
+        The `validate_recommendations__default_date` setting must accept only
+        a specific set of date.
+        """
+
+        for date in ["TODAY", "WEEK", "MONTH", "YEAR", "ALL_TIME"]:
+            serializer = VideosPollUserSettingsSerializer(
+                data={"recommendations__default_date": date}
+            )
+            self.assertEqual(serializer.is_valid(), True)
+
+        # A blank value means no default date.
+        serializer = VideosPollUserSettingsSerializer(data={"recommendations__default_date": ""})
+        self.assertEqual(serializer.is_valid(), True)
+
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendations__default_date": ["not_a_valid_date"]}
+        )
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertIn("recommendations__default_date", serializer.errors)
