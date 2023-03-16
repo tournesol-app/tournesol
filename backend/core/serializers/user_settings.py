@@ -42,7 +42,9 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
 
 class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
 
-    recommendation__default_language = serializers.ListField(child=serializers.CharField(), required=False) 
+    recommendation__default_language = serializers.ListField(
+        child=serializers.CharField(), required=False
+    )
     recommendation__default_date = serializers.CharField(required=False)
     recommendation__default_unsafe = serializers.BooleanField(required=False)
 
@@ -50,20 +52,19 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
 
         for lang in default_language:
             if lang not in ACCEPTED_LANGUAGE_CODES:
-                raise ValidationError(
-                    _("Invalid language: %(language)s.") % {"language": lang}
-                )
+                raise ValidationError(_("Invalid language: %(language)s.") % {"language": lang})
 
         return default_language
 
     def validate_recommendation__default_date(self, default_date):
 
         if default_date not in {"Today", "Week", "Month", "Year"}:
-            raise ValidationError(_("Invalid parameter: %(default_date)s.") % {"default_date": default_date})
-        
+            raise ValidationError(
+                _("Invalid parameter: %(default_date)s.") % {"default_date": default_date}
+            )
+
         return default_date
 
-    
 
 class TournesolUserSettingsSerializer(serializers.Serializer):
     """A representation of all settings of the Tournesol project.

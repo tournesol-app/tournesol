@@ -112,20 +112,30 @@ class VideosPollUserSettingsSerializerTestCase(TestCase):
         The `validate_recommendation__default_language` setting must match the video poll.
         """
 
-        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": []})
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendation__default_language": []}
+        )
         self.assertEqual(serializer.is_valid(), True)
 
-        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["fr"]})
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendation__default_language": ["fr"]}
+        )
         self.assertEqual(serializer.is_valid(), True)
 
-        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["fr", "en"]})
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendation__default_language": ["fr", "en"]}
+        )
         self.assertEqual(serializer.is_valid(), True)
 
-        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["not_a_language"]})
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendation__default_language": ["not_a_language"]}
+        )
         self.assertEqual(serializer.is_valid(), False)
         self.assertIn("recommendation__default_language", serializer.errors)
 
-        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_language": ["en", "not_a_language"]})
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendation__default_language": ["en", "not_a_language"]}
+        )
         self.assertEqual(serializer.is_valid(), False)
         self.assertIn("recommendation__default_language", serializer.errors)
 
@@ -135,10 +145,13 @@ class VideosPollUserSettingsSerializerTestCase(TestCase):
         """
 
         for date in ["Today", "Week", "Month", "Year"]:
-            serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_date": date})
+            serializer = VideosPollUserSettingsSerializer(
+                data={"recommendation__default_date": date}
+            )
             self.assertEqual(serializer.is_valid(), True)
 
-        serializer = VideosPollUserSettingsSerializer(data={"recommendation__default_date": ["not_a_valid_date"]})
+        serializer = VideosPollUserSettingsSerializer(
+            data={"recommendation__default_date": ["not_a_valid_date"]}
+        )
         self.assertEqual(serializer.is_valid(), False)
         self.assertIn("recommendation__default_date", serializer.errors)
-
