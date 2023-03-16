@@ -10,6 +10,7 @@ import SectionTitle from './SectionTitle';
 interface ComparisonStats {
   comparisonCount: number;
   lastMonthComparisonCount: number;
+  lastWeekComparisonCount: number;
 }
 
 interface Props {

@@ -4,6 +4,12 @@ API endpoints to show public statistics
 from dataclasses import dataclass
 from typing import List
 
+import logging
+
+from django.utils import timezone
+from core.utils.time import time_ago
+from pprint import pprint
+
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
@@ -31,6 +37,7 @@ class ComparedEntitiesStatistics:
 class ComparisonsStatistics:
     total: int
     added_last_month: int
+    added_last_week: int
 
 
 @dataclass
@@ -78,7 +85,9 @@ class StatisticsView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = StatisticsSerializer
 
-    _days_delta = 30
+    _days_delta = 200 #make it 30 later
+    _days_delta_week = timezone.now().day - time_ago(days=timezone.now().weekday()).day
+    # print('DAYS DELTA WEEK:', _days_delta_week)
 
     def get(self, request):
         statistics = Statistics()
@@ -104,13 +113,19 @@ class StatisticsView(generics.GenericAPIView):
 
             comparisons = Comparison.objects.filter(poll=poll)
             comparison_count = comparisons.count()
+            if len(comparisons) > 0:
+                print("Comparison", comparisons[0])
             last_month_comparison_count = comparisons.filter(
                 datetime_lastedit__gte=time_ago(days=self._days_delta)
+            ).count()
+            last_week_comparison_count = comparisons.filter(
+                datetime_lastedit__gte=time_ago(days=self._days_delta_week)
             ).count()
 
             comparisons_statistics = ComparisonsStatistics(
                 comparison_count,
                 last_month_comparison_count,
+                last_week_comparison_count
             )
 
             statistics.append_poll(
