@@ -15,8 +15,8 @@ class UserSettingsDetailTestCase(TestCase):
         self.user = UserFactory(username=self._username)
         self.valid_settings = {
             "videos": {
-                "rate_later__auto_remove": 16,
                 "comparison__criteria_order": ["reliability"],
+                "rate_later__auto_remove": 16,
                 "recommendation__default_language": ["en"],
                 "recommendation__default_date": "Week",
                 "recommendation__default_unsage": False,
@@ -41,11 +41,11 @@ class UserSettingsDetailTestCase(TestCase):
         # When the user have settings, the API should return them.
         new_settings = {
             "videos": {
-                "rate_later__auto_remove": 99,
                 "comparison__criteria_order": ["reliability"],
-                "recommendation__default_date": "Week",
-                "recommendation__default_language": ["en"],
-                "recommendation__default_unsafe": False,
+                "rate_later__auto_remove": 99,
+                "recommendations__default_language": ["en"],
+                "recommendations__default_date": "WEEK",
+                "recommendations__default_unsafe": False,
             }
         }
         self.user.settings = new_settings

@@ -41,29 +41,35 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
 
 
 class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
+    """
+    The settings specific to the `videos` poll.
 
-    recommendation__default_language = serializers.ListField(
+    Also inherit the settings common to all polls.
+    """
+
+    DEFAULT_DATE_CHOICES = [
+        ("TODAY", "today"),
+        ("WEEK", "week"),
+        ("MONTH", "month"),
+        ("YEAR", "year"),
+        ("ALL_TIME", "all_time"),
+    ]
+
+    recommendations__default_date = serializers.ChoiceField(
+        choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
+    )
+    recommendations__default_language = serializers.ListField(
         child=serializers.CharField(), required=False
     )
-    recommendation__default_date = serializers.CharField(required=False)
-    recommendation__default_unsafe = serializers.BooleanField(required=False)
+    recommendations__default_unsafe = serializers.BooleanField(required=False)
 
-    def validate_recommendation__default_language(self, default_language):
+    def validate_recommendations__default_language(self, default_languages):
 
-        for lang in default_language:
+        for lang in default_languages:
             if lang not in ACCEPTED_LANGUAGE_CODES:
                 raise ValidationError(_("Invalid language: %(language)s.") % {"language": lang})
 
-        return default_language
-
-    def validate_recommendation__default_date(self, default_date):
-
-        if default_date not in {"Today", "Week", "Month", "Year"}:
-            raise ValidationError(
-                _("Invalid parameter: %(default_date)s.") % {"default_date": default_date}
-            )
-
-        return default_date
+        return default_languages
 
 
 class TournesolUserSettingsSerializer(serializers.Serializer):
