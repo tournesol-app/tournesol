@@ -95,6 +95,7 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         """
         Create a new comparison associated with the logged user, in a given
         poll.
+        Add the comparison count via this route/function, no need to apply this logic in updates sections etc.
         """
         if not self.poll_from_url.active:
             raise InactivePollError
@@ -109,6 +110,7 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
                 f"with {self.request.data['entity_b']['uid']}."
             )
         comparison: Comparison = serializer.save()
+        # add the data structure here for count+1
 
         # TODO To be removed, replaced by update_n_poll_ratings
         comparison.entity_1.update_n_ratings()
