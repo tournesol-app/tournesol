@@ -64,10 +64,9 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
     recommendations__default_unsafe = serializers.BooleanField(required=False)
 
     def validate_recommendations__default_language(self, default_languages):
-
         for lang in default_languages:
             if lang not in ACCEPTED_LANGUAGE_CODES:
-                raise ValidationError(_("Invalid language: %(language)s.") % {"language": lang})
+                raise ValidationError(_("Unknown language code: %(lang)s.") % {"lang": lang})
 
         return default_languages
 
