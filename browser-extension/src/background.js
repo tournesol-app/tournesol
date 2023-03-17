@@ -238,118 +238,146 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return [];
     };
 
-    // Compute the number of videos to load in each category
-    const recentVideoToLoad = Math.round(
-      request.videosNumber *
-        oversamplingRatioForRecentVideos *
-        recentVideoProportion
-    );
-    const oldVideoToLoad = Math.round(
-      request.videosNumber *
-        oversamplingRatioForOldVideos *
-        (1 - recentVideoProportion)
-    );
-    const recentAdditionalVideoToLoad = Math.round(
-      request.additionalVideosNumber *
-        oversamplingRatioForRecentVideos *
-        recentVideoProportionForAdditionalVideos
-    );
-    const oldAdditionalVideoToLoad = Math.round(
-      request.additionalVideosNumber *
-        oversamplingRatioForOldVideos *
-        (1 - recentVideoProportionForAdditionalVideos)
-    );
-
-    const process = async () => {
-      const threeWeeksAgo = getDateThreeWeeksAgo();
-
-      const languagesString = await recommendationsLanguages();
-
-      // Only one request for both videos and additional videos
-      const recentParams = new URLSearchParams([
-        ['date_gte', threeWeeksAgo],
-        ['limit', recentVideoToLoad + recentAdditionalVideoToLoad],
-        ...languagesString.split(',').map((l) => ['metadata[language]', l]),
-      ]);
-
-      const oldParams = new URLSearchParams([
-        ['date_lte', threeWeeksAgo],
-        ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
-        ...languagesString.split(',').map((l) => ['metadata[language]', l]),
-      ]);
-
-      if (request.message == 'getTournesolSearchRecommendations') {
-        recentParams.append('search', request.search);
-        oldParams.append('search', request.search);
-      }
-
-      const [recent, old] = await Promise.all([
-        request_recommendations(recentParams),
-        request_recommendations(oldParams),
-      ]);
-
-      // Cut the response into the part for the videos and the one for the additional videos
-      const videoRecent = recent.slice(0, recentVideoToLoad);
-      const videoOld = old.slice(0, oldVideoToLoad);
-      const additionalVideoRecent = recent.slice(recentVideoToLoad);
-      const additionalVideoOld = old.slice(oldVideoToLoad);
-
-      // Compute the actual number of videos from each category that will appear in the feed
-      // If there is not enough recent videos, use old ones of the same category instead
-      let numberOfRecentVideoToRespond = Math.round(
-        request.videosNumber * recentVideoProportion
+    if (request.message == 'getTournesolRecommendations') {
+      // Compute the number of videos to load in each category
+      const recentVideoToLoad = Math.round(
+        request.videosNumber *
+          oversamplingRatioForRecentVideos *
+          recentVideoProportion
       );
-      if (numberOfRecentVideoToRespond > videoRecent.length) {
-        numberOfRecentVideoToRespond = videoRecent.length;
-      }
-      const numberOfOldVideoToRespond =
-        request.videosNumber - numberOfRecentVideoToRespond;
-
-      let numberOfRecentAdditionalVideoToRespond = Math.round(
+      const oldVideoToLoad = Math.round(
+        request.videosNumber *
+          oversamplingRatioForOldVideos *
+          (1 - recentVideoProportion)
+      );
+      const recentAdditionalVideoToLoad = Math.round(
         request.additionalVideosNumber *
+          oversamplingRatioForRecentVideos *
           recentVideoProportionForAdditionalVideos
       );
-      if (
-        numberOfRecentAdditionalVideoToRespond > additionalVideoRecent.length
-      ) {
-        numberOfRecentAdditionalVideoToRespond = additionalVideoRecent.length;
-      }
-      const numberOfOldAdditionalVideoToRespond =
-        request.additionalVideosNumber - numberOfRecentAdditionalVideoToRespond;
-
-      // Select randomly which videos are selected, merge them, and shuffle them
-      // (separely for videos and additional videos)
-      const recentVideos = getRandomSubarray(
-        videoRecent,
-        numberOfRecentVideoToRespond
-      );
-      const oldVideos = getRandomSubarray(videoOld, numberOfOldVideoToRespond);
-      const videos = getRandomSubarray(
-        [...oldVideos, ...recentVideos],
-        request.videosNumber
+      const oldAdditionalVideoToLoad = Math.round(
+        request.additionalVideosNumber *
+          oversamplingRatioForOldVideos *
+          (1 - recentVideoProportionForAdditionalVideos)
       );
 
-      const additionalRecentVideos = getRandomSubarray(
-        additionalVideoRecent,
-        numberOfRecentAdditionalVideoToRespond
-      );
-      const additionalOldVideos = getRandomSubarray(
-        additionalVideoOld,
-        numberOfOldAdditionalVideoToRespond
-      );
-      const additionalVideos = getRandomSubarray(
-        [...additionalRecentVideos, ...additionalOldVideos],
-        request.additionalVideosNumber
-      );
+      const process = async () => {
+        const threeWeeksAgo = getDateThreeWeeksAgo();
 
-      return {
-        data: [...videos, ...additionalVideos],
-        loadVideos: request.videosNumber > 0,
-        loadAdditionalVideos: request.additionalVideosNumber > 0,
+        const languagesString = await recommendationsLanguages();
+
+        // Only one request for both videos and additional videos
+        const recentParams = new URLSearchParams([
+          ['date_gte', threeWeeksAgo],
+          ['limit', recentVideoToLoad + recentAdditionalVideoToLoad],
+          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
+        ]);
+
+        const oldParams = new URLSearchParams([
+          ['date_lte', threeWeeksAgo],
+          ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
+          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
+        ]);
+
+        const [recent, old] = await Promise.all([
+          request_recommendations(recentParams),
+          request_recommendations(oldParams),
+        ]);
+
+        // Cut the response into the part for the videos and the one for the additional videos
+        const videoRecent = recent.slice(0, recentVideoToLoad);
+        const videoOld = old.slice(0, oldVideoToLoad);
+        const additionalVideoRecent = recent.slice(recentVideoToLoad);
+        const additionalVideoOld = old.slice(oldVideoToLoad);
+
+        // Compute the actual number of videos from each category that will appear in the feed
+        // If there is not enough recent videos, use old ones of the same category instead
+        let numberOfRecentVideoToRespond = Math.round(
+          request.videosNumber * recentVideoProportion
+        );
+        if (numberOfRecentVideoToRespond > videoRecent.length) {
+          numberOfRecentVideoToRespond = videoRecent.length;
+        }
+        const numberOfOldVideoToRespond =
+          request.videosNumber - numberOfRecentVideoToRespond;
+
+        let numberOfRecentAdditionalVideoToRespond = Math.round(
+          request.additionalVideosNumber *
+            recentVideoProportionForAdditionalVideos
+        );
+        if (
+          numberOfRecentAdditionalVideoToRespond > additionalVideoRecent.length
+        ) {
+          numberOfRecentAdditionalVideoToRespond = additionalVideoRecent.length;
+        }
+        const numberOfOldAdditionalVideoToRespond =
+          request.additionalVideosNumber -
+          numberOfRecentAdditionalVideoToRespond;
+
+        // Select randomly which videos are selected, merge them, and shuffle them
+        // (separely for videos and additional videos)
+        const recentVideos = getRandomSubarray(
+          videoRecent,
+          numberOfRecentVideoToRespond
+        );
+        const oldVideos = getRandomSubarray(
+          videoOld,
+          numberOfOldVideoToRespond
+        );
+        const videos = getRandomSubarray(
+          [...oldVideos, ...recentVideos],
+          request.videosNumber
+        );
+
+        const additionalRecentVideos = getRandomSubarray(
+          additionalVideoRecent,
+          numberOfRecentAdditionalVideoToRespond
+        );
+        const additionalOldVideos = getRandomSubarray(
+          additionalVideoOld,
+          numberOfOldAdditionalVideoToRespond
+        );
+        const additionalVideos = getRandomSubarray(
+          [...additionalRecentVideos, ...additionalOldVideos],
+          request.additionalVideosNumber
+        );
+
+        return {
+          data: [...videos, ...additionalVideos],
+          loadVideos: request.videosNumber > 0,
+          loadAdditionalVideos: request.additionalVideosNumber > 0,
+        };
       };
-    };
-    process().then(sendResponse);
-    return true;
+      process().then(sendResponse);
+      return true;
+    } else {
+      const process = async () => {
+        const videosNumber =
+          request.videosNumber + request.additionalVideosNumber;
+        const languagesString = await recommendationsLanguages();
+
+        // Only one request for both videos and additional videos
+        const params = new URLSearchParams([
+          ['limit', Math.max(20, videosNumber)],
+          ['search', request.search],
+          ['unsafe', false],
+          ['score_mode', 'default'],
+          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
+        ]);
+
+        const [videosList] = await Promise.all([
+          request_recommendations(params),
+        ]);
+
+        return {
+          data: videosList.splice(0, videosNumber),
+          loadVideos: request.videosNumber > 0,
+          loadAdditionalVideos: request.additionalVideosNumber > 0,
+        };
+      };
+      process().then(sendResponse);
+      return true;
+    }
   }
 });
 

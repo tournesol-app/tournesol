@@ -33,38 +33,26 @@
   color: var(--yt-spec-text-primary);
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 22px;
-  position: absolute;
-  left: 32px;
   font-weight: normal;
+  margin-right: auto;
 }
 
 #tournesol_link {
   color: var(--yt-spec-text-primary);
   font-family: 'Roboto', 'Arial', sans-serif;
-  float: right;
-  margin-top: 3px;
-  margin-left: 2px;
+  align-self: flex-start;
 }
 
-#tournesol_refresh_button {
-  float: right;
-  margin-top: 4px;
-  margin-left: 12px;
-  margin-right: 24px;
+
+.expand_button_container{
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
+  width: 100%;
 }
 
-#tournesol_expand_button {
-  float: right;
-  margin-top: 4px;
-  margin-left: 12px;
-}
-
-#tournesol_icon {
-  position: absolute;
-  left: 0px;
-}
-
-.video_channel_link{
+.video_channel_link,
+.video_title_link{
   text-decoration: none;
   color: inherit;
 }
@@ -172,11 +160,9 @@
 .details_div {
   cursor: pointer;
   position: relative;
-
   display: flex;
   gap: 6px;
   flex-direction: column;
-
   padding-bottom: var(--ts-container-padding);
 }
 
@@ -188,7 +174,8 @@
   margin-bottom: 6px;
 }
 
-.video_text {
+.video_text,
+.video_criteria {
   color: var(--yt-endpoint-color, var(--yt-spec-text-secondary));
   font-family: 'Roboto', 'Arial', sans-serif;
   word-break: break-word;
@@ -197,9 +184,14 @@
 }
 
 .inline_div {
-  position: absolute;
   width: 100%;
-  top: -38px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.inline_div > *{
+  margin-left: 8px;
 }
 
 .time_span {
@@ -227,14 +219,18 @@
 }
 
 #tournesol_container.search{
+  width: 100%;
   min-width: 320px;
   margin-left: auto;
   margin-right: auto;
-  padding: 8px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
 }
 
 #tournesol_container.search h2{
   min-height: auto;
+  font-size: 1.8rem;
 }
 
 #tournesol_container.search .video_channel_link{
@@ -242,39 +238,31 @@
 }
 
 #tournesol_container.search .tournesol_comparison_logo{
-  width: auto;
+  width: 32px;
 }
 
 #tournesol_container.search .thumb_div,
 #tournesol_container.search .thumb_div img,
 #tournesol_container.search .video_link{
-  min-width: 35%;
-  width: 35%;
-  margin: 0;
-  height: 100%;
-}
-
-#tournesol_container.search .thumb_div img,
-#tournesol_container.search .video_link
-{
-  border-radius: 4px 0 0 4px;
-}
-
-#tournesol_container.search .thumb_div img{
   width: 100%;
+  min-width: 240px;
+  max-width: 360px;
+  aspect-ratio: 16/9;
+  height: 100%;
+  border-radius: 12px;
+  margin: 0;
 }
+
 
 #tournesol_container.search .video_box{
   width: 100%;
   display: flex;
-  border: 1px solid #f3bd00;
   border-radius: 4px;
-  background: #fefcf2;
-  box-shadow: 1px 1px 5px rgb(0 0 0 / 20%);
+  
 }
 
-#tournesol_container.search .video_box:not(:last-child){
-  margin-bottom: 6px;
+#tournesol_container.search .video_box{
+  margin-bottom: 16px;
 }
 
 #tournesol_container.search #tournesol_refresh_button,
@@ -291,14 +279,13 @@
 }
 
 #tournesol_container.search .video_box .details_div .video_text{
-  font-size: 1.1em;
-  color: #A09B87;
+  font-size: 1.2rem;
 }
 
 #tournesol_container.search .video_box .details_div  strong{
   font-weight: 400;
   font-size: 2.4em;
-  color: rgb(29, 26, 20);
+  color: var(--yt-spec-text-primary);
   margin-right: 8px;
   font-style: normal;
 }
@@ -306,15 +293,13 @@
   font-style: italic;
 }
 
-#tournesol_container.search .video_box .details_div :nth-child(3),
-#tournesol_container.search .video_criteria {
+#tournesol_container.search .video_box .details_div .video_tournesol_rating,
+#tournesol_container.search .video_box .details_div .video_criteria {
   display: flex;
   align-items: center;
+  font-size: 1.4rem;
 }
 
-#tournesol_container.search .video_criteria{
-  font-size: 1.1em;
-}
 #tournesol_container.search .video_criteria img{
   margin: 0 8px;
   width: 32px;
