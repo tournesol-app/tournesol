@@ -102,7 +102,7 @@ class StatisticsView(generics.GenericAPIView):
                 last_month_compared_entity_count,
             )
 
-            comparisons = Comparison.objects.filter(poll=poll)
+            comparisons = Comparison.objects.filter(poll=poll, user__is_active=True)
             comparison_count = comparisons.count()
             last_month_comparison_count = comparisons.filter(
                 datetime_lastedit__gte=time_ago(days=self._days_delta)
