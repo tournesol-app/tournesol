@@ -30,6 +30,9 @@ class UserDeletionTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(User.objects.filter(username=user.username, is_active=True).exists())
 
+        user.refresh_from_db()
+        self.assertRegex(user.email, r".*@deleted.invalid")
+
 
 class UserRegistrationTest(TestCase):
     def test_register_user(self):
