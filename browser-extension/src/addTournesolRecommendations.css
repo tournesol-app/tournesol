@@ -55,12 +55,25 @@ html[dark] #tournesol_banner {
   background-color: var(--yt-spec-button-chip-background-hover);
 }
 
+#tournesol_banner.display_none {
+  display: none;
+}
+
 #tournesol_banner p {
   letter-spacing: 0.2px;
 }
 
 #tournesol_banner_icon {
   width: 35px;
+}
+
+#tournesol_banner_close_icon {
+  width: 22px;
+  opacity: 0.6;
+}
+
+#tournesol_banner_close_icon:hover {
+  opacity: 1;
 }
 
 html[dark] #tournesol_banner_icon {

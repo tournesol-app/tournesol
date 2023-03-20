@@ -123,6 +123,10 @@ const getLocalizedActionError = () => {
   );
 };
 
+const hideElement = (element) => {
+  element.className = 'display_none';
+}
+
 /**
  * Create and return a banner.
  *
@@ -135,6 +139,13 @@ const createBanner = () => {
   const banner = document.createElement('div');
   banner.id = 'tournesol_banner';
 
+  chrome.storage.local.get("displayBanner").then(items => {
+    if (items.displayBanner === false) {
+      hideElement(banner);
+    }
+  });
+
+  // The first flex item is the campaign icon.
   const bannerIconContainer = document.createElement('div');
   const icon = document.createElement('img');
   icon.id = 'tournesol_banner_icon';
@@ -142,13 +153,13 @@ const createBanner = () => {
   icon.setAttribute('alt', 'Megaphone icon');
   bannerIconContainer.append(icon);
 
-  // The first flex item is the text.
+  // The second flex item is the text.
   const bannerTextContainer = document.createElement('div');
   const bannerText = document.createElement('p');
   bannerText.textContent = getLocalizedBannerText();
   bannerTextContainer.append(bannerText);
 
-  // The second flex item is the action button.
+  // The third flex item is the action button.
   const actionButtonContainer = document.createElement('div');
   const actionButton = document.createElement('a');
   actionButton.textContent = getLocalizedActionButtonText();
@@ -159,6 +170,23 @@ const createBanner = () => {
   );
   actionButton.setAttribute('target', '_blank');
   actionButton.setAttribute('rel', 'noopener');
+
+  const closeButtonContainer = document.createElement('div');
+  closeButton = document.createElement('button');
+
+  closeButton.className = 'tournesol_simple_button';
+  closeButtonImg = document.createElement('img');
+  closeButtonImg.id = 'tournesol_banner_close_icon';
+  closeButtonImg.setAttribute('src', chrome.extension.getURL('images/close.svg'));
+  closeButtonImg.setAttribute('alt', 'Close icon');
+  closeButton.append(closeButtonImg);
+  closeButtonContainer.append(closeButton);
+
+  closeButton.onclick = () => {
+    chrome.storage.local.set({"displayBanner": false}).then(() => {
+      hideElement(banner);
+    });
+  };
 
   // Dynamically get the user proof before opening the URL.
   actionButton.onclick = (event) => {
@@ -215,6 +243,7 @@ const createBanner = () => {
   banner.appendChild(bannerIconContainer);
   banner.appendChild(bannerTextContainer);
   banner.appendChild(actionButtonContainer);
+  banner.appendChild(closeButtonContainer);
   return banner;
 };
 
