@@ -123,9 +123,24 @@ const getLocalizedActionError = () => {
   );
 };
 
+const displayElement = (element) => {
+  const classes = element.className.split(' ');
+  const index = classes.indexOf('display_none');
+
+  if (index > -1) {
+    classes.splice(index, 1);
+    element.className = classes.join(' ');
+  }
+};
+
 const hideElement = (element) => {
-  element.className = 'display_none';
-}
+  const classes = element.className.split(' ');
+
+  if (!classes.includes('display_none')) {
+    classes.push('display_none');
+    element.className = classes.join(' ');
+  }
+};
 
 /**
  * Create and return a banner.
@@ -138,8 +153,9 @@ const hideElement = (element) => {
 const createBanner = () => {
   const banner = document.createElement('div');
   banner.id = 'tournesol_banner';
+  banner.className = 'tournesol_banner';
 
-  chrome.storage.local.get("displayBanner").then(items => {
+  chrome.storage.local.get('displayBanner').then((items) => {
     if (items.displayBanner === false) {
       hideElement(banner);
     }
@@ -172,18 +188,21 @@ const createBanner = () => {
   actionButton.setAttribute('rel', 'noopener');
 
   const closeButtonContainer = document.createElement('div');
-  closeButton = document.createElement('button');
+  const closeButton = document.createElement('button');
 
   closeButton.className = 'tournesol_simple_button';
-  closeButtonImg = document.createElement('img');
+  const closeButtonImg = document.createElement('img');
   closeButtonImg.id = 'tournesol_banner_close_icon';
-  closeButtonImg.setAttribute('src', chrome.extension.getURL('images/close.svg'));
+  closeButtonImg.setAttribute(
+    'src',
+    chrome.extension.getURL('images/close.svg')
+  );
   closeButtonImg.setAttribute('alt', 'Close icon');
   closeButton.append(closeButtonImg);
   closeButtonContainer.append(closeButton);
 
   closeButton.onclick = () => {
-    chrome.storage.local.set({"displayBanner": false}).then(() => {
+    chrome.storage.local.set({ displayBanner: false }).then(() => {
       hideElement(banner);
     });
   };
@@ -295,6 +314,26 @@ const getTournesolComponent = () => {
   tournesol_link.href = 'https://tournesol.app?utm_source=extension';
   tournesol_link.append('learn more');
   inline_div.append(tournesol_link);
+
+  const campaignButton = document.createElement('button');
+  campaignButton.id = 'tournesol_campaign_button';
+  campaignButton.className = 'tournesol_simple_button width_auto';
+
+  const campaignButtonImg = document.createElement('img');
+  campaignButtonImg.setAttribute(
+    'src',
+    chrome.extension.getURL('images/campaign.svg')
+  );
+  campaignButtonImg.setAttribute('alt', 'Megaphone icon');
+  campaignButton.append(campaignButtonImg);
+
+  campaignButton.onclick = () => {
+    chrome.storage.local.set({ displayBanner: true }).then(() => {
+      displayElement(document.getElementById('tournesol_banner'));
+    });
+  };
+
+  inline_div.append(campaignButton);
 
   // Refresh button
   const refresh_button = document.createElement('button');

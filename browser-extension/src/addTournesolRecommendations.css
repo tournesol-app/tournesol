@@ -29,7 +29,6 @@
   );
 }
 
-/* MUI <Paper> style imitation */
 #tournesol_banner {
   padding: 16px;
   margin-bottom: 16px;
@@ -43,6 +42,7 @@
   color: var(--ts-palette-text-primary);
   background-color: white;
 
+  /* MUI <Paper> style imitation */
   border-radius: 4px;
   box-shadow:
     0px 2px 1px -1px rgb(0 0 0 / 20%),
@@ -50,13 +50,13 @@
     0px 1px 3px 0px rgb(0 0 0 / 12%);
 }
 
+#tournesol_banner.display_none {
+  display: none;
+}
+
 html[dark] #tournesol_banner {
   color: var(--yt-spec-text-primary);
   background-color: var(--yt-spec-button-chip-background-hover);
-}
-
-#tournesol_banner.display_none {
-  display: none;
 }
 
 #tournesol_banner p {
@@ -101,6 +101,14 @@ html[dark] #tournesol_banner_icon {
   float: right;
   margin-top: 3px;
   margin-left: 2px;
+}
+
+#tournesol_campaign_button {
+  width: 20px;
+  float: right;
+  margin-top: 4px;
+  margin-left: 12px;
+  margin-right: 24px;
 }
 
 #tournesol_refresh_button {
@@ -164,6 +172,10 @@ html[dark] #tournesol_banner_icon {
   background-color: transparent;
   position: relative;
   cursor: pointer;
+}
+
+.tournesol_simple_button.width_auto {
+  width: auto;
 }
 
 .tournesol_simple_button svg {
