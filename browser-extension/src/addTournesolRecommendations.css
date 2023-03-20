@@ -104,11 +104,16 @@ html[dark] #tournesol_banner_icon {
 }
 
 #tournesol_campaign_button {
-  width: 20px;
+  width: 28px;
   float: right;
-  margin-top: 4px;
-  margin-left: 12px;
-  margin-right: 24px;
+}
+
+#tournesol_campaign_button img {
+  opacity: 0.8;
+}
+
+#tournesol_campaign_button:hover img {
+  opacity: 1;
 }
 
 #tournesol_refresh_button {
@@ -172,10 +177,6 @@ html[dark] #tournesol_banner_icon {
   background-color: transparent;
   position: relative;
   cursor: pointer;
-}
-
-.tournesol_simple_button.width_auto {
-  width: auto;
 }
 
 .tournesol_simple_button svg {

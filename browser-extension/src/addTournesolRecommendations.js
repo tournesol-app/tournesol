@@ -315,26 +315,6 @@ const getTournesolComponent = () => {
   tournesol_link.append('learn more');
   inline_div.append(tournesol_link);
 
-  const campaignButton = document.createElement('button');
-  campaignButton.id = 'tournesol_campaign_button';
-  campaignButton.className = 'tournesol_simple_button width_auto';
-
-  const campaignButtonImg = document.createElement('img');
-  campaignButtonImg.setAttribute(
-    'src',
-    chrome.extension.getURL('images/campaign.svg')
-  );
-  campaignButtonImg.setAttribute('alt', 'Megaphone icon');
-  campaignButton.append(campaignButtonImg);
-
-  campaignButton.onclick = () => {
-    chrome.storage.local.set({ displayBanner: true }).then(() => {
-      displayElement(document.getElementById('tournesol_banner'));
-    });
-  };
-
-  inline_div.append(campaignButton);
-
   // Refresh button
   const refresh_button = document.createElement('button');
   refresh_button.setAttribute('id', 'tournesol_refresh_button');
@@ -371,6 +351,26 @@ const getTournesolComponent = () => {
     }
   };
   inline_div.append(expand_button);
+
+  const campaignButton = document.createElement('button');
+  campaignButton.id = 'tournesol_campaign_button';
+  campaignButton.className = 'tournesol_simple_button';
+
+  const campaignButtonImg = document.createElement('img');
+  campaignButtonImg.setAttribute(
+    'src',
+    chrome.extension.getURL('images/campaign.svg')
+  );
+  campaignButtonImg.setAttribute('alt', 'Megaphone icon');
+  campaignButton.append(campaignButtonImg);
+
+  campaignButton.onclick = () => {
+    chrome.storage.local.set({ displayBanner: true }).then(() => {
+      displayElement(document.getElementById('tournesol_banner'));
+    });
+  };
+
+  inline_div.append(campaignButton);
 
   tournesol_container.append(inline_div);
 
