@@ -2482,10 +2482,10 @@ components:
       properties:
         total:
           type: integer
-        added_last_month:
+        added_last_30_days:
           type: integer
       required:
-      - added_last_month
+      - added_last_30_days
       - total
     ContributorCriteriaCorrelations:
       type: object

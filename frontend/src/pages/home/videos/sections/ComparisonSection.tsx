@@ -9,8 +9,8 @@ import SectionTitle from './SectionTitle';
 
 interface ComparisonStats {
   comparisonCount: number;
-  lastMonthComparisonCount: number;
-  lastWeekComparisonCount: number;
+  lastThirtyDaysComparisonCount: number;
+  currentWeekComparisonCount: number;
 }
 
 interface Props {
@@ -45,7 +45,7 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
                   text={t('stats.comparisons')}
                   count={comparisonStats?.comparisonCount || 0}
                   lastMonthCount={
-                    comparisonStats?.lastMonthComparisonCount || 0
+                    comparisonStats?.lastThirtyDaysComparisonCount || 0
                   }
                   lastMonthAsText
                 />

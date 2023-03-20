@@ -41,8 +41,8 @@ const ComparisonPage = () => {
 
   // Code for issue solving
   const { isLoggedIn, loginState } = useLoginState();
-  const [progress, setProgress] = useState(30); // progress = your contribution
-  const [buffer, setBuffer] = React.useState(70);
+  const [userWeekly, setUserWeekly] = useState(30); // progress = your current week contribution
+  const [totalWeekly, setTotalWeekly] = React.useState(70); // buffer = total current week contribution
   const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
   const { showWarningAlert } = useNotifications();
 
@@ -52,8 +52,8 @@ const ComparisonPage = () => {
         const pollStats = await getPollStats(pollName);
         if (pollStats) {
           setStats(pollStats);
-          // setProgress(stats.lastWeekUserComparisonCount) // add logic if logged in user ? their contribution to comparison as well.
-          // setBuffer(stats.lastWeekComparisonCount);
+          // setProgress(stats.currentWeekUserComparisonCount) // add logic if logged in user ? their contribution to comparison as well.
+          // setBuffer(stats.currentWeekComparisonCount);
         }
       } catch (reason) {
         showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
@@ -63,23 +63,27 @@ const ComparisonPage = () => {
     getPollStatsAsync(pollName);
   }, [pollName, showWarningAlert, t]);
 
+  // this const/interface isnt required
   const comparisonStats = {
-    comparisonCount: stats.comparisonCount,
-    lastMonthComparisonCount: stats.lastMonthComparisonCount,
-    lastWeekComparisonCount: stats.lastWeekComparisonCount,
+    comparisonCount: stats.comparisonCount, // no optional chaining since they are already set to 0 as default
+    lastMonthComparisonCount: stats.lastThirtyDaysComparisonCount,
+    currentWeekComparisonCount: stats.currentWeekComparisonCount,
   };
 
   console.log('Comparison stats:', comparisonStats);
   console.log('Login State:', isLoggedIn, loginState);
+
+  const weeklyPercent = stats.currentWeekComparisonCount / 10;
+
   return (
     <>
       <Box>
-        Thanks to everyone, Tournesol has reached 60%% of its weekly objective
-        of 1000 comparisons.
+        Thanks to everyone, Tournesol has reached {weeklyPercent}% of its weekly
+        objective of 1000 comparisons.
         <LinearProgress
           variant="buffer"
-          value={progress}
-          valueBuffer={buffer}
+          value={userWeekly}
+          valueBuffer={totalWeekly}
           color="success"
         />
         4,2% comes directly from you! / Help us reach this goal!

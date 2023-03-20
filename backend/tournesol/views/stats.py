@@ -8,7 +8,6 @@ import logging
 
 from django.utils import timezone
 from core.utils.time import time_ago
-from pprint import pprint
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
@@ -16,7 +15,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from core.models import User
-from core.utils.time import time_ago
 from tournesol.models import Comparison, Entity, Poll
 from tournesol.serializers.stats import StatisticsSerializer
 
@@ -36,8 +34,8 @@ class ComparedEntitiesStatistics:
 @dataclass
 class ComparisonsStatistics:
     total: int
-    added_last_month: int
-    added_last_week: int
+    added_last_30_days: int
+    added_current_week: int
 
 
 @dataclass
@@ -85,9 +83,10 @@ class StatisticsView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = StatisticsSerializer
 
-    _days_delta = 200 #make it 30 later
-    _days_delta_week = timezone.now().day - time_ago(days=timezone.now().weekday()).day
+    # _days_delta_week = timezone.now().day - time_ago(days=timezone.now().weekday()).day
     # print('DAYS DELTA WEEK:', _days_delta_week)
+    _days_delta = 30 #make it 30 later
+    # _days_delta_week = (datetime.now() - timedelta(days = datetime.now().weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
 
     def get(self, request):
         statistics = Statistics()
@@ -97,6 +96,12 @@ class StatisticsView(generics.GenericAPIView):
             is_active=True, date_joined__gte=time_ago(days=self._days_delta)
         ).count()
         statistics.set_active_users(active_users, last_month_active_users)
+
+
+        # mondayTime = (datetime.now() - timedelta(days = datetime.now().weekday())) #.replace(hour=0, minute=0, second=0, microsecond=0)
+        daysParam = timezone.now().weekday()
+        mondayDiff = time_ago(days=daysParam)
+        hourParam, minuteParam, secondParam = mondayDiff.hour, mondayDiff.minute, mondayDiff.second
 
         for poll in Poll.objects.iterator():
             entities = Entity.objects.filter(type=poll.entity_type)
@@ -113,19 +118,26 @@ class StatisticsView(generics.GenericAPIView):
 
             comparisons = Comparison.objects.filter(poll=poll)
             comparison_count = comparisons.count()
-            if len(comparisons) > 0:
-                print("Comparison", comparisons[0])
+            # if len(comparisons) > 0:
+            #     print("\n\nTimezone now:", timezone.now())
+            #     print("\n\nlastWeek:", time_ago(days=daysParam, hours=hourParam, minutes=minuteParam, seconds=secondParam))
+            #     print("\n\nMondayDiff:", mondayDiff, mondayDiff.day,daysParam, hourParam, minuteParam, secondParam)
+            #     print("\n\nTimeago weekday:", timezone.now().weekday())
+            #     print("\n\nComparison", comparisons[0])
+
+            # We should optimize the following two calls so that they are called only when the server updates
+            # the count, and not when the client calls this API
             last_month_comparison_count = comparisons.filter(
                 datetime_lastedit__gte=time_ago(days=self._days_delta)
             ).count()
-            last_week_comparison_count = comparisons.filter(
-                datetime_lastedit__gte=time_ago(days=self._days_delta_week)
+            current_week_comparison_count = comparisons.filter(
+                datetime_lastedit__gte=time_ago(days=daysParam, hours=hourParam, minutes=minuteParam, seconds=secondParam)
             ).count()
 
             comparisons_statistics = ComparisonsStatistics(
                 comparison_count,
                 last_month_comparison_count,
-                last_week_comparison_count
+                current_week_comparison_count
             )
 
             statistics.append_poll(

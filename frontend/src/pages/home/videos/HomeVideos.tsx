@@ -125,8 +125,9 @@ const HomeVideosPage = () => {
           <ComparisonSection
             comparisonStats={{
               comparisonCount: stats.comparisonCount,
-              lastMonthComparisonCount: stats.lastMonthComparisonCount,
-              lastWeekComparisonCount: stats.lastWeekComparisonCount,
+              lastThirtyDaysComparisonCount:
+                stats.lastThirtyDaysComparisonCount,
+              currentWeekComparisonCount: stats.currentWeekComparisonCount,
             }}
           />
         </Grid2>

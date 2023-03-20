@@ -105,10 +105,15 @@ class StatisticsAPI(TestCase):
         self.assertEqual(last_month_video_count, 2)
 
         comparison_count = video_poll["comparisons"]["total"]
-        last_month_comparison_count = video_poll["comparisons"]["added_last_month"]
+        #should this variable name be changed as well?
+        last_month_comparison_count = video_poll["comparisons"]["added_last_30_days"]
+        #test for current week to be added here
+        current_week_comparison_count = video_poll["comparisons"]["added_current_week"]
 
         self.assertEqual(comparison_count, len(self._list_of_comparisons))
         self.assertEqual(last_month_comparison_count, 2)
+        self.assertEqual(current_week_comparison_count, 2)
+
 
     def test_user_stats(self):
         """

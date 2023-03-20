@@ -14,8 +14,8 @@ class ComparedEntitiesStatisticsSerializer(Serializer):
 
 class ComparisonsStatisticsSerializer(Serializer):
     total = IntegerField()
-    added_last_month = IntegerField()
-    added_last_week = IntegerField()
+    added_last_30_days= IntegerField()
+    added_current_week = IntegerField()
 
 
 class PollStatisticsSerializer(Serializer):
