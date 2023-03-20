@@ -53,7 +53,6 @@
       #enable_search {
         position: relative;
         background-color: #f44336;
-        color: transparent;
       }
 
       #enable_search.enabled {
@@ -68,19 +67,9 @@
         background-color: #6fc072;
       }
 
-      #enable_search::after {
-        content: 'Search Is Off';
-        position: absolute;
-        top: 14%;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        color: white;
-      }
       
-      #enable_search.enabled::after {
-        content: 'Search Is On';
-      }
+      
+  
 
     </style>
     <script type="module" src="menu.js"></script>
@@ -92,6 +81,6 @@
     <button id="rate_now">Rate now</button>
     <button id="rate_later">Rate later</button>
     <button id="analysis">Analysis</button>
-    <button id="enable_search">Search</button>
+    <button id="enable_search">Search is off</button>
   </body>
 </html>

@@ -1,5 +1,7 @@
 import { addRateLater } from '../utils.js';
 
+const i18n = chrome.i18n;
+
 function get_current_tab_video_id() {
   function get_tab_video_id(tabs) {
     for (let tab of tabs) {
@@ -102,45 +104,56 @@ function openAnalysisPageAction(event) {
 }
 
 /**
- * Handle the search button visual and the toggle between enable and disabled in the storage
- */
-
-function toggleSearchState() {
-  let enabled;
-
-  chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-    enabled = searchEnabled;
-    if (enabled === undefined) {
-      chrome.storage.local.set({ searchEnabled: false });
-    }
-
-    if (enabled) {
-      document.getElementById('enable_search').classList.add('enabled');
-    }
-  });
-
-  return () => {
-    document.getElementById('enable_search').classList.toggle('enabled');
-    enabled = !enabled;
-    chrome.storage.local.set({ searchEnabled: enabled });
-  };
-}
-
-/**
  * Create the action menu.
  */
 document.addEventListener('DOMContentLoaded', function () {
-  document
-    .getElementById('tournesol_home')
-    .addEventListener('click', openTournesolHome);
-  document.getElementById('rate_now').addEventListener('click', rateNowAction);
-  document
-    .getElementById('rate_later')
-    .addEventListener('click', addToRateLaterAction);
-  document
-    .getElementById('analysis')
-    .addEventListener('click', openAnalysisPageAction);
-  document
-    .getElementById('enable_search')
-    .addEventListener('click', toggleSearchState());
+  const tournesolHomeLink = document.getElementById('tournesol_home');
+  const rateNowButton = document.getElementById('rate_now');
+  const rateLaterButton = document.getElementById('rate_later');
+  const analysisButton = document.getElementById('analysis');
+  const enableSearchButton = document.getElementById('enable_search');
+
+  /**
+   * Handle the search button visual and the toggle between enable and disabled in the storage
+   */
+
+  function toggleSearchState() {
+    let enabled;
+
+    // Check in the storage if the user enabled the search
+    // if the key is not found init at false
+    chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
+      enabled = searchEnabled;
+      if (enabled === undefined) {
+        chrome.storage.local.set({ searchEnabled: false });
+      }
+
+      if (enabled) {
+        document.getElementById('enable_search').classList.add('enabled');
+        enableSearchButton.textContent = i18n.getMessage('menuSearchEnabled');
+      } else {
+        enableSearchButton.textContent = i18n.getMessage('menuSearchDisabled');
+      }
+    });
+
+    // Toggle both the menu visual state and the storage state
+    return () => {
+      document.getElementById('enable_search').classList.toggle('enabled');
+      enabled = !enabled;
+      enableSearchButton.textContent = enabled
+        ? i18n.getMessage('menuSearchEnabled')
+        : i18n.getMessage('menuSearchDisabled');
+      chrome.storage.local.set({ searchEnabled: enabled });
+    };
+  }
+
+  tournesolHomeLink.addEventListener('click', openTournesolHome);
+  rateNowButton.addEventListener('click', rateNowAction);
+  rateLaterButton.addEventListener('click', addToRateLaterAction);
+  analysisButton.addEventListener('click', openAnalysisPageAction);
+  enableSearchButton.addEventListener('click', toggleSearchState());
+
+  rateNowButton.textContent = i18n.getMessage('menuRateNow');
+  rateLaterButton.textContent = i18n.getMessage('menuRateLater');
+  analysisButton.textContent = i18n.getMessage('menuAnalysis');
 });

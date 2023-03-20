@@ -8,7 +8,6 @@ const rowsWhenExpanded = 3;
 let isExpanded = false;
 
 const searchRecommandationNumber = 3;
-const searchRecommandationAdditionalNumber = 0;
 
 let videos = [];
 let additionalVideos = [];
@@ -17,6 +16,11 @@ let areRecommandationsLoading = false;
 let areRecommendationsLoaded = false;
 let path = location.pathname;
 let search = '';
+const i18n = chrome.i18n;
+
+document.addEventListener('yt-navigate-finish', process);
+if (document.body) process();
+else document.addEventListener('DOMContentLoaded', process);
 
 setInterval(() => {
   if (location.pathname != path || location.search != search) {
@@ -25,10 +29,6 @@ setInterval(() => {
     loadRecommandations();
   }
 }, 1000);
-
-document.addEventListener('yt-navigate-finish', process);
-if (document.body) process();
-else document.addEventListener('DOMContentLoaded', process);
 
 const convertDurationToClockDuration = (duration) => {
   const roundToTwoDigits = (number) => {
@@ -61,10 +61,6 @@ const getTournesolComponent = () => {
   const tournesol_container = document.createElement('div');
   tournesol_container.id = 'tournesol_container';
 
-  if (path == '/results') {
-    tournesol_container.classList.add('search');
-  }
-
   // Add inline-block div
   const inline_div = document.createElement('div');
   inline_div.setAttribute('class', 'inline_div');
@@ -83,7 +79,7 @@ const getTournesolComponent = () => {
   // Add title
   const tournesol_title = document.createElement('h1');
   tournesol_title.id = 'tournesol_title';
-  tournesol_title.append('Recommended by Tournesol');
+  tournesol_title.append(i18n.getMessage('recommandedBy'));
   inline_div.append(tournesol_title);
 
   // Refresh button
@@ -104,7 +100,7 @@ const getTournesolComponent = () => {
   const tournesol_link = document.createElement('a');
   tournesol_link.id = 'tournesol_link';
   tournesol_link.href = 'https://tournesol.app?utm_source=extension';
-  tournesol_link.append('learn more');
+  tournesol_link.append(i18n.getMessage('learnMore'));
   inline_div.append(tournesol_link);
 
   // Expand button
@@ -194,9 +190,9 @@ const getTournesolComponent = () => {
 
     const video_views_publication = document.createElement('p');
     video_views_publication.className = 'video_text';
-    video_views_publication.innerHTML = `${millifyViews(
-      video.metadata.views
-    )} views <span class="dot">&nbsp•&nbsp</span> ${viewPublishedDate(
+    video_views_publication.innerHTML = `${i18n.getMessage('views', [
+      millifyViews(video.metadata.views),
+    ])} <span class="dot">&nbsp•&nbsp</span> ${viewPublishedDate(
       video.metadata.publication_date
     )}`;
     video_channel_details.append(video_views_publication);
@@ -207,12 +203,12 @@ const getTournesolComponent = () => {
     video_score.innerHTML = `<img class="tournesol_comparison_logo" src="https://tournesol.app/svg/tournesol.svg" alt"logo tournesol" /><strong>${video.tournesol_score.toFixed(
       0
     )} <span class="dot">&nbsp·&nbsp</span></strong>
-         <span>${
-           video.n_comparisons
-         } comparisons by </span>&nbsp<span class="contributors">${
-      video.n_contributors
-    }
-         contributors</span>`;
+         <span>${i18n.getMessage('comparisonsBy', [
+           video.n_comparisons,
+         ])} </span>&nbsp<span class="contributors">${i18n.getMessage(
+      'comparisonsContributors',
+      [video.n_contributors]
+    )}</span>`;
     details_div.append(video_score);
 
     if (path == '/results') {
@@ -227,13 +223,11 @@ const getTournesolComponent = () => {
         const lower = sortedCriteria[0];
         const higher = sortedCriteria[sortedCriteria.length - 1];
 
-        const lowerCriteriaTitle = `${lower.criteria.replaceAll(
-          '_',
-          ' '
+        const lowerCriteriaTitle = `${i18n.getMessage(
+          lower.criteria
         )}: ${Math.round(lower.score)}`;
-        const higherCriteriaTitle = `${higher.criteria.replaceAll(
-          '_',
-          ' '
+        const higherCriteriaTitle = `${i18n.getMessage(
+          higher.criteria
         )}: ${Math.round(higher.score)}`;
 
         const lowerCriteriaIconUrl = `images/criteriaIcons/${lower.criteria}.svg`;
@@ -254,13 +248,17 @@ const getTournesolComponent = () => {
                     'data:image/svg+xml;base64,' + window.btoa(svg))
               )
               .then(() => {
-                video_criteria.innerHTML = `Rated high: <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' /> Rated low: <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`;
+                video_criteria.innerHTML = `${i18n.getMessage(
+                  'ratedHigh'
+                )} <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' /> ${i18n.getMessage(
+                  'ratedLow'
+                )} <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`;
 
                 details_div.append(video_criteria);
               });
           });
       } else {
-        video_criteria.innerHTML = `There is no criteria score for this video at the moment`;
+        video_criteria.innerHTML = i18n.getMessage('noCriteriaScore');
       }
     }
 
@@ -281,6 +279,22 @@ const getTournesolComponent = () => {
     );
   }
   tournesol_container.append(expand_button_container);
+
+  if (path == '/results') {
+    tournesol_container.classList.add('search');
+
+    let viewMoreLink = document.createElement('a');
+    viewMoreLink.className = 'tournesol_mui_like_button view_more_link';
+    viewMoreLink.target = '_blank';
+    viewMoreLink.rel = 'noopener';
+    viewMoreLink.href = `https://tournesol.app/recommendations/?search=${search.substring(
+      14
+    )}&language=fr%2Cen`;
+    viewMoreLink.textContent = i18n.getMessage('viewMore');
+
+    tournesol_container.append(viewMoreLink);
+  }
+
   return tournesol_container;
 };
 
@@ -310,8 +324,8 @@ function displayRecommendations() {
     if (old_container) old_container.remove();
 
     // Generate component to display on Youtube home page
-    const tournesol_component = getTournesolComponent();
 
+    const tournesol_component = getTournesolComponent();
     container.insertBefore(tournesol_component, container.children[1]);
   }, 300);
 }
@@ -360,7 +374,6 @@ function loadRecommandations() {
             message: 'getTournesolSearchRecommendations',
             search: searchQuery,
             videosNumber: searchRecommandationNumber,
-            additionalVideosNumber: searchRecommandationAdditionalNumber,
           },
           handleResponse
         );
@@ -399,26 +412,32 @@ function viewPublishedDate(publishedDate) {
   const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
 
   if (diffDays == 0) {
-    return 'Today';
+    return i18n.getMessage('publishedToday');
   } else if (diffDays == 1) {
-    return 'Yesterday';
+    return i18n.getMessage('publishedYesterday');
   } else if (diffDays < 31) {
     if (diffDays < 14) {
-      return `${diffDays} days ago`;
+      return i18n.getMessage('publishedSomeDaysAgo', [diffDays]);
     } else {
-      return `${Math.floor(diffDays / 7)} weeks ago`;
+      return i18n.getMessage('publishedSomeWeeksAgo', [
+        Math.floor(diffDays / 7),
+      ]);
     }
   } else if (diffDays < 365) {
     if (diffDays < 61) {
-      return '1 month ago';
+      return i18n.getMessage('publishedAMonthAgo');
     } else {
-      return `${Math.floor(diffDays / 30)} months ago`;
+      return i18n.getMessage('publishedSomeMonthsAgo', [
+        Math.floor(diffDays / 30),
+      ]);
     }
   } else {
     if (diffDays < 730) {
-      return '1 year ago';
+      return i18n.getMessage('publishedAYearAgo');
     } else {
-      return `${Math.floor(diffDays / 365)} years ago`;
+      return i18n.getMessage('publishedSomeYearsAgo', [
+        Math.floor(diffDays / 365),
+      ]);
     }
   }
 }

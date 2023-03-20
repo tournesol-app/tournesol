@@ -352,8 +352,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return true;
     } else {
       const process = async () => {
-        const videosNumber =
-          request.videosNumber + request.additionalVideosNumber;
+        const videosNumber = request.videosNumber;
         const languagesString = await recommendationsLanguages();
 
         // Only one request for both videos and additional videos

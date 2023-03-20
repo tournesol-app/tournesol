@@ -1,0 +1,128 @@
+{
+  "menuRateNow": {
+    "message": "Comparer maintenant",
+    "description": "content of the rate now menu button."
+  },
+
+  "menuRateLater": {
+    "message": "Comparer plus tard",
+    "description": "Content of the rate later menu button."
+  },
+
+  "menuAnalysis": {
+    "message": "Analyses",
+    "description": "Content of the analysis menu button."
+  },
+  "menuSearchEnabled": {
+    "message": "Recherche activée",
+    "description": "Content of the search button when search is turned on."
+  },
+  "menuSearchDisabled": {
+    "message": "Recherche désactivée",
+    "description": "Content of the search button when search is turned off."
+  },
+  "recommandedBy": {
+    "message": "Recommandés par Tournesol",
+    "description": "Tournesol container title."
+  },
+  "learnMore": {
+    "message": "Plus d'infos",
+    "description": "Link to tournesol website homePage."
+  },
+  "views": {
+    "message": "$1 vues",
+    "description": "Text for the number of views"
+  },
+  "publishedToday": {
+    "message": "Aujourd'hui",
+    "description": "Text for video published today."
+  },
+  "publishedYesterday": {
+    "message": "Hier",
+    "description": "Text for video published yesterday."
+  },
+  "publishedSomeDaysAgo": {
+    "message": "Il y a $1 jours",
+    "description": "Text for video published less than two weeks ago"
+  },
+  "publishedSomeWeeksAgo": {
+    "message": "Il y a $1 semaines",
+    "description": "Text for video published between 2 weeks ago and one month ago"
+  },
+  "publishedAMonthAgo": {
+    "message": "Il y a 1 mois",
+    "description": "Text for video published one month ago"
+  },
+  "publishedSomeMonthsAgo": {
+    "message": "Il y a $1 mois",
+    "description": "Text for video published more at least two month ago and less than 1 year ago"
+  },
+  "publishedAYearAgo": {
+    "message": "Il y a 1 an",
+    "description": "Text for video published 1 year ago"
+  },
+  "publishedSomeYearAgo": {
+    "message": "Il y a $1 ans",
+    "description": "Text for video published more than 1 year ago"
+  },
+  "comparisonsBy": {
+    "message": " $1 comparaisons par",
+    "description": "Recommandations results numbers of comparisons."
+  },
+  "comparisonsContributors": {
+    "message": " $1 contributeurs",
+    "description": "Recommandations results numbers of contributors."
+  },
+  "reliability": {
+    "message": "Fiable & non trompeur",
+    "description": "Reliability criteria icon hover message."
+  },
+  "backfire_risk": {
+    "message": "Résistant aux retours négatifs",
+    "description": "Backfire_risk criteria icon hover message."
+  },
+  "layman_friendly": {
+    "message": "Accessible aux non-spécialistes",
+    "description": "Layman_friendly criteria icon hover message."
+  },
+  "diversity_inclusion": {
+    "message": "Diversité & inclusion",
+    "description": "Diversity_inclusion criteria icon hover message."
+  },
+  "engaging": {
+    "message": "Stimulant & suscite la réflexion",
+    "description": "Engaging criteria icon hover message."
+  },
+  "entertaining_relaxing": {
+    "message": "Divertissant & relaxant",
+    "description": "Entertaining_relaxing criteria icon hover message."
+  },
+  "better_habits": {
+    "message": "Encourage de meilleurs habitudes",
+    "description": "Better_habits criteria icon hover message."
+  },
+  "pedagogy": {
+    "message": "Clair & pédagogique",
+    "description": "Pedagogy criteria icon hover message."
+  },
+  "importance": {
+    "message": "Important & actionnable",
+    "description": "Importance criteria icon hover message."
+  },
+  "noCriteriaScore": {
+    "message": "Il n'y a pas de score de critère pour cette vidéo pour le moment.",
+    "description": "Message displayed when there is no criteria score for a video."
+  },
+  "ratedHigh": {
+    "message": "Notée fortement:",
+    "description": "Text for high rated criteria"
+  },
+  "ratedLow": {
+    "message": "Notée faiblement:",
+    "description": "Text for low rated criteria"
+  },
+  "viewMore": {
+    "message": "Voir plus sur tournesol",
+    "Description": "Text for the view more button inside the search recommandation container"
+  }
+}

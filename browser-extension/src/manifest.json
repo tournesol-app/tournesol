@@ -60,5 +60,6 @@
       "all_frames": true
     }
   ],
-  "web_accessible_resources": ["Logo128.png", "html/*", "images/*"]
+  "default_locale": "en",
+  "web_accessible_resources": ["Logo128.png", "html/*", "images/*", "translations/*", "utils.js"]
 }
