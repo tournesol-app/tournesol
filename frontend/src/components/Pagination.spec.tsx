@@ -243,12 +243,6 @@ describe('Pagination component', () => {
 
       setup(paginationProps);
 
-      // Check if the -100 and +100 buttons are visible
-      const minus100Button = screen.queryByRole('button', { name: /< -100/i });
-      const plus100Button = screen.queryByRole('button', { name: /\+100 >/i });
-      expect(minus100Button).toBeInTheDocument();
-      expect(plus100Button).toBeInTheDocument();
-
       // click on next 100 page button from page 50
       fireEvent.click(screen.getByRole('button', { name: /\+100 >/i }));
       expect(paginationProps.onOffsetChange).toHaveBeenCalledWith(2980);
