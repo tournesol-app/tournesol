@@ -238,7 +238,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return [];
     };
 
-    if (request.message == 'getTournesolRecommendations') {
+    if (request.message === 'getTournesolRecommendations') {
       // Compute the number of videos to load in each category
       const recentVideoToLoad = Math.round(
         request.videosNumber *
@@ -344,13 +344,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: [...videos, ...additionalVideos],
+          recommandationsLanguages: languagesString,
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };
       };
       process().then(sendResponse);
       return true;
-    } else {
+    } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
         const videosNumber = request.videosNumber;
         const languagesString = await recommendationsLanguages();
@@ -370,6 +371,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: videosList.splice(0, videosNumber),
+          recommandationsLanguages: languagesString,
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };

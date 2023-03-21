@@ -17,6 +17,7 @@ let areRecommendationsLoaded = false;
 let path = location.pathname;
 let search = '';
 const i18n = chrome.i18n;
+let recommandationsLanguages = 'en';
 
 document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
@@ -100,6 +101,8 @@ const getTournesolComponent = () => {
   const tournesol_link = document.createElement('a');
   tournesol_link.id = 'tournesol_link';
   tournesol_link.href = 'https://tournesol.app?utm_source=extension';
+  tournesol_link.target = '_blank';
+  tournesol_link.rel = 'noopener';
   tournesol_link.append(i18n.getMessage('learnMore'));
   inline_div.append(tournesol_link);
 
@@ -156,6 +159,11 @@ const getTournesolComponent = () => {
 
     video_duration.append(document.createTextNode(formatted_video_duration));
     thumb_div.append(video_duration);
+
+    const video_link = document.createElement('a');
+    video_link.className = 'video_link';
+    video_link.href = '/watch?v=' + video.metadata.video_id;
+    thumb_div.append(video_link);
 
     video_box.append(thumb_div);
 
@@ -244,37 +252,41 @@ const getTournesolComponent = () => {
         let lowerCriteriaIcon;
         let higherCriteriaIcon;
 
-        fetch(chrome.runtime.getURL(lowerCriteriaIconUrl))
+        fetch(chrome.runtime.getURL(higherCriteriaIconUrl))
           .then((r) => r.text())
           .then((svg) => {
-            lowerCriteriaIcon = 'data:image/svg+xml;base64,' + window.btoa(svg);
+            higherCriteriaIcon =
+              'data:image/svg+xml;base64,' + window.btoa(svg);
 
-            fetch(chrome.runtime.getURL(higherCriteriaIconUrl))
-              .then((r) => r.text())
-              .then(
-                (svg) =>
-                  (higherCriteriaIcon =
-                    'data:image/svg+xml;base64,' + window.btoa(svg))
-              )
-              .then(() => {
-                video_criteria.innerHTML = `${i18n.getMessage(
-                  'ratedHigh'
-                )} <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' /> ${i18n.getMessage(
-                  'ratedLow'
-                )} <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`;
+            if (higher.score > 0) {
+              video_criteria.innerHTML += `${i18n.getMessage(
+                'ratedHigh'
+              )} <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' />`;
+            }
 
-                details_div.append(video_criteria);
-              });
+            if (lower.score < 0) {
+              fetch(chrome.runtime.getURL(lowerCriteriaIconUrl))
+                .then((r) => r.text())
+                .then(
+                  (svg) =>
+                    (lowerCriteriaIcon =
+                      'data:image/svg+xml;base64,' + window.btoa(svg))
+                )
+                .then(() => {
+                  video_criteria.innerHTML += ` ${i18n.getMessage(
+                    'ratedLow'
+                  )} <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`;
+
+                  details_div.append(video_criteria);
+                });
+            } else {
+              details_div.append(video_criteria);
+            }
           });
       } else {
         video_criteria.innerHTML = i18n.getMessage('noCriteriaScore');
       }
     }
-
-    const video_link = document.createElement('a');
-    video_link.className = 'video_link';
-    video_link.href = '/watch?v=' + video.metadata.video_id;
-    video_box.append(video_link);
 
     video_box.append(details_div);
 
@@ -298,7 +310,10 @@ const getTournesolComponent = () => {
     viewMoreLink.rel = 'noopener';
     viewMoreLink.href = `https://tournesol.app/recommendations/?search=${search.substring(
       14
-    )}&language=fr%2Cen`;
+    )}&language=${recommandationsLanguages.replaceAll(
+      ',',
+      '%2C'
+    )}&utm_source=extension`;
     viewMoreLink.textContent = i18n.getMessage('viewMore');
 
     tournesol_container.append(viewMoreLink);
@@ -351,11 +366,15 @@ function process() {
   }
 }
 
-function handleResponse({ data: videosReponse }) {
+function handleResponse({
+  data: videosReponse,
+  recommandationsLanguages: languagesString,
+}) {
   areRecommandationsLoading = false;
   areRecommendationsLoaded = true;
   videos = videosReponse.slice(0, 4);
   additionalVideos = videosReponse.slice(4);
+  recommandationsLanguages = languagesString;
 
   if (isPageLoaded) {
     displayRecommendations();
@@ -371,12 +390,19 @@ function loadRecommandations() {
   areRecommandationsLoading = true;
 
   if (location.pathname == '/results') {
-    const old_container = document.getElementById('tournesol_container');
-    if (old_container) old_container.remove();
-
+    handleResponse({ data: [] });
     chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
       if (searchEnabled) {
-        let searchQuery = search.substring(14);
+        let searchQuery = search
+          .substring(1)
+          .split('&')
+          .reduce((cur, next) => {
+            let param = next.split('=');
+            if (param[0] === 'search_query') {
+              return param[1];
+            }
+            return cur;
+          }, null);
 
         chrome.runtime.sendMessage(
           {

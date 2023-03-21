@@ -61,6 +61,10 @@
   color: inherit;
 }
 
+.video_channel_link{
+  text-decoration: underline;
+}
+
 .tournesol_comparison_logo{
   width: 16px;
   margin-right: 4px;
@@ -162,7 +166,6 @@
 }
 
 .details_div {
-  cursor: pointer;
   position: relative;
   display: flex;
   gap: 6px;
@@ -257,6 +260,8 @@
 
 .view_more_link{
   margin-left: auto;
+  font-size: 1.2rem;
+  padding: 8px;
 }
 
 #tournesol_container.search{
@@ -274,17 +279,13 @@
   font-size: 1.8rem;
 }
 
-#tournesol_container.search .video_channel_link{
-  text-decoration: underline;
-}
-
 #tournesol_container.search .tournesol_comparison_logo{
   width: 32px;
 }
 
 #tournesol_container.search .thumb_div,
-#tournesol_container.search .thumb_div img,
-#tournesol_container.search .video_link{
+#tournesol_container.search .thumb_div img
+{ 
   width: 100%;
   min-width: 240px;
   max-width: 360px;
