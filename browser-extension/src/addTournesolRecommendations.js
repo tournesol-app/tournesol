@@ -125,19 +125,19 @@ const getLocalizedActionError = () => {
 
 const displayElement = (element) => {
   const classes = element.className.split(' ');
-  const index = classes.indexOf('display_none');
 
-  if (index > -1) {
-    classes.splice(index, 1);
+  if (!classes.includes('displayed')) {
+    classes.push('displayed');
     element.className = classes.join(' ');
   }
 };
 
 const hideElement = (element) => {
   const classes = element.className.split(' ');
+  const index = classes.indexOf('displayed');
 
-  if (!classes.includes('display_none')) {
-    classes.push('display_none');
+  if (index > -1) {
+    classes.splice(index, 1);
     element.className = classes.join(' ');
   }
 };
@@ -156,8 +156,10 @@ const createBanner = () => {
   banner.className = 'tournesol_banner';
 
   chrome.storage.local.get('displayBanner').then((items) => {
-    if (items.displayBanner === false) {
-      hideElement(banner);
+    if (items.displayBanner === true ||
+        items.displayBanner === null ||
+        items.displayBanner === undefined) {
+      displayElement(banner);
     }
   });
 

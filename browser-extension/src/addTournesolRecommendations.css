@@ -33,7 +33,7 @@
   padding: 16px;
   margin-bottom: 16px;
 
-  display: flex;
+  display: none;
   align-items: center;
   gap: 16px;
 
@@ -50,8 +50,8 @@
     0px 1px 3px 0px rgb(0 0 0 / 12%);
 }
 
-#tournesol_banner.display_none {
-  display: none;
+#tournesol_banner.displayed {
+  display: flex;
 }
 
 html[dark] #tournesol_banner {
