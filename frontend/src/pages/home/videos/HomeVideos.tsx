@@ -16,6 +16,10 @@ import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSec
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
 
+//added new
+import { useAppDispatch } from 'src/app/hooks';
+import { fetchComparisonData } from 'src/features/comparisons/comparisonSlice';
+
 const HomeVideosPage = () => {
   const { t } = useTranslation();
 
@@ -24,6 +28,9 @@ const HomeVideosPage = () => {
   const { baseUrl, active, name: pollName } = useCurrentPoll();
 
   const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
+
+  //added new
+  const dispatch = useAppDispatch();
 
   const homeSectionSx = {
     width: '100%',
@@ -41,6 +48,7 @@ const HomeVideosPage = () => {
         const pollStats = await getPollStats(pollName);
         if (pollStats) {
           setStats(pollStats);
+          dispatch(fetchComparisonData(pollStats));
         }
       } catch (reason) {
         showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
@@ -48,7 +56,7 @@ const HomeVideosPage = () => {
     }
 
     getPollStatsAsync(pollName);
-  }, [pollName, showWarningAlert, t]);
+  }, [pollName, showWarningAlert, t, dispatch]);
 
   return (
     <>

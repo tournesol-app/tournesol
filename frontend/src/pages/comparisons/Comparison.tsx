@@ -10,8 +10,10 @@ import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { PollStats } from 'src/utils/types';
-import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
-import { useNotifications, useLoginState } from 'src/hooks';
+// import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
+// import { useNotifications, useLoginState } from 'src/hooks';
+import { useAppSelector } from 'src/app/hooks';
+import { selectComparison } from 'src/features/comparisons/comparisonSlice';
 
 /**
  * Display the standard comparison UI or the poll tutorial.
@@ -29,7 +31,7 @@ const ComparisonPage = () => {
     options,
     baseUrl,
     active: pollActive,
-    name: pollName,
+    // name: pollName,
   } = useCurrentPoll();
 
   const tutorialLength = options?.tutorialLength ?? 0;
@@ -40,38 +42,16 @@ const ComparisonPage = () => {
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
   // Code for issue solving
-  const { isLoggedIn, loginState } = useLoginState();
+  // const { isLoggedIn, loginState } = useLoginState();
   const [userWeekly, setUserWeekly] = useState(30); // progress = your current week contribution
   const [totalWeekly, setTotalWeekly] = React.useState(70); // buffer = total current week contribution
-  const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
-  const { showWarningAlert } = useNotifications();
+  // const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
 
-  useEffect(() => {
-    async function getPollStatsAsync(pollName: string) {
-      try {
-        const pollStats = await getPollStats(pollName);
-        if (pollStats) {
-          setStats(pollStats);
-          // setProgress(stats.currentWeekUserComparisonCount) // add logic if logged in user ? their contribution to comparison as well.
-          // setBuffer(stats.currentWeekComparisonCount);
-        }
-      } catch (reason) {
-        showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
-      }
-    }
+  //new added
+  const stats: PollStats | undefined = useAppSelector(selectComparison);
+  console.log('poll Data is here:', stats);
 
-    getPollStatsAsync(pollName);
-  }, [pollName, showWarningAlert, t]);
-
-  // this const/interface isnt required
-  const comparisonStats = {
-    comparisonCount: stats.comparisonCount, // no optional chaining since they are already set to 0 as default
-    lastMonthComparisonCount: stats.lastThirtyDaysComparisonCount,
-    currentWeekComparisonCount: stats.currentWeekComparisonCount,
-  };
-
-  console.log('Comparison stats:', comparisonStats);
-  console.log('Login State:', isLoggedIn, loginState);
+  // console.log('Login State:', isLoggedIn, loginState);
 
   const weeklyPercent = stats.currentWeekComparisonCount / 10;
 
@@ -82,8 +62,8 @@ const ComparisonPage = () => {
         objective of 1000 comparisons.
         <LinearProgress
           variant="buffer"
-          value={userWeekly}
-          valueBuffer={totalWeekly}
+          value={userWeekly} // later set it as : userCurrentWeekComparisonCount
+          valueBuffer={totalWeekly} // later set it as : stats?.currentWeekComparisonCount}
           color="success"
         />
         4,2% comes directly from you! / Help us reach this goal!
