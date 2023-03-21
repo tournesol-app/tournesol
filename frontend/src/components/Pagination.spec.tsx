@@ -218,22 +218,26 @@ describe('Pagination component', () => {
       const pages = screen.getAllByRole('button', { name: /page \d+/i });
       expect(pages).toHaveLength(11);
 
-      // check present of last page button
-      const lastPageButton = screen.queryByRole('button', { name: /31/i });
+      // The last button should be the page 31.
+      const lastPageButton = screen.getByRole('button', { name: /31/i });
       expect(lastPageButton).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /32/i })
+      ).not.toBeInTheDocument();
 
-      // check for the presence of the penultimate page button
-      const lastPenultimatePageButton = screen.queryByRole('button', {
+      // The penultimate page button should be present.
+      const lastPenultimatePageButton = screen.getByRole('button', {
         name: /30/i,
       });
       expect(lastPenultimatePageButton).toBeInTheDocument();
 
-      // click on page 31
+      // Click on page 31.
       fireEvent.click(screen.getByRole('button', { name: /page 31/i }));
       expect(paginationProps.onOffsetChange).toHaveBeenCalledWith(600);
     });
 
-    it('test navigation page buttons from 50 page', () => {
+    it('allows the navigation between pages', () => {
+      // We start at the page 50.
       const paginationProps: PaginationProps = {
         offset: 980,
         limit: 20,
@@ -295,9 +299,12 @@ describe('Pagination component', () => {
       const pages = screen.getAllByRole('button', { name: /page \d+/i });
       expect(pages).toHaveLength(6);
 
-      // check that last button is page 14
-      const lastPageButton = screen.queryByRole('button', { name: /14/i });
+      // The last button should be the page 14.
+      const lastPageButton = screen.getByRole('button', { name: /14/i });
       expect(lastPageButton).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /15/i })
+      ).not.toBeInTheDocument();
 
       const minus1Button = screen.getByRole('button', { name: /^< -1$/i });
       expect(minus1Button).toBeInTheDocument();
