@@ -217,6 +217,9 @@ const getTournesolComponent = () => {
         </span>`;
     details_div.append(video_score);
 
+    /**
+     * If the content script is executed on the YT research page.
+     */
     if (path == '/results') {
       const video_criteria = document.createElement('div');
       video_criteria.className = 'video_text video_criteria';
