@@ -92,12 +92,6 @@ describe('Pagination component', () => {
       const next10 = screen.getByRole('button', { name: /\+10 >/i });
       expect(next1).toBeEnabled();
       expect(next10).toBeEnabled();
-
-      // The buttons -100 and +100 should not be visible.
-      const minus100Button = screen.queryByRole('button', { name: /< -100/i });
-      const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
-      expect(minus100Button).not.toBeInTheDocument();
-      expect(plus100Button).not.toBeInTheDocument();
     });
 
     it('displays buttons +1 and +10 as disabled when current page is last', () => {
@@ -119,12 +113,38 @@ describe('Pagination component', () => {
       const next10 = screen.getByRole('button', { name: /\+10 >/i });
       expect(next1).toBeDisabled();
       expect(next10).toBeDisabled();
+    });
 
-      // The buttons -100 and +100 should not be visible.
-      const minus100Button = screen.queryByRole('button', { name: /< -100/i });
-      const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
-      expect(minus100Button).not.toBeInTheDocument();
-      expect(plus100Button).not.toBeInTheDocument();
+    it("doesn't display buttons -100 and +100 when there is less than 100 pages", () => {
+      const paginationProps: PaginationProps = {
+        offset: 0,
+        limit: 1,
+        count: 100,
+        onOffsetChange: onOffsetChange,
+      };
+
+      setup(paginationProps);
+
+      const plus100 = screen.queryByRole('button', { name: /\+100 >/i });
+      const minus100 = screen.queryByRole('button', { name: /< -100/i });
+      expect(plus100).not.toBeInTheDocument();
+      expect(minus100).not.toBeInTheDocument();
+    });
+
+    it('displays buttons -100 and +100 when there is strictly more than 100 pages', () => {
+      const paginationProps: PaginationProps = {
+        offset: 0,
+        limit: 1,
+        count: 101,
+        onOffsetChange: onOffsetChange,
+      };
+
+      setup(paginationProps);
+
+      const plus100 = screen.getByRole('button', { name: /\+100 >/i });
+      const minus100 = screen.getByRole('button', { name: /< -100/i });
+      expect(plus100).toBeInTheDocument();
+      expect(minus100).toBeInTheDocument();
     });
 
     it('displays 5 pages with limit: 20, count: 100', () => {
