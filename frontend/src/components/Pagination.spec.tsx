@@ -248,6 +248,23 @@ describe('Pagination component', () => {
   });
 
   describe('Screen size: sm', () => {
+    it('-100 / +100 buttons are never displayed', () => {
+      const paginationProps: PaginationProps = {
+        offset: 0,
+        limit: 1,
+        count: 101,
+        onOffsetChange: onOffsetChange,
+        widthScreen: theme.breakpoints.values.sm,
+      };
+
+      setup(paginationProps);
+
+      const plus100 = screen.queryByRole('button', { name: / \+100 >/i });
+      const minus100 = screen.queryByRole('button', { name: /< -100/i });
+      expect(plus100).not.toBeInTheDocument();
+      expect(minus100).not.toBeInTheDocument();
+    });
+
     it('displays 6 pages when limit: 20, count: 270', () => {
       const paginationProps: PaginationProps = {
         offset: 0,
@@ -277,12 +294,6 @@ describe('Pagination component', () => {
       expect(plus1Button).toBeInTheDocument();
       const plus10Button = screen.getByRole('button', { name: /^\+10 >$/i });
       expect(plus10Button).toBeInTheDocument();
-
-      // Check if the -100 and +100 buttons are not visible
-      const minus100Button = screen.queryByRole('button', { name: /< -100/i });
-      const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
-      expect(minus100Button).not.toBeInTheDocument();
-      expect(plus100Button).not.toBeInTheDocument();
     });
   });
 });
