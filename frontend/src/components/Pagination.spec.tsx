@@ -245,39 +245,42 @@ describe('Pagination component', () => {
     expect(paginationProps.onOffsetChange).toHaveBeenCalledWith(960);
   });
 
-  it('default pagination for 270 elements, 20 per page, on small screen, verify 6 pages', () => {
-    const paginationProps: PaginationProps = {
-      offset: 0,
-      limit: 20,
-      count: 270,
-      onOffsetChange: onOffsetChange,
-      widthScreen: theme.breakpoints.values.sm,
-    };
+  describe('Screen size: sm', () => {
+    it('displays 6 pages when limit: 20, count: 270', () => {
+      const paginationProps: PaginationProps = {
+        offset: 0,
+        limit: 20,
+        count: 270,
+        onOffsetChange: onOffsetChange,
+        widthScreen: theme.breakpoints.values.sm,
+      };
 
-    setup(paginationProps);
+      setup(paginationProps);
 
-    // check that there are 6 pages
-    const pages = screen.getAllByRole('button', { name: /page \d+/i });
-    expect(pages).toHaveLength(6);
+      // [WHEN] The PaginationComponent is configured with boundaryCount=1 and
+      // siblingCount=1, we expect 6 pages to be displayed.
+      const pages = screen.getAllByRole('button', { name: /page \d+/i });
+      expect(pages).toHaveLength(6);
 
-    // check that last button is page 14
-    const lastPageButton = screen.queryByRole('button', { name: /14/i });
-    expect(lastPageButton).toBeInTheDocument();
+      // check that last button is page 14
+      const lastPageButton = screen.queryByRole('button', { name: /14/i });
+      expect(lastPageButton).toBeInTheDocument();
 
-    const minus1Button = screen.getByRole('button', { name: /^< -1$/i });
-    expect(minus1Button).toBeInTheDocument();
-    const minus10Button = screen.getByRole('button', { name: /^< -10$/i });
-    expect(minus10Button).toBeInTheDocument();
+      const minus1Button = screen.getByRole('button', { name: /^< -1$/i });
+      expect(minus1Button).toBeInTheDocument();
+      const minus10Button = screen.getByRole('button', { name: /^< -10$/i });
+      expect(minus10Button).toBeInTheDocument();
 
-    const plus1Button = screen.getByRole('button', { name: /^\+1 >$/i });
-    expect(plus1Button).toBeInTheDocument();
-    const plus10Button = screen.getByRole('button', { name: /^\+10 >$/i });
-    expect(plus10Button).toBeInTheDocument();
+      const plus1Button = screen.getByRole('button', { name: /^\+1 >$/i });
+      expect(plus1Button).toBeInTheDocument();
+      const plus10Button = screen.getByRole('button', { name: /^\+10 >$/i });
+      expect(plus10Button).toBeInTheDocument();
 
-    // Check if the -100 and +100 buttons are not visible
-    const minus100Button = screen.queryByRole('button', { name: /< -100/i });
-    const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
-    expect(minus100Button).not.toBeInTheDocument();
-    expect(plus100Button).not.toBeInTheDocument();
+      // Check if the -100 and +100 buttons are not visible
+      const minus100Button = screen.queryByRole('button', { name: /< -100/i });
+      const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
+      expect(minus100Button).not.toBeInTheDocument();
+      expect(plus100Button).not.toBeInTheDocument();
+    });
   });
 });
