@@ -21,7 +21,7 @@ const defineMatchMedia = (width: number) => {
     value: width,
   });
   window.matchMedia = jest.fn().mockImplementation((query) => {
-    console.log(width == theme.breakpoints.values.sm);
+
     return {
       matches: width == theme.breakpoints.values.sm ? true : false,
       media: query,
