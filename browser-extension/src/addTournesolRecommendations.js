@@ -200,15 +200,21 @@ const getTournesolComponent = () => {
 
     const video_score = document.createElement('p');
     video_score.className = 'video_text video_tournesol_rating';
-    video_score.innerHTML = `<img class="tournesol_comparison_logo" src="https://tournesol.app/svg/tournesol.svg" alt"logo tournesol" /><strong>${video.tournesol_score.toFixed(
-      0
-    )} <span class="dot">&nbsp·&nbsp</span></strong>
-         <span>${i18n.getMessage('comparisonsBy', [
-           video.n_comparisons,
-         ])} </span>&nbsp<span class="contributors">${i18n.getMessage(
-      'comparisonsContributors',
-      [video.n_contributors]
-    )}</span>`;
+    video_score.innerHTML = `<img
+        class="tournesol_comparison_logo"
+        src="https://tournesol.app/svg/tournesol.svg"
+        alt="Tournesol logo"
+      />
+        <strong>
+          ${video.tournesol_score.toFixed(0)}
+          <span class="dot">&nbsp·&nbsp</span>
+        </strong>
+        <span>${i18n.getMessage('comparisonsBy', [
+          video.n_comparisons,
+        ])}</span>&nbsp
+        <span class="contributors">
+          ${i18n.getMessage('comparisonsContributors', [video.n_contributors])}
+        </span>`;
     details_div.append(video_score);
 
     if (path == '/results') {
