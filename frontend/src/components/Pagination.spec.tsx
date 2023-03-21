@@ -21,7 +21,6 @@ const defineMatchMedia = (width: number) => {
     value: width,
   });
   window.matchMedia = jest.fn().mockImplementation((query) => {
-
     return {
       matches: width == theme.breakpoints.values.sm ? true : false,
       media: query,
@@ -35,7 +34,7 @@ const defineMatchMedia = (width: number) => {
   });
 };
 
-describe('pagination component', () => {
+describe('Pagination component', () => {
   const component = ({
     offset,
     limit,
@@ -72,6 +71,60 @@ describe('pagination component', () => {
     });
     return { rendered };
   };
+
+  it('displays buttons -1 and -10 as disabled when current page is first', () => {
+    const paginationProps: PaginationProps = {
+      offset: 0,
+      limit: 1,
+      count: 5,
+      onOffsetChange: onOffsetChange,
+    };
+
+    setup(paginationProps);
+
+    const prev1 = screen.getByRole('button', { name: /^< -1$/i });
+    const prev10 = screen.getByRole('button', { name: /< -10/i });
+    expect(prev1).toBeDisabled();
+    expect(prev10).toBeDisabled();
+
+    const next1 = screen.getByRole('button', { name: /^\+1 >$/i });
+    const next10 = screen.getByRole('button', { name: /\+10 >/i });
+    expect(next1).toBeEnabled();
+    expect(next10).toBeEnabled();
+
+    // The buttons -100 and +100 should not be visible.
+    const minus100Button = screen.queryByRole('button', { name: /< -100/i });
+    const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
+    expect(minus100Button).not.toBeInTheDocument();
+    expect(plus100Button).not.toBeInTheDocument();
+  });
+
+  it('displays buttons +1 and +10 as disabled when current page is last', () => {
+    const paginationProps: PaginationProps = {
+      offset: 4,
+      limit: 1,
+      count: 5,
+      onOffsetChange: onOffsetChange,
+    };
+
+    setup(paginationProps);
+
+    const prev1 = screen.getByRole('button', { name: /^< -1$/i });
+    const prev10 = screen.getByRole('button', { name: /< -10/i });
+    expect(prev1).toBeEnabled();
+    expect(prev10).toBeEnabled();
+
+    const next1 = screen.getByRole('button', { name: /^\+1 >$/i });
+    const next10 = screen.getByRole('button', { name: /\+10 >/i });
+    expect(next1).toBeDisabled();
+    expect(next10).toBeDisabled();
+
+    // The buttons -100 and +100 should not be visible.
+    const minus100Button = screen.queryByRole('button', { name: /< -100/i });
+    const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
+    expect(minus100Button).not.toBeInTheDocument();
+    expect(plus100Button).not.toBeInTheDocument();
+  });
 
   it('default pagination for 100 elements, 20 per page, verify 5 pages', () => {
     const paginationProps: PaginationProps = {
@@ -154,29 +207,6 @@ describe('pagination component', () => {
     // click on page 31
     fireEvent.click(screen.getByRole('button', { name: /page 31/i }));
     expect(paginationProps.onOffsetChange).toHaveBeenCalledWith(600);
-  });
-
-  it('should render the first two buttons as disabled and hide the -100 and +100 buttons', () => {
-    const paginationProps: PaginationProps = {
-      offset: 0,
-      limit: 20,
-      count: 100,
-      onOffsetChange: onOffsetChange,
-    };
-
-    setup(paginationProps);
-
-    // Check if the first two buttons are disabled
-    const firstButton = screen.getByRole('button', { name: /< -10/i });
-    const secondButton = screen.getByRole('button', { name: /^< -1$/i });
-    expect(firstButton).toBeDisabled();
-    expect(secondButton).toBeDisabled();
-
-    // Check if the -100 and +100 buttons are not visible
-    const minus100Button = screen.queryByRole('button', { name: /< -100/i });
-    const plus100Button = screen.queryByRole('button', { name: / \+100 >/i });
-    expect(minus100Button).not.toBeInTheDocument();
-    expect(plus100Button).not.toBeInTheDocument();
   });
 
   it('test navigation page buttons from 50 page', () => {
