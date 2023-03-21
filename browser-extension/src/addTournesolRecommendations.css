@@ -29,13 +29,18 @@
   );
 }
 
+/**
+ * ---- start: style of the main banner ----
+ */
+
 #tournesol_banner {
   padding: 16px;
   margin-bottom: 16px;
 
+  /* hidden unless explicitly displayed to avoid visual blink */
   display: none;
-  align-items: center;
   gap: 16px;
+  align-items: center;
 
   font-size: 16px;
 
@@ -54,11 +59,6 @@
   display: flex;
 }
 
-html[dark] #tournesol_banner {
-  color: var(--yt-spec-text-primary);
-  background-color: var(--yt-spec-button-chip-background-hover);
-}
-
 #tournesol_banner p {
   letter-spacing: 0.2px;
 }
@@ -69,16 +69,24 @@ html[dark] #tournesol_banner {
 
 #tournesol_banner_close_icon {
   width: 22px;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 #tournesol_banner_close_icon:hover {
   opacity: 1;
 }
 
-html[dark] #tournesol_banner_icon {
+html[dark] #tournesol_banner {
+  color: var(--yt-spec-text-primary);
+  background-color: var(--yt-spec-button-chip-background-hover);
+}
+
+html[dark] #tournesol_banner_icon,
+html[dark] #tournesol_banner_close_icon {
   filter: invert(99%) saturate(0%) brightness(140%);
 }
+
+/* ---- end: style of the main banner ---- */
 
 #tournesol_videos_flexcontainer {
   display: flex;
@@ -106,6 +114,10 @@ html[dark] #tournesol_banner_icon {
 #tournesol_campaign_button {
   width: 28px;
   float: right;
+}
+
+html[dark] #tournesol_campaign_button {
+  filter: invert(99%) saturate(0%) brightness(140%);
 }
 
 #tournesol_campaign_button img {
