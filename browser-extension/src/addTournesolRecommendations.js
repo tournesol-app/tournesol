@@ -155,7 +155,8 @@ const createBanner = () => {
   banner.id = 'tournesol_banner';
   banner.className = 'tournesol_banner';
 
-  chrome.storage.local.get('displayBanner').then((items) => {
+  // Only display the banner if the user didn't explicitly close it.
+  chrome.storage.local.get('displayBanner', (items) => {
     if (
       items.displayBanner === true ||
       items.displayBanner === null ||
@@ -206,7 +207,7 @@ const createBanner = () => {
   closeButtonContainer.append(closeButton);
 
   closeButton.onclick = () => {
-    chrome.storage.local.set({ displayBanner: false }).then(() => {
+    chrome.storage.local.set({ displayBanner: false }, () => {
       hideElement(banner);
     });
   };
@@ -371,7 +372,7 @@ const getTournesolComponent = () => {
     campaignButton.append(campaignButtonImg);
 
     campaignButton.onclick = () => {
-      chrome.storage.local.set({ displayBanner: true }).then(() => {
+      chrome.storage.local.set({ displayBanner: true }, () => {
         displayElement(document.getElementById('tournesol_banner'));
       });
     };
