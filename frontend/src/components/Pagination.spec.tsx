@@ -126,7 +126,7 @@ describe('Pagination component', () => {
     expect(plus100Button).not.toBeInTheDocument();
   });
 
-  it('default pagination for 100 elements, 20 per page, verify 5 pages', () => {
+  it('displays 5 pages with limit: 20, count: 100', () => {
     const paginationProps: PaginationProps = {
       offset: 0,
       limit: 20,
@@ -136,7 +136,8 @@ describe('Pagination component', () => {
 
     setup(paginationProps);
 
-    // check that there are 5 pages
+    // [WHEN] The PaginationComponent is configured with boundaryCount=2 and
+    // siblingCount=3, we expect 5 pages to be displayed.
     const pages = screen.getAllByRole('button', { name: /page \d+/i });
     expect(pages).toHaveLength(5);
 
@@ -157,7 +158,7 @@ describe('Pagination component', () => {
     expect(paginationProps.onOffsetChange).toHaveBeenCalledWith(80);
   });
 
-  it('default pagination for 270 elements, 20 per page, verify 12 pages because siblingCount is 3 and boundaryCount is 2', () => {
+  it('displays 12 pages with limit: 20, count: 270', () => {
     const paginationProps: PaginationProps = {
       offset: 0,
       limit: 20,
@@ -167,7 +168,8 @@ describe('Pagination component', () => {
 
     setup(paginationProps);
 
-    // check that there are 12 pages
+    // [WHEN] The PaginationComponent is configured with boundaryCount=2 and
+    // siblingCount=3, we expect 12 pages to be displayed.
     const pages = screen.getAllByRole('button', { name: /page \d+/i });
     expect(pages).toHaveLength(12);
 
@@ -180,7 +182,7 @@ describe('Pagination component', () => {
     expect(paginationProps.onOffsetChange).toHaveBeenCalledWith(200);
   });
 
-  it('default pagination for 615 elements, 20 per page, current page is 13 verify 11 pages, because siblingCount is 3 and boundaryCount is 2', () => {
+  it('displays 11 pages when limit: 20, count: 615, offset: 240', () => {
     const paginationProps: PaginationProps = {
       offset: 240,
       limit: 20,
@@ -190,7 +192,8 @@ describe('Pagination component', () => {
 
     setup(paginationProps);
 
-    // check that there are 11 pages
+    // [WHEN] The PaginationComponent is configured with boundaryCount=2 and
+    // siblingCount=3, we expect 11 pages to be displayed.
     const pages = screen.getAllByRole('button', { name: /page \d+/i });
     expect(pages).toHaveLength(11);
 
