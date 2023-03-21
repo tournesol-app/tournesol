@@ -156,9 +156,11 @@ const createBanner = () => {
   banner.className = 'tournesol_banner';
 
   chrome.storage.local.get('displayBanner').then((items) => {
-    if (items.displayBanner === true ||
-        items.displayBanner === null ||
-        items.displayBanner === undefined) {
+    if (
+      items.displayBanner === true ||
+      items.displayBanner === null ||
+      items.displayBanner === undefined
+    ) {
       displayElement(banner);
     }
   });
