@@ -297,7 +297,7 @@ class Entity(models.Model):
         criteria_distributions = []
         for key, values in scores_dict.items():
             score_range = (min_score_base, max_score_base)
-            distribution, bins = np.histogram(np.clip(values, *score_range), range=score_range)
+            distribution, bins = np.histogram(np.clip(values, *score_range), bins=20, range=score_range)
 
             criteria_distributions.append(CriteriaDistributionScore(
                 key, distribution, bins))
