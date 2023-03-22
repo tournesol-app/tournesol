@@ -193,7 +193,7 @@ urlpatterns = [
     path(
         "preview/comparison/",
         DynamicWebsitePreviewComparison.as_view(),
-        name="website_preview_comparison",
+        name="website_preview_comparison_slash",
     ),
     path(
         "preview/comparison",
