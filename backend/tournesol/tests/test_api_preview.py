@@ -255,6 +255,15 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         # check is not very robust.
         self.assertNotIn("Content-Disposition", response.headers)
 
+        # Test without the trailing slash
+        response = self.client.get(
+            self.preview_url[:-1], {"uidA": self.valid_uid, "uidB": self.valid_uid2}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertNotIn("Content-Disposition", response.headers)
+
+
     @patch("requests.get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_anon_200_get_existing_entities(self):
