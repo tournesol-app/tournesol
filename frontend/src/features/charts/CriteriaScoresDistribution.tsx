@@ -73,12 +73,11 @@ const CriteriaScoresDistributionChart = ({
           }}
           dataKey="label"
           interval={0}
-          height={60}
+          height={50}
           tickMargin={8}
           tickFormatter={(value, index) => {
             const split = value.split(' ');
-
-            if (index == 0 || index % 2) {
+            if (index === 0 || index % 2) {
               return '';
             } else {
               return split.length > 2 ? split[0] : split[1];
