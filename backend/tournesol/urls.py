@@ -196,6 +196,11 @@ urlpatterns = [
         name="website_preview_comparison",
     ),
     path(
+        "preview/comparison",
+        DynamicWebsitePreviewComparison.as_view(),
+        name="website_preview_comparison",
+    ),
+    path(
         "preview/entities/<str:uid>",
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
