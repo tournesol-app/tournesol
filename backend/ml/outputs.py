@@ -94,9 +94,13 @@ def save_tournesol_scores(poll):
     entities_it = entities_iterator()
     while batch := list(islice(entities_it, 1000)):
         Entity.objects.bulk_update(batch, fields=["tournesol_score"])
+        # Both Entity.tournesol_score and EntityPollRating coexist at the
+        # moment. When all serializers will be updated to use the new
+        # EntityPollRating model, the uses of the legacy
+        # Entity.tournesol_score system should be replaced everywhere.
         EntityPollRating.objects.bulk_update(
             [ent.single_poll_ratings[0] for ent in batch if ent.single_poll_ratings],
-            fields=["tournesol_score"]
+            fields=["tournesol_score"],
         )
 
 
