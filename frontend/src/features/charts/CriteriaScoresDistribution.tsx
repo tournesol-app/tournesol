@@ -72,6 +72,18 @@ const CriteriaScoresDistributionChart = ({
             textAnchor: 'middle',
           }}
           dataKey="label"
+          interval={0}
+          height={60}
+          tickMargin={8}
+          tickFormatter={(value, index) => {
+            const split = value.split(' ');
+
+            if (index == 0 || index % 2) {
+              return '';
+            } else {
+              return split.length > 2 ? split[0] : split[1];
+            }
+          }}
         />
         <YAxis
           label={{
