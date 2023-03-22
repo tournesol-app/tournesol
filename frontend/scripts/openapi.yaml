@@ -1647,16 +1647,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/ScoreInconsistencies'
           description: ''
-  /users/me/proof_of_votes/{poll_name}/:
+  /users/me/proof/{poll_name}/:
     get:
-      operationId: users_me_proof_of_votes_retrieve
-      description: API for retrieving the logged user's proof_of_vote in a given poll.
+      operationId: users_me_proof_retrieve
+      description: |-
+        Return a cryptographic signature of the user id, associated to the
+        selected poll and optionally to the specified keyword.
+
+        This signature can act as a proof for the users to guarantee they have an
+        activated account, and optionally that they meet specific requirements
+        that can be poll dependant.
+
+        The query parameter `keyword` identifies the requested proof, and its set
+        of requirements that are expected to be met by the logged-in user. Each
+        set of requirements includes at least having an activated user account.
+
+        List of accepted keywords and matching conditions:
+
+            "" (empty): Same as "activated".
+
+            "activated": Only check if the user has an activated account.
+
+            "proof_of_vote": Additionally check if the user has participated in
+                             the selected poll.
       parameters:
       - in: path
         name: poll_name
         schema:
           type: string
         required: true
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: A keyword identifying a proof. Used as an input by the signing
+          algorithm.
       tags:
       - users
       security:
@@ -1892,6 +1917,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedContributorRecommendationsList'
           description: ''
+  /users/me/settings/:
+    get:
+      operationId: users_me_settings_retrieve
+      description: Get the logged-in user's settings.
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournesolUserSettings'
+          description: ''
+    put:
+      operationId: users_me_settings_update
+      description: Replace the logged-in user's settings by new ones.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TournesolUserSettingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TournesolUserSettingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TournesolUserSettingsRequest'
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournesolUserSettings'
+          description: ''
+    patch:
+      operationId: users_me_settings_partial_update
+      description: Update a subset of the logged-in user's settings.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTournesolUserSettingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTournesolUserSettingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTournesolUserSettingsRequest'
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournesolUserSettings'
+          description: ''
   /users/me/unconnected_entities/{poll_name}/{uid}/:
     get:
       operationId: users_me_unconnected_entities_list
@@ -1921,6 +2014,14 @@ paths:
         description: The initial index from which to return the results.
         schema:
           type: integer
+      - in: query
+        name: strict
+        schema:
+          type: boolean
+          default: true
+        description: Set to 'false' to include entities connected to the target entity.
+          In this case, the returned list contains first all unconnected entities,
+          then connected entities sorted by decreasing distance to the target entity.
       tags:
       - users
       security:
@@ -2665,16 +2766,6 @@ components:
           minLength: 1
       required:
       - login
-    DegreeOfPoliticalEngagementEnum:
-      enum:
-      - Not Specified
-      - None
-      - Light
-      - Interested
-      - Engaged
-      - Activist
-      - Professional
-      type: string
     EmailDomain:
       type: object
       properties:
@@ -2831,14 +2922,27 @@ components:
       - answer
       - name
       - question
-    GenderEnum:
-      enum:
-      - Not Specified
-      - Non-binary
-      - Other
-      - Female
-      - Male
-      type: string
+    GenericPollUserSettings:
+      type: object
+      description: The settings common to all polls.
+      properties:
+        comparison__criteria_order:
+          type: array
+          items:
+            type: string
+        rate_later__auto_remove:
+          type: integer
+    GenericPollUserSettingsRequest:
+      type: object
+      description: The settings common to all polls.
+      properties:
+        comparison__criteria_order:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        rate_later__auto_remove:
+          type: integer
     GivenVoucher:
       type: object
       description: |-
@@ -2891,269 +2995,6 @@ components:
       - count
       - results
       - stats
-    MoralPhilosophyEnum:
-      enum:
-      - Not Specified
-      - Utilitarian
-      - Non-Utilitarian Consequentialist
-      - Deontological
-      - Virtue Ethics
-      - Mixed
-      - Other
-      type: string
-    NationalityEnum:
-      enum:
-      - Not Specified
-      - Afghanistan
-      - Åland Islands
-      - Albania
-      - Algeria
-      - American Samoa
-      - Andorra
-      - Angola
-      - Anguilla
-      - Antarctica
-      - Antigua and Barbuda
-      - Argentina
-      - Armenia
-      - Aruba
-      - Australia
-      - Austria
-      - Azerbaijan
-      - Bahamas
-      - Bahrain
-      - Bangladesh
-      - Barbados
-      - Belarus
-      - Belgium
-      - Belize
-      - Benin
-      - Bermuda
-      - Bhutan
-      - Bolivia
-      - Bonaire, Sint Eustatius and Saba
-      - Bosnia and Herzegovina
-      - Botswana
-      - Bouvet Island
-      - Brazil
-      - British Indian Ocean Territory
-      - Brunei
-      - Bulgaria
-      - Burkina Faso
-      - Burundi
-      - Cabo Verde
-      - Cambodia
-      - Cameroon
-      - Canada
-      - Cayman Islands
-      - Central African Republic
-      - Chad
-      - Chile
-      - China
-      - Christmas Island
-      - Cocos (Keeling) Islands
-      - Colombia
-      - Comoros
-      - Congo
-      - Congo (the Democratic Republic of the)
-      - Cook Islands
-      - Costa Rica
-      - Côte d'Ivoire
-      - Croatia
-      - Cuba
-      - Curaçao
-      - Cyprus
-      - Czechia
-      - Denmark
-      - Djibouti
-      - Dominica
-      - Dominican Republic
-      - Ecuador
-      - Egypt
-      - El Salvador
-      - Equatorial Guinea
-      - Eritrea
-      - Estonia
-      - Eswatini
-      - Ethiopia
-      - Falkland Islands (Malvinas)
-      - Faroe Islands
-      - Fiji
-      - Finland
-      - France
-      - French Guiana
-      - French Polynesia
-      - French Southern Territories
-      - Gabon
-      - Gambia
-      - Georgia
-      - Germany
-      - Ghana
-      - Gibraltar
-      - Greece
-      - Greenland
-      - Grenada
-      - Guadeloupe
-      - Guam
-      - Guatemala
-      - Guernsey
-      - Guinea
-      - Guinea-Bissau
-      - Guyana
-      - Haiti
-      - Heard Island and McDonald Islands
-      - Holy See
-      - Honduras
-      - Hong Kong
-      - Hungary
-      - Iceland
-      - India
-      - Indonesia
-      - Iran
-      - Iraq
-      - Ireland
-      - Isle of Man
-      - Israel
-      - Italy
-      - Jamaica
-      - Japan
-      - Jersey
-      - Jordan
-      - Kazakhstan
-      - Kenya
-      - Kiribati
-      - Kuwait
-      - Kyrgyzstan
-      - Laos
-      - Latvia
-      - Lebanon
-      - Lesotho
-      - Liberia
-      - Libya
-      - Liechtenstein
-      - Lithuania
-      - Luxembourg
-      - Macao
-      - Madagascar
-      - Malawi
-      - Malaysia
-      - Maldives
-      - Mali
-      - Malta
-      - Marshall Islands
-      - Martinique
-      - Mauritania
-      - Mauritius
-      - Mayotte
-      - Mexico
-      - Micronesia (Federated States of)
-      - Moldova
-      - Monaco
-      - Mongolia
-      - Montenegro
-      - Montserrat
-      - Morocco
-      - Mozambique
-      - Myanmar
-      - Namibia
-      - Nauru
-      - Nepal
-      - Netherlands
-      - New Caledonia
-      - New Zealand
-      - Nicaragua
-      - Niger
-      - Nigeria
-      - Niue
-      - Norfolk Island
-      - North Korea
-      - North Macedonia
-      - Northern Mariana Islands
-      - Norway
-      - Oman
-      - Pakistan
-      - Palau
-      - Palestine, State of
-      - Panama
-      - Papua New Guinea
-      - Paraguay
-      - Peru
-      - Philippines
-      - Pitcairn
-      - Poland
-      - Portugal
-      - Puerto Rico
-      - Qatar
-      - Réunion
-      - Romania
-      - Russia
-      - Rwanda
-      - Saint Barthélemy
-      - Saint Helena, Ascension and Tristan da Cunha
-      - Saint Kitts and Nevis
-      - Saint Lucia
-      - Saint Martin (French part)
-      - Saint Pierre and Miquelon
-      - Saint Vincent and the Grenadines
-      - Samoa
-      - San Marino
-      - Sao Tome and Principe
-      - Saudi Arabia
-      - Senegal
-      - Serbia
-      - Seychelles
-      - Sierra Leone
-      - Singapore
-      - Sint Maarten (Dutch part)
-      - Slovakia
-      - Slovenia
-      - Solomon Islands
-      - Somalia
-      - South Africa
-      - South Georgia and the South Sandwich Islands
-      - South Korea
-      - South Sudan
-      - Spain
-      - Sri Lanka
-      - Sudan
-      - Suriname
-      - Svalbard and Jan Mayen
-      - Sweden
-      - Switzerland
-      - Syria
-      - Taiwan
-      - Tajikistan
-      - Tanzania
-      - Thailand
-      - Timor-Leste
-      - Togo
-      - Tokelau
-      - Tonga
-      - Trinidad and Tobago
-      - Tunisia
-      - Turkey
-      - Turkmenistan
-      - Turks and Caicos Islands
-      - Tuvalu
-      - Uganda
-      - Ukraine
-      - United Arab Emirates
-      - United Kingdom
-      - United States Minor Outlying Islands
-      - United States of America
-      - Uruguay
-      - Uzbekistan
-      - Vanuatu
-      - Venezuela
-      - Vietnam
-      - Virgin Islands (British)
-      - Virgin Islands (U.S.)
-      - Wallis and Futuna
-      - Western Sahara
-      - Yemen
-      - Zambia
-      - Zimbabwe
-      type: string
     PaginatedComparisonList:
       type: object
       properties:
@@ -3365,6 +3206,16 @@ components:
       properties:
         is_public:
           type: boolean
+    PatchedTournesolUserSettingsRequest:
+      type: object
+      description: |-
+        A representation of all settings of the Tournesol project.
+
+        This representation includes poll-agnostic settings in addition to the
+        specific settings of each poll.
+      properties:
+        videos:
+          $ref: '#/components/schemas/GenericPollUserSettingsRequest'
     PatchedUserProfileRequest:
       type: object
       description: |-
@@ -3384,9 +3235,6 @@ components:
             only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
-        is_demo:
-          type: boolean
-          description: Is a demo account?
         first_name:
           type: string
           nullable: true
@@ -3397,128 +3245,18 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        title:
-          type: string
-          nullable: true
-          description: Your position
-        bio:
-          type: string
-          nullable: true
-          description: Self-description (other degrees, biography, ...)
-        comment_anonymously:
-          type: boolean
-          description: Comment anonymously by-default
-        show_online_presence:
-          type: boolean
-          description: Show my online presence on Tournesol
-        show_my_profile:
-          type: boolean
-          description: Show my profile on Tournesol
-        birth_year:
-          type: integer
-          maximum: 2100
-          minimum: 1900
-          nullable: true
-          description: Year of birth
-        gender:
-          allOf:
-          - $ref: '#/components/schemas/GenderEnum'
-          description: Your gender
-        nationality:
-          allOf:
-          - $ref: '#/components/schemas/NationalityEnum'
-          description: Your country of nationality
-        residence:
-          allOf:
-          - $ref: '#/components/schemas/ResidenceEnum'
-          description: Your country of residence
-        race:
-          allOf:
-          - $ref: '#/components/schemas/RaceEnum'
-          description: Your ethnicity
-        political_affiliation:
-          allOf:
-          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
-          description: Your political preference
-        religion:
-          allOf:
-          - $ref: '#/components/schemas/ReligionEnum'
-          description: Your religion
-        degree_of_political_engagement:
-          allOf:
-          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
-          description: Your degree of political engagement
-        moral_philosophy:
-          allOf:
-          - $ref: '#/components/schemas/MoralPhilosophyEnum'
-          description: Your preferred moral philosophy
-        website:
-          type: string
-          format: uri
-          nullable: true
-          description: Your website URL
-          maxLength: 500
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          description: Your LinkedIn URL
-          maxLength: 500
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Youtube channel URL
-          maxLength: 500
-        google_scholar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Google Scholar URL
-          maxLength: 500
-        orcid:
-          type: string
-          format: uri
-          nullable: true
-          description: Your ORCID URL
-          maxLength: 500
-        researchgate:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Researchgate profile URL
-          maxLength: 500
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Twitter URL
-          maxLength: 500
-        avatar:
-          type: string
-          format: binary
-          nullable: true
-          description: Your profile picture.
         trust_score:
           type: number
           format: float
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         is_trusted:
           type: boolean
-    PoliticalAffiliationEnum:
-      enum:
-      - Not Specified
-      - Extreme left
-      - Far left
-      - Left
-      - Centrist
-      - Right
-      - Far right
-      - Extreme right
-      - Other
-      type: string
     Poll:
       type: object
       properties:
@@ -3575,20 +3313,6 @@ components:
       required:
       - poll_name
       - signature
-    RaceEnum:
-      enum:
-      - Not Specified
-      - African
-      - African American
-      - American Indian
-      - Arabic or Middle Eastern
-      - Asian
-      - Caucasian
-      - Latino or Hispanic
-      - Mixed
-      - Unknown
-      - Other
-      type: string
     RateLater:
       type: object
       properties:
@@ -3713,9 +3437,6 @@ components:
         email:
           type: string
           format: email
-        is_demo:
-          type: boolean
-          description: Is a demo account?
         first_name:
           type: string
           nullable: true
@@ -3726,114 +3447,16 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        title:
-          type: string
-          nullable: true
-          description: Your position
-        bio:
-          type: string
-          nullable: true
-          description: Self-description (other degrees, biography, ...)
-        comment_anonymously:
-          type: boolean
-          description: Comment anonymously by-default
-        show_online_presence:
-          type: boolean
-          description: Show my online presence on Tournesol
-        show_my_profile:
-          type: boolean
-          description: Show my profile on Tournesol
-        birth_year:
-          type: integer
-          maximum: 2100
-          minimum: 1900
-          nullable: true
-          description: Year of birth
-        gender:
-          allOf:
-          - $ref: '#/components/schemas/GenderEnum'
-          description: Your gender
-        nationality:
-          allOf:
-          - $ref: '#/components/schemas/NationalityEnum'
-          description: Your country of nationality
-        residence:
-          allOf:
-          - $ref: '#/components/schemas/ResidenceEnum'
-          description: Your country of residence
-        race:
-          allOf:
-          - $ref: '#/components/schemas/RaceEnum'
-          description: Your ethnicity
-        political_affiliation:
-          allOf:
-          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
-          description: Your political preference
-        religion:
-          allOf:
-          - $ref: '#/components/schemas/ReligionEnum'
-          description: Your religion
-        degree_of_political_engagement:
-          allOf:
-          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
-          description: Your degree of political engagement
-        moral_philosophy:
-          allOf:
-          - $ref: '#/components/schemas/MoralPhilosophyEnum'
-          description: Your preferred moral philosophy
-        website:
-          type: string
-          format: uri
-          nullable: true
-          description: Your website URL
-          maxLength: 500
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          description: Your LinkedIn URL
-          maxLength: 500
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Youtube channel URL
-          maxLength: 500
-        google_scholar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Google Scholar URL
-          maxLength: 500
-        orcid:
-          type: string
-          format: uri
-          nullable: true
-          description: Your ORCID URL
-          maxLength: 500
-        researchgate:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Researchgate profile URL
-          maxLength: 500
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Twitter URL
-          maxLength: 500
-        avatar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your profile picture.
         trust_score:
           type: number
           format: float
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
       required:
       - email
       - id
@@ -3865,9 +3488,6 @@ components:
           type: string
           format: email
           minLength: 1
-        is_demo:
-          type: boolean
-          description: Is a demo account?
         first_name:
           type: string
           nullable: true
@@ -3878,114 +3498,16 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        title:
-          type: string
-          nullable: true
-          description: Your position
-        bio:
-          type: string
-          nullable: true
-          description: Self-description (other degrees, biography, ...)
-        comment_anonymously:
-          type: boolean
-          description: Comment anonymously by-default
-        show_online_presence:
-          type: boolean
-          description: Show my online presence on Tournesol
-        show_my_profile:
-          type: boolean
-          description: Show my profile on Tournesol
-        birth_year:
-          type: integer
-          maximum: 2100
-          minimum: 1900
-          nullable: true
-          description: Year of birth
-        gender:
-          allOf:
-          - $ref: '#/components/schemas/GenderEnum'
-          description: Your gender
-        nationality:
-          allOf:
-          - $ref: '#/components/schemas/NationalityEnum'
-          description: Your country of nationality
-        residence:
-          allOf:
-          - $ref: '#/components/schemas/ResidenceEnum'
-          description: Your country of residence
-        race:
-          allOf:
-          - $ref: '#/components/schemas/RaceEnum'
-          description: Your ethnicity
-        political_affiliation:
-          allOf:
-          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
-          description: Your political preference
-        religion:
-          allOf:
-          - $ref: '#/components/schemas/ReligionEnum'
-          description: Your religion
-        degree_of_political_engagement:
-          allOf:
-          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
-          description: Your degree of political engagement
-        moral_philosophy:
-          allOf:
-          - $ref: '#/components/schemas/MoralPhilosophyEnum'
-          description: Your preferred moral philosophy
-        website:
-          type: string
-          format: uri
-          nullable: true
-          description: Your website URL
-          maxLength: 500
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          description: Your LinkedIn URL
-          maxLength: 500
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Youtube channel URL
-          maxLength: 500
-        google_scholar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Google Scholar URL
-          maxLength: 500
-        orcid:
-          type: string
-          format: uri
-          nullable: true
-          description: Your ORCID URL
-          maxLength: 500
-        researchgate:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Researchgate profile URL
-          maxLength: 500
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Twitter URL
-          maxLength: 500
-        avatar:
-          type: string
-          format: binary
-          nullable: true
-          description: Your profile picture.
         trust_score:
           type: number
           format: float
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         password_confirm:
           type: string
           writeOnly: true
@@ -4040,18 +3562,6 @@ components:
           maxLength: 144
       required:
       - uid
-    ReligionEnum:
-      enum:
-      - Not Specified
-      - Christian
-      - Muslim
-      - Hindu
-      - Buddhist
-      - Jewish
-      - Atheist
-      - Agnostic
-      - Other
-      type: string
     ResetPassword:
       type: object
       properties:
@@ -4087,259 +3597,6 @@ components:
       - signature
       - timestamp
       - user_id
-    ResidenceEnum:
-      enum:
-      - Not Specified
-      - Afghanistan
-      - Åland Islands
-      - Albania
-      - Algeria
-      - American Samoa
-      - Andorra
-      - Angola
-      - Anguilla
-      - Antarctica
-      - Antigua and Barbuda
-      - Argentina
-      - Armenia
-      - Aruba
-      - Australia
-      - Austria
-      - Azerbaijan
-      - Bahamas
-      - Bahrain
-      - Bangladesh
-      - Barbados
-      - Belarus
-      - Belgium
-      - Belize
-      - Benin
-      - Bermuda
-      - Bhutan
-      - Bolivia
-      - Bonaire, Sint Eustatius and Saba
-      - Bosnia and Herzegovina
-      - Botswana
-      - Bouvet Island
-      - Brazil
-      - British Indian Ocean Territory
-      - Brunei
-      - Bulgaria
-      - Burkina Faso
-      - Burundi
-      - Cabo Verde
-      - Cambodia
-      - Cameroon
-      - Canada
-      - Cayman Islands
-      - Central African Republic
-      - Chad
-      - Chile
-      - China
-      - Christmas Island
-      - Cocos (Keeling) Islands
-      - Colombia
-      - Comoros
-      - Congo
-      - Congo (the Democratic Republic of the)
-      - Cook Islands
-      - Costa Rica
-      - Côte d'Ivoire
-      - Croatia
-      - Cuba
-      - Curaçao
-      - Cyprus
-      - Czechia
-      - Denmark
-      - Djibouti
-      - Dominica
-      - Dominican Republic
-      - Ecuador
-      - Egypt
-      - El Salvador
-      - Equatorial Guinea
-      - Eritrea
-      - Estonia
-      - Eswatini
-      - Ethiopia
-      - Falkland Islands (Malvinas)
-      - Faroe Islands
-      - Fiji
-      - Finland
-      - France
-      - French Guiana
-      - French Polynesia
-      - French Southern Territories
-      - Gabon
-      - Gambia
-      - Georgia
-      - Germany
-      - Ghana
-      - Gibraltar
-      - Greece
-      - Greenland
-      - Grenada
-      - Guadeloupe
-      - Guam
-      - Guatemala
-      - Guernsey
-      - Guinea
-      - Guinea-Bissau
-      - Guyana
-      - Haiti
-      - Heard Island and McDonald Islands
-      - Holy See
-      - Honduras
-      - Hong Kong
-      - Hungary
-      - Iceland
-      - India
-      - Indonesia
-      - Iran
-      - Iraq
-      - Ireland
-      - Isle of Man
-      - Israel
-      - Italy
-      - Jamaica
-      - Japan
-      - Jersey
-      - Jordan
-      - Kazakhstan
-      - Kenya
-      - Kiribati
-      - Kuwait
-      - Kyrgyzstan
-      - Laos
-      - Latvia
-      - Lebanon
-      - Lesotho
-      - Liberia
-      - Libya
-      - Liechtenstein
-      - Lithuania
-      - Luxembourg
-      - Macao
-      - Madagascar
-      - Malawi
-      - Malaysia
-      - Maldives
-      - Mali
-      - Malta
-      - Marshall Islands
-      - Martinique
-      - Mauritania
-      - Mauritius
-      - Mayotte
-      - Mexico
-      - Micronesia (Federated States of)
-      - Moldova
-      - Monaco
-      - Mongolia
-      - Montenegro
-      - Montserrat
-      - Morocco
-      - Mozambique
-      - Myanmar
-      - Namibia
-      - Nauru
-      - Nepal
-      - Netherlands
-      - New Caledonia
-      - New Zealand
-      - Nicaragua
-      - Niger
-      - Nigeria
-      - Niue
-      - Norfolk Island
-      - North Korea
-      - North Macedonia
-      - Northern Mariana Islands
-      - Norway
-      - Oman
-      - Pakistan
-      - Palau
-      - Palestine, State of
-      - Panama
-      - Papua New Guinea
-      - Paraguay
-      - Peru
-      - Philippines
-      - Pitcairn
-      - Poland
-      - Portugal
-      - Puerto Rico
-      - Qatar
-      - Réunion
-      - Romania
-      - Russia
-      - Rwanda
-      - Saint Barthélemy
-      - Saint Helena, Ascension and Tristan da Cunha
-      - Saint Kitts and Nevis
-      - Saint Lucia
-      - Saint Martin (French part)
-      - Saint Pierre and Miquelon
-      - Saint Vincent and the Grenadines
-      - Samoa
-      - San Marino
-      - Sao Tome and Principe
-      - Saudi Arabia
-      - Senegal
-      - Serbia
-      - Seychelles
-      - Sierra Leone
-      - Singapore
-      - Sint Maarten (Dutch part)
-      - Slovakia
-      - Slovenia
-      - Solomon Islands
-      - Somalia
-      - South Africa
-      - South Georgia and the South Sandwich Islands
-      - South Korea
-      - South Sudan
-      - Spain
-      - Sri Lanka
-      - Sudan
-      - Suriname
-      - Svalbard and Jan Mayen
-      - Sweden
-      - Switzerland
-      - Syria
-      - Taiwan
-      - Tajikistan
-      - Tanzania
-      - Thailand
-      - Timor-Leste
-      - Togo
-      - Tokelau
-      - Tonga
-      - Trinidad and Tobago
-      - Tunisia
-      - Turkey
-      - Turkmenistan
-      - Turks and Caicos Islands
-      - Tuvalu
-      - Uganda
-      - Ukraine
-      - United Arab Emirates
-      - United Kingdom
-      - United States Minor Outlying Islands
-      - United States of America
-      - Uruguay
-      - Uzbekistan
-      - Vanuatu
-      - Venezuela
-      - Vietnam
-      - Virgin Islands (British)
-      - Virgin Islands (U.S.)
-      - Wallis and Futuna
-      - Western Sahara
-      - Yemen
-      - Zambia
-      - Zimbabwe
-      type: string
     ScoreInconsistencies:
       type: object
       description: |-
@@ -4431,6 +3688,26 @@ components:
       - ACK
       - PD
       type: string
+    TournesolUserSettings:
+      type: object
+      description: |-
+        A representation of all settings of the Tournesol project.
+
+        This representation includes poll-agnostic settings in addition to the
+        specific settings of each poll.
+      properties:
+        videos:
+          $ref: '#/components/schemas/GenericPollUserSettings'
+    TournesolUserSettingsRequest:
+      type: object
+      description: |-
+        A representation of all settings of the Tournesol project.
+
+        This representation includes poll-agnostic settings in addition to the
+        specific settings of each poll.
+      properties:
+        videos:
+          $ref: '#/components/schemas/GenericPollUserSettingsRequest'
     TypeEnum:
       enum:
       - video
@@ -4462,9 +3739,6 @@ components:
           format: email
           readOnly: true
           title: Email address
-        is_demo:
-          type: boolean
-          description: Is a demo account?
         first_name:
           type: string
           nullable: true
@@ -4475,114 +3749,16 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        title:
-          type: string
-          nullable: true
-          description: Your position
-        bio:
-          type: string
-          nullable: true
-          description: Self-description (other degrees, biography, ...)
-        comment_anonymously:
-          type: boolean
-          description: Comment anonymously by-default
-        show_online_presence:
-          type: boolean
-          description: Show my online presence on Tournesol
-        show_my_profile:
-          type: boolean
-          description: Show my profile on Tournesol
-        birth_year:
-          type: integer
-          maximum: 2100
-          minimum: 1900
-          nullable: true
-          description: Year of birth
-        gender:
-          allOf:
-          - $ref: '#/components/schemas/GenderEnum'
-          description: Your gender
-        nationality:
-          allOf:
-          - $ref: '#/components/schemas/NationalityEnum'
-          description: Your country of nationality
-        residence:
-          allOf:
-          - $ref: '#/components/schemas/ResidenceEnum'
-          description: Your country of residence
-        race:
-          allOf:
-          - $ref: '#/components/schemas/RaceEnum'
-          description: Your ethnicity
-        political_affiliation:
-          allOf:
-          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
-          description: Your political preference
-        religion:
-          allOf:
-          - $ref: '#/components/schemas/ReligionEnum'
-          description: Your religion
-        degree_of_political_engagement:
-          allOf:
-          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
-          description: Your degree of political engagement
-        moral_philosophy:
-          allOf:
-          - $ref: '#/components/schemas/MoralPhilosophyEnum'
-          description: Your preferred moral philosophy
-        website:
-          type: string
-          format: uri
-          nullable: true
-          description: Your website URL
-          maxLength: 500
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          description: Your LinkedIn URL
-          maxLength: 500
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Youtube channel URL
-          maxLength: 500
-        google_scholar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Google Scholar URL
-          maxLength: 500
-        orcid:
-          type: string
-          format: uri
-          nullable: true
-          description: Your ORCID URL
-          maxLength: 500
-        researchgate:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Researchgate profile URL
-          maxLength: 500
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Twitter URL
-          maxLength: 500
-        avatar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your profile picture.
         trust_score:
           type: number
           format: float
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         is_trusted:
           type: boolean
       required:
@@ -4609,9 +3785,6 @@ components:
             only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
-        is_demo:
-          type: boolean
-          description: Is a demo account?
         first_name:
           type: string
           nullable: true
@@ -4622,114 +3795,16 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        title:
-          type: string
-          nullable: true
-          description: Your position
-        bio:
-          type: string
-          nullable: true
-          description: Self-description (other degrees, biography, ...)
-        comment_anonymously:
-          type: boolean
-          description: Comment anonymously by-default
-        show_online_presence:
-          type: boolean
-          description: Show my online presence on Tournesol
-        show_my_profile:
-          type: boolean
-          description: Show my profile on Tournesol
-        birth_year:
-          type: integer
-          maximum: 2100
-          minimum: 1900
-          nullable: true
-          description: Year of birth
-        gender:
-          allOf:
-          - $ref: '#/components/schemas/GenderEnum'
-          description: Your gender
-        nationality:
-          allOf:
-          - $ref: '#/components/schemas/NationalityEnum'
-          description: Your country of nationality
-        residence:
-          allOf:
-          - $ref: '#/components/schemas/ResidenceEnum'
-          description: Your country of residence
-        race:
-          allOf:
-          - $ref: '#/components/schemas/RaceEnum'
-          description: Your ethnicity
-        political_affiliation:
-          allOf:
-          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
-          description: Your political preference
-        religion:
-          allOf:
-          - $ref: '#/components/schemas/ReligionEnum'
-          description: Your religion
-        degree_of_political_engagement:
-          allOf:
-          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
-          description: Your degree of political engagement
-        moral_philosophy:
-          allOf:
-          - $ref: '#/components/schemas/MoralPhilosophyEnum'
-          description: Your preferred moral philosophy
-        website:
-          type: string
-          format: uri
-          nullable: true
-          description: Your website URL
-          maxLength: 500
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          description: Your LinkedIn URL
-          maxLength: 500
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Youtube channel URL
-          maxLength: 500
-        google_scholar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Google Scholar URL
-          maxLength: 500
-        orcid:
-          type: string
-          format: uri
-          nullable: true
-          description: Your ORCID URL
-          maxLength: 500
-        researchgate:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Researchgate profile URL
-          maxLength: 500
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Twitter URL
-          maxLength: 500
-        avatar:
-          type: string
-          format: binary
-          nullable: true
-          description: Your profile picture.
         trust_score:
           type: number
           format: float
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         is_trusted:
           type: boolean
       required:
@@ -4819,7 +3894,7 @@ components:
           description: Video description, from YouTube
         publication_date:
           type: string
-          format: date
+          format: date-time
           readOnly: true
           nullable: true
         views:
@@ -4893,7 +3968,7 @@ components:
           description: Video description, from YouTube
         publication_date:
           type: string
-          format: date
+          format: date-time
           readOnly: true
           nullable: true
         views:

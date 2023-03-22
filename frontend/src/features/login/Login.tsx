@@ -81,6 +81,7 @@ const Login = () => {
                 size="small"
                 variant="outlined"
                 autoFocus={true}
+                autoComplete="username"
                 onChange={(event) => setUsername(event.target.value)}
               />
             </Grid>
@@ -94,6 +95,7 @@ const Login = () => {
                 size="small"
                 type="password"
                 variant="outlined"
+                autoComplete="current-password"
                 onChange={(event) => setPassword(event.target.value)}
               />
             </Grid>

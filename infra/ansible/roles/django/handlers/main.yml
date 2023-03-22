@@ -34,7 +34,7 @@
 
 - name: Notify backend upgrade
   shell:
-    cmd: "wget -qO /dev/null --post-data='{\"content\": \"**{{domain_name}}** - new back end deployed: {{git_reference}}\"}' --header='Content-Type:application/json' '{{discord_infra_alert_webhook}}?wait=true'"
+    cmd: "wget -qO /dev/null --post-data='{\"content\": \"**{{domain_name}}** - {{ansible_env.SUDO_USER}} deployed new back end : {{git_reference}}\"}' --header='Content-Type:application/json' '{{discord_infra_alert_webhook}}?wait=true'"
     executable: /usr/bin/bash
   when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
 
@@ -44,14 +44,6 @@
     executable: /usr/bin/bash
   become: true
   become_user: gunicorn
-
-- name: Populate Django DB from Public Dataset
-  shell:
-    cmd: cd /tmp && tar xvf /srv/tournesol-backend/scripts/dataset-import/dump-for-migrations-core-0004-tournesol-0007.sql.tgz && psql -1 -d tournesol < dump.sql && rm dump.sql
-    executable: /usr/bin/bash
-  become: yes
-  become_user: postgres
-  when: populate_django_db_from_public_dataset == True
 
 - name: Create Swagger UI OAuth application in Django database
   shell:

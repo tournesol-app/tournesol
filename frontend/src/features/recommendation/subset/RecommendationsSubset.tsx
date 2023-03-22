@@ -80,7 +80,7 @@ const RecommendationsSubset = ({
       )}
       <LoaderWrapper isLoading={isLoading}>
         {entities.length === 0 ? (
-          <Typography paragraph textAlign="center">
+          <Typography paragraph textAlign="center" color="#fff">
             {t('recommendationsSubset.noRecommendationHasBeenFound')}
           </Typography>
         ) : (

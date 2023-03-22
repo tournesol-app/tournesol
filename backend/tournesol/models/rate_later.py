@@ -7,6 +7,11 @@ from django.db import models
 from core.models import User
 from tournesol.models.poll import Poll
 
+# The default minimum number of comparisons required to remove an entity from
+# a user's rate-later list. When this constant is imported and used, the
+# user's settings should take precedence over this default value.
+RATE_LATER_AUTO_REMOVE_DEFAULT = 4
+
 
 class RateLater(models.Model):
     """An `Entity` a user wants to rate later in a poll."""

@@ -127,6 +127,70 @@ To import a backup from production to the local tournesol VM:
 ./ansible/scripts/fetch-and-import-pg-backup.sh --backup-name 2021-11-12-weekly --from tournesol.app --to-ansible-host tournesol-vm
 ```
 
+## Using Grafana with Loki to Browse Logs
+
+Grafana can be used to monitor and alert on various types of data, including log data. The Loki plugin for Grafana allows you to easily view and analyze logs.
+
+### Nginx Logs
+
+The server is using Nginx as a reverse proxy, and produces access logs in JSON format. Each line of the log file `json_access.log` will contain a single request represented in JSON. Here are some examples of queries you can use to filter and analyze these logs in Grafana with Loki.
+
+The Loki plugin provides a query builder and an "explain" option that make relatively easy to create a custom query to look for specific events.
+
+> Direct link (on staging):  
+https://grafana.staging.tournesol.app/goto/mPTIzpt4k?orgId=1
+
+#### Query examples
+
+* To view all logs for a specific HTTP host:
+
+```
+{filename="/var/log/nginx/json_access.log"} | json | http_host = `api.tournesol.app`
+```
+
+You can also use the Grafana query language to combine multiple filters and perform more advanced searches.
+
+* To view all logs for a specific path and/or method:
+
+```
+{filename="/var/log/nginx/json_access.log"} | json | http_host = `api.tournesol.app` | request_method = `POST` | request_uri =~ `/users/me/comparisons.*`
+```
+
+* To view all logs for a specific HTTP status code:
+
+```
+{filename="/var/log/nginx/json_access.log"} | json | status >= 500
+```
+
+* To view all logs for a specific user agent:
+
+```
+{filename="/var/log/nginx/json_access.log"} | json | http_user_agent =~ ".*iPhone OS.*"
+```
+
+* To view all API requests with duration over 500ms:
+```
+{filename="/var/log/nginx/json_access.log"} | json | http_host = "api.tournesol.app" | request_time > 0.5
+```
+
+### Systemd Services
+
+You can use Grafana with the Loki plugin to view and analyze the logs produced by services managed by Systemd.
+
+To view logs for a specific Systemd unit, you can use the {unit="service_name"} filter. For example, to view logs for the ml-train service:
+
+```
+{unit="ml-train.service"}
+```
+
+As with Nginx logs, you can use the Grafana query language to combine multiple filters and perform more advanced searches. For example, to view logs for the gunicorn service containing the word "Warning":
+
+```
+{unit="gunicorn.service"} |= `Warning`
+```
+> Direct link (on staging):  
+https://grafana.staging.tournesol.app/goto/lVgjR0pVk?orgId=1
+
 ## Copyright & License
 
 Copyright 2021-2022 Association Tournesol and contributors.

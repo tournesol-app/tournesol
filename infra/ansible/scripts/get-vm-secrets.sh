@@ -6,7 +6,7 @@ export VM_USER="${2:-"$USER"}"
 function get_settings_value() {
     local jq_filter=$1;
     ssh "$VM_USER@$VM_ADDR" -- \
-    'python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'' \
+    'sudo python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'' \
     | jq -r' "'$jq_filter | values'"
 }
 
@@ -33,6 +33,9 @@ export DJANGO_OIDC_RSA_PRIVATE_KEY
 
 YOUTUBE_API_KEY=$(get_settings_value .YOUTUBE_API_KEY)
 export YOUTUBE_API_KEY
+
+YOUTUBE_CHANNEL_CREDENTIALS_JSON=$(get_settings_value .YOUTUBE_CHANNEL_CREDENTIALS_JSON)
+export YOUTUBE_CHANNEL_CREDENTIALS_JSON
 
 FRONTEND_OAUTH_CLIENT_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/frontend_oauth_client_id)"
 export FRONTEND_OAUTH_CLIENT_ID
@@ -103,5 +106,11 @@ export TWBOT_ACCESS_TOKEN_SECRET_EN
 DISCORD_INFRA_ALERT_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.infra_alert)
 export DISCORD_INFRA_ALERT_WEBHOOK
 
+DISCORD_INFRA_ALERT_PRIVATE_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.infra_alert_private)
+export DISCORD_INFRA_ALERT_PRIVATE_WEBHOOK
+
 DISCORD_TWITTER_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.twitter)
 export DISCORD_TWITTER_WEBHOOK
+
+PLAUSIBLE_ANALYTICS_SECRET_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/plausible_analytics_secret_key)"
+export PLAUSIBLE_ANALYTICS_SECRET_KEY

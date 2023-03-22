@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
 from sklearn.linear_model import LinearRegression
-
 from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
 st.set_page_config(
@@ -30,10 +29,10 @@ def add_sidebar_select_user():
 
     df = st.session_state.df
     all_users = df["public_username"].unique()
-    selected_users = st.sidebar.multiselect("", all_users)
+    selected_users = st.sidebar.multiselect("selected_users", all_users, label_visibility="hidden")
     if len(selected_users):
         df = df[df["public_username"].isin(selected_users)]
-    st.session_state.df = df
+        st.session_state.df = df
     st.session_state.all_users = all_users
     st.session_state.selected_users = selected_users
 
@@ -63,6 +62,7 @@ def add_expander_statistics():
         df_stats = (
             df["public_username"]
             .value_counts()
+            .pipe(lambda x: x[x>0])
             .reset_index()
             .rename(
                 columns={
@@ -73,8 +73,7 @@ def add_expander_statistics():
         )
 
         df_stats["Nb of video"] = df_stats["public_username"].apply(
-            lambda x: len(get_unique_video_list(df[df["public_username"] == x]))
-        )
+            lambda x: len(get_unique_video_list(df[df["public_username"] == x])))
 
         col1, col2, col3 = st.columns(3)
         col1.metric("Users", df["public_username"].nunique())

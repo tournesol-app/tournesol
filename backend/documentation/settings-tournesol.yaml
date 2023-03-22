@@ -8,7 +8,12 @@ ALLOWED_HOSTS:
     - 127.0.0.1
     - 0.0.0.0
 
-# allow CORS for origin localhost:3000 for local development
+# A list of origins that are authorized to make cross-site HTTP requests.
+#
+# The URL of the front end must be added to this list. For developments with a
+# local front end running on the port 3000, you need to add:
+#   - "http://127.0.0.1:3000"
+#   - "http://localhost:3000"
 CORS_ALLOWED_ORIGINS: []
 CORS_ALLOW_CREDENTIALS: false
 
@@ -20,6 +25,7 @@ DATABASE_NAME: tournesol
 DATABASE_USER: user
 DATABASE_PASSWORD: password
 
+# must be writable by the user running the API
 STATIC_ROOT: /home/user/static
 MEDIA_ROOT: /home/user/media/
 

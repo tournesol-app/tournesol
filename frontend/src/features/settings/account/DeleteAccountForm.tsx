@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+
 import { TextField, Typography, Button, useTheme } from '@mui/material';
 
-import { UsersService } from 'src/services/openapi';
 import { useLoginState } from 'src/hooks';
+import { UsersService } from 'src/services/openapi';
+import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 
 const DELETE_ACCOUNT_KEYWORD = 'delete account';
 
@@ -17,7 +19,9 @@ const DeleteAccountForm = () => {
   const history = useHistory();
 
   const deleteAccount = async () => {
+    // TODO: track the event only when the deletion is successful
     await UsersService.usersMeDestroy();
+    trackEvent(TRACKED_EVENTS.accountDeleted);
     logout();
     history.push('/');
   };

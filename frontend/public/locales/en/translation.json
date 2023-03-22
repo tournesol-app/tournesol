@@ -14,6 +14,7 @@
     "continue": "continue"
   },
   "video": {
+    "notAvailableAnymore": "This video is not available anymore.",
     "labelShowSettings": "Show settings related to this video",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
     "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
@@ -32,15 +33,11 @@
     "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
     "personalScore": "Personal score: {{score}}"
   },
+  "entityCard": {
+    "notAvailableAnymore": "This entity is not available anymore."
+  },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
-  },
-  "pagination": {
-    "videos": "videos",
-    "previousButton": "Previous {{limit}}",
-    "showingCounts": "Showing {{itemTypeText}} {{firstShowing}} to {{lastShowing}} of {{total}}",
-    "nextButton": "Next {{limit}}",
-    "comparisons": "comparisons"
   },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
@@ -65,8 +62,8 @@
     "successfullySubmitted": "The comparison has been successfully submitted.",
     "pleaseSelectTwoItems": "Please select 2 items to compare them.",
     "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
-    "removeOptionalCriterias": "Remove optional criterias",
-    "addOptionalCriterias": "Add optional criterias",
+    "removeOptionalCriterias": "Remove optional criteria",
+    "addOptionalCriterias": "Add optional criteria",
     "changeOneItem": "Change one of the items to submit a new comparison",
     "comparisonInPublicData": "This comparison is included in the public data.",
     "comparisonInPublicDataAfterSubmission": "After submission, this comparison will be included in the public data.",
@@ -74,7 +71,8 @@
     "criteriaSkipped": "skipped",
     "submitAComparison": "Submit a comparison",
     "inactivePoll": "This poll is closed.",
-    "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified."
+    "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
+    "comparisonCriteria": "Comparison criteria"
   },
   "comparisonHelper": {
     "hideHelp": "Hide the help",
@@ -118,13 +116,15 @@
     },
     "title": "Criteria most correlated with who you think should be president",
     "ifYourRankingSeemsOff": "If these results seem off, you should submit additional comparisons to improve them.",
-    "addNewComparisons": "make new comparaisons",
+    "addNewComparisons": "make new comparisons",
     "shareOnTwitter": "Share on Twitter"
   },
   "footer": {
     "getRecommendations": "Get Recommendations",
     "chromeExtension": "Chrome Extension",
     "firefoxExtension": "Firefox Extension",
+    "youtubePlaylistEn": "YouTube Playlist EN",
+    "youtubePlaylistFr": "YouTube Playlist FR",
     "followUs": "Follow Us",
     "supportUs": "Support Us",
     "directTransfer": "Direct transfer",
@@ -144,7 +144,8 @@
     "myRateLaterList": "My rate later list",
     "myResults": "My results",
     "faq": "FAQ",
-    "about": "About"
+    "about": "About",
+    "donate": "Donate"
   },
   "frame": {
     "onChromeOrDerivatives": "On Chrome, Chromium, or derivatives",
@@ -225,7 +226,7 @@
     "language": "Language",
     "scoreMode": {
       "default": {
-        "description": "More importance is given to accounts associated with a trusted email address",
+        "description": "More importance is given to accounts associated with an email address considered trustworthy",
         "label": "Default"
       },
       "allEqual": {
@@ -233,7 +234,7 @@
         "label": "All equal"
       },
       "trustedOnly": {
-        "description": "Only accounts associated with <2>a trusted email address</2> are considered",
+        "description": "Only accounts associated with <2>an email address considered trustworthy</2> are taken into account",
         "label": "Trusted only"
       }
     },
@@ -274,7 +275,7 @@
     "emailStatus": "Email status",
     "emailTrusted": "Trusted",
     "emailNonTrusted": "Non-trusted",
-    "learnMoreAboutTrustedDomains": "Learn more about trusted domains",
+    "learnMoreAboutTrustedDomains": "Learn more about domains which are considered trustworthy",
     "verificationEmailSentNewEmail": "A verification email has been sent to confirm your new email address.",
     "currentEmailAddressIs": "Your current email address is",
     "newEmailAddress": "New email address",
@@ -339,6 +340,10 @@
     "rolePresident": "President",
     "roleTreasurer": "Treasurer",
     "roleSecretary": "Secretary",
+    "significantContributors": "Significant Contributors",
+    "weThankOurContributors": "We are extremely thankful to many significant contributor who are or have been very impactful for the project.",
+    "sergiaDescription": "Sergia was among the few people who decided to start building Tournesol. She took over most of the engineering effort and developed the backend, the algorithms and the front-end of the first version of the platform.",
+    "sigmikeDescription": "Michael is a volunteer open source contributor who contributes impactful features on our backend, frontend and extension.",
     "weThankOurPartners": "We thank our partners",
     "partnershipWithEpfl": "Partnership with EPFL",
     "partenershipWithEpflDetail": "For a short period a research engineer at École Polytechnique Fédérale de Lausanne (EPFL) was dedicated to the development of the Tournesol platform. Many researchers from the Distributed Computing Laboratory have also designed and still contribute to the research about Tournesol algorithms.",
@@ -348,33 +353,35 @@
     "partnershipWithKleisDetail": "We received support from the technology and consulting company Kleis to help us shape our organizational processes and adopt efficient development practices. Our partnership with Kleis is extremely structuring for the development of our vision for the product and to bring perspective for foundational technical choices.",
     "openSourceContributions": "Open Source Contributions",
     "openSourceContributors": "As Tournesol is an open source project, we have been lucky to benefit from contributions by multiple volunteers. Find our wonderful contributors on <2>GitHub</2>",
-    "donateWeAreASmallTeam": "Because we are a small team of mostly volunteers, the development of Tournesol is slower than we would like it to be. If you can, please consider helping us with a donation using one of methods below. You can also help us by contributing to our open source code. Check-out our <2>open source code</2>, or join our <5>Discord</5>.",
     "donateHowTo": "How to make a donation?",
-    "donateWithUtipTitle": "With uTip",
-    "donateWithUtipDescription": "uTip is an online crowdfunding platform. Visit our <2>uTip page</2> to make a one-time or recurring donation.",
     "donateByDirectTransferEUR": "By direct transfer in Euros (EUR)",
     "donateByDirectTransferCHF": "By direct transfer in Swiss Francs (CHF)",
-    "donateByPaypal": "By PayPal",
     "publicDatabase": "Public Database",
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
-    "trustedEmailDomains": "Trusted email domains",
+    "trustedEmailDomains": "Email domains considered trustworthy",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
-    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a trusted domain</2>, or when other users vouch for you.",
+    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a domain considered trustworthy</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
-    "trustedDomainsCurrentList": "Current list of trusted domains"
+    "trustedDomainsCurrentList": "Current list of domains considered trustworthy"
+  },
+  "donate": {
+    "ifPossibleConsiderUsingDirectTransfers": "If possible, consider using direct transfers instead (see below). This allows the association to not pay additional fees and makes the most of your contributions.",
+    "donateWithUtip": "Donate with uTip",
+    "donateWithPaypal": "Donate with PayPal",
+    "doYouPreferDirectTransfer": "You prefer direct transfers?"
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",
     "whatPersonalDataTournesolCollectAndWhy": "What personal data Tournesol collects and why?",
     "ratings": "Ratings",
-    "whyTournesolCollectsRatings": "Tournesol is a tool for collaborative decisions. This tool requires to elicit, infer and aggregate contributors' judgments on the quality of multiple types of alternatives. These alternatives can for example be online videos or candidates to a presidential election. We want to make sure that the users of the plateform are well aware that political opinions are sensitive personnal information and that Tournesol collects and uses the data provided and saved on the plateform. To do so, Tournesol collects the data provided by the contributors when they compare pairs of content.",
+    "whyTournesolCollectsRatings": "Tournesol is a tool for collaborative decisions. This tool requires to elicit, infer and aggregate contributors' judgements on the quality of multiple types of alternatives. These alternatives can for example be online videos or candidates to a presidential election. We want to make sure that the users of the platform are well aware that political opinions are sensitive personal information and that Tournesol collects and uses the data provided and saved on the platform. To do so, Tournesol collects the data provided by the contributors when they compare pairs of content.",
     "search": "Search",
     "whyTournesolCollectsSearchQueries": "Even if the contributor is not logged in, Tournesol collects the parameters of their search queries in order to better understand most users' needs. We believe that such data can also have a scientific and ethical value to help make recommendation systems more robustly beneficial to humanity.",
     "contributorProfile": "Contributor profile",
     "whyTournesolCollectsContributorProfile": "In order to distinguish different contributors' expertise, Tournesol asks contributors to certify their emails, to report their fields of expertise and to link to their public profiles. We believe that such data have an important scientific and ethical value and will help make recommendation systems more robustly beneficial to humanity.",
     "contactForm": "Contact form",
-    "thereIsNoContactForm": "There is no contact form. If you need to contact us, please use the following email: tournesol.application(at)gmail.com",
+    "thereIsNoContactForm": "There is no contact form. If you need to contact us, please use the following email: hello(at)tournesol.app",
     "loginInformation": "Login information",
     "loginInformationDetails": "If a contributor has an account and logs in Tournesol, Tournesol will set a unique and temporary token to authenticate the user session when connecting to the Tournesol servers. This token contains no personal data, and is used only for authentication purposes. Moreover, Tournesol may also persist locally on the browser some data related to the platform features, such as display and language preferences. If they log out of their account, the login data will be removed. Tournesol does not use cookies (or any other measures) for tracking purposes.",
     "embeddedContentFromOtherWebsites": "Embedded content from other websites",
@@ -382,7 +389,7 @@
     "whoTournesolSharesUsersNContributorsDataWith": "Who Tournesol shares users' and contributors' data with?",
     "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol highly values the protection of users' and contributors' data. In particular, Tournesol knows that some of the contributors' judgments may conflict with the agendas of some political leaders or of their employer. We want contributors to express judgments without the fear of any consequence for their personal life. This is why Tournesol has the option of providing judgments privately or anonymously. Privately provided raw judgments will not be shared with any third party.",
     "publicData": "Public data",
-    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. This database consists of detailed public contributions, associated with the usernames of the contributors who submitted them. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties. Additionally, comparisons between election candidates will all be considered private and Tournesol will not enable users to make these information public on the plateform. If you have made a comparison of public videos Tournesol includes in the public database your trust score calculated from your email and the users who vouched for you.",
+    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. This database consists of detailed public contributions, associated with the usernames of the contributors who submitted them. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties. Additionally, comparisons between election candidates will all be considered private and Tournesol will not enable users to make these information public on the platform. If you have made a comparison of public videos Tournesol includes in the public database your trust score calculated from your email and the users who vouched for you.",
     "aggregateData": "Aggregate data",
     "whereGoAggregateData": "Our algorithms combine contributors’ public and private data to provide aggregate statistics, which are made public. This is typically the case of the Tournesol scores given to different videos or to different candidates to an election. Tournesol also plans to release statistics about subsets of contributors, e.g. to determine how pedagogical a physics video is according to biologists. In any such case, we apply the principles of differential privacy, by adding randomness to the actual aggregation, in order to increase the privacy of your data. The aggregated statistics are likely to be used in scientific articles about the ethics of large scale algorithms and artificial intelligence.",
     "researchPurposes": "Research purposes",
@@ -399,6 +406,18 @@
     "listHasNbComparisons_other": "You already did <1>{{comparisonCount}}</1> comparisons.",
     "title": "My comparisons",
     "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
+  },
+  "criteriaDescriptions": {
+    "backfire_risk": "<0>Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?</0><1>This criterion aims to measure the probability that a user may misunderstand or negatively react to the information presented. This may be particularly likely to occur for contents presented with a strong \"us versus them\" atmosphere on controversial topics<1>(<1>BailABBC+-18</1>)</1>. Note, however, that this <4>Veritasium video</4> (based on his <8>PhD thesis</8>) shows that backfiring also occurs for clean presentation of a counter-intuitive scientific concept, if the content does not pinpoint the risks of misunderstandings.</1><2>Contents that score high on \"resilience to backfiring risks\" should be safe to recommend to all sorts of viewers, with limited risks of misunderstandings.</2>",
+    "better_habits": "<0>Does it make people adopt habits that benefit themselves and beyond?</0><1>This criterion aims to highlight content that nudges viewers towards better habits, for themselves or for society. These habits may include healthier habits, in terms of food, sport activities or mental health, or more careful thinking when consuming informational contents. They may also include more altruistic habits, such as being kinder to others (including on the Internet), reducing our carbon footprint and being wary of our overconfidence. Evidently, contents that do not promote better habits should be given lower ratings, while contents that promote poor habits, purposely or not, should be given very low ratings.</1><2>Contents that score high on \"encourages better habits\" should be successful at motivating viewers to grow and improve themselves.</2>",
+    "diversity_inclusion": "<0>Does it promote tolerance, compassion and wider moral considerations?</0><1>This criterion aims at identifying contents that promote a more diverse and inclusive view of the great diversity of all life. Contents that score high on \"diversity and inclusion\" should celebrate diversity and be appealing to minority groups. Among other things, diverse and inclusive content promote:</1><2><0>The diversity of humanity's ethnics, beliefs and preferences, especially in fields that deeply lack such a diversity,</0><1>The lifes of all sentient beings (e.g. non-human animals),</1><2>The well-being of young and future generations,</2><3>The diversity of genders and sexual orientations,</3><4>The inclusion of all species in our moral circles and the protection of biodiversity.</4></2><3>When judging this feature, contributors are encouraged to reflect on what both privileged and underprivileged viewers may feel when viewing the content. Contents that normalize biases or that disregard the interests of under-represented groups, purposely or not, should be rated negatively along this feature.</3><4>Example</4><5>Typically the below videos may be referred to as high diversity and inclusion.</5><6><0><0>Tibees' video \"The First Computer Program\"</0></0><1><0>Mark Robert's video \"The Truth About my Son\"</0></1><2><0>Jaiden Animations' video \"Being not Straight\"</0></2><3><0>Vox's video \"Are we Automating Racism?\"</0></3></6>",
+    "engaging": "<0>Does it catch people's attention, spark curiosity and invite to question previous beliefs?</0><1>When judging this quality feature, the contributors are typically invited to ask themselves if their relatives would be bored by the content, or if the content has a chance to start an interesting discussion or to encourage further research on the topic.</1><2>Contents that score high on \"engaging and thought-provoking\" should catch the attention of a larger audience, trigger their curiosity and create a desire to find out more, including by questioning their own beliefs.</2><3>Engaging</3><4>The dynamism of the video, the use of humour or the audiovisual quality of the story-telling are important components to consider.</4><5>This <2>Veritasium video</2> presents advice for more engaging science videos.</5><6>Thought-provoking</6><7>A video is thought-provoking if it invites further, perhaps unusual, thoughts for viewers. It may typically be more successful at doing so if it raises further questions, encourages viewers to reflect further and provides pointers to find out more.</7><8>Curiosity</8><9>As opposed to many metrics including \"scientific intelligence\"<1>(<1>KahanPCS-17</1>)</1>, scientific curiosity has been linked to a convergence of beliefs despite diverging political views <4>(<1>KahanLCHH-17</1>)</4>.</9><10><0>Galef-21</0> argues that the greatest bottleneck to good judgment is usually the will to adopt the \"scout mindset\", which is defined as accuracy motivated reasoning or intellectual honesty. This is as opposed to the \"soldier mindset\", which corresponds to belief motivated reasoning.</10>",
+    "entertaining_relaxing": "<0>Do people feel good watching it?</0><1>Contents that score high on \"entertaining and relaxing\" should entertain and relax viewers.</1>",
+    "importance": "<0>Can additional focus on this topic have a significantly positive impact on the world?</0><1>This criterion aims to combat the problem of <1>mute news</1>, which are information that do not have the attention that they should have for the good of humanity and beyond. As an example, as explained by <4>this PBS Hot Mess video</4>, when it comes to mitigating climate change, asking viewers to switch off the light when not at home is orders of magnitude less important than, say, avoid flying to countries far away.</1><2>Contents that score high on \"important and actionable\" should present data and arguments with major consequences, as well as actionable plans that would have large-scale impacts.</2><3>Scale</3><4>Plans with large-scale impacts are more important, as they affect more individuals at once.</4><5>Actionable and tractable</5><6>A content that simply lists problem is arguably less important to share than a content that both lists problems and propose actionable solutions.</6><7>The content is all the more important if it calls for actionable plans from the viewers (even though these plans may consist in creating social pressure on other individuals).</7><8>Other aspects</8><9>When judging the importance of a content, it may be relevant to reflect on whether the content stresses the important features of the topic it discusses. In particular, introductions and conclusions may be what catches viewers' attention the most. Does the content open and close with important considerations?</9><10>According to Bayesianism, <1>surprising</1> data ought to have a much larger impact on a (Bayesian) viewer's beliefs. In practice, viewers are not Bayesian. This is why, in addition to presenting surprising data to viewers, it is also important to also stress the surprisingness of the data or argument, by highlighting it. This means underlining the neglectedness of the data or argument.</10>",
+    "largely_recommended": "<0>This is the default quality criterion of Tournesol 🌻</0><1>It aims to measure the extent to which a content should be recommended to a very wide audience, according to the contributor's judgment.</1><2>The main motivation for making this the single default quality criterion is that it highlights the core of Tournesol's mission. Namely, Tournesol aims to identify contents worth promoting at scale.</2><3>A secondary motivation is to make it as contributor-friendly as possible, especially for new contributors.</3><4>A third motivation is to use this quality criterion to infer the importance assigned by the contributors the the other quality criteria. In particular, we plan to soon learn how to best combine the different optional quality criteria (and the default one) into a more reliable unique global Tournesol score per video.</4>",
+    "layman_friendly": "<0>How understandable is it, without prior knowledge?</0><1>This criterion aims to identify contents that would be suitable to those with very limited prior knowledge. When judging this feature, contributors are encouraged to reflect on the suitability of the content to their grandparents or to their 5-year-old nephew.</1><2>Contents that score high on \"layman-friendly\" should be accessible to a very large audience.</2><3>Distinction with \"clear and pedagogical\"</3><4>An example of layman-friendly non-pedagogical video is a video discussing concepts in a very superficial way.</4><5>An example of a very pedagogical video that may not be very layman-friendly is <2>this video by 3Blue1Brown</2>.</5>",
+    "pedagogy": "<0>How efficiently does the content guide viewers in their understanding?</0><1>This criterion aims to measure the clarity of the explanations of a content. More importantly, this <2>Veritasium video</2> argues that what really matters is what is going on in the viewer's head as they watch the video. A pedagogical content should thus accompany the viewers adequately along every challenging step of an argument or of the analysis of some data.</1><2>Contents that score high on \"clear and pedagogical\" should help viewers understand all the elements that lead to a conclusion.</2>",
+    "reliability": "<0>Is the presented information trustworthy, robustly backed and properly nuanced?</0><1>This criterion aims to measure the trustworthiness of the information presented in a content, but also the extent to which the information may be misleading. In particular, a factual content that cherry-picks data to present to corroborate a world view and lacks completeness should be considered partially misleading. Similarly, contents that lack epistemic prudence and suffer overconfidence may be considered less reliable than contents that adequately measure the extent of their ignorance.</1><2>Contents that score high on \"reliable and not misleading\" should make nearly all viewers improve their global world view, despite viewers' biases and motivated reasoning.</2><3>Reliability</3><4>The multiplicity and diversity of sources and evidence play an important role in the reliability of a content. It should ideally be also backed by <2>peer-reviewed scientific publications</2>. However, as explained in <5>this video by Veritasium</5>, even published research usually has major shortcomings. More reliable information can be obtained by meta-analyses of multiple scientific publications, or by drawing on scientific consensus.</4><5>Even then, even meta-analysis <1>may not be conclusive</1>, especially when data are not compelling enough. A reliable analysis of the data should acknowledge uncertainty<3>(<1>WassersteinSL-19</1>)</3> by showing epistemic prudence, thereby combatting overconfidence. Ideally, the level of certainty should be well calibrated.</5><6>Not misleading</6><7>Unfortunately, factual news can be deeply misleading. As an example, on October 21st, 2020, NBC News published a news entitled <2>\"Volunteer in AstraZeneca Covid-19 vaccine trial dies in Brazil\"</2>. However, subsequent news reported that the volunteer did not receive the vaccine, as he was in the control group. Weirdly, this was reported by Healthcare Finance in a news entitled <5>\"28-year-old volunteer in AstraZeneca COVID-19 vaccine trial dies\"</5>. Only the subtitle clarifies the story, as it asserts \"The trial has not been paused as the volunteer did not receive the COVID-19 vaccine but was part of the control group.\". Still, more generally, even a death of a single vaccinated individual should not radically affect our estimation of the dangerousness of the vaccine, as the cause of the death may be unrelated to the individual's vaccination. In fact, if tens of thousands of individuals get vaccinated, then a death of at least one individual should be expected in the months to come since; according at <8>Statista</8>, adults have a probability of dying within a year of at least 1 in 1,000.</7><8><0>ChevrePensante-21<1>FR</1></0> reports the way vaccine news have been reported in a disproportionally negative manner.</8><9>More generally, to avoid being misleading, information should arguably present on scientific background knowledge, set information within context, analyze the best available statistical data, discuss conflicting interpretations and use careful wordings.</9>"
   },
   "entityAnalysisPage": {
     "candidate": {
@@ -423,7 +442,7 @@
     },
     "unexpected": {
       "title": "Unknown error",
-      "message": "An unexpected error has occured."
+      "message": "An unexpected error has occurred."
     }
   },
   "faqEntryList": {
@@ -441,7 +460,7 @@
     "presidentielle2022": {
       "title": "Tournesol for France's presidential elections",
       "tournesolDescription": "Tournesol is an open source platform which proposes a tool for collaborative decision.",
-      "whyCompareCandidates": "Initially developped to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about your explicited preferences.",
+      "whyCompareCandidates": "Initially developed to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about the preferences you expressed.",
       "dataUsage": "Submitted data will never be revealed to other users, and will only be used to help research on the ethics of algorithms and artificial intelligence.",
       "respondToSurvey": "Respond to survey"
     },
@@ -456,16 +475,24 @@
     "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
     "helpUsAdvanceResearch": "Help us advance research by giving your opinion on the videos you have watched in order to identify public interest contents that should be largely recommended.",
     "contributeTitle": "Contribute!",
-    "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
+    "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criteria.",
     "compareButton": "Compare now",
     "useOurExtension": "Use our extension!",
-    "webExtensionDescription": "The browser extension allows to display the videos recommended by the community directly on your YouTube home page. You can also add videos to your rate-later list or immediately rate them in a few clicks.",
+    "webExtensionDescription": "The browser extension allows you to display videos recommended by the community directly on your YouTube home page. With just a few clicks you can rate any video or add them to your rate-later list.",
     "getTheExtensionButton": "Get the extension",
-    "extensionNotAvailableOnYourBrowser": "Unfortunately the extension is not available on your web browser. You may use it on <1>Firefox</1>, <3>Google Chrome</3> and probably on browsers based on them."
+    "extensionNotAvailableOnYourBrowser": "Unfortunately the extension is not available on your web browser. You may use it on <1>Firefox</1>, <3>Google Chrome</3>, <4>Microsoft Edge</4>, and similar browsers."
   },
   "comparisonSection": {
     "contribute": "Contribute",
-    "theSimpliestWayToContribute": "The simpliest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family?"
+    "theSimpliestWayToContribute": "The simplest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family?"
+  },
+  "fundingSection": {
+    "supportUs": "Support Us!",
+    "tournesolExistsThanksToYourInvolvement": "Tournesol exists thanks to your involvement. By financing Tournesol you...",
+    "guaranteeTheProjectsIndependence": "<0>guarantee</0> the project's independence",
+    "participateInTheCreationOfCommons": "<0>participate</0> in the creation of commons",
+    "actForTheEthicsOfInformation": "<0>act</0> for the ethics of information",
+    "iSupport": "I support"
   },
   "homeComparison": {
     "sorryTheComparisonIsTemporarilyUnavailable": "Sorry, the comparison of video is temporarily unavailable. Please try again later.",
@@ -496,7 +523,7 @@
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
-    "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> appplication made with Streamlit.",
+    "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> application made with Streamlit.",
     "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of comparison criteria scores (2022/10/10)."
   },
   "reset": {
@@ -531,7 +558,7 @@
     "proofOfVote": "Proof of vote"
   },
   "personalVouchers": {
-    "voucherCreated": "You successfuly vouched for \"{{username}}\".",
+    "voucherCreated": "You successfully vouched for \"{{username}}\".",
     "introduction": "I vouch that this user is a human, with an authentic behavior, and that this user does not actively use another account on Tournesol:",
     "usernameLabel": "Username",
     "submitButton": "I vouch for this user",
@@ -544,19 +571,19 @@
       "title": "Trust score",
       "description": {
         "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
-        "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch for you.",
+        "howToChangeIt": "You can gain more trust by using an email from a domain considered trustworthy or when other users vouch for you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
       "nullValue": "Unknown",
       "low": "Low",
       "medium": "Medium",
       "high": "High",
-      "isTrusted": "Your email address is trusted.",
-      "isNotTrusted": "Your email address is not trusted.",
+      "isTrusted": "Your email address is considered trustworthy.",
+      "isNotTrusted": "Your email address is not considered trustworthy.",
       "hasReceivedVouchers": "Other users vouch for you.",
       "hasNotReceivedVouchers": "No other user vouch for you."
     },
-    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered to be trusted. The list of users for whom you vouch, or who have vouched for you, is a public information."
+    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered trustworthy. The list of users for whom you vouch, or who have vouched for you, is a public information."
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
@@ -571,7 +598,7 @@
       "recommendations": "Recommendations"
     }
   },
-  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
+  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
   "profile": "Profile",
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
@@ -605,7 +632,7 @@
     "international": "Topics related to Europe, international diplomacy, defense, terrorism and immigration",
     "education_culture": "Topics related to the education system, media, culture, social networks and the ethics of algorithms",
     "health": "Topics related to the health system, mental health, sports, end-of-life ethics, COVID-19 and vaccines",
-    "institutions_democracy": "Topics related to the organization of political life, democracy, territories and collectivities, public service and overseas",
+    "institutions_democracy": "Topics related to the organization of political life, democracy, local authorities, public service and overseas",
     "labour_economy": "Topics related to jobs, unemployment, purchasing power, taxation, public deficits and debt",
     "solidarity": "Topics related to societal issues, inequality and discrimination, disability, violence against women and immigration",
     "pedagogy": "How efficiently does the content guide viewers in their understanding?",
@@ -691,7 +718,7 @@
           "p40": "You can also choose to not vote on the optional criteria by unchecking it.",
           "p50": "Good to know, you will be able to edit all your comparisons later if you are not confident."
         },
-        "title3": "How does Tournseol work? 🤖",
+        "title3": "How does Tournesol work? 🤖",
         "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",

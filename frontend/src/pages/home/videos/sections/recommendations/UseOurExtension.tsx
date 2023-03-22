@@ -7,14 +7,22 @@ import { Extension } from '@mui/icons-material';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import SectionTitle from '../SectionTitle';
 
-const UseOurExtension = () => {
+interface UseOurExtensionProps {
+  titleColor?: string;
+}
+
+const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
   const { t } = useTranslation();
   const webExtensionUrl = getWebExtensionUrl();
 
   return (
     <Box>
       <Box my={6}>
-        <SectionTitle title={t('home.useOurExtension')} dividerColor="#fff" />
+        <SectionTitle
+          color={titleColor}
+          dividerColor={titleColor}
+          title={t('home.useOurExtension')}
+        />
       </Box>
       <Grid container flexDirection="column" alignItems="center">
         <Grid item xl={9}>
@@ -31,6 +39,11 @@ const UseOurExtension = () => {
                     width="64px"
                     src="/logos/Chrome-Browser-icon-fullColor.svg"
                     alt="Google Chrome browser logo."
+                  />
+                  <img
+                    width="64px"
+                    src="/logos/Edge-Browser-icon-fullColor.svg"
+                    alt="Microsoft Edge browser logo."
                   />
                 </Box>
               </Grid>

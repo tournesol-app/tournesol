@@ -13,6 +13,8 @@ CORS_ALLOW_CREDENTIALS: true
 
 MAIN_URL: {{django_main_url}}/
 
+TOURNESOL_VERSION: {{git_reference}}
+
 DATABASE_NAME: {{django_database_name}}
 DATABASE_USER: {{django_database_user}}
 DATABASE_PASSWORD: {{django_database_password}}
@@ -51,6 +53,8 @@ SWAGGER_UI_OAUTH2_CLIENT_SECRET: {{swagger_ui_oauth2_client_secret}}
 DJANGO_LOG_LEVEL: {{django_log_level}}
 
 YOUTUBE_API_KEY: {{youtube_api_key}}
+YOUTUBE_CHANNEL_CREDENTIALS_JSON: > # Multiline string in yaml will keep JSON string as is
+    {{ youtube_channel_credentials_json }}
 
 ENABLE_API_WIKIDATA:
     MIGRATIONS: {{django_enable_api_wikidata_migrations}}
@@ -75,5 +79,6 @@ TWITTERBOT_CREDENTIALS:
 
 DISCORD_CHANNEL_WEBHOOKS: {
     infra_alert: "{{ discord_infra_alert_webhook }}",
+    infra_alert_private: "{{ discord_infra_alert_private_webhook }}",
     twitter: "{{ discord_twitter_webhook }}",
 }

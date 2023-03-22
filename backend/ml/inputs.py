@@ -1,6 +1,8 @@
+import zipfile
 from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import Optional
+from typing import BinaryIO, Optional, Union
+from urllib.request import urlretrieve
 
 import pandas as pd
 from django.db.models import Case, F, QuerySet, When
@@ -11,10 +13,13 @@ from tournesol.models import ComparisonCriteriaScore, ContributorRating, Contrib
 
 
 class MlInput(ABC):
+    SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE = 20
+    SCALING_CALIBRATION_MIN_TRUST_SCORE = 0.1
+    MAX_SCALING_CALIBRATION_USERS = 100
+
     @abstractmethod
     def get_comparisons(
         self,
-        trusted_only=False,
         criteria: Optional[str] = None,
         user_id: Optional[int] = None,
     ) -> pd.DataFrame:
@@ -41,63 +46,72 @@ class MlInput(ABC):
             * `user_id`: int
             * `entity_id`: int or str
             * `is_public`: bool
-            * `is_trusted`: bool
-            * `is_supertrusted`: bool
+            * `is_scaling_calibration_user`: bool
+            * `trust_score`: float
         """
         raise NotImplementedError
 
 
 class MlInputFromPublicDataset(MlInput):
-    def __init__(self, csv_file):
-        self.public_dataset = pd.read_csv(csv_file)
-        self.public_dataset.rename(
-            {"video_a": "entity_a", "video_b": "entity_b"}, axis=1, inplace=True
-        )
-        self.public_dataset["user_id"], self.user_indices = self.public_dataset[
-            "public_username"
-        ].factorize()
+    def __init__(self, dataset_zip: Union[str, BinaryIO]):
+        if isinstance(dataset_zip, str) and (
+            dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
+        ):
+            dataset_zip, _headers = urlretrieve(dataset_zip)  # nosec B310
 
-    def get_comparisons(
-        self, trusted_only=False, criteria=None, user_id=None
-    ) -> pd.DataFrame:
-        dtf = self.public_dataset.copy(deep=False)
+        with zipfile.ZipFile(dataset_zip) as zip_file:
+            with (zipfile.Path(zip_file) / "comparisons.csv").open(mode="rb") as comparison_file:
+                self.comparisons = pd.read_csv(comparison_file)
+                self.comparisons.rename(
+                    {"video_a": "entity_a", "video_b": "entity_b"}, axis=1, inplace=True
+                )
+
+            with (zipfile.Path(zip_file) / "users.csv").open(mode="rb") as users_file:
+                self.users = pd.read_csv(users_file)
+                self.users.index.name = "user_id"
+
+            username_to_user_id = pd.Series(
+                data=self.users.index, index=self.users["public_username"]
+            )
+            self.comparisons = self.comparisons.join(username_to_user_id, on="public_username")
+
+    def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
+        dtf = self.comparisons.copy(deep=False)
         if criteria is not None:
             dtf = dtf[dtf.criteria == criteria]
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
+        dtf["weight"] = 1
         return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
     @cached_property
     def ratings_properties(self):
-        # TODO support trust_scores from the public dataset
         user_entities_pairs = pd.Series(
             iter(
-                set(self.public_dataset.groupby(["user_id", "entity_a"]).indices.keys())
-                | set(
-                    self.public_dataset.groupby(["user_id", "entity_b"]).indices.keys()
-                )
+                set(self.comparisons.groupby(["user_id", "entity_a"]).indices.keys())
+                | set(self.comparisons.groupby(["user_id", "entity_b"]).indices.keys())
             )
         )
         dtf = pd.DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
         dtf["is_public"] = True
-        top_users = dtf.value_counts("user_id").index[:6]
-        dtf["is_trusted"] = dtf["is_supertrusted"] = dtf["user_id"].isin(top_users)
+        dtf["trust_score"] = dtf["user_id"].map(self.users["trust_score"])
+        scaling_calibration_user_ids = (
+            dtf[dtf.trust_score > self.SCALING_CALIBRATION_MIN_TRUST_SCORE]["user_id"]
+            .value_counts(sort=True)[: self.MAX_SCALING_CALIBRATION_USERS]
+            .index
+        )
+        dtf["is_scaling_calibration_user"] = dtf["user_id"].isin(scaling_calibration_user_ids)
         return dtf
 
 
 class MlInputFromDb(MlInput):
-    SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE = 20
-    MAX_SUPERTRUSTED_USERS = 100
-
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
-    def get_supertrusted_users(self) -> QuerySet[User]:
+    def get_scaling_calibration_users(self) -> QuerySet[User]:
         n_alternatives = (
             Entity.objects.filter(comparisons_entity_1__poll__name=self.poll_name)
-            .union(
-                Entity.objects.filter(comparisons_entity_2__poll__name=self.poll_name)
-            )
+            .union(Entity.objects.filter(comparisons_entity_2__poll__name=self.poll_name))
             .count()
         )
         users = User.objects.alias(
@@ -114,39 +128,27 @@ class MlInputFromDb(MlInput):
                 (self.poll_name,),
             )
         )
-        if n_alternatives <= self.SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE:
-            # The number of alternatives is low enough to consider as supertrusted
+        if n_alternatives <= self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE:
+            # The number of alternatives is low enough to consider as calibration users
             # all trusted users who have compared all alternatives.
-            have_compared_all_alternatives = users.filter(
-                n_compared_entities__gte=n_alternatives
+            return users.filter(
+                is_active=True,
+                trust_score__gt=self.SCALING_CALIBRATION_MIN_TRUST_SCORE,
+                n_compared_entities__gte=n_alternatives,
             )
-            return User.with_trusted_email().filter(pk__in=have_compared_all_alternatives)
 
-        n_supertrusted_seed = User.supertrusted_seed_users().count()
-        return User.supertrusted_seed_users().union(
-            users.filter(
-                pk__in=User.with_trusted_email(),
-                n_compared_entities__gte=self.SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE,
-            )
-            .exclude(pk__in=User.supertrusted_seed_users())
-            .order_by("-n_compared_entities")[
-                : self.MAX_SUPERTRUSTED_USERS - n_supertrusted_seed
-            ]
-        )
+        return users.filter(
+            is_active=True,
+            trust_score__gt=self.SCALING_CALIBRATION_MIN_TRUST_SCORE,
+            n_compared_entities__gte=self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE,
+        ).order_by("-n_compared_entities")[: self.MAX_SCALING_CALIBRATION_USERS]
 
-    def get_comparisons(
-        self, trusted_only=False, criteria=None, user_id=None
-    ) -> pd.DataFrame:
+    def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll_name
         )
         if criteria is not None:
             scores_queryset = scores_queryset.filter(criteria=criteria)
-
-        if trusted_only:
-            scores_queryset = scores_queryset.filter(
-                comparison__user__in=User.with_trusted_email()
-            )
 
         if user_id is not None:
             scores_queryset = scores_queryset.filter(comparison__user_id=user_id)
@@ -161,9 +163,7 @@ class MlInputFromDb(MlInput):
         )
         if len(values) > 0:
             dtf = pd.DataFrame(values)
-            return dtf[
-                ["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]
-            ]
+            return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
         return pd.DataFrame(
             columns=[
@@ -183,11 +183,8 @@ class MlInputFromDb(MlInput):
                 poll__name=self.poll_name,
             )
             .annotate(
-                is_trusted=Case(
-                    When(user__in=User.with_trusted_email(), then=True), default=False
-                ),
-                is_supertrusted=Case(
-                    When(user__in=self.get_supertrusted_users().values("id"), then=True),
+                is_scaling_calibration_user=Case(
+                    When(user__in=self.get_scaling_calibration_users().values("id"), then=True),
                     default=False,
                 ),
             )
@@ -195,8 +192,7 @@ class MlInputFromDb(MlInput):
                 "user_id",
                 "entity_id",
                 "is_public",
-                "is_trusted",
-                "is_supertrusted",
+                "is_scaling_calibration_user",
                 trust_score=F("user__trust_score"),
             )
         )
@@ -206,8 +202,7 @@ class MlInputFromDb(MlInput):
                     "user_id",
                     "entity_id",
                     "is_public",
-                    "is_trusted",
-                    "is_supertrusted",
+                    "is_scaling_calibration_user",
                     "trust_score",
                 ]
             )
@@ -234,7 +229,7 @@ class MlInputFromDb(MlInput):
             "scale",
             "scale_uncertainty",
             "translation",
-            "translation_uncertainty"
+            "translation_uncertainty",
         )
         if len(values) == 0:
             return pd.DataFrame(
@@ -244,7 +239,7 @@ class MlInputFromDb(MlInput):
                     "scale",
                     "scale_uncertainty",
                     "translation",
-                    "translation_uncertainty"
+                    "translation_uncertainty",
                 ]
             )
         return pd.DataFrame(values)

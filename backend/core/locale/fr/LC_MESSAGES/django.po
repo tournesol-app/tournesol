@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-12 20:22+0000\n"
+"POT-Creation-Date: 2023-03-16 09:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: core/models/user.py:36
+#: core/admin.py:80
+msgid "Tournesol - trust"
+msgstr "Tournesol - confiance"
+
+#: core/admin.py:81
+msgid "Tournesol - preferences"
+msgstr "Tournesol - préférences"
+
+#: core/models/user.py:33
 msgid "email address"
 msgstr "adresse e-mail"
 
-#: core/models/user.py:294
+#: core/models/user.py:53
+msgid "The user' preferences."
+msgstr "Les préférences de l'utilisateur."
+
+#: core/models/user.py:126
 #, python-format
 msgid ""
 "A user with an email starting with '%(email)s' already exists in this domain."
@@ -30,7 +42,7 @@ msgstr ""
 "Un utilisateur avec un e-mail commençant par '%(email)s' existe déjà dans ce "
 "domaine."
 
-#: core/models/user.py:327 core/serializers/user.py:19
+#: core/models/user.py:165 core/serializers/user.py:19
 msgid "A user with this email address already exists."
 msgstr "Un utilisateur avec cet e-mail existe déjà."
 
@@ -42,6 +54,28 @@ msgstr "'%(name)s' est un nom d'utilisateur reservé"
 #: core/serializers/user.py:30
 msgid "'@' is not allowed in username"
 msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
+
+#: core/serializers/user_settings.py:24
+msgid "The main criterion cannot be in the list."
+msgstr "Le critère principal ne peut pas être présent."
+
+#: core/serializers/user_settings.py:27
+msgid "The list cannot contain duplicates."
+msgstr "La liste ne peut pas contenir des doublons."
+
+#: core/serializers/user_settings.py:32
+#, python-format
+msgid "Unknown criterion: %(criterion)s."
+msgstr "Critère inconnu: %(criterion)s."
+
+#: core/serializers/user_settings.py:39
+msgid "This parameter cannot be lower than 1."
+msgstr "Ce paramètre ne peut pas être inférieur à 1."
+
+#: core/serializers/user_settings.py:69
+#, python-format
+msgid "Unknown language code: %(lang)s."
+msgstr "Code de langue inconnu : %(lang)s."
 
 #: core/templates/accounts/register/body.html:5
 msgid "Please verify your Tournesol account by clicking on this link:"

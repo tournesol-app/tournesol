@@ -178,10 +178,14 @@ const RateLaterPage = () => {
 
           <Box width="100%" textAlign="center">
             <LoaderWrapper isLoading={isLoading}>
-              <EntityList entities={entities} actions={rateLaterPageActions} />
+              <EntityList
+                entities={entities}
+                actions={rateLaterPageActions}
+                actionsIfUnavailable={[RemoveFromRateLater(loadList)]}
+              />
             </LoaderWrapper>
           </Box>
-          {!!entityCount && (
+          {!!entityCount && entityCount > limit && (
             <div className={classes.stickyPagination}>
               <Pagination
                 offset={offset}

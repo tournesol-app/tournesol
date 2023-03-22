@@ -83,6 +83,7 @@ const PasswordForm = () => {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             inputProps={{ 'data-testid': 'password' }}
+            autoComplete="new-password"
           />
         </Grid>
         <Grid item>
@@ -104,6 +105,7 @@ const PasswordForm = () => {
             error={passwordConfirm !== '' && !passwordConfirmMatches}
             onChange={(event) => setPasswordConfirm(event.target.value)}
             inputProps={{ 'data-testid': 'password_confirm' }}
+            autoComplete="new-password"
           />
         </Grid>
         <Grid item>

@@ -8,8 +8,9 @@ import { Box, Slider, Grid, Checkbox, Chip, Tooltip } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { Link } from '@mui/material';
 import { CriteriaIcon } from 'src/components';
-import { criteriaLinks, getCriteriaTooltips } from 'src/utils/constants';
+import { getCriteriaTooltips } from 'src/utils/constants';
 import { HelpOutline } from '@mui/icons-material';
+import { RouteID } from 'src/utils/types';
 
 const SLIDER_MIN_STEP = -10;
 const SLIDER_MAX_STEP = 10;
@@ -60,21 +61,27 @@ const CriteriaLabelWithTooltip = ({ children, criteria }: Props) => {
 };
 
 const CriteriaLabelWithLink = ({ children, criteria }: Props) => {
-  return criteriaLinks[criteria] ? (
-    <Link
-      color="text.secondary"
-      href={criteriaLinks[criteria]}
-      id={`id_explanation_${criteria}`}
-      target="_blank"
-      rel="noreferrer"
-      underline="hover"
-      sx={{ cursor: 'help' }}
-    >
-      {children}
-    </Link>
-  ) : (
-    <>{children}</>
+  const poll = useCurrentPoll();
+  const hasCriteriaPage = !poll.options?.disabledRouteIds?.includes(
+    RouteID.Criteria
   );
+
+  if (hasCriteriaPage) {
+    return (
+      <Link
+        color="text.secondary"
+        href={`${poll.baseUrl}/criteria#${criteria}`}
+        id={`id_explanation_${criteria}`}
+        target="_blank"
+        rel="noreferrer"
+        underline="hover"
+      >
+        {children}
+      </Link>
+    );
+  }
+
+  return <>{children}</>;
 };
 
 const CriteriaLabel = ({

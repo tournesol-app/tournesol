@@ -23,7 +23,13 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
   return (
     <Paper
       square
-      sx={{ color: '#fff', p: 2, pb: 2, mb: 2, backgroundColor: '#1282B2' }}
+      sx={{
+        color: '#fff',
+        p: 2,
+        pb: 2,
+        mb: 2,
+        backgroundColor: 'background.emphatic',
+      }}
     >
       <Typography variant="h6">{t('faqPage.tableOfContent')}</Typography>
       <List dense={true}>

@@ -1,3 +1,4 @@
+from itertools import islice
 from typing import Iterable, Optional, Union
 
 import numpy as np
@@ -58,44 +59,45 @@ def save_entity_scores(
 
 
 def save_tournesol_scores(poll):
-    entities = []
-    entity_poll_ratings = []
+    def entities_iterator():
+        for entity in (
+            Entity.objects.filter(all_criteria_scores__poll=poll)
+            .distinct()
+            .with_prefetched_scores(poll_name=poll.name)
+            .with_prefetched_poll_ratings(poll_name=poll.name)
+        ):
+            if poll.algorithm == ALGORITHM_MEHESTAN:
+                # The Tournesol score is the score of the main criteria.
+                tournesol_score = next(
+                    (
+                        s.score
+                        for s in entity.criteria_scores
+                        if s.criteria == poll.main_criteria
+                    ),
+                    None,
+                )
+            else:
+                tournesol_score = 10 * sum(
+                    criterion.score for criterion in entity.criteria_scores
+                )
 
-    for entity in (
-        Entity.objects.filter(all_criteria_scores__poll=poll)
-        .distinct()
-        .with_prefetched_scores(poll_name=poll.name)
-        .with_prefetched_poll_ratings(poll_name=poll.name)
-    ):
-        if poll.algorithm == ALGORITHM_MEHESTAN:
-            # The tournesol score is simply the score of the main criteria.
-            tournesol_score = next(
-                (
-                    s.score
-                    for s in entity.criteria_scores
-                    if s.criteria == poll.main_criteria
-                ),
-                None,
-            )
-        else:
-            tournesol_score = 10 * sum(
-                criterion.score for criterion in entity.criteria_scores
-            )
+            entity.tournesol_score = tournesol_score
 
-        entity.tournesol_score = tournesol_score
-        entities.append(entity)
+            if entity.single_poll_ratings:
+                entity.single_poll_ratings[0].tournesol_score = tournesol_score
 
-        if entity.single_poll_ratings:
-            entity_poll_rating = entity.single_poll_ratings[0]
-            entity_poll_rating.tournesol_score = tournesol_score
-            entity_poll_ratings.append(entity_poll_rating)
+            yield entity
 
     # Updating all entities at once increases the risk of a database deadlock.
-    # We use an explicitly low `batch_size` value to reduce this risk.
-    Entity.objects.bulk_update(entities, ["tournesol_score"], batch_size=1000)
-    EntityPollRating.objects.bulk_update(
-        entity_poll_ratings, ["tournesol_score"], batch_size=1000
-    )
+    # We use explicit batches instead of bulk_update "batch_size" to avoid
+    # locking all entities in a large transaction.
+    entities_it = entities_iterator()
+    while batch := list(islice(entities_it, 1000)):
+        Entity.objects.bulk_update(batch, fields=["tournesol_score"])
+        EntityPollRating.objects.bulk_update(
+            [ent.single_poll_ratings[0] for ent in batch if ent.single_poll_ratings],
+            fields=["tournesol_score"]
+        )
 
 
 def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):

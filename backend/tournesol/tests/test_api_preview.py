@@ -48,7 +48,7 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
             response.headers["Content-Disposition"],
             'inline; filename="tournesol_screenshot_og.png"',
         )
-        content = b''.join(response.streaming_content)
+        content = b"".join(response.streaming_content)
         self.assertGreater(len(content), 0)
 
     def test_anon_200_get(self):
@@ -187,6 +187,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
                 "video_id": self.valid_uid.split(":")[-1],
                 "name": "name",
                 "uploader": "uploader",
+                "duration": 1337,
             },
         )
         response = self.client.get(f"{self.preview_url}{self.valid_uid}")
@@ -210,7 +211,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         self.client = APIClient()
         self.user = UserFactory(username=self._user)
 
-        self.preview_url = "/preview/comparison/"
+        self.preview_url = "/preview/comparison"
         self.valid_uid = "yt:sDPk-r18sb0"
         self.valid_uid2 = "yt:VKsekCHBuHI"
 
@@ -228,6 +229,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid.split(":")[-1],
                 "name": "name",
                 "uploader": "uploader",
+                "duration": 1337,
             },
         )
         Entity.objects.create(
@@ -237,6 +239,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid2.split(":")[-1],
                 "name": "name2",
                 "uploader": "uploader2",
+                "duration": 1337,
             },
         )
 
@@ -250,6 +253,14 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         # The absence of the Content-Disposition header indicates that the
         # default preview image is not returned, as expected in our case. This
         # check is not very robust.
+        self.assertNotIn("Content-Disposition", response.headers)
+
+        # Ensure the URL with a trailing slash is also accepted.
+        response = self.client.get(
+            f"{self.preview_url}/", {"uidA": self.valid_uid, "uidB": self.valid_uid2}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertNotIn("Content-Disposition", response.headers)
 
     @patch("requests.get", mock_yt_thumbnail_response)
@@ -267,6 +278,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid.split(":")[-1],
                 "name": "name",
                 "uploader": "uploader",
+                "duration": 4242,  # testing for >1 hour
             },
         )
         Entity.objects.create(
@@ -276,6 +288,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "video_id": self.valid_uid2.split(":")[-1],
                 "name": "name2",
                 "uploader": "uploader2",
+                "duration": 1337,  # testing for <1 hour
             },
         )
         response = self.client.get(
@@ -334,9 +347,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         the comparison preview without using the required query parameters.
         """
         # Missing `uidA` parameter.
-        response = self.client.get(
-            self.preview_url, {"uidB": self.valid_uid}
-        )
+        response = self.client.get(self.preview_url, {"uidB": self.valid_uid})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertEqual(
@@ -345,9 +356,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         )
 
         # Missing `uidB` parameter.
-        response = self.client.get(
-            self.preview_url, {"uidA": self.valid_uid2}
-        )
+        response = self.client.get(self.preview_url, {"uidA": self.valid_uid2})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertEqual(
@@ -379,9 +388,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
                 "language": "en",
             },
         )
-        response = self.client.get(
-            f"{self.preview_url}{self.valid_uid}/zz:an_invalid_id"
-        )
+        response = self.client.get(f"{self.preview_url}{self.valid_uid}/zz:an_invalid_id")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertEqual(

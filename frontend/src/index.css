@@ -38,5 +38,28 @@ code {
   /* display alerts below the top bar, to avoid hiding buttons */
   top: 80px;
 }
+html.embedded .SnackbarContainer-root.belowTopBar {
+  /* when the site is embedded in the browser extension iframe, we move the
+     snackbar into the empty page title bar in order to avoid shadowing any
+     page content */
+  top: 4px;
+}
+
+
+/* pkg: @mui/material */
+@media (pointer: coarse) {
+  /* On touch screens, disable touch events on the slider rail.
+     Only the slider "thumb" will remain interactive. */
+  .MuiSlider-root {
+    pointer-events: none;
+  }
+  .MuiSlider-root .MuiSlider-thumb {
+    pointer-events: auto;
+    /* `touch-action: none` is used internally by MUI on Slider to disable
+    scrolling and zooming on touch events. But it conflicts with
+    `pointer-events: none` on Firefox. So it's required here too. */
+    touch-action: none;
+  }
+}
 
 /* -- end: third-party packages customization -- */

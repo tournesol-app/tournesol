@@ -58,6 +58,25 @@ server {
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Content-Type-Options nosniff;
     add_header Strict-Transport-Security "max-age=300; includeSubDomains; preload; always;";
+
+    # Content Security Policy
+    #
+    # The following policy will be enforced in addition to those potentially
+    # defined by HTML <meta> tags. When the same directive is defined in
+    # different policies, only the most restrictive is applied.
+    #
+    #   see: https://w3c.github.io/webappsec-csp/#meta-element
+    #   see: https://w3c.github.io/webappsec-csp/#multiple-policies
+    #
+    # The `frame-ancestors` directive is defined here because it's usage is
+    # not allowed in HTML <meta> tags. The other directives are defined directly
+    # in the front end, so that errors can be catched during the development,
+    # even when the front end is not served by a properly configured reverse
+    # proxy.
+    #
+    #   see: https://w3c.github.io/webappsec-csp/#directive-frame-ancestors
+    #
+    add_header Content-Security-Policy "frame-ancestors {{ frontend_csp_frame_ancestors }};";
 {% else %}
     listen 80;
 {% endif %}

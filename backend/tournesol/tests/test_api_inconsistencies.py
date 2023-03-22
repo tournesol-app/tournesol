@@ -1,4 +1,3 @@
-import datetime
 from math import sqrt
 
 from django.test import TestCase
@@ -6,13 +5,8 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import (
-    Comparison,
-    ComparisonCriteriaScore,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
-    Poll,
-)
+from core.utils.time import time_ago, time_ahead
+from tournesol.models import Poll
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
@@ -238,18 +232,18 @@ class Length3CyclesApiTestCase(TestCase):
         """Can use the date filter to ignore old comparisons"""
         self.client.force_authenticate(self.user)
 
-        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
-        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-
+        tomorrow = time_ahead(days=1).isoformat().split('+')[0]
+        yesterday = time_ago(days=1).isoformat().split('+')[0]
+ 
         response = self.client.get(
-            self.url + f"?date_gte={yesterday.isoformat()}",
+            self.url + f"?date_gte={yesterday}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], self.setup_cycles_count)
 
         response = self.client.get(
-            self.url + f"?date_gte={tomorrow.isoformat()}",
+            self.url + f"?date_gte={tomorrow}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -429,18 +423,18 @@ class ScoreInconsistenciesApiTestCase(TestCase):
 
         self._create_comparison_and_rating()
 
-        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
-        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        tomorrow = time_ahead(days=1).isoformat().split('+')[0]
+        yesterday = time_ago(days=1).isoformat().split('+')[0]
 
         response = self.client.get(
-            self.url + f"?date_gte={yesterday.isoformat()}",
+            self.url + f"?date_gte={yesterday}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
 
         response = self.client.get(
-            self.url + f"?date_gte={tomorrow.isoformat()}",
+            self.url + f"?date_gte={tomorrow}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)

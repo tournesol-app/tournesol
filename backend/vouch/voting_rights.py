@@ -4,7 +4,8 @@ import numpy as np
 # This amount is call overtrust and we want it to be low compared to regular trusted voting rights
 # such that untrusted users can only have a limited influence on the total voting right.
 # overtrust is computed as OVER_TRUST_BIAS + OVER_TRUST_SCALE * total_trust
-OVER_TRUST_BIAS, OVER_TRUST_SCALE = 2, 0.1
+OVER_TRUST_BIAS = 2
+OVER_TRUST_SCALE = 0.1
 
 
 def compute_voting_rights(

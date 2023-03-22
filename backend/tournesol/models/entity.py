@@ -6,6 +6,7 @@ import logging
 from collections import defaultdict
 from functools import cached_property
 from typing import List
+from urllib.parse import urljoin
 
 import numpy as np
 from django.conf import settings
@@ -23,7 +24,7 @@ from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
-from tournesol.models.rate_later import RateLater
+from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT, RateLater
 from tournesol.serializers.metadata import VideoMetadata
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 from tournesol.utils.video_language import (
@@ -42,10 +43,9 @@ class EntityQueryset(models.QuerySet):
             Prefetch(
                 "all_criteria_scores",
                 queryset=EntityCriteriaScore.objects.filter(
-                    poll__name=poll_name,
-                    score_mode=mode
+                    poll__name=poll_name, score_mode=mode
                 ),
-                to_attr="_prefetched_criteria_scores"
+                to_attr="_prefetched_criteria_scores",
             )
         )
 
@@ -112,9 +112,7 @@ class Entity(models.Model):
 
     class Meta:
         verbose_name_plural = "entities"
-        indexes = (
-            GinIndex(name="search_index", fields=['search_vector']),
-        )
+        indexes = (GinIndex(name="search_index", fields=["search_vector"]),)
 
     objects = EntityQueryset.as_manager()
 
@@ -247,20 +245,22 @@ class Entity(models.Model):
     def auto_remove_from_rate_later(self, poll, user) -> None:
         """
         When called, the entity is removed from the user's rate-later list if
-        it has been compared at least 4 times.
+        it has been compared enough times according to the user's auto remove
+        setting.
         """
         from .comparisons import Comparison  # pylint: disable=import-outside-toplevel
 
+        max_threshold = user.settings.get(poll.name, {}).get(
+            "rate_later__auto_remove", RATE_LATER_AUTO_REMOVE_DEFAULT
+        )
         n_comparisons = Comparison.objects.filter(
             poll=poll, user=user
         ).filter(
             Q(entity_1=self) | Q(entity_2=self)
         ).count()
 
-        if n_comparisons >= 4:
-            RateLater.objects.filter(
-                poll=poll, user=user, entity=self
-            ).delete()
+        if n_comparisons >= max_threshold:
+            RateLater.objects.filter(poll=poll, user=user, entity=self).delete()
 
     @property
     def entity_cls(self):
@@ -304,12 +304,14 @@ class Entity(models.Model):
     def __str__(self):
         return f"{self.uid}"
 
-    def link_to_youtube(self):
+    def link_to_tournesol(self):
         if self.type != TYPE_VIDEO:
             return None
-        return format_html(
-            '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
+
+        video_uri = urljoin(
+            settings.REST_REGISTRATION_MAIN_URL, f"entities/yt:{self.video_id}"
         )
+        return format_html('<a href="{}" target="_blank">Play ▶</a>', video_uri)
 
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of criteria score per criteria for the entity"""

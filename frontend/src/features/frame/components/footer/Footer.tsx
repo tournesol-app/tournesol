@@ -13,6 +13,8 @@ import {
   twitterTournesolBotEnUrl,
   twitterTournesolBotFrUrl,
   twitterTournesolUrl,
+  youtubePlaylistEnUrl,
+  youtubePlaylistFrUrl,
   discordTournesolInviteUrl,
   githubTournesolUrl,
   utipTournesolUrl,
@@ -42,6 +44,8 @@ const Footer = () => {
         },
         { name: 'Twitter Bot EN', to: twitterTournesolBotEnUrl },
         { name: 'Twitter Bot FR', to: twitterTournesolBotFrUrl },
+        { name: t('footer.youtubePlaylistEn'), to: youtubePlaylistEnUrl },
+        { name: t('footer.youtubePlaylistFr'), to: youtubePlaylistFrUrl },
       ],
     },
     {
@@ -52,17 +56,17 @@ const Footer = () => {
         { name: 'Discord', to: discordTournesolInviteUrl },
         { name: 'Twitch', to: twitchTournesolUrl },
         { name: 'LinkedIn', to: linkedInTournesolUrl },
-        {
-          name: 'GitHub',
-          to: githubTournesolUrl,
-        },
+        { name: 'GitHub', to: githubTournesolUrl },
       ],
     },
     {
       id: 'support-us',
       title: t('footer.supportUs'),
       items: [
-        { name: t('footer.directTransfer'), to: '/about/donate' },
+        {
+          name: t('footer.directTransfer'),
+          to: '/about/donate#direct_transfer',
+        },
         { name: 'uTip', to: utipTournesolUrl },
         { name: 'PayPal', to: paypalTournesolUrl },
         { name: t('footer.compareVideos'), to: '/comparison' },
@@ -103,7 +107,7 @@ const Footer = () => {
   });
 
   return (
-    <Box padding={2} color="#fff" bgcolor="#1282B2">
+    <Box padding={2} color="#fff" bgcolor="background.emphatic">
       <Grid
         container
         spacing={2}

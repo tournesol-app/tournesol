@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.db.models import Case, F, Sum, When
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -22,6 +23,7 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
+from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.utils.constants import CRITERIA_DEFAULT_WEIGHT, MEHESTAN_MAX_SCALED_SCORE
 from tournesol.views import PollScopedViewMixin
 
@@ -171,9 +173,12 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         if filters["search"] and self.poll_from_url.algorithm == ALGORITHM_MEHESTAN:
             max_absolute_score = MEHESTAN_MAX_SCALED_SCORE * self._weights_sum
-            normalized_total_score = (
-                (F("total_score") + max_absolute_score) / (2 * max_absolute_score)
-            )
+            if max_absolute_score > 0:
+                normalized_total_score = (
+                    (F("total_score") + max_absolute_score) / (2 * max_absolute_score)
+                )
+            else:
+                normalized_total_score = 0
             queryset = queryset.alias(
                 search_score=F("relevance")
                 * (F("relevance") + self.search_score_coef * normalized_total_score)
@@ -258,6 +263,10 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
 
     queryset = Entity.objects.none()
     serializer_class = RecommendationSerializer
+
+    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
+    def list(self, *args, **kwargs):
+        return super().list(self, *args, **kwargs)
 
     def annotate_and_prefetch_scores(self, queryset, request, poll: Poll):
         raw_score_mode = request.query_params.get("score_mode", ScoreMode.DEFAULT)

@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol YT playlists schedule
+
+[Timer]
+OnCalendar={{tournesol_yt_playlists_schedule | default('@0') }}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target
