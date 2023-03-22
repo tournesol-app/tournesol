@@ -191,14 +191,14 @@ urlpatterns = [
     ),
     # Website Previews
     path(
-        "preview/comparison/",
-        DynamicWebsitePreviewComparison.as_view(),
-        name="website_preview_comparison_slash",
-    ),
-    path(
         "preview/comparison",
         DynamicWebsitePreviewComparison.as_view(),
         name="website_preview_comparison",
+    ),
+    path(
+        "preview/comparison/",
+        DynamicWebsitePreviewComparison.as_view(),
+        name="website_preview_comparison_slash",
     ),
     path(
         "preview/entities/<str:uid>",
