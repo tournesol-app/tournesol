@@ -67,7 +67,7 @@ def save_tournesol_scores(poll):
             .with_prefetched_poll_ratings(poll_name=poll.name)
         ):
             if poll.algorithm == ALGORITHM_MEHESTAN:
-                # The Tournesol score is the score of the main criteria.
+                # The Tournesol score is the score of the main criterion.
                 tournesol_score = next(
                     (
                         s.score
