@@ -23,9 +23,11 @@ def create_entity_poll_rating(apps, poll, entity):
     entity_pr_model.objects.get_or_create(
         poll=poll,
         entity=entity,
-        tournesol_score=entity.tournesol_score,
-        n_comparisons=entity.rating_n_ratings,
-        n_contributors=entity.rating_n_contributors,
+        defaults={
+            "tournesol_score": entity.tournesol_score,
+            "n_comparisons": entity.rating_n_ratings,
+            "n_contributors": entity.rating_n_contributors,
+        }
     )
 
 
