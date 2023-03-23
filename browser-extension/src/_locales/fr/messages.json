@@ -8,7 +8,6 @@
     "message": "Comparer plus tard",
     "description": "Content of the rate later menu button."
   },
-
   "menuAnalysis": {
     "message": "Analyses",
     "description": "Content of the analysis menu button."
@@ -21,8 +20,8 @@
     "message": "Recherche désactivée",
     "description": "Content of the search button when search is turned off."
   },
-  "recommandedBy": {
-    "message": "Recommandés par Tournesol",
+  "recommendedByTournesol": {
+    "message": "Recommandées par Tournesol",
     "description": "Tournesol container title."
   },
   "learnMore": {

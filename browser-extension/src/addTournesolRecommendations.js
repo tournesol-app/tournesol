@@ -80,7 +80,7 @@ const getTournesolComponent = () => {
   // Add title
   const tournesol_title = document.createElement('h1');
   tournesol_title.id = 'tournesol_title';
-  tournesol_title.append(i18n.getMessage('recommandedBy'));
+  tournesol_title.append(i18n.getMessage('recommendedByTournesol'));
   inline_div.append(tournesol_title);
 
   // Refresh button

@@ -21,7 +21,7 @@
     "message": "Search is off",
     "description": "Text of the search button when search is turned off."
   },
-  "recommandedBy": {
+  "recommendedByTournesol": {
     "message": "Recommended by Tournesol",
     "description": "Tournesol container title."
   },
