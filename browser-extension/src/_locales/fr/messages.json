@@ -114,11 +114,11 @@
     "description": "Message displayed when there is no criteria score for a video."
   },
   "ratedHigh": {
-    "message": "Notée fortement:",
+    "message": "Notée fortement :",
     "description": "Text for high rated criteria"
   },
   "ratedLow": {
-    "message": "Notée faiblement:",
+    "message": "Notée faiblement :",
     "description": "Text for low rated criteria"
   },
   "viewMore": {
