@@ -4,8 +4,8 @@
 /* ********************************************************************* */
 
 // TODO: these values are placeholder values that should be updated.
-const TS_BANNER_DATE_START = new Date('2023-01-01T00:00:00Z');
-const TS_BANNER_DATE_END = new Date('2025-01-01T00:00:00Z');
+const TS_BANNER_DATE_START = new Date('2020-01-01T00:00:00Z');
+const TS_BANNER_DATE_END = new Date('2022-01-01T00:00:00Z');
 const TS_BANNER_ACTION_FR_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLScQzlEKBSA3MqxI0kaPazbyIUnZ4PjFcrR8EFiikG1quyAoiw/viewform?usp=pp_url&entry.939413650=';
 const TS_BANNER_ACTION_EN_URL =
