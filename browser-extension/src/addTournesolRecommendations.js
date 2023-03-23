@@ -82,7 +82,7 @@ const getLocalizedBannerText = () => {
     return (
       'Le projet Tournesol est-il vraiment efficace? Nous étudions' +
       " actuellement l'impact de notre extension navigateur sur les" +
-      " habitudes d'utilisation de YouTube. Rejoingnez notre étude" +
+      " habitudes d'utilisation de YouTube. Rejoignez notre étude" +
       ' pour nous aider à améliorer Tournesol !'
     );
   }
