@@ -18,7 +18,7 @@ import { PollStats } from 'src/utils/types';
 
 //added new
 import { useAppDispatch } from 'src/app/hooks';
-import { fetchComparisonData } from 'src/features/comparisons/comparisonSlice';
+import { fetchStatsData } from 'src/features/comparisons/statsSlice';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
@@ -48,7 +48,7 @@ const HomeVideosPage = () => {
         const pollStats = await getPollStats(pollName);
         if (pollStats) {
           setStats(pollStats);
-          dispatch(fetchComparisonData(pollStats));
+          dispatch(fetchStatsData(pollStats));
         }
       } catch (reason) {
         showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));

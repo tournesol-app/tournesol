@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
@@ -9,11 +9,12 @@ import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
 import LinearProgress from '@mui/material/LinearProgress';
 
-import { PollStats } from 'src/utils/types';
+// import { PollStats } from 'src/utils/types';
 // import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 // import { useNotifications, useLoginState } from 'src/hooks';
-import { useAppSelector } from 'src/app/hooks';
-import { selectComparison } from 'src/features/comparisons/comparisonSlice';
+// import { useAppSelector } from 'src/app/hooks';
+// import { selectStats } from 'src/features/comparisons/statsSlice';
+import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
 /**
  * Display the standard comparison UI or the poll tutorial.
@@ -48,12 +49,15 @@ const ComparisonPage = () => {
   // const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
 
   //new added
-  const stats: PollStats | undefined = useAppSelector(selectComparison);
-  console.log('poll Data is here:', stats);
+  // const stats: PollStats | undefined = useAppSelector(selectStats); // doesn't get automatically updated when we submit a comparison here.
+  // console.log('OLD Poll Data is here:', stats);
+
+  const { statsState } = useStatsRefresh();
+  console.log('STATS STATE:', statsState);
 
   // console.log('Login State:', isLoggedIn, loginState);
 
-  const weeklyPercent = stats.currentWeekComparisonCount / 10;
+  const weeklyPercent = statsState.currentWeekComparisonCount / 10;
 
   return (
     <>
