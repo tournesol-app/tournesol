@@ -124,12 +124,7 @@ const getLocalizedActionError = () => {
 };
 
 const displayElement = (element) => {
-  const classes = element.className.split(' ');
-
-  if (!classes.includes('displayed')) {
-    classes.push('displayed');
-    element.className = classes.join(' ');
-  }
+  element.classList.add('displayed');
 };
 
 const hideElement = (element) => {
