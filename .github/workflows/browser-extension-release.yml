@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - 'main'
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 defaults:
   run:
