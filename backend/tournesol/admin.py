@@ -123,7 +123,7 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
     list_filter = ("poll",)
     search_fields = ("entity__uid",)
     raw_id_fields = ("entity",)
-    readonly_fields = ("poll", "entity", "tournesol_score","n_comparisons", "n_contributors")
+    readonly_fields = ("poll", "entity", "tournesol_score", "n_comparisons", "n_contributors")
 
 
 @admin.register(EntityCriteriaScore)
