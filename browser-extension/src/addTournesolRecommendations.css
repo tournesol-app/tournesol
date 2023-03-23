@@ -258,10 +258,11 @@
     0px 1px 10px 0px rgb(0 0 0 / 12%);
 }
 
-.view_more_link{
-  margin-left: auto;
+.view_more_link {
   font-size: 1.2rem;
-  padding: 8px;
+  margin-left: auto;
+  /* MUI <Button size="small"> imitation */
+  padding: 4px 10px;
 }
 
 #tournesol_container.search{
