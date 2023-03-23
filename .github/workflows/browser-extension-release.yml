@@ -1,0 +1,65 @@
+name: Browser extension release
+
+on:
+  push:
+    branches:
+      - 'main'
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: browser-extension
+
+jobs:
+  build_extension:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with: 
+          fetch-depth: 0
+
+      - name: Check extension version in the manifest
+        run: |      
+          ext_version=$(python -c 'import json; print(json.load(open("src/manifest.json"))["version"])')
+          tag_exist=$(git tag -l "browser-extension-v$ext_version" | wc -l)
+          echo "ext_version=$ext_version" >> $GITHUB_ENV
+          echo "tag_exist=$tag_exist" >> $GITHUB_ENV
+
+      - name: Create a new tag
+        if: ${{ env.tag_exist == 0 }}
+        run: |
+          echo "Creation of a new tag: browser-extension-v${{ env.ext_version }}"
+          git tag "browser-extension-v${{ env.ext_version }}"
+          git push --tags
+
+      - name: Build browser extension
+        if: ${{ env.tag_exist == 0 }}
+        run: |
+          ./build.sh
+
+      - name: Error message
+        if: failure()
+        run: |
+          curl
+          -F 'payload_json={"username": "ExtensionBot",
+          "content": "Problem with the build of browser extension version **${{ env.ext_version }}**.\n
+          More detail: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+          ${{ secrets.DISCORD_BROWSER_EXTENSION_WEBHOOK_URL }}
+          
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.tag_exist == 0 }}
+        with:
+          name: browser-extension-zipfile
+          path: browser-extension/tournesol_extension.zip
+
+      - name: Send zip file on Discord
+        if: ${{ env.tag_exist == 0 }}
+        run: >
+          curl --fail
+          -F 'payload_json={"username": "ExtensionBot",
+          "content": "The browser extension version **${{ env.ext_version }}** has been built.\n
+          More detail: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+          -F "file1=@tournesol_extension.zip"
+          ${{ secrets.DISCORD_BROWSER_EXTENSION_WEBHOOK_URL }}
