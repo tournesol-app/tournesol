@@ -104,8 +104,8 @@ function openAnalysisPageAction(event) {
 }
 
 /**
- * Initialize the search button visual according to the current state of the
- * search.
+ * Initialize the search state button style according to the current state of
+ * the search defined in the local storage.
  */
 function initSearchStateButtonStyle() {
   const searchButton = document.getElementById('search_state');
@@ -128,7 +128,7 @@ function initSearchStateButtonStyle() {
 }
 
 /**
- * Enable or disable the search state and update the search button style
+ * Enable or disable the search state and update the search state button style
  * accordingly.
  */
 function toggleSearchStateAction(event) {
