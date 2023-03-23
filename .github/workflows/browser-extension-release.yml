@@ -58,7 +58,7 @@ jobs:
       - name: Send zip file on Discord
         if: ${{ env.tag_exist == 0 }}
         run: >
-          curl
+          curl --fail
           -F 'payload_json={"username": "ExtensionBot",
           "content": "The browser extension version **${{ env.ext_version }}** has been built.\n
           More detail: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
