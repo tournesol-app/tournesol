@@ -104,6 +104,53 @@ function openAnalysisPageAction(event) {
 }
 
 /**
+ * Initialize the search button visual according to the current state of the
+ * search.
+ */
+function initSearchButtonStyle() {
+  const searchButton = document.getElementById('enable_search');
+
+  // The search is disabled by default.
+  chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
+    const enabled = searchEnabled;
+    if (enabled === null || enabled === undefined) {
+      chrome.storage.local.set({ searchEnabled: false });
+    }
+    console.log(enabled);
+    if (enabled) {
+      searchButton.classList.add('enabled');
+      searchButton.textContent = i18n.getMessage('menuSearchEnabled');
+    } else {
+      searchButton.classList.remove('enabled');
+      searchButton.textContent = i18n.getMessage('menuSearchDisabled');
+    }
+  });
+}
+
+/**
+ * Enable or disable the search state and update the search button style
+ * accordingly.
+ */
+function toggleSearchStateAction(event) {
+  const searchButton = event.target;
+
+  chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
+    const newState = (searchEnabled) ? false : true;
+
+    if (newState === true) {
+      searchButton.classList.add('enabled');
+    } else {
+      searchButton.classList.remove('enabled');
+    }
+
+    searchButton.textContent = newState
+      ? i18n.getMessage('menuSearchEnabled')
+      : i18n.getMessage('menuSearchDisabled');
+    chrome.storage.local.set({ searchEnabled: newState });
+  });
+}
+
+/**
  * Create the action menu.
  */
 document.addEventListener('DOMContentLoaded', function () {
@@ -113,45 +160,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const analysisButton = document.getElementById('analysis');
   const enableSearchButton = document.getElementById('enable_search');
 
-  /**
-   * Handle the search button visual and the toggle between enable and disabled in the storage
-   */
-
-  function toggleSearchState() {
-    let enabled;
-
-    // Check in the storage if the user enabled the search
-    // if the key is not found init at false
-    chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-      enabled = searchEnabled;
-      if (enabled === undefined) {
-        chrome.storage.local.set({ searchEnabled: false });
-      }
-
-      if (enabled) {
-        document.getElementById('enable_search').classList.add('enabled');
-        enableSearchButton.textContent = i18n.getMessage('menuSearchEnabled');
-      } else {
-        enableSearchButton.textContent = i18n.getMessage('menuSearchDisabled');
-      }
-    });
-
-    // Toggle both the menu visual state and the storage state
-    return () => {
-      document.getElementById('enable_search').classList.toggle('enabled');
-      enabled = !enabled;
-      enableSearchButton.textContent = enabled
-        ? i18n.getMessage('menuSearchEnabled')
-        : i18n.getMessage('menuSearchDisabled');
-      chrome.storage.local.set({ searchEnabled: enabled });
-    };
-  }
+  initSearchButtonStyle();
 
   tournesolHomeLink.addEventListener('click', openTournesolHome);
   rateNowButton.addEventListener('click', rateNowAction);
   rateLaterButton.addEventListener('click', addToRateLaterAction);
   analysisButton.addEventListener('click', openAnalysisPageAction);
-  enableSearchButton.addEventListener('click', toggleSearchState());
+  enableSearchButton.addEventListener('click', toggleSearchStateAction);
 
   rateNowButton.textContent = i18n.getMessage('menuRateNow');
   rateLaterButton.textContent = i18n.getMessage('menuRateLater');
