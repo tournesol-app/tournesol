@@ -53,7 +53,7 @@ jobs:
         if: ${{ env.tag_exist == 0 }}
         with:
           name: browser-extension-zipfile
-          path: tournesol_extension.zip
+          path: ./tournesol_extension.zip
 
       - name: Send zip file on Discord
         if: ${{ env.tag_exist == 0 }}
