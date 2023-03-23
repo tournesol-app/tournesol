@@ -133,13 +133,7 @@ const displayElement = (element) => {
 };
 
 const hideElement = (element) => {
-  const classes = element.className.split(' ');
-  const index = classes.indexOf('displayed');
-
-  if (index > -1) {
-    classes.splice(index, 1);
-    element.className = classes.join(' ');
-  }
+  element.classList.remove('displayed');
 };
 
 /**
