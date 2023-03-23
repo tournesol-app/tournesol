@@ -145,15 +145,14 @@ const createBanner = () => {
   banner.className = 'tournesol_banner';
 
   // Only display the banner if the user didn't explicitly close it.
-  chrome.storage.local.get('displayBanner', (items) => {
-    if (
-      items.displayBanner === true ||
-      items.displayBanner === null ||
-      items.displayBanner === undefined
-    ) {
-      displayElement(banner);
+  chrome.storage.local.get(
+    'displayBannerStudy2023',
+    ({ displayBannerStudy2023 }) => {
+      if ([true, null, undefined].includes(displayBannerStudy2023)) {
+        displayElement(banner);
+      }
     }
-  });
+  );
 
   // The first flex item is the campaign icon.
   const bannerIconContainer = document.createElement('div');
@@ -196,7 +195,7 @@ const createBanner = () => {
   closeButtonContainer.append(closeButton);
 
   closeButton.onclick = () => {
-    chrome.storage.local.set({ displayBanner: false }, () => {
+    chrome.storage.local.set({ displayBannerStudy2023: false }, () => {
       hideElement(banner);
     });
   };
@@ -361,7 +360,7 @@ const getTournesolComponent = () => {
     campaignButton.append(campaignButtonImg);
 
     campaignButton.onclick = () => {
-      chrome.storage.local.set({ displayBanner: true }, () => {
+      chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
         displayElement(document.getElementById('tournesol_banner'));
       });
     };
