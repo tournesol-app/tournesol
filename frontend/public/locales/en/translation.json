@@ -454,6 +454,11 @@
     "joinUsOnDiscord": "Join Us on Discord",
     "tableOfContent": "Table of Content"
   },
+  "tempStudyBanner": {
+    "join": "Join",
+    "loginToParticipate": "Log in to participate",
+    "isTheTournesolProjectReallyEffective": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!"
+  },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol is used to compare multiple types of alternatives. See the list below and choose the Tournesol that is best for you:",
@@ -538,6 +543,10 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "resetPasswordButton": "Reset password"
   },
+  "proofByKeyword": {
+    "proofByKeyword": "Proof by keyword",
+    "proofFor": "Proof for:"
+  },
   "myFeedbackPage": {
     "title": "My results",
     "presidentielle2022": {
@@ -550,12 +559,16 @@
       "opinionsOnOnlineSharedContent": "We think your opinions on online shared contents are at least as equally important as your opinions on candidates.",
       "discoverTournesolVideos": "Discover Tournesol videos. A place where you can give your opinion on the YouTube videos you watch, to improve everyone's recommendations."
     },
+    "proofOfVote": "Proof of vote",
+    "proofOfVoteHelperText": "This code will be helpful to complete <2>our survey.</2>",
     "generic": {
       "whatsNext": "What's next?",
       "discoverTournesol": "Discover Tournesol"
-    },
-    "proofOfVoteHelperText": "This code will be helpful to complete <2>our survey.</2>",
-    "proofOfVote": "Proof of vote"
+    }
+  },
+  "proofOfVote": {
+    "proof": "Proof",
+    "copyTheProof": "Copy the proof"
   },
   "personalVouchers": {
     "voucherCreated": "You successfully vouched for \"{{username}}\".",

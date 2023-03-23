@@ -460,6 +460,11 @@
     "joinUsOnDiscord": "Rejoignez-nous sur Discord",
     "tableOfContent": "Table des Matières"
   },
+  "tempStudyBanner": {
+    "join": "Participer",
+    "loginToParticipate": "Connectez-vous pour participer",
+    "isTheTournesolProjectReallyEffective": "Le projet Tournesol est-il vraiment efficace? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !"
+  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
@@ -544,6 +549,10 @@
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
     "resetPasswordButton": "Réinitialiser le mot de passe"
   },
+  "proofByKeyword": {
+    "proofByKeyword": "Preuve par mot-clé",
+    "proofFor": "Preuve pour :"
+  },
   "myFeedbackPage": {
     "title": "Mes résultats",
     "presidentielle2022": {
@@ -557,12 +566,16 @@
       "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat·es.",
       "discoverTournesolVideos": "Découvrez maintenant Tournesol vidéos. Un endroit qui vous permet de donner votre avis sur les vidéos YouTube que vous avez regardées, afin d'améliorer les recommandations de tous."
     },
+    "proofOfVote": "Preuve de participation",
+    "proofOfVoteHelperText": "Ce code sera utile afin de répondre à <2>notre sondage.</2>",
     "generic": {
       "whatsNext": "Et maintenant ?",
       "discoverTournesol": "Découvrez Tournesol"
-    },
-    "proofOfVoteHelperText": "Ce code sera utile afin de répondre à <2>notre sondage.</2>",
-    "proofOfVote": "Preuve de participation"
+    }
+  },
+  "proofOfVote": {
+    "proof": "Preuve",
+    "copyTheProof": "Copier la preuve"
   },
   "personalVouchers": {
     "voucherCreated": "Vous vous portez garant pour «\u00a0{{username}}\u00a0».",
