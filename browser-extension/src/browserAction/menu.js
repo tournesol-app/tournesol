@@ -107,8 +107,8 @@ function openAnalysisPageAction(event) {
  * Initialize the search button visual according to the current state of the
  * search.
  */
-function initSearchButtonStyle() {
-  const searchButton = document.getElementById('enable_search');
+function initSearchStateButtonStyle() {
+  const searchButton = document.getElementById('search_state');
 
   // The search is disabled by default.
   chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
@@ -135,7 +135,7 @@ function toggleSearchStateAction(event) {
   const searchButton = event.target;
 
   chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-    const newState = (searchEnabled) ? false : true;
+    const newState = searchEnabled ? false : true;
 
     if (newState === true) {
       searchButton.classList.add('enabled');
@@ -158,9 +158,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const rateNowButton = document.getElementById('rate_now');
   const rateLaterButton = document.getElementById('rate_later');
   const analysisButton = document.getElementById('analysis');
-  const enableSearchButton = document.getElementById('enable_search');
+  const enableSearchButton = document.getElementById('search_state');
 
-  initSearchButtonStyle();
+  initSearchStateButtonStyle();
 
   tournesolHomeLink.addEventListener('click', openTournesolHome);
   rateNowButton.addEventListener('click', rateNowAction);
