@@ -19,6 +19,7 @@ import {
   resetPendingRatings,
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
+import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -88,6 +89,8 @@ const ComparisonSliders = ({
     criteriaValues[cs.criteria] = cs.score || 0;
   });
 
+  const { getPollStatsAsync } = useStatsRefresh();
+
   /**
    * If `initialComparison` is set, initialize the sliders with the provided
    * ratings, else create a new comparison.
@@ -123,6 +126,7 @@ const ComparisonSliders = ({
       await submit(comparison);
     } finally {
       setDisableSubmit(false);
+      await getPollStatsAsync(pollName);
     }
 
     // avoid a "memory leak" warning if the component is unmounted on submit.

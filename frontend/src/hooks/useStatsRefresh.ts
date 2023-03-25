@@ -18,7 +18,6 @@ export const useStatsRefresh = () => {
     try {
       const pollStats = await getPollStats(pollName);
       if (pollStats) {
-        //   setStats(pollStats);
         dispatch(fetchStatsData(pollStats));
       }
     } catch (reason) {

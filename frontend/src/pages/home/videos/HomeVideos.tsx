@@ -16,7 +16,6 @@ import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSec
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
 
-//added new
 import { useAppDispatch } from 'src/app/hooks';
 import { fetchStatsData } from 'src/features/comparisons/statsSlice';
 
@@ -29,7 +28,6 @@ const HomeVideosPage = () => {
 
   const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
 
-  //added new
   const dispatch = useAppDispatch();
 
   const homeSectionSx = {
