@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
@@ -7,9 +7,6 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
-import LinearProgress from '@mui/material/LinearProgress';
-
-import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
 /**
  * Display the standard comparison UI or the poll tutorial.
@@ -32,25 +29,8 @@ const ComparisonPage = () => {
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
-  const [userWeekly, setUserWeekly] = useState(30);
-  const [totalWeekly, setTotalWeekly] = React.useState(70);
-
-  const { statsState } = useStatsRefresh();
-  const weeklyPercent = statsState.currentWeekComparisonCount / 10;
-
   return (
     <>
-      <Box>
-        Thanks to everyone, Tournesol has reached {weeklyPercent}% of its weekly
-        objective of 1000 comparisons.
-        <LinearProgress
-          variant="buffer"
-          value={userWeekly}
-          valueBuffer={totalWeekly}
-          color="success"
-        />
-        4,2% comes directly from you! / Help us reach this goal!
-      </Box>
       <ContentHeader title={t('comparison.submitAComparison')} />
       <ContentBox>
         <Box
