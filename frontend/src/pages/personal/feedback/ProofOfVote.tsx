@@ -1,39 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation, Trans } from 'react-i18next';
-import { Box, TextField } from '@mui/material';
-import { UsersService } from 'src/services/openapi';
-import { useCurrentPoll } from 'src/hooks';
-import { PRESIDENTIELLE_2022_SURVEY_URL } from 'src/utils/constants';
+import { useTranslation } from 'react-i18next';
 
-const ProofOfVote = () => {
+import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Check, ContentCopy } from '@mui/icons-material';
+
+import { useCurrentPoll } from 'src/hooks';
+import { UsersService } from 'src/services/openapi';
+
+// in milliseconds
+const FEEDBACK_DELAY = 1200;
+
+interface Props {
+  keyword?: string;
+  label?: string;
+  helperText?: string | JSX.Element;
+}
+
+const ProofOfVote = ({
+  keyword = 'proof_of_vote',
+  label,
+  helperText,
+}: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+
   const [code, setCode] = useState('');
+  const [feedback, setFeedback] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(code);
+
+    // Do not trigger any additionnal rendering when the user clicks
+    // repeatedly on the button.
+    if (feedback) {
+      return;
+    }
+
+    setFeedback(true);
+
+    setTimeout(() => {
+      setFeedback(false);
+    }, FEEDBACK_DELAY);
+  };
 
   useEffect(() => {
     UsersService.usersMeProofRetrieve({
       pollName: pollName,
-      keyword: 'proof_of_vote',
+      keyword: keyword,
     })
       .then(({ signature }) => setCode(signature))
       .catch(console.error);
-  }, [pollName]);
-
-  const codeHelperText = (
-    <Trans t={t} i18nKey="myFeedbackPage.proofOfVoteHelperText">
-      This code will be helpful to complete{' '}
-      <a target="_blank" rel="noreferrer" href={PRESIDENTIELLE_2022_SURVEY_URL}>
-        our survey.
-      </a>
-    </Trans>
-  );
+  }, [keyword, pollName]);
 
   return (
     <Box my={2}>
       {code && (
         <TextField
-          label={t('myFeedbackPage.proofOfVote')}
-          helperText={codeHelperText}
+          label={label ?? t('proofOfVote.proof')}
+          helperText={helperText}
           color="secondary"
           fullWidth
           value={code}
@@ -43,6 +67,17 @@ const ProofOfVote = () => {
               bgcolor: 'white',
               fontFamily: 'monospace',
             },
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={t('proofOfVote.copyTheProof')}
+                  edge="end"
+                  onClick={copyToClipboard}
+                >
+                  {feedback ? <Check /> : <ContentCopy />}
+                </IconButton>
+              </InputAdornment>
+            ),
           }}
           onFocus={(e) => e.target.select()}
         />
