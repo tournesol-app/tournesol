@@ -125,7 +125,7 @@ export const VideoAnalysis = ({
                   </Paper>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6}>
-                  <Paper>
+                  <Paper sx={{ height: '100%' }}>
                     <Box
                       p={1}
                       bgcolor="rgb(238, 238, 238)"
