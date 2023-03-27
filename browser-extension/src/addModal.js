@@ -72,17 +72,6 @@ function initTournesolModal() {
 
     const modal = document.createElement('div');
     modal.setAttribute('id', EXT_MODAL_ID);
-    modal.classList = 'main';
-
-    const modal_heading = document.createElement('div');
-    modal_heading.classList = 'heading';
-
-    const modal_heading_title = document.createElement('h2');
-    modal_heading_title.textContent =
-      'This action requires a connection to Tournesol';
-
-    modal_heading.append(modal_heading_title);
-    modal.append(modal_heading);
 
     const iframe = document.createElement('iframe');
     iframe.setAttribute('id', IFRAME_TOURNESOL_LOGIN_ID);
