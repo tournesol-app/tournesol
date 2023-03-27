@@ -22,3 +22,27 @@ iframe#x-tournesol-iframe-login {
   height: 528px;
   border: none;
 }
+
+#x-tournesol-modal.main {
+  width: 100%;
+  flex-direction: column;
+}
+
+
+#x-tournesol-modal > .heading {
+  margin: 8px 0;
+
+  color: rgb(255, 200, 0);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: system-ui, Arial, sans-serif;
+}
+
+iframe#x-tournesol-iframe-login .heading h2 {
+  margin: 0;
+  font-size: 18px;
+}
+

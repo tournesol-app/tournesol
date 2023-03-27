@@ -15,6 +15,8 @@ const EXT_MODAL_INVISIBLE_STATE = 'none';
 // unique HTML id of the Tournesol login iframe
 const IFRAME_TOURNESOL_LOGIN_ID = 'x-tournesol-iframe-login';
 
+// iframe URL of tournesol login
+const IFRAME_TOURNESOL_LOGIN_URL = 'https://tournesol.app/login?embed=1&dnt=1';
 /**
  * Youtube doesnt completely load a page, so content script doesn't
  * launch correctly without these events.
@@ -66,18 +68,26 @@ function initTournesolModal() {
       window.clearInterval(iframeTimer);
       return;
     }
-
     window.clearInterval(iframeTimer);
 
     const modal = document.createElement('div');
     modal.setAttribute('id', EXT_MODAL_ID);
+    modal.classList = 'main';
+
+    const modal_heading = document.createElement('div');
+    modal_heading.classList = 'heading';
+
+    const modal_heading_title = document.createElement('h2');
+    modal_heading_title.textContent =
+      'This action requires a connection to Tournesol';
+
+    modal_heading.append(modal_heading_title);
+    modal.append(modal_heading);
 
     const iframe = document.createElement('iframe');
     iframe.setAttribute('id', IFRAME_TOURNESOL_LOGIN_ID);
-    iframe.setAttribute(
-      'src',
-      chrome.runtime.getURL('html/tournesol-iframe.html')
-    );
+    iframe.setAttribute('src', IFRAME_TOURNESOL_LOGIN_URL);
+
     modal.append(iframe);
     document.body.prepend(modal);
 
@@ -132,7 +142,7 @@ function displayModal({ src, height } = {}) {
     // outdated token in the chrome.storage.local. Using the iframe
     // without discarding a local outdated token, will erroneously display
     // the Tournesol home page, instead of the login form.
-    iframe.src = chrome.runtime.getURL('html/tournesol-iframe.html');
+    iframe.src = IFRAME_TOURNESOL_LOGIN_URL;
   }
 
   iframe.style.height = height || '';
