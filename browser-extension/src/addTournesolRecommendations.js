@@ -92,14 +92,6 @@ const isNavigatorLang = (lang) => {
   return false;
 };
 
-const getLocalizedActionButtonText = () => {
-  if (isNavigatorLang('fr')) {
-    return 'Participer';
-  }
-
-  return 'Join';
-};
-
 const getLocalizedActionError = () => {
   if (isNavigatorLang('fr')) {
     return (
@@ -168,7 +160,7 @@ const createBanner = () => {
   // The third flex item is the action button.
   const actionButtonContainer = document.createElement('div');
   const actionButton = document.createElement('a');
-  actionButton.textContent = getLocalizedActionButtonText();
+  actionButton.textContent = i18n.getMessage('study2023ActionButton');
   actionButton.className = 'tournesol_mui_like_button';
   actionButton.setAttribute(
     'href',

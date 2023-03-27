@@ -128,5 +128,9 @@
   "study2023BannerText": {
     "message": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!",
     "description": "Invite the users to join the study."
+  },
+  "study2023ActionButton": {
+    "message": "Join",
+    "description": "Text displayed by the main action button of the banner."
   }
 }

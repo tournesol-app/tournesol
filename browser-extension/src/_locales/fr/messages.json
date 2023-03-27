@@ -127,5 +127,9 @@
   "study2023BannerText": {
     "message": "Le projet Tournesol est-il vraiment efficace ? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !",
     "description": "Inviter les utilisateur·rices à participer à l'étude."
+  },
+  "study2023ActionButton": {
+    "message": "Participer",
+    "description": "Texte affiché par le bouton d'action principal de la bannière."
   }
 }
