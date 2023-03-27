@@ -16,7 +16,6 @@
   margin-bottom: 16px; /* 40px for tournesol container - 24px for margin-top of youtube recommendations */
 
   padding: var(--ts-container-padding);
-  padding-bottom: 0;
 
   border: solid 3px #f3bd00;
   border-radius: 12px;
@@ -108,11 +107,11 @@ html[dark] #tournesol_banner_close_icon {
   align-self: flex-start;
 }
 
-.expand_button_container{
+#ts_container_bottom_action_bar {
+  width: 100%;
+
   display: flex;
   justify-content: flex-end;
-  padding: 8px;
-  width: 100%;
 }
 
 #tournesol_campaign_button {

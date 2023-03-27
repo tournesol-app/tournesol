@@ -316,11 +316,12 @@ const getTournesolComponent = () => {
   tournesol_link.append(i18n.getMessage('learnMore'));
   inline_div.append(tournesol_link);
 
-  // Expand button
-  const expand_button_container = document.createElement('div');
-  expand_button_container.classList = 'expand_button_container';
+  // Bottom action bar
+  const bottom_action_bar = document.createElement('div');
+  bottom_action_bar.id = 'ts_container_bottom_action_bar';
   const expand_button = document.createElement('button');
   expand_button.setAttribute('id', 'tournesol_expand_button');
+
   // A new button is created on each video loading, the image must be loaded accordingly
   fetch(
     chrome.runtime.getURL(
@@ -340,7 +341,7 @@ const getTournesolComponent = () => {
       displayRecommendations();
     }
   };
-  expand_button_container.append(expand_button);
+  bottom_action_bar.append(expand_button);
 
   tournesol_container.append(inline_div);
 
@@ -514,7 +515,7 @@ const getTournesolComponent = () => {
       videosFlexContainer.append(make_video_box(video))
     );
   }
-  tournesol_container.append(expand_button_container);
+  tournesol_container.append(bottom_action_bar);
 
   if (path == '/results') {
     tournesol_container.classList.add('search');
