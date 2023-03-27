@@ -59,7 +59,7 @@
     "message": "Il y a 1 an",
     "description": "Date affichée pour les vidéos publiées il y a un an."
   },
-  "publishedSomeYearAgo": {
+  "publishedSomeYearsAgo": {
     "message": "Il y a $1 ans",
     "description": "Date affichée pour les vidéos publiées il a plus d'un an."
   },

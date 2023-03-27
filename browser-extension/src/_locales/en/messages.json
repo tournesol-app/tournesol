@@ -59,7 +59,7 @@
     "message": "1 year ago",
     "description": "Date displayed for videos published one year ago."
   },
-  "publishedSomeYearAgo": {
+  "publishedSomeYearsAgo": {
     "message": "$1 years ago",
     "description": "Date displayed for videos published more than one year ago."
   },
