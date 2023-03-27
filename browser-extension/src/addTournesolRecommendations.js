@@ -500,8 +500,6 @@ const getTournesolComponent = () => {
               details_div.append(video_criteria);
             }
           });
-      } else {
-        video_criteria.innerHTML = i18n.getMessage('noCriteriaScore');
       }
     }
 
