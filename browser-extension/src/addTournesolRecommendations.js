@@ -270,6 +270,29 @@ const getTournesolComponent = () => {
   tournesol_title.append(i18n.getMessage('recommendedByTournesol'));
   inline_div.append(tournesol_title);
 
+  // Display the campaign button only if there is a banner.
+  if (bannerShouldBeDisplayed()) {
+    const campaignButton = document.createElement('button');
+    campaignButton.id = 'tournesol_campaign_button';
+    campaignButton.className = 'tournesol_simple_button';
+
+    const campaignButtonImg = document.createElement('img');
+    campaignButtonImg.setAttribute(
+      'src',
+      chrome.extension.getURL('images/campaign.svg')
+    );
+    campaignButtonImg.setAttribute('alt', 'Megaphone icon');
+    campaignButton.append(campaignButtonImg);
+
+    campaignButton.onclick = () => {
+      chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
+        displayElement(document.getElementById('tournesol_banner'));
+      });
+    };
+
+    inline_div.append(campaignButton);
+  }
+
   // Refresh button
   const refresh_button = document.createElement('button');
   refresh_button.setAttribute('id', 'tournesol_refresh_button');
@@ -318,29 +341,6 @@ const getTournesolComponent = () => {
     }
   };
   expand_button_container.append(expand_button);
-
-  // Display the campaign button only if there is a banner.
-  if (bannerShouldBeDisplayed()) {
-    const campaignButton = document.createElement('button');
-    campaignButton.id = 'tournesol_campaign_button';
-    campaignButton.className = 'tournesol_simple_button';
-
-    const campaignButtonImg = document.createElement('img');
-    campaignButtonImg.setAttribute(
-      'src',
-      chrome.extension.getURL('images/campaign.svg')
-    );
-    campaignButtonImg.setAttribute('alt', 'Megaphone icon');
-    campaignButton.append(campaignButtonImg);
-
-    campaignButton.onclick = () => {
-      chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
-        displayElement(document.getElementById('tournesol_banner'));
-      });
-    };
-
-    inline_div.append(campaignButton);
-  }
 
   tournesol_container.append(inline_div);
 

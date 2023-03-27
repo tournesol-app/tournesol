@@ -117,7 +117,6 @@ html[dark] #tournesol_banner_close_icon {
 
 #tournesol_campaign_button {
   width: 28px;
-  float: right;
 }
 
 html[dark] #tournesol_campaign_button {
@@ -135,8 +134,6 @@ html[dark] #tournesol_campaign_button {
 #tournesol_refresh_button {
   float: right;
   margin-top: 4px;
-  margin-left: 12px;
-  margin-right: 24px;
 }
 
 .video_channel_link,
@@ -309,13 +306,11 @@ html[dark] #tournesol_campaign_button {
 
 .inline_div {
   width: 100%;
+  margin-bottom: 16px;
+
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
-}
-
-.inline_div > *{
-  margin-left: 8px;
+  gap: 16px;
 }
 
 .time_span {
