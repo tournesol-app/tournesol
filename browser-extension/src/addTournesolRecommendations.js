@@ -232,7 +232,7 @@ const createBanner = () => {
             `Failed to retrieve user proof with keyword: ${TS_BANNER_PROOF_KW}`
           );
           console.error(response.body);
-          alert(getLocalizedActionError());
+          alert(i18n.getMessage('study2023JoinError'));
         }
       });
 

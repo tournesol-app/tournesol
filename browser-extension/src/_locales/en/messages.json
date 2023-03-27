@@ -132,5 +132,9 @@
   "study2023ActionButton": {
     "message": "Join",
     "description": "Text displayed by the main action button of the banner."
+  },
+  "study2023JoinError": {
+    "message": "Sorry, an error occured.\n\nPlease, report the issue on our GitHub space or on our Discord server.\n\nGitHub: https://github.com/tournesol-app/tournesol/issues/new\n\nDiscord: https://discord.com/invite/TvsFB8RNBV",
+    "description": "Invite the users to report the participation issue."
   }
 }

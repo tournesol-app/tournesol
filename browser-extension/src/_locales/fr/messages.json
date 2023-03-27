@@ -131,5 +131,9 @@
   "study2023ActionButton": {
     "message": "Participer",
     "description": "Texte affiché par le bouton d'action principal de la bannière."
+  },
+  "study2023JoinError": {
+    "message": "Désolé, une erreur est survenue.\n\nS'il vous plaît, reportez l'erreur dans notre espace GitHub ou sur notre serveur Discord.\n\n GitHub : https://github.com/tournesol-app/tournesol/issues/new\n\n Discord : https://discord.com/invite/TvsFB8RNBV",
+    "description": "Inviter les utilisateur·rices à reporter l'erreur de participation."
   }
 }
