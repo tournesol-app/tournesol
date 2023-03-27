@@ -156,9 +156,9 @@ html[dark] #tournesol_campaign_button {
 
 .tournesol_mui_like_button {
   margin: 0;
-  padding: 10px 16px;
+  padding: 8px 22px;
 
-  min-width: 64px;
+  display: inline-flex;
 
   cursor: pointer;
   line-height: 24.5px;
