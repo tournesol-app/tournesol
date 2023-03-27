@@ -135,17 +135,17 @@ html[dark] #tournesol_campaign_button {
   margin-top: 4px;
 }
 
-.video_channel_link,
-.video_title_link{
+.video_title_link,
+.video_channel_link {
   text-decoration: none;
   color: inherit;
 }
 
-.video_channel_link{
+.video_channel_link {
   text-decoration: underline;
 }
 
-.tournesol_comparison_logo{
+.tournesol_score_logo {
   width: 16px;
   margin-right: 4px;
 }
@@ -343,47 +343,44 @@ html[dark] #tournesol_campaign_button {
   padding: 4px 10px;
 }
 
-#tournesol_container.search{
+/**
+ * ---- start: style of search results ----
+ */
+
+#tournesol_container.search {
   width: 100%;
   min-width: 320px;
-  margin-left: auto;
-  margin-right: auto;
   padding: 0;
   border: none;
   background-color: transparent;
 }
 
-#tournesol_container.search h2{
+#tournesol_container.search h2 {
   min-height: auto;
   font-size: 1.8rem;
 }
 
-#tournesol_container.search .tournesol_comparison_logo{
+#tournesol_container.search .tournesol_score_logo {
   width: 32px;
 }
 
 #tournesol_container.search .thumb_div,
-#tournesol_container.search .thumb_div img
-{ 
+#tournesol_container.search .thumb_div img { 
   width: 100%;
   min-width: 240px;
   max-width: 360px;
   aspect-ratio: 16/9;
   height: 100%;
-  border-radius: 12px;
   margin: 0;
+  border-radius: 12px;
 }
 
 
-#tournesol_container.search .video_box{
+#tournesol_container.search .video_box {
   width: 100%;
+  margin-bottom: 16px;
   display: flex;
   border-radius: 4px;
-  
-}
-
-#tournesol_container.search .video_box{
-  margin-bottom: 16px;
 }
 
 #tournesol_container.search #tournesol_refresh_button,
@@ -392,25 +389,24 @@ html[dark] #tournesol_campaign_button {
   display: none;
 }
 
-
-#tournesol_container.search .video_box .details_div{
+#tournesol_container.search .video_box .details_div {
   font-size: 1.3em;
   padding: 1em;
   cursor: initial;
 }
 
-#tournesol_container.search .video_box .details_div .video_text{
+#tournesol_container.search .video_box .details_div .video_text {
   font-size: 1.2rem;
 }
 
-#tournesol_container.search .video_box .details_div  strong{
+#tournesol_container.search .video_box .details_div strong {
   font-weight: 400;
   font-size: 2.4em;
   color: var(--yt-spec-text-primary);
   margin-right: 8px;
   font-style: normal;
 }
-#tournesol_container.search .video_box .details_div :nth-child(3){
+#tournesol_container.search .video_box .details_div :nth-child(3) {
   font-style: italic;
 }
 
@@ -421,27 +417,27 @@ html[dark] #tournesol_campaign_button {
   font-size: 1.4rem;
 }
 
-#tournesol_container.search .video_criteria img{
+#tournesol_container.search .video_criteria img {
   margin: 0 8px;
   width: 32px;
 }
 
-#tournesol_container.search .video_box .details_div .contributors{
+#tournesol_container.search .video_box .details_div .contributors {
   color: #B38B00;
 }
 
-#tournesol_container.search  .video_title{
+#tournesol_container.search .video_title {
   font-weight: 400;
 }
 
-#tournesol_container.search .video_channel_details{
+#tournesol_container.search .video_channel_details {
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-end;
 }
 
-#tournesol_container.search .video_channel_details :first-child{
+#tournesol_container.search .video_channel_details :first-child {
   margin-left: 8px;
 }
 
-
+/* ---- end: style of the search results ---- */

@@ -427,7 +427,7 @@ const getTournesolComponent = () => {
     const video_score = document.createElement('p');
     video_score.className = 'video_text video_tournesol_rating';
     video_score.innerHTML = `<img
-        class="tournesol_comparison_logo"
+        class="tournesol_score_logo"
         src="https://tournesol.app/svg/tournesol.svg"
         alt="Tournesol logo"
       />
