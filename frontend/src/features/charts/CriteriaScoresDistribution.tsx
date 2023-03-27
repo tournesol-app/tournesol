@@ -56,7 +56,7 @@ const CriteriaScoresDistributionChart = ({
   const { bins, distribution } = criteriaDistributionScore;
   const barColors = new Array(20).fill(criterionColor(criterion));
 
-  const { score: userScore } = useCriterionScoreData({
+  const { score: userScore, color } = useCriterionScoreData({
     index: criterion,
     personal: true,
   });
@@ -69,7 +69,7 @@ const CriteriaScoresDistributionChart = ({
     // Beware if granularity change
     for (let i = -100, j = 0; i <= 100; i += 10, j++) {
       if (i == roundedScore) {
-        barColors[j] = 'pink';
+        barColors[j] = color;
         break;
       }
     }
