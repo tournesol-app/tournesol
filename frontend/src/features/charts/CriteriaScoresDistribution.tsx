@@ -61,12 +61,16 @@ const CriteriaScoresDistributionChart = ({
     personal: true,
   });
 
+  /**
+   * Use a different color for the bin in which the logged user's score is.
+   */
   if (userScore) {
-    // transform a score like 78.75 to 70
+    // Transform scores like 78.75 in 70.
     const roundedScore = Math.floor(userScore / 10) * 10;
 
-    // step are 10 since granularity is 20
-    // Beware if granularity change
+    // The step is 10 because the scores interval [-100, 100] is divided in 20
+    // bins. If this granularity changes, the step and `roundedScore` must be
+    // updated.
     for (let i = -100, j = 0; i <= 100; i += 10, j++) {
       if (i == roundedScore) {
         barColors[j] = color;
