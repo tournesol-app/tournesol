@@ -72,7 +72,7 @@ const CriteriaScoresDistributionChart = ({
     // bins. If this granularity changes, the step and `roundedScore` must be
     // updated.
     for (let i = -100, j = 0; i <= 100; i += 10, j++) {
-      if (i == roundedScore) {
+      if (i === roundedScore) {
         barColors[j] = color;
         break;
       }
