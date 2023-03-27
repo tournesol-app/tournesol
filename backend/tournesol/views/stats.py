@@ -112,10 +112,10 @@ class StatisticsView(generics.GenericAPIView):
             comparisons = Comparison.objects.filter(poll=poll)
             comparison_count = comparisons.count()
             last_month_comparison_count = comparisons.filter(
-                datetime_lastedit__gte=time_ago(days=self._days_delta)
+                datetime_add__gte=time_ago(days=self._days_delta)
             ).count()
             current_week_comparison_count = comparisons.filter(
-                datetime_lastedit__gte=last_monday).count()
+                datetime_add__gte=last_monday).count()
 
             comparisons_statistics = ComparisonsStatistics(
                 comparison_count,
