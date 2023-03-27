@@ -92,24 +92,6 @@ const isNavigatorLang = (lang) => {
   return false;
 };
 
-const getLocalizedBannerText = () => {
-  if (isNavigatorLang('fr')) {
-    return (
-      'Le projet Tournesol est-il vraiment efficace? Nous étudions' +
-      " actuellement l'impact de notre extension navigateur sur les" +
-      " habitudes d'utilisation de YouTube. Rejoignez notre étude" +
-      ' pour nous aider à améliorer Tournesol !'
-    );
-  }
-
-  // Return the 'en' version by default.
-  return (
-    'Is the Tournesol project really effective? We are currently investigating' +
-    " the impact of our browser extension on the YouTube viewers' habits. Join" +
-    ' our research study to help us improve Tournesol!'
-  );
-};
-
 const getLocalizedActionButtonText = () => {
   if (isNavigatorLang('fr')) {
     return 'Participer';
@@ -180,7 +162,7 @@ const createBanner = () => {
   // The second flex item is the text.
   const bannerTextContainer = document.createElement('div');
   const bannerText = document.createElement('p');
-  bannerText.textContent = getLocalizedBannerText();
+  bannerText.textContent = i18n.getMessage('study2023BannerText');
   bannerTextContainer.append(bannerText);
 
   // The third flex item is the action button.

@@ -124,5 +124,9 @@
   "viewMore": {
     "message": "view more on tournesol",
     "Description": "Text for the view more button inside the search recommandation container"
+  },
+  "study2023BannerText": {
+    "message": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!",
+    "description": "Invite the users to join the study."
   }
 }
