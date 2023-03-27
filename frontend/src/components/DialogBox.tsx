@@ -6,12 +6,18 @@ interface DialogProps {
   dialog: { title: string; messages: Array<string> };
   open: boolean;
   onClose: () => void;
+  additionalActionButton?: React.ReactNode;
 }
 
 /**
  * A dialog box that displays one or more messages.
  */
-const DialogBox = ({ open, onClose, dialog }: DialogProps) => {
+const DialogBox = ({
+  open,
+  onClose,
+  dialog,
+  additionalActionButton,
+}: DialogProps) => {
   const { t } = useTranslation();
 
   const handleClose = () => {
@@ -40,6 +46,7 @@ const DialogBox = ({ open, onClose, dialog }: DialogProps) => {
           })}
         </Box>
         <Box display="flex" justifyContent="flex-end">
+          {additionalActionButton}
           <Button variant="contained" onClick={handleClose}>
             {t('dialogBox.continue')}
           </Button>

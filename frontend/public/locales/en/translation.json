@@ -82,6 +82,9 @@
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
+  "tutorial": {
+    "skip": "Skip tutorial"
+  },
   "entitySelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import { Container, Step, StepLabel, Stepper } from '@mui/material';
+import { Button, Container, Step, StepLabel, Stepper } from '@mui/material';
 
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
@@ -56,6 +57,7 @@ const ComparisonSeries = ({
   const location = useLocation();
 
   const { name: pollName } = useCurrentPoll();
+  const { t } = useTranslation();
 
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected once the series has started
@@ -80,6 +82,9 @@ const ComparisonSeries = ({
   const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
   // a string representing the URL parameters of the first comparison that may be suggested
   const [firstComparisonParams, setFirstComparisonParams] = useState('');
+  const [tutorialIsSkipped, setTutorialIsSkipped] = useState(
+    window.localStorage.getItem('tutorialIsSkipped') == 'true'
+  );
 
   const searchParams = new URLSearchParams(location.search);
   const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
@@ -215,6 +220,24 @@ const ComparisonSeries = ({
     setDialogOpen(false);
   };
 
+  const skipTutorial = () => {
+    closeDialog();
+
+    setTutorialIsSkipped(true);
+    window.localStorage.setItem('tutorialIsSkipped', 'true');
+  };
+
+  const skipTutorialButton = (
+    <Button
+      sx={{ marginRight: '8px' }}
+      color="secondary"
+      variant="contained"
+      onClick={skipTutorial}
+    >
+      {t('tutorial.skip')}
+    </Button>
+  );
+
   /**
    * Build a string representing the URL parameters of a comparison.
    *
@@ -277,7 +300,7 @@ const ComparisonSeries = ({
     );
   }
 
-  if (redirectTo && step >= length) {
+  if (redirectTo && (step >= length || tutorialIsSkipped)) {
     const futureSearchParams = new URLSearchParams();
 
     if (keepUIDsAfterRedirect) {
@@ -312,6 +335,7 @@ const ComparisonSeries = ({
                 dialog={dialogs[step]}
                 open={dialogOpen}
                 onClose={closeDialog}
+                additionalActionButton={skipTutorialButton}
               />
             )}
           <Container maxWidth="md" sx={{ my: 2 }}>
