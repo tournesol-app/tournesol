@@ -276,7 +276,7 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
             },
         },
     }
-    json.dump(metadata_dict, write_target)
+    json.dump(metadata_dict, write_target, indent=2)
 
 
 def write_comparisons_file(

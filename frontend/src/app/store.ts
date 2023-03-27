@@ -1,9 +1,11 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import drawerOpenReducer from '../features/frame/drawerOpenSlice';
-import loginReducer from '../features/login/loginSlice';
 import { combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+
+import drawerOpenReducer from '../features/frame/drawerOpenSlice';
+import loginReducer from '../features/login/loginSlice';
+import userSettingsReducer from 'src/features/settings/userSettingsSlice';
 
 const persistConfig = {
   key: 'root',
@@ -12,6 +14,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   drawerOpen: drawerOpenReducer,
   token: loginReducer,
+  settings: userSettingsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

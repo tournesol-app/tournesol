@@ -9,6 +9,7 @@ import CriteriaPage from 'src/pages/criteria/CriteriaPage';
 import FeedbackPage from 'src/pages/personal/feedback/FeedbackPage';
 import EntityAnalysisPage from 'src/pages/entities/EntityAnalysisPage';
 import HomePage from 'src/pages/home/Home';
+import ProofByKeywordPage from 'src/pages/me/proof/ProofByKeywordPage';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
@@ -95,6 +96,12 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.MyFeedback,
       url: 'personal/feedback',
       page: FeedbackPage,
+      type: PrivateRoute,
+    },
+    {
+      id: RouteID.MyProofByKeyword,
+      url: 'me/proof/:keyword',
+      page: ProofByKeywordPage,
       type: PrivateRoute,
     },
     {

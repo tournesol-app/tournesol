@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-12 20:22+0000\n"
+"POT-Creation-Date: 2023-03-16 09:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,6 @@ msgstr "Les métadonnées de %(count)s entités ont été mises à jour."
 msgid "The entity is already in the rate-later list of this poll."
 msgstr "L'entité est déjà dans la liste à comparer plus tard de ce scrutin."
 
-#: tournesol/views/comparison.py:21
+#: tournesol/views/comparison.py:20
 msgid "This action is not allowed on an inactive poll."
 msgstr "Cette action n'est pas permise dans un scrutin inactif."

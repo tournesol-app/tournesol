@@ -11,6 +11,7 @@ from tournesol.models import (
     ContributorScaling,
     Entity,
     EntityCriteriaScore,
+    EntityPollRating,
     Poll,
 )
 from tournesol.models.entity_score import ScoreMode
@@ -63,10 +64,11 @@ def save_tournesol_scores(poll):
             Entity.objects.filter(all_criteria_scores__poll=poll)
             .distinct()
             .with_prefetched_scores(poll_name=poll.name)
+            .with_prefetched_poll_ratings(poll_name=poll.name)
         ):
             if poll.algorithm == ALGORITHM_MEHESTAN:
-                # The tournesol score is simply the score associated with the main criteria
-                entity.tournesol_score = next(
+                # The Tournesol score is the score of the main criterion.
+                tournesol_score = next(
                     (
                         s.score
                         for s in entity.criteria_scores
@@ -75,9 +77,15 @@ def save_tournesol_scores(poll):
                     None,
                 )
             else:
-                entity.tournesol_score = 10 * sum(
+                tournesol_score = 10 * sum(
                     criterion.score for criterion in entity.criteria_scores
                 )
+
+            entity.tournesol_score = tournesol_score
+
+            if entity.single_poll_ratings:
+                entity.single_poll_ratings[0].tournesol_score = tournesol_score
+
             yield entity
 
     # Updating all entities at once increases the risk of a database deadlock.
@@ -86,6 +94,14 @@ def save_tournesol_scores(poll):
     entities_it = entities_iterator()
     while batch := list(islice(entities_it, 1000)):
         Entity.objects.bulk_update(batch, fields=["tournesol_score"])
+        # Both Entity.tournesol_score and EntityPollRating coexist at the
+        # moment. When all serializers will be updated to use the new
+        # EntityPollRating model, the uses of the legacy
+        # Entity.tournesol_score system should be replaced everywhere.
+        EntityPollRating.objects.bulk_update(
+            [ent.single_poll_ratings[0] for ent in batch if ent.single_poll_ratings],
+            fields=["tournesol_score"],
+        )
 
 
 def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
