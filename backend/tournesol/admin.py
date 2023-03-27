@@ -119,11 +119,25 @@ class EntityAdmin(admin.ModelAdmin):
 
 @admin.register(EntityPollRating)
 class EntityPollRatingAdmin(admin.ModelAdmin):
-    list_display = ("id", "entity", "poll", "tournesol_score", "n_comparisons", "n_contributors")
+    list_display = (
+        "id",
+        "entity_link",
+        "poll",
+        "tournesol_score",
+        "n_comparisons",
+        "n_contributors",
+    )
     list_filter = ("poll",)
     search_fields = ("entity__uid",)
     raw_id_fields = ("entity",)
     readonly_fields = ("poll", "entity", "tournesol_score", "n_comparisons", "n_contributors")
+
+    def entity_link(self, obj):
+        entity = obj.entity
+        app_label = entity._meta.app_label
+        model_label = entity._meta.model_name
+        url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
+        return format_html(f'<a href="{url}">{entity.uid}</a>')
 
 
 @admin.register(EntityCriteriaScore)
