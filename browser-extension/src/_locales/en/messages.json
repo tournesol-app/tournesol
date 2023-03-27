@@ -116,7 +116,7 @@
     "description": "Label of the criterion with the lowest negative score."
   },
   "viewMore": {
-    "message": "view more on tournesol",
+    "message": "View more on tournesol",
     "Description": "Invite the users to see more results on the Tournesol website."
   },
   "study2023BannerText": {
@@ -125,7 +125,7 @@
   },
   "study2023ActionButton": {
     "message": "Join",
-    "description": "Text displayed by the main action button of the banner."
+    "description": "Label of the main action button of the banner."
   },
   "study2023JoinError": {
     "message": "Sorry, an error occured.\n\nPlease, report the issue on our GitHub space or on our Discord server.\n\nGitHub: https://github.com/tournesol-app/tournesol/issues/new\n\nDiscord: https://discord.com/invite/TvsFB8RNBV",

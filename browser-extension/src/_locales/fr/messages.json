@@ -1,128 +1,123 @@
 {
   "menuRateNow": {
-    "message": "Comparer maintenant",
-    "description": "content of the rate now menu button."
+    "message": "Comparer",
+    "description": "Label du bouton de menu permettant de comparer la vidéo."
   },
-
   "menuRateLater": {
     "message": "Comparer plus tard",
-    "description": "Content of the rate later menu button."
+    "description": "Label du bouton de menu permettant d'ajouter la vidéo à la liste à comparer plus tard."
   },
   "menuAnalysis": {
     "message": "Analyses",
-    "description": "Content of the analysis menu button."
+    "description": "Label du bouton de menu permettant d'accéder à la page d'analyse d'une vidéo."
   },
   "menuSearchEnabled": {
     "message": "Recherche activée",
-    "description": "Content of the search button when search is turned on."
+    "description": "Label du bouton de menu recherche affiché lorsque la recherche est activée."
   },
   "menuSearchDisabled": {
     "message": "Recherche désactivée",
-    "description": "Content of the search button when search is turned off."
+    "description": "Label du bouton de menu recherche affiché lorsque la recherche est désactivée."
   },
   "recommendedByTournesol": {
     "message": "Recommandées par Tournesol",
-    "description": "Tournesol container title."
+    "description": "Titre du conteneur principal affichant les recommandations."
   },
   "learnMore": {
-    "message": "Plus d'infos",
-    "description": "Link to tournesol website homePage."
+    "message": "En savoir plus",
+    "description": "Inviter les utilisateurs à en savoir plus sur le projet (texte très court)."
   },
   "views": {
     "message": "$1 vues",
-    "description": "Text for the number of views"
+    "description": "Affiche le nombre de vues d'une vidéo."
   },
   "publishedToday": {
     "message": "Aujourd'hui",
-    "description": "Text for video published today."
+    "description": "Date affichée pour les vidéos publiées aujourd'hui."
   },
   "publishedYesterday": {
     "message": "Hier",
-    "description": "Text for video published yesterday."
+    "description": "Date affichée pour les vidéos publiées hier."
   },
   "publishedSomeDaysAgo": {
     "message": "Il y a $1 jours",
-    "description": "Text for video published less than two weeks ago"
+    "description": "Date affichée pour les vidéos publiées il y a moins de deux semaines."
   },
   "publishedSomeWeeksAgo": {
     "message": "Il y a $1 semaines",
-    "description": "Text for video published between 2 weeks ago and one month ago"
+    "description": "Date affichée pour les vidéos publiées entre: il y a deux semaines et un mois."
   },
   "publishedAMonthAgo": {
     "message": "Il y a 1 mois",
-    "description": "Text for video published one month ago"
+    "description": "Date affichée pour les vidéos publiées il y a un mois."
   },
   "publishedSomeMonthsAgo": {
     "message": "Il y a $1 mois",
-    "description": "Text for video published more at least two month ago and less than 1 year ago"
+    "description": "Date affichée pour les vidéos publiées entre: il y a deux mois et un an."
   },
   "publishedAYearAgo": {
     "message": "Il y a 1 an",
-    "description": "Text for video published 1 year ago"
+    "description": "Date affichée pour les vidéos publiées il y a un an."
   },
   "publishedSomeYearAgo": {
     "message": "Il y a $1 ans",
-    "description": "Text for video published more than 1 year ago"
+    "description": "Date affichée pour les vidéos publiées il a plus d'un an."
   },
   "comparisonsBy": {
     "message": " $1 comparaisons par",
-    "description": "Recommandations results numbers of comparisons."
+    "description": "Nombre de comparaisons impliquant la vidéo."
   },
   "comparisonsContributors": {
-    "message": " $1 contributeurs",
-    "description": "Recommandations results numbers of contributors."
+    "message": " $1 contributeur·rices",
+    "description": "Nombre de contributeur·rices ayant notés la vidéo."
   },
   "reliability": {
     "message": "Fiable & non trompeur",
-    "description": "Reliability criteria icon hover message."
-  },
-  "backfire_risk": {
-    "message": "Résistant aux retours négatifs",
-    "description": "Backfire_risk criteria icon hover message."
-  },
-  "layman_friendly": {
-    "message": "Accessible aux non-spécialistes",
-    "description": "Layman_friendly criteria icon hover message."
-  },
-  "diversity_inclusion": {
-    "message": "Diversité & inclusion",
-    "description": "Diversity_inclusion criteria icon hover message."
-  },
-  "engaging": {
-    "message": "Stimulant & suscite la réflexion",
-    "description": "Engaging criteria icon hover message."
-  },
-  "entertaining_relaxing": {
-    "message": "Divertissant & relaxant",
-    "description": "Entertaining_relaxing criteria icon hover message."
-  },
-  "better_habits": {
-    "message": "Encourage de meilleurs habitudes",
-    "description": "Better_habits criteria icon hover message."
+    "description": "Nom complet du critère 'fiable'."
   },
   "pedagogy": {
     "message": "Clair & pédagogique",
-    "description": "Pedagogy criteria icon hover message."
+    "description": "Nom complet du critère 'pédagogie'."
   },
   "importance": {
     "message": "Important & actionnable",
-    "description": "Importance criteria icon hover message."
+    "description": "Nom complet du critère 'importance'."
   },
-  "noCriteriaScore": {
-    "message": "Il n'y a pas de score de critère pour cette vidéo pour le moment.",
-    "description": "Message displayed when there is no criteria score for a video."
+  "layman_friendly": {
+    "message": "Accessible aux non-spécialistes",
+    "description": "Nom complet du critère 'accessible'."
+  },
+  "entertaining_relaxing": {
+    "message": "Divertissant & relaxant",
+    "description": "Nom complet du critère 'divertissant'."
+  },
+  "engaging": {
+    "message": "Stimulant & suscite la réflexion",
+    "description": "Nom complet du critère 'stimulant'."
+  },
+  "diversity_inclusion": {
+    "message": "Diversité & inclusion",
+    "description": "Nom complet du critère 'diversité'."
+  },
+  "better_habits": {
+    "message": "Encourage de meilleurs habitudes",
+    "description": "Nom complet du critère 'meilleures habitudes'."
+  },
+  "backfire_risk": {
+    "message": "Résistant aux retours négatifs",
+    "description": "Nom complet du critère 'résistant'."
   },
   "ratedHigh": {
     "message": "Notée fortement :",
-    "description": "Text for high rated criteria"
+    "description": "Label du critère ayant le plus haut score positif."
   },
   "ratedLow": {
     "message": "Notée faiblement :",
-    "description": "Text for low rated criteria"
+    "description": "Label du critère ayant le plus faible score négatif."
   },
   "viewMore": {
     "message": "Voir plus sur tournesol",
-    "Description": "Text for the view more button inside the search recommandation container"
+    "Description": "Inviter les utilisateur·rices à voir plus de résultats sur le site web de Tournesol."
   },
   "study2023BannerText": {
     "message": "Le projet Tournesol est-il vraiment efficace ? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !",
@@ -130,7 +125,7 @@
   },
   "study2023ActionButton": {
     "message": "Participer",
-    "description": "Texte affiché par le bouton d'action principal de la bannière."
+    "description": "Label du bouton d'action principal de la bannière."
   },
   "study2023JoinError": {
     "message": "Désolé, une erreur est survenue.\n\nS'il vous plaît, reportez l'erreur dans notre espace GitHub ou sur notre serveur Discord.\n\n GitHub : https://github.com/tournesol-app/tournesol/issues/new\n\n Discord : https://discord.com/invite/TvsFB8RNBV",
