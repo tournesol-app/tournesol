@@ -92,26 +92,6 @@ const isNavigatorLang = (lang) => {
   return false;
 };
 
-const getLocalizedActionError = () => {
-  if (isNavigatorLang('fr')) {
-    return (
-      'Désolé, une erreur est survenue.\n' +
-      "S'il vous plaît, reportez l'erreur dans notre espace GitHub " +
-      'ou sur notre serveur Discord.\n\n' +
-      'GitHub: https://github.com/tournesol-app/tournesol/issues/new\n\n' +
-      'Discord: https://discord.com/invite/TvsFB8RNBV'
-    );
-  }
-
-  return (
-    'Sorry, an error occured.\n' +
-    'Please, report the issue on our GitHub space ' +
-    'or on our Discord server.\n\n' +
-    'GitHub: https://github.com/tournesol-app/tournesol/issues/new\n\n' +
-    'Discord: https://discord.com/invite/TvsFB8RNBV'
-  );
-};
-
 const displayElement = (element) => {
   element.classList.add('displayed');
 };
