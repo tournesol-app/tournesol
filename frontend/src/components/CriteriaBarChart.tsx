@@ -3,8 +3,6 @@ import React, {
   useLayoutEffect,
   useState,
   useMemo,
-  createContext,
-  useContext,
   useCallback,
 } from 'react';
 import {
@@ -17,67 +15,22 @@ import useCriteriaChartData, {
   CriterionChartScores,
 } from 'src/hooks/useCriteriaChartData';
 import { useTranslation } from 'react-i18next';
-import { lighten } from 'src/utils/color';
 import { Tooltip } from '@mui/material';
 import useResizeObserver from '@react-hook/resize-observer';
 import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
+import useCriterionScoreData, {
+  useChartContext,
+  ChartContext,
+  ChartContextValue,
+} from 'src/hooks/useCriterionScoreData';
 const barMargin = 40; // The horizontal margin around the bar (must be enough for the icon and the score value)
 const criterionChartHeight = 40; // The height of a single criterion chart (circle + icon + bars)
 const scoreBarHeight = 10;
 const scoreBarsSpacing = 4;
 const scoreLabelSpacingWithBar = 4;
 const selectedCriterionBackgroundColor = 'rgb(238, 238, 238)';
-
-interface ChartContextValue {
-  data: CriterionChartScores[];
-  domain: number[];
-  chartWidth: number;
-  chartHeight: number;
-  personalScoresActivated: boolean;
-}
-const ChartContext = createContext<ChartContextValue>({
-  data: [],
-  domain: [0.0, 1.0],
-  chartWidth: 0,
-  chartHeight: 0,
-  personalScoresActivated: false,
-});
-const useChartContext = () => useContext(ChartContext);
-
-const useCriterionScoreData = ({
-  index,
-  personal,
-}: {
-  index: number;
-  personal: boolean;
-}) => {
-  const { data } = useChartContext();
-  const criterionScores = data[index];
-  const {
-    criterion,
-    score,
-    clippedScore,
-    personalScore,
-    clippedPersonalScore,
-  } = criterionScores;
-  const color = criterionColor(criterion);
-
-  if (personal)
-    return {
-      score: personalScore,
-      clippedScore: clippedPersonalScore,
-      color: lighten(color, 0.5),
-    };
-  else
-    return {
-      score,
-      clippedScore,
-      color,
-    };
-};
 
 const calculateScoreBarY = ({
   index,
