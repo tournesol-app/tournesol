@@ -103,26 +103,6 @@ const getLocalizedActionButtonText = () => {
   return 'Join';
 };
 
-const getLocalizedActionError = () => {
-  if (isNavigatorLang('fr')) {
-    return (
-      'Désolé, une erreur est survenue.\n' +
-      "S'il vous plaît, reportez l'erreur dans notre espace GitHub " +
-      'ou sur notre serveur Discord.\n\n' +
-      'GitHub: https://github.com/tournesol-app/tournesol/issues/new\n\n' +
-      'Discord: https://discord.com/invite/TvsFB8RNBV'
-    );
-  }
-
-  return (
-    'Sorry, an error occured.\n' +
-    'Please, report the issue on our GitHub space ' +
-    'or on our Discord server.\n\n' +
-    'GitHub: https://github.com/tournesol-app/tournesol/issues/new\n\n' +
-    'Discord: https://discord.com/invite/TvsFB8RNBV'
-  );
-};
-
 const displayElement = (element) => {
   element.classList.add('displayed');
 };
@@ -228,23 +208,28 @@ const createBanner = () => {
         window.open(url, '_blank', 'noopener');
       })
       .catch((response) => {
-        // Anonymous users should be redirected to the form without
-        // participation proof. Other errors are logged.
-        if (response.status === 401) {
-          window.open(
-            isNavigatorLang('fr')
-              ? TS_BANNER_ACTION_FR_URL
-              : TS_BANNER_ACTION_EN_URL,
-            '_blank',
-            'noopener'
-          );
-        } else {
+        /**
+         * Do not block the users in case of API error. The participation
+         * proof being optionnal, and the API tested, logging the errors
+         * should be enough.
+         *
+         * Anonymous users are expected to be redirected to the form without
+         * participation proof (HTTP 401), no logging is required.
+         */
+        if (response.status !== 401) {
           console.error(
             `Failed to retrieve user proof with keyword: ${TS_BANNER_PROOF_KW}`
           );
           console.error(response.body);
-          alert(getLocalizedActionError());
         }
+
+        window.open(
+          isNavigatorLang('fr')
+            ? TS_BANNER_ACTION_FR_URL
+            : TS_BANNER_ACTION_EN_URL,
+          '_blank',
+          'noopener'
+        );
       });
 
     return false;
