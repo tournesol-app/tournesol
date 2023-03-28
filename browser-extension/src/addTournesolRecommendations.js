@@ -7,9 +7,9 @@
 const TS_BANNER_DATE_START = new Date('2020-01-01T00:00:00Z');
 const TS_BANNER_DATE_END = new Date('2022-01-01T00:00:00Z');
 const TS_BANNER_ACTION_FR_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLScQzlEKBSA3MqxI0kaPazbyIUnZ4PjFcrR8EFiikG1quyAoiw/viewform?usp=pp_url&entry.939413650=';
+  'https://docs.google.com/forms/d/e/1FAIpQLSd4_8nF0kVnHj3GvTlEAFw-PHAGOAGc1j1NKZbXr8Ga_nIY9w/viewform?usp=pp_url&entry.939413650=';
 const TS_BANNER_ACTION_EN_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSf9PXr-f8o9QqDR-Pi63xRZx4y4nOumNDdwi_jvUWc6LxZRAw/viewform?usp=pp_url&entry.1924714025=';
+  'https://docs.google.com/forms/d/e/1FAIpQLSfEXZLlkLA6ngx8LV-VVpIxV9AZ9MgN-H_U0aTOnVhrXv1XLQ/viewform?usp=pp_url&entry.1924714025=';
 const TS_BANNER_PROOF_KW = 'browser_extension_study_2023';
 
 const videosPerRow = 4;
@@ -197,23 +197,28 @@ const createBanner = () => {
         window.open(url, '_blank', 'noopener');
       })
       .catch((response) => {
-        // Anonymous users should be redirected to the form without
-        // participation proof. Other errors are logged.
-        if (response.status === 401) {
-          window.open(
-            isNavigatorLang('fr')
-              ? TS_BANNER_ACTION_FR_URL
-              : TS_BANNER_ACTION_EN_URL,
-            '_blank',
-            'noopener'
-          );
-        } else {
+        /**
+         * Do not block the users in case of API error. The participation
+         * proof being optionnal, and the API tested, logging the errors
+         * should be enough.
+         *
+         * Anonymous users are expected to be redirected to the form without
+         * participation proof (HTTP 401), no logging is required.
+         */
+        if (response.status !== 401) {
           console.error(
             `Failed to retrieve user proof with keyword: ${TS_BANNER_PROOF_KW}`
           );
           console.error(response.body);
-          alert(i18n.getMessage('study2023JoinError'));
         }
+
+        window.open(
+          isNavigatorLang('fr')
+            ? TS_BANNER_ACTION_FR_URL
+            : TS_BANNER_ACTION_EN_URL,
+          '_blank',
+          'noopener'
+        );
       });
 
     return false;

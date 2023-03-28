@@ -21,6 +21,7 @@ from .models import (
     CriteriaRank,
     Entity,
     EntityCriteriaScore,
+    EntityPollRating,
     Poll,
 )
 from .utils.video_language import LANGUAGE_CODE_TO_NAME_MATCHING
@@ -91,8 +92,7 @@ class EntityAdmin(admin.ModelAdmin):
             count += 1
         messages.info(
             request,
-            _("Successfully refreshed the metadata of %(count)s entities.")
-            % {"count": count},
+            _("Successfully refreshed the metadata of %(count)s entities.") % {"count": count},
         )
 
     @staticmethod
@@ -106,9 +106,7 @@ class EntityAdmin(admin.ModelAdmin):
         return obj.metadata.get("uploader")
 
     @staticmethod
-    @admin.display(
-        description="publication_date", ordering="metadata__publication_date"
-    )
+    @admin.display(description="publication_date", ordering="metadata__publication_date")
     def get_publication_date(obj):
         return obj.metadata.get("publication_date")
 
@@ -117,6 +115,29 @@ class EntityAdmin(admin.ModelAdmin):
     def get_language(obj):
         language_code = obj.metadata.get("language")
         return LANGUAGE_CODE_TO_NAME_MATCHING.get(language_code, language_code)
+
+
+@admin.register(EntityPollRating)
+class EntityPollRatingAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "entity_link",
+        "poll",
+        "tournesol_score",
+        "n_comparisons",
+        "n_contributors",
+    )
+    list_filter = ("poll",)
+    search_fields = ("entity__uid",)
+    raw_id_fields = ("entity",)
+    readonly_fields = ("poll", "entity", "tournesol_score", "n_comparisons", "n_contributors")
+
+    def entity_link(self, obj):
+        entity = obj.entity
+        app_label = entity._meta.app_label
+        model_label = entity._meta.model_name
+        url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
+        return format_html(f'<a href="{url}">{entity.uid}</a>')
 
 
 @admin.register(EntityCriteriaScore)
@@ -297,9 +318,7 @@ class PollAdmin(admin.ModelAdmin):
     def get_proof_of_vote_file(self, obj):
         return format_html(
             "<a href={url}>CSV</a>",
-            url=reverse(
-                "tournesol:export_poll_proof_of_vote", kwargs={"poll_name": obj.name}
-            ),
+            url=reverse("tournesol:export_poll_proof_of_vote", kwargs={"poll_name": obj.name}),
         )
 
 

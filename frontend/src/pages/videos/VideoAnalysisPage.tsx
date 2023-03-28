@@ -103,45 +103,45 @@ export const VideoAnalysis = ({
           {/* Data visualization. */}
           {shouldDisplayCharts && (
             <SelectedCriterionProvider>
-              <Grid item xs={12} sm={12} md={6}>
-                <Paper>
-                  <Box
-                    p={1}
-                    bgcolor="rgb(238, 238, 238)"
-                    display="flex"
-                    justifyContent="center"
-                  >
-                    <Typography variant="h5">
-                      {t('entityAnalysisPage.chart.criteriaScores.title')}
-                    </Typography>
-                  </Box>
-                  <PersonalCriteriaScoresContextProvider uid={uid}>
+              <PersonalCriteriaScoresContextProvider uid={uid}>
+                <Grid item xs={12} sm={12} md={6}>
+                  <Paper>
+                    <Box
+                      p={1}
+                      bgcolor="rgb(238, 238, 238)"
+                      display="flex"
+                      justifyContent="center"
+                    >
+                      <Typography variant="h5">
+                        {t('entityAnalysisPage.chart.criteriaScores.title')}
+                      </Typography>
+                    </Box>
                     <Box px={2} pt={1}>
                       <PersonalScoreCheckbox />
                     </Box>
                     <Box p={1}>
                       <CriteriaBarChart video={video} />
                     </Box>
-                  </PersonalCriteriaScoresContextProvider>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} sm={12} md={6}>
-                <Paper>
-                  <Box
-                    p={1}
-                    bgcolor="rgb(238, 238, 238)"
-                    display="flex"
-                    justifyContent="center"
-                  >
-                    <Typography variant="h5">
-                      {t('criteriaScoresDistribution.title')}
-                    </Typography>
-                  </Box>
-                  <Box p={1}>
-                    <CriteriaScoresDistribution uid={uid} />
-                  </Box>
-                </Paper>
-              </Grid>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6}>
+                  <Paper sx={{ height: '100%' }}>
+                    <Box
+                      p={1}
+                      bgcolor="rgb(238, 238, 238)"
+                      display="flex"
+                      justifyContent="center"
+                    >
+                      <Typography variant="h5">
+                        {t('criteriaScoresDistribution.title')}
+                      </Typography>
+                    </Box>
+                    <Box p={1}>
+                      <CriteriaScoresDistribution video={video} />
+                    </Box>
+                  </Paper>
+                </Grid>
+              </PersonalCriteriaScoresContextProvider>
             </SelectedCriterionProvider>
           )}
         </Grid>
