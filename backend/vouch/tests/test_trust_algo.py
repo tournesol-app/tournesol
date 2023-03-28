@@ -137,7 +137,7 @@ class TrustAlgoTest(TestCase):
             self.assertIsNone(user.trust_score)
 
         trust_algo()
-        users = list(User.objects.all())
+        users = list(User.objects.all().order_by('username'))
         self.assertTrue(users[1].trust_score >= TRUSTED_EMAIL_PRETRUST)
         self.assertTrue(users[2].trust_score > 0)
         self.assertAlmostEqual(users[9].trust_score, 0)
