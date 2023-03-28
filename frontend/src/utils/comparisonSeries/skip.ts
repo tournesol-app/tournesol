@@ -1,3 +1,8 @@
+/**
+ * The day we will have different components using the skippedBy state, we
+ * should consider using Redux instead of our custom localstorage accessors.
+ */
+
 const initSkippedBy = () => '';
 
 const skippedByIsEmpty = (skippedBy: string) => {
