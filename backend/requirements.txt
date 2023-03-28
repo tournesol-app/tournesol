@@ -7,8 +7,6 @@ django-computed-property==0.3.0
 # CORS middleware
 # See https://github.com/adamchainz/django-cors-headers
 django-cors-headers==3.14.0
-# TODO
-django-filter==22.1
 # Used to support OAuth
 # See https://github.com/jazzband/django-oauth-toolkit
 django-oauth-toolkit==1.7.1
