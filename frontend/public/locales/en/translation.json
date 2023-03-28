@@ -83,7 +83,7 @@
   },
   "submit": "submit",
   "tutorial": {
-    "skip": "Skip tutorial"
+    "skipTheTutorial": "Skip tutorial"
   },
   "entitySelector": {
     "newVideo": "Select a new video automatically",

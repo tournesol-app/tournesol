@@ -231,7 +231,7 @@ const ComparisonSeries = ({
 
   const skipTutorialButton = (
     <Button color="secondary" variant="text" onClick={skipTutorial}>
-      {t('tutorial.skip')}
+      {t('tutorial.skipTheTutorial')}
     </Button>
   );
 
