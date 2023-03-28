@@ -71,9 +71,9 @@ class EntityAdmin(admin.ModelAdmin):
         "get_name",
         "get_uploader",
         "get_publication_date",
-        "rating_n_ratings",
-        "tournesol_score",
-        "rating_n_contributors",
+        "get_tournesol_score",
+        "get_n_comparisons",
+        "get_n_contributors",
         "get_language",
         "link_to_tournesol",
     )
@@ -83,6 +83,11 @@ class EntityAdmin(admin.ModelAdmin):
         EntityLanguageFilter,
     )
     actions = ["update_metadata"]
+
+    def get_queryset(self, request):
+        qst = super().get_queryset(request)
+        qst = qst.with_prefetched_poll_ratings(poll_name="videos")
+        return qst
 
     @admin.action(description="Force metadata refresh of selected entities")
     def update_metadata(self, request, queryset: QuerySet[Entity]):
@@ -109,6 +114,24 @@ class EntityAdmin(admin.ModelAdmin):
     @admin.display(description="publication_date", ordering="metadata__publication_date")
     def get_publication_date(obj):
         return obj.metadata.get("publication_date")
+    
+    @staticmethod
+    @admin.display(description="Tournesol score")
+    def get_tournesol_score(obj):
+        try:
+            return round(obj.single_poll_ratings[0].tournesol_score, 2)
+        except TypeError:
+            return obj.single_poll_ratings[0].tournesol_score
+        
+    @staticmethod
+    @admin.display(description="comparisons")
+    def get_n_comparisons(obj):
+        return obj.single_poll_ratings[0].n_comparisons
+    
+    @staticmethod
+    @admin.display(description="contributors")
+    def get_n_contributors(obj):
+        return obj.single_poll_ratings[0].n_contributors
 
     @staticmethod
     @admin.display(description="language", ordering="metadata__language")
