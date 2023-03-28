@@ -45,7 +45,7 @@ const DialogBox = ({
             );
           })}
         </Box>
-        <Box display="flex" justifyContent="flex-end">
+        <Box display="flex" justifyContent="flex-end" gap={1}>
           {additionalActionButton}
           <Button variant="contained" onClick={handleClose}>
             {t('dialogBox.continue')}

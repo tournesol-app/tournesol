@@ -228,12 +228,7 @@ const ComparisonSeries = ({
   };
 
   const skipTutorialButton = (
-    <Button
-      sx={{ marginRight: '8px' }}
-      color="secondary"
-      variant="text"
-      onClick={skipTutorial}
-    >
+    <Button color="secondary" variant="text" onClick={skipTutorial}>
       {t('tutorial.skip')}
     </Button>
   );
