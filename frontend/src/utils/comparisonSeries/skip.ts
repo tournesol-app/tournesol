@@ -3,10 +3,10 @@
  * should consider using Redux instead of our custom localstorage accessors.
  */
 
-const initSkippedBy = () => '';
+const INITAL_SKIPPED_BY = '';
 
 const skippedByIsEmpty = (skippedBy: string) => {
-  return skippedBy === initSkippedBy();
+  return skippedBy === INITAL_SKIPPED_BY;
 };
 
 /**
@@ -16,7 +16,7 @@ const skippedByIsEmpty = (skippedBy: string) => {
  * @param username The username of the user.
  */
 export const setSkippedBy = (skipKey: string, username: string) => {
-  const skippedBy = localStorage.getItem(skipKey) ?? initSkippedBy();
+  const skippedBy = localStorage.getItem(skipKey) ?? INITAL_SKIPPED_BY;
   let users: Array<string>;
 
   if (skippedByIsEmpty(skippedBy)) {
@@ -37,7 +37,7 @@ export const setSkippedBy = (skipKey: string, username: string) => {
  * skipped by the user.
  */
 export const getSkippedBy = (skipKey: string, username: string): boolean => {
-  const skippedBy = localStorage.getItem(skipKey) ?? initSkippedBy();
+  const skippedBy = localStorage.getItem(skipKey) ?? INITAL_SKIPPED_BY;
 
   if (skippedByIsEmpty(skippedBy)) {
     return false;
