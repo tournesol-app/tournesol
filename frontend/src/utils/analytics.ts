@@ -9,6 +9,7 @@ import Plausible, { EventOptions, PlausibleOptions } from 'plausible-tracker';
 export const TRACKED_EVENTS = {
   signup: 'signup',
   tutorial: 'tutorial',
+  tutorialSkipped: 'tutorial skipped',
   accountDeleted: 'account deleted',
 };
 

@@ -225,6 +225,8 @@ const ComparisonSeries = ({
 
     setTutorialIsSkipped(true);
     window.localStorage.setItem('tutorialIsSkipped', 'true');
+
+    trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
   };
 
   const skipTutorialButton = (
