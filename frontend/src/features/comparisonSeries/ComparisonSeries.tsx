@@ -7,12 +7,13 @@ import { Button, Container, Step, StepLabel, Stepper } from '@mui/material';
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
+import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
 
 const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
 
@@ -69,8 +70,11 @@ const ComparisonSeries = ({
 }: Props) => {
   const location = useLocation();
 
-  const { name: pollName } = useCurrentPoll();
   const { t } = useTranslation();
+  const { loginState } = useLoginState();
+  const { name: pollName } = useCurrentPoll();
+
+  const username = loginState.username;
 
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected once the series has started
@@ -97,7 +101,7 @@ const ComparisonSeries = ({
   const [firstComparisonParams, setFirstComparisonParams] = useState('');
   // has the series been skipped by the user?
   const [skipped, setSkipped] = useState(
-    skipKey ? window.localStorage.getItem(skipKey) === 'true' : false
+    skipKey && username ? getSkippedBy(skipKey, username) === true : false
   );
 
   const searchParams = new URLSearchParams(location.search);
@@ -237,9 +241,9 @@ const ComparisonSeries = ({
   const skipTheSeries = () => {
     closeDialog();
 
-    if (skipKey) {
+    if (skipKey && username) {
       setSkipped(true);
-      window.localStorage.setItem(skipKey, 'true');
+      setSkippedBy(skipKey, username);
 
       // Only track skip events if the series is the tutorial. Skipping a
       // generic comparison series is not useful for now.
