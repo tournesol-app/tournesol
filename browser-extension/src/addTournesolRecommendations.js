@@ -567,13 +567,6 @@ function displayRecommendations() {
     }
   }
 
-  // if (
-  //   pathname === '/results' &&
-  //   (!searchVideos || searchVideos.length === 0)
-  // ) {
-  //   return;
-  // }
-
   // Timer will run until needed elements are generated
   var timer = window.setInterval(function () {
     /*
