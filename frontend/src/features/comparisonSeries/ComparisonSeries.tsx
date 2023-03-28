@@ -231,7 +231,7 @@ const ComparisonSeries = ({
     <Button
       sx={{ marginRight: '8px' }}
       color="secondary"
-      variant="contained"
+      variant="text"
       onClick={skipTutorial}
     >
       {t('tutorial.skip')}
