@@ -7,9 +7,9 @@
 const TS_BANNER_DATE_START = new Date('2020-01-01T00:00:00Z');
 const TS_BANNER_DATE_END = new Date('2022-01-01T00:00:00Z');
 const TS_BANNER_ACTION_FR_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLScQzlEKBSA3MqxI0kaPazbyIUnZ4PjFcrR8EFiikG1quyAoiw/viewform?usp=pp_url&entry.939413650=';
+  'https://docs.google.com/forms/d/e/1FAIpQLSd4_8nF0kVnHj3GvTlEAFw-PHAGOAGc1j1NKZbXr8Ga_nIY9w/viewform?usp=pp_url&entry.939413650=';
 const TS_BANNER_ACTION_EN_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSf9PXr-f8o9QqDR-Pi63xRZx4y4nOumNDdwi_jvUWc6LxZRAw/viewform?usp=pp_url&entry.1924714025=';
+  'https://docs.google.com/forms/d/e/1FAIpQLSfEXZLlkLA6ngx8LV-VVpIxV9AZ9MgN-H_U0aTOnVhrXv1XLQ/viewform?usp=pp_url&entry.1924714025=';
 const TS_BANNER_PROOF_KW = 'browser_extension_study_2023';
 
 const videosPerRow = 4;
