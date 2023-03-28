@@ -521,7 +521,7 @@ const getTournesolComponent = () => {
     tournesol_container.classList.add('search');
 
     const view_more_container = document.createElement('div');
-    view_more_container.classList = 'view_more_container';
+    view_more_container.id = 'tournesol_view_more_results';
 
     const view_more_link = document.createElement('a');
     view_more_link.className = 'tournesol_mui_like_button view_more_link';

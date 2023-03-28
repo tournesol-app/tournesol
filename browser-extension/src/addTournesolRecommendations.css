@@ -440,7 +440,7 @@ html[dark] #tournesol_campaign_button {
   margin-left: 8px;
 }
 
-.view_more_container{
+#tournesol_view_more_results {
   display: flex;
   align-items: flex-end;
 }
