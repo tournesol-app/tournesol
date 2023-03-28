@@ -27,6 +27,9 @@ interface Props {
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   length: number;
+  // A magic flag that will enable additional behaviours specific to
+  // tutorials, like  the anonymous tracking by our web analytics.
+  isTutorial?: boolean;
   // Redirect to this URL when the series is over.
   redirectTo?: string;
   keepUIDsAfterRedirect?: boolean;
@@ -57,6 +60,7 @@ const ComparisonSeries = ({
   generateInitial,
   getAlternatives,
   length,
+  isTutorial = false,
   redirectTo,
   keepUIDsAfterRedirect,
   resumable,
@@ -185,7 +189,7 @@ const ComparisonSeries = ({
 
     // Anonymously track the users' progression through the tutorial, to
     // evaluate the tutorial's quality. DO NOT SEND ANY PERSONAL DATA.
-    if (comparisonIsNew) {
+    if (comparisonIsNew && isTutorial === true) {
       trackEvent(TRACKED_EVENTS.tutorial, { props: { step: step + 1 } });
     }
 
@@ -236,7 +240,12 @@ const ComparisonSeries = ({
     if (skipKey) {
       setSkipped(true);
       window.localStorage.setItem(skipKey, 'true');
-      trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
+
+      // Only track skip events if the series is the tutorial. Skipping a
+      // generic comparison series is not useful for now.
+      if (isTutorial === true) {
+        trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
+      }
     }
   };
 

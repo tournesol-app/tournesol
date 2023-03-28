@@ -58,6 +58,7 @@ const ComparisonPage = () => {
 
           {series === 'true' && tutorialLength > 0 ? (
             <ComparisonSeries
+              isTutorial={true}
               dialogs={dialogs}
               generateInitial={true}
               getAlternatives={tutorialAlternatives}
