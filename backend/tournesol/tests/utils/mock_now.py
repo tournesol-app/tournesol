@@ -1,8 +1,6 @@
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import patch
-
-from django.utils import timezone
 
 
 class MockNow:
