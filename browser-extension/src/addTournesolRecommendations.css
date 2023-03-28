@@ -440,4 +440,9 @@ html[dark] #tournesol_campaign_button {
   margin-left: 8px;
 }
 
+.view_more_container{
+  display: flex;
+  align-items: flex-end;
+}
+
 /* ---- end: style of the search results ---- */

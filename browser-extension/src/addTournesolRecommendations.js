@@ -520,19 +520,23 @@ const getTournesolComponent = () => {
   if (path == '/results') {
     tournesol_container.classList.add('search');
 
-    let viewMoreLink = document.createElement('a');
-    viewMoreLink.className = 'tournesol_mui_like_button view_more_link';
-    viewMoreLink.target = '_blank';
-    viewMoreLink.rel = 'noopener';
-    viewMoreLink.href = `https://tournesol.app/recommendations/?search=${search.substring(
+    const view_more_container = document.createElement('div');
+    view_more_container.classList = 'view_more_container';
+
+    const view_more_link = document.createElement('a');
+    view_more_link.className = 'tournesol_mui_like_button view_more_link';
+    view_more_link.target = '_blank';
+    view_more_link.rel = 'noopener';
+    view_more_link.href = `https://tournesol.app/recommendations/?search=${search.substring(
       14
     )}&language=${recommandationsLanguages.replaceAll(
       ',',
       '%2C'
     )}&utm_source=extension`;
-    viewMoreLink.textContent = i18n.getMessage('viewMore');
+    view_more_link.textContent = i18n.getMessage('viewMore');
 
-    tournesol_container.append(viewMoreLink);
+    view_more_container.append(view_more_link);
+    tournesol_container.append(view_more_container);
   }
 
   return tournesol_container;
