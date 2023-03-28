@@ -27,10 +27,17 @@ interface Props {
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   length: number;
-  // redirect to this URL when the series is over
+  // Redirect to this URL when the series is over.
   redirectTo?: string;
   keepUIDsAfterRedirect?: boolean;
   resumable?: boolean;
+  // Allows the users to skip the series. If this value is set, the series
+  // becomes skip-able. This value should be a unique name identifying the
+  // series in the poll (can be suffixed by `_${pollName}`). Used as a local
+  // storage key.
+  skipKey?: string;
+  // Only used if `skipKey` is defined.
+  skipButtonLabel?: string;
 }
 
 const generateSteps = (length: number) => {
@@ -53,6 +60,8 @@ const ComparisonSeries = ({
   redirectTo,
   keepUIDsAfterRedirect,
   resumable,
+  skipKey,
+  skipButtonLabel,
 }: Props) => {
   const location = useLocation();
 
@@ -82,8 +91,9 @@ const ComparisonSeries = ({
   const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
   // a string representing the URL parameters of the first comparison that may be suggested
   const [firstComparisonParams, setFirstComparisonParams] = useState('');
-  const [tutorialIsSkipped, setTutorialIsSkipped] = useState(
-    window.localStorage.getItem('tutorialIsSkipped') == 'true'
+  // has the series been skipped by the user?
+  const [skipped, setSkipped] = useState(
+    skipKey ? window.localStorage.getItem(skipKey) === 'true' : false
   );
 
   const searchParams = new URLSearchParams(location.search);
@@ -220,20 +230,15 @@ const ComparisonSeries = ({
     setDialogOpen(false);
   };
 
-  const skipTutorial = () => {
+  const skipTheSeries = () => {
     closeDialog();
 
-    setTutorialIsSkipped(true);
-    window.localStorage.setItem('tutorialIsSkipped', 'true');
-
-    trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
+    if (skipKey) {
+      setSkipped(true);
+      window.localStorage.setItem(skipKey, 'true');
+      trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
+    }
   };
-
-  const skipTutorialButton = (
-    <Button color="secondary" variant="text" onClick={skipTutorial}>
-      {t('tutorial.skipTheTutorial')}
-    </Button>
-  );
 
   /**
    * Build a string representing the URL parameters of a comparison.
@@ -297,7 +302,7 @@ const ComparisonSeries = ({
     );
   }
 
-  if (redirectTo && (step >= length || tutorialIsSkipped)) {
+  if (redirectTo && (step >= length || skipped)) {
     const futureSearchParams = new URLSearchParams();
 
     if (keepUIDsAfterRedirect) {
@@ -332,7 +337,19 @@ const ComparisonSeries = ({
                 dialog={dialogs[step]}
                 open={dialogOpen}
                 onClose={closeDialog}
-                additionalActionButton={skipTutorialButton}
+                additionalActionButton={
+                  skipKey ? (
+                    <Button
+                      color="secondary"
+                      variant="text"
+                      onClick={skipTheSeries}
+                    >
+                      {skipButtonLabel
+                        ? skipButtonLabel
+                        : t('comparisonSeries.skipTheSeries')}
+                    </Button>
+                  ) : null
+                }
               />
             )}
           <Container maxWidth="md" sx={{ my: 2 }}>

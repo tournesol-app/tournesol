@@ -21,7 +21,12 @@ const ComparisonPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const series: string = searchParams.get('series') || 'false';
 
-  const { options, baseUrl, active: pollActive } = useCurrentPoll();
+  const {
+    options,
+    baseUrl,
+    active: pollActive,
+    name: pollName,
+  } = useCurrentPoll();
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
@@ -60,6 +65,8 @@ const ComparisonPage = () => {
               redirectTo={`${baseUrl}${redirectTo}`}
               keepUIDsAfterRedirect={keepUIDsAfterRedirect}
               resumable={true}
+              skipKey={`tutorialSkipped_${pollName}`}
+              skipButtonLabel={t('tutorial.skipTheTutorial')}
             />
           ) : (
             <Comparison />
