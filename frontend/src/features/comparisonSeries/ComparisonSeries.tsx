@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import { Container, Step, StepLabel, Stepper } from '@mui/material';
+import { Button, Container, Step, StepLabel, Stepper } from '@mui/material';
 
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
+import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
 
 const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
 
@@ -26,10 +28,20 @@ interface Props {
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   length: number;
-  // redirect to this URL when the series is over
+  // A magic flag that will enable additional behaviours specific to
+  // tutorials, like  the anonymous tracking by our web analytics.
+  isTutorial?: boolean;
+  // Redirect to this URL when the series is over.
   redirectTo?: string;
   keepUIDsAfterRedirect?: boolean;
   resumable?: boolean;
+  // Allows the users to skip the series. If this value is set, the series
+  // becomes skip-able. This value should be a unique name identifying the
+  // series in the poll (can be suffixed by `_${pollName}`). Used as a local
+  // storage key.
+  skipKey?: string;
+  // Only used if `skipKey` is defined.
+  skipButtonLabel?: string;
 }
 
 const generateSteps = (length: number) => {
@@ -49,13 +61,20 @@ const ComparisonSeries = ({
   generateInitial,
   getAlternatives,
   length,
+  isTutorial = false,
   redirectTo,
   keepUIDsAfterRedirect,
   resumable,
+  skipKey,
+  skipButtonLabel,
 }: Props) => {
   const location = useLocation();
 
+  const { t } = useTranslation();
+  const { loginState } = useLoginState();
   const { name: pollName } = useCurrentPoll();
+
+  const username = loginState.username;
 
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected once the series has started
@@ -80,6 +99,10 @@ const ComparisonSeries = ({
   const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
   // a string representing the URL parameters of the first comparison that may be suggested
   const [firstComparisonParams, setFirstComparisonParams] = useState('');
+  // has the series been skipped by the user?
+  const [skipped, setSkipped] = useState(
+    skipKey && username ? getSkippedBy(skipKey, username) === true : false
+  );
 
   const searchParams = new URLSearchParams(location.search);
   const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
@@ -170,7 +193,7 @@ const ComparisonSeries = ({
 
     // Anonymously track the users' progression through the tutorial, to
     // evaluate the tutorial's quality. DO NOT SEND ANY PERSONAL DATA.
-    if (comparisonIsNew) {
+    if (comparisonIsNew && isTutorial === true) {
       trackEvent(TRACKED_EVENTS.tutorial, { props: { step: step + 1 } });
     }
 
@@ -213,6 +236,21 @@ const ComparisonSeries = ({
 
   const closeDialog = () => {
     setDialogOpen(false);
+  };
+
+  const skipTheSeries = () => {
+    closeDialog();
+
+    if (skipKey && username) {
+      setSkipped(true);
+      setSkippedBy(skipKey, username);
+
+      // Only track skip events if the series is the tutorial. Skipping a
+      // generic comparison series is not useful for now.
+      if (isTutorial === true) {
+        trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
+      }
+    }
   };
 
   /**
@@ -277,7 +315,7 @@ const ComparisonSeries = ({
     );
   }
 
-  if (redirectTo && step >= length) {
+  if (redirectTo && (step >= length || skipped)) {
     const futureSearchParams = new URLSearchParams();
 
     if (keepUIDsAfterRedirect) {
@@ -312,6 +350,19 @@ const ComparisonSeries = ({
                 dialog={dialogs[step]}
                 open={dialogOpen}
                 onClose={closeDialog}
+                additionalActionButton={
+                  skipKey ? (
+                    <Button
+                      color="secondary"
+                      variant="text"
+                      onClick={skipTheSeries}
+                    >
+                      {skipButtonLabel
+                        ? skipButtonLabel
+                        : t('comparisonSeries.skipTheSeries')}
+                    </Button>
+                  ) : null
+                }
               />
             )}
           <Container maxWidth="md" sx={{ my: 2 }}>
