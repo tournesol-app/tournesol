@@ -14,7 +14,7 @@ class VideoMetadata(serializers.Serializer):
     duration = serializers.IntegerField(
         allow_null=True,
         default=None,
-        help_text="Duration in seconds"
+        help_text="Duration in seconds. May be null (e.g on live streams)"
     )
     views = serializers.IntegerField(allow_null=True, default=None)
     language = serializers.CharField(allow_null=True, default=None)
