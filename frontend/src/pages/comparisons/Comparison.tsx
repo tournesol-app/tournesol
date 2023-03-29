@@ -72,8 +72,8 @@ const ComparisonPage = () => {
               aria-label="Should be largely recommended"
               data-mui-internal-clone-element="true"
             />{' '}
-            Thanks to everyone, Tournesol has reached {weeklyPercent}% of its
-            weekly objective of 1000 comparisons.
+            {t('comparison.thanksForWeeklyObjectiveFirst')} {weeklyPercent}
+            {t('comparison.thanksForWeeklyObjectiveSecond')}
           </Typography>
           <LinearProgress
             variant="buffer"
@@ -94,7 +94,7 @@ const ComparisonPage = () => {
             }}
           />
           <Typography pt={2}>
-            4,2% comes directly from you! / Help us reach this goal!
+            4,2% comes directly from you! / {t('comparison.helpReachTheGoal')}
           </Typography>
         </Box>
       </Box>

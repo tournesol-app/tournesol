@@ -75,7 +75,10 @@
     "submitAComparison": "Soumettre une comparaison",
     "inactivePoll": "Ce scrutin est fermé.",
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
-    "comparisonCriteria": "Critères de comparaison"
+    "comparisonCriteria": "Critères de comparaison",
+    "thanksForWeeklyObjectiveFirst" : "Grâce à tous, Tournesol a atteint ",
+    "thanksForWeeklyObjectiveSecond" : "% de son objectif hebdomadaire de 1000 comparaisons.",
+    "helpReachTheGoal" : "Aidez-nous à atteindre cet objectif!"
   },
   "comparisonHelper": {
     "hideHelp": "Cacher l'aide",
