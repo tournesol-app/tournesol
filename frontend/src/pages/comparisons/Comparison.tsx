@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography } from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -29,8 +29,75 @@ const ComparisonPage = () => {
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
+  // Code for issue solving
+  // const { isLoggedIn, loginState } = useLoginState();
+  const [userWeekly, setUserWeekly] = useState(30); // progress = your current week contribution
+  const [totalWeekly, setTotalWeekly] = React.useState(70); // buffer = total current week contribution
+  // const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
+
+  //new added
+  // const stats: PollStats | undefined = useAppSelector(selectStats); // doesn't get automatically updated when we submit a comparison here.
+  // console.log('OLD Poll Data is here:', stats);
+
+  // const { statsState } = useStatsRefresh();
+  // console.log('STATS STATE:', statsState);
+
+  // console.log('Login State:', isLoggedIn, loginState);
+
+  // const weeklyPercent = statsState.currentWeekComparisonCount / 10;
+  const weeklyPercent = 30;
+
   return (
     <>
+      <Box width="100%" justifyContent="space-between">
+        <Box
+          px={4}
+          pt={4}
+          pb={2}
+          mx={'auto'}
+          display="flex"
+          flexDirection="column"
+          width="100%"
+          maxWidth="800px"
+          minHeight="100px"
+          textAlign="center"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Typography pb={2}>
+            <img
+              src="/svg/LogoSmall.svg"
+              width="18px"
+              alt="Should be largely recommended"
+              aria-label="Should be largely recommended"
+              data-mui-internal-clone-element="true"
+            />{' '}
+            Thanks to everyone, Tournesol has reached {weeklyPercent}% of its
+            weekly objective of 1000 comparisons.
+          </Typography>
+          <LinearProgress
+            variant="buffer"
+            value={userWeekly} // later set it as : userCurrentWeekComparisonCount
+            valueBuffer={totalWeekly} // later set it as : stats?.currentWeekComparisonCount}
+            color="success"
+            sx={{
+              width: '100%',
+              maxWidth: '400px',
+              height: '12px',
+              borderRadius: '6px',
+              // borderWidth: '4px'
+              '& .MuiLinearProgress-dashed': {
+                backgroundColor: 'lightgray', // or gainsboro
+                backgroundImage: 'none',
+                animation: 'none',
+              },
+            }}
+          />
+          <Typography pt={2}>
+            4,2% comes directly from you! / Help us reach this goal!
+          </Typography>
+        </Box>
+      </Box>
       <ContentHeader title={t('comparison.submitAComparison')} />
       <ContentBox>
         <Box
