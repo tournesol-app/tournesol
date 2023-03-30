@@ -10,6 +10,8 @@ from core.tests.factories.user import UserFactory
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
 
+from .factories.entity import VideoFactory
+
 
 def raise_(exception):
     raise exception
@@ -171,6 +173,12 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
             response.headers["Content-Disposition"],
             'inline; filename="tournesol_screenshot_og.png"',
         )
+
+    def test_get_preview_no_duration(self):
+        video = VideoFactory(metadata__duration=None)
+        response = self.client.get(f"{self.preview_url}{video.uid}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
 
     @patch("requests.get", lambda x, timeout=None: raise_(ConnectionError))
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
