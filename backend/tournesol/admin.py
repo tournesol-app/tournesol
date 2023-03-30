@@ -100,7 +100,7 @@ class EntityAdmin(admin.ModelAdmin):
     @admin.display(description="publication_date", ordering="metadata__publication_date")
     def get_publication_date(obj):
         return obj.metadata.get("publication_date")
-    
+
 
 @admin.register(EntityPollRating)
 class EntityPollRatingAdmin(admin.ModelAdmin):
@@ -117,9 +117,12 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
         "get_language",
         "get_link_to_tournesol",
     )
-    list_filter = ("poll", EntityLanguageFilter,)
+    list_filter = (
+        "poll",
+        EntityLanguageFilter,
+    )
     search_fields = ("entity__uid", "entity__metadata__name", "entity__metadata__uploader")
-    list_select_related = ("poll","entity")
+    list_select_related = ("poll", "entity")
     raw_id_fields = ("entity",)
     readonly_fields = ("poll", "entity", "tournesol_score", "n_comparisons", "n_contributors")
 
@@ -129,12 +132,12 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
         model_label = entity._meta.model_name
         url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
         return format_html(f'<a href="{url}">{entity.uid}</a>')
-    
+
     @staticmethod
     @admin.display(description="name", ordering="entity__metadata__name")
     def get_name(obj):
         return obj.entity.metadata.get("name")
-    
+
     @staticmethod
     @admin.display(description="uploader", ordering="entity__metadata__uploader")
     def get_uploader(obj):
@@ -144,7 +147,7 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
     @admin.display(description="publication_date", ordering="entity__metadata__publication_date")
     def get_publication_date(obj):
         return obj.entity.metadata.get("publication_date")
-    
+
     @staticmethod
     @admin.display(description="Tournesol score", ordering="tournesol_score")
     def get_tournesol_score(obj):
@@ -152,13 +155,13 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
             return round(obj.tournesol_score, 2)
         except TypeError:
             return obj.tournesol_score
-    
+
     @staticmethod
     @admin.display(description="language", ordering="entity__metadata__language")
     def get_language(obj):
         language_code = obj.entity.metadata.get("language")
         return LANGUAGE_CODE_TO_NAME_MATCHING.get(language_code, language_code)
-    
+
     @staticmethod
     @admin.display(description="publication_date")
     def get_link_to_tournesol(obj):
