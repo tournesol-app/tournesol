@@ -144,7 +144,7 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
         return obj.entity.metadata.get("uploader")
 
     @staticmethod
-    @admin.display(description="publication_date", ordering="entity__metadata__publication_date")
+    @admin.display(description="publication date", ordering="entity__metadata__publication_date")
     def get_publication_date(obj):
         return obj.entity.metadata.get("publication_date")
 
@@ -163,7 +163,7 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
         return LANGUAGE_CODE_TO_NAME_MATCHING.get(language_code, language_code)
 
     @staticmethod
-    @admin.display(description="publication_date")
+    @admin.display(description="link")
     def get_link_to_tournesol(obj):
         return obj.entity.link_to_tournesol()
 
