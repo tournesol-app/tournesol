@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models
 from django.db.models import Prefetch, Q
 from django.db.models.expressions import RawSQL
 from django.utils import timezone
@@ -411,14 +411,16 @@ class Entity(models.Model):
                 f"Unexpected errors in video metadata format: {serializer.errors}"
             )
 
-        entity = cls.objects.create(
-            type=TYPE_VIDEO,
-            uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
-            metadata=metadata,
-            metadata_timestamp=timezone.now(),
-        )
-
-        return entity
+        try:
+            return cls.objects.create(
+                type=TYPE_VIDEO,
+                uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
+                metadata=metadata,
+                metadata_timestamp=timezone.now(),
+            )
+        except IntegrityError:
+            # A concurrent request may have created the video
+            return cls.get_from_video_id(video_id)
 
     @classmethod
     def get_from_video_id(cls, video_id):

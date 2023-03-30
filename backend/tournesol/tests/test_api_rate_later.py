@@ -1,7 +1,8 @@
+from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import ANY
 
-from django.db import transaction
-from django.test import TestCase, override_settings
+from django.db import connection, transaction
+from django.test import TestCase, TransactionTestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -23,7 +24,7 @@ class RateLaterCommonMixinTestCase:
 
     _uid_not_in_db = "yt:xSqqXN0D4fY"
 
-    def common_set_up(self) -> None:
+    def setUp(self) -> None:
         self.maxDiff = None
 
         self.client = APIClient()
@@ -48,10 +49,6 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
 
     The `RateLaterList` API provides the endpoints list and create.
     """
-
-    def setUp(self) -> None:
-        self.common_set_up()
-
     def test_anon_401_list(self) -> None:
         """
         An anonymous user cannot list its rate-later items, even if the poll
@@ -220,10 +217,6 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
 
     The `RateLaterList` API provides the endpoints get and delete.
     """
-
-    def setUp(self) -> None:
-        self.common_set_up()
-
     def test_anon_401_get(self) -> None:
         """
         An anonymous user cannot get a rate-later item, even if the poll
@@ -373,10 +366,6 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
     Note: the tests related to `Entity.auto_remove_from_rate_later` could be
     moved in an Entity specific test case.
     """
-
-    def setUp(self) -> None:
-        self.common_set_up()
-
     def test_auto_remove(self) -> None:
         """
         Test of the `auto_remove_from_rate_later` method of the Entity model.
@@ -564,3 +553,24 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
             RateLater.objects.filter(poll=other_poll, user=user, entity=entity).count(),
             1,
         )
+
+
+class TestConcurrentRequests(RateLaterCommonMixinTestCase, TransactionTestCase):
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_simultaneous_requests(self):
+        data = {"entity": {"uid": self._uid_not_in_db}}
+
+        def add_to_rate_later():
+            user = UserFactory()
+            client = APIClient()
+            client.force_authenticate(user)
+            response = client.post(self.rate_later_base_url, data, format="json")
+            connection.close()  # Make sure that db connection is closed in the current thread
+            return response
+
+        with ThreadPoolExecutor() as executor:
+            thread1 = executor.submit(add_to_rate_later)
+            thread2 = executor.submit(add_to_rate_later)
+
+        self.assertEqual(thread1.result().status_code, status.HTTP_201_CREATED)
+        self.assertEqual(thread2.result().status_code, status.HTTP_201_CREATED)
