@@ -7,8 +7,7 @@ export const DEFAULT_POLL_STATS = {
   comparedEntityCount: 0,
   lastMonthComparedEntityCount: 0,
   comparisonCount: 0,
-  lastThirtyDaysComparisonCount: 0,
-  currentWeekComparisonCount: 0,
+  lastMonthComparisonCount: 0,
 };
 
 export async function getPollStats(
@@ -24,7 +23,6 @@ export async function getPollStats(
     comparisonCount: pollStats.comparisons.total,
     lastMonthUserCount: stats.active_users.joined_last_month,
     lastMonthComparedEntityCount: pollStats.compared_entities.added_last_month,
-    lastThirtyDaysComparisonCount: pollStats.comparisons.added_last_30_days,
-    currentWeekComparisonCount: pollStats.comparisons.added_current_week,
+    lastMonthComparisonCount: pollStats.comparisons.added_last_month,
   };
 }

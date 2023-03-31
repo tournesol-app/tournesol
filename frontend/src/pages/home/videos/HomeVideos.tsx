@@ -16,9 +16,6 @@ import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSec
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
 
-import { useAppDispatch } from 'src/app/hooks';
-import { fetchStatsData } from 'src/features/comparisons/statsSlice';
-
 const HomeVideosPage = () => {
   const { t } = useTranslation();
 
@@ -27,8 +24,6 @@ const HomeVideosPage = () => {
   const { baseUrl, active, name: pollName } = useCurrentPoll();
 
   const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
-
-  const dispatch = useAppDispatch();
 
   const homeSectionSx = {
     width: '100%',
@@ -46,7 +41,6 @@ const HomeVideosPage = () => {
         const pollStats = await getPollStats(pollName);
         if (pollStats) {
           setStats(pollStats);
-          dispatch(fetchStatsData(pollStats));
         }
       } catch (reason) {
         showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
@@ -54,7 +48,7 @@ const HomeVideosPage = () => {
     }
 
     getPollStatsAsync(pollName);
-  }, [pollName, showWarningAlert, t, dispatch]);
+  }, [pollName, showWarningAlert, t]);
 
   return (
     <>
@@ -131,9 +125,7 @@ const HomeVideosPage = () => {
           <ComparisonSection
             comparisonStats={{
               comparisonCount: stats.comparisonCount,
-              lastThirtyDaysComparisonCount:
-                stats.lastThirtyDaysComparisonCount,
-              currentWeekComparisonCount: stats.currentWeekComparisonCount,
+              lastMonthComparisonCount: stats.lastMonthComparisonCount,
             }}
           />
         </Grid2>

@@ -2482,13 +2482,10 @@ components:
       properties:
         total:
           type: integer
-        added_last_30_days:
-          type: integer
-        added_current_week:
+        added_last_month:
           type: integer
       required:
-      - added_current_week
-      - added_last_30_days
+      - added_last_month
       - total
     ContributorCriteriaCorrelations:
       type: object
@@ -2929,21 +2926,12 @@ components:
       type: object
       description: The settings common to all polls.
       properties:
-        comparison__criteria_order:
-          type: array
-          items:
-            type: string
         rate_later__auto_remove:
           type: integer
     GenericPollUserSettingsRequest:
       type: object
       description: The settings common to all polls.
       properties:
-        comparison__criteria_order:
-          type: array
-          items:
-            type: string
-            minLength: 1
         rate_later__auto_remove:
           type: integer
     GivenVoucher:

@@ -16,12 +16,12 @@ import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
  */
 const ComparisonPage = () => {
   const { t } = useTranslation();
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const series: string = searchParams.get('series') || 'false';
 
   const { options, baseUrl, active: pollActive } = useCurrentPoll();
-
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;

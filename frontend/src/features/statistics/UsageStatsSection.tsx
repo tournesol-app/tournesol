@@ -116,8 +116,8 @@ const StatsSection = ({ externalData }: StatsSectionProps) => {
             text={t('stats.comparisons')}
             count={externalData?.comparisonCount ?? data.comparisonCount}
             lastMonthCount={
-              externalData?.lastThirtyDaysComparisonCount ??
-              data.lastThirtyDaysComparisonCount
+              externalData?.lastMonthComparisonCount ??
+              data.lastMonthComparisonCount
             }
           />
         </Grid>
