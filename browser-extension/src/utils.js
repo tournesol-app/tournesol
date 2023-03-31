@@ -125,3 +125,40 @@ export const getRandomSubarray = (arr, size) => {
 export const getVideoStatistics = (videoId) => {
   return fetchTournesolApi(`videos/?video_id=${videoId}`, 'GET', {});
 };
+
+/**
+   * The browser API is expected to return the language indentifier following
+   * the RFC 5646.
+   *
+   * See: https://datatracker.ietf.org/doc/html/rfc5646#section-2.1
+   */
+export const isNavigatorLang = (lang) => {
+  let expected = lang.toLowerCase();
+  let found = window.navigator.language.toLocaleLowerCase();
+
+  // `expected` can be the shortest ISO 639 code of a language.
+  //  Example: 'fr'.
+  if (found === expected) {
+    return true;
+  }
+
+  // The shortest ISO 639 code can be followed by other "subtags" like the
+  // region, or the variant. Example: 'fr-CA'.
+  if (found.startsWith(expected + '-')) {
+    return true;
+  }
+
+  return false;
+};
+
+export const convertDurationToClockDuration = (duration) => {
+  const roundToTwoDigits = (number) => {
+    return number < 10 ? `0${number}` : `${number}`;
+  };
+  const hours = Math.floor(duration / 3600);
+  const minutes = roundToTwoDigits(Math.floor((duration % 3600) / 60));
+  const seconds = roundToTwoDigits(duration % 60);
+  return hours > 0
+    ? `${hours}:${minutes}:${seconds}`
+    : `${minutes}:${seconds}`;
+};
