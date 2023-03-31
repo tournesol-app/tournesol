@@ -1,25 +1,22 @@
 import { TournesolRecommendations } from './TournesolRecommendations.js';
+import { defaultTournesolRecommendationsOptions } from './TournesolRecommendationsOptions.js';
 
 export class TournesolSearchRecommendations extends TournesolRecommendations {
-  searchQuery;
-
   constructor(options = defaultTournesolRecommendationsOptions) {
     super(options);
+    this.searchQuery = '';
   }
 
   loadRecommandations() {
     // Only enable on youtube.com/results
-    console.log(this);
     if (this.path != location.pathname) return;
-    console.log(2);
+
     if (this.areRecommendationsLoading) return;
-    console.log(3);
+
     this.areRecommendationsLoading = true;
-    console.log(4);
+
     chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-      console.log(5);
       if (searchEnabled) {
-        console.log(6);
         this.areRecommendationsLoading = true;
         this.searchQuery = location.search
           .substring(1)
@@ -42,12 +39,12 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
           },
           this.handleResponse
         );
-        
       } else {
         //Remove the component from the previous search if the search has just been turned off
+        if (this.tournesol_component) this.tournesol_component.remove();
+
         // reset the recommendationsLoading if search is off either it will never
         // try to reload new videos for the search
-        if (this.tournesol_component) this.tournesol_component.remove();
         this.areRecommendationsLoading = false;
       }
     });

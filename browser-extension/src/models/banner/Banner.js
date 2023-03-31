@@ -1,15 +1,7 @@
 import { isNavigatorLang } from '../../utils.js';
 import { defaultBannerOptions } from './BannerOptions.js';
 
-
 export class Banner {
-  TS_BANNER_DATE_START;
-  TS_BANNER_DATE_END;
-  TS_BANNER_ACTION_FR_URL;
-  TS_BANNER_ACTION_EN_URL;
-  TS_BANNER_PROOF_KW;
-  banner = undefined;
-
   constructor(options = defaultBannerOptions) {
     this.TS_BANNER_DATE_START = options.TS_BANNER_DATE_START;
     this.TS_BANNER_DATE_END = options.TS_BANNER_DATE_END;
@@ -30,7 +22,6 @@ export class Banner {
   }
 
   createBanner() {
-
     let banner = document.createElement('div');
     banner.id = 'tournesol_banner';
     banner.className = 'tournesol_banner';
@@ -151,7 +142,6 @@ export class Banner {
     banner.appendChild(closeButtonContainer);
 
     return banner;
-    
   }
 
   bannerShouldBeDisplayed() {
@@ -164,4 +154,3 @@ export class Banner {
     return false;
   }
 }
-

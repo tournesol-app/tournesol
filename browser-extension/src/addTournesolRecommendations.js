@@ -49,6 +49,4 @@
   document.addEventListener('yt-navigate-finish', process);
   if (document.body) process();
   else document.addEventListener('DOMContentLoaded', process);
-
-  
 })();

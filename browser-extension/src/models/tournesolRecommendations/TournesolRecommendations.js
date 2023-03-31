@@ -2,22 +2,15 @@ import { convertDurationToClockDuration } from '../../utils.js';
 import { defaultTournesolRecommendationsOptions } from './TournesolRecommendationsOptions.js';
 
 export class TournesolRecommendations {
-  isPageLoaded = false;
-  isExpanded = false;
-  areRecommendationsLoading = false;
-  areRecommendationsLoaded = false;
-  videos = [];
-  additionalVideos = [];
-  recommendationsLanguage = 'en';
-  videosPerRow;
-  rowsWhenExpanded;
-  recommendationsNumber;
-
-  path;
-  banner;
-  parentComponentQuery;
-
   constructor(options = defaultTournesolRecommendationsOptions) {
+    this.isPageLoaded = false;
+    this.isExpanded = false;
+    this.areRecommendationsLoading = false;
+    this.areRecommendationsLoaded = false;
+    this.videos = [];
+    this.additionalVideos = [];
+    this.recommendationsLanguage = 'en';
+
     this.videosPerRow = options.videosPerRow;
     this.rowsWhenExpanded = options.rowsWhenExpanded;
     this.path = options.path;
@@ -30,11 +23,11 @@ export class TournesolRecommendations {
     try {
       // Get parent element for the boxes in youtube page
       let contents;
-      
+
       contents = document.querySelector(this.parentComponentQuery);
 
       if (!contents || !contents.children[1]) return;
-      
+
       return contents;
     } catch (error) {
       return;
@@ -42,9 +35,8 @@ export class TournesolRecommendations {
   }
 
   getTournesolComponent() {
-
     // remove the component before rerender so it's not duplicate
-    if(this.tournesol_component) this.tournesol_component.remove()
+    if (this.tournesol_component) this.tournesol_component.remove();
     // Create new container
     let tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -69,7 +61,7 @@ export class TournesolRecommendations {
     tournesol_title.id = 'tournesol_title';
     tournesol_title.append(chrome.i18n.getMessage('recommendedByTournesol'));
     inline_div.append(tournesol_title);
-   
+
     // Display the campaign button only if there is a banner.
     if (this.banner.bannerShouldBeDisplayed()) {
       const campaignButton = document.createElement('button');
@@ -85,7 +77,6 @@ export class TournesolRecommendations {
       campaignButton.append(campaignButtonImg);
 
       campaignButton.onclick = () => {
-        
         chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
           this.banner.displayBanner();
         });
@@ -103,7 +94,6 @@ export class TournesolRecommendations {
 
     refresh_button.className = 'tournesol_simple_button';
     refresh_button.onclick = () => {
-      
       refresh_button.disabled = true;
       this.loadRecommandations();
     };
@@ -146,9 +136,8 @@ export class TournesolRecommendations {
     bottom_action_bar.append(expand_button);
 
     tournesol_container.append(inline_div);
-    
+
     if (this.banner.bannerShouldBeDisplayed()) {
-     
       tournesol_container.append(this.banner.banner);
     }
 
@@ -168,8 +157,6 @@ export class TournesolRecommendations {
     if (this.path == '/results') {
       tournesol_container.classList.add('search');
 
-      
-
       const view_more_container = document.createElement('div');
       view_more_container.classList = 'view_more_container';
 
@@ -177,7 +164,9 @@ export class TournesolRecommendations {
       view_more_link.className = 'tournesol_mui_like_button view_more_link';
       view_more_link.target = '_blank';
       view_more_link.rel = 'noopener';
-      view_more_link.href = `https://tournesol.app/recommendations/?search=${this.searchQuery}&language=${this.recommandationsLanguages.replaceAll(
+      view_more_link.href = `https://tournesol.app/recommendations/?search=${
+        this.searchQuery
+      }&language=${this.recommandationsLanguages.replaceAll(
         ',',
         '%2C'
       )}&utm_source=extension`;
@@ -283,7 +272,9 @@ export class TournesolRecommendations {
         video.n_comparisons,
       ])}</span>&nbsp
       <span class="contributors">
-        ${chrome.i18n.getMessage('comparisonsContributors', [video.n_contributors])}
+        ${chrome.i18n.getMessage('comparisonsContributors', [
+          video.n_contributors,
+        ])}
       </span>`;
     details_div.append(video_score);
 
@@ -355,14 +346,13 @@ export class TournesolRecommendations {
 
   // This part creates video boxes from API's response JSON
   displayRecommendations() {
-    
     if (!this.videos || this.videos.length === 0) {
       // remove the component if we did not receive video from the response
       // so it remove the videos from the previous results
-      if(this.tournesol_component) this.tournesol_component.remove()
+      if (this.tournesol_component) this.tournesol_component.remove();
       return;
     }
-    
+
     // Timer will run until needed elements are generated
     var timer = window.setInterval(() => {
       /*
@@ -390,16 +380,13 @@ export class TournesolRecommendations {
     data: videosResponse,
     recommandationsLanguages: languagesString = 'en',
   }) {
-    
-    console.log(videosResponse, this.isPageLoaded)
     this.areRecommendationsLoading = false;
     this.areRecommendationsLoaded = true;
     this.videos = videosResponse.slice(0, this.videosPerRow);
     this.additionalVideos = videosResponse.slice(this.videosPerRow);
     this.recommandationsLanguages = languagesString;
-    
+
     if (this.isPageLoaded) {
-      
       this.displayRecommendations();
     }
   }
@@ -423,9 +410,7 @@ export class TournesolRecommendations {
   }
 
   process() {
-    
     this.isPageLoaded = true;
-
 
     if (location.pathname === this.path) {
       if (this.videos.length > 0) {
@@ -488,4 +473,3 @@ export class TournesolRecommendations {
     }
   }
 }
-

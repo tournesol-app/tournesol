@@ -127,11 +127,11 @@ export const getVideoStatistics = (videoId) => {
 };
 
 /**
-   * The browser API is expected to return the language indentifier following
-   * the RFC 5646.
-   *
-   * See: https://datatracker.ietf.org/doc/html/rfc5646#section-2.1
-   */
+ * The browser API is expected to return the language indentifier following
+ * the RFC 5646.
+ *
+ * See: https://datatracker.ietf.org/doc/html/rfc5646#section-2.1
+ */
 export const isNavigatorLang = (lang) => {
   let expected = lang.toLowerCase();
   let found = window.navigator.language.toLocaleLowerCase();
@@ -158,7 +158,5 @@ export const convertDurationToClockDuration = (duration) => {
   const hours = Math.floor(duration / 3600);
   const minutes = roundToTwoDigits(Math.floor((duration % 3600) / 60));
   const seconds = roundToTwoDigits(duration % 60);
-  return hours > 0
-    ? `${hours}:${minutes}:${seconds}`
-    : `${minutes}:${seconds}`;
+  return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
 };
