@@ -1,10 +1,12 @@
 import json
+import logging
 import sys
 
 import google.oauth2.credentials
 import googleapiclient.discovery
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from googleapiclient.errors import HttpError
 
 from core.utils.time import time_ago
 from tournesol.models import Entity
@@ -50,6 +52,33 @@ class Command(BaseCommand):
 
         return items_dict
 
+    def insert_video_in_playlist(self, yt_client, playlist_id, video_id):
+        try:
+            yt_client.playlistItems().insert(
+                part="snippet",
+                body={
+                    "snippet": {
+                        "playlistId": playlist_id,
+                        "position": 0,
+                        "resourceId": {
+                            "kind": "youtube#video",
+                            "videoId": video_id,
+                        },
+                    }
+                },
+            ).execute()
+        except HttpError as e:
+            if e.status_code == 400:
+                # The video may no longer be available on Youtube
+                logging.warning(
+                    "Failed to insert video_id '%s' in playlist '%s'",
+                    video_id,
+                    playlist_id,
+                    exc_info=True,
+                )
+            else:
+                raise
+
     def sync_playlist(self, yt_client, playlist_id, lang):
         videos_to_publish = {v.video_id: v for v in self.get_top_recent_videos(lang)}
         existing_items = self.get_existing_items(yt_client, playlist_id)
@@ -63,19 +92,9 @@ class Command(BaseCommand):
         # to put videos with higher scores at the top of playlist
         for video_id in videos_to_publish:
             if video_id in video_ids_to_insert:
-                yt_client.playlistItems().insert(
-                    part="snippet",
-                    body={
-                        "snippet": {
-                            "playlistId": playlist_id,
-                            "position": 0,
-                            "resourceId": {
-                                "kind": "youtube#video",
-                                "videoId": video_id,
-                            },
-                        }
-                    },
-                ).execute()
+                self.insert_video_in_playlist(
+                    yt_client, playlist_id=playlist_id, video_id=video_id
+                )
 
     def handle(self, *args, **options):
         if not settings.YOUTUBE_CHANNEL_CREDENTIALS_JSON:
@@ -91,8 +110,6 @@ class Command(BaseCommand):
 
         channel_credentials = json.loads(settings.YOUTUBE_CHANNEL_CREDENTIALS_JSON)
         credentials = google.oauth2.credentials.Credentials(**channel_credentials)
-        yt_client = googleapiclient.discovery.build(
-            "youtube", "v3", credentials=credentials
-        )
+        yt_client = googleapiclient.discovery.build("youtube", "v3", credentials=credentials)
         for playlist in PLAYLISTS:
             self.sync_playlist(yt_client, playlist["playlist_id"], playlist["lang"])
