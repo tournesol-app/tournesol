@@ -42,6 +42,7 @@ class VoucherGivenListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return Voucher.objects.filter(
             by=self.request.user,
+            to__is_active=True,
         )
 
 
@@ -57,4 +58,5 @@ class VoucherReceivedListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return Voucher.objects.filter(
             to=self.request.user,
+            by__is_active=True,
         )
