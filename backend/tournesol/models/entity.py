@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models
 from django.db.models import Prefetch, Q
 from django.db.models.expressions import RawSQL
 from django.utils import timezone
@@ -46,6 +46,19 @@ class EntityQueryset(models.QuerySet):
                     poll__name=poll_name, score_mode=mode
                 ),
                 to_attr="_prefetched_criteria_scores",
+            )
+        )
+
+    def with_prefetched_poll_ratings(self, poll_name):
+        # pylint: disable=import-outside-toplevel
+        from tournesol.models.entity_poll_rating import EntityPollRating
+        return self.prefetch_related(
+            Prefetch(
+                "all_poll_ratings",
+                queryset=EntityPollRating.objects.filter(
+                    poll__name=poll_name,
+                ),
+                to_attr="single_poll_ratings"
             )
         )
 
@@ -200,6 +213,35 @@ class Entity(models.Model):
         )
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
 
+    def update_entity_poll_rating(self, poll, ratings: tuple = None):
+        """
+        Update the related `EntityPollRating` object.
+
+        The new ratings can be provided directly by passing `ratings` as
+        argument, or automatically computed by reading the database instead.
+
+        TODO: the `ratings` parameter won't be needed anymore when the ratings
+              fields will be removed from the `Entity` model. Don't forget to
+              delete it.
+
+        Keyword arguments:
+        poll -- the poll inside which the ratings will be saved
+        ratings -- the first item is the nbr of comparisons, the second the
+                   nbr of contributors
+        """
+        from .entity_poll_rating import EntityPollRating  # pylint: disable=import-outside-toplevel
+
+        entity_rating, _ = EntityPollRating.objects.get_or_create(
+            poll=poll, entity=self
+        )
+
+        if ratings:
+            entity_rating.n_comparisons = ratings[0]
+            entity_rating.n_contributors = ratings[1]
+            entity_rating.save(update_fields=["n_comparisons", "n_contributors"])
+        else:
+            entity_rating.update_n_ratings()
+
     def auto_remove_from_rate_later(self, poll, user) -> None:
         """
         When called, the entity is removed from the user's rate-later list if
@@ -297,7 +339,8 @@ class Entity(models.Model):
         criteria_distributions = []
         for key, values in scores_dict.items():
             score_range = (min_score_base, max_score_base)
-            distribution, bins = np.histogram(np.clip(values, *score_range), range=score_range)
+            distribution, bins = np.histogram(np.clip(
+                values, *score_range), bins=20, range=score_range)
 
             criteria_distributions.append(CriteriaDistributionScore(
                 key, distribution, bins))
@@ -368,14 +411,16 @@ class Entity(models.Model):
                 f"Unexpected errors in video metadata format: {serializer.errors}"
             )
 
-        entity = cls.objects.create(
-            type=TYPE_VIDEO,
-            uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
-            metadata=metadata,
-            metadata_timestamp=timezone.now(),
-        )
-
-        return entity
+        try:
+            return cls.objects.create(
+                type=TYPE_VIDEO,
+                uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
+                metadata=metadata,
+                metadata_timestamp=timezone.now(),
+            )
+        except IntegrityError:
+            # A concurrent request may have created the video
+            return cls.get_from_video_id(video_id)
 
     @classmethod
     def get_from_video_id(cls, video_id):

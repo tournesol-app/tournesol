@@ -144,7 +144,7 @@ class StatisticsView(generics.GenericAPIView):
             time.min,
             tzinfo=timezone.utc,
         )
-        comparisons = Comparison.objects.filter(poll=poll)
+        comparisons = Comparison.objects.filter(poll=poll, user__is_active=True)
         comparison_count = comparisons.count()
         last_30_days_comparison_count = comparisons.filter(
             datetime_add__gte=time_ago(days=self._days_delta)

@@ -3,8 +3,18 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
+// TODO: these values are placeholder values that should be updated.
+const TS_BANNER_DATE_START = new Date('2020-01-01T00:00:00Z');
+const TS_BANNER_DATE_END = new Date('2022-01-01T00:00:00Z');
+const TS_BANNER_ACTION_FR_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSd4_8nF0kVnHj3GvTlEAFw-PHAGOAGc1j1NKZbXr8Ga_nIY9w/viewform?usp=pp_url&entry.939413650=';
+const TS_BANNER_ACTION_EN_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSfEXZLlkLA6ngx8LV-VVpIxV9AZ9MgN-H_U0aTOnVhrXv1XLQ/viewform?usp=pp_url&entry.1924714025=';
+const TS_BANNER_PROOF_KW = 'browser_extension_study_2023';
+
 const videosPerRow = 4;
 const rowsWhenExpanded = 3;
+
 let isExpanded = false;
 
 let videos = [];
@@ -40,6 +50,214 @@ const getParentComponent = () => {
   } catch (error) {
     return;
   }
+};
+
+/**
+ * The browser API is expected to return the language indentifier following
+ * the RFC 5646.
+ *
+ * See: https://datatracker.ietf.org/doc/html/rfc5646#section-2.1
+ */
+const isNavigatorLang = (lang) => {
+  let expected = lang.toLowerCase();
+  let found = window.navigator.language.toLocaleLowerCase();
+
+  // `expected` can be the shortest ISO 639 code of a language.
+  //  Example: 'fr'.
+  if (found === expected) {
+    return true;
+  }
+
+  // The shortest ISO 639 code can be followed by other "subtags" like the
+  // region, or the variant. Example: 'fr-CA'.
+  if (found.startsWith(expected + '-')) {
+    return true;
+  }
+
+  return false;
+};
+
+const getLocalizedBannerText = () => {
+  if (isNavigatorLang('fr')) {
+    return (
+      'Le projet Tournesol est-il vraiment efficace? Nous étudions' +
+      " actuellement l'impact de notre extension navigateur sur les" +
+      " habitudes d'utilisation de YouTube. Rejoignez notre étude" +
+      ' pour nous aider à améliorer Tournesol !'
+    );
+  }
+
+  // Return the 'en' version by default.
+  return (
+    'Is the Tournesol project really effective? We are currently investigating' +
+    " the impact of our browser extension on the YouTube viewers' habits. Join" +
+    ' our research study to help us improve Tournesol!'
+  );
+};
+
+const getLocalizedActionButtonText = () => {
+  if (isNavigatorLang('fr')) {
+    return 'Participer';
+  }
+
+  return 'Join';
+};
+
+const displayElement = (element) => {
+  element.classList.add('displayed');
+};
+
+const hideElement = (element) => {
+  element.classList.remove('displayed');
+};
+
+/**
+ * Create and return a banner.
+ *
+ * The banner invites the users to join our study about the impact of the
+ * browser extension has on their YouTube usage.
+ *
+ * @returns HTMLDivElement
+ */
+const createBanner = () => {
+  const banner = document.createElement('div');
+  banner.id = 'tournesol_banner';
+  banner.className = 'tournesol_banner';
+
+  // Only display the banner if the user didn't explicitly close it.
+  chrome.storage.local.get(
+    'displayBannerStudy2023',
+    ({ displayBannerStudy2023 }) => {
+      if ([true, null, undefined].includes(displayBannerStudy2023)) {
+        displayElement(banner);
+      }
+    }
+  );
+
+  // The first flex item is the campaign icon.
+  const bannerIconContainer = document.createElement('div');
+  const icon = document.createElement('img');
+  icon.id = 'tournesol_banner_icon';
+  icon.setAttribute('src', chrome.extension.getURL('images/campaign.svg'));
+  icon.setAttribute('alt', 'Megaphone icon');
+  bannerIconContainer.append(icon);
+
+  // The second flex item is the text.
+  const bannerTextContainer = document.createElement('div');
+  const bannerText = document.createElement('p');
+  bannerText.textContent = getLocalizedBannerText();
+  bannerTextContainer.append(bannerText);
+
+  // The third flex item is the action button.
+  const actionButtonContainer = document.createElement('div');
+  const actionButton = document.createElement('a');
+  actionButton.textContent = getLocalizedActionButtonText();
+  actionButton.className = 'tournesol_mui_like_button';
+  actionButton.setAttribute(
+    'href',
+    isNavigatorLang('fr') ? TS_BANNER_ACTION_FR_URL : TS_BANNER_ACTION_EN_URL
+  );
+  actionButton.setAttribute('target', '_blank');
+  actionButton.setAttribute('rel', 'noopener');
+
+  // The last flex item is the close button.
+  const closeButtonContainer = document.createElement('div');
+  const closeButton = document.createElement('button');
+  closeButton.className = 'tournesol_simple_button';
+  const closeButtonImg = document.createElement('img');
+  closeButtonImg.id = 'tournesol_banner_close_icon';
+  closeButtonImg.setAttribute(
+    'src',
+    chrome.extension.getURL('images/close.svg')
+  );
+  closeButtonImg.setAttribute('alt', 'Close icon');
+  closeButton.append(closeButtonImg);
+  closeButtonContainer.append(closeButton);
+
+  closeButton.onclick = () => {
+    chrome.storage.local.set({ displayBannerStudy2023: false }, () => {
+      hideElement(banner);
+    });
+  };
+
+  // Dynamically get the user proof before opening the URL.
+  actionButton.onclick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        {
+          message: `getProof:${TS_BANNER_PROOF_KW}`,
+        },
+        (response) => {
+          if (response.success) {
+            resolve(
+              isNavigatorLang('fr')
+                ? `${TS_BANNER_ACTION_FR_URL}${response.body.signature}`
+                : `${TS_BANNER_ACTION_EN_URL}${response.body.signature}`
+            );
+          } else {
+            reject(response);
+          }
+        }
+      );
+    })
+      .then((url) => {
+        actionButton.setAttribute('href', url);
+        window.open(url, '_blank', 'noopener');
+      })
+      .catch((response) => {
+        /**
+         * Do not block the users in case of API error. The participation
+         * proof being optionnal, and the API tested, logging the errors
+         * should be enough.
+         *
+         * Anonymous users are expected to be redirected to the form without
+         * participation proof (HTTP 401), no logging is required.
+         */
+        if (response.status !== 401) {
+          console.error(
+            `Failed to retrieve user proof with keyword: ${TS_BANNER_PROOF_KW}`
+          );
+          console.error(response.body);
+        }
+
+        window.open(
+          isNavigatorLang('fr')
+            ? TS_BANNER_ACTION_FR_URL
+            : TS_BANNER_ACTION_EN_URL,
+          '_blank',
+          'noopener'
+        );
+      });
+
+    return false;
+  };
+
+  actionButtonContainer.append(actionButton);
+
+  banner.appendChild(bannerIconContainer);
+  banner.appendChild(bannerTextContainer);
+  banner.appendChild(actionButtonContainer);
+  banner.appendChild(closeButtonContainer);
+  return banner;
+};
+
+const bannerShouldBeDisplayed = () => {
+  const now = new Date();
+
+  if (TS_BANNER_DATE_START <= now && now <= TS_BANNER_DATE_END) {
+    return true;
+  }
+
+  return false;
+};
+
+const createVideosFlexContainer = () => {
+  const container = document.createElement('div');
+  container.id = 'tournesol_videos_flexcontainer';
+  return container;
 };
 
 const getTournesolComponent = () => {
@@ -112,7 +330,37 @@ const getTournesolComponent = () => {
   };
   inline_div.append(expand_button);
 
+  // Display the campaign button only if there is a banner.
+  if (bannerShouldBeDisplayed()) {
+    const campaignButton = document.createElement('button');
+    campaignButton.id = 'tournesol_campaign_button';
+    campaignButton.className = 'tournesol_simple_button';
+
+    const campaignButtonImg = document.createElement('img');
+    campaignButtonImg.setAttribute(
+      'src',
+      chrome.extension.getURL('images/campaign.svg')
+    );
+    campaignButtonImg.setAttribute('alt', 'Megaphone icon');
+    campaignButton.append(campaignButtonImg);
+
+    campaignButton.onclick = () => {
+      chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
+        displayElement(document.getElementById('tournesol_banner'));
+      });
+    };
+
+    inline_div.append(campaignButton);
+  }
+
   tournesol_container.append(inline_div);
+
+  if (bannerShouldBeDisplayed()) {
+    tournesol_container.append(createBanner());
+  }
+
+  const videosFlexContainer = createVideosFlexContainer();
+  tournesol_container.append(videosFlexContainer);
 
   function make_video_box(video) {
     // Div whith everything about a video
@@ -182,10 +430,10 @@ const getTournesolComponent = () => {
     return video_box;
   }
 
-  videos.forEach((video) => tournesol_container.append(make_video_box(video)));
+  videos.forEach((video) => videosFlexContainer.append(make_video_box(video)));
   if (isExpanded) {
     additionalVideos.forEach((video) =>
-      tournesol_container.append(make_video_box(video))
+      videosFlexContainer.append(make_video_box(video))
     );
   }
 

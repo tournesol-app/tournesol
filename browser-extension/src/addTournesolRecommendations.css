@@ -1,5 +1,9 @@
 :root {
   --ts-container-padding: 16px;
+
+  --ts-palette-primary-main: #ffc800;
+  --ts-palette-primary-main-hover: #b28c00;
+  --ts-palette-text-primary: #1d1a14;
 }
 
 #tournesol_container {
@@ -14,10 +18,6 @@
   padding: var(--ts-container-padding);
   padding-bottom: 0;
 
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-
   border: solid 3px #f3bd00;
   border-radius: 12px;
   background: #f3bd0011;
@@ -27,6 +27,71 @@
     var(--ytd-rich-grid-items-per-row) *
       (var(--ytd-rich-grid-item-max-width) + var(--ytd-rich-grid-item-margin))
   );
+}
+
+/**
+ * ---- start: style of the main banner ----
+ */
+
+#tournesol_banner {
+  padding: 16px;
+  margin-bottom: 16px;
+
+  /* hidden unless explicitly displayed to avoid visual blink */
+  display: none;
+  gap: 16px;
+  align-items: center;
+
+  font-size: 16px;
+
+  color: var(--ts-palette-text-primary);
+  background-color: white;
+
+  /* MUI <Paper> style imitation */
+  border-radius: 4px;
+  box-shadow:
+    0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%),
+    0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+#tournesol_banner.displayed {
+  display: flex;
+}
+
+#tournesol_banner p {
+  letter-spacing: 0.2px;
+}
+
+#tournesol_banner_icon {
+  width: 35px;
+}
+
+#tournesol_banner_close_icon {
+  width: 22px;
+  opacity: 0.7;
+}
+
+#tournesol_banner_close_icon:hover {
+  opacity: 1;
+}
+
+html[dark] #tournesol_banner {
+  color: var(--yt-spec-text-primary);
+  background-color: var(--yt-spec-button-chip-background-hover);
+}
+
+html[dark] #tournesol_banner_icon,
+html[dark] #tournesol_banner_close_icon {
+  filter: invert(99%) saturate(0%) brightness(140%);
+}
+
+/* ---- end: style of the main banner ---- */
+
+#tournesol_videos_flexcontainer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
 }
 
 #tournesol_title {
@@ -46,6 +111,23 @@
   margin-left: 2px;
 }
 
+#tournesol_campaign_button {
+  width: 28px;
+  float: right;
+}
+
+html[dark] #tournesol_campaign_button {
+  filter: invert(99%) saturate(0%) brightness(140%);
+}
+
+#tournesol_campaign_button img {
+  opacity: 0.8;
+}
+
+#tournesol_campaign_button:hover img {
+  opacity: 1;
+}
+
 #tournesol_refresh_button {
   float: right;
   margin-top: 4px;
@@ -62,6 +144,39 @@
 #tournesol_icon {
   position: absolute;
   left: 0px;
+}
+
+.tournesol_mui_like_button {
+  margin: 0;
+  padding: 10px 16px;
+
+  min-width: 64px;
+
+  cursor: pointer;
+  line-height: 24.5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  color: var(--ts-palette-text-primary);
+  background-color: var(--ts-palette-primary-main);
+
+  border-radius: 4px;
+  box-shadow:
+    0px 3px 1px -2px rgb(0 0 0 / 20%),
+    0px 2px 2px 0px rgb(0 0 0 / 14%),
+    0px 1px 5px 0px rgb(0 0 0 / 12%);
+}
+
+.tournesol_mui_like_button:hover {
+  text-decoration: none;
+  background-color: rgb(178, 140, 0);
+  box-shadow:
+    0px 2px 4px -1px rgb(0 0 0 / 20%),
+    0px 4px 5px 0px rgb(0 0 0 / 14%),
+    0px 1px 10px 0px rgb(0 0 0 / 12%);
 }
 
 .tournesol_simple_button {

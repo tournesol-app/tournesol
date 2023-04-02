@@ -2,6 +2,7 @@
 Delete users that have not activated their account.
 """
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 
 from core.models.user import User
@@ -27,7 +28,9 @@ class Command(BaseCommand):
         # corresponding try/catch and log the number of users to delete still
         # in the database
         deleted = User.objects.filter(
-            is_active=False, date_joined__lt=delete_before
+            Q(last_login__isnull=True) | Q(last_login__lt=delete_before),
+            is_active=False,
+            date_joined__lt=delete_before,
         ).delete()
 
         self.stdout.write(self.style.SUCCESS(f"{deleted[0]} users deleted"))

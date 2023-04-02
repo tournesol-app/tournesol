@@ -189,6 +189,7 @@ class VoucherGivenListAPIViewTestCase(TestCase):
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
         self.user3 = User.objects.create(username="user3", email="user3@example.com")
+        self.user4 = User.objects.create(username="user4", email="user4@example.com", is_active=False)
 
         self.voucher1 = Voucher.objects.create(by=self.user1, to=self.user2, value=1)
         self.voucher2 = Voucher.objects.create(
@@ -202,6 +203,10 @@ class VoucherGivenListAPIViewTestCase(TestCase):
             to=self.user3,
             value=3,
         )
+        self.voucher4 = Voucher.objects.create(
+            by=self.user1,
+            to=self.user4,
+        )
 
     def test_anon_401_list(self):
         """
@@ -212,7 +217,7 @@ class VoucherGivenListAPIViewTestCase(TestCase):
 
     def test_auth_200_list(self):
         """
-        An authenticated user can list its given vouchers.
+        An authenticated user can list its given vouchers (excluding inactive users)
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.get(self.voucher_base_url, format="json")
@@ -253,6 +258,7 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
         self.user3 = User.objects.create(username="user3", email="user3@example.com")
+        self.user4 = User.objects.create(username="user4", email="user4@example.com", is_active=False)
 
         self.voucher1 = Voucher.objects.create(by=self.user1, to=self.user2, value=1)
         self.voucher2 = Voucher.objects.create(
@@ -266,6 +272,10 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
             to=self.user3,
             value=3,
         )
+        self.voucher4 = Voucher.objects.create(
+            by=self.user4,
+            to=self.user3,
+        )
 
     def test_anon_401_list(self):
         """
@@ -276,7 +286,7 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
 
     def test_auth_200_list(self):
         """
-        An authenticated user can list its received vouchers.
+        An authenticated user can list its received vouchers
         """
         self.client.force_authenticate(user=self.user3)
         response = self.client.get(self.voucher_base_url, format="json")

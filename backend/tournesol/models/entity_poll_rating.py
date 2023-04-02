@@ -15,17 +15,22 @@ class EntityPollRating(models.Model):
     An `EntityPollRating` represents a set of entity related metrics per poll.
     """
 
+    class Meta:
+        unique_together = ["poll", "entity"]
+
     poll = models.ForeignKey(
         Poll,
         on_delete=models.CASCADE,
         related_name="all_entity_ratings",
         default=Poll.default_poll_pk,
     )
+
     entity = models.ForeignKey(
         Entity,
         on_delete=models.CASCADE,
         related_name="all_poll_ratings",
     )
+
     tournesol_score = models.FloatField(
         null=True,
         blank=True,

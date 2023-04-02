@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-14 13:01+0000\n"
+"POT-Creation-Date: 2023-03-16 09:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,21 +55,27 @@ msgstr "'%(name)s' est un nom d'utilisateur reservé"
 msgid "'@' is not allowed in username"
 msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
 
-#: core/serializers/user_settings.py:21
+#: core/serializers/user_settings.py:24
 msgid "The main criterion cannot be in the list."
 msgstr "Le critère principal ne peut pas être présent."
 
-#: core/serializers/user_settings.py:24
+#: core/serializers/user_settings.py:27
 msgid "The list cannot contain duplicates."
 msgstr "La liste ne peut pas contenir des doublons."
 
-#: core/serializers/user_settings.py:28
+#: core/serializers/user_settings.py:32
+#, python-format
 msgid "Unknown criterion: %(criterion)s."
 msgstr "Critère inconnu: %(criterion)s."
 
-#: core/serializers/user_settings.py:34
+#: core/serializers/user_settings.py:39
 msgid "This parameter cannot be lower than 1."
 msgstr "Ce paramètre ne peut pas être inférieur à 1."
+
+#: core/serializers/user_settings.py:69
+#, python-format
+msgid "Unknown language code: %(lang)s."
+msgstr "Code de langue inconnu : %(lang)s."
 
 #: core/templates/accounts/register/body.html:5
 msgid "Please verify your Tournesol account by clicking on this link:"

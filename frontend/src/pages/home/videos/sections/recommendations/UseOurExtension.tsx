@@ -40,6 +40,11 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
                     src="/logos/Chrome-Browser-icon-fullColor.svg"
                     alt="Google Chrome browser logo."
                   />
+                  <img
+                    width="64px"
+                    src="/logos/Edge-Browser-icon-fullColor.svg"
+                    alt="Microsoft Edge browser logo."
+                  />
                 </Box>
               </Grid>
               <Grid item xl={9}>

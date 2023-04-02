@@ -145,7 +145,8 @@ class MlInputFromDb(MlInput):
 
     def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
-            comparison__poll__name=self.poll_name
+            comparison__poll__name=self.poll_name,
+            comparison__user__is_active=True,
         )
         if criteria is not None:
             scores_queryset = scores_queryset.filter(criteria=criteria)

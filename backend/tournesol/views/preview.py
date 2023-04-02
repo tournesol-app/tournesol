@@ -340,7 +340,9 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         Adapts the overlay position and size in function of the duration text size.
         """
 
-        duration = entity.metadata.get("duration", 0)
+        duration = entity.metadata.get("duration")
+        if not duration:
+            return
         minutes, seconds = divmod(duration, 60)
         hours, minutes = divmod(minutes, 60)
 
