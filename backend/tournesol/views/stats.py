@@ -2,19 +2,17 @@
 API endpoints to show public statistics
 """
 from dataclasses import dataclass
+from datetime import datetime, time
 from typing import List
 
-from datetime import datetime, time
-
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from django.utils import timezone
-from core.utils.time import time_ago
 from core.models import User
-
+from core.utils.time import time_ago
 from tournesol.models import Comparison, Entity, Poll
 from tournesol.serializers.stats import StatisticsSerializer
 
