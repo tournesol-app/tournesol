@@ -70,13 +70,13 @@ class StatisticsAPI(TestCase):
         )
 
         Comparison.objects.filter(pk=comparison_1.pk).update(
-            datetime_lastedit=time_ago(days=5)
+            datetime_add=time_ago(days=5)
         )
         Comparison.objects.filter(pk=comparison_2.pk).update(
-            datetime_lastedit=time_ago(days=29)
+            datetime_add=time_ago(days=29)
         )
         Comparison.objects.filter(pk=comparison_3.pk).update(
-            datetime_lastedit=time_ago(days=60)
+            datetime_add=time_ago(days=60)
         )
 
         self._list_of_comparisons = [comparison_1, comparison_2, comparison_3]
@@ -99,18 +99,17 @@ class StatisticsAPI(TestCase):
         video_poll = [poll for poll in polls if poll["name"] == "videos"][0]
 
         video_count = video_poll["compared_entities"]["total"]
-        last_month_video_count = video_poll["compared_entities"]["added_last_month"]
 
         self.assertEqual(video_count, len(self._list_of_videos))
-        self.assertEqual(last_month_video_count, 2)
+        self.assertEqual(video_poll["compared_entities"]["added_last_30_days"], 2)
 
         comparison_count = video_poll["comparisons"]["total"]
-        last_30days_comparison_count = video_poll["comparisons"]["added_last_30_days"]
+        last_30_days_comparison_count = video_poll["comparisons"]["added_last_30_days"]
         current_week_comparison_count = video_poll["comparisons"]["added_current_week"]
 
         self.assertEqual(comparison_count, len(self._list_of_comparisons))
-        self.assertEqual(last_30days_comparison_count, 2)
-        self.assertEqual(current_week_comparison_count, 0)
+        self.assertEqual(last_30_days_comparison_count, 2)
+        self.assertEqual(current_week_comparison_count, 1)
 
 
     def test_user_stats(self):
@@ -129,7 +128,6 @@ class StatisticsAPI(TestCase):
 
         active_users = response.data["active_users"]
         user_count = active_users["total"]
-        last_month_user_count = active_users["joined_last_month"]
 
         self.assertEqual(user_count, len(self._list_of_users))
-        self.assertEqual(last_month_user_count, 1)
+        self.assertEqual(active_users["joined_last_30_days"], 1)
