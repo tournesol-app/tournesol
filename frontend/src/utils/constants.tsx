@@ -127,6 +127,12 @@ export function getMetadataName(
         case 'publication_date':
           name = t('videoMetadata.publication_date');
           break;
+        case 'collective_score_largely_recommended':
+          name = t('videoMetadata.collective_score_largely_recommended');
+          break;
+        case 'contributor_rating_criteria_score':
+          name = t('videoMetadata.contributor_rating_criteria_score');
+          break;
       }
       break;
   }
@@ -207,7 +213,12 @@ export const polls: Array<SelectablePoll> = [
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
-    extraMetadataOrderBy: ['duration', 'publication_date'],
+    extraMetadataOrderBy: [
+      'duration',
+      'publication_date',
+      'contributor_rating_criteria_score',
+      'collective_score_largely_recommended',
+    ],
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,
     tutorialDialogs: getVideosTutorialDialogs,
