@@ -372,9 +372,18 @@
     "donateWithPaypal": "Donate with PayPal",
     "doYouPreferDirectTransfer": "You prefer direct transfers?",
     "whatDoWeDoQuestion": "What do we do with the funds of the association?",
+    "whatDoWeDoAnswer": {
+      "part1": "What we do with our donations:",
+      "part2": "- Pay for servers / Infrastructure. Tournesol now uses a single server, an email service, ..., but as the project grows, maintenance costs also increase.",
+      "part3": "- Promote Tournesol with advertising on Youtube of promoted videos",
+      "part4": "- Hire software Engineers to develop the Tournesol website"
+    },
     "whatWeWouldDoQuestion": "What we would do with more funds?",
+    "whatWeWouldDoAnswer": "More promotion and hiring more team members, either focuses on growing the association and funding or engineers that would develop the website either with expertise in UX/Design or in Machine Learning",
     "howMuchDoWeHaveQuestion": "How much we currently have?",
-    "howMuchWeCurrentlySpendQuestion": "How much we currently spend?"
+    "howMuchDoWeHaveAnswer": "Started with 60'000 two years ago thanks to large donations, we are now receiving about 700€/month",
+    "howMuchWeCurrentlySpendQuestion": "How much we currently spend?",
+    "howMuchWeCurrentlySpendAnswer": "Roughly 4000€/month"
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",
