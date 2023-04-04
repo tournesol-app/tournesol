@@ -391,9 +391,18 @@
     "donateWithPaypal": "Faire un don avec PayPal",
     "doYouPreferDirectTransfer": "Vous préférez les virements directs ?",
     "whatDoWeDoQuestion": "Que faisons-nous avec les fonds de l'association?",
+    "whatDoWeDoAnswer": {
+      "part1": "Ce que nous faisons avec nos dons",
+      "part2": "- Payer pour les serveurs / Infrastructure. Tournesol utilise aujourd'hui un serveur unique, un service d'envoi d'emails, ..., mais alors que le projet grandit les coûts de maintenance augmentent aussi",
+      "part3": "- Promouvoir Tournesol avec la publicité des vidéos promues sur Youtube ",
+      "part4": "- Embaucher des ingénieurs logiciels pour développer le site Tournesol"
+    },
     "whatWeWouldDoQuestion": "Que ferions-nous avec plus de fonds?",
+    "whatWeWouldDoAnswer": "Plus de promotion et l'embauche de plus de membres d'équipe, soit en se concentrant sur la croissance de l'association et le financement, soit en embauchant des ingénieurs qui développeraient le site Web avec une expertise en UX/Design ou en Machine Learning",
     "howMuchDoWeHaveQuestion": "Combien avons-nous actuellement?",
-    "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement?"
+    "howMuchDoWeHaveAnswer": "Lancé il y a deux ans avec 60'000 grâce à d'importants dons, nous recevons aujourd'hui environ 700€/mois",
+    "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement?",
+    "howMuchWeCurrentlySpendAnswer": "Environ 4000€/mois"
   },
   "privacyPolicy": {
     "privacyPolicy": "Politique de confidentialité",

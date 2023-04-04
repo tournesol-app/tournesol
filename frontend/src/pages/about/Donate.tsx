@@ -213,17 +213,16 @@ const DonatePage = () => {
                 sx={{ borderRadius: 1, p: 2, height: '100%' }}
               >
                 <Typography fontWeight={600}>
-                  What we do with our donations:
+                  {t('donate.whatDoWeDoAnswer.part1')}
+
                   <br />
-                  - Pay for servers / Infrastructure. Tournesol utilise
-                  aujourd'hui un serveur unique, un service d'envoie d'emails,
-                  ..., mais alors que le projet grandit les coûts de maintenance
-                  augmentent aussi
+                  {t('donate.whatDoWeDoAnswer.part2')}
+
                   <br />
-                  - Promote Tournesol with advertising on Youtube of promoted
-                  videos
-                  <br />- Hire software Engineers to develop the Tournesol
-                  website
+                  {t('donate.whatDoWeDoAnswer.part3')}
+
+                  <br />
+                  {t('donate.whatDoWeDoAnswer.part4')}
                 </Typography>
               </Paper>
             </Grid2>
@@ -260,10 +259,7 @@ const DonatePage = () => {
                 sx={{ borderRadius: 1, p: 2, height: '100%' }}
               >
                 <Typography fontWeight={600}>
-                  More promotion and hiring more team members, either focuses on
-                  growing the association and funding or engineers that would
-                  develop the website either with expertise in UX/Design or in
-                  Machine Learning
+                  {t('donate.whatWeWouldDoAnswer')}
                 </Typography>
               </Paper>
             </Grid2>
@@ -300,8 +296,7 @@ const DonatePage = () => {
                 sx={{ borderRadius: 1, p: 2, height: '100%' }}
               >
                 <Typography fontWeight={600}>
-                  Started with 60'000 two years ago thanks to large donations,
-                  we are now receiving about 700€/month
+                  {t('donate.howMuchDoWeHaveAnswer')}
                 </Typography>
               </Paper>
             </Grid2>
@@ -337,7 +332,9 @@ const DonatePage = () => {
                 elevation={1}
                 sx={{ borderRadius: 1, p: 2, height: '100%' }}
               >
-                <Typography fontWeight={600}>Roughly 4000€/month</Typography>
+                <Typography fontWeight={600}>
+                  {t('donate.howMuchWeCurrentlySpendAnswer')}
+                </Typography>
               </Paper>
             </Grid2>
           </Grid2>
