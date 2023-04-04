@@ -33,10 +33,43 @@ onlyOn("headed", () => {
         cy.visit("https://www.youtube.com");
         consent();
         cy.contains("Recommended by Tournesol").should("be.visible");
+        cy.reload();
         cy.get("#tournesol_title:contains(Recommended by Tournesol)").should(
           "have.length",
           1
         );
+      });
+
+      it("shows the banner in the tournesol component when the banner should be displayed", () => {
+        cy.visit("https://www.youtube.com/");
+        consent();
+
+        if (cy.get("#tournesol_campaign_button")) {
+          //The banner is visible the first time you visit youtube
+          cy.get("#tournesol_banner").should("be.visible");
+        }
+      });
+
+      it("toggles the banner visibility", () => {
+        cy.visit("https://www.youtube.com/");
+        consent();
+
+        if (cy.get("#tournesol_campaign_button")) {
+          //The banner is visible the first time you visit youtube
+          cy.get("#tournesol_banner").should("be.visible");
+
+          cy.get("#tournesol_banner_close_icon").click();
+          cy.get("#tournesol_banner").should("not.be.visible");
+
+          cy.get("#tournesol_campaign_button").click();
+          cy.get("#tournesol_banner").should("be.visible");
+        }
+      });
+
+      it("does not show Tournesol recommendations on youtube.com/results when search is off", () => {
+        cy.visit("https://www.youtube.com/results?search_query=guerre");
+        consent();
+        cy.contains("Recommended by Tournesol").should("not.exist");
       });
 
       it("does not show Tournesol recommendations on youtube.com/results when search is off", () => {
