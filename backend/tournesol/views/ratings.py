@@ -1,7 +1,7 @@
 """
 API endpoint to interact with the contributor's ratings.
 """
-from django.db.models import Func, OuterRef, Q, Subquery
+from django.db.models import Func, OuterRef, Q, Subquery, Prefetch
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -9,7 +9,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from tournesol.models import Comparison, ContributorRating, Poll
+from tournesol.models import Comparison, ContributorRating, Poll, EntityPollRating, ContributorRatingCriteriaScore
 from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
@@ -23,6 +23,10 @@ ALLOWED_GENERIC_ORDER_BY_VALUES = [
     "-last_compared_at",
     "n_comparisons",
     "-n_comparisons",
+    "collective_score_largely_recommended",
+    "-collective_score_largely_recommended",
+    "contributor_rating_criteria_score",
+    "-contributor_rating_criteria_score",
 ]
 
 # Appended to the positional arguments of all calls to QuerySet.order_by()
@@ -54,9 +58,21 @@ def get_annotated_ratings():
         .order_by("-datetime_lastedit")
     )[:1]
 
+    collective_score = (
+        EntityPollRating.objects.filter(poll=OuterRef("poll"), entity=OuterRef("entity"))
+        .values("tournesol_score")
+    )
+
+    contributor_rating_criteria_score = (
+        ContributorRatingCriteriaScore.objects.filter(contributor_rating=OuterRef("pk"), criteria="largely_recommended")
+        .values("score")
+    )
+
     return ContributorRating.objects.annotate(
         n_comparisons=Subquery(n_comparisons),
         last_compared_at=Subquery(last_compared_at),
+        collective_score_largely_recommended=Subquery(collective_score),
+        contributor_rating_criteria_score=Subquery(contributor_rating_criteria_score)
     )
 
 
