@@ -70,10 +70,10 @@ class StatisticsAPI(TestCase):
         )
 
         Comparison.objects.filter(pk=comparison_1.pk).update(
-            datetime_add=time_ago(days=5)
+            datetime_add=time_ago(days=0)
         )
         Comparison.objects.filter(pk=comparison_2.pk).update(
-            datetime_add=time_ago(days=29)
+            datetime_add=time_ago(days=7)
         )
         Comparison.objects.filter(pk=comparison_3.pk).update(
             datetime_add=time_ago(days=60)

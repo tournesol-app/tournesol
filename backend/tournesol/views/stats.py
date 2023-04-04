@@ -2,10 +2,9 @@
 API endpoints to show public statistics
 """
 from dataclasses import dataclass, field
-from datetime import datetime, time
+from datetime import datetime, time, timezone
 from typing import List
 
-from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
@@ -140,7 +139,7 @@ class StatisticsView(generics.GenericAPIView):
 
     def _get_comparisons_statistics(self, poll):
         last_monday = datetime.combine(
-            time_ago(days=timezone.now().weekday()),
+            time_ago(days=datetime.now().weekday()),
             time.min,
             tzinfo=timezone.utc,
         )
