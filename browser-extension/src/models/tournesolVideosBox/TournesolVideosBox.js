@@ -1,7 +1,7 @@
 import { convertDurationToClockDuration } from '../../utils.js';
 
 export class TournesolVideosBox {
-  static async makeBox(video, displayCriteria) {
+  static makeBox(video, displayCriteria) {
     // Div whith everything about a video
     const video_box = document.createElement('div');
     video_box.className = 'video_box';
@@ -19,9 +19,7 @@ export class TournesolVideosBox {
      * add criteria to the details_div
      */
     if (displayCriteria) {
-      const video_criteria = await TournesolVideosBox.getVideoCriteriaElement(
-        video
-      );
+      const video_criteria = TournesolVideosBox.getVideoCriteriaElement(video);
 
       details_div.append(video_criteria);
     }
@@ -31,7 +29,7 @@ export class TournesolVideosBox {
     return video_box;
   }
 
-  static async getVideoCriteriaElement(video) {
+  static getVideoCriteriaElement(video) {
     const video_criteria = document.createElement('div');
     video_criteria.className = 'video_text video_criteria';
 
@@ -58,31 +56,20 @@ export class TournesolVideosBox {
       const lowestCriteriaIconUrl = `images/criteriaIcons/${lowestCriteria.criteria}.svg`;
       const highestCriteriaIconUrl = `images/criteriaIcons/${highestCriteria.criteria}.svg`;
 
-      let lowestCriteriaIcon;
-      let highestCriteriaIcon;
-
       if (highestCriteria.score > 0) {
-        const svg = await fetch(
-          chrome.runtime.getURL(highestCriteriaIconUrl)
-        ).then((r) => r.text());
-
-        highestCriteriaIcon = 'data:image/svg+xml;base64,' + window.btoa(svg);
-
         video_criteria.innerHTML += `${chrome.i18n.getMessage(
           'ratedHigh'
-        )} <img src=${highestCriteriaIcon} title='${highestCriteriaTitle}' />`;
+        )} <img src=${chrome.runtime.getURL(
+          highestCriteriaIconUrl
+        )} title='${highestCriteriaTitle}' />`;
       }
 
       if (lowestCriteria.score < 0) {
-        const svg = await fetch(
-          chrome.runtime.getURL(lowestCriteriaIconUrl)
-        ).then((r) => r.text());
-
-        lowestCriteriaIcon = 'data:image/svg+xml;base64,' + window.btoa(svg);
-
         video_criteria.innerHTML += `${chrome.i18n.getMessage(
           'ratedLow'
-        )} <img src=${lowestCriteriaIcon} title='${lowestCriteriaTitle}' />`;
+        )} <img src=${chrome.runtime.getURL(
+          lowestCriteriaIconUrl
+        )} title='${lowestCriteriaTitle}' />`;
       }
     }
 

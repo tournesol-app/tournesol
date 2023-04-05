@@ -115,8 +115,8 @@ export class TournesolComponent {
     const videosFlexContainer = this.createVideosFlexContainer();
     tournesol_container.append(videosFlexContainer);
 
-    this.parent.videos.forEach(async (video) => {
-      const videoBox = await TournesolVideosBox.makeBox(
+    this.parent.videos.forEach((video) => {
+      const videoBox = TournesolVideosBox.makeBox(
         video,
         this.parent.displayCriteria
       );
@@ -124,8 +124,8 @@ export class TournesolComponent {
     });
 
     if (this.isExpanded) {
-      this.parent.additionalVideos.forEach(async (video) => {
-        const videoBox = await TournesolVideosBox.makeBox(
+      this.parent.additionalVideos.forEach((video) => {
+        const videoBox = TournesolVideosBox.makeBox(
           video,
           this.parent.displayCriteria
         );
