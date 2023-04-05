@@ -1,12 +1,95 @@
 import { convertDurationToClockDuration } from '../../utils.js';
 
 export class TournesolVideosBox {
-  static makeBox(video) {
+  static async makeBox(video) {
     // Div whith everything about a video
     const video_box = document.createElement('div');
     video_box.className = 'video_box';
 
     // Div with thumbnail and video duration
+    const thumb_div = TournesolVideosBox.getThumbDiv(video);
+
+    video_box.append(thumb_div);
+
+    // Div with uploader name, video title and tournesol score
+    const details_div = TournesolVideosBox.getDetailsDiv(video);
+
+    /**
+     * If the content script is executed on the YT research page
+     * add criteria to the details_div
+     */
+    if (location.pathname == '/results') {
+      const video_criteria = await TournesolVideosBox.getVideoCriteriaElement(
+        video
+      );
+
+      details_div.append(video_criteria);
+    }
+
+    video_box.append(details_div);
+
+    return video_box;
+  }
+
+  static async getVideoCriteriaElement(video) {
+    const video_criteria = document.createElement('div');
+    video_criteria.className = 'video_text video_criteria';
+
+    // if there is more than the largely recommended criteria
+    if (video.criteria_scores.length > 1) {
+      /**
+       * Filter the largely_recommended criteria out of the criteria_scores
+       * and sort by score
+       */
+      const sortedCriteria = video.criteria_scores
+        .filter((criteria) => criteria.criteria != 'largely_recommended')
+        .sort((a, b) => a.score - b.score);
+
+      const lowestCriteria = sortedCriteria[0];
+      const highestCriteria = sortedCriteria[sortedCriteria.length - 1];
+
+      const lowestCriteriaTitle = `${chrome.i18n.getMessage(
+        lowestCriteria.criteria
+      )}: ${Math.round(lowestCriteria.score)}`;
+      const highestCriteriaTitle = `${chrome.i18n.getMessage(
+        highestCriteria.criteria
+      )}: ${Math.round(highestCriteria.score)}`;
+
+      const lowestCriteriaIconUrl = `images/criteriaIcons/${lowestCriteria.criteria}.svg`;
+      const highestCriteriaIconUrl = `images/criteriaIcons/${highestCriteria.criteria}.svg`;
+
+      let lowestCriteriaIcon;
+      let highestCriteriaIcon;
+
+      if (highestCriteria.score > 0) {
+        const svg = await fetch(
+          chrome.runtime.getURL(highestCriteriaIconUrl)
+        ).then((r) => r.text());
+
+        highestCriteriaIcon = 'data:image/svg+xml;base64,' + window.btoa(svg);
+
+        video_criteria.innerHTML += `${chrome.i18n.getMessage(
+          'ratedHigh'
+        )} <img src=${highestCriteriaIcon} title='${highestCriteriaTitle}' />`;
+      }
+
+      if (lowestCriteria.score < 0) {
+        const svg = await fetch(
+          chrome.runtime.getURL(lowestCriteriaIconUrl)
+        ).then((r) => r.text());
+
+        lowestCriteriaIcon = 'data:image/svg+xml;base64,' + window.btoa(svg);
+
+        video_criteria.innerHTML += `${chrome.i18n.getMessage(
+          'ratedLow'
+        )} <img src=${lowestCriteriaIcon} title='${lowestCriteriaTitle}' />`;
+      }
+    }
+
+    return video_criteria;
+  }
+
+  static getThumbDiv(video) {
     const thumb_div = document.createElement('div');
     thumb_div.setAttribute('class', 'thumb_div');
 
@@ -32,9 +115,10 @@ export class TournesolVideosBox {
     video_link.href = '/watch?v=' + video.metadata.video_id;
     thumb_div.append(video_link);
 
-    video_box.append(thumb_div);
+    return thumb_div;
+  }
 
-    // Div with uploader name, video title and tournesol score
+  static getDetailsDiv(video) {
     const details_div = document.createElement('div');
     details_div.setAttribute('class', 'details_div');
 
@@ -94,70 +178,7 @@ export class TournesolVideosBox {
           </span>`;
     details_div.append(video_score);
 
-    /**
-     * If the content script is executed on the YT research page.
-     */
-    if (location.pathname == '/results') {
-      const video_criteria = document.createElement('div');
-      video_criteria.className = 'video_text video_criteria';
-
-      if (video.criteria_scores.length > 1) {
-        const sortedCriteria = video.criteria_scores
-          .filter((criteria) => criteria.criteria != 'largely_recommended')
-          .sort((a, b) => a.score - b.score);
-
-        const lower = sortedCriteria[0];
-        const higher = sortedCriteria[sortedCriteria.length - 1];
-
-        const lowerCriteriaTitle = `${chrome.i18n.getMessage(
-          lower.criteria
-        )}: ${Math.round(lower.score)}`;
-        const higherCriteriaTitle = `${chrome.i18n.getMessage(
-          higher.criteria
-        )}: ${Math.round(higher.score)}`;
-
-        const lowerCriteriaIconUrl = `images/criteriaIcons/${lower.criteria}.svg`;
-        const higherCriteriaIconUrl = `images/criteriaIcons/${higher.criteria}.svg`;
-        let lowerCriteriaIcon;
-        let higherCriteriaIcon;
-
-        fetch(chrome.runtime.getURL(higherCriteriaIconUrl))
-          .then((r) => r.text())
-          .then((svg) => {
-            higherCriteriaIcon =
-              'data:image/svg+xml;base64,' + window.btoa(svg);
-
-            if (higher.score > 0) {
-              video_criteria.innerHTML += `${chrome.i18n.getMessage(
-                'ratedHigh'
-              )} <img src=${higherCriteriaIcon} title='${higherCriteriaTitle}' />`;
-            }
-
-            if (lower.score < 0) {
-              fetch(chrome.runtime.getURL(lowerCriteriaIconUrl))
-                .then((r) => r.text())
-                .then(
-                  (svg) =>
-                    (lowerCriteriaIcon =
-                      'data:image/svg+xml;base64,' + window.btoa(svg))
-                )
-                .then(() => {
-                  video_criteria.innerHTML += ` ${chrome.i18n.getMessage(
-                    'ratedLow'
-                  )} <img src='${lowerCriteriaIcon}' title='${lowerCriteriaTitle}' />`;
-
-                  details_div.append(video_criteria);
-                });
-            } else {
-              details_div.append(video_criteria);
-            }
-          });
-      }
-    }
-
-    video_box.append(details_div);
-
-    return video_box;
+    return details_div;
   }
 
   static millifyViews(videoViews) {

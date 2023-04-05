@@ -114,13 +114,16 @@ export class TournesolComponent {
     const videosFlexContainer = this.createVideosFlexContainer();
     tournesol_container.append(videosFlexContainer);
 
-    parent.videos.forEach((video) =>
-      videosFlexContainer.append(TournesolVideosBox.makeBox(video))
-    );
+    parent.videos.forEach(async (video) => {
+      const videoBox = await TournesolVideosBox.makeBox(video);
+      videosFlexContainer.append(videoBox);
+    });
+
     if (this.isExpanded) {
-      parent.additionalVideos.forEach((video) =>
-        videosFlexContainer.append(TournesolVideosBox.makeBox(video))
-      );
+      parent.additionalVideos.forEach(async (video) => {
+        const videoBox = await TournesolVideosBox.makeBox(video);
+        videosFlexContainer.append(videoBox);
+      });
     }
     tournesol_container.append(bottom_action_bar);
 

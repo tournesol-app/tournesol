@@ -35,7 +35,9 @@
   );
 
   const process = () => {
+    // random recommendations only on youtube home page
     if (location.pathname === '/') tournesolHomeRecommendations.process();
+    // search recommendations only on youtube search page
     if (location.pathname === '/results')
       tournesolSearchRecommendations.process();
   };
