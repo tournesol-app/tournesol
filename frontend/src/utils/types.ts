@@ -40,7 +40,8 @@ export type PollStats = {
   comparedEntityCount: number;
   lastMonthComparedEntityCount: number;
   comparisonCount: number;
-  lastMonthComparisonCount: number;
+  lastThirtyDaysComparisonCount: number;
+  currentWeekComparisonCount: number;
 };
 
 /**

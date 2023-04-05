@@ -72,7 +72,10 @@
     "submitAComparison": "Submit a comparison",
     "inactivePoll": "This poll is closed.",
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
-    "comparisonCriteria": "Comparison criteria"
+    "comparisonCriteria": "Comparison criteria",
+    "thanksForWeeklyObjectiveFirst" : "Thanks to everyone, Tournesol has reached ",
+    "thanksForWeeklyObjectiveSecond" : "% of its weekly objective of 1000 comparisons.",
+    "helpReachTheGoal" : "Help us reach this goal!"
   },
   "comparisonHelper": {
     "hideHelp": "Hide the help",

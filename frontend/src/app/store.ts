@@ -6,6 +6,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import drawerOpenReducer from '../features/frame/drawerOpenSlice';
 import loginReducer from '../features/login/loginSlice';
 import userSettingsReducer from 'src/features/settings/userSettingsSlice';
+import statsDataReducer from '../features/comparisons/statsSlice';
 
 const persistConfig = {
   key: 'root',
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   drawerOpen: drawerOpenReducer,
   token: loginReducer,
   settings: userSettingsReducer,
+  statsData: statsDataReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
