@@ -8,8 +8,6 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
   }
 
   loadRecommandations() {
-    // Only enable on youtube.com/results
-    if (this.path != location.pathname) return;
 
     if (this.areRecommendationsLoading) return;
 
@@ -53,9 +51,7 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
   }
 
   process() {
-    if (location.pathname === this.path) {
       this.isPageLoaded = true;
       this.loadRecommandations();
-    }
   }
 }

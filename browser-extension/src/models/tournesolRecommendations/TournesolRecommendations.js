@@ -15,7 +15,6 @@ export class TournesolRecommendations {
 
     this.videosPerRow = options.videosPerRow;
     this.rowsWhenExpanded = options.rowsWhenExpanded;
-    this.path = options.path;
     this.parentComponentQuery = options.parentComponentQuery;
     this.handleResponse = this.handleResponse.bind(this);
     this.displayRecommendations = this.displayRecommendations.bind(this);
@@ -84,9 +83,6 @@ export class TournesolRecommendations {
   }
 
   loadRecommandations() {
-    // Only enable on youtube.com/
-    if (location.pathname != this.path) return;
-
     if (this.areRecommendationsLoading) return;
 
     this.areRecommendationsLoading = true;
@@ -104,15 +100,13 @@ export class TournesolRecommendations {
   process() {
     this.isPageLoaded = true;
 
-    if (location.pathname === this.path) {
-      if (this.videos.length > 0) {
-        this.displayRecommendations();
-      } else if (!this.areRecommendationsLoaded) {
-        // If the content script is loaded on a non-root URL the recommendations
-        // are not loaded. So if the user then goes to the root URL and the content
-        // script is not reloaded, we need to load the recommendations.
-        this.loadRecommandations();
-      }
+    if (this.videos.length > 0) {
+      this.displayRecommendations();
+    } else if (!this.areRecommendationsLoaded) {
+      // If the content script is loaded on a non-root URL the recommendations
+      // are not loaded. So if the user then goes to the root URL and the content
+      // script is not reloaded, we need to load the recommendations.
+      this.loadRecommandations();
     }
   }
 }

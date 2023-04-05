@@ -27,7 +27,6 @@
     new TournesolRecommendationsOptions(
       3,
       1,
-      '/results',
       new Banner(),
       '#header-container'
     );
