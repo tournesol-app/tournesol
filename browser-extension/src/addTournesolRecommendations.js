@@ -28,7 +28,8 @@
       3,
       1,
       new Banner(),
-      '#header-container'
+      '#header-container',
+      true
     );
   const tournesolSearchRecommendations = new TournesolSearchRecommendations(
     tournesolSearchRecommendationsOptions

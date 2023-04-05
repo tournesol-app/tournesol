@@ -1,7 +1,7 @@
 import { convertDurationToClockDuration } from '../../utils.js';
 
 export class TournesolVideosBox {
-  static async makeBox(video) {
+  static async makeBox(video, displayCriteria) {
     // Div whith everything about a video
     const video_box = document.createElement('div');
     video_box.className = 'video_box';
@@ -18,7 +18,7 @@ export class TournesolVideosBox {
      * If the content script is executed on the YT research page
      * add criteria to the details_div
      */
-    if (location.pathname == '/results') {
+    if (displayCriteria) {
       const video_criteria = await TournesolVideosBox.getVideoCriteriaElement(
         video
       );

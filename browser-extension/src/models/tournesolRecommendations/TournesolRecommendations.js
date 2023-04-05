@@ -9,13 +9,15 @@ export class TournesolRecommendations {
     this.areRecommendationsLoaded = false;
     this.videos = [];
     this.additionalVideos = [];
-    this.recommendationsLanguage = 'en';
+    this.recommendationsLanguage = 'en,fr';
 
-    this.tournesolComponent = new TournesolComponent(options.banner);
+    this.tournesolComponent = new TournesolComponent(this, options.banner);
 
     this.videosPerRow = options.videosPerRow;
     this.rowsWhenExpanded = options.rowsWhenExpanded;
     this.parentComponentQuery = options.parentComponentQuery;
+    this.displayCriteria = options.displayCriteria;
+
     this.handleResponse = this.handleResponse.bind(this);
     this.displayRecommendations = this.displayRecommendations.bind(this);
   }
@@ -62,14 +64,14 @@ export class TournesolRecommendations {
 
       // Generate component to display on Youtube home page
 
-      this.tournesol_component = this.tournesolComponent.getComponent(this);
+      this.tournesol_component = this.tournesolComponent.getComponent();
       container.insertBefore(this.tournesol_component, container.children[1]);
     }, 300);
   }
 
   handleResponse({
     data: videosResponse,
-    recommandationsLanguages: languagesString = 'en',
+    recommandationsLanguages: languagesString = 'en,fr',
   }) {
     this.areRecommendationsLoading = false;
     this.areRecommendationsLoaded = true;

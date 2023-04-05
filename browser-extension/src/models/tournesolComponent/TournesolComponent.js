@@ -1,12 +1,13 @@
 import { TournesolVideosBox } from '../tournesolVideosBox/TournesolVideosBox.js';
 
 export class TournesolComponent {
-  constructor(banner) {
+  constructor(parent, banner) {
     this.isExpanded = false;
+    this.parent = parent;
     this.banner = banner;
   }
 
-  getComponent(parent) {
+  getComponent() {
     // Create container
     let tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -65,7 +66,7 @@ export class TournesolComponent {
     refresh_button.className = 'tournesol_simple_button';
     refresh_button.onclick = () => {
       refresh_button.disabled = true;
-      parent.loadRecommandations();
+      this.parent.loadRecommandations();
     };
     inline_div.append(refresh_button);
 
@@ -97,10 +98,10 @@ export class TournesolComponent {
       expand_button.disabled = true;
       if (!this.areRecommendationsLoading && !this.isExpanded) {
         this.isExpanded = true;
-        parent.displayRecommendations();
+        this.parent.displayRecommendations();
       } else if (this.isExpanded) {
         this.isExpanded = false;
-        parent.displayRecommendations();
+        this.parent.displayRecommendations();
       }
     };
     bottom_action_bar.append(expand_button);
@@ -114,14 +115,20 @@ export class TournesolComponent {
     const videosFlexContainer = this.createVideosFlexContainer();
     tournesol_container.append(videosFlexContainer);
 
-    parent.videos.forEach(async (video) => {
-      const videoBox = await TournesolVideosBox.makeBox(video);
+    this.parent.videos.forEach(async (video) => {
+      const videoBox = await TournesolVideosBox.makeBox(
+        video,
+        this.parent.displayCriteria
+      );
       videosFlexContainer.append(videoBox);
     });
 
     if (this.isExpanded) {
-      parent.additionalVideos.forEach(async (video) => {
-        const videoBox = await TournesolVideosBox.makeBox(video);
+      this.parent.additionalVideos.forEach(async (video) => {
+        const videoBox = await TournesolVideosBox.makeBox(
+          video,
+          this.parent.displayCriteria
+        );
         videosFlexContainer.append(videoBox);
       });
     }
@@ -138,8 +145,8 @@ export class TournesolComponent {
       view_more_link.target = '_blank';
       view_more_link.rel = 'noopener';
       view_more_link.href = `https://tournesol.app/recommendations/?search=${
-        parent.searchQuery
-      }&language=${parent.recommandationsLanguages.replaceAll(
+        this.parent.searchQuery
+      }&language=${this.parent.recommandationsLanguages.replaceAll(
         ',',
         '%2C'
       )}&utm_source=extension`;

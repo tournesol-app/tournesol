@@ -8,7 +8,6 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
   }
 
   loadRecommandations() {
-
     if (this.areRecommendationsLoading) return;
 
     this.areRecommendationsLoading = true;
@@ -51,7 +50,7 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
   }
 
   process() {
-      this.isPageLoaded = true;
-      this.loadRecommandations();
+    this.isPageLoaded = true;
+    this.loadRecommandations();
   }
 }

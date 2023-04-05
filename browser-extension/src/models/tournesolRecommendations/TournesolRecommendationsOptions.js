@@ -5,12 +5,14 @@ export class TournesolRecommendationsOptions {
     videosPerRow,
     rowsWhenExpanded,
     banner,
-    parentComponentQuery
+    parentComponentQuery,
+    displayCriteria
   ) {
     this.videosPerRow = videosPerRow;
     this.rowsWhenExpanded = rowsWhenExpanded;
     this.banner = banner;
     this.parentComponentQuery = parentComponentQuery;
+    this.displayCriteria = displayCriteria;
   }
 }
 
@@ -19,5 +21,6 @@ export const defaultTournesolRecommendationsOptions =
     4,
     3,
     new Banner(),
-    '#primary > ytd-rich-grid-renderer'
+    '#primary > ytd-rich-grid-renderer',
+    false
   );
