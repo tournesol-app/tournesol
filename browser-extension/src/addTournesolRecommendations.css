@@ -336,9 +336,13 @@ html[dark] #tournesol_campaign_button {
   margin-bottom: 6px;
 }
 
+.view_more_container{
+  display: flex;
+  justify-content: flex-end;
+}
+
 .view_more_link {
   font-size: 1.2rem;
-  margin-left: auto;
   /* MUI <Button size="small"> imitation */
   padding: 4px 10px;
 }
