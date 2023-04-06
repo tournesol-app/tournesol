@@ -61,5 +61,5 @@
     }
   ],
   "default_locale": "en",
-  "web_accessible_resources": ["Logo128.png", "html/*", "images/*", "translations/*", "utils.js"]
+  "web_accessible_resources": ["Logo128.png", "html/*", "images/*", "utils.js", "models/*" ]
 }
