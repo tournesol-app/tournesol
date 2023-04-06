@@ -9,13 +9,15 @@ onlyOn("headed", () => {
     },
     () => {
       const consent = () => {
+        cy.wait(3000);
+
         cy.get("body").then(($body) => {
           // Agree to cookies dialog if it's present
           if ($body.find("#dialog").length) {
             cy.get(
               "#dialog .yt-spec-button-shape-next.yt-spec-button-shape-next--filled.yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--size-m"
             )
-              .last()
+              .eq(-2)
               .click();
           }
         });
@@ -73,10 +75,10 @@ onlyOn("headed", () => {
       });
 
       it("shows Tournesol recommendations on youtube.com/results when search is on", () => {
-        cy.visit("https://www.youtube.com/");
+        cy.visit("https://www.youtube.com/?tournesolSearch=on");
         consent();
-        //  turn the search on before resume
-        cy.pause();
+
+        cy.wait(5000);
 
         cy.visit("https://www.youtube.com/results?search_query=test");
 
@@ -86,6 +88,7 @@ onlyOn("headed", () => {
       it('shows "Rate later" and "Rate Now" button on video page', () => {
         cy.visit("https://www.youtube.com/");
         consent();
+
         cy.visit("https://www.youtube.com/watch?v=6jK9bFWE--g");
 
         cy.get("body").then(($body) => {

@@ -36,6 +36,10 @@
   );
 
   const process = () => {
+    // This line is for the extension search tests
+    if (location.search.includes('tournesolSearch')) {
+      chrome.storage.local.set({ searchEnabled: true });
+    }
     // random recommendations only on youtube home page
     if (location.pathname === '/') tournesolHomeRecommendations.process();
     // search recommendations only on youtube search page
