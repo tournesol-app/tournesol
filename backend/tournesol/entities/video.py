@@ -75,10 +75,23 @@ class VideoEntity(EntityType):
         are older than `VIDEO_METADATA_EXPIRE_SECONDS`.
         The request can be forced with `.refresh_metadata(force=True)`.
         """
-        return self.instance.last_metadata_request_at is None or (
-            timezone.now() - self.instance.last_metadata_request_at
-            >= timedelta(seconds=settings.VIDEO_METADATA_EXPIRE_SECONDS)
-        )
+        if self.instance.last_metadata_request_at is None:
+            return True
+
+        now = timezone.now()
+        since_last_request = now - self.instance.last_metadata_request_at
+        if since_last_request < timedelta(minutes=1):
+            return False
+        if since_last_request > timedelta(days=30):
+            return True
+
+        publication_date = self.validated_metadata["publication_date"]
+        if publication_date is None:
+            return False
+
+        since_publication = now - publication_date
+        ratio = since_last_request / since_publication
+        return ratio > settings.VIDEO_METADATA_REFRESH_THRESHOLD
 
     @classmethod
     def update_search_vector(cls, entity) -> None:
