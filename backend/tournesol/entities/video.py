@@ -72,7 +72,7 @@ class VideoEntity(EntityType):
     def metadata_needs_to_be_refreshed(self) -> bool:
         """
         Refresh will be executed only if the current metadata
-        are older than `VIDEO_METADATA_EXPIRE_SECONDS`.
+        are too old, relatively to the video publication date.
         The request can be forced with `.refresh_metadata(force=True)`.
         """
         if self.instance.last_metadata_request_at is None:
