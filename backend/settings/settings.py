@@ -403,7 +403,9 @@ CACHES = {
     }
 }
 
-VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
+# The video metadata will be refreshed when the ratio between the age of last refresh attempt
+# over the age of the video is higher than this threshold.
+VIDEO_METADATA_REFRESH_THRESHOLD = 0.5
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
 
