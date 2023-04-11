@@ -800,6 +800,19 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView):
 
         image.paste(headline)
 
+    def _draw_bottom_overlay(self, image: Image, upscale_ratio: int):
+        """
+        Draw the bottom overlay showing there is more results
+        """
+
+        overlay = Image.new(
+            "RGBA", (440 * upscale_ratio, 25 * upscale_ratio), COLOR_DURATION_RECTANGLE
+        )
+        overlay.putalpha(127)
+        overlay_position = (0, 215 * upscale_ratio)
+
+        image.paste(overlay, overlay_position)
+
     def get(self, request):
         response = HttpResponse(content_type="image/png")
 
@@ -810,6 +823,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView):
         )
 
         self._draw_headline(preview_image, upscale_ratio)
+        self._draw_bottom_overlay(preview_image, upscale_ratio)
 
         preview_image.save(response, "png")
 
