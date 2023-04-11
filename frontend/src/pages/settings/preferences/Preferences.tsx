@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Grid } from '@mui/material';
 
 import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
+import UserSettingsForm from 'src/features/settings/preferences/videos/UserSettingsForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import {
   mainSectionBreakpoints,
@@ -36,7 +37,7 @@ function PreferencePage() {
               title={t('preferences.preferencesOfThePoll')}
               {...subSectionBreakpoints}
             >
-              <></>
+              <UserSettingsForm />
             </SettingsSection>
           </Grid>
         </Grid>
