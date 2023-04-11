@@ -7,6 +7,7 @@ import { useLoginState, useRefreshSettings } from './hooks';
 import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
 import SettingsProfilePage from './pages/settings/profile/Profile';
+import SettingsPreferencesPage from './pages/settings/preferences/Preferences';
 import SignupPage from './pages/signup/Signup';
 import VerifySignature from './pages/signup/Verify';
 import DonatePage from './pages/about/Donate';
@@ -107,6 +108,9 @@ function App() {
           </PrivateRoute>
           <PrivateRoute path="/settings/account">
             <SettingsAccountPage />
+          </PrivateRoute>
+          <PrivateRoute path="/settings/preferences">
+            <SettingsPreferencesPage />
           </PrivateRoute>
           <PrivateRoute path="/vouching">
             <PersonalVouchersPage />

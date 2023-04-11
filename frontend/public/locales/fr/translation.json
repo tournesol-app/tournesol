@@ -625,6 +625,10 @@
     }
   },
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
+  "preferences": {
+    "preferences": "Préférences",
+    "preferencesOfThePoll": "Préférences du scrutin :"
+  },
   "profile": "Profil",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
