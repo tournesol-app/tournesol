@@ -200,6 +200,9 @@ urlpatterns = [
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
     ),
+    path("preview/recommendations?";
+         DynamicWebsitePreviewDefault.as_view(),
+         name="website_preview_recommendations"),
     re_path(
         r"^preview/.*$",
         DynamicWebsitePreviewDefault.as_view(),
