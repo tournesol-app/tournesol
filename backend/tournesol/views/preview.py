@@ -34,6 +34,8 @@ DURATION_FONT_LOCATION = "tournesol/resources/Roboto-Bold.ttf"
 ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 194)
 
+TOURNESOL_RECOMMENDATIONS_HEADLINE_XY = (15, 3)
+
 TOURNESOL_SCORE_XY = (84, 30)
 TOURNESOL_SCORE_NEGATIVE_XY = (60, 30)
 
@@ -759,4 +761,56 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
 
         response = HttpResponse(content_type="image/png")
         final.save(response, "png")
+        return response
+
+
+class DynamicWebsitePreviewRecommendations(BasePreviewAPIView):
+    """
+    Return a preview of the Tournesol front end's recommendations page.
+    """
+
+    permission_classes = []
+
+    def _draw_headline(self, image: Image, upscale_ratio: int):
+        """
+        Draw find videos on Tournesol headline
+        """
+        # make a blank image for the text, initialized to transparent text color
+        headline = Image.new(
+            "RGBA", (440 * upscale_ratio, 25 * upscale_ratio), COLOR_YELLOW_BACKGROUND
+        )
+        tournesol_frame_draw = ImageDraw.Draw(headline)
+
+        headline_border = Image.new(
+            "RGBA", (440 * upscale_ratio, 3 * upscale_ratio), COLOR_YELLOW_BORDER
+        )
+        headline_border_position = (0, 22 * upscale_ratio)
+
+        headline.paste(headline_border, headline_border_position)
+
+        full_title = "Find videos on Tournesol"
+        fnt_config = get_preview_font_config(upscale_ratio=upscale_ratio)
+
+        tournesol_frame_draw.text(
+            numpy.multiply(TOURNESOL_RECOMMENDATIONS_HEADLINE_XY, upscale_ratio),
+            full_title,
+            font=fnt_config["entity_uploader"],
+            fill=COLOR_BROWN_FONT,
+        )
+
+        image.paste(headline)
+
+    def get(self, request):
+        response = HttpResponse(content_type="image/png")
+
+        upscale_ratio = 3
+
+        preview_image = Image.new(
+            "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_FONT
+        )
+
+        self._draw_headline(preview_image, upscale_ratio)
+
+        preview_image.save(response, "png")
+
         return response

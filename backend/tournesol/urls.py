@@ -32,6 +32,7 @@ from .views.preview import (
     DynamicWebsitePreviewComparison,
     DynamicWebsitePreviewDefault,
     DynamicWebsitePreviewEntity,
+    DynamicWebsitePreviewRecommendations,
 )
 from .views.proof import ProofView
 from .views.rate_later import RateLaterDetail, RateLaterList
@@ -200,8 +201,8 @@ urlpatterns = [
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
     ),
-    path("preview/recommendations?";
-         DynamicWebsitePreviewDefault.as_view(),
+    path("preview/recommendations",
+         DynamicWebsitePreviewRecommendations.as_view(),
          name="website_preview_recommendations"),
     re_path(
         r"^preview/.*$",
