@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, Grid, TextField, Typography } from '@mui/material';
 
-import { replaceSettings } from 'src/features/settings/userSettingsSlice';
+import {
+  replaceSettings,
+  selectSettings,
+} from 'src/features/settings/userSettingsSlice';
 import { useNotifications } from 'src/hooks';
 import {
   ApiError,
@@ -12,44 +15,25 @@ import {
   UsersService,
 } from 'src/services/openapi';
 
-const RATE_LATER_AUTO_REMOVE_DEFAULT = 4;
+interface Props {
+  pollName: string;
+}
 
-const UserSettingsForm = () => {
+/**
+ * Display a generic user settings form that can be used by any poll.
+ */
+const GenericPollUserSettingsForm = ({ pollName }: Props) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
-  const { contactAdministrator, displayErrorsFrom, showSuccessAlert } =
-    useNotifications();
+  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
 
   const [disabled, setDisabled] = useState(false);
-  const [rateLaterAutoRemove, setRateLaterAutoRemove] = useState(0);
 
-  /**
-   * Retrieve the up-to-date user's preferences from the API and refresh the
-   * Redux store.
-   */
-  useEffect(() => {
-    async function retrieveProfile() {
-      const response = await UsersService.usersMeSettingsRetrieve().catch(
-        () => {
-          contactAdministrator(
-            'error',
-            t('pollUserSettingsForm.errorOccurredWhileRetrievingPreferences')
-          );
-        }
-      );
-
-      if (response) {
-        setRateLaterAutoRemove(
-          response?.videos?.rate_later__auto_remove ??
-            RATE_LATER_AUTO_REMOVE_DEFAULT
-        );
-        dispatch(replaceSettings(response));
-      }
-    }
-
-    retrieveProfile();
-  }, [t, dispatch, contactAdministrator]);
+  // List of user's settings.
+  const pollSettings = useSelector(selectSettings);
+  const [rateLaterAutoRemove, setRateLaterAutoRemove] = useState(
+    pollSettings.settings?.videos?.rate_later__auto_remove ?? 4
+  );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -58,7 +42,7 @@ const UserSettingsForm = () => {
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
-          videos: {
+          [pollName]: {
             rate_later__auto_remove: rateLaterAutoRemove,
           },
         },
@@ -131,4 +115,4 @@ const UserSettingsForm = () => {
   );
 };
 
-export default UserSettingsForm;
+export default GenericPollUserSettingsForm;

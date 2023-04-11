@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { RootState } from 'src/app/store';
 import { TournesolUserSettings, UsersService } from 'src/services/openapi';
 
 export const userSettingsInitialState: { settings: TournesolUserSettings } = {
@@ -28,6 +29,8 @@ export const userSettingsSlice = createSlice({
     });
   },
 });
+
+export const selectSettings = (state: RootState) => state.settings;
 
 export const { replaceSettings } = userSettingsSlice.actions;
 
