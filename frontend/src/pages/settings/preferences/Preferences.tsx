@@ -31,7 +31,7 @@ const PreferencePage = () => {
         () => {
           contactAdministrator(
             'error',
-            t('pollUserSettingsForm.errorOccurredWhileRetrievingPreferences')
+            t('preferences.errorOccurredWhileRetrievingPreferences')
           );
         }
       );
@@ -64,7 +64,9 @@ const PreferencePage = () => {
             {...mainSectionBreakpoints}
           >
             <SettingsSection
-              title={t('preferences.preferencesOfThePoll')}
+              title={`${t('preferences.preferencesOfThePoll')} ${t(
+                'poll.videos'
+              )}`}
               {...subSectionBreakpoints}
             >
               <GenericPollUserSettingsForm pollName="videos" />

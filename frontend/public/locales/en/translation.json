@@ -312,8 +312,7 @@
     "autoRemove": "Auto-remove",
     "autoRemoveHelpText_one": "Entities will be removed from your rate-later list after {{rateLaterAutoRemove}} comparison.",
     "autoRemoveHelpText_other": "Entities will be removed from your rate-later list after {{rateLaterAutoRemove}} comparisons.",
-    "updatePreferences": "Update preferences",
-    "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences."
+    "updatePreferences": "Update preferences"
   },
   "username": "Username",
   "metrics": {
@@ -629,8 +628,15 @@
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
   "preferences": {
+    "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences.",
     "preferences": "Preferences",
     "preferencesOfThePoll": "Preferences of the poll:"
+  },
+  "poll": {
+    "videos": "videos",
+    "presidential2022": "election FR 2022",
+    "entityCandidate": "candidate",
+    "entityVideo": "video"
   },
   "profile": "Profile",
   "signup": {
@@ -677,12 +683,6 @@
     "better_habits": "Does it make people adopt habits that benefit themselves and beyond?",
     "backfire_risk": "Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?",
     "reliability": "Is the presented information trustworthy, robustly backed and properly nuanced?"
-  },
-  "poll": {
-    "presidential2022": "election FR 2022",
-    "videos": "videos",
-    "entityCandidate": "candidate",
-    "entityVideo": "video"
   },
   "videoMetadata": {
     "duration": "Duration",

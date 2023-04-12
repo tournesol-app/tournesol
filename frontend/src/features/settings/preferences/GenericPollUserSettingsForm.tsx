@@ -68,7 +68,7 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={2} direction="column" alignItems="stretch">
+      <Grid container spacing={4} direction="column" alignItems="stretch">
         <Grid item>
           <Typography variant="h6">
             {t('pollUserSettingsForm.rateLater')}
