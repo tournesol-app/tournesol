@@ -12,10 +12,11 @@ import { AnyAction } from '@reduxjs/toolkit';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import GenericPollUserSettingsForm from './GenericPollUserSettingsForm';
-import { initialState } from '../../login/loginSlice';
-import { LoginState } from '../../login/LoginState.model';
+import { LoginState } from 'src/features/login/LoginState.model';
+import { initialState } from 'src/features/login/loginSlice';
 import { OpenAPI, TournesolUserSettings } from 'src/services/openapi';
+
+import GenericPollUserSettingsForm from './GenericPollUserSettingsForm';
 
 interface MockState {
   token: LoginState;
@@ -123,57 +124,99 @@ describe('GenericPollUserSettingsForm', () => {
     storeDispatchSpy.mockClear();
   });
 
-  it('handles successful settings updates', async () => {
-    const { rateLaterAutoRemove, submit, storeDispatchSpy } = setup();
+  describe('Success', () => {
+    it('displays the defined values after a submit', async () => {
+      const { rateLaterAutoRemove, submit } = setup();
 
-    fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
+      fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
+      expect(submit).toBeEnabled();
 
-    expect(submit).toBeEnabled();
+      await act(async () => {
+        fireEvent.click(submit);
+      });
 
-    await act(async () => {
-      fireEvent.click(submit);
+      expect(rateLaterAutoRemove).toHaveValue(16);
+      expect(submit).toBeEnabled();
     });
 
-    expect(rateLaterAutoRemove).toHaveValue(16);
-    expect(submit).toBeEnabled();
+    it("calls the store's dispatch function", async () => {
+      const { rateLaterAutoRemove, storeDispatchSpy, submit } = setup();
 
-    expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
-    expect(storeDispatchSpy).toBeCalledWith({
-      type: 'settings/replaceSettings',
-      payload: { videos: { rate_later__auto_remove: 16 } },
+      fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
+
+      await act(async () => {
+        fireEvent.click(submit);
+      });
+
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
+      expect(storeDispatchSpy).toBeCalledWith({
+        type: 'settings/replaceSettings',
+        payload: { videos: { rate_later__auto_remove: 16 } },
+      });
     });
 
-    expect(mockEnqueueSnackbar).toBeCalledTimes(1);
-    expect(mockEnqueueSnackbar).toBeCalledWith(
-      expect.stringMatching(/successfully/i),
-      {
-        variant: 'success',
-      }
-    );
+    it('displays the success message with notistack', async () => {
+      const { rateLaterAutoRemove, submit } = setup();
+
+      fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
+
+      await act(async () => {
+        fireEvent.click(submit);
+      });
+
+      expect(mockEnqueueSnackbar).toBeCalledTimes(1);
+      expect(mockEnqueueSnackbar).toBeCalledWith(
+        expect.stringMatching(/successfully/i),
+        {
+          variant: 'success',
+        }
+      );
+    });
   });
 
-  it('handles bad requests and displays all error messages', async () => {
-    const { rateLaterAutoRemove, submit } = setup();
+  describe('Errors', () => {
+    it('displays the defined values after a submit', async () => {
+      const { rateLaterAutoRemove, submit } = setup();
 
-    fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
+      fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
+      expect(submit).toBeEnabled();
 
-    expect(submit).toBeEnabled();
+      await act(async () => {
+        fireEvent.click(submit);
+      });
 
-    await act(async () => {
-      fireEvent.click(submit);
+      expect(rateLaterAutoRemove).toHaveValue(-1);
+      expect(submit).toBeEnabled();
     });
 
-    expect(rateLaterAutoRemove).toHaveValue(-1);
-    expect(submit).toBeEnabled();
+    it("doesn't call the store's dispatch function", async () => {
+      const { rateLaterAutoRemove, storeDispatchSpy, submit } = setup();
 
-    expect(storeDispatchSpy).toBeCalledTimes(0);
+      fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
 
-    expect(mockEnqueueSnackbar).toBeCalledTimes(1);
-    expect(mockEnqueueSnackbar).toBeCalledWith(
-      'pollUserSettingsForm.errorOccurredDuringPreferencesUpdate',
-      {
-        variant: 'error',
-      }
-    );
+      await act(async () => {
+        fireEvent.click(submit);
+      });
+
+      expect(storeDispatchSpy).toBeCalledTimes(0);
+    });
+
+    it('displays the error message with notistack', async () => {
+      const { rateLaterAutoRemove, submit } = setup();
+
+      fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
+
+      await act(async () => {
+        fireEvent.click(submit);
+      });
+
+      expect(mockEnqueueSnackbar).toBeCalledTimes(1);
+      expect(mockEnqueueSnackbar).toBeCalledWith(
+        'pollUserSettingsForm.errorOccurredDuringPreferencesUpdate',
+        {
+          variant: 'error',
+        }
+      );
+    });
   });
 });
