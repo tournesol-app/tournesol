@@ -312,7 +312,6 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
-    "errorOccurredWhileRetrievingPreferences": "Désolé, une erreur est survenue, impossible de récupérer vos préférences.",
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "rateLater": "Liste à comparer plus tard",
@@ -320,7 +319,8 @@
     "autoRemoveHelpText_one": "Les entités seront supprimées de votre liste à comparer plus tard après {{rateLaterAutoRemove}} comparison.",
     "autoRemoveHelpText_many": "Les entités seront supprimées de votre liste à comparer plus tard après {{rateLaterAutoRemove}} comparisons.",
     "autoRemoveHelpText_other": "Les entités seront supprimées de votre liste à comparer plus tard après {{rateLaterAutoRemove}} comparisons.",
-    "updatePreferences": "Mettre à jour les préférences"
+    "updatePreferences": "Mettre à jour les préférences",
+    "errorOccurredWhileRetrievingPreferences": "Désolé, une erreur est survenue, impossible de récupérer vos préférences."
   },
   "username": "Nom d'utilisateur",
   "metrics": {

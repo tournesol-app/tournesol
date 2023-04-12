@@ -306,14 +306,14 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
-    "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences.",
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "rateLater": "Rate-later list",
     "autoRemove": "Auto-remove",
     "autoRemoveHelpText_one": "Entities will be removed from your rate-later list after {{rateLaterAutoRemove}} comparison.",
     "autoRemoveHelpText_other": "Entities will be removed from your rate-later list after {{rateLaterAutoRemove}} comparisons.",
-    "updatePreferences": "Update preferences"
+    "updatePreferences": "Update preferences",
+    "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences."
   },
   "username": "Username",
   "metrics": {

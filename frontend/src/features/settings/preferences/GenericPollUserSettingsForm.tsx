@@ -25,9 +25,10 @@ interface Props {
 const GenericPollUserSettingsForm = ({ pollName }: Props) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
+  const { showSuccessAlert, showErrorAlert } = useNotifications();
 
   const [disabled, setDisabled] = useState(false);
+  const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
   // List of user's settings.
   const pollSettings = useSelector(selectSettings);
@@ -47,17 +48,18 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
           },
         },
       }).catch((reason: ApiError) => {
-        // TODO: display the errors next to their related fields
-        displayErrorsFrom(
-          reason,
+        showErrorAlert(
           t('pollUserSettingsForm.errorOccurredDuringPreferencesUpdate')
         );
+
+        setApiErrors(reason);
       });
 
     if (response) {
       showSuccessAlert(
         t('pollUserSettingsForm.preferencesUpdatedSuccessfully')
       );
+      setApiErrors(null);
       dispatch(replaceSettings(response));
       (document.activeElement as HTMLElement).blur();
     }
@@ -78,14 +80,30 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
             fullWidth
             label={t('pollUserSettingsForm.autoRemove')}
             helperText={
-              <Trans
-                t={t}
-                i18nKey="pollUserSettingsForm.autoRemoveHelpText"
-                count={rateLaterAutoRemove}
-              >
-                Entities will be removed from your rate-later list after
-                {{ rateLaterAutoRemove }} comparisons.
-              </Trans>
+              <>
+                <Trans
+                  t={t}
+                  i18nKey="pollUserSettingsForm.autoRemoveHelpText"
+                  count={rateLaterAutoRemove}
+                >
+                  Entities will be removed from your rate-later list after
+                  {{ rateLaterAutoRemove }} comparisons.
+                </Trans>
+                {apiErrors &&
+                  apiErrors.body?.videos?.rate_later__auto_remove &&
+                  apiErrors.body.videos.rate_later__auto_remove.map(
+                    (error: string, idx: number) => (
+                      <Typography
+                        key={`rate_later__auto_remove_error_${idx}`}
+                        color="red"
+                        display="block"
+                        variant="caption"
+                      >
+                        {error}
+                      </Typography>
+                    )
+                  )}
+              </>
             }
             name="rate_later__auto_remove"
             color="secondary"
