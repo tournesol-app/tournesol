@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, Grid, TextField, Typography } from '@mui/material';
 
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import {
   replaceSettings,
   selectSettings,
@@ -18,7 +19,7 @@ import {
 interface Props {
   // Allowed polls. Using literal allows us to use the form settings[pollName]
   // with TypeScript.
-  pollName: 'videos';
+  pollName: typeof YOUTUBE_POLL_NAME;
 }
 
 /**
