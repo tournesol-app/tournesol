@@ -10,17 +10,21 @@ from io import BytesIO
 import numpy
 import requests
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw, ImageFont
 from requests.exceptions import Timeout
+from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 
 from tournesol.entities.video import TYPE_VIDEO
-from tournesol.models.entity import Entity
+from tournesol.models import Entity, Poll
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.utils.constants import REQUEST_TIMEOUT
+
+from ..views import PollsRecommendationsView
 
 logger = logging.getLogger(__name__)
 
@@ -764,12 +768,20 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         return response
 
 
-class DynamicWebsitePreviewRecommendations(BasePreviewAPIView):
+class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendationsView):
     """
     Return a preview of the Tournesol front end's recommendations page.
     """
 
     permission_classes = []
+
+    # overwrite the default method of `PollScopedViewMixin`
+    def poll_from_kwargs_or_404(self, request_kwargs):
+        poll_name = "videos"
+        try:
+            return Poll.objects.get(name=poll_name)
+        except ObjectDoesNotExist as error:
+            raise NotFound(f"The requested poll {poll_name} doesn't exist.") from error
 
     def _draw_headline(self, image: Image, upscale_ratio: int):
         """
@@ -813,6 +825,9 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView):
 
         image.paste(overlay, overlay_position)
 
+    def _draw_recommendation_box(self):
+        return True
+
     def get(self, request):
         response = HttpResponse(content_type="image/png")
 
@@ -821,6 +836,11 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView):
         preview_image = Image.new(
             "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_FONT
         )
+
+        recommendations = super().get_queryset()
+
+        for i in range(3):
+            print(recommendations[i].metadata)
 
         self._draw_headline(preview_image, upscale_ratio)
         self._draw_bottom_overlay(preview_image, upscale_ratio)
