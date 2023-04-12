@@ -16,7 +16,9 @@ import {
 } from 'src/services/openapi';
 
 interface Props {
-  pollName: string;
+  // Allowed polls. Using literal allows us to use the form settings[pollName]
+  // with TypeScript.
+  pollName: 'videos';
 }
 
 /**
@@ -31,9 +33,9 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
   // List of user's settings.
-  const pollSettings = useSelector(selectSettings);
+  const userSettings = useSelector(selectSettings).settings;
   const [rateLaterAutoRemove, setRateLaterAutoRemove] = useState(
-    pollSettings.settings?.videos?.rate_later__auto_remove ?? 4
+    userSettings ? userSettings[pollName]?.rate_later__auto_remove ?? 4 : 4
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -90,8 +92,8 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
                   {{ rateLaterAutoRemove }} comparisons.
                 </Trans>
                 {apiErrors &&
-                  apiErrors.body?.videos?.rate_later__auto_remove &&
-                  apiErrors.body.videos.rate_later__auto_remove.map(
+                  apiErrors.body[pollName]?.rate_later__auto_remove &&
+                  apiErrors.body[pollName].rate_later__auto_remove.map(
                     (error: string, idx: number) => (
                       <Typography
                         key={`rate_later__auto_remove_error_${idx}`}
