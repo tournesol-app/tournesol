@@ -114,7 +114,9 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
             onChange={(event) =>
               setRateLaterAutoRemove(Number(event.target.value))
             }
-            inputProps={{ 'data-testid': 'rate_later__auto_remove' }}
+            inputProps={{
+              'data-testid': `${pollName}_rate_later__auto_remove`,
+            }}
           />
         </Grid>
         <Grid item>
