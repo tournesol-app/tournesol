@@ -155,7 +155,7 @@ describe('GenericPollUserSettingsForm', () => {
       });
     });
 
-    it('displays the success message with notistack', async () => {
+    it('displays a generic success message with notistack', async () => {
       const { rateLaterAutoRemove, submit } = setup();
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
@@ -201,7 +201,7 @@ describe('GenericPollUserSettingsForm', () => {
       expect(storeDispatchSpy).toBeCalledTimes(0);
     });
 
-    it('displays the error message with notistack', async () => {
+    it('displays a generic error message with notistack', async () => {
       const { rateLaterAutoRemove, submit } = setup();
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
@@ -217,6 +217,24 @@ describe('GenericPollUserSettingsForm', () => {
           variant: 'error',
         }
       );
+    });
+
+    it('displays the error messages of each field', async () => {
+      const { rateLaterAutoRemove, submit } = setup();
+
+      fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
+
+      expect(
+        screen.queryByText(/this parameter cannot be lower than 1./i)
+      ).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(submit);
+      });
+
+      expect(
+        screen.getByText(/this parameter cannot be lower than 1./i)
+      ).toBeInTheDocument();
     });
   });
 });
