@@ -873,7 +873,6 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         box.paste(thumbnail, (1, 1))
 
         self.draw_video_metadata_box(recommendation, box, upscale_ratio)
-
         self.draw_tournesol_score_box(recommendation, box, upscale_ratio)
 
         image.paste(box, position)
@@ -944,7 +943,10 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         ts_logo_size = (12 * upscale_ratio, 12 * upscale_ratio)
         ts_logo = self.get_ts_logo(ts_logo_size)
-        ts_score_box.paste(ts_logo, (0, 0))
+        ts_score_box.alpha_composite(
+                ts_logo,
+                dest=(0, 0),
+            )
 
         score = str(round(recommendation.tournesol_score))
         comparisons = str(recommendation.rating_n_ratings) + ' comparisons by '
