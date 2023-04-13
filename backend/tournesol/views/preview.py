@@ -48,6 +48,7 @@ COLOR_YELLOW_BACKGROUND = (255, 200, 0, 16)
 COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_WHITE_FONT = (255, 255, 255, 255)
+COLOR_GREY_FONT = (160, 155, 135, 255)
 COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 COLOR_DURATION_RECTANGLE = (0, 0, 0, 201)
 
@@ -168,6 +169,9 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
         ),
         "recommendations_rating": ImageFont.truetype(
             str(BASE_DIR / FOOTER_FONT_LOCATION), 6 * upscale_ratio
+        ),
+        "recommendations_metadata": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 4 * upscale_ratio
         ),
 
     }
@@ -867,18 +871,56 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         box.paste(thumbnail, (1, 1))
 
-        box_draw.text(
-            (110 * upscale_ratio, 5 * upscale_ratio),
-            recommendation.metadata['name'],
-            font=self.fnt_config["recommendations_title"],
-            fill=COLOR_BROWN_FONT,
-        )
+        self.draw_video_metadata_box(recommendation, box, upscale_ratio)
 
         self.draw_tournesol_score_box(recommendation, box, upscale_ratio)
 
         image.paste(box, position)
 
         return True
+
+    def draw_video_metadata_box(self, video, image: Image, upscale_ratio):
+        video_metadata_box = Image.new(
+            "RGBA", (330 * upscale_ratio, 60 * upscale_ratio), COLOR_WHITE_FONT
+        )
+        draw = ImageDraw.Draw(video_metadata_box)
+
+        draw.text(
+            (0, 0),
+            video.metadata['name'],
+            font=self.fnt_config["recommendations_title"],
+            fill=COLOR_BROWN_FONT,
+        )
+
+        views_number = f'{video.metadata["views"]:,} views'
+        draw.text(
+            (0, 9 * upscale_ratio),
+            views_number,
+            font=self.fnt_config["recommendations_metadata"],
+            fill=COLOR_GREY_FONT,
+        )
+
+        publication_date = video.metadata["publication_date"]
+        video_date_x = len(views_number) * 2.5 * upscale_ratio
+
+        draw.text(
+            (video_date_x, 9 * upscale_ratio),
+            publication_date,
+            font=self.fnt_config["recommendations_metadata"],
+            fill=COLOR_GREY_FONT,
+        )
+
+        video_uploader = video.metadata["uploader"]
+        video_uploader_x = video_date_x + len(publication_date) * 3 * upscale_ratio
+
+        draw.text(
+            (video_uploader_x, 9 * upscale_ratio),
+            video_uploader,
+            font=self.fnt_config["recommendations_metadata"],
+            fill=COLOR_GREY_FONT,
+        )
+
+        image.paste(video_metadata_box, (110 * upscale_ratio, 5 * upscale_ratio))
 
     def draw_tournesol_score_box(self, recommendation, image: Image, upscale_ratio: int):
 
@@ -906,18 +948,18 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             (24 * upscale_ratio, 2 * upscale_ratio),
             comparisons_by_text,
             font=self.fnt_config["recommendations_rating"],
-            fill='#A09B87',
+            fill=COLOR_GREY_FONT,
         )
 
-        comparisons_by_text = str(recommendation.rating_n_contributors) + ' contributors'
+        contributors_text = str(recommendation.rating_n_contributors) + ' contributors'
         ts_score_box_draw.text(
             (82 * upscale_ratio, 2 * upscale_ratio),
-            comparisons_by_text,
+            contributors_text,
             font=self.fnt_config["recommendations_rating"],
             fill="#B38B00",
         )
 
-        image.paste(ts_score_box, (110 * upscale_ratio, 20 * upscale_ratio))
+        image.paste(ts_score_box, (110 * upscale_ratio, 25 * upscale_ratio))
 
     def get(self, request):
         response = HttpResponse(content_type="image/png")
@@ -941,6 +983,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
                 upscale_ratio,
                 (recommendation_x_pos, recommendation_y_pos)
             )
+            print(recommendation.metadata)
 
             i += 1
 
