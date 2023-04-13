@@ -172,3 +172,23 @@ class UserSettingsDetailTestCase(TestCase):
                 }
             },
         )
+
+    def test_patch_without_initial_settings(self):
+        """An authenticated user can update a subset of its settings."""
+        self.client.force_authenticate(self.user)
+
+        initial_settings = {}
+        self.user.settings = initial_settings
+        self.user.save(update_fields=["settings"])
+
+        new_settings = {"videos": {"rate_later__auto_remove": 99}}
+        response = self.client.patch(self.settings_base_url, data=new_settings, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertDictEqual(
+            response.data,
+            new_settings,
+            {"videos": {"rate_later__auto_remove": 99}},
+        )
+        self.user.refresh_from_db()
+        self.assertDictEqual(self.user.settings, new_settings)
