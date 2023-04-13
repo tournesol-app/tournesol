@@ -99,7 +99,7 @@ describe('GenericPollUserSettingsForm', () => {
       token: initialState,
       settings: {
         videos: {
-          rate_later__auto_remove: 8,
+          rate_later__auto_remove: 4,
         },
       },
     };
@@ -128,6 +128,7 @@ describe('GenericPollUserSettingsForm', () => {
     it('displays the defined values after a submit', async () => {
       const { rateLaterAutoRemove, submit } = setup();
 
+      expect(rateLaterAutoRemove).toHaveValue(4);
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       expect(submit).toBeEnabled();
 
