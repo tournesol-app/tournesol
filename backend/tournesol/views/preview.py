@@ -788,7 +788,8 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
     """
 
     permission_classes = []
-    fnt_config = get_preview_font_config(upscale_ratio=3)
+    upscale_ratio = 3
+    fnt_config = get_preview_font_config(upscale_ratio)
 
     # overwrite the default method of `PollScopedViewMixin`
     def poll_from_kwargs_or_404(self, request_kwargs):
@@ -885,14 +886,32 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         )
         draw = ImageDraw.Draw(video_metadata_box)
 
+        title = video.metadata['name']
+        views_number = f'{video.metadata["views"]:,} views'
+        publication_date = video.metadata["publication_date"]
+        uploader = video.metadata["uploader"]
+
+        views_number_size = draw.textsize(
+                views_number,
+                self.fnt_config["recommendations_metadata"]
+            )
+        
+        publication_date_size = draw.textsize(
+                publication_date,
+                self.fnt_config["recommendations_metadata"]
+            )
+        
+        gap = 4 * upscale_ratio
+        publication_date_x_gap = views_number_size[0] + gap
+        uploader_x_gap = publication_date_x_gap + publication_date_size[0] + gap
+        
         draw.text(
             (0, 0),
-            video.metadata['name'],
+            title,
             font=self.fnt_config["recommendations_title"],
             fill=COLOR_BROWN_FONT,
         )
 
-        views_number = f'{video.metadata["views"]:,} views'
         draw.text(
             (0, 9 * upscale_ratio),
             views_number,
@@ -900,22 +919,16 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             fill=COLOR_GREY_FONT,
         )
 
-        publication_date = video.metadata["publication_date"]
-        video_date_x = len(views_number) * 2.5 * upscale_ratio
-
         draw.text(
-            (video_date_x, 9 * upscale_ratio),
+            (publication_date_x_gap, 9 * upscale_ratio),
             publication_date,
             font=self.fnt_config["recommendations_metadata"],
             fill=COLOR_GREY_FONT,
         )
 
-        video_uploader = video.metadata["uploader"]
-        video_uploader_x = video_date_x + len(publication_date) * 3 * upscale_ratio
-
         draw.text(
-            (video_uploader_x, 9 * upscale_ratio),
-            video_uploader,
+            (uploader_x_gap, 9 * upscale_ratio),
+            uploader,
             font=self.fnt_config["recommendations_metadata"],
             fill=COLOR_GREY_FONT,
         )
@@ -927,44 +940,53 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         ts_score_box = Image.new(
             "RGBA", (200 * upscale_ratio, 20 * upscale_ratio), COLOR_WHITE_FONT
         )
-
         ts_score_box_draw = ImageDraw.Draw(ts_score_box)
 
-        ts_logo = self.get_ts_logo((12 * upscale_ratio, 12 * upscale_ratio))
-
+        ts_logo_size = (12 * upscale_ratio, 12 * upscale_ratio)
+        ts_logo = self.get_ts_logo(ts_logo_size)
         ts_score_box.paste(ts_logo, (0, 0))
 
         score = str(round(recommendation.tournesol_score))
+        comparisons = str(recommendation.rating_n_ratings) + ' comparisons by '
+        contributors = str(recommendation.rating_n_contributors) + ' contributors'
 
+        score_size = ts_score_box_draw.textsize(score, self.fnt_config["entity_title"])
+        comparisons_size = ts_score_box_draw.textsize(
+            comparisons,
+            self.fnt_config["recommendations_rating"]
+            )
+
+        score_x_gap = ts_logo_size[0]
+        comparisons_x_gap = score_x_gap + score_size[0] + 2 * upscale_ratio
+        contributors_x_gap = comparisons_x_gap + comparisons_size[0]
+        
         ts_score_box_draw.text(
-            (12 * upscale_ratio, -4 * upscale_ratio),
+            (score_x_gap, -4 * upscale_ratio),
             score,
             font=self.fnt_config["entity_title"],
             fill=COLOR_BROWN_FONT,
         )
 
-        comparisons_by_text = str(recommendation.rating_n_ratings) + ' comparisons by'
         ts_score_box_draw.text(
-            (24 * upscale_ratio, 2 * upscale_ratio),
-            comparisons_by_text,
+            (comparisons_x_gap, 2 * upscale_ratio),
+            comparisons,
             font=self.fnt_config["recommendations_rating"],
             fill=COLOR_GREY_FONT,
         )
-
-        contributors_text = str(recommendation.rating_n_contributors) + ' contributors'
+    
         ts_score_box_draw.text(
-            (82 * upscale_ratio, 2 * upscale_ratio),
-            contributors_text,
+            (contributors_x_gap, 2 * upscale_ratio),
+            contributors,
             font=self.fnt_config["recommendations_rating"],
             fill="#B38B00",
         )
-
+        
         image.paste(ts_score_box, (110 * upscale_ratio, 25 * upscale_ratio))
 
     def get(self, request):
         response = HttpResponse(content_type="image/png")
 
-        upscale_ratio = 3
+        upscale_ratio = self.upscale_ratio
 
         preview_image = Image.new(
             "RGBA", (440 * upscale_ratio, 240 * upscale_ratio)
@@ -983,8 +1005,6 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
                 upscale_ratio,
                 (recommendation_x_pos, recommendation_y_pos)
             )
-            print(recommendation.metadata)
-
             i += 1
 
         self.draw_headline(preview_image, upscale_ratio)
