@@ -85,5 +85,7 @@ class TournesolUserSettingsSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         for scope, settings in self.validated_data.items():
+            if scope not in instance:
+                instance[scope] = {}
             instance[scope].update(settings)
         return instance
