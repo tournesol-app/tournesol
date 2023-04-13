@@ -46,26 +46,30 @@ onlyOn("headed", () => {
         cy.visit("https://www.youtube.com/");
         consent();
 
-        if (cy.get("#tournesol_campaign_button")) {
-          //The banner is visible the first time you visit youtube
-          cy.get("#tournesol_banner").should("be.visible");
-        }
+        cy.get("#tournesol_container .inline_div > *").each(($el) => {
+          if ($el.attr("id") == "tournesol_campaign_button") {
+            cy.get("#tournesol_banner").should("be.visible");
+          }
+        });
       });
 
       it("toggles the banner visibility", () => {
         cy.visit("https://www.youtube.com/");
         consent();
 
-        if (cy.get("#tournesol_campaign_button")) {
-          //The banner is visible the first time you visit youtube
-          cy.get("#tournesol_banner").should("be.visible");
+        cy.get("#tournesol_container .inline_div > *").each(($el) => {
+          if ($el.attr("id") == "tournesol_campaign_button") {
+            cy.get("#tournesol_banner").should("be.visible");
+            //The banner is visible the first time you visit youtube
+            cy.get("#tournesol_banner").should("be.visible");
 
-          cy.get("#tournesol_banner_close_icon").click();
-          cy.get("#tournesol_banner").should("not.be.visible");
+            cy.get("#tournesol_banner_close_icon").click();
+            cy.get("#tournesol_banner").should("not.be.visible");
 
-          cy.get("#tournesol_campaign_button").click();
-          cy.get("#tournesol_banner").should("be.visible");
-        }
+            cy.get("#tournesol_campaign_button").click();
+            cy.get("#tournesol_banner").should("be.visible");
+          }
+        });
       });
 
       it("does not show Tournesol recommendations on youtube.com/results when search is off", () => {
