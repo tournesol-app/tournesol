@@ -160,6 +160,16 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
         "entity_ratings_label": ImageFont.truetype(
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
         ),
+        "recommendations_headline": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 10 * upscale_ratio
+        ),
+        "recommendations_title": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 7 * upscale_ratio
+        ),
+        "recommendations_rating": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 6 * upscale_ratio
+        ),
+
     }
     return config
 
@@ -338,7 +348,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
             )
 
-    def _draw_duration(self, image: Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
+    def draw_duration(self, image: Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
         # pylint: disable=too-many-locals
 
         """
@@ -422,7 +432,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             youtube_thumbnail, box=tuple(youtube_thumbnail_bbox[2:4])
         )
 
-        self._draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
+        self.draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
         self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
 
         preview_image.save(response, "png")
@@ -774,6 +784,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
     """
 
     permission_classes = []
+    fnt_config = get_preview_font_config(upscale_ratio=3)
 
     # overwrite the default method of `PollScopedViewMixin`
     def poll_from_kwargs_or_404(self, request_kwargs):
@@ -783,7 +794,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         except ObjectDoesNotExist as error:
             raise NotFound(f"The requested poll {poll_name} doesn't exist.") from error
 
-    def _draw_headline(self, image: Image, upscale_ratio: int):
+    def draw_headline(self, image: Image, upscale_ratio: int):
         """
         Draw find videos on Tournesol headline
         """
@@ -801,18 +812,17 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         headline.paste(headline_border, headline_border_position)
 
         full_title = "Find videos on Tournesol"
-        fnt_config = get_preview_font_config(upscale_ratio=upscale_ratio)
 
         tournesol_frame_draw.text(
             numpy.multiply(TOURNESOL_RECOMMENDATIONS_HEADLINE_XY, upscale_ratio),
             full_title,
-            font=fnt_config["entity_uploader"],
-            fill=COLOR_BROWN_FONT,
+            font=self.fnt_config["recommendations_headline"],
+            fill="#4a473e",
         )
 
         image.paste(headline)
 
-    def _draw_bottom_overlay(self, image: Image, upscale_ratio: int):
+    def draw_bottom_overlay(self, image: Image, upscale_ratio: int):
         """
         Draw the bottom overlay showing there is more results
         """
@@ -823,10 +833,91 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         overlay.putalpha(127)
         overlay_position = (0, 215 * upscale_ratio)
 
-        image.paste(overlay, overlay_position)
+        image.alpha_composite(
+                overlay,
+                dest=overlay_position,
+            )
 
-    def _draw_recommendation_box(self):
+    def draw_recommendation_box(
+            self, recommendation,
+            image: Image, upscale_ratio: int,
+            position):
+
+        box = Image.new(
+            "RGBA", (440 * upscale_ratio, 60 * upscale_ratio)
+        )
+        box_draw = ImageDraw.Draw(box)
+
+        box_draw.rounded_rectangle(
+            ((0, 0), (440 * upscale_ratio, 60 * upscale_ratio)),
+            outline="lightgrey",
+            fill=COLOR_WHITE_FONT,
+            width=2,
+            radius=10
+        )
+
+        thumbnail = self.get_yt_thumbnail(recommendation)
+        new_width = 106 * upscale_ratio
+        new_height = 59 * upscale_ratio
+        thumbnail = thumbnail.resize((new_width, new_height), Image.LANCZOS)
+
+        draw_duration = DynamicWebsitePreviewEntity.draw_duration
+        thumbnail_bbox = tuple(numpy.multiply((106, 59, 0, 0), upscale_ratio))
+        draw_duration(self, thumbnail, recommendation, thumbnail_bbox, 2)
+
+        box.paste(thumbnail, (1, 1))
+
+        box_draw.text(
+            (110 * upscale_ratio, 5 * upscale_ratio),
+            recommendation.metadata['name'],
+            font=self.fnt_config["recommendations_title"],
+            fill=COLOR_BROWN_FONT,
+        )
+
+        self.draw_tournesol_score_box(recommendation, box, upscale_ratio)
+
+        image.paste(box, position)
+
         return True
+
+    def draw_tournesol_score_box(self, recommendation, image: Image, upscale_ratio: int):
+
+        ts_score_box = Image.new(
+            "RGBA", (200 * upscale_ratio, 20 * upscale_ratio), COLOR_WHITE_FONT
+        )
+
+        ts_score_box_draw = ImageDraw.Draw(ts_score_box)
+
+        ts_logo = self.get_ts_logo((12 * upscale_ratio, 12 * upscale_ratio))
+
+        ts_score_box.paste(ts_logo, (0, 0))
+
+        score = str(round(recommendation.tournesol_score))
+
+        ts_score_box_draw.text(
+            (12 * upscale_ratio, -4 * upscale_ratio),
+            score,
+            font=self.fnt_config["entity_title"],
+            fill=COLOR_BROWN_FONT,
+        )
+
+        comparisons_by_text = str(recommendation.rating_n_ratings) + ' comparisons by'
+        ts_score_box_draw.text(
+            (24 * upscale_ratio, 2 * upscale_ratio),
+            comparisons_by_text,
+            font=self.fnt_config["recommendations_rating"],
+            fill='#A09B87',
+        )
+
+        comparisons_by_text = str(recommendation.rating_n_contributors) + ' contributors'
+        ts_score_box_draw.text(
+            (82 * upscale_ratio, 2 * upscale_ratio),
+            comparisons_by_text,
+            font=self.fnt_config["recommendations_rating"],
+            fill="#B38B00",
+        )
+
+        image.paste(ts_score_box, (110 * upscale_ratio, 20 * upscale_ratio))
 
     def get(self, request):
         response = HttpResponse(content_type="image/png")
@@ -834,16 +925,27 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         upscale_ratio = 3
 
         preview_image = Image.new(
-            "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_FONT
+            "RGBA", (440 * upscale_ratio, 240 * upscale_ratio)
         )
 
-        recommendations = super().get_queryset()
+        recommendations = super().get_queryset()[:3]
 
-        for i in range(3):
-            print(recommendations[i].metadata)
+        recommendation_x_pos = 20 * upscale_ratio
+        i = 0
 
-        self._draw_headline(preview_image, upscale_ratio)
-        self._draw_bottom_overlay(preview_image, upscale_ratio)
+        for recommendation in recommendations:
+            recommendation_y_pos = (40 + i * 70) * upscale_ratio
+            self.draw_recommendation_box(
+                recommendation,
+                preview_image,
+                upscale_ratio,
+                (recommendation_x_pos, recommendation_y_pos)
+            )
+
+            i += 1
+
+        self.draw_headline(preview_image, upscale_ratio)
+        self.draw_bottom_overlay(preview_image, upscale_ratio)
 
         preview_image.save(response, "png")
 
