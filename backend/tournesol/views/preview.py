@@ -894,16 +894,16 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
                 views_number,
                 self.fnt_config["recommendations_metadata"]
             )
-        
+
         publication_date_size = draw.textsize(
                 publication_date,
                 self.fnt_config["recommendations_metadata"]
             )
-        
+
         gap = 4 * upscale_ratio
         publication_date_x_gap = views_number_size[0] + gap
         uploader_x_gap = publication_date_x_gap + publication_date_size[0] + gap
-        
+
         draw.text(
             (0, 0),
             title,
@@ -961,7 +961,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         score_x_gap = ts_logo_size[0]
         comparisons_x_gap = score_x_gap + score_size[0] + 2 * upscale_ratio
         contributors_x_gap = comparisons_x_gap + comparisons_size[0]
-        
+
         ts_score_box_draw.text(
             (score_x_gap, -4 * upscale_ratio),
             score,
@@ -975,14 +975,14 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             font=self.fnt_config["recommendations_rating"],
             fill=COLOR_GREY_FONT,
         )
-    
+
         ts_score_box_draw.text(
             (contributors_x_gap, 2 * upscale_ratio),
             contributors,
             font=self.fnt_config["recommendations_rating"],
             fill="#B38B00",
         )
-        
+
         image.paste(ts_score_box, (110 * upscale_ratio, 25 * upscale_ratio))
 
     def get(self, request):
