@@ -8,7 +8,7 @@ onlyOn("headed", () => {
       defaultCommandTimeout: 32000,
     },
     () => {
-      const consent = () => {
+      const decline = () => {
         cy.wait(3000);
 
         cy.get("body").then(($body) => {
@@ -33,7 +33,7 @@ onlyOn("headed", () => {
 
       it("shows Tournesol recommendations on youtube.com", () => {
         cy.visit("https://www.youtube.com");
-        consent();
+        decline();
         cy.contains("Recommended by Tournesol").should("be.visible");
         cy.reload();
         cy.get("#tournesol_title:contains(Recommended by Tournesol)").should(
@@ -44,7 +44,7 @@ onlyOn("headed", () => {
 
       it("shows the banner in the tournesol component when the banner should be displayed", () => {
         cy.visit("https://www.youtube.com/");
-        consent();
+        decline();
 
         cy.get("#tournesol_container .inline_div > *").each(($el) => {
           if ($el.attr("id") == "tournesol_campaign_button") {
@@ -55,7 +55,7 @@ onlyOn("headed", () => {
 
       it("toggles the banner visibility", () => {
         cy.visit("https://www.youtube.com/");
-        consent();
+        decline();
 
         cy.get("#tournesol_container .inline_div > *").each(($el) => {
           if ($el.attr("id") == "tournesol_campaign_button") {
@@ -74,13 +74,13 @@ onlyOn("headed", () => {
 
       it("does not show Tournesol recommendations on youtube.com/results when search is off", () => {
         cy.visit("https://www.youtube.com/results?search_query=test");
-        consent();
+        decline();
         cy.contains("Recommended by Tournesol").should("not.exist");
       });
 
       it("shows Tournesol recommendations on youtube.com/results when search is on", () => {
         cy.visit("https://www.youtube.com/?tournesolSearch=on");
-        consent();
+        decline();
 
         cy.wait(5000);
 
@@ -91,7 +91,7 @@ onlyOn("headed", () => {
 
       it('shows "Rate later" and "Rate Now" button on video page', () => {
         cy.visit("https://www.youtube.com/");
-        consent();
+        decline();
 
         cy.visit("https://www.youtube.com/watch?v=6jK9bFWE--g");
 
