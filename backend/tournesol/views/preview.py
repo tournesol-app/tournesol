@@ -881,7 +881,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
     def draw_video_metadata_box(self, video, image: Image, upscale_ratio):
         video_metadata_box = Image.new(
-            "RGBA", (330 * upscale_ratio, 60 * upscale_ratio), COLOR_WHITE_FONT
+            "RGBA", (330 * upscale_ratio, 40 * upscale_ratio), COLOR_WHITE_FONT
         )
         draw = ImageDraw.Draw(video_metadata_box)
 
