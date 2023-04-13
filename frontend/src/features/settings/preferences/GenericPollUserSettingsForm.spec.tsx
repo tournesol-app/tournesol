@@ -3,7 +3,7 @@ import React from 'react';
 import fetchMock from 'fetch-mock-jest';
 import { SnackbarProvider } from 'notistack';
 import { act } from 'react-dom/test-utils';
-import { Provider } from 'react-redux';
+import * as reactRedux from 'react-redux';
 import configureStore, {
   MockStoreCreator,
   MockStoreEnhanced,
@@ -85,21 +85,22 @@ describe('GenericPollUserSettingsForm', () => {
 
   const component = ({ store }: { store: MockStoreEnhanced<MockState> }) =>
     render(
-      <Provider store={store}>
+      <reactRedux.Provider store={store}>
         <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
           <GenericPollUserSettingsForm pollName="videos" />
         </SnackbarProvider>
-      </Provider>
+      </reactRedux.Provider>
     );
 
   let storeDispatchSpy: jest.SpyInstance;
+  const useSelectorSpy = jest.spyOn(reactRedux, 'useSelector');
 
   const setup = () => {
     const state = {
       token: initialState,
       settings: {
         videos: {
-          rate_later__auto_remove: 4,
+          rate_later__auto_remove: 0,
         },
       },
     };
@@ -120,6 +121,15 @@ describe('GenericPollUserSettingsForm', () => {
     };
   };
 
+  beforeEach(() => {
+    useSelectorSpy.mockClear();
+    // The value of `rate_later__auto_remove` should be different than the one
+    // used to initialize the store, to make the tests relevant.
+    useSelectorSpy.mockReturnValue({
+      settings: { videos: { rate_later__auto_remove: 8 } },
+    });
+  });
+
   afterEach(() => {
     storeDispatchSpy.mockClear();
   });
@@ -128,7 +138,7 @@ describe('GenericPollUserSettingsForm', () => {
     it('displays the defined values after a submit', async () => {
       const { rateLaterAutoRemove, submit } = setup();
 
-      expect(rateLaterAutoRemove).toHaveValue(4);
+      expect(rateLaterAutoRemove).toHaveValue(8);
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       expect(submit).toBeEnabled();
 
@@ -140,7 +150,13 @@ describe('GenericPollUserSettingsForm', () => {
       expect(submit).toBeEnabled();
     });
 
-    it("calls the store's dispatch function", async () => {
+    it('retrieves its initial values from the store', async () => {
+      const { rateLaterAutoRemove } = setup();
+      expect(useSelectorSpy).toHaveBeenCalled();
+      expect(rateLaterAutoRemove).toHaveValue(8);
+    });
+
+    it("calls the store's dispatch function after a submit", async () => {
       const { rateLaterAutoRemove, storeDispatchSpy, submit } = setup();
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
@@ -190,7 +206,7 @@ describe('GenericPollUserSettingsForm', () => {
       expect(submit).toBeEnabled();
     });
 
-    it("doesn't call the store's dispatch function", async () => {
+    it("doesn't call the store's dispatch function after a submit", async () => {
       const { rateLaterAutoRemove, storeDispatchSpy, submit } = setup();
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
