@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, Grid, TextField, Typography } from '@mui/material';
 
-import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import {
+  DEFAULT_RATE_LATER_AUTO_REMOVAL,
+  YOUTUBE_POLL_NAME,
+} from 'src/utils/constants';
 import {
   replaceSettings,
   selectSettings,
@@ -31,8 +34,9 @@ const VideosPollUserSettingsForm = () => {
 
   // List of user's settings.
   const userSettings = useSelector(selectSettings).settings;
-  const [rateLaterAutoRemove, setRateLaterAutoRemove] = useState(
-    userSettings ? userSettings[pollName]?.rate_later__auto_remove ?? 4 : 4
+  const [rateLaterAutoRemoval, setRateLaterAutoRemoval] = useState(
+    userSettings?.[pollName]?.rate_later__auto_remove ??
+      DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -43,7 +47,7 @@ const VideosPollUserSettingsForm = () => {
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
           [pollName]: {
-            rate_later__auto_remove: rateLaterAutoRemove,
+            rate_later__auto_remove: rateLaterAutoRemoval,
           },
         },
       }).catch((reason: ApiError) => {
@@ -84,10 +88,10 @@ const VideosPollUserSettingsForm = () => {
                 <Trans
                   t={t}
                   i18nKey="pollUserSettingsForm.autoRemoveHelpText"
-                  count={rateLaterAutoRemove}
+                  count={rateLaterAutoRemoval}
                 >
                   Entities will be removed from your rate-later list after
-                  {{ rateLaterAutoRemove }} comparisons.
+                  {{ rateLaterAutoRemoval }} comparisons.
                 </Trans>
                 {apiErrors &&
                   apiErrors.body[pollName]?.rate_later__auto_remove &&
@@ -110,9 +114,9 @@ const VideosPollUserSettingsForm = () => {
             size="small"
             type="number"
             variant="outlined"
-            value={rateLaterAutoRemove}
+            value={rateLaterAutoRemoval}
             onChange={(event) =>
-              setRateLaterAutoRemove(Number(event.target.value))
+              setRateLaterAutoRemoval(Number(event.target.value))
             }
             inputProps={{
               'data-testid': `${pollName}_rate_later__auto_remove`,
