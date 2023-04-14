@@ -16,16 +16,12 @@ import {
   UsersService,
 } from 'src/services/openapi';
 
-interface Props {
-  // Allowed polls. Using literal allows us to use the form settings[pollName]
-  // with TypeScript.
-  pollName: typeof YOUTUBE_POLL_NAME;
-}
-
 /**
  * Display a generic user settings form that can be used by any poll.
  */
-const GenericPollUserSettingsForm = ({ pollName }: Props) => {
+const VideosPollUserSettingsForm = () => {
+  const pollName = YOUTUBE_POLL_NAME;
+
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
@@ -72,6 +68,7 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={4} direction="column" alignItems="stretch">
+        {/* Generic settings common to all polls */}
         <Grid item>
           <Typography variant="h6">
             {t('pollUserSettingsForm.rateLater')}
@@ -138,4 +135,4 @@ const GenericPollUserSettingsForm = ({ pollName }: Props) => {
   );
 };
 
-export default GenericPollUserSettingsForm;
+export default VideosPollUserSettingsForm;

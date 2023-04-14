@@ -16,7 +16,7 @@ import { LoginState } from 'src/features/login/LoginState.model';
 import { initialState } from 'src/features/login/loginSlice';
 import { OpenAPI, TournesolUserSettings } from 'src/services/openapi';
 
-import GenericPollUserSettingsForm from './GenericPollUserSettingsForm';
+import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
 interface MockState {
   token: LoginState;
@@ -87,7 +87,7 @@ describe('GenericPollUserSettingsForm', () => {
     render(
       <reactRedux.Provider store={store}>
         <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
-          <GenericPollUserSettingsForm pollName="videos" />
+          <VideosPollUserSettingsForm />
         </SnackbarProvider>
       </reactRedux.Provider>
     );

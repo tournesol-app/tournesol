@@ -6,7 +6,7 @@ import { Grid } from '@mui/material';
 
 import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
 import { useNotifications } from 'src/hooks';
-import GenericPollUserSettingsForm from 'src/features/settings/preferences/GenericPollUserSettingsForm';
+import VideosPollUserSettingsForm from 'src/features/settings/preferences/VideosPollUserSettingsForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
 import {
@@ -69,7 +69,7 @@ const PreferencePage = () => {
               )}`}
               {...subSectionBreakpoints}
             >
-              <GenericPollUserSettingsForm pollName="videos" />
+              <VideosPollUserSettingsForm />
             </SettingsSection>
           </Grid>
         </Grid>
