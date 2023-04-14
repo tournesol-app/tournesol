@@ -985,6 +985,20 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         image.paste(ts_score_box, (110 * upscale_ratio, 25 * upscale_ratio))
 
+    def draw_no_recommendations_text(self, image: Image):
+        draw = ImageDraw.Draw(image)
+        text_size = draw.textsize(
+            'No video corresponds to this search criteria.',
+            self.fnt_config["recommendations_title"]
+        )
+        text_pos = ((image.size[0] - text_size[0]) / 2, (image.size[1] - text_size[1]) / 2)
+        draw.text(
+            text_pos,
+            'No video corresponds to this search criteria.',
+            font=self.fnt_config["recommendations_title"],
+            fill=COLOR_BROWN_FONT,
+        )
+
     def get(self, request):
         response = HttpResponse(content_type="image/png")
 
@@ -995,21 +1009,26 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         )
 
         recommendations = super().get_queryset()[:3]
-
         recommendation_x_pos = 20 * upscale_ratio
         i = 0
 
-        for recommendation in recommendations:
-            recommendation_y_pos = (40 + i * 70) * upscale_ratio
-            self.draw_recommendation_box(
-                recommendation,
-                preview_image,
-                upscale_ratio,
-                (recommendation_x_pos, recommendation_y_pos)
-            )
-            i += 1
-
         self.draw_headline(preview_image, upscale_ratio)
+
+        if recommendations:
+            for recommendation in recommendations:
+                recommendation_y_pos = (40 + i * 70) * upscale_ratio
+                self.draw_recommendation_box(
+                    recommendation,
+                    preview_image,
+                    upscale_ratio,
+                    (recommendation_x_pos, recommendation_y_pos)
+                )
+                i += 1
+        else:
+            self.draw_no_recommendations_text(preview_image, upscale_ratio)
+            preview_image.save(response, "png")
+            return response
+
         self.draw_bottom_overlay(preview_image, upscale_ratio)
 
         preview_image.save(response, "png")
