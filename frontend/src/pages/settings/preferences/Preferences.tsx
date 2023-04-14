@@ -64,7 +64,7 @@ const PreferencePage = () => {
             {...mainSectionBreakpoints}
           >
             <SettingsSection
-              title={`${t('preferences.preferencesOfThePoll')} ${t(
+              title={`${t('preferences.preferencesRegarding')} ${t(
                 'poll.videos'
               )}`}
               {...subSectionBreakpoints}

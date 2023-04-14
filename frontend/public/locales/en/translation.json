@@ -310,8 +310,8 @@
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "rateLater": "Rate-later list",
     "autoRemove": "Auto-remove",
-    "autoRemoveHelpText_one": "Entities will be removed from your rate-later list after {{rateLaterAutoRemove}} comparison.",
-    "autoRemoveHelpText_other": "Entities will be removed from your rate-later list after {{rateLaterAutoRemove}} comparisons.",
+    "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{rateLaterAutoRemove}} comparison.",
+    "autoRemoveHelpText_other": "Elements will be removed from your rate-later list after {{rateLaterAutoRemove}} comparisons.",
     "updatePreferences": "Update preferences"
   },
   "username": "Username",
@@ -630,7 +630,7 @@
   "preferences": {
     "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences.",
     "preferences": "Preferences",
-    "preferencesOfThePoll": "Preferences of the poll:"
+    "preferencesRegarding": "Preferences regarding:"
   },
   "poll": {
     "videos": "videos",
