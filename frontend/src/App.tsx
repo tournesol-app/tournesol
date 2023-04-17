@@ -22,6 +22,7 @@ import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
+import TermsOfService from './pages/about/TermsOfService';
 import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
@@ -84,6 +85,9 @@ function App() {
             {/* About routes */}
             <PublicRoute path="/faq">
               <FAQ />
+            </PublicRoute>
+            <PublicRoute path="/about/terms-of-service">
+              <TermsOfService />
             </PublicRoute>
             <PublicRoute path="/about/privacy_policy">
               <PrivacyPolicy />
