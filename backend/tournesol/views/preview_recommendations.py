@@ -3,9 +3,12 @@ API returning preview images of some Tournesol recommendations page.
 
 Mainly used to provide URLs that can be used by the Open Graph protocol.
 """
+import datetime
+import time
+
 import numpy
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from PIL import Image, ImageDraw
 from rest_framework.exceptions import NotFound
 
@@ -25,6 +28,38 @@ from ..views.preview import (
 )
 
 TOURNESOL_RECOMMENDATIONS_HEADLINE_XY = (15, 3)
+
+DAY_IN_SECS = 60 * 60 * 24
+
+CONVERSION_TIME = {
+    'Today':  DAY_IN_SECS * 1.5,
+    'Week': DAY_IN_SECS * 7,
+    'Month': DAY_IN_SECS * 31,
+    'Year': DAY_IN_SECS * 365
+    }
+
+
+def format_preview_recommendations(request):
+    """
+    format the url and redirect
+    """
+    params = request.GET
+    url = '/preview/recommendations-preview?'
+
+    for key in params:
+        if key == 'language':
+            for lang in params[key].split(','):
+                url += f'&metadata[language]={lang}'
+        elif key == 'date':
+            for time_key in CONVERSION_TIME:
+                if params[key] == time_key:
+                    now = time.time()
+                    date_gte = datetime.datetime.fromtimestamp(now - CONVERSION_TIME[params[key]])
+                    url += f'date_gte={date_gte}'
+        else:
+            url += f'&{key}={params[key]}'
+
+    return HttpResponseRedirect(url)
 
 
 class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendationsView):

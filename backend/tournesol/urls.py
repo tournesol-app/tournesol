@@ -33,7 +33,10 @@ from .views.preview import (
     DynamicWebsitePreviewDefault,
     DynamicWebsitePreviewEntity,
 )
-from .views.preview_recommendations import DynamicWebsitePreviewRecommendations
+from .views.preview_recommendations import (
+    DynamicWebsitePreviewRecommendations,
+    format_preview_recommendations,
+)
 from .views.proof import ProofView
 from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
@@ -201,9 +204,12 @@ urlpatterns = [
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
     ),
-    path("preview/recommendations",
+    path("preview/recommendations-preview",
          DynamicWebsitePreviewRecommendations.as_view(),
          name="website_preview_recommendations"),
+    path("preview/recommendations",
+         format_preview_recommendations,
+         name="website_format_recommendations_url"),
     re_path(
         r"^preview/.*$",
         DynamicWebsitePreviewDefault.as_view(),
