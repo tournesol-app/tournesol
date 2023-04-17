@@ -77,8 +77,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
     useState<ComparisonRequest | null>(null);
 
   const { uidA, uidB } = getUidsFromLocation(location);
-  const [entityAisAvailable, setEntityAisAvailable] = useState(true);
-  const [entityBisAvailable, setEntityBisAvailable] = useState(true);
 
   const [selectorA, setSelectorA] = useState<SelectorValue>({
     uid: uidA,
@@ -114,20 +112,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
 
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
   const onChangeB = useMemo(() => onChange('vidB'), [onChange]);
-
-  const makeEntityAAvailable = useCallback(() => {
-    setEntityAisAvailable(true);
-  }, []);
-  const makeEntityBAvailable = useCallback(() => {
-    setEntityBisAvailable(true);
-  }, []);
-
-  const makeEntityAUnavailable = useCallback(() => {
-    setEntityAisAvailable(false);
-  }, []);
-  const makeEntityBUnavailable = useCallback(() => {
-    setEntityBisAvailable(false);
-  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -225,8 +209,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          onEntityAvailable={makeEntityAAvailable}
-          onEntityUnavailable={makeEntityAUnavailable}
           autoFill
         />
       </Grid>
@@ -243,8 +225,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          onEntityAvailable={makeEntityBAvailable}
-          onEntityUnavailable={makeEntityBUnavailable}
           autoFill
         />
       </Grid>
@@ -278,10 +258,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         component={Card}
         elevation={2}
       >
-        {selectorA.rating &&
-        selectorB.rating &&
-        entityAisAvailable &&
-        entityBisAvailable ? (
+        {selectorA.rating && selectorB.rating ? (
           isLoading ? (
             <CircularProgress />
           ) : (

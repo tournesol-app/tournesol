@@ -12,7 +12,7 @@ import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 import { theme } from 'src/theme';
 import { ActionList } from 'src/utils/types';
-import { extractVideoId, idFromUid } from 'src/utils/video';
+import { extractVideoId } from 'src/utils/video';
 import {
   UsersService,
   ContributorRating,
@@ -20,7 +20,6 @@ import {
   Recommendation,
 } from 'src/services/openapi';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
-import { getVideoForComparison } from 'src/utils/video';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
@@ -49,8 +48,6 @@ interface Props {
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
   autoFill?: boolean;
-  onEntityAvailable?: CallableFunction;
-  onEntityUnavailable?: CallableFunction;
 }
 
 export interface SelectorValue {
@@ -69,8 +66,6 @@ const EntitySelector = ({
   otherUid,
   variant = 'regular',
   autoFill = false,
-  onEntityAvailable,
-  onEntityUnavailable,
 }: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
@@ -84,8 +79,6 @@ const EntitySelector = ({
           onChange={onChange}
           otherUid={otherUid}
           variant={variant}
-          onEntityAvailable={onEntityAvailable ?? undefined}
-          onEntityUnavailable={onEntityUnavailable ?? undefined}
           autoFill={autoFill}
         />
       ) : (
@@ -138,8 +131,6 @@ const EntitySelectorInnerAuth = ({
   otherUid,
   variant,
   autoFill,
-  onEntityAvailable,
-  onEntityUnavailable,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
@@ -152,7 +143,6 @@ const EntitySelectorInnerAuth = ({
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
   );
-  const [autoReload, setAutoReload] = useState(true);
 
   let showEntityInput = true;
   let showRatingControl = true;
@@ -204,66 +194,12 @@ const EntitySelectorInnerAuth = ({
 
   /**
    * Load the user's rating.
-   *
-   * Do not load anything if the entity availability is unknown, or if an
-   * entity auto-reload has been asked.
    */
   useEffect(() => {
-    if (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE || !autoReload) {
-      if (onEntityAvailable) {
-        onEntityAvailable();
-      }
-    } else if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
-      if (onEntityUnavailable) {
-        onEntityUnavailable();
-      }
+    if (isUidValid(uid) && rating == null) {
+      loadRating();
     }
-
-    if (
-      entityAvailability === ENTITY_AVAILABILITY.AVAILABLE ||
-      (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !autoReload)
-    ) {
-      if (isUidValid(uid) && rating == null) {
-        loadRating();
-      }
-    }
-  }, [
-    autoReload,
-    entityAvailability,
-    loadRating,
-    onEntityAvailable,
-    onEntityUnavailable,
-    rating,
-    uid,
-  ]);
-
-  /**
-   * Ask a new entity if an auto-reload has been asked.
-   */
-  useEffect(() => {
-    if (entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) {
-      if (autoReload && !loading) {
-        setLoading(true);
-        getVideoForComparison(
-          idFromUid(otherUid || ''),
-          idFromUid(uid || '')
-        ).then((newUid) => {
-          onChange({ uid: `${UID_YT_NAMESPACE}${newUid}`, rating: null });
-          setTimeout(() => {
-            setLoading(false);
-          }, 800);
-        });
-      }
-    }
-  }, [
-    autoReload,
-    entityAvailability,
-    loading,
-    onChange,
-    onEntityUnavailable,
-    otherUid,
-    uid,
-  ]);
+  }, [loadRating, rating, uid]);
 
   /**
    * Reload rating after the parent (comparison) form has been submitted.
@@ -287,8 +223,6 @@ const EntitySelectorInnerAuth = ({
   }, [uid]);
 
   const handleChange = (value: string) => {
-    setAutoReload(false);
-
     if (value === '') {
       setInputValue('');
       onChange({
@@ -297,8 +231,6 @@ const EntitySelectorInnerAuth = ({
       });
       return;
     }
-
-    setLoading(true);
 
     const videoIdFromValue =
       pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
@@ -310,10 +242,6 @@ const EntitySelectorInnerAuth = ({
       uid: newUid,
       rating: null,
     });
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
   };
 
   const handleRatingUpdate = useCallback(
@@ -365,13 +293,10 @@ const EntitySelectorInnerAuth = ({
               otherUid={otherUid}
               onClick={() => {
                 setLoading(true);
-                setAutoReload(true);
                 setInputValue('');
               }}
               onResponse={(uid) => {
-                uid
-                  ? onChange({ uid, rating: null })
-                  : (setLoading(false), setAutoReload(true));
+                uid ? onChange({ uid, rating: null }) : setLoading(false);
               }}
               autoFill={autoFill}
             />
@@ -387,45 +312,34 @@ const EntitySelectorInnerAuth = ({
         </>
       )}
       <Box position="relative">
-        {(rating &&
-          (entityAvailability === ENTITY_AVAILABILITY.AVAILABLE ||
-            !autoReload) && (
-            <EntityCard
-              compact
-              entity={rating.entity}
-              settings={showRatingControl ? toggleAction : undefined}
-            ></EntityCard>
-          )) || (
-          <EmptyEntityCard
+        {(rating && (
+          <EntityCard
             compact
-            loading={
-              loading || entityAvailability !== ENTITY_AVAILABILITY.AVAILABLE
-            }
-          />
+            entity={rating.entity}
+            settings={showRatingControl ? toggleAction : undefined}
+          ></EntityCard>
+        )) || <EmptyEntityCard compact loading={loading} />}
+        {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !loading && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            position="absolute"
+            top="0"
+            color="white"
+            bgcolor="rgba(0,0,0,.6)"
+            sx={{
+              aspectRatio: '16/9',
+              [theme.breakpoints.down('sm')]: {
+                fontSize: '0.8rem',
+              },
+            }}
+          >
+            <Typography textAlign="center" fontSize="inherit">
+              {t('entitySelector.youtubeVideoUnavailale')}
+            </Typography>
+          </Box>
         )}
-        {rating &&
-          entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE &&
-          !autoReload && (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              position="absolute"
-              top="0"
-              color="white"
-              bgcolor="rgba(0,0,0,.6)"
-              sx={{
-                aspectRatio: '16/9',
-                [theme.breakpoints.down('sm')]: {
-                  fontSize: '0.8rem',
-                },
-              }}
-            >
-              <Typography textAlign="center" fontSize="inherit">
-                {t('entitySelector.youtubeVideoUnavailale')}
-              </Typography>
-            </Box>
-          )}
       </Box>
     </>
   );
