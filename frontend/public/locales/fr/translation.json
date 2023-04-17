@@ -311,6 +311,16 @@
     "exportAllData": "Télécharger vos données",
     "deleteAccount": "Supprimer votre compte"
   },
+  "pollUserSettingsForm": {
+    "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
+    "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
+    "rateLater": "Liste à comparer plus tard",
+    "autoRemove": "Suppression automatique",
+    "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{rateLaterAutoRemoval}} comparison.",
+    "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{rateLaterAutoRemoval}} comparisons.",
+    "autoRemoveHelpText_other": "Les éléments seront supprimés de votre liste à comparer plus tard après {{rateLaterAutoRemoval}} comparisons.",
+    "updatePreferences": "Mettre à jour les préférences"
+  },
   "username": "Nom d'utilisateur",
   "metrics": {
     "evolutionDuringTheLast30Days": "Évolution au cours des 30 derniers jours.",
@@ -625,6 +635,17 @@
     }
   },
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
+  "preferences": {
+    "errorOccurredWhileRetrievingPreferences": "Désolé, une erreur est survenue, impossible de récupérer vos préférences.",
+    "preferences": "Préférences",
+    "preferencesRegarding": "Préférences concernant :"
+  },
+  "poll": {
+    "videos": "vidéos",
+    "presidential2022": "présidentielle FR 2022",
+    "entityCandidate": "candidat",
+    "entityVideo": "vidéo"
+  },
   "profile": "Profil",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
@@ -670,12 +691,6 @@
     "better_habits": "Est-ce que ça fait adopter des habitudes bénéfiques, pour soi-même et au-delà?",
     "backfire_risk": "Est-ce adapté aux spectateur·ices ayant des opinions opposées\u00a0? Le risque de malentendus ou de réactions indésirables est-il faible\u00a0?",
     "reliability": "Les informations présentées sont-elles dignes de confiance et correctement nuancées\u00a0? Reposent-elles sur des bases solides\u00a0?"
-  },
-  "poll": {
-    "presidential2022": "présidentielle FR 2022",
-    "videos": "vidéos",
-    "entityCandidate": "candidat",
-    "entityVideo": "vidéo"
   },
   "videoMetadata": {
     "duration": "Durée",

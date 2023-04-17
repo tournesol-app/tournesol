@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { RootState } from 'src/app/store';
 import { TournesolUserSettings, UsersService } from 'src/services/openapi';
 
 export const userSettingsInitialState: { settings: TournesolUserSettings } = {
@@ -15,15 +16,22 @@ export const fetchUserSettings = createAsyncThunk(
 export const userSettingsSlice = createSlice({
   name: 'settings',
   initialState: userSettingsInitialState,
-  reducers: {},
+  reducers: {
+    // Replace all user's settings of all polls by new ones.
+    replaceSettings: (state, action) => {
+      state.settings = action.payload;
+    },
+  },
   extraReducers: (builder) => {
-    /**
-     * Replace all user's settings by new ones.
-     */
+    // Replace all user's settings of all polls by new ones.
     builder.addCase(fetchUserSettings.fulfilled, (state, action) => {
       state.settings = action.payload;
     });
   },
 });
+
+export const selectSettings = (state: RootState) => state.settings;
+
+export const { replaceSettings } = userSettingsSlice.actions;
 
 export default userSettingsSlice.reducer;
