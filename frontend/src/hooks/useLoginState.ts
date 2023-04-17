@@ -16,11 +16,11 @@ export const useLoginState = () => {
   const logout = useCallback(() => {
     dispatch(logoutAction());
     /**
-     * Ensure that the user's settings retrieved after the login are cleared 
+     * Ensure that the user's settings retrieved after the login are cleared
      * after a logout, to not leave trace of the user's preferences in the
-     * browser. 
+     * browser.
      */
-     dispatch(clearSettings());
+    dispatch(clearSettings());
   }, [dispatch]);
 
   const updateUsername = useCallback(
