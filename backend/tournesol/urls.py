@@ -32,8 +32,8 @@ from .views.preview import (
     DynamicWebsitePreviewComparison,
     DynamicWebsitePreviewDefault,
     DynamicWebsitePreviewEntity,
-    DynamicWebsitePreviewRecommendations,
 )
+from .views.preview_recommendations import DynamicWebsitePreviewRecommendations
 from .views.proof import ProofView
 from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
