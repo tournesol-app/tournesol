@@ -29,7 +29,7 @@ If `compose up` fails with `=> ERROR resolve image config for docker.io/docker/d
 The first time you start the dev-env, you will need to build the Docker
 containers with the following command.
 
-> **Notes**
+> **Note**
 >
 > If you are on Linux, you may encounter the error "Permission denied".
 > Usually you can fix it by adding your user to the `docker` group
