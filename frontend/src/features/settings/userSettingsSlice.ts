@@ -17,6 +17,10 @@ export const userSettingsSlice = createSlice({
   name: 'settings',
   initialState: userSettingsInitialState,
   reducers: {
+    // Clear all user's settings.
+    clearSettings: (state) => {
+      state.settings = {};
+    },
     // Replace all user's settings of all polls by new ones.
     replaceSettings: (state, action) => {
       state.settings = action.payload;
@@ -32,6 +36,6 @@ export const userSettingsSlice = createSlice({
 
 export const selectSettings = (state: RootState) => state.settings;
 
-export const { replaceSettings } = userSettingsSlice.actions;
+export const { clearSettings, replaceSettings } = userSettingsSlice.actions;
 
 export default userSettingsSlice.reducer;

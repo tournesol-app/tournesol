@@ -5,6 +5,7 @@ import {
   logout as logoutAction,
   updateUsername as updateUsernameAction,
 } from 'src/features/login/loginSlice';
+import { clearSettings } from 'src/features/settings/userSettingsSlice';
 import { LoginState } from 'src/features/login/LoginState.model';
 import { isLoggedIn as isStateLoggedIn } from 'src/features/login/loginUtils';
 
@@ -14,6 +15,7 @@ export const useLoginState = () => {
 
   const logout = useCallback(() => {
     dispatch(logoutAction());
+    dispatch(clearSettings());
   }, [dispatch]);
 
   const updateUsername = useCallback(
