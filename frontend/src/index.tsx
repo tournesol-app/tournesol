@@ -27,11 +27,11 @@ declare module '@mui/styles/defaultTheme' {
 
 ReactDOM.render(
   <React.StrictMode>
-    <CssBaseline />
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={theme}>
+            <CssBaseline />
             <BrowserRouter>
               <SnackbarProvider
                 classes={{
