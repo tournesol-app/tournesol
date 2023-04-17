@@ -328,6 +328,7 @@ const EntitySelectorInnerAuth = ({
             top="0"
             color="white"
             bgcolor="rgba(0,0,0,.6)"
+            width="100%"
             sx={{
               aspectRatio: '16/9',
               [theme.breakpoints.down('sm')]: {
@@ -336,7 +337,7 @@ const EntitySelectorInnerAuth = ({
             }}
           >
             <Typography textAlign="center" fontSize="inherit">
-              {t('entitySelector.youtubeVideoUnavailale')}
+              {t('entitySelector.youtubeVideoUnavailable')}
             </Typography>
           </Box>
         )}

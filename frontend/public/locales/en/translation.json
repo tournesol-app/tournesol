@@ -98,7 +98,7 @@
     "recommendations": "Top of the month",
     "unconnected": "To connect",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
-    "youtubeVideoUnavailale": "YouTube video not available. Only available videos can be compared.",
+    "youtubeVideoUnavailable": "Youtube video unavailable.",
     "backButton": "Back"
   },
   "tabsBox": {
