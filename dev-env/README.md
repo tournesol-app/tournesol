@@ -26,9 +26,13 @@ If `compose up` fails with `=> ERROR resolve image config for docker.io/docker/d
 
 ## Initialize the containers
 
+The first time you start the dev-env, you will need to build the Docker containers. To do so, use the following command.
+
 ```bash
 ./run-docker-compose.sh init
 ```
+
+If you are on Linux, you may encounter the error "Permission denied", in that case, you can add your user to the docker group (see official doc https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
 
 The script will create 3 containers:
 
@@ -51,6 +55,18 @@ Then, the application is accessible on http://localhost:3000.
 The created database includes video metadata, users and comparisons derived from a subset of Tournesol public dataset.
 An additional non-admin user is also created: `user1` with password `tournesol`.
 
+
+## A few commands
+
+See launched containers :
+```bash
+docker ps
+```
+
+See all containers :
+```bash
+docker ps -a
+```
 
 ## Rebuild the containers while preserving the database
 
