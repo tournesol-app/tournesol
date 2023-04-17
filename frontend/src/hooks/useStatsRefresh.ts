@@ -9,11 +9,11 @@ import { PollStats } from 'src/utils/types';
 import { useNotifications } from './useNotifications';
 
 export const useStatsRefresh = () => {
-  const statsState: PollStats | undefined = useAppSelector(selectStats);
+  const statsState: PollStats = useAppSelector(selectStats);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { showWarningAlert } = useNotifications();
-
+  //this function fetches from /stats/ api, AND pushes/refreshes/dispatches the data into redux
   async function getPollStatsAsync(pollName: string) {
     try {
       const pollStats = await getPollStats(pollName);

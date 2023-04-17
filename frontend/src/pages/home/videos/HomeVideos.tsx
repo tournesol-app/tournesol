@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -6,29 +6,23 @@ import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
-import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
-import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
-import { PollStats } from 'src/utils/types';
 import TempStudyBanner from '../banners/TempStudyBanner';
-import { useAppDispatch } from 'src/app/hooks';
-import { fetchStatsData } from 'src/features/comparisons/statsSlice';
+import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
 
   const { isLoggedIn } = useLoginState();
-  const { showWarningAlert } = useNotifications();
   const { baseUrl, active, name: pollName } = useCurrentPoll();
 
-  const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
-
-  const dispatch = useAppDispatch();
+  const { statsState, getPollStatsAsync } = useStatsRefresh();
 
   const homeSectionSx = {
     width: '100%',
@@ -41,20 +35,14 @@ const HomeVideosPage = () => {
    * provide them to each section needing them.
    */
   useEffect(() => {
-    async function getPollStatsAsync(pollName: string) {
-      try {
-        const pollStats = await getPollStats(pollName);
-        if (pollStats) {
-          setStats(pollStats);
-          dispatch(fetchStatsData(pollStats));
-        }
-      } catch (reason) {
-        showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
-      }
+    async function fetchData() {
+      console.log('Homevideos before:', statsState);
+      await getPollStatsAsync(pollName);
+      console.log('Homevideos after:', statsState);
     }
 
-    getPollStatsAsync(pollName);
-  }, [pollName, showWarningAlert, t, dispatch]);
+    fetchData();
+  }, [getPollStatsAsync, pollName, statsState]);
 
   return (
     <>
@@ -129,22 +117,10 @@ const HomeVideosPage = () => {
 
       <Grid2 container width="100%" flexDirection="column" alignItems="center">
         <Grid2 sx={homeSectionSx}>
-          <ComparisonSection
-            comparisonStats={{
-              comparisonCount: stats.comparisonCount,
-              lastThirtyDaysComparisonCount:
-                stats.lastThirtyDaysComparisonCount,
-              currentWeekComparisonCount: stats.currentWeekComparisonCount,
-            }}
-          />
+          <ComparisonSection />
         </Grid2>
         <Grid2 sx={homeSectionSx} bgcolor="background.emphatic">
-          <RecommendationsSection
-            comparedEntityStats={{
-              comparedEntityCount: stats.comparedEntityCount,
-              lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
-            }}
-          />
+          <RecommendationsSection />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
           <FundingSection />
@@ -153,7 +129,7 @@ const HomeVideosPage = () => {
           <ResearchSection />
         </Grid2>
         <Grid2 sx={homeSectionSx} bgcolor="rgba(0, 0, 0, 0.08)">
-          <UsageStatsSection externalData={stats} />
+          <UsageStatsSection />
         </Grid2>
         <Grid2 sx={homeSectionSx} display="flex" justifyContent="center">
           <PollListSection />

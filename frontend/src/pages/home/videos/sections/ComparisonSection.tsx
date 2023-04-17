@@ -6,19 +6,13 @@ import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import HomeComparison from './HomeComparison';
 import SectionTitle from './SectionTitle';
+import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
-interface ComparisonStats {
-  comparisonCount: number;
-  lastThirtyDaysComparisonCount: number;
-  currentWeekComparisonCount: number;
-}
-
-interface Props {
-  comparisonStats?: ComparisonStats;
-}
-
-const ComparisonSection = ({ comparisonStats }: Props) => {
+const ComparisonSection = () => {
   const { t } = useTranslation();
+  const { statsState } = useStatsRefresh();
+
+  console.log('Comparison section statsState :', statsState);
 
   const color = '#fff';
 
@@ -43,10 +37,8 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
               <Box textAlign="center">
                 <Metrics
                   text={t('stats.comparisons')}
-                  count={comparisonStats?.comparisonCount || 0}
-                  lastMonthCount={
-                    comparisonStats?.lastThirtyDaysComparisonCount || 0
-                  }
+                  count={statsState.comparisonCount}
+                  lastMonthCount={statsState.lastThirtyDaysComparisonCount}
                   lastMonthAsText
                 />
               </Box>

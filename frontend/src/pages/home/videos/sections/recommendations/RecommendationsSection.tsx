@@ -9,24 +9,15 @@ import RecommendationsSubset from 'src/features/recommendation/subset/Recommenda
 import { useCurrentPoll } from 'src/hooks';
 import SectionTitle from '../SectionTitle';
 import UseOurExtension from './UseOurExtension';
-
-interface ComparedEntityStats {
-  comparedEntityCount: number;
-  lastMonthComparedEntityCount: number;
-}
-
-interface RecommendationsSectionProps {
-  comparedEntityStats?: ComparedEntityStats;
-}
+import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
 /**
  * A home page section that displays a subset of recommended entities.
  */
-const RecommendationsSection = ({
-  comparedEntityStats,
-}: RecommendationsSectionProps) => {
+const RecommendationsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+  const { statsState } = useStatsRefresh();
 
   const titleColor = '#fff';
 
@@ -47,6 +38,8 @@ const RecommendationsSection = ({
         throw new Error(`Unknown poll: ${pollName}`);
     }
   }, [pollName, t]);
+
+  console.log('Recommendations section statsState :', statsState);
 
   return (
     <Box>
@@ -69,10 +62,8 @@ const RecommendationsSection = ({
               <Box textAlign="center">
                 <Metrics
                   text={comparedEntitiesTitle}
-                  count={comparedEntityStats?.comparedEntityCount || 0}
-                  lastMonthCount={
-                    comparedEntityStats?.lastMonthComparedEntityCount || 0
-                  }
+                  count={statsState.comparedEntityCount}
+                  lastMonthCount={statsState.lastMonthComparedEntityCount}
                   lastMonthAsText
                 />
               </Box>
