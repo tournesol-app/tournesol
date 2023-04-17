@@ -25,6 +25,7 @@ from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.utils.constants import REQUEST_TIMEOUT
 
 from ..views import PollsRecommendationsView
+from ..views.previews_helper import PreviewDrawer
 
 logger = logging.getLogger(__name__)
 
@@ -873,7 +874,10 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         box.paste(thumbnail, (1, 1))
 
         self.draw_video_metadata_box(recommendation, box, upscale_ratio)
-        self.draw_tournesol_score_box(recommendation, box, upscale_ratio)
+        PreviewDrawer.draw_tournesol_score_box(
+            self, recommendation,
+            box, self.fnt_config, upscale_ratio
+        )
 
         image.paste(box, position)
 
@@ -934,70 +938,12 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         image.paste(video_metadata_box, (110 * upscale_ratio, 5 * upscale_ratio))
 
-    def draw_tournesol_score_box(self, recommendation, image: Image, upscale_ratio: int):
-
-        ts_score_box = Image.new(
-            "RGBA", (200 * upscale_ratio, 20 * upscale_ratio), COLOR_WHITE_FONT
-        )
-        ts_score_box_draw = ImageDraw.Draw(ts_score_box)
-
-        ts_logo_size = (12 * upscale_ratio, 12 * upscale_ratio)
-        ts_logo = self.get_ts_logo(ts_logo_size)
-        ts_score_box.alpha_composite(
-                ts_logo,
-                dest=(0, 0),
-            )
-
-        score = str(round(recommendation.tournesol_score))
-        comparisons = str(recommendation.rating_n_ratings) + ' comparisons by '
-        contributors = str(recommendation.rating_n_contributors) + ' contributors'
-
-        score_size = ts_score_box_draw.textsize(score, self.fnt_config["entity_title"])
-        comparisons_size = ts_score_box_draw.textsize(
-            comparisons,
-            self.fnt_config["recommendations_rating"]
-            )
-
-        score_x_gap = ts_logo_size[0]
-        comparisons_x_gap = score_x_gap + score_size[0] + 2 * upscale_ratio
-        contributors_x_gap = comparisons_x_gap + comparisons_size[0]
-
-        ts_score_box_draw.text(
-            (score_x_gap, -4 * upscale_ratio),
-            score,
-            font=self.fnt_config["entity_title"],
-            fill=COLOR_BROWN_FONT,
-        )
-
-        ts_score_box_draw.text(
-            (comparisons_x_gap, 2 * upscale_ratio),
-            comparisons,
-            font=self.fnt_config["recommendations_rating"],
-            fill=COLOR_GREY_FONT,
-        )
-
-        ts_score_box_draw.text(
-            (contributors_x_gap, 2 * upscale_ratio),
-            contributors,
-            font=self.fnt_config["recommendations_rating"],
-            fill="#B38B00",
-        )
-
-        image.paste(ts_score_box, (110 * upscale_ratio, 25 * upscale_ratio))
-
     def draw_no_recommendations_text(self, image: Image):
-        draw = ImageDraw.Draw(image)
-        text_size = draw.textsize(
-            'No video corresponds to this search criteria.',
-            self.fnt_config["recommendations_title"]
-        )
-        text_pos = ((image.size[0] - text_size[0]) / 2, (image.size[1] - text_size[1]) / 2)
-        draw.text(
-            text_pos,
-            'No video corresponds to this search criteria.',
-            font=self.fnt_config["recommendations_title"],
-            fill=COLOR_BROWN_FONT,
-        )
+        text = 'No video corresponds to this search criteria.'
+        PreviewDrawer.draw_text_center(
+            self, image, text,
+            self.fnt_config["recommendations_title"], COLOR_BROWN_FONT
+            )
 
     def get(self, request):
         response = HttpResponse(content_type="image/png")
@@ -1025,7 +971,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
                 )
                 i += 1
         else:
-            self.draw_no_recommendations_text(preview_image, upscale_ratio)
+            self.draw_no_recommendations_text(preview_image)
             preview_image.save(response, "png")
             return response
 
