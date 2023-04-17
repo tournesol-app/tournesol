@@ -243,7 +243,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             fill=COLOR_BROWN_FONT,
         )
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type="image/png")
 
         upscale_ratio = self.upscale_ratio
