@@ -316,9 +316,9 @@
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "rateLater": "Liste à comparer plus tard",
     "autoRemove": "Suppression automatique",
-    "autoRemoveHelpText_one": "Les éléments seront supprimées de votre liste à comparer plus tard après {{rateLaterAutoRemove}} comparison.",
-    "autoRemoveHelpText_many": "Les éléments seront supprimées de votre liste à comparer plus tard après {{rateLaterAutoRemove}} comparisons.",
-    "autoRemoveHelpText_other": "Les éléments seront supprimées de votre liste à comparer plus tard après {{rateLaterAutoRemove}} comparisons.",
+    "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{rateLaterAutoRemoval}} comparison.",
+    "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{rateLaterAutoRemoval}} comparisons.",
+    "autoRemoveHelpText_other": "Les éléments seront supprimés de votre liste à comparer plus tard après {{rateLaterAutoRemoval}} comparisons.",
     "updatePreferences": "Mettre à jour les préférences"
   },
   "username": "Nom d'utilisateur",
