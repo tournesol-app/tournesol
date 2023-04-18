@@ -3,13 +3,21 @@ describe('My rated elements page', () => {
     const TEST_USERNAME = "aidjango";
     const TEST_PASSWORD = "tournesol";
 
-    it('can list and update ratings status', () => {
+    it('display the pagination', () => {
       cy.visit('/ratings');
       cy.focused().type(TEST_USERNAME);
       cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
 
-      // All rated videos are listed.
-      cy.contains(/Showing videos 1 to 20 of \d+/).should('be.visible');
+      cy.contains('button', '< -10', {matchCase: false}).should('exist');
+      cy.contains('button', '< -1', {matchCase: false}).should('exist');
+      cy.contains('button', '+1 >', {matchCase: false}).should('exist');
+      cy.contains('button', '+10 >', {matchCase: false}).should('exist');
+    });
+
+    it('can list and update ratings status', () => {
+      cy.visit('/ratings');
+      cy.focused().type(TEST_USERNAME);
+      cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
 
       // Mark all videos as public.
       cy.contains('button', 'Options', {matchCase: false}).click();
@@ -26,11 +34,9 @@ describe('My rated elements page', () => {
       // Select "Private" filter and check that a single video appears on the list
       cy.contains('button', 'Options', {matchCase: false}).click();
       cy.contains('label', 'Private', {matchCase: false}).click();
-      cy.contains('Showing videos 1 to 1 of 1').should('be.visible');
 
       // Mark all videos as public, the filter is reset and all videos are listed
       cy.contains('button', 'Mark all as public').click();
-      cy.contains(/Showing videos 1 to 20 of \d+/).should('be.visible');
     });
 
     it('visit ratings page with `isPublic` param in URL', () => {

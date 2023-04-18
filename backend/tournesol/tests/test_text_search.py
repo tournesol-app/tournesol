@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
 
+from django.core.cache import cache
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -249,7 +250,8 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(response.data["count"], self.setup_results_count)
 
         self._create_rated_entity(field1="cake")
-
+        
+        cache.clear()
         response = self.client.get(
             self._make_url(query),
             format="json"
@@ -276,7 +278,8 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(response.data["count"], 0)
 
         self._create_rated_entity(field1="oignon", language="fr")
-
+        
+        cache.clear()
         response = self.client.get(
             self._make_url(query, "fr"),
             format="json"

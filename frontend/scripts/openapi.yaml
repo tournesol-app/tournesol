@@ -688,9 +688,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedRecommendationList'
           description: ''
-  /preview/.*:
+  /preview/.:
     get:
-      operationId: preview_.*_retrieve
+      operationId: preview_._retrieve
       description: Default website preview.
       tags:
       - preview
@@ -1028,8 +1028,9 @@ paths:
     delete:
       operationId: users_me_destroy
       description: |-
-        Delete and logout the authenticated user.
-        All related resources are also deleted: comparisons, rate-later list, access tokens, etc.
+        Deactivate and logout the authenticated user. All related resources (comparisons, etc.)
+        will be deleted separately by 'delete_inactive_users' after a delay, in order to avoid
+        conflicts with ml-train currently running.
       tags:
       - users
       security:
@@ -1623,7 +1624,7 @@ paths:
         name: inconsistency_threshold
         schema:
           type: number
-          format: float
+          format: double
           default: 5.0
         description: Comparisons with an inconsistency score above this threshold
           are considered inconsistent and listed in the response (max. 100 responses).
@@ -2290,9 +2291,15 @@ components:
           type: integer
         joined_last_month:
           type: integer
+        joined_last_30_days:
+          type: integer
       required:
+      - joined_last_30_days
       - joined_last_month
       - total
+    BlankEnum:
+      enum:
+      - ''
     ChangePassword:
       type: object
       properties:
@@ -2327,7 +2334,10 @@ components:
           type: integer
         added_last_month:
           type: integer
+        added_last_30_days:
+          type: integer
       required:
+      - added_last_30_days
       - added_last_month
       - total
     Comparison:
@@ -2350,7 +2360,7 @@ components:
             $ref: '#/components/schemas/ComparisonCriteriaScore'
         duration_ms:
           type: number
-          format: float
+          format: double
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
       required:
@@ -2366,13 +2376,13 @@ components:
           maxLength: 32
         score:
           type: number
-          format: float
+          format: double
           maximum: 10.0
           minimum: -10.0
           description: Score for the given comparison
         weight:
           type: number
-          format: float
+          format: double
           description: Weight of the comparison
       required:
       - criteria
@@ -2387,13 +2397,13 @@ components:
           maxLength: 32
         score:
           type: number
-          format: float
+          format: double
           maximum: 10.0
           minimum: -10.0
           description: Score for the given comparison
         weight:
           type: number
-          format: float
+          format: double
           description: Weight of the comparison
       required:
       - criteria
@@ -2418,7 +2428,7 @@ components:
             $ref: '#/components/schemas/ComparisonCriteriaScoreRequest'
         duration_ms:
           type: number
-          format: float
+          format: double
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
       required:
@@ -2441,7 +2451,7 @@ components:
             $ref: '#/components/schemas/ComparisonCriteriaScore'
         duration_ms:
           type: number
-          format: float
+          format: double
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
         entity_a:
@@ -2472,7 +2482,7 @@ components:
             $ref: '#/components/schemas/ComparisonCriteriaScoreRequest'
         duration_ms:
           type: number
-          format: float
+          format: double
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
       required:
@@ -2484,7 +2494,13 @@ components:
           type: integer
         added_last_month:
           type: integer
+        added_last_30_days:
+          type: integer
+        added_current_week:
+          type: integer
       required:
+      - added_current_week
+      - added_last_30_days
       - added_last_month
       - total
     ContributorCriteriaCorrelations:
@@ -2501,14 +2517,14 @@ components:
             type: array
             items:
               type: number
-              format: float
+              format: double
         slopes:
           type: array
           items:
             type: array
             items:
               type: number
-              format: float
+              format: double
       required:
       - correlations
       - criterias
@@ -2522,12 +2538,12 @@ components:
           maxLength: 32
         score:
           type: number
-          format: float
+          format: double
           description: Score for the given criteria, after individual and poll scalings
             applied
         uncertainty:
           type: number
-          format: float
+          format: double
           description: Uncertainty about the criteria score
       required:
       - criteria
@@ -2541,12 +2557,12 @@ components:
           maxLength: 32
         score:
           type: number
-          format: float
+          format: double
           description: Score for the given criteria, after individual and poll scalings
             applied
         uncertainty:
           type: number
-          format: float
+          format: double
           description: Uncertainty about the criteria score
       required:
       - criteria
@@ -2567,9 +2583,9 @@ components:
           readOnly: true
         n_comparisons:
           type: integer
-          readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+          readOnly: true
         last_compared_at:
           type: string
           format: date-time
@@ -2596,9 +2612,9 @@ components:
           readOnly: true
         n_comparisons:
           type: integer
-          readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+          readOnly: true
         last_compared_at:
           type: string
           format: date-time
@@ -2663,10 +2679,10 @@ components:
           readOnly: true
         total_score:
           type: number
-          format: float
+          format: double
         tournesol_score:
           type: number
-          format: float
+          format: double
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
@@ -2696,12 +2712,12 @@ components:
           type: array
           items:
             type: number
-            format: float
+            format: double
         bins:
           type: array
           items:
             type: number
-            format: float
+            format: double
       required:
       - bins
       - criteria
@@ -2776,7 +2792,12 @@ components:
         status:
           allOf:
           - $ref: '#/components/schemas/StatusEnum'
-          description: Status of the domain.
+          description: |-
+            Status of the domain.
+
+            * `RJ` - Rejected
+            * `ACK` - Accepted
+            * `PD` - Pending
       required:
       - domain
     Entity:
@@ -2798,7 +2819,7 @@ components:
           additionalProperties: {}
         tournesol_score:
           type: number
-          format: float
+          format: double
           readOnly: true
           nullable: true
           description: The aggregated of all criteria for all users in a specific
@@ -2833,7 +2854,7 @@ components:
           readOnly: true
         tournesol_score:
           type: number
-          format: float
+          format: double
           readOnly: true
           nullable: true
           description: The aggregated of all criteria for all users in a specific
@@ -2863,7 +2884,7 @@ components:
           maxLength: 32
         score:
           type: number
-          format: float
+          format: double
           description: Score of the given criteria
       required:
       - criteria
@@ -2905,6 +2926,9 @@ components:
       - video
       - candidate_fr_2022
       type: string
+      description: |-
+        * `video` - Video
+        * `candidate_fr_2022` - Candidate (FR 2022)
     FAQEntry:
       type: object
       description: A translated question with its translated answer.
@@ -2922,18 +2946,6 @@ components:
       - answer
       - name
       - question
-    GenericPollUserSettings:
-      type: object
-      description: The settings common to all polls.
-      properties:
-        rate_later__auto_remove:
-          type: integer
-    GenericPollUserSettingsRequest:
-      type: object
-      description: The settings common to all polls.
-      properties:
-        rate_later__auto_remove:
-          type: integer
     GivenVoucher:
       type: object
       description: |-
@@ -3206,7 +3218,7 @@ components:
         specific settings of each poll.
       properties:
         videos:
-          $ref: '#/components/schemas/GenericPollUserSettingsRequest'
+          $ref: '#/components/schemas/VideosPollUserSettingsRequest'
     PatchedUserProfileRequest:
       type: object
       description: |-
@@ -3238,7 +3250,7 @@ components:
           maxLength: 100
         trust_score:
           type: number
-          format: float
+          format: double
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
@@ -3364,10 +3376,10 @@ components:
           readOnly: true
         total_score:
           type: number
-          format: float
+          format: double
         tournesol_score:
           type: number
-          format: float
+          format: double
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
@@ -3383,6 +3395,20 @@ components:
       - total_score
       - type
       - uid
+    Recommendations_defaultDateEnum:
+      enum:
+      - TODAY
+      - WEEK
+      - MONTH
+      - YEAR
+      - ALL_TIME
+      type: string
+      description: |-
+        * `TODAY` - today
+        * `WEEK` - week
+        * `MONTH` - month
+        * `YEAR` - year
+        * `ALL_TIME` - all_time
     RegisterEmail:
       type: object
       description: Default serializer used for e-mail registration (e-mail change).
@@ -3440,7 +3466,7 @@ components:
           maxLength: 100
         trust_score:
           type: number
-          format: float
+          format: double
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
@@ -3491,7 +3517,7 @@ components:
           maxLength: 100
         trust_score:
           type: number
-          format: float
+          format: double
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
@@ -3617,7 +3643,7 @@ components:
       properties:
         mean_inconsistency:
           type: number
-          format: float
+          format: double
         inconsistent_comparisons_count:
           type: integer
         comparisons_count:
@@ -3632,7 +3658,7 @@ components:
       properties:
         inconsistency:
           type: number
-          format: float
+          format: double
         criteria:
           type: string
         entity_1_uid:
@@ -3641,16 +3667,16 @@ components:
           type: string
         entity_1_rating:
           type: number
-          format: float
+          format: double
         entity_2_rating:
           type: number
-          format: float
+          format: double
         comparison_score:
           type: number
-          format: float
+          format: double
         expected_comparison_score:
           type: number
-          format: float
+          format: double
       required:
       - comparison_score
       - criteria
@@ -3679,6 +3705,10 @@ components:
       - ACK
       - PD
       type: string
+      description: |-
+        * `RJ` - Rejected
+        * `ACK` - Accepted
+        * `PD` - Pending
     TournesolUserSettings:
       type: object
       description: |-
@@ -3688,7 +3718,7 @@ components:
         specific settings of each poll.
       properties:
         videos:
-          $ref: '#/components/schemas/GenericPollUserSettings'
+          $ref: '#/components/schemas/VideosPollUserSettings'
     TournesolUserSettingsRequest:
       type: object
       description: |-
@@ -3698,12 +3728,15 @@ components:
         specific settings of each poll.
       properties:
         videos:
-          $ref: '#/components/schemas/GenericPollUserSettingsRequest'
+          $ref: '#/components/schemas/VideosPollUserSettingsRequest'
     TypeEnum:
       enum:
       - video
       - candidate_fr_2022
       type: string
+      description: |-
+        * `video` - Video
+        * `candidate_fr_2022` - Candidate (FR 2022)
     UserProfile:
       type: object
       description: |-
@@ -3742,7 +3775,7 @@ components:
           maxLength: 100
         trust_score:
           type: number
-          format: float
+          format: double
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
@@ -3788,7 +3821,7 @@ components:
           maxLength: 100
         trust_score:
           type: number
-          format: float
+          format: double
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
@@ -3996,7 +4029,7 @@ components:
           pattern: ^([A-Za-z0-9-_]{11})$
         tournesol_score:
           type: number
-          format: float
+          format: double
           readOnly: true
           nullable: true
           description: The aggregated of all criteria for all users in a specific
@@ -4017,6 +4050,54 @@ components:
       - uploader
       - video_id
       - views
+    VideosPollUserSettings:
+      type: object
+      description: |-
+        The settings specific to the `videos` poll.
+
+        Also inherit the settings common to all polls.
+      properties:
+        comparison__criteria_order:
+          type: array
+          items:
+            type: string
+        rate_later__auto_remove:
+          type: integer
+        recommendations__default_date:
+          oneOf:
+          - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        recommendations__default_language:
+          type: array
+          items:
+            type: string
+        recommendations__default_unsafe:
+          type: boolean
+    VideosPollUserSettingsRequest:
+      type: object
+      description: |-
+        The settings specific to the `videos` poll.
+
+        Also inherit the settings common to all polls.
+      properties:
+        comparison__criteria_order:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        rate_later__auto_remove:
+          type: integer
+        recommendations__default_date:
+          oneOf:
+          - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        recommendations__default_language:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        recommendations__default_unsafe:
+          type: boolean
   securitySchemes:
     cookieAuth:
       type: apiKey

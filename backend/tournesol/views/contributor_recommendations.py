@@ -83,7 +83,7 @@ class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
 
     def get_queryset(self):
         poll = self.poll_from_url
-        user = get_object_or_404(User, username=self.kwargs["username"])
+        user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
 
         queryset = Entity.objects.filter(
             contributorvideoratings__poll=poll,

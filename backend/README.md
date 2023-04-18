@@ -6,7 +6,7 @@ The API of the Tournesol platform, made with Python and Django.
 
 - [Install](#install)
     - [Automatic installation (recommended)](#automatic-installation-recommended)
-    - [Manual installation](#manual-installation-advanced)
+    - [Manual installation](#manual-installation)
     - [Set up a Google API key](#set-up-a-google-api-key)
 - [Management commands](#management-commands)
 - [Tests](#tests)

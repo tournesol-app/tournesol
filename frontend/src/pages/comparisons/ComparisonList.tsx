@@ -100,13 +100,14 @@ function ComparisonsPage() {
             <>
               {nbComparisonsMessage}
               <ComparisonList comparisons={comparisons} />
-              <Pagination
-                offset={offset}
-                count={comparisonCount}
-                onOffsetChange={handleOffsetChange}
-                limit={limit}
-                itemType={t('pagination.comparisons')}
-              />
+              {comparisonCount > limit && (
+                <Pagination
+                  offset={offset}
+                  count={comparisonCount}
+                  onOffsetChange={handleOffsetChange}
+                  limit={limit}
+                />
+              )}
             </>
           )}
         </LoaderWrapper>

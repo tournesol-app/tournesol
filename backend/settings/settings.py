@@ -69,6 +69,8 @@ MEDIA_ROOT = server_settings.get("MEDIA_ROOT", f"{base_folder}{MEDIA_URL}")
 
 MAIN_URL = server_settings.get("MAIN_URL", "http://localhost:8000/")
 
+TOURNESOL_VERSION = server_settings.get("TOURNESOL_VERSION", "")
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -277,7 +279,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 30,
@@ -391,12 +392,20 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "default_cache_table",
         "OPTIONS": {
-            "MAX_ENTRIES": 3000, # default value is 300
+            # Default value for MAX_ENTRIES is 300.
+            # The heaviest entries in the cache are dynamic page previews or
+            # long lists of videos with their description. These weight in
+            # general between 300kb and 500kb. Another important use of the
+            # cache entries is the rate limiting.
+            # (This comment might be expired, please double check if needed)
+            "MAX_ENTRIES": 100000,
         }
     }
 }
 
-VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
+# The video metadata will be refreshed when the ratio between the age of last refresh attempt
+# over the age of the video is higher than this threshold.
+VIDEO_METADATA_REFRESH_THRESHOLD = 0.5
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
 
@@ -417,7 +426,7 @@ APP_CORE = {
 APP_TOURNESOL = {
     # The created datasets will use this name, and the creation date will be
     # appended.
-    "DATASET_BASE_NAME": "tournesol_dataset_",
+    "DATASET_BASE_NAME": "tournesol_dataset",
     # The mgmt command create_dataset will create the datasets in
     # `MEDIA_ROOT/DATASETS_BUILD_DIR`.
     "DATASETS_BUILD_DIR": "datasets",

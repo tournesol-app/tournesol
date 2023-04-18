@@ -494,7 +494,7 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=self.contributor_ratings_1,
             criteria="reliability",
-            score=0.2,
+            score=0.1,
         )
         response = self.client.get(
             f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions"
@@ -505,10 +505,10 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         self.assertEqual(
             response.data["criteria_scores_distributions"][0]["criteria"], "reliability"
         )
-        # The sixth position are values between (0, 0.2) because
-        # we use a 10 bins between (-1, 1)
+        # The eleventh position are values between (0, 0.1) because
+        # we use a 20 bins between (-1, 1)
         self.assertEqual(
-            response.data["criteria_scores_distributions"][0]["distribution"][5], 1
+            response.data["criteria_scores_distributions"][0]["distribution"][10], 1
         )
 
     def test_two_criteria_score_should_have_right_distribution(self):
@@ -520,7 +520,7 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=self.contributor_ratings_2,
             criteria="reliability",
-            score=85,
+            score=95,
         )
 
         response = self.client.get(
@@ -532,14 +532,14 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         self.assertEqual(
             response.data["criteria_scores_distributions"][0]["criteria"], "reliability"
         )
-        # The sixth position are values between (0, 20) because
-        # we use a 10 bins between (-100, 100)
+        # The eleventh position are values between (0, 10) because
+        # we use a 20 bins between (-100, 100)
         self.assertEqual(
-            response.data["criteria_scores_distributions"][0]["distribution"][5], 1
+            response.data["criteria_scores_distributions"][0]["distribution"][10], 1
         )
-        # The 10th position are all values above 80 because we use a 10 bins between (-100, 100)
+        # The 20th position are all values above 90 because we use a 20 bins between (-100, 100)
         self.assertEqual(
-            response.data["criteria_scores_distributions"][0]["distribution"][9], 1
+            response.data["criteria_scores_distributions"][0]["distribution"][19], 1
         )
         # Distribution is always in a range [-100,100]
         self.assertEqual(

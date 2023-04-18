@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
@@ -192,6 +193,16 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.client.force_authenticate(self.user1)
         response = self.client.get(
             f"/users/non-existing/recommendations/{self.poll.name}", format="json"
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_users_cant_list_on_inactive_user(self):
+        """
+        Users can't list recommendations of an inactive user.
+        """
+        User.objects.filter(username=self.user1.username).update(is_active=False)
+        response = self.client.get(
+            f"/users/{self.user1.username}/recommendations/{self.poll.name}", format="json"
         )
         self.assertEqual(response.status_code, 404)
 

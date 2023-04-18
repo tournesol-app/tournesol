@@ -60,15 +60,13 @@ class MlInputFromPublicDataset(MlInput):
             dataset_zip, _headers = urlretrieve(dataset_zip)  # nosec B310
 
         with zipfile.ZipFile(dataset_zip) as zip_file:
-            zip_root_dir = next(path for path in zipfile.Path(zip_file).iterdir() if path.is_dir())
-
-            with (zip_root_dir / "comparisons.csv").open(mode="rb") as comparison_file:
+            with (zipfile.Path(zip_file) / "comparisons.csv").open(mode="rb") as comparison_file:
                 self.comparisons = pd.read_csv(comparison_file)
                 self.comparisons.rename(
                     {"video_a": "entity_a", "video_b": "entity_b"}, axis=1, inplace=True
                 )
 
-            with (zip_root_dir / "users.csv").open(mode="rb") as users_file:
+            with (zipfile.Path(zip_file) / "users.csv").open(mode="rb") as users_file:
                 self.users = pd.read_csv(users_file)
                 self.users.index.name = "user_id"
 
@@ -147,7 +145,8 @@ class MlInputFromDb(MlInput):
 
     def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
-            comparison__poll__name=self.poll_name
+            comparison__poll__name=self.poll_name,
+            comparison__user__is_active=True,
         )
         if criteria is not None:
             scores_queryset = scores_queryset.filter(criteria=criteria)

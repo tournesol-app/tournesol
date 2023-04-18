@@ -21,7 +21,12 @@ import {
   PollCriteria,
   UsersService,
 } from 'src/services/openapi';
-import { getPollName, polls, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import {
+  getPollName,
+  polls,
+  PRESIDENTIELLE_2022_SURVEY_URL,
+  YOUTUBE_POLL_NAME,
+} from 'src/utils/constants';
 import { SelectablePoll } from 'src/utils/types';
 import ProofOfVote from './ProofOfVote';
 
@@ -163,7 +168,21 @@ const FeedbackPagePresidentielle2022 = () => {
                 'myFeedbackPage.presidentielle2022.thanksForComparingCandidates'
               )}
             </Typography>
-            <ProofOfVote />
+            <ProofOfVote
+              label={t('myFeedbackPage.proofOfVote')}
+              helperText={
+                <Trans t={t} i18nKey="myFeedbackPage.proofOfVoteHelperText">
+                  This code will be helpful to complete{' '}
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={PRESIDENTIELLE_2022_SURVEY_URL}
+                  >
+                    our survey.
+                  </a>
+                </Trans>
+              }
+            />
             <Typography paragraph textAlign="right">
               <Button
                 color="secondary"

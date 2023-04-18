@@ -137,7 +137,7 @@ class TrustAlgoTest(TestCase):
             self.assertIsNone(user.trust_score)
 
         trust_algo()
-        users = list(User.objects.all())
+        users = list(User.objects.all().order_by('username'))
         self.assertTrue(users[1].trust_score >= TRUSTED_EMAIL_PRETRUST)
         self.assertTrue(users[2].trust_score > 0)
         self.assertAlmostEqual(users[9].trust_score, 0)
@@ -146,7 +146,7 @@ class TrustAlgoTest(TestCase):
         vouch18 = Voucher(by=self.user_1, to=self.user_8)
         vouch18.save()
         trust_algo()
-        users = list(User.objects.all())
+        users = list(User.objects.all().order_by('username'))
         self.assertTrue(users[8].trust_score > 0)
 
     def test_trust_algo_without_pretrusted_users_is_noop(self):

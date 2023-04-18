@@ -1,7 +1,8 @@
 """
 API endpoints to show public statistics
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime, time, timezone
 from typing import List
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -18,19 +19,41 @@ from tournesol.serializers.stats import StatisticsSerializer
 @dataclass
 class ActiveUsersStatistics:
     total: int
-    joined_last_month: int
+    joined_last_30_days: int
+    # This field is only kept for backward compatibility. It can be safely removed as soon as the
+    # frontend is not using it anymore. Renamed to `..._last_30_days`. See also the similar fields
+    # in other dataclasses in this file.
+    joined_last_month: int = field(init=False)
+
+    def __post_init__(self):
+        self.joined_last_month = self.joined_last_30_days
 
 
 @dataclass
 class ComparedEntitiesStatistics:
     total: int
-    added_last_month: int
+    added_last_30_days: int
+    # This field is only kept for backward compatibility. It can be safely removed as soon as the
+    # frontend is not using it anymore. Renamed to `..._last_30_days`. See also the similar fields
+    # in other dataclasses in this file.
+    added_last_month: int = field(init=False)
+
+    def __post_init__(self):
+        self.added_last_month = self.added_last_30_days
 
 
 @dataclass
 class ComparisonsStatistics:
     total: int
-    added_last_month: int
+    added_last_30_days: int
+    added_current_week: int
+    # This field is only kept for backward compatibility. It can be safely removed as soon as the
+    # frontend is not using it anymore. Renamed to `..._last_30_days`. See also the similar fields
+    # in other dataclasses in this file.
+    added_last_month: int = field(init=False)
+
+    def __post_init__(self):
+        self.added_last_month = self.added_last_30_days
 
 
 @dataclass
@@ -90,29 +113,8 @@ class StatisticsView(generics.GenericAPIView):
         statistics.set_active_users(active_users, last_month_active_users)
 
         for poll in Poll.objects.iterator():
-            entities = Entity.objects.filter(type=poll.entity_type)
-            compared_entities = entities.filter(rating_n_ratings__gt=0)
-            compared_entity_count = compared_entities.count()
-            last_month_compared_entity_count = compared_entities.filter(
-                add_time__gte=time_ago(days=self._days_delta),
-            ).count()
-
-            compared_entities_statistics = ComparedEntitiesStatistics(
-                compared_entity_count,
-                last_month_compared_entity_count,
-            )
-
-            comparisons = Comparison.objects.filter(poll=poll)
-            comparison_count = comparisons.count()
-            last_month_comparison_count = comparisons.filter(
-                datetime_lastedit__gte=time_ago(days=self._days_delta)
-            ).count()
-
-            comparisons_statistics = ComparisonsStatistics(
-                comparison_count,
-                last_month_comparison_count,
-            )
-
+            compared_entities_statistics = self._get_compared_entities_statistics(poll)
+            comparisons_statistics = self._get_comparisons_statistics(poll)
             statistics.append_poll(
                 poll.name,
                 compared_entities_statistics,
@@ -120,3 +122,39 @@ class StatisticsView(generics.GenericAPIView):
             )
 
         return Response(StatisticsSerializer(statistics).data)
+
+    def _get_compared_entities_statistics(self, poll):
+        entities = Entity.objects.filter(type=poll.entity_type)
+        compared_entities = entities.filter(rating_n_ratings__gt=0)
+        compared_entity_count = compared_entities.count()
+        last_30_days_compared_entity_count = compared_entities.filter(
+            add_time__gte=time_ago(days=self._days_delta),
+        ).count()
+
+        compared_entities_statistics = ComparedEntitiesStatistics(
+            compared_entity_count,
+            last_30_days_compared_entity_count,
+        )
+        return compared_entities_statistics
+
+    def _get_comparisons_statistics(self, poll):
+        last_monday = datetime.combine(
+            time_ago(days=datetime.now().weekday()),
+            time.min,
+            tzinfo=timezone.utc,
+        )
+        comparisons = Comparison.objects.filter(poll=poll, user__is_active=True)
+        comparison_count = comparisons.count()
+        last_30_days_comparison_count = comparisons.filter(
+            datetime_add__gte=time_ago(days=self._days_delta)
+        ).count()
+        current_week_comparison_count = comparisons.filter(
+            datetime_add__gte=last_monday
+        ).count()
+
+        comparisons_statistics = ComparisonsStatistics(
+            comparison_count,
+            last_30_days_comparison_count,
+            current_week_comparison_count,
+        )
+        return comparisons_statistics

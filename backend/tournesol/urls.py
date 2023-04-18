@@ -190,8 +190,8 @@ urlpatterns = [
         name="polls_score_distribution",
     ),
     # Website Previews
-    path(
-        "preview/comparison/",
+    re_path(
+        "^preview/comparison/?$",
         DynamicWebsitePreviewComparison.as_view(),
         name="website_preview_comparison",
     ),
