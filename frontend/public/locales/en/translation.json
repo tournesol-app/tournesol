@@ -34,7 +34,7 @@
     "personalScore": "Personal score: {{score}}"
   },
   "entityCard": {
-    "notAvailableAnymore": "This entity is not available anymore."
+    "thisElementIsNotAvailable": "This element is not available anymore."
   },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
@@ -94,7 +94,7 @@
     "recommendations": "Top of the month",
     "unconnected": "To connect",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
-    "youtubeVideoUnavailable": "Youtube video unavailable.",
+    "youtubeVideoUnavailable": "YouTube video unavailable.",
     "backButton": "Back"
   },
   "tabsBox": {

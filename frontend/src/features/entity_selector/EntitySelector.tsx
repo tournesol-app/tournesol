@@ -337,7 +337,9 @@ const EntitySelectorInnerAuth = ({
             }}
           >
             <Typography textAlign="center" fontSize="inherit">
-              {t('entitySelector.youtubeVideoUnavailable')}
+              {pollName === YOUTUBE_POLL_NAME
+                ? t('entitySelector.youtubeVideoUnavailable')
+                : t('entityCard.thisElementIsNotAvailable')}
             </Typography>
           </Box>
         )}
