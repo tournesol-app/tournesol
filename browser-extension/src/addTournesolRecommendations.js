@@ -44,7 +44,7 @@
     if (location.pathname === '/') {
       tournesolHomeRecommendations.process();
 
-    // Add results from Tournesol to the YT search results.
+      // Add results from Tournesol to the YT search results.
     } else if (location.pathname === '/results') {
       tournesolSearchRecommendations.process();
     }
