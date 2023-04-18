@@ -267,13 +267,13 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         draw = ImageDraw.Draw(image)
         text_size = draw.textsize(
             'No video corresponds to this search criteria.',
-            self.fnt_config["recommendations_title"]
+            self.fnt_config["recommendations_headline"]
         )
         text_pos = ((image.size[0] - text_size[0]) / 2, (image.size[1] - text_size[1]) / 2)
         draw.text(
             text_pos,
             'No video corresponds to this search criteria.',
-            font=self.fnt_config["recommendations_title"],
+            font=self.fnt_config["recommendations_headline"],
             fill=COLOR_BROWN_FONT,
         )
 
