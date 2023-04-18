@@ -20,7 +20,7 @@ from ..views.preview import (
     COLOR_DURATION_RECTANGLE,
     COLOR_GREY_FONT,
     COLOR_WHITE_FONT,
-    COLOR_YELLOW_BACKGROUND,
+    COLOR_WHITE_BACKGROUND,
     COLOR_YELLOW_BORDER,
     BasePreviewAPIView,
     DynamicWebsitePreviewEntity,
@@ -85,7 +85,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         """
         # make a blank image for the text, initialized to transparent text color
         headline = Image.new(
-            "RGBA", (440 * upscale_ratio, 25 * upscale_ratio), COLOR_YELLOW_BACKGROUND
+            "RGBA", (440 * upscale_ratio, 25 * upscale_ratio), COLOR_WHITE_BACKGROUND
         )
         tournesol_frame_draw = ImageDraw.Draw(headline)
 
@@ -283,7 +283,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         upscale_ratio = self.upscale_ratio
 
         preview_image = Image.new(
-            "RGBA", (440 * upscale_ratio, 240 * upscale_ratio)
+            "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), '#FAFAFA'
         )
 
         recommendations = super().get_queryset()[:3]
