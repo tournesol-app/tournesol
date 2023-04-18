@@ -19,8 +19,8 @@ from ..views.preview import (
     COLOR_BROWN_FONT,
     COLOR_DURATION_RECTANGLE,
     COLOR_GREY_FONT,
-    COLOR_WHITE_FONT,
     COLOR_WHITE_BACKGROUND,
+    COLOR_WHITE_FONT,
     COLOR_YELLOW_BORDER,
     BasePreviewAPIView,
     DynamicWebsitePreviewEntity,
@@ -166,7 +166,8 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         title = video.metadata['name']
         views_number = f'{video.metadata["views"]:,} views'
-        publication_date = video.metadata["publication_date"]
+        # Expected date format are 2022-06-19T00:00:00Z or 2022-06-19
+        publication_date = video.metadata["publication_date"].split('T')[0]
         uploader = video.metadata["uploader"]
 
         views_number_size = draw.textsize(

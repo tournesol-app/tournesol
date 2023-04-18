@@ -362,7 +362,6 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             str(BASE_DIR / FOOTER_FONT_LOCATION), 4 * upscale_ratio
         )
 
-        print(vars(font))
         duration = entity.metadata.get("duration")
         if not duration:
             return
