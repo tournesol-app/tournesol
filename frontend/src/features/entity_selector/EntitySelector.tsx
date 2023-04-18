@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Theme } from '@mui/material/styles';
+import { Theme, useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
 
@@ -10,7 +10,7 @@ import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
-import { theme } from 'src/theme';
+
 import { ActionList } from 'src/utils/types';
 import { extractVideoId } from 'src/utils/video';
 import {
@@ -132,6 +132,7 @@ const EntitySelectorInnerAuth = ({
   variant,
   autoFill,
 }: Props) => {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
 
