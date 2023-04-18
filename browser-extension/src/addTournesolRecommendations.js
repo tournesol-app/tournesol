@@ -36,23 +36,29 @@
   );
 
   const process = () => {
-    // This line is for the extension search tests
     if (location.search.includes('tournesolSearch')) {
       chrome.storage.local.set({ searchEnabled: true });
     }
-    // random recommendations only on youtube home page
-    if (location.pathname === '/') tournesolHomeRecommendations.process();
-    // search recommendations only on youtube search page
-    if (location.pathname === '/results')
+
+    // Display the home page recommendations.
+    if (location.pathname === '/') {
+      tournesolHomeRecommendations.process();
+
+    // Add results from Tournesol to the YT search results.
+    } else if (location.pathname === '/results') {
       tournesolSearchRecommendations.process();
+    }
   };
 
-  // Youtube doesnt completely load a video page, so content script doesn't lauch correctly without these events
-
-  // This part is called on connection for the first time on youtube.com/*
-  /* ********************************************************************* */
-
+  /**
+   * YouTube doesn't completely load a video page. The content script needs
+   * these events to run correctly.
+   */
   document.addEventListener('yt-navigate-finish', process);
-  if (document.body) process();
-  else document.addEventListener('DOMContentLoaded', process);
+
+  if (document.body) {
+    process();
+  } else {
+    document.addEventListener('DOMContentLoaded', process);
+  }
 })();
