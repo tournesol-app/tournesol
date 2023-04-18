@@ -30,6 +30,9 @@ CACHE_DEFAULT_PREVIEW = 3600 * 24  # 24h
 CACHE_ENTITY_PREVIEW = 3600 * 2
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
+LIGHT_FONT_LOCATION = "tournesol/resources/Poppins-Light.ttf"
+LIGHT_ITALIC_FONT_LOCATION = "tournesol/resources/Poppins-LightItalic.ttf"
+REGULAR_FONT_LOCATION = "tournesol/resources/Poppins-Regular.ttf"
 DURATION_FONT_LOCATION = "tournesol/resources/Roboto-Bold.ttf"
 ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 194)
@@ -156,18 +159,20 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
         ),
         "recommendations_headline": ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 10 * upscale_ratio
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 10 * upscale_ratio
         ),
         "recommendations_title": ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 7 * upscale_ratio
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 7 * upscale_ratio
         ),
         "recommendations_rating": ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 6 * upscale_ratio
+            str(BASE_DIR / LIGHT_ITALIC_FONT_LOCATION), 6 * upscale_ratio
         ),
         "recommendations_metadata": ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 4 * upscale_ratio
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 5 * upscale_ratio
         ),
-
+        "recommendations_ts_score": ImageFont.truetype(
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
+        )
     }
     return config
 
@@ -353,7 +358,11 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         Draw the duration on the preview.
         Adapts the overlay position and size in function of the duration text size.
         """
+        font = ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 4 * upscale_ratio
+        )
 
+        print(vars(font))
         duration = entity.metadata.get("duration")
         if not duration:
             return

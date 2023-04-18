@@ -133,12 +133,11 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         )
         box_draw = ImageDraw.Draw(box)
 
-        box_draw.rounded_rectangle(
+        box_draw.rectangle(
             ((0, 0), (440 * upscale_ratio, 60 * upscale_ratio)),
             outline="lightgrey",
             fill=COLOR_WHITE_FONT,
             width=2,
-            radius=10
         )
 
         thumbnail = self.get_yt_thumbnail(recommendation)
@@ -244,7 +243,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         ts_score_box_draw.text(
             (score_x_gap, -4 * upscale_ratio),
             score,
-            font=self.fnt_config["entity_title"],
+            font=self.fnt_config["recommendations_ts_score"],
             fill=COLOR_BROWN_FONT,
         )
 
