@@ -36,7 +36,7 @@ const HomeVideosPage = () => {
    */
   useEffect(() => {
     dispatch(fetchStats());
-  }, [dispatch, fetchStats]);
+  }, [dispatch]);
 
   return (
     <>
