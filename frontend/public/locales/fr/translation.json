@@ -386,7 +386,7 @@
   },
   "donate": {
     "ifPossibleConsiderUsingDirectTransfers": "Si possible, préférez les virements directs (voir au-dessous). Cela permet à l'association de ne pas payer de frais supplémentaires, et permet de tirer le meilleur parti de vos dons.",
-    "donateWithUtip": "Faire un don avec uTip",
+    "donateWithKKBB": "Faire un don avec KissKissBankBank",
     "donateWithPaypal": "Faire un don avec PayPal",
     "doYouPreferDirectTransfer": "Vous préférez les virements directs ?"
   },
