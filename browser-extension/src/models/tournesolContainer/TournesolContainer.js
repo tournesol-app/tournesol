@@ -7,7 +7,7 @@ export class TournesolContainer {
     this.banner = banner;
   }
 
-  getHTMLElement() {
+  createHTMLElement() {
     // Create container
     let tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -112,7 +112,7 @@ export class TournesolContainer {
       tournesol_container.append(this.banner.banner);
     }
 
-    const videosFlexContainer = this.createVideosFlexContainer();
+    const videosFlexContainer = this._createVideosFlexContainer();
     tournesol_container.append(videosFlexContainer);
 
     this.parent.videos.forEach((video) => {
@@ -159,7 +159,7 @@ export class TournesolContainer {
     return tournesol_container;
   }
 
-  createVideosFlexContainer() {
+  _createVideosFlexContainer() {
     const container = document.createElement('div');
     container.id = 'tournesol_videos_flexcontainer';
     return container;
