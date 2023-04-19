@@ -38,7 +38,7 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
         );
       } else {
         //Remove the component from the previous search if the search has just been turned off
-        if (this.tournesol_component) this.tournesol_component.remove();
+        if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
 
         // reset the recommendationsLoading if search is off either it will never
         // try to reload new videos for the search
