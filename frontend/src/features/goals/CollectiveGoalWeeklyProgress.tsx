@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, LinearProgress, Typography } from '@mui/material';
 
@@ -21,65 +21,56 @@ const CollectiveGoalWeeklyProgress = () => {
     }
   });
 
-  const collectiveComparisonNbr =
+  const collectiveComparisonsNbr =
     pollStats?.comparisons.added_current_week ?? 0;
-  const collectiveComparisonPercent =
-    (collectiveComparisonNbr / WEEKLY_COMPARISON_GOAL) * 100;
+
+  const collectiveComparisonsPercent =
+    (collectiveComparisonsNbr / WEEKLY_COMPARISON_GOAL) * 100;
+
+  const reward = '❤️‍🔥';
 
   return (
-    <>
-      <Box width="100%" justifyContent="space-between">
-        <Box
-          px={4}
-          pt={4}
-          pb={2}
-          mx={'auto'}
-          display="flex"
-          flexDirection="column"
-          width="100%"
-          maxWidth="800px"
-          minHeight="100px"
-          textAlign="center"
-          alignItems="center"
-          justifyContent="center"
+    <Box
+      width="100%"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      gap={1}
+      mb={4}
+    >
+      <Typography variant="h6">
+        <Trans
+          t={t}
+          i18nKey="collectiveGoalWeeklyProgress.weeklyCollectiveGoal"
         >
-          <Typography pb={2}>
-            <img
-              src="/svg/LogoSmall.svg"
-              width="18px"
-              alt="tournesol-logo"
-              aria-label="tournesol-logo"
-              data-mui-internal-clone-element="true"
-            />{' '}
-            {t('comparison.weeklyCollectiveGoal')} -{' '}
-            {collectiveComparisonPercent}%
-          </Typography>
-          <Box
-            width="100%"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-around"
-            maxWidth="460px"
-          >
-            <LinearProgress
-              variant="determinate"
-              value={collectiveComparisonPercent}
-              color="success"
-              sx={{
-                width: '100%',
-                maxWidth: '400px',
-                height: '12px',
-                marginRight: '6px',
-                borderRadius: '6px',
-              }}
-            />
-            <Typography>
-              {collectiveComparisonNbr}/{WEEKLY_COMPARISON_GOAL}
-            </Typography>
-          </Box>
-        </Box>
+          Weekly collective goal - {{ collectiveComparisonsPercent }}%
+        </Trans>
+        {collectiveComparisonsPercent > 100 && ` ${reward}`}
+      </Typography>
+      <Box
+        width="100%"
+        maxWidth="sm"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        gap={1}
+      >
+        <LinearProgress
+          value={Math.min(collectiveComparisonsPercent, 100)}
+          color="success"
+          variant="determinate"
+          sx={{
+            width: '100%',
+            height: '12px',
+            marginRight: '6px',
+            borderRadius: '6px',
+          }}
+        />
+        <Typography variant="body1">
+          {collectiveComparisonsNbr}/{WEEKLY_COMPARISON_GOAL}
+        </Typography>
       </Box>
-    </>
+    </Box>
   );
 };
 

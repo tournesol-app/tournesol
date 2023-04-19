@@ -37,8 +37,6 @@ const ComparisonPage = () => {
 
   return (
     <>
-      {/* {series && <CollectiveGoalWeeklyProgress />} */}
-      <CollectiveGoalWeeklyProgress />
       <ContentHeader title={t('comparison.submitAComparison')} />
       <ContentBox>
         <Box
@@ -73,7 +71,10 @@ const ComparisonPage = () => {
               skipButtonLabel={t('tutorial.skipTheTutorial')}
             />
           ) : (
-            <Comparison />
+            <>
+              <CollectiveGoalWeeklyProgress />
+              <Comparison />
+            </>
           )}
         </Box>
       </ContentBox>
