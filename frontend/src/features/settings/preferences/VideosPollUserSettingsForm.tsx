@@ -2,7 +2,17 @@ import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Button, Grid, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
@@ -15,6 +25,8 @@ import {
 import { useNotifications } from 'src/hooks';
 import {
   ApiError,
+  BlankEnum,
+  ComparisonUi_displayWeeklyCollectiveGoalEnum,
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
@@ -34,10 +46,28 @@ const VideosPollUserSettingsForm = () => {
 
   // List of user's settings.
   const userSettings = useSelector(selectSettings).settings;
+
+  // Comparison (page)
+  const [compUiDisplayWeeklyColGoal, setCompUiDisplayWeeklyColGoal] = useState<
+    ComparisonUi_displayWeeklyCollectiveGoalEnum | BlankEnum
+  >(
+    userSettings?.[pollName]?.comparison_ui__display_weekly_collective_goal ??
+      ComparisonUi_displayWeeklyCollectiveGoalEnum.ALWAYS
+  );
+
+  // Rate-later settings
   const [rateLaterAutoRemoval, setRateLaterAutoRemoval] = useState(
     userSettings?.[pollName]?.rate_later__auto_remove ??
       DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
+
+  const changeCompUiDisplayWeeklyColGoal = (event: SelectChangeEvent) => {
+    setCompUiDisplayWeeklyColGoal(
+      event.target.value as
+        | ComparisonUi_displayWeeklyCollectiveGoalEnum
+        | BlankEnum
+    );
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -47,6 +77,8 @@ const VideosPollUserSettingsForm = () => {
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
           [pollName]: {
+            comparison_ui__display_weekly_collective_goal:
+              compUiDisplayWeeklyColGoal,
             rate_later__auto_remove: rateLaterAutoRemoval,
           },
         },
@@ -73,6 +105,57 @@ const VideosPollUserSettingsForm = () => {
     <form onSubmit={handleSubmit}>
       <Grid container spacing={4} direction="column" alignItems="stretch">
         {/* Generic settings common to all polls */}
+        <Grid item>
+          <Typography variant="h6">
+            {t('pollUserSettingsForm.comparisonPage')}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <FormControl fullWidth>
+            <InputLabel
+              id="label__comparison_ui__display_weekly_collective_goal"
+              color="secondary"
+            >
+              {t('pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal')}
+            </InputLabel>
+            <Select
+              size="small"
+              color="secondary"
+              id="comparison_ui__display_weekly_collective_goal"
+              labelId="label__comparison_ui__display_weekly_collective_goal"
+              value={compUiDisplayWeeklyColGoal}
+              label={t(
+                'pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal'
+              )}
+              onChange={changeCompUiDisplayWeeklyColGoal}
+            >
+              <MenuItem
+                value={ComparisonUi_displayWeeklyCollectiveGoalEnum.ALWAYS}
+              >
+                {t('pollUserSettingsForm.always')}
+              </MenuItem>
+              <MenuItem
+                value={
+                  ComparisonUi_displayWeeklyCollectiveGoalEnum.WEBSITE_ONLY
+                }
+              >
+                {t('pollUserSettingsForm.websiteOnly')}
+              </MenuItem>
+              <MenuItem
+                value={
+                  ComparisonUi_displayWeeklyCollectiveGoalEnum.EMBEDDED_ONLY
+                }
+              >
+                {t('pollUserSettingsForm.embeddedOnly')}
+              </MenuItem>
+              <MenuItem
+                value={ComparisonUi_displayWeeklyCollectiveGoalEnum.NEVER}
+              >
+                {t('pollUserSettingsForm.never')}
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
         <Grid item>
           <Typography variant="h6">
             {t('pollUserSettingsForm.rateLater')}
