@@ -6,6 +6,7 @@ import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 
 import { selectStats } from 'src/features/comparisons/statsSlice';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
+import { getPollStats } from 'src/features/statistics/stats';
 import HomeComparison from './HomeComparison';
 import SectionTitle from './SectionTitle';
 import { useCurrentPoll } from 'src/hooks';
@@ -15,12 +16,7 @@ const ComparisonSection = () => {
   const { name: pollName } = useCurrentPoll();
 
   const publicStats = useSelector(selectStats);
-
-  const pollStats = publicStats.polls.find((poll) => {
-    if (poll.name === pollName) {
-      return poll;
-    }
-  });
+  const pollStats = getPollStats(publicStats, pollName);
 
   const color = '#fff';
 

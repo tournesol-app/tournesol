@@ -5,6 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Typography, Button } from '@mui/material';
 
 import { selectStats } from 'src/features/comparisons/statsSlice';
+import { getPollStats } from 'src/features/statistics/stats';
 import { useCurrentPoll } from 'src/hooks';
 
 // PublicDownloadSection is a paragraph displayed on the HomePage
@@ -16,11 +17,7 @@ const PublicDownloadSection = () => {
   const api_url = process.env.REACT_APP_API_URL;
 
   const publicStats = useSelector(selectStats);
-  const pollStats = publicStats.polls.find((poll) => {
-    if (poll.name === pollName) {
-      return poll;
-    }
-  });
+  const pollStats = getPollStats(publicStats, pollName);
 
   const userCount = publicStats.active_users.total;
   const comparisonCount = pollStats?.comparisons.total ?? 0;
