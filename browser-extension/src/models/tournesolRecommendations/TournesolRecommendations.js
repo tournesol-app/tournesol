@@ -38,7 +38,7 @@ export class TournesolRecommendations {
   }
 
   // This part creates video boxes from API's response JSON
-  displayRecommendations() {
+  displayRecommendations(nthchild = 1) {
     if (!this.videos || this.videos.length === 0) {
       // remove the component if we did not receive video from the response
       // so it remove the videos from the previous results
@@ -65,7 +65,7 @@ export class TournesolRecommendations {
       // Generate component to display on Youtube home page
 
       this.tournesolHTMLElement = this.tournesolContainer.createHTMLElement();
-      container.insertBefore(this.tournesolHTMLElement, container.children[1]);
+      container.insertBefore(this.tournesolHTMLElement, container.children[nthchild]);
     }, 300);
   }
 
