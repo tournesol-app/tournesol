@@ -1,6 +1,16 @@
 import { isNavigatorLang } from '../../utils.js';
 import { defaultBannerOptions } from './BannerOptions.js';
 
+/**
+ * A banner displaying a message and an action button.
+ * 
+ * At the moment this class is specific to the extension research study, but
+ * could be refactored to be generic.
+ * 
+ * - the texts could be parameters of the constructor
+ * - the action button could be optional
+ * - etc.
+ */
 export class Banner {
   constructor(options = defaultBannerOptions) {
     this.TS_BANNER_DATE_START = options.TS_BANNER_DATE_START;
