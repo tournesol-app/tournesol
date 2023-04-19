@@ -1,5 +1,5 @@
 import { defaultTournesolRecommendationsOptions } from './TournesolRecommendationsOptions.js';
-import { TournesolComponent } from '../tournesolComponent/TournesolComponent.js';
+import { TournesolContainer } from '../tournesolContainer/TournesolContainer.js';
 
 export class TournesolRecommendations {
   constructor(options = defaultTournesolRecommendationsOptions) {
@@ -11,7 +11,7 @@ export class TournesolRecommendations {
     this.additionalVideos = [];
     this.recommendationsLanguage = 'en,fr';
 
-    this.tournesolComponent = new TournesolComponent(this, options.banner);
+    this.tournesolContainer = new TournesolContainer(this, options.banner);
 
     this.videosPerRow = options.videosPerRow;
     this.rowsWhenExpanded = options.rowsWhenExpanded;
@@ -42,7 +42,7 @@ export class TournesolRecommendations {
     if (!this.videos || this.videos.length === 0) {
       // remove the component if we did not receive video from the response
       // so it remove the videos from the previous results
-      if (this.tournesol_component) this.tournesol_component.remove();
+      if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
       return;
     }
 
@@ -55,7 +55,7 @@ export class TournesolRecommendations {
        ** Some ids on video pages are duplicated, so I take the first non-duplicated id and search in its childs the correct div to add the recommendations
        ** Note: using .children[index] when child has no id
        */
-      if (this.tournesol_component) this.tournesol_component.remove();
+      if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
       // Get the container on Youtube home page in which we will insert Tournesol's component
       let container = this.getParentComponent();
 
@@ -64,8 +64,8 @@ export class TournesolRecommendations {
 
       // Generate component to display on Youtube home page
 
-      this.tournesol_component = this.tournesolComponent.getComponent();
-      container.insertBefore(this.tournesol_component, container.children[1]);
+      this.tournesolHTMLElement = this.tournesolContainer.getHTMLElement();
+      container.insertBefore(this.tournesolHTMLElement, container.children[1]);
     }, 300);
   }
 

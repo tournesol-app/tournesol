@@ -1,13 +1,13 @@
 import { TournesolVideoCard } from '../tournesolVideoCard/TournesolVideoCard.js';
 
-export class TournesolComponent {
+export class TournesolContainer {
   constructor(parent, banner) {
     this.isExpanded = false;
     this.parent = parent;
     this.banner = banner;
   }
 
-  getComponent() {
+  getHTMLElement() {
     // Create container
     let tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
