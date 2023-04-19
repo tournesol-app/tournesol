@@ -16,7 +16,11 @@ import makeStyles from '@mui/styles/makeStyles';
 
 import { ContentHeader, ContentBox, TitledPaper } from 'src/components';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
-import { KKBBTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
+import {
+  KKBBTournesolEnUrl,
+  KKBBTournesolFrUrl,
+  paypalDonateTournesolUrl,
+} from 'src/utils/url';
 
 const useStyles = makeStyles(() => ({
   bankingInfo: {
@@ -29,7 +33,8 @@ const DonatePage = () => {
   const alreadyScrolled = React.useRef(false);
 
   const classes = useStyles();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.resolvedLanguage;
 
   const donateSectionSx = {
     width: '100%',
@@ -82,7 +87,11 @@ const DonatePage = () => {
                     justify-content="space-between"
                   >
                     <Link
-                      href={KKBBTournesolUrl}
+                      href={
+                        currentLanguage === 'fr'
+                          ? KKBBTournesolFrUrl
+                          : KKBBTournesolEnUrl
+                      }
                       rel="noopener"
                       target="_blank"
                     >
@@ -94,7 +103,11 @@ const DonatePage = () => {
                     </Link>
                     <Button
                       variant="contained"
-                      href={KKBBTournesolUrl}
+                      href={
+                        currentLanguage === 'fr'
+                          ? KKBBTournesolFrUrl
+                          : KKBBTournesolEnUrl
+                      }
                       rel="noopener"
                       target="_blank"
                     >
