@@ -23,7 +23,7 @@ export class Banner {
     this.banner = this.createBanner();
   }
 
-  displayBanner() {
+  display() {
     this.banner.classList.add('displayed');
   }
 
