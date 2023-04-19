@@ -27,7 +27,7 @@ export class Banner {
     this.banner.classList.add('displayed');
   }
 
-  hideBanner() {
+  hide() {
     this.banner.classList.remove('displayed');
   }
 
