@@ -152,14 +152,14 @@ html[dark] #tournesol_campaign_button {
 
 .tournesol_mui_like_button {
   margin: 0;
-  padding: 8px 16px;
+  padding: 8px 22px;
 
   display: inline-flex;
 
   cursor: pointer;
   line-height: 24.5px;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: normal;
   text-decoration: none;
   text-transform: uppercase;
@@ -444,6 +444,10 @@ html[dark] #tournesol_campaign_button {
   font-size: 1.2rem;
   /* MUI <Button size="small"> imitation */
   padding: 4px 10px;
+}
+
+.search .tournesol_mui_like_button{
+  padding: 6px 16px;
 }
 
 /* ---- end: style of the search results ---- */
