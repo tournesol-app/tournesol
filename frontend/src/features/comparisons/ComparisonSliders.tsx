@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -19,7 +21,8 @@ import {
   resetPendingRatings,
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
-import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
+
+import { fetchStats } from './statsSlice';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -52,6 +55,7 @@ const ComparisonSliders = ({
 }) => {
   const classes = useStyles();
 
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const {
     criteriaByName,
@@ -89,8 +93,6 @@ const ComparisonSliders = ({
     criteriaValues[cs.criteria] = cs.score || 0;
   });
 
-  const { getPollStatsAsync } = useStatsRefresh();
-
   /**
    * If `initialComparison` is set, initialize the sliders with the provided
    * ratings, else create a new comparison.
@@ -126,7 +128,7 @@ const ComparisonSliders = ({
       await submit(comparison);
     } finally {
       setDisableSubmit(false);
-      await getPollStatsAsync(pollName);
+      dispatch(fetchStats());
     }
 
     // avoid a "memory leak" warning if the component is unmounted on submit.

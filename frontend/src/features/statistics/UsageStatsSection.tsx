@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 
+import { selectStats } from 'src/features/comparisons/statsSlice';
 import { useCurrentPoll } from 'src/hooks';
-import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
 interface statsProp {
   text: string;
@@ -57,7 +58,13 @@ const StatsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const { statsState } = useStatsRefresh();
+  const publicStats = useSelector(selectStats);
+
+  const pollStats = publicStats.polls.find((poll) => {
+    if (poll.name === pollName) {
+      return poll;
+    }
+  });
 
   const comparedEntitiesTitle = useMemo(() => {
     switch (pollName) {
@@ -69,8 +76,6 @@ const StatsSection = () => {
         throw new Error(`Unknown poll: ${pollName}`);
     }
   }, [pollName, t]);
-
-  console.log('UsageStats section statsState :', statsState);
 
   return (
     <Box
@@ -85,22 +90,24 @@ const StatsSection = () => {
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.activatedAccounts')}
-            count={statsState.userCount}
-            lastMonthCount={statsState.lastMonthUserCount}
+            count={publicStats.active_users.total}
+            lastMonthCount={publicStats.active_users.joined_last_30_days}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.comparisons')}
-            count={statsState.comparisonCount}
-            lastMonthCount={statsState.lastThirtyDaysComparisonCount}
+            count={pollStats?.comparisons.total ?? 0}
+            lastMonthCount={pollStats?.comparisons.added_last_30_days ?? 0}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
             text={comparedEntitiesTitle}
-            count={statsState.comparedEntityCount}
-            lastMonthCount={statsState.lastMonthComparedEntityCount}
+            count={pollStats?.compared_entities.total ?? 0}
+            lastMonthCount={
+              pollStats?.compared_entities.added_last_30_days ?? 0
+            }
           />
         </Grid>
       </Grid>

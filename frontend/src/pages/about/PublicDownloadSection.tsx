@@ -1,25 +1,30 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
+
 import { Typography, Button } from '@mui/material';
-import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
+
+import { selectStats } from 'src/features/comparisons/statsSlice';
+import { useCurrentPoll } from 'src/hooks';
 
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case
 const PublicDownloadSection = () => {
   const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
+
   const api_url = process.env.REACT_APP_API_URL;
 
-  const [userCount, setUserCount] = useState<number>(0);
-  const [comparedEntityCount, setComparedEntityCount] = useState<number>(0);
-  const [comparisonCount, setComparisonCount] = useState<number>(0);
+  const publicStats = useSelector(selectStats);
+  const pollStats = publicStats.polls.find((poll) => {
+    if (poll.name === pollName) {
+      return poll;
+    }
+  });
 
-  const { statsState } = useStatsRefresh();
-
-  useEffect(() => {
-    setUserCount(statsState.userCount);
-    setComparedEntityCount(statsState.comparedEntityCount);
-    setComparisonCount(statsState.comparisonCount);
-  }, [statsState]);
+  const userCount = publicStats.active_users.total;
+  const comparisonCount = pollStats?.comparisons.total ?? 0;
+  const comparedEntityCount = pollStats?.compared_entities.total ?? 0;
 
   return (
     <>

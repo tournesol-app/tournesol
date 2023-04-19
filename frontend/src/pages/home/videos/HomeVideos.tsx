@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
+import { fetchStats } from 'src/features/comparisons/statsSlice';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import TitleSection from 'src/pages/home/TitleSection';
@@ -14,15 +16,13 @@ import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
 import TempStudyBanner from '../banners/TempStudyBanner';
-import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const { isLoggedIn } = useLoginState();
-  const { baseUrl, active, name: pollName } = useCurrentPoll();
-
-  const { statsState, getPollStatsAsync } = useStatsRefresh();
+  const { baseUrl, active } = useCurrentPoll();
 
   const homeSectionSx = {
     width: '100%',
@@ -35,14 +35,8 @@ const HomeVideosPage = () => {
    * provide them to each section needing them.
    */
   useEffect(() => {
-    async function fetchData() {
-      console.log('Homevideos before:', statsState);
-      await getPollStatsAsync(pollName);
-      console.log('Homevideos after:', statsState);
-    }
-
-    fetchData();
-  }, [getPollStatsAsync, pollName, statsState]);
+    dispatch(fetchStats());
+  }, [dispatch, fetchStats]);
 
   return (
     <>

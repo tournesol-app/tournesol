@@ -1,18 +1,26 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 
+import { selectStats } from 'src/features/comparisons/statsSlice';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import HomeComparison from './HomeComparison';
 import SectionTitle from './SectionTitle';
-import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
+import { useCurrentPoll } from 'src/hooks';
 
 const ComparisonSection = () => {
   const { t } = useTranslation();
-  const { statsState } = useStatsRefresh();
+  const { name: pollName } = useCurrentPoll();
 
-  console.log('Comparison section statsState :', statsState);
+  const publicStats = useSelector(selectStats);
+
+  const pollStats = publicStats.polls.find((poll) => {
+    if (poll.name === pollName) {
+      return poll;
+    }
+  });
 
   const color = '#fff';
 
@@ -37,8 +45,10 @@ const ComparisonSection = () => {
               <Box textAlign="center">
                 <Metrics
                   text={t('stats.comparisons')}
-                  count={statsState.comparisonCount}
-                  lastMonthCount={statsState.lastThirtyDaysComparisonCount}
+                  count={pollStats?.comparisons.total ?? 0}
+                  lastMonthCount={
+                    pollStats?.comparisons.added_last_30_days ?? 0
+                  }
                   lastMonthAsText
                 />
               </Box>

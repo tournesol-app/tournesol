@@ -1,35 +1,37 @@
-import { RootState } from '../../app/store';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { RootState } from 'src/app/store';
 
-import { PollStats } from 'src/utils/types';
-import { DEFAULT_POLL_STATS } from 'src/utils/api/stats';
+import { Statistics, StatsService } from 'src/services/openapi';
 
-const initialState: PollStats = DEFAULT_POLL_STATS;
+const initialState: Statistics = {
+  active_users: {
+    total: 0,
+    joined_last_month: 0,
+    joined_last_30_days: 0,
+  },
+  polls: [],
+};
+
+export const fetchStats = createAsyncThunk(
+  'stats/fetchStats',
+  async (): Promise<Statistics> => {
+    return await StatsService.statsRetrieve();
+  }
+);
 
 const statsSlice = createSlice({
-  name: 'comparison',
+  name: 'stats',
   initialState,
-  reducers: {
-    fetchStatsData: (state: PollStats, action: PayloadAction<PollStats>) => {
-      console.log('redux statsSlice pollStats:', action.payload);
-      state.userCount = action.payload.userCount;
-      state.lastMonthUserCount = action.payload.lastMonthUserCount;
-      state.lastThirtyDaysUserCount = action.payload.lastThirtyDaysUserCount;
-      state.comparedEntityCount = action.payload.comparedEntityCount;
-      state.lastMonthComparedEntityCount =
-        action.payload.lastMonthComparedEntityCount;
-      state.lastThirtyDaysComparedEntityCount =
-        action.payload.lastThirtyDaysComparedEntityCount;
-      state.comparisonCount = action.payload.comparisonCount;
-      state.lastMonthComparisonCount = action.payload.lastMonthComparisonCount;
-      state.lastThirtyDaysComparisonCount =
-        action.payload.lastThirtyDaysComparisonCount;
-      state.currentWeekComparisonCount =
-        action.payload.currentWeekComparisonCount;
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    // Refresh all statistics.
+    builder.addCase(fetchStats.fulfilled, (state, action) => {
+      state.active_users = action.payload.active_users;
+      state.polls = action.payload.polls;
+    });
   },
 });
 
-export const selectStats = (state: RootState) => state.statsData;
-export const { fetchStatsData } = statsSlice.actions;
+export const selectStats = (state: RootState) => state.stats;
+
 export default statsSlice.reducer;

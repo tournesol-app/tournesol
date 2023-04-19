@@ -1,20 +1,30 @@
-import { Box, LinearProgress, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { useStatsRefresh } from 'src/hooks/useStatsRefresh';
+
+import { Box, LinearProgress, Typography } from '@mui/material';
+
+import { selectStats } from 'src/features/comparisons/statsSlice';
+import { useCurrentPoll } from 'src/hooks';
+
+const WEEKLY_COMPARISON_GOAL = 1000;
 
 const CollectiveGoalWeeklyProgress = () => {
   const { t } = useTranslation();
-  const [totalWeeklyCount, setTotalWeeklyCount] = useState(0);
-  const { statsState } = useStatsRefresh();
+  const { name: pollName } = useCurrentPoll();
 
-  console.log('statsState of Progress Bar UI', statsState);
+  const publicStats = useSelector(selectStats);
 
-  useEffect(() => {
-    setTotalWeeklyCount(statsState.currentWeekComparisonCount);
-  }, [statsState.currentWeekComparisonCount]);
+  const pollStats = publicStats.polls.find((poll) => {
+    if (poll.name === pollName) {
+      return poll;
+    }
+  });
 
-  const weeklyPercent = statsState.currentWeekComparisonCount / 10;
+  const collectiveComparisonNbr =
+    pollStats?.comparisons.added_current_week ?? 0;
+  const collectiveComparisonPercent =
+    (collectiveComparisonNbr / WEEKLY_COMPARISON_GOAL) * 100;
 
   return (
     <>
@@ -41,7 +51,8 @@ const CollectiveGoalWeeklyProgress = () => {
               aria-label="tournesol-logo"
               data-mui-internal-clone-element="true"
             />{' '}
-            {t('comparison.weeklyCollectiveGoal')} - {weeklyPercent}%
+            {t('comparison.weeklyCollectiveGoal')} -{' '}
+            {collectiveComparisonPercent}%
           </Typography>
           <Box
             width="100%"
@@ -52,7 +63,7 @@ const CollectiveGoalWeeklyProgress = () => {
           >
             <LinearProgress
               variant="determinate"
-              value={weeklyPercent}
+              value={collectiveComparisonPercent}
               color="success"
               sx={{
                 width: '100%',
@@ -62,7 +73,9 @@ const CollectiveGoalWeeklyProgress = () => {
                 borderRadius: '6px',
               }}
             />
-            <Typography>{totalWeeklyCount}/1000</Typography>
+            <Typography>
+              {collectiveComparisonNbr}/{WEEKLY_COMPARISON_GOAL}
+            </Typography>
           </Box>
         </Box>
       </Box>
