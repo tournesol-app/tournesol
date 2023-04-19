@@ -1,4 +1,4 @@
-import { TournesolVideosBox } from '../tournesolVideosBox/TournesolVideosBox.js';
+import { TournesolVideoCard } from '../tournesolVideoCard/TournesolVideoCard.js';
 
 export class TournesolComponent {
   constructor(parent, banner) {
@@ -116,20 +116,20 @@ export class TournesolComponent {
     tournesol_container.append(videosFlexContainer);
 
     this.parent.videos.forEach((video) => {
-      const videoBox = TournesolVideosBox.makeBox(
+      const videoCard = TournesolVideoCard.makeCard(
         video,
         this.parent.displayCriteria
       );
-      videosFlexContainer.append(videoBox);
+      videosFlexContainer.append(videoCard);
     });
 
     if (this.isExpanded) {
       this.parent.additionalVideos.forEach((video) => {
-        const videoBox = TournesolVideosBox.makeBox(
+        const videoCard = TournesolVideoCard.makeCard(
           video,
           this.parent.displayCriteria
         );
-        videosFlexContainer.append(videoBox);
+        videosFlexContainer.append(videoCard);
       });
     }
     tournesol_container.append(bottom_action_bar);

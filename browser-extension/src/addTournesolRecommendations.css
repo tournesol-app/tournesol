@@ -241,7 +241,7 @@ html[dark] #tournesol_campaign_button {
   background: var(--yt-spec-brand-background-solid);
 }
 
-.video_box {
+.video_card {
   position: relative;
   width: calc(100% / 4 - var(--ytd-rich-grid-item-margin) - 0.01px);
 }
@@ -369,7 +369,7 @@ html[dark] #tournesol_campaign_button {
 }
 
 
-#tournesol_container.search .video_box {
+#tournesol_container.search .video_card {
   width: 100%;
   margin-bottom: 16px;
   display: flex;
@@ -378,33 +378,33 @@ html[dark] #tournesol_campaign_button {
 
 #tournesol_container.search #tournesol_refresh_button,
 #tournesol_container.search #tournesol_expand_button,
-#tournesol_container.search .video_box .dot {
+#tournesol_container.search .video_card .dot {
   display: none;
 }
 
-#tournesol_container.search .video_box .details_div {
+#tournesol_container.search .video_card .details_div {
   font-size: 1.3em;
   padding: 1em;
   cursor: initial;
 }
 
-#tournesol_container.search .video_box .details_div .video_text {
+#tournesol_container.search .video_card .details_div .video_text {
   font-size: 1.2rem;
 }
 
-#tournesol_container.search .video_box .details_div strong {
+#tournesol_container.search .video_card .details_div strong {
   font-weight: 400;
   font-size: 2.4em;
   color: var(--yt-spec-text-primary);
   margin-right: 8px;
   font-style: normal;
 }
-#tournesol_container.search .video_box .details_div :nth-child(3) {
+#tournesol_container.search .video_card .details_div :nth-child(3) {
   font-style: italic;
 }
 
-#tournesol_container.search .video_box .details_div .video_tournesol_rating,
-#tournesol_container.search .video_box .details_div .video_criteria {
+#tournesol_container.search .video_card .details_div .video_tournesol_rating,
+#tournesol_container.search .video_card .details_div .video_criteria {
   display: flex;
   align-items: center;
   font-size: 1.4rem;
@@ -415,7 +415,7 @@ html[dark] #tournesol_campaign_button {
   width: 32px;
 }
 
-#tournesol_container.search .video_box .details_div .contributors {
+#tournesol_container.search .video_card .details_div .contributors {
   color: #B38B00;
 }
 

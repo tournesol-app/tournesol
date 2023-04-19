@@ -1,32 +1,32 @@
 import { convertDurationToClockDuration } from '../../utils.js';
 
-export class TournesolVideosBox {
-  static makeBox(video, displayCriteria) {
+export class TournesolVideoCard {
+  static makeCard(video, displayCriteria) {
     // Div whith everything about a video
-    const video_box = document.createElement('div');
-    video_box.className = 'video_box';
+    const video_card = document.createElement('div');
+    video_card.className = 'video_card';
 
     // Div with thumbnail and video duration
-    const thumb_div = TournesolVideosBox.getThumbDiv(video);
+    const thumb_div = TournesolVideoCard.getThumbDiv(video);
 
-    video_box.append(thumb_div);
+    video_card.append(thumb_div);
 
     // Div with uploader name, video title and tournesol score
-    const details_div = TournesolVideosBox.getDetailsDiv(video);
+    const details_div = TournesolVideoCard.getDetailsDiv(video);
 
     /**
      * If the content script is executed on the YT research page
      * add criteria to the details_div
      */
     if (displayCriteria) {
-      const video_criteria = TournesolVideosBox.getVideoCriteriaElement(video);
+      const video_criteria = TournesolVideoCard.getVideoCriteriaElement(video);
 
       details_div.append(video_criteria);
     }
 
-    video_box.append(details_div);
+    video_card.append(details_div);
 
-    return video_box;
+    return video_card;
   }
 
   static getVideoCriteriaElement(video) {
@@ -137,8 +137,8 @@ export class TournesolVideosBox {
     const video_views_publication = document.createElement('p');
     video_views_publication.className = 'video_text';
     video_views_publication.innerHTML = `${chrome.i18n.getMessage('views', [
-      TournesolVideosBox.millifyViews(video.metadata.views),
-    ])} <span class="dot">&nbsp•&nbsp</span> ${TournesolVideosBox.viewPublishedDate(
+      TournesolVideoCard.millifyViews(video.metadata.views),
+    ])} <span class="dot">&nbsp•&nbsp</span> ${TournesolVideoCard.viewPublishedDate(
       video.metadata.publication_date
     )}`;
     video_channel_details.append(video_views_publication);
