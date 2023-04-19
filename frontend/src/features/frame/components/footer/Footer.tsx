@@ -28,7 +28,8 @@ import { theme } from 'src/theme';
 const Footer = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.resolvedLanguage;
 
   const footerSections = [
     {
@@ -68,7 +69,11 @@ const Footer = () => {
           name: t('footer.directTransfer'),
           to: '/about/donate#direct_transfer',
         },
-        { name: 'KissKissBankBank', to: KKBBTournesolEnUrl },
+        {
+          name: 'KissKissBankBank',
+          to:
+            currentLanguage === 'fr' ? KKBBTournesolFrUrl : KKBBTournesolEnUrl,
+        },
         { name: 'PayPal', to: paypalTournesolUrl },
         { name: t('footer.compareVideos'), to: '/comparison' },
       ],
