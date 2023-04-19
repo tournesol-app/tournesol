@@ -446,7 +446,7 @@ html[dark] #tournesol_campaign_button {
   padding: 4px 10px;
 }
 
-.search .tournesol_mui_like_button{
+.tournesol_mui_like_button.small{
   padding: 6px 16px;
 }
 

@@ -141,7 +141,7 @@ export class TournesolContainer {
       view_more_container.id = 'tournesol_view_more_results';
 
       const view_more_link = document.createElement('a');
-      view_more_link.className = 'tournesol_mui_like_button view_more_link';
+      view_more_link.className = 'tournesol_mui_like_button view_more_link small';
       view_more_link.target = '_blank';
       view_more_link.rel = 'noopener';
       view_more_link.href = `https://tournesol.app/recommendations/?search=${
