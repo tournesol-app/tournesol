@@ -49,7 +49,7 @@ export class TournesolComponent {
 
       campaignButton.onclick = () => {
         chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
-          this.banner.displayBanner();
+          this.banner.display();
         });
       };
 

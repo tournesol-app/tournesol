@@ -41,7 +41,7 @@ export class Banner {
       'displayBannerStudy2023',
       ({ displayBannerStudy2023 }) => {
         if ([true, null, undefined].includes(displayBannerStudy2023)) {
-          this.displayBanner();
+          this.display();
         }
       }
     );
@@ -90,7 +90,7 @@ export class Banner {
 
     closeButton.onclick = () => {
       chrome.storage.local.set({ displayBannerStudy2023: false }, () => {
-        this.hideBanner();
+        this.hide();
       });
     };
 
