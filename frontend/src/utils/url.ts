@@ -52,7 +52,8 @@ export const paypalDonateTournesolUrl =
   'https://www.paypal.com/donate?hosted_button_id=22T84YR7TZ762';
 
 // KissKissBankBank
-export const KKBBTournesolUrl = 'https://www.kisskissbankbank.com/fr/projects/tournesol-9c3fce6a-261b-4bf2-a147-f72b39b2737a';
+export const KKBBTournesolUrl =
+  'https://www.kisskissbankbank.com/en/projects/tournesol-9c3fce6a-261b-4bf2-a147-f72b39b2737a';
 
 /**
  * Research
