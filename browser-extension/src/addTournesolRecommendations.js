@@ -3,9 +3,8 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
-// TODO: these values are placeholder values that should be updated.
-const TS_BANNER_DATE_START = new Date('2020-01-01T00:00:00Z');
-const TS_BANNER_DATE_END = new Date('2022-01-01T00:00:00Z');
+const TS_BANNER_DATE_START = new Date('2023-04-01T00:00:00Z');
+const TS_BANNER_DATE_END = new Date('2023-05-20T00:00:00Z');
 const TS_BANNER_ACTION_FR_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSd4_8nF0kVnHj3GvTlEAFw-PHAGOAGc1j1NKZbXr8Ga_nIY9w/viewform?usp=pp_url&entry.939413650=';
 const TS_BANNER_ACTION_EN_URL =

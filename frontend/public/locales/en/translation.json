@@ -306,6 +306,15 @@
     "exportAllData": "Export all data",
     "deleteAccount": "Delete account"
   },
+  "pollUserSettingsForm": {
+    "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
+    "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
+    "rateLater": "Rate-later list",
+    "autoRemove": "Automatic removal",
+    "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{rateLaterAutoRemoval}} comparison.",
+    "autoRemoveHelpText_other": "Elements will be removed from your rate-later list after {{rateLaterAutoRemoval}} comparisons.",
+    "updatePreferences": "Update preferences"
+  },
   "username": "Username",
   "metrics": {
     "evolutionDuringTheLast30Days": "Evolution during the last 30 days.",
@@ -619,6 +628,17 @@
     }
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
+  "preferences": {
+    "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences.",
+    "preferences": "Preferences",
+    "preferencesRegarding": "Preferences regarding:"
+  },
+  "poll": {
+    "videos": "videos",
+    "presidential2022": "election FR 2022",
+    "entityCandidate": "candidate",
+    "entityVideo": "video"
+  },
   "profile": "Profile",
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
@@ -664,12 +684,6 @@
     "better_habits": "Does it make people adopt habits that benefit themselves and beyond?",
     "backfire_risk": "Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?",
     "reliability": "Is the presented information trustworthy, robustly backed and properly nuanced?"
-  },
-  "poll": {
-    "presidential2022": "election FR 2022",
-    "videos": "videos",
-    "entityCandidate": "candidate",
-    "entityVideo": "video"
   },
   "videoMetadata": {
     "duration": "Duration",

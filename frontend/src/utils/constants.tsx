@@ -150,6 +150,16 @@ export const getRecommendationPageName = (
   }
 };
 
+/**
+ * User settings.
+ *
+ * As the back end doesn't provide the default values of the user settings, we
+ * define here the default values that should be used by the front end. In an
+ * ideal world they always match the default values used by the back end.
+ */
+
+export const DEFAULT_RATE_LATER_AUTO_REMOVAL = 4;
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.

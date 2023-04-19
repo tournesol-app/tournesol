@@ -3,7 +3,12 @@
  */
 
 import { TFunction } from 'react-i18next';
-import { AccountCircle, Settings, SvgIconComponent } from '@mui/icons-material';
+import {
+  AccountCircle,
+  Settings,
+  ToggleOn,
+  SvgIconComponent,
+} from '@mui/icons-material';
 
 export type TournesolMenuItemType = {
   id: string;
@@ -25,6 +30,12 @@ export const settingsMenu = (t: TFunction): Array<TournesolMenuItemType> => {
       text: t('settings.account'),
       icon: Settings,
       to: '/settings/account',
+    },
+    {
+      id: 'settings-preferences',
+      text: t('preferences.preferences'),
+      icon: ToggleOn,
+      to: '/settings/preferences',
     },
   ];
 };

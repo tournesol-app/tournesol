@@ -18,9 +18,8 @@ import { Biotech, Campaign } from '@mui/icons-material';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
 
-// TODO: these values are placeholders. Replace them with the correct dates.
-const STUDY_DATE_START = new Date('2020-01-01T00:00:00Z');
-const STUDY_DATE_END = new Date('2022-01-01T00:00:00Z');
+const STUDY_DATE_START = new Date('2023-04-01T00:00:00Z');
+const STUDY_DATE_END = new Date('2023-05-20T00:00:00Z');
 
 const PROOF_ID = 'browser_extension_study_2023';
 
