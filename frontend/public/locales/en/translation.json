@@ -379,7 +379,7 @@
   },
   "donate": {
     "ifPossibleConsiderUsingDirectTransfers": "If possible, consider using direct transfers instead (see below). This allows the association to not pay additional fees and makes the most of your contributions.",
-    "donateWithUtip": "Donate with uTip",
+    "donateWithKKBB": "Donate with KissKissBankBank",
     "donateWithPaypal": "Donate with PayPal",
     "doYouPreferDirectTransfer": "You prefer direct transfers?"
   },

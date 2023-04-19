@@ -16,7 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 
 import { ContentHeader, ContentBox, TitledPaper } from 'src/components';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
-import { utipTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
+import { KKBBTournesolUrl, paypalDonateTournesolUrl } from 'src/utils/url';
 
 const useStyles = makeStyles(() => ({
   bankingInfo: {
@@ -82,23 +82,23 @@ const DonatePage = () => {
                     justify-content="space-between"
                   >
                     <Link
-                      href={utipTournesolUrl}
+                      href={KKBBTournesolUrl}
                       rel="noopener"
                       target="_blank"
                     >
                       <img
-                        src="/logos/uTip_Logo.png"
-                        alt="uTip logo"
+                        src="/logos/KKBB_Logo.png"
+                        alt="KKBB logo"
                         height="90px"
                       />
                     </Link>
                     <Button
                       variant="contained"
-                      href={utipTournesolUrl}
+                      href={KKBBTournesolUrl}
                       rel="noopener"
                       target="_blank"
                     >
-                      {t('donate.donateWithUtip')}
+                      {t('donate.donateWithKKBB')}
                     </Button>
                   </Stack>
                 </Grid2>
