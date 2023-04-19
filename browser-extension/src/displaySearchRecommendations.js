@@ -22,7 +22,7 @@
       3,
       1,
       new Banner(),
-      '#header-container',
+      '.style-scope.ytd-page-manager #container',
       true
     );
   const tournesolSearchRecommendations = new TournesolSearchRecommendations(

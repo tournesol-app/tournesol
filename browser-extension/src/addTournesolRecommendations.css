@@ -343,7 +343,9 @@ html[dark] #tournesol_campaign_button {
 #tournesol_container.search {
   width: 100%;
   min-width: 320px;
-  padding: 0;
+  max-width: 1096px;
+  margin: 0 auto;
+  padding: 24px 0;
   border: none;
   background-color: transparent;
 }
