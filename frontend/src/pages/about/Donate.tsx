@@ -97,7 +97,7 @@ const DonatePage = () => {
                     >
                       <img
                         src="/logos/KKBB_Logo.png"
-                        alt="KKBB logo"
+                        alt="KissKissBankBank logo"
                         height="90px"
                       />
                     </Link>
