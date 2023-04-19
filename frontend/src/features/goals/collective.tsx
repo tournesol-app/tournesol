@@ -1,3 +1,5 @@
+export const WEEKLY_COMPARISON_GOAL = 1000;
+
 /**
  * Return an emoji to reward the users for their progression in the weekly
  * collective goal.

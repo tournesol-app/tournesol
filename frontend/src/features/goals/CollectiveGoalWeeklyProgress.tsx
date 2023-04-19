@@ -7,9 +7,10 @@ import { Box, LinearProgress, Typography } from '@mui/material';
 import { selectStats } from 'src/features/comparisons/statsSlice';
 import { useCurrentPoll } from 'src/hooks';
 
-import { getWeeklyProgressionEmoji } from './collective';
-
-const WEEKLY_COMPARISON_GOAL = 1000;
+import {
+  WEEKLY_COMPARISON_GOAL,
+  getWeeklyProgressionEmoji,
+} from './collective';
 
 const CollectiveGoalWeeklyProgress = () => {
   const { t } = useTranslation();
@@ -43,7 +44,12 @@ const CollectiveGoalWeeklyProgress = () => {
           t={t}
           i18nKey="collectiveGoalWeeklyProgress.weeklyCollectiveGoal"
         >
-          Weekly collective goal - {{ collectiveComparisonsPercent }}%
+          Weekly collective goal -{' '}
+          {{
+            collectiveComparisonsPercent:
+              collectiveComparisonsPercent.toFixed(1),
+          }}
+          %
         </Trans>
         {` ${getWeeklyProgressionEmoji(collectiveComparisonsPercent)}`}
       </Typography>
