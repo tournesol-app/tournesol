@@ -54,7 +54,7 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
     this.loadRecommandations();
   }
 
-  displayRecommendations(nthchild = 0){
+  displayRecommendations(nthchild = 0) {
     super.displayRecommendations(nthchild);
   }
 }
