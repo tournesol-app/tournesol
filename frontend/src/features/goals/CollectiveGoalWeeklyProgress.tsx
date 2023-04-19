@@ -7,6 +7,8 @@ import { Box, LinearProgress, Typography } from '@mui/material';
 import { selectStats } from 'src/features/comparisons/statsSlice';
 import { useCurrentPoll } from 'src/hooks';
 
+import { getWeeklyProgressionEmoji } from './collective';
+
 const WEEKLY_COMPARISON_GOAL = 1000;
 
 const CollectiveGoalWeeklyProgress = () => {
@@ -27,8 +29,6 @@ const CollectiveGoalWeeklyProgress = () => {
   const collectiveComparisonsPercent =
     (collectiveComparisonsNbr / WEEKLY_COMPARISON_GOAL) * 100;
 
-  const reward = '❤️‍🔥';
-
   return (
     <Box
       width="100%"
@@ -45,7 +45,7 @@ const CollectiveGoalWeeklyProgress = () => {
         >
           Weekly collective goal - {{ collectiveComparisonsPercent }}%
         </Trans>
-        {collectiveComparisonsPercent > 100 && ` ${reward}`}
+        {` ${getWeeklyProgressionEmoji(collectiveComparisonsPercent)}`}
       </Typography>
       <Box
         width="100%"
