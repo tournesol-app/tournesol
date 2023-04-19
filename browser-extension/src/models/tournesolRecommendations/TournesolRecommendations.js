@@ -64,7 +64,7 @@ export class TournesolRecommendations {
 
       // Generate component to display on Youtube home page
 
-      this.tournesolHTMLElement = this.tournesolContainer.getHTMLElement();
+      this.tournesolHTMLElement = this.tournesolContainer.createHTMLElement();
       container.insertBefore(this.tournesolHTMLElement, container.children[1]);
     }, 300);
   }
