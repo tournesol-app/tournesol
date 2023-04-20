@@ -127,8 +127,8 @@ export function getMetadataName(
         case 'publication_date':
           name = t('videoMetadata.publication_date');
           break;
-        case 'collective_score_largely_recommended':
-          name = t('videoMetadata.collective_score_largely_recommended');
+        case 'collective_score':
+          name = t('videoMetadata.collective_score');
           break;
         case 'contributor_rating_criteria_score':
           name = t('videoMetadata.contributor_rating_criteria_score');
@@ -217,7 +217,7 @@ export const polls: Array<SelectablePoll> = [
       'duration',
       'publication_date',
       'contributor_rating_criteria_score',
-      'collective_score_largely_recommended',
+      'collective_score',
     ],
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,

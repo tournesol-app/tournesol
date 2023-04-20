@@ -687,7 +687,7 @@
   "videoMetadata": {
     "duration": "Duration",
     "publication_date": "Publication date",
-    "collective_score_largely_recommended": "Collective Score",
+    "collective_score": "Collective Score",
     "contributor_rating_criteria_score": "Personal Score"
   },
   "presidentielle2022": {

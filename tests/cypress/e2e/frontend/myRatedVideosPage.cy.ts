@@ -175,5 +175,51 @@ describe('My rated elements page', () => {
         cy.get('input[data-testid=order-by-metadata-input]').should('have.value', '-last_compared_at');
       });
     });
+
+    it('the ratings can be order by `collective_score`', () => {
+      cy.visit('/ratings');
+      cy.focused().type(TEST_USERNAME);
+      cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
+
+      cy.contains('button', 'Options', {matchCase: false}).click();
+      cy.contains('Order by').should('be.visible');
+
+      // Ascending order.
+      cy.get('div[id=order-by-metadata]').click();
+      cy.get('li[data-value=collective_score]').click();
+      cy.location().should((loc) => {
+        expect(loc.search).to.eq('?orderBy=collective_score')
+      });
+
+      // Descending order.
+      cy.get('div[id=order-by-metadata]').click();
+      cy.get('li[data-value=-collective_score]').click();
+      cy.location().should((loc) => {
+        expect(loc.search).to.eq('?orderBy=-collective_score')
+      });
+    });
+
+    it('the ratings can be order by `contributor_rating_criteria_score`', () => {
+      cy.visit('/ratings');
+      cy.focused().type(TEST_USERNAME);
+      cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
+  
+      cy.contains('button', 'Options', {matchCase: false}).click();
+      cy.contains('Order by').should('be.visible');
+  
+      // Ascending order.
+      cy.get('div[id=order-by-metadata]').click();
+      cy.get('li[data-value=contributor_rating_criteria_score]').click();
+      cy.location().should((loc) => {
+        expect(loc.search).to.eq('?orderBy=contributor_rating_criteria_score')
+      });
+  
+      // Descending order.
+      cy.get('div[id=order-by-metadata]').click();
+      cy.get('li[data-value=-contributor_rating_criteria_score]').click();
+      cy.location().should((loc) => {
+        expect(loc.search).to.eq('?orderBy=-contributor_rating_criteria_score')
+      });
+    });
   });
 });
