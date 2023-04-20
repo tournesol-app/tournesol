@@ -204,9 +204,13 @@ urlpatterns = [
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
     ),
+    # This route show the preview for the recommendations page
+    # after preview/recommendations route rewrite the url paramaters
+    # to match backend parameters and redirect
     path("preview/recommendations-preview",
          DynamicWebsitePreviewRecommendations.as_view(),
          name="website_preview_recommendations"),
+    # This route rewrite the url for the recommendations page preview
     path("preview/recommendations",
          format_preview_recommendations,
          name="website_format_recommendations_url"),
