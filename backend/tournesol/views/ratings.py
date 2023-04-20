@@ -9,10 +9,18 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from tournesol.models import Comparison, ContributorRating, Poll, \
-    EntityPollRating, ContributorRatingCriteriaScore
-from tournesol.serializers.rating import ContributorRatingCreateSerializer, \
-    ContributorRatingSerializer, ContributorRatingUpdateAllSerializer
+from tournesol.models import (
+    Comparison,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    EntityPollRating,
+    Poll,
+)
+from tournesol.serializers.rating import (
+    ContributorRatingCreateSerializer,
+    ContributorRatingSerializer,
+    ContributorRatingUpdateAllSerializer,
+)
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 # The only values accepted by the URL parameter `order_by` in the list APIs.

@@ -2,7 +2,7 @@ import factory
 from factory import fuzzy
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import Poll, EntityPollRating
+from tournesol.models import EntityPollRating, Poll
 from tournesol.models import ratings as ratings_models
 from tournesol.tests.factories.entity import VideoFactory
 

@@ -14,7 +14,8 @@ from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
-    ContributorRatingFactory, EntityPollRatingFactory,
+    ContributorRatingFactory,
+    EntityPollRatingFactory,
 )
 
 
