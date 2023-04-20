@@ -7,7 +7,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import FooterSection from 'src/features/frame/components/footer/FooterSection';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import {
-  getWikiBaseUrl,
   linkedInTournesolUrl,
   twitchTournesolUrl,
   twitterTournesolBotEnUrl,
@@ -102,7 +101,6 @@ const Footer = () => {
       items: [
         { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
         // { name: 'FAQ', to: '' },
-        { name: 'Wiki', to: getWikiBaseUrl() },
       ],
       trailingDivider: false,
     },

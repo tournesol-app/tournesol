@@ -339,13 +339,13 @@
   },
   "about": {
     "whatIsTournesol": "What is Tournesol?",
-    "introductionTournesol": "Tournesol is an open source platform which provides a tool for collaborative decisions. The main aim of the Tournesol project is to collaboratively identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Another application of Tournesol's algorithm that we are currently exploring is to collaboratively evaluate candidates in an election. Find out more with our <2>white paper</2>, our <5>wiki</5>, our <8>GitHub</8>, our <11>Discord</11>, or our <14>LinkedIn page</14>.",
+    "introductionTournesol": "Tournesol is an open source platform which provides a tool for collaborative decisions. The main aim of the Tournesol project is to collaboratively identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Another application of Tournesol's algorithm that we are currently exploring is to collaboratively evaluate candidates in an election. Find out more with our <2>white paper</2>, our <5>GitHub</5>, our <8>Discord</8>, or our <11>LinkedIn page</11>.",
     "tournesolVision": "We seek to build the foundations of a robust and beneficial algorithmic governance of information at scale",
     "tournesolVisionRaisingAwareness": "Through raising awareness of the global information crisis",
     "tournesolVisionCollaborativePlatform": "Through the development of a collaborative platform for evaluation and recommendation of online content",
     "tournesolVisionResearchOnEthicsOfAlgorithms": "Through research on ethics of algorithms relying on a large and reliable database of human judgements",
     "whoBuildsTournesol": "Who builds Tournesol?",
-    "tournesolTransparency": "Tournesol seeks to be an extremely transparent project. All contributions to the project are openly visible on our GitHub, description of important concepts and Tournesol's vision can be found on our wiki, and discussions that guide the development of Tournesol happen openly on our Discord.",
+    "tournesolTransparency": "Tournesol seeks to be an extremely transparent project. All contributions to the project are openly visible on our GitHub, description of important concepts and Tournesol's vision can be found on this website, and discussions that guide the development of Tournesol happen openly on our Discord.",
     "considerHelpingWithDonation": "If you can, please consider helping us <2>with a donation</2>.",
     "tournesolAssociation": "Tournesol Association",
     "tournesolAssociationDetail": "Tournesol is supported by the non-profit Tournesol association based in Lausanne, Switzerland.",
@@ -755,7 +755,7 @@
         "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
-          "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to consult its dedicated wiki page."
+          "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to find its detailed description."
         },
         "title4": "Thanks a lot for following this tutorial ❤️",
         "message4": {
