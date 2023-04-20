@@ -9,9 +9,12 @@ import time
 import numpy
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from drf_spectacular.utils import  OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw
 from rest_framework.exceptions import NotFound
 
+from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.models import Poll
 
 from ..views import PollsRecommendationsView
@@ -29,6 +32,7 @@ from ..views.preview import (
 
 TOURNESOL_RECOMMENDATIONS_HEADLINE_XY = (15, 3)
 
+CACHE_RECOMMENDATIONS_PREVIEW = 3600 * 12
 DAY_IN_SECS = 60 * 60 * 24
 
 CONVERSION_TIME = {
@@ -278,6 +282,11 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             fill=COLOR_BROWN_FONT,
         )
 
+    @method_decorator(cache_page_no_i18n(CACHE_RECOMMENDATIONS_PREVIEW))
+    @extend_schema(
+        description="Recommendations page preview.",
+        responses={200: OpenApiTypes.BINARY},
+    )
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type="image/png")
 
