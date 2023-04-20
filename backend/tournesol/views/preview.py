@@ -159,16 +159,16 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
         ),
         "recommendations_headline": ImageFont.truetype(
-            str(BASE_DIR / REGULAR_FONT_LOCATION), 10 * upscale_ratio
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 11 * upscale_ratio
         ),
         "recommendations_title": ImageFont.truetype(
-            str(BASE_DIR / LIGHT_FONT_LOCATION), 7 * upscale_ratio
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 10 * upscale_ratio
         ),
         "recommendations_rating": ImageFont.truetype(
-            str(BASE_DIR / LIGHT_ITALIC_FONT_LOCATION), 6 * upscale_ratio
+            str(BASE_DIR / LIGHT_ITALIC_FONT_LOCATION), 8 * upscale_ratio
         ),
         "recommendations_metadata": ImageFont.truetype(
-            str(BASE_DIR / LIGHT_FONT_LOCATION), 5 * upscale_ratio
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 8 * upscale_ratio
         ),
         "recommendations_ts_score": ImageFont.truetype(
             str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio

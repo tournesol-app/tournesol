@@ -10,7 +10,7 @@ import numpy
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.decorators import method_decorator
-from drf_spectacular.utils import  OpenApiTypes, extend_schema
+from drf_spectacular.utils import OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw
 from rest_framework.exceptions import NotFound
 
@@ -72,7 +72,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
     """
 
     permission_classes = []
-    upscale_ratio = 3
+    upscale_ratio = 2
     fnt_config = get_preview_font_config(upscale_ratio)
 
     # overwrite the default method of `PollScopedViewMixin`
@@ -151,7 +151,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         draw_duration = DynamicWebsitePreviewEntity.draw_duration
         thumbnail_bbox = tuple(numpy.multiply((106, 59, 0, 0), upscale_ratio))
-        draw_duration(self, thumbnail, recommendation, thumbnail_bbox, 2)
+        draw_duration(self, thumbnail, recommendation, thumbnail_bbox, 1)
 
         box.paste(thumbnail, (1, 1))
 
@@ -196,27 +196,27 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         )
 
         draw.text(
-            (0, 9 * upscale_ratio),
+            (0, 11 * upscale_ratio),
             views_number,
             font=self.fnt_config["recommendations_metadata"],
             fill=COLOR_GREY_FONT,
         )
 
         draw.text(
-            (publication_date_x_gap, 9 * upscale_ratio),
+            (publication_date_x_gap, 11 * upscale_ratio),
             publication_date,
             font=self.fnt_config["recommendations_metadata"],
             fill=COLOR_GREY_FONT,
         )
 
         draw.text(
-            (uploader_x_gap, 9 * upscale_ratio),
+            (uploader_x_gap, 11 * upscale_ratio),
             uploader,
             font=self.fnt_config["recommendations_metadata"],
             fill=COLOR_GREY_FONT,
         )
 
-        image.paste(video_metadata_box, (110 * upscale_ratio, 5 * upscale_ratio))
+        image.paste(video_metadata_box, (110 * upscale_ratio, 3 * upscale_ratio))
 
     def draw_tournesol_score_box(self, recommendation, image: Image, upscale_ratio: int):
 
@@ -253,20 +253,20 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         )
 
         ts_score_box_draw.text(
-            (comparisons_x_gap, 2 * upscale_ratio),
+            (comparisons_x_gap, upscale_ratio),
             comparisons,
             font=self.fnt_config["recommendations_rating"],
             fill=COLOR_GREY_FONT,
         )
 
         ts_score_box_draw.text(
-            (comparisons_x_gap + comparisons_size[0], 2 * upscale_ratio),
+            (comparisons_x_gap + comparisons_size[0], upscale_ratio),
             contributors,
             font=self.fnt_config["recommendations_rating"],
             fill="#B38B00",
         )
 
-        image.paste(ts_score_box, (110 * upscale_ratio, 25 * upscale_ratio))
+        image.paste(ts_score_box, (110 * upscale_ratio, 30 * upscale_ratio))
 
     def draw_no_recommendations_text(self, image: Image):
         draw = ImageDraw.Draw(image)
