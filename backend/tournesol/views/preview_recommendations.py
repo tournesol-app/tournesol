@@ -8,14 +8,14 @@ import time
 
 import numpy
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.utils.decorators import method_decorator
 from drf_spectacular.utils import OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw
 from rest_framework.exceptions import NotFound
 
-from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.models import Poll
+from tournesol.utils.cache import cache_page_no_i18n
 
 from ..views import PollsRecommendationsView
 from ..views.preview import (
@@ -48,20 +48,25 @@ def format_preview_recommendations(request):
     format the url and redirect
     """
     params = request.GET
+    query = QueryDict('', mutable=True)
     url = '/preview/recommendations-preview?'
 
     for key in params:
         if key == 'language':
+            languages = []
             for lang in params[key].split(','):
-                url += f'&metadata[language]={lang}'
+                languages.append(lang)
+            query.setlist('metadata[language]', languages)
         elif key == 'date':
             for time_key in CONVERSION_TIME:
                 if params[key] == time_key:
                     now = time.time()
                     date_gte = datetime.datetime.fromtimestamp(now - CONVERSION_TIME[params[key]])
-                    url += f'date_gte={date_gte}'
+                    query['date_gte'] = date_gte
         else:
-            url += f'&{key}={params[key]}'
+            query[key] = params[key]
+
+    url += query.urlencode()
 
     return HttpResponseRedirect(url)
 
