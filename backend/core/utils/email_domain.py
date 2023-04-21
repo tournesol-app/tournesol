@@ -101,3 +101,35 @@ def get_domain_n_accounts_until(
             "min_n_account": min_n_account,
         },
     )
+
+
+def count_accounts_by_domains_until(
+    pks: [int], until: datetime.datetime, min_n_account: int = 1
+) -> RawQuerySet:
+    return EmailDomain.objects.raw(
+        """
+        SELECT
+            e.id,
+            e.domain,
+            count(*) as cnt
+
+        FROM core_emaildomain AS e
+
+        JOIN (
+            SELECT *, regexp_replace("email", '(.*)(@.*$)', '\\2') AS user_domain
+            FROM core_user
+        ) AS u ON e.domain=u.user_domain
+
+        WHERE e.id = ANY(%(pks)s) 
+          AND u.date_joined <= %(until)s
+
+        GROUP BY e.domain, e.id
+        HAVING count(*) >= %(min_n_account)s
+        ORDER BY cnt DESC;
+        """,
+        {
+            "pks": pks,
+            "until": until.strftime("%Y-%m-%d %H:%M:%S"),
+            "min_n_account": min_n_account,
+        },
+    )

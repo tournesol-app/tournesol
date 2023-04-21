@@ -10,11 +10,11 @@ from django.utils import timezone
 
 from core.models.user import EmailDomain
 from core.utils.email_domain import (
-    get_domain_n_accounts_until,
+    count_accounts_by_domains_until,
     get_email_domain_with_recent_new_users,
 )
 
-THRESHOLDS = [3, 10, 50, 100, 200, 400, 600, 800, 1000, 1500, 2000]
+THRESHOLDS = [10, 50, 100, 200, 400, 600, 800, 1000, 1500, 2000]
 
 
 def validate_date(date_str):
@@ -46,18 +46,23 @@ class Command(BaseCommand):
         day_before = options["date"] - timedelta(days=1)
         self.stdout.write(f"comparing {options['date']} with {day_before}")
 
+        # Get the number of users per domain since `options["date"]`
         email_domains_since = get_email_domain_with_recent_new_users(
             options["date"], EmailDomain.STATUS_ACCEPTED, 1
         )
 
-        for domain in email_domains_since:
-            n_users_after = domain.cnt
+        # Get the number of users per domain before `options["date"]`
+        email_domains_before = count_accounts_by_domains_until(
+            [domain.id for domain in email_domains_since], day_before, 1
+        )
 
+        for domain in email_domains_since:
             try:
-                n_users_before = get_domain_n_accounts_until(domain.id, day_before)[0].cnt
-            except IndexError:
+                n_users_before = next(filter(lambda x: x.id == domain.id, email_domains_before)).cnt
+            except StopIteration:
                 n_users_before = 0
 
+            n_users_after = domain.cnt
             n_users_total = n_users_before + n_users_after
 
             try:
