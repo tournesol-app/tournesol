@@ -61,19 +61,9 @@ def get_email_domain_with_recent_new_users(
     )
 
 
-def get_domain_n_accounts_until(
-    pk: int, until: datetime.datetime, min_n_account: int = 1
+def count_accounts_by_domains_on_day(
+    day: datetime.date, status: str = EmailDomain.STATUS_ACCEPTED, min_n_account: int = 1
 ) -> RawQuerySet:
-    """
-    For a given EmailDomain identified by its primary key, return the number
-    of accounts created `until` the specified date, only if at least
-    `n_account` are present.
-
-    Keyword arguments:
-
-    until -- include only accounts created until this date (included)
-    min_n_account -- minimum number of account to be considered (default 1)
-    """
     return EmailDomain.objects.raw(
         """
         SELECT
@@ -88,22 +78,22 @@ def get_domain_n_accounts_until(
             FROM core_user
         ) AS u ON e.domain=u.user_domain
 
-        WHERE e.id = %(pk)s
-          AND u.date_joined <= %(until)s
+        WHERE date_trunc('day', u.date_joined) = %(since)s
+          AND e.status = %(status)s
 
         GROUP BY e.domain, e.id
         HAVING count(*) >= %(min_n_account)s
-        LIMIT 1;
+        ORDER BY cnt DESC;
         """,
         {
-            "pk": pk,
-            "until": until.strftime("%Y-%m-%d %H:%M:%S"),
+            "since": day.strftime("%Y-%m-%d"),
+            "status": status,
             "min_n_account": min_n_account,
         },
     )
 
 
-def count_accounts_by_domains_until(
+def count_accounts_by_filtered_domains_until(
     pks: [int], until: datetime.datetime, min_n_account: int = 1
 ) -> RawQuerySet:
     return EmailDomain.objects.raw(
@@ -120,7 +110,7 @@ def count_accounts_by_domains_until(
             FROM core_user
         ) AS u ON e.domain=u.user_domain
 
-        WHERE e.id = ANY(%(pks)s) 
+        WHERE e.id = ANY(%(pks)s)
           AND u.date_joined <= %(until)s
 
         GROUP BY e.domain, e.id

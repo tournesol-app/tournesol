@@ -10,8 +10,8 @@ from django.utils import timezone
 
 from core.models.user import EmailDomain
 from core.utils.email_domain import (
-    count_accounts_by_domains_until,
-    get_email_domain_with_recent_new_users,
+    count_accounts_by_domains_on_day,
+    count_accounts_by_filtered_domains_until,
 )
 
 THRESHOLDS = [10, 50, 100, 200, 400, 600, 800, 1000, 1500, 2000]
@@ -46,19 +46,21 @@ class Command(BaseCommand):
         day_before = options["date"] - timedelta(days=1)
         self.stdout.write(f"comparing {options['date']} with {day_before}")
 
-        # Get the number of users per domain since `options["date"]`
-        email_domains_since = get_email_domain_with_recent_new_users(
+        # Get the number of accounts per domain created the `options["date"]`
+        email_domains_since = count_accounts_by_domains_on_day(
             options["date"], EmailDomain.STATUS_ACCEPTED, 1
         )
 
-        # Get the number of users per domain before `options["date"]`
-        email_domains_before = count_accounts_by_domains_until(
+        # Get the number of accounts per domain before `options["date"]`
+        email_domains_before = count_accounts_by_filtered_domains_until(
             [domain.id for domain in email_domains_since], day_before, 1
         )
 
         for domain in email_domains_since:
             try:
-                n_users_before = next(filter(lambda x: x.id == domain.id, email_domains_before)).cnt
+                n_users_before = next(
+                    filter(lambda x, dom_id=domain.id: x.id == dom_id, email_domains_before)
+                ).cnt
             except StopIteration:
                 n_users_before = 0
 
@@ -67,7 +69,7 @@ class Command(BaseCommand):
 
             try:
                 threshold = max(
-                    [thr for thr in THRESHOLDS if n_users_total >= thr > n_users_before]
+                    (thr for thr in THRESHOLDS if n_users_total >= thr > n_users_before)
                 )
             except ValueError:
                 continue
