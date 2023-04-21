@@ -53,7 +53,7 @@ const EntityCard = ({
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
   useEffect(() => {
-    setContentDisplayed(isAvailable);
+    setContentDisplayed(isAvailable || compact);
   }, [isAvailable]);
 
   const displayEntityCardScores = () => {
@@ -75,7 +75,7 @@ const EntityCard = ({
 
   return (
     <Grid container sx={entityCardMainSx}>
-      {!isAvailable && (
+      {!isAvailable && !compact && (
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item pl={1} py={2}>
             <Typography>
@@ -104,6 +104,7 @@ const EntityCard = ({
             sx={{
               display: 'flex',
               justifyContent: 'center',
+              position: 'relative',
               ...(compact
                 ? {}
                 : { minWidth: '240px', maxWidth: { sm: '240px' } }),
@@ -114,6 +115,30 @@ const EntityCard = ({
               compact={compact}
               config={entityTypeConfig}
             />
+            {!isAvailable && compact && (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                position="absolute"
+                top="0"
+                color="white"
+                bgcolor="rgba(0,0,0,.6)"
+                width="100%"
+                height="100%"
+                sx={{
+                  [theme.breakpoints.down('sm')]: {
+                    fontSize: '0.8rem',
+                  },
+                }}
+              >
+                <Typography textAlign="center" fontSize="inherit">
+                  {entity.type == TypeEnum.VIDEO
+                    ? t('video.notAvailableAnymore')
+                    : t('entityCard.thisElementIsNotAvailable')}
+                </Typography>
+              </Box>
+            )}
           </Grid>
           <Grid
             item
