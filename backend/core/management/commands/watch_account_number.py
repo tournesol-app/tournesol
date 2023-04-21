@@ -3,7 +3,7 @@ Send an alert on Discord when the number of accounts using a trusted email
 domain name exceeds a specific threshold on a given date.
 """
 from argparse import ArgumentTypeError
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -37,11 +37,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
+        self.stdout.write(f"date: {options['date']}")
+
+        day_before = options['date'] - timedelta(days=1)
+        self.stdout.write(str(day_before))
 
         email_domains_alert_qs = get_email_domain_with_recent_new_users(
             options['date'], EmailDomain.STATUS_ACCEPTED, 1
         )
 
-        self.stdout.write(f"date: {options['date']}")
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
