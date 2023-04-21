@@ -1,6 +1,6 @@
 """
-Send an alert on Discord when the number of account using a trusted domain
-passes a threshold
+Send an alert on Discord when the number of accounts using a trusted email
+domain name exceeds a specific threshold on a given date.
 """
 from argparse import ArgumentTypeError
 
@@ -18,17 +18,17 @@ def validate_date(date_str):
 
 
 class Command(BaseCommand):
-    help = "Send an alert on Discord if a threshold of users using" \
-           "a trusted domain has been reached between the given date and the day before"
+    help = "Send an alert on Discord when the number of accounts using a" \
+           " trusted email a trusted domain exceeds a defined threshold on a" \
+           " given date."
 
     def add_arguments(self, parser):
-
         parser.add_argument(
             "-d",
             "--date",
             type=validate_date,
             default=timezone.now().date(),
-            help="count the accounts created on this date (format yyyy-mm-dd)",
+            help="Check the accounts created on that date (format yyyy-mm-dd).",
         )
 
     def handle(self, *args, **options):
