@@ -14,7 +14,7 @@
     "continue": "continuer"
   },
   "video": {
-    "notAvailableAnymore": "Cette vidéo n'est plus disponible.",
+    "notAvailableAnymore": "Cette vidéo n'est plus disponible sur YouTube.",
     "labelShowSettings": "Voir les paramètres de cette video",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
     "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
@@ -37,7 +37,7 @@
     "personalScore": "Score personnel\u00a0: {{score}}"
   },
   "entityCard": {
-    "notAvailableAnymore": "Cette entité n'est plus disponible."
+    "thisElementIsNotAvailable": "Cet élément n'est plus disponible."
   },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
@@ -97,6 +97,7 @@
     "recommendations": "Top du mois",
     "unconnected": "À relier",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
     "backButton": "Retour"
   },
   "tabsBox": {

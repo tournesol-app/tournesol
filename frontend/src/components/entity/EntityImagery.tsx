@@ -44,6 +44,9 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
           fontSize="0.8em"
           fontWeight="bold"
           lineHeight={1.5}
+          // Prevent the duration to be hidden by an additional layer
+          // displayed on top of it (like the unavailable box).
+          zIndex={10}
           sx={{ pointerEvents: 'none' }}
         >
           {formattedDuration}
