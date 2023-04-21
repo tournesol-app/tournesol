@@ -12,18 +12,25 @@ def get_email_domain_with_recent_new_users(
     since: datetime.datetime, status: str = EmailDomain.STATUS_ACCEPTED, n_account: int = 1
 ) -> RawQuerySet:
     """
-    Return the email domain with the number of account created `since` date with atleast
-    `n_account`.
+    Return the email domains with the number of accounts created `since` the
+    given date, having at least `n_account`.
 
     Keyword arguments:
 
-    since -- date from which the count starts
-    status -- email domain status: "ACK": accepted, "PD": pending, "RJ": rejected (default "ACK")
-    n_account -- minimum number of account to be consider (default 1)
+    since -- include only accounts created since this date (included)
+    status -- email domain status (default "ACK"):
+                "ACK": accepted
+                "PD": pending
+                "RJ": rejected
+    n_account -- minimum number of account to be considered (default 1)
 
     Ex:
-        get_email_domain_with_recent_new_users(datetime.datetime(2022,3,4), 10)
-        Return all the domain name with 10 or more users created since the 4th of March 2022
+
+    Return all the domain name with 10 or more users created since the 4th of
+    March 2022:
+
+        get_email_domain_with_recent_new_users(datetime.datetime(2022, 3, 4), 10)
+
     """
     return EmailDomain.objects.raw(
         """
@@ -53,20 +60,30 @@ def get_email_domain_with_recent_new_users(
         },
     )
 
-def get_email_domain_until(until:datetime.datetime, status: str = EmailDomain.STATUS_ACCEPTED, n_account: int = 1) -> RawQuerySet:
+
+def get_email_domain_until(
+        until: datetime.datetime, status: str = EmailDomain.STATUS_ACCEPTED, n_account: int = 1
+) -> RawQuerySet:
     """
     Return the email domains with their number of accounts created `until` the
-    given date having at least `n_account`.
+    given date, having at least `n_account`.
 
     Keyword arguments:
 
     until -- include only accounts created until this date (included)
-    status -- email domain status: "ACK": accepted, "PD": pending, "RJ": rejected (default "ACK")
+    status -- email domain status (default "ACK"):
+                "ACK": accepted
+                "PD": pending
+                "RJ": rejected
     n_account -- minimum number of account to be considered (default 1)
 
     Ex:
+
+    Return all the domains names with at least 10 accounts created before the
+    4th of March 2022.
+
         get_email_domain_until(datetime.datetime(2022, 3, 4), 10)
-        Return all the domains names with at least 10 accounts created before the 4th of March 2022.
+
     """
     return EmailDomain.objects.raw(
         """

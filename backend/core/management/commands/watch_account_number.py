@@ -37,10 +37,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
-        self.stdout.write(f"date: {options['date']}")
 
         day_before = options['date'] - timedelta(days=1)
-        self.stdout.write(str(day_before))
+        self.stdout.write(f"checking date: {options['date']}")
+        self.stdout.write(f"comparing with: {day_before}")
 
         email_domains_since = get_email_domain_with_recent_new_users(
             options['date'], EmailDomain.STATUS_ACCEPTED, 1
@@ -51,7 +51,7 @@ class Command(BaseCommand):
         )
 
         for domain in email_domains_until:
-            self.stdout.write(f"{domain.domain} \t {domain.cnt}")
+            self.stdout.write(f"{domain.domain} - {domain.cnt}")
 
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
