@@ -8,6 +8,9 @@ from datetime import datetime
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from core.models.user import EmailDomain
+from core.utils.email_domain import get_email_domain_with_recent_new_users
+
 THRESHOLDS = [10, 50, 100, 200, 400, 600, 800, 1000, 1500, 2000]
 
 
@@ -34,6 +37,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
+
+        email_domains_alert_qs = get_email_domain_with_recent_new_users(
+            options['date'], EmailDomain.STATUS_ACCEPTED, 1
+        )
+
         self.stdout.write(f"date: {options['date']}")
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
