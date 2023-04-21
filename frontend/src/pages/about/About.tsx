@@ -7,7 +7,6 @@ import { Grid, Typography, Box, Card, Link, Paper } from '@mui/material';
 import { ContentHeader } from 'src/components';
 import {
   discordTournesolInviteUrl,
-  getWikiBaseUrl,
   githubTournesolUrl,
   linkedInTournesolUrl,
   whitePaperUrl,
@@ -170,15 +169,6 @@ const AboutPage = () => {
                   style={{ color: 'white' }}
                 >
                   white paper
-                </a>
-                , our{' '}
-                <a
-                  href={getWikiBaseUrl()}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: 'white' }}
-                >
-                  wiki
                 </a>
                 , our{' '}
                 <a
