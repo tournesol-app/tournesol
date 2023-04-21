@@ -13,7 +13,7 @@ def validate_date(date_str):
     try:
         return datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError as err:
-        raise ArgumentTypeError(err)
+        raise ArgumentTypeError(err) from err
 
 
 class Command(BaseCommand):
