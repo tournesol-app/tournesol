@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Switch, Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
@@ -24,10 +25,11 @@ import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
+import { fetchStats } from './features/comparisons/statsSlice';
 import { LoginState } from './features/login/LoginState.model';
 import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
-import { PollProvider } from './hooks/useCurrentPoll';
+import { PollProvider, useCurrentPoll } from './hooks/useCurrentPoll';
 import FAQ from './pages/faq/FAQ';
 import { scrollToTop } from './utils/ui';
 
@@ -61,6 +63,22 @@ const ScrollToTop = () => {
   return null;
 };
 
+const InitGlobalStates = () => {
+  const dispatch = useDispatch();
+  const { name: pollName } = useCurrentPoll();
+
+  /**
+   * Refresh the global states that contain poll specific data.
+   */
+  useEffect(() => {
+    dispatch(fetchStats());
+  }, [dispatch, pollName]);
+
+  useRefreshSettings();
+
+  return null;
+};
+
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
@@ -72,11 +90,10 @@ function App() {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
 
-  useRefreshSettings();
-
   return (
     <PollProvider>
       <ScrollToTop />
+      <InitGlobalStates />
       <Frame>
         <Switch>
           {/* About routes */}

@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
-import { fetchStats } from 'src/features/comparisons/statsSlice';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import TitleSection from 'src/pages/home/TitleSection';
@@ -19,7 +17,6 @@ import TempStudyBanner from '../banners/TempStudyBanner';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
 
   const { isLoggedIn } = useLoginState();
   const { baseUrl, active } = useCurrentPoll();
@@ -29,14 +26,6 @@ const HomeVideosPage = () => {
     padding: 6,
     px: { xs: 2, md: 6 },
   };
-
-  /**
-   * Retrieve the Tournesol's statistics at the root of the home page to
-   * provide them to each section needing them.
-   */
-  useEffect(() => {
-    dispatch(fetchStats());
-  }, [dispatch]);
 
   return (
     <>
