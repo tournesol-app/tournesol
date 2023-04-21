@@ -61,29 +61,18 @@ def get_email_domain_with_recent_new_users(
     )
 
 
-def get_email_domain_until(
-        until: datetime.datetime, status: str = EmailDomain.STATUS_ACCEPTED, n_account: int = 1
+def get_domain_n_accounts_until(
+    pk: int, until: datetime.datetime, min_n_account: int = 1
 ) -> RawQuerySet:
     """
-    Return the email domains with their number of accounts created `until` the
-    given date, having at least `n_account`.
+    For a given EmailDomain identified by its primary key, return the number
+    of accounts created `until` the specified date, only if at least
+    `n_account` are present.
 
     Keyword arguments:
 
     until -- include only accounts created until this date (included)
-    status -- email domain status (default "ACK"):
-                "ACK": accepted
-                "PD": pending
-                "RJ": rejected
-    n_account -- minimum number of account to be considered (default 1)
-
-    Ex:
-
-    Return all the domains names with at least 10 accounts created before the
-    4th of March 2022.
-
-        get_email_domain_until(datetime.datetime(2022, 3, 4), 10)
-
+    min_n_account -- minimum number of account to be considered (default 1)
     """
     return EmailDomain.objects.raw(
         """
@@ -99,16 +88,16 @@ def get_email_domain_until(
             FROM core_user
         ) AS u ON e.domain=u.user_domain
 
-        WHERE u.date_joined <= %(until)s
-          AND e.status = %(status)s
+        WHERE e.id = %(pk)s
+          AND u.date_joined <= %(until)s
 
         GROUP BY e.domain, e.id
-        HAVING count(*) >= %(n_account)s
-        ORDER BY cnt DESC;
+        HAVING count(*) >= %(min_n_account)s
+        LIMIT 1;
         """,
         {
+            "pk": pk,
             "until": until.strftime("%Y-%m-%d %H:%M:%S"),
-            "status": status,
-            "n_account": n_account,
+            "min_n_account": min_n_account,
         },
     )
