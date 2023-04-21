@@ -8,6 +8,8 @@ from datetime import datetime
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+THRESHOLDS = [10, 50, 100, 200, 400, 600, 800, 1000, 1500, 2000]
+
 
 def validate_date(date_str):
     try:
