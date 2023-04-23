@@ -54,7 +54,7 @@ const EntityCard = ({
 
   useEffect(() => {
     setContentDisplayed(isAvailable || compact);
-  }, [isAvailable]);
+  }, [isAvailable, compact]);
 
   const displayEntityCardScores = () => {
     if ('tournesol_score' in entity && !compact) {
