@@ -29,6 +29,51 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const QuestionRow = ({
+  questionTextKey,
+  answerTextKey,
+}: {
+  questionTextKey: string;
+  answerTextKey: string;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Grid2
+      py={2}
+      container
+      spacing={4}
+      justifyContent="center"
+      alignItems="stretch"
+    >
+      <Grid2 xs={12} md={5}>
+        <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
+          <Box
+            p={3}
+            height="100%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            color="#fff"
+            bgcolor="background.emphatic"
+            borderRadius={20}
+            sx={{ borderRadius: 1 }}
+          >
+            <Typography variant="h5" align="center">
+              {t(questionTextKey)}
+            </Typography>
+          </Box>
+        </Paper>
+      </Grid2>
+      <Grid2 xs={12} md={7}>
+        <Paper elevation={1} sx={{ borderRadius: 1, p: 2, height: '100%' }}>
+          <Typography fontWeight={600}>{t(answerTextKey)}</Typography>
+        </Paper>
+      </Grid2>
+    </Grid2>
+  );
+};
+
 const DonatePage = () => {
   const { hash } = useLocation();
   const alreadyScrolled = React.useRef(false);
@@ -181,163 +226,26 @@ const DonatePage = () => {
           </Grid2>
         </Grid2>
         <Grid2 py={4}>
-          <Grid2
-            py={2}
-            container
-            spacing={4}
-            justifyContent="center"
-            alignItems="stretch"
-          >
-            <Grid2 xs={12} md={5}>
-              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
-                <Box
-                  p={3}
-                  height="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  color="#fff"
-                  bgcolor="background.emphatic"
-                  borderRadius={20}
-                  sx={{ borderRadius: 1 }}
-                >
-                  <Typography variant="h5" align="center">
-                    {t('donate.whatDoWeDoQuestion')}
-                  </Typography>
-                </Box>
-              </Paper>
-            </Grid2>
-            <Grid2 xs={12} md={7}>
-              <Paper
-                elevation={1}
-                sx={{ borderRadius: 1, p: 2, height: '100%' }}
-              >
-                <Typography fontWeight={600}>
-                  {t('donate.whatDoWeDoAnswer.part1')}
-
-                  <br />
-                  {t('donate.whatDoWeDoAnswer.part2')}
-
-                  <br />
-                  {t('donate.whatDoWeDoAnswer.part3')}
-
-                  <br />
-                  {t('donate.whatDoWeDoAnswer.part4')}
-                </Typography>
-              </Paper>
-            </Grid2>
-          </Grid2>
-          <Grid2
-            py={2}
-            container
-            spacing={4}
-            justifyContent="center"
-            alignItems="stretch"
-          >
-            <Grid2 xs={12} md={5}>
-              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
-                <Box
-                  p={3}
-                  height="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  color="#fff"
-                  bgcolor="background.emphatic"
-                  borderRadius={20}
-                  sx={{ borderRadius: 1 }}
-                >
-                  <Typography variant="h5" align="center">
-                    {t('donate.whatWeWouldDoQuestion')}
-                  </Typography>
-                </Box>
-              </Paper>
-            </Grid2>
-            <Grid2 xs={12} md={7}>
-              <Paper
-                elevation={1}
-                sx={{ borderRadius: 1, p: 2, height: '100%' }}
-              >
-                <Typography fontWeight={600}>
-                  {t('donate.whatWeWouldDoAnswer')}
-                </Typography>
-              </Paper>
-            </Grid2>
-          </Grid2>
-          <Grid2
-            py={2}
-            container
-            spacing={4}
-            justifyContent="center"
-            alignItems="stretch"
-          >
-            <Grid2 xs={12} md={5}>
-              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
-                <Box
-                  p={3}
-                  height="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  color="#fff"
-                  bgcolor="background.emphatic"
-                  borderRadius={20}
-                  sx={{ borderRadius: 1 }}
-                >
-                  <Typography variant="h5" align="center">
-                    {t('donate.howMuchDoWeHaveQuestion')}
-                  </Typography>
-                </Box>
-              </Paper>
-            </Grid2>
-            <Grid2 xs={12} md={7}>
-              <Paper
-                elevation={1}
-                sx={{ borderRadius: 1, p: 2, height: '100%' }}
-              >
-                <Typography fontWeight={600}>
-                  {t('donate.howMuchDoWeHaveAnswer')}
-                </Typography>
-              </Paper>
-            </Grid2>
-          </Grid2>
-          <Grid2
-            py={2}
-            container
-            spacing={4}
-            justifyContent="center"
-            alignItems="stretch"
-          >
-            <Grid2 xs={12} md={5}>
-              <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
-                <Box
-                  p={3}
-                  height="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  color="#fff"
-                  bgcolor="background.emphatic"
-                  borderRadius={20}
-                  sx={{ borderRadius: 1 }}
-                >
-                  <Typography variant="h5" align="center">
-                    {t('donate.howMuchWeCurrentlySpendQuestion')}
-                  </Typography>
-                </Box>
-              </Paper>
-            </Grid2>
-            <Grid2 xs={12} md={7}>
-              <Paper
-                elevation={1}
-                sx={{ borderRadius: 1, p: 2, height: '100%' }}
-              >
-                <Typography fontWeight={600}>
-                  {t('donate.howMuchWeCurrentlySpendAnswer')}
-                </Typography>
-              </Paper>
-            </Grid2>
-          </Grid2>
+          <QuestionRow
+            questionTextKey="donate.whatDoWeDoQuestion"
+            answerTextKey="donate.whatDoWeDoAnswer"
+          />
+          <QuestionRow
+            questionTextKey="donate.whatWeWouldDoQuestion"
+            answerTextKey="donate.whatWeWouldDoAnswer"
+          />
+          <QuestionRow
+            questionTextKey="donate.howMuchDoWeHaveQuestion"
+            answerTextKey="donate.howMuchDoWeHaveAnswer"
+          />
+          <QuestionRow
+            questionTextKey="donate.howMuchWeCurrentlySpendQuestion"
+            answerTextKey="donate.howMuchWeCurrentlySpendAnswer"
+          />
+          <QuestionRow
+            questionTextKey="donate.haveWeConsideredQuestion"
+            answerTextKey="donate.haveWeConsideredAnswer"
+          />
         </Grid2>
       </ContentBox>
     </>

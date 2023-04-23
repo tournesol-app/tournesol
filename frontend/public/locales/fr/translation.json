@@ -390,19 +390,16 @@
     "donateWithKKBB": "Faire un don avec KissKissBankBank",
     "donateWithPaypal": "Faire un don avec PayPal",
     "doYouPreferDirectTransfer": "Vous préférez les virements directs ?",
-    "whatDoWeDoQuestion": "Que faisons-nous avec les fonds de l'association?",
-    "whatDoWeDoAnswer": {
-      "part1": "Ce que nous faisons avec nos dons",
-      "part2": "- Payer pour les serveurs / Infrastructure. Tournesol utilise aujourd'hui un serveur unique, un service d'envoi d'emails, ..., mais alors que le projet grandit les coûts de maintenance augmentent aussi",
-      "part3": "- Promouvoir Tournesol avec la publicité des vidéos promues sur Youtube ",
-      "part4": "- Embaucher des ingénieurs logiciels pour développer le site Tournesol"
-    },
+    "whatDoWeDoQuestion": "Comment dépensons-nous nos financements ?",
+    "whatDoWeDoAnswer": "Tout d'abord, nous engageons un développeur de logiciels pour travailler sur le code source de Tournesol (environ 4000€ par mois avec taxes). Ensuite, nous payons des infrastructures et des services pour héberger et faire fonctionner la plateforme Tournesol (environ 150€ par mois).",
     "whatWeWouldDoQuestion": "Que ferions-nous avec plus de fonds?",
-    "whatWeWouldDoAnswer": "Plus de promotion et l'embauche de plus de membres d'équipe, soit en se concentrant sur la croissance de l'association et le financement, soit en embauchant des ingénieurs qui développeraient le site Web avec une expertise en UX/Design ou en Machine Learning",
+    "whatWeWouldDoAnswer": "Notre priorité est de promouvoir Tournesol et d'embaucher un deuxième employé. Le deuxième employé serait soit axé sur la croissance de l'association et le financement, soit serait un ingénieur qui développerait le site web avec une expertise en UX/Design ou en apprentissage automatique.",
     "howMuchDoWeHaveQuestion": "Combien avons-nous actuellement?",
-    "howMuchDoWeHaveAnswer": "Lancé il y a deux ans avec 60'000 grâce à d'importants dons, nous recevons aujourd'hui environ 700€/mois",
+    "howMuchDoWeHaveAnswer": "Depuis la création de l'association en 2021, nous avons reçu quelques dons généreux qui nous ont grandement aidés à construire la première version de la plateforme (environ 60 000€). Depuis lors, nous avons reçu moins de 1000€ par mois, ce qui n'est pas suffisant pour couvrir nos coûts à long terme.",
     "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement?",
-    "howMuchWeCurrentlySpendAnswer": "Environ 4000€/mois"
+    "howMuchWeCurrentlySpendAnswer": "L'association dépense un peu plus de 4000€ par mois.",
+    "haveWeConsideredQuestion": "Avons-nous envisagé d'autres opportunités de financement ?",
+    "haveWeConsideredAnswer": "Oui, nous avons essayé de postuler à plusieurs sources de financement mais n'avons pas encore été sélectionnés avec succès. Si vous êtes une agence de financement et que vous trouvez notre projet prometteur, veuillez nous contacter à l'adresse hello@tournesol.app."
   },
   "privacyPolicy": {
     "privacyPolicy": "Politique de confidentialité",
