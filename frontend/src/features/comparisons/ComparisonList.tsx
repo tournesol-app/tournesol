@@ -25,9 +25,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         gap: '16px',
       }}
     >
-      <AvailableEntity
-        uid={entity_a.uid}
-      >
+      <AvailableEntity uid={entity_a.uid}>
         <EntityCard
           compact
           entity={entity_a}
@@ -61,9 +59,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           </Fab>
         </Tooltip>
       </Box>
-      <AvailableEntity
-        uid={entity_b.uid}
-      >
+      <AvailableEntity uid={entity_b.uid}>
         <EntityCard
           compact
           entity={entity_b}
