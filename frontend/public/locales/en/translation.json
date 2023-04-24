@@ -258,6 +258,8 @@
   "ratingOrderByInput": {
     "lastComparisonDate": "Last comparison date",
     "numberOfComparisons": "Number of comparisons",
+    "collectiveTournesolScore": "Collective Tournesol score ",
+    "individualTournesolScore": "Individual Tournesol score",
     "orderBy": "Order by",
     "order": "Order"
   },

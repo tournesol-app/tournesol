@@ -264,6 +264,8 @@
   "ratingOrderByInput": {
     "lastComparisonDate": "Dernière comparaison",
     "numberOfComparisons": "Nombre de comparaisons",
+    "collectiveTournesolScore": "Tournesol score collectif",
+    "individualTournesolScore": "Tournesol score individuel",
     "orderBy": "Trier par",
     "order": "Ordre"
   },
