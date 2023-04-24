@@ -30,11 +30,11 @@ const useStyles = makeStyles(() => ({
 }));
 
 const QuestionRow = ({
-  questionTextKey,
-  answerTextKey,
+  questionText,
+  answerText,
 }: {
-  questionTextKey: string;
-  answerTextKey: string;
+  questionText: string;
+  answerText: string;
 }) => {
   const { t } = useTranslation();
 
@@ -60,14 +60,14 @@ const QuestionRow = ({
             sx={{ borderRadius: 1 }}
           >
             <Typography variant="h5" align="center">
-              {t(questionTextKey)}
+              {questionText}
             </Typography>
           </Box>
         </Paper>
       </Grid2>
       <Grid2 xs={12} md={7}>
         <Paper elevation={1} sx={{ borderRadius: 1, p: 2, height: '100%' }}>
-          <Typography fontWeight={600}>{t(answerTextKey)}</Typography>
+          <Typography fontWeight={600}>{answerText}</Typography>
         </Paper>
       </Grid2>
     </Grid2>
@@ -227,24 +227,24 @@ const DonatePage = () => {
         </Grid2>
         <Grid2 py={4}>
           <QuestionRow
-            questionTextKey="donate.whatDoWeDoQuestion"
-            answerTextKey="donate.whatDoWeDoAnswer"
+            questionText={t('donate.whatDoWeDoQuestion')}
+            answerText={t('donate.whatDoWeDoAnswer')}
           />
           <QuestionRow
-            questionTextKey="donate.whatWeWouldDoQuestion"
-            answerTextKey="donate.whatWeWouldDoAnswer"
+            questionText={t('donate.whatWeWouldDoQuestion')}
+            answerText={t('donate.whatWeWouldDoAnswer')}
           />
           <QuestionRow
-            questionTextKey="donate.howMuchDoWeHaveQuestion"
-            answerTextKey="donate.howMuchDoWeHaveAnswer"
+            questionText={t('donate.howMuchDoWeHaveQuestion')}
+            answerText={t('donate.howMuchDoWeHaveAnswer')}
           />
           <QuestionRow
-            questionTextKey="donate.howMuchWeCurrentlySpendQuestion"
-            answerTextKey="donate.howMuchWeCurrentlySpendAnswer"
+            questionText={t('donate.howMuchWeCurrentlySpendQuestion')}
+            answerText={t('donate.howMuchWeCurrentlySpendAnswer')}
           />
           <QuestionRow
-            questionTextKey="donate.haveWeConsideredQuestion"
-            answerTextKey="donate.haveWeConsideredAnswer"
+            questionText={t('donate.haveWeConsideredQuestion')}
+            answerText={t('donate.haveWeConsideredAnswer')}
           />
         </Grid2>
       </ContentBox>
