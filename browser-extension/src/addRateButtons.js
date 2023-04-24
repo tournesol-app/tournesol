@@ -55,7 +55,7 @@ function addRateButtons() {
       return;
     }
 
-    // Remove existing buttons to prevent doubles
+    // Remove the existing buttons to avoid duplicates.
     if (document.getElementById('tournesol-rate-later-button')) {
       document.getElementById('tournesol-rate-later-button').remove();
     }
