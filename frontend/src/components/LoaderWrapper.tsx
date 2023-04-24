@@ -38,6 +38,7 @@ const LoaderWrapper = ({ isLoading, sx = {}, children }: LoaderProps) => {
             pointerEvents: 'none',
           },
         ]}
+        width="100%"
       >
         {children}
       </Box>

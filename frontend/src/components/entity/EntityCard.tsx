@@ -106,7 +106,7 @@ const EntityCard = ({
               justifyContent: 'center',
               position: 'relative',
               ...(compact
-                ? {}
+                ? { aspectRatio: '16/9', overflow: 'hidden' }
                 : { minWidth: '240px', maxWidth: { sm: '240px' } }),
             }}
           >
@@ -128,7 +128,7 @@ const EntityCard = ({
                 height="100%"
                 sx={{
                   [theme.breakpoints.down('sm')]: {
-                    fontSize: '0.8rem',
+                    fontSize: '0.6rem',
                   },
                 }}
               >
