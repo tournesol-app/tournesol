@@ -382,7 +382,17 @@
     "ifPossibleConsiderUsingDirectTransfers": "If possible, consider using direct transfers instead (see below). This allows the association to not pay additional fees and makes the most of your contributions.",
     "donateWithKKBB": "Donate with KissKissBankBank",
     "donateWithPaypal": "Donate with PayPal",
-    "doYouPreferDirectTransfer": "You prefer direct transfers?"
+    "doYouPreferDirectTransfer": "You prefer direct transfers?",
+    "whatDoWeDoQuestion": "How do we spend our funding?",
+    "whatDoWeDoAnswer": "First, we employ a software developer to work on the source code of Tournesol (about 4000€ per month with taxes). Second, we pay for infrastructures and services to host and run the Tournesol platform (about 150€ per month).",
+    "whatWeWouldDoQuestion": "What would we do with more funds?",
+    "whatWeWouldDoAnswer": "Our priority is to promote Tournesol and hire a second employee. The second employee would be either focused on growing the association and funding, or would be an engineer that would develop the website with expertise either in UX/Design or in Machine Learning.",
+    "howMuchDoWeHaveQuestion": "How much do we currently have?",
+    "howMuchDoWeHaveAnswer": "Since the creation of the association in 2021, we received a few generous donations that greatly helped us build the first version of the platform (approximately 60'000€). Since then, we have received less than 1000€ per month which is not enough to cover our costs for the long term.",
+    "howMuchWeCurrentlySpendQuestion": "How much do we currently spend?",
+    "howMuchWeCurrentlySpendAnswer": "The association spends a little bit more than 4000€ per month.",
+    "haveWeConsideredQuestion": "Have we considered other funding opportunities?",
+    "haveWeConsideredAnswer": "Yes, we have tried to apply to multiple sources of fundings but have not yet been successfully selected. If you are such a funding agency and find our project promising please contact us at hello@tournesol.app."
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",

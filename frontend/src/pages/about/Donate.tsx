@@ -10,6 +10,7 @@ import {
   Link,
   Stack,
   Typography,
+  Paper,
 } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
@@ -27,6 +28,51 @@ const useStyles = makeStyles(() => ({
     margin: 0,
   },
 }));
+
+const QuestionRow = ({
+  questionText,
+  answerText,
+}: {
+  questionText: string;
+  answerText: string;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Grid2
+      py={2}
+      container
+      spacing={4}
+      justifyContent="center"
+      alignItems="stretch"
+    >
+      <Grid2 xs={12} md={5}>
+        <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
+          <Box
+            p={3}
+            height="100%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            color="#fff"
+            bgcolor="background.emphatic"
+            borderRadius={20}
+            sx={{ borderRadius: 1 }}
+          >
+            <Typography variant="h5" align="center">
+              {questionText}
+            </Typography>
+          </Box>
+        </Paper>
+      </Grid2>
+      <Grid2 xs={12} md={7}>
+        <Paper elevation={1} sx={{ borderRadius: 1, p: 2, height: '100%' }}>
+          <Typography fontWeight={600}>{answerText}</Typography>
+        </Paper>
+      </Grid2>
+    </Grid2>
+  );
+};
 
 const DonatePage = () => {
   const { hash } = useLocation();
@@ -178,6 +224,28 @@ const DonatePage = () => {
               </Box>
             </TitledPaper>
           </Grid2>
+        </Grid2>
+        <Grid2 py={4}>
+          <QuestionRow
+            questionText={t('donate.whatDoWeDoQuestion')}
+            answerText={t('donate.whatDoWeDoAnswer')}
+          />
+          <QuestionRow
+            questionText={t('donate.whatWeWouldDoQuestion')}
+            answerText={t('donate.whatWeWouldDoAnswer')}
+          />
+          <QuestionRow
+            questionText={t('donate.howMuchDoWeHaveQuestion')}
+            answerText={t('donate.howMuchDoWeHaveAnswer')}
+          />
+          <QuestionRow
+            questionText={t('donate.howMuchWeCurrentlySpendQuestion')}
+            answerText={t('donate.howMuchWeCurrentlySpendAnswer')}
+          />
+          <QuestionRow
+            questionText={t('donate.haveWeConsideredQuestion')}
+            answerText={t('donate.haveWeConsideredAnswer')}
+          />
         </Grid2>
       </ContentBox>
     </>
