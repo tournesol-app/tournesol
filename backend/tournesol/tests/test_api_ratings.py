@@ -11,11 +11,11 @@ from core.utils.time import time_ago, time_ahead
 from tournesol.models import Comparison, ContributorRating, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
-    EntityPollRatingFactory,
 )
 
 
