@@ -31,8 +31,8 @@ ALLOWED_GENERIC_ORDER_BY_VALUES = [
     "-n_comparisons",
     "collective_score",
     "-collective_score",
-    "contributor_rating_criteria_score",
-    "-contributor_rating_criteria_score",
+    "individual_score",
+    "-individual_score",
 ]
 
 # Appended to the positional arguments of all calls to QuerySet.order_by()
@@ -46,6 +46,7 @@ def get_annotated_ratings(poll: Poll):
     Return a `ContributorRating` queryset with additional annotations like:
         - the number of comparisons made by the user for the entity
         - the date of the last comparison made for this entity
+        - etc.
 
     This queryset expects to be evaluated with a specific poll, user and
     entity.
@@ -69,7 +70,7 @@ def get_annotated_ratings(poll: Poll):
         .values("tournesol_score")
     )
 
-    contributor_rating_criteria_score = (
+    individual_score = (
         ContributorRatingCriteriaScore.objects
         .filter(contributor_rating=OuterRef("pk"), criteria=poll.main_criteria)
         .values("score")
@@ -79,7 +80,7 @@ def get_annotated_ratings(poll: Poll):
         n_comparisons=Subquery(n_comparisons),
         last_compared_at=Subquery(last_compared_at),
         collective_score=Subquery(collective_score),
-        contributor_rating_criteria_score=Subquery(contributor_rating_criteria_score)
+        individual_score=Subquery(individual_score)
     )
 
 

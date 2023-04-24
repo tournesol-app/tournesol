@@ -420,7 +420,7 @@ class RatingApi(TestCase):
         self.assertEqual(results[0]["entity"]["uid"], self.video1.uid)
         self.assertEqual(results[1]["entity"]["uid"], self.video2.uid)
 
-    def test_authenticated_can_list_videos_by_contributor_rating_criteria_score(self):
+    def test_authenticated_can_list_videos_by_individual_score(self):
         """
         An authenticated user can list its ratings related to the `videos`
         poll based on his personal score
@@ -461,7 +461,7 @@ class RatingApi(TestCase):
         self.client.force_authenticate(user=self.user1)
 
         response = self.client.get(
-            self.ratings_base_url + "?order_by=contributor_rating_criteria_score", format="json"
+            self.ratings_base_url + "?order_by=individual_score", format="json"
         )
         results = response.data["results"]
 
@@ -471,7 +471,7 @@ class RatingApi(TestCase):
         self.assertEqual(results[2]["entity"]["uid"], self.video1.uid)
 
         response = self.client.get(
-            self.ratings_base_url + "?order_by=-contributor_rating_criteria_score", format="json"
+            self.ratings_base_url + "?order_by=-individual_score", format="json"
         )
         results = response.data["results"]
         self.assertEqual(response.status_code, status.HTTP_200_OK)

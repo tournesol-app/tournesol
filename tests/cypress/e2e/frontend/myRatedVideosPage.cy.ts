@@ -199,7 +199,7 @@ describe('My rated elements page', () => {
       });
     });
 
-    it('the ratings can be order by `contributor_rating_criteria_score`', () => {
+    it('the ratings can be order by `individual_score`', () => {
       cy.visit('/ratings');
       cy.focused().type(TEST_USERNAME);
       cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
@@ -209,16 +209,16 @@ describe('My rated elements page', () => {
   
       // Ascending order.
       cy.get('div[id=order-by-metadata]').click();
-      cy.get('li[data-value=contributor_rating_criteria_score]').click();
+      cy.get('li[data-value=individual_score]').click();
       cy.location().should((loc) => {
-        expect(loc.search).to.eq('?orderBy=contributor_rating_criteria_score')
+        expect(loc.search).to.eq('?orderBy=individual_score')
       });
   
       // Descending order.
       cy.get('div[id=order-by-metadata]').click();
-      cy.get('li[data-value=-contributor_rating_criteria_score]').click();
+      cy.get('li[data-value=-individual_score]').click();
       cy.location().should((loc) => {
-        expect(loc.search).to.eq('?orderBy=-contributor_rating_criteria_score')
+        expect(loc.search).to.eq('?orderBy=-individual_score')
       });
     });
   });
