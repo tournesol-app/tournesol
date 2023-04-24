@@ -106,7 +106,7 @@ const EntityCard = ({
               justifyContent: 'center',
               position: 'relative',
               ...(compact
-                ? { aspectRatio: '16/9', overflow: 'hidden' }
+                ? {}
                 : { minWidth: '240px', maxWidth: { sm: '240px' } }),
             }}
           >
