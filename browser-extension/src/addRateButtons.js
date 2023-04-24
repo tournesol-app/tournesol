@@ -55,10 +55,13 @@ function addRateButtons() {
       return;
     }
 
-    // If the button already exists, don't create a new one
+    // Remove existing buttons to prevent doubles
     if (document.getElementById('tournesol-rate-later-button')) {
-      window.clearInterval(timer);
-      return;
+      document.getElementById('tournesol-rate-later-button').remove();
+    }
+
+    if (document.getElementById('tournesol-rate-now-button')) {
+      document.getElementById('tournesol-rate-now-button').remove();
     }
 
     window.clearInterval(timer);
