@@ -42,6 +42,14 @@ class Command(BaseCommand):
             help="Check the accounts created on that date (format yyyy-mm-dd).",
         )
 
+        parser.add_argument(
+            "-s",
+            "--stdout-only",
+            action='store_true',
+            required=False,
+            help="Display the results only on standard output",
+        )
+
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
 
@@ -84,7 +92,8 @@ class Command(BaseCommand):
             self.stdout.write(msg)
 
             # Post the alert on Discord
-            write_in_channel("infra_alert_private", msg)
+            if not options['stdout_only']:
+                write_in_channel("infra_alert_private", msg)
 
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
