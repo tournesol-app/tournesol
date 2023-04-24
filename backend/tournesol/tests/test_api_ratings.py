@@ -395,7 +395,7 @@ class RatingApi(TestCase):
 
     def test_authenticated_can_list_videos_by_collective_score(self):
         """
-        An authenticated user can list its ratings related to the `videos`
+        An authenticated user can list his/her ratings related to the `videos`
         poll by the entities' collective score.
         """
 
@@ -422,17 +422,17 @@ class RatingApi(TestCase):
 
     def test_authenticated_can_list_videos_by_individual_score(self):
         """
-        An authenticated user can list its ratings related to the `videos`
-        poll based on his personal score
+        An authenticated user can list his/her ratings related to the `videos`
+        poll based on their individual score.
         """
 
-        rating = ContributorRating.objects.get(
+        rating_video1 = ContributorRating.objects.get(
             poll=self.poll_videos, user=self.user1, entity=self.video1
         )
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=rating,
+            contributor_rating=rating_video1,
             criteria=self.poll_videos.main_criteria,
-            score=5
+            score=10
         )
 
         rating_video2 = ContributorRating.objects.get(
@@ -441,7 +441,7 @@ class RatingApi(TestCase):
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating_video2,
             criteria=self.poll_videos.main_criteria,
-            score=1
+            score=20
         )
 
         ComparisonFactory(
@@ -455,7 +455,7 @@ class RatingApi(TestCase):
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating_video3,
             criteria=self.poll_videos.main_criteria,
-            score=2
+            score=30
         )
 
         self.client.force_authenticate(user=self.user1)
@@ -466,18 +466,18 @@ class RatingApi(TestCase):
         results = response.data["results"]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(results[0]["entity"]["uid"], self.video2.uid)
-        self.assertEqual(results[1]["entity"]["uid"], self.video3.uid)
-        self.assertEqual(results[2]["entity"]["uid"], self.video1.uid)
+        self.assertEqual(results[0]["entity"]["uid"], self.video1.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video2.uid)
+        self.assertEqual(results[2]["entity"]["uid"], self.video3.uid)
 
         response = self.client.get(
             self.ratings_base_url + "?order_by=-individual_score", format="json"
         )
         results = response.data["results"]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(results[0]["entity"]["uid"], self.video1.uid)
-        self.assertEqual(results[1]["entity"]["uid"], self.video3.uid)
-        self.assertEqual(results[2]["entity"]["uid"], self.video2.uid)
+        self.assertEqual(results[0]["entity"]["uid"], self.video3.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video2.uid)
+        self.assertEqual(results[2]["entity"]["uid"], self.video1.uid)
 
     def test_authenticated_can_list_videos_by_publication_date(self):
         """
