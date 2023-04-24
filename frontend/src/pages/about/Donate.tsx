@@ -36,8 +36,6 @@ const QuestionRow = ({
   questionText: string;
   answerText: string;
 }) => {
-  const { t } = useTranslation();
-
   return (
     <Grid2
       py={2}
