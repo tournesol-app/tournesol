@@ -5,9 +5,11 @@ domain name exceeds a specific threshold on a given date.
 from argparse import ArgumentTypeError
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from core.lib.discord.api import write_in_channel
 from core.models.user import EmailDomain
 from core.utils.email_domain import (
     count_accounts_by_domains_on_day,
@@ -75,10 +77,14 @@ class Command(BaseCommand):
                 continue
 
             msg = (
-                f"{n_users_total} accounts use the trusted domain '{domain.domain}' - "
-                f"the day before it was {n_users_before} (threshold exceeded: {threshold})"
+                f"**{settings.MAIN_URL}** - {n_users_total} accounts use the trusted domain"
+                f" '{domain.domain}' - the day before it was {n_users_before} "
+                f"(threshold exceeded: {threshold})"
             )
             self.stdout.write(msg)
+
+            # Post the alert on Discord
+            write_in_channel("infra_alert_private", msg)
 
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
