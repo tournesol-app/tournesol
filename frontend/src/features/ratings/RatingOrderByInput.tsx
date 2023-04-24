@@ -54,6 +54,26 @@ function RatingOrderByInput(props: FilterProps) {
         value: '-n_comparisons',
         icon: CallReceivedIcon,
       },
+      {
+        label: t('ratingOrderByInput.collectiveTournesolScore'),
+        value: 'collective_score',
+        icon: CallMadeIcon,
+      },
+      {
+        label: t('ratingOrderByInput.collectiveTournesolScore'),
+        value: '-collective_score',
+        icon: CallReceivedIcon,
+      },
+      {
+        label: t('ratingOrderByInput.individualTournesolScore'),
+        value: 'individual_score',
+        icon: CallMadeIcon,
+      },
+      {
+        label: t('ratingOrderByInput.individualTournesolScore'),
+        value: '-individual_score',
+        icon: CallReceivedIcon,
+      },
     ],
     [t]
   );

@@ -127,12 +127,6 @@ export function getMetadataName(
         case 'publication_date':
           name = t('videoMetadata.publication_date');
           break;
-        case 'collective_score':
-          name = t('videoMetadata.collective_score');
-          break;
-        case 'individual_score':
-          name = t('videoMetadata.individual_score');
-          break;
       }
       break;
   }
@@ -213,12 +207,7 @@ export const polls: Array<SelectablePoll> = [
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
-    extraMetadataOrderBy: [
-      'duration',
-      'publication_date',
-      'collective_score',
-      'individual_score',
-    ],
+    extraMetadataOrderBy: ['duration', 'publication_date'],
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,
     tutorialDialogs: getVideosTutorialDialogs,

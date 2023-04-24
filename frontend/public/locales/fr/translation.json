@@ -263,6 +263,8 @@
   "ratingOrderByInput": {
     "lastComparisonDate": "Dernière comparaison",
     "numberOfComparisons": "Nombre de comparaisons",
+    "collectiveTournesolScore": "Tournesol score collectif",
+    "individualTournesolScore": "Tournesol score individuel",
     "orderBy": "Trier par",
     "order": "Ordre"
   },
@@ -694,9 +696,7 @@
   },
   "videoMetadata": {
     "duration": "Durée",
-    "publication_date": "Date de publication",
-    "collective_score": "Score collectif",
-    "individual_score": "Score personnel"
+    "publication_date": "Date de publication"
   },
   "presidentielle2022": {
     "dialogs": {
