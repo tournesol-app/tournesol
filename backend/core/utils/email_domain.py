@@ -64,6 +64,10 @@ def get_email_domain_with_recent_new_users(
 def count_accounts_by_domains_on_day(
     day: datetime.date, status: str = EmailDomain.STATUS_ACCEPTED, min_n_account: int = 1
 ) -> RawQuerySet:
+    """
+    Return the email domains with the number of accounts created on
+    the given date.
+    """
     return EmailDomain.objects.raw(
         """
         SELECT
@@ -78,7 +82,7 @@ def count_accounts_by_domains_on_day(
             FROM core_user
         ) AS u ON e.domain=u.user_domain
 
-        WHERE date_trunc('day', u.date_joined) = %(since)s
+        WHERE date_trunc('day', u.date_joined) = %(day)s
           AND e.status = %(status)s
 
         GROUP BY e.domain, e.id
@@ -86,7 +90,7 @@ def count_accounts_by_domains_on_day(
         ORDER BY cnt DESC;
         """,
         {
-            "since": day.strftime("%Y-%m-%d"),
+            "day": day.strftime("%Y-%m-%d"),
             "status": status,
             "min_n_account": min_n_account,
         },
@@ -96,6 +100,10 @@ def count_accounts_by_domains_on_day(
 def count_accounts_by_filtered_domains_until(
     pks: [int], until: datetime.datetime, min_n_account: int = 1
 ) -> RawQuerySet:
+    """
+    Return the email domains with the number of accounts created on
+    before the given date
+    """
     return EmailDomain.objects.raw(
         """
         SELECT
