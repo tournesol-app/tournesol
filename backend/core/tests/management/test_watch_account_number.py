@@ -8,11 +8,13 @@ from django.utils import timezone
 
 from core.models.user import EmailDomain
 from core.tests.factories.user import UserFactory
+from tournesol.tests.utils.mock_now import MockNow
 
 
 class WatchAccountNumberTestCase(TestCase):
+    @MockNow.Context()
     def setUp(self):
-        today = timezone.now().date()
+        today = timezone.now()
 
         # Create 6 domains: 3 trusted and 3 not-trusted with 9, 10 and 11 users.
         for n in range(1, 4):
@@ -48,6 +50,7 @@ class WatchAccountNumberTestCase(TestCase):
             "the day before it was 0 (threshold exceeded: 10)"
         )
 
+    @MockNow.Context()
     @patch("core.management.commands.watch_account_number.write_in_channel")
     def test_command_without_arg(self, write_in_channel_mock):
         """
@@ -62,6 +65,7 @@ class WatchAccountNumberTestCase(TestCase):
         self.assertIn(self.expected_msg_domain3, output)
         self.assertEqual(write_in_channel_mock.call_count, 2)
 
+    @MockNow.Context()
     @patch("core.management.commands.watch_account_number.write_in_channel")
     def test_message_are_not_sent_on_discord_when_asked(self, write_in_channel_mock):
         """
@@ -75,17 +79,18 @@ class WatchAccountNumberTestCase(TestCase):
         self.assertIn(self.expected_msg_domain3, output)
         self.assertEqual(write_in_channel_mock.call_count, 0)
 
+    @MockNow.Context()
     @patch("core.management.commands.watch_account_number.write_in_channel", new=lambda x, y: True)
     def test_specific_date_can_be_targeted(self):
         """
         A specific date can be targeted with --date.
         """
         out = StringIO()
-        tomorrow = (timezone.now() + timedelta(days=1)).date()
 
-        UserFactory(email=f"user10@trusted_1.test", date_joined=tomorrow)
+        somewhere_tomorrow = timezone.now() + timedelta(days=1, hours=1)
+        UserFactory(email=f"user10@trusted_1.test", date_joined=somewhere_tomorrow)
 
-        call_command("watch_account_number", date=tomorrow, stdout=out)
+        call_command("watch_account_number", date=somewhere_tomorrow.date(), stdout=out)
         output = out.getvalue()
 
         self.assertIn(
