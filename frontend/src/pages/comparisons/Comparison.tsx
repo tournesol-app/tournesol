@@ -7,6 +7,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
+import CollectiveGoalWeeklyProgress from 'src/features/goals/CollectiveGoalWeeklyProgress';
 
 /**
  * Display the standard comparison UI or the poll tutorial.
@@ -70,7 +71,10 @@ const ComparisonPage = () => {
               skipButtonLabel={t('tutorial.skipTheTutorial')}
             />
           ) : (
-            <Comparison />
+            <>
+              <CollectiveGoalWeeklyProgress />
+              <Comparison />
+            </>
           )}
         </Box>
       </ContentBox>

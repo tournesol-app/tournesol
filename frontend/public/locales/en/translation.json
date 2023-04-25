@@ -172,6 +172,9 @@
   "topbar": {
     "search": "Search"
   },
+  "collectiveGoalWeeklyProgress": {
+    "weeklyCollectiveGoal": "Weekly collective goal - {{collectiveComparisonsPercent}}%"
+  },
   "login": {
     "loginToTournesol": "Log in to Tournesol",
     "logInAction": "Log In",
@@ -503,7 +506,6 @@
       "pollIsClosed": "The poll is now closed.",
       "seeResults": "See the results"
     },
-    "theStatsCouldNotBeDisplayed": "The stats could not be displayed.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
     "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
     "helpUsAdvanceResearch": "Help us advance research by giving your opinion on the videos you have watched in order to identify public interest contents that should be largely recommended.",

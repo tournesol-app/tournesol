@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 
+import { selectStats } from 'src/features/comparisons/statsSlice';
 import { useCurrentPoll } from 'src/hooks';
-import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
-import { PollStats } from 'src/utils/types';
 
 interface statsProp {
   text: string;
@@ -13,10 +13,6 @@ interface statsProp {
   lastMonthCount: number;
   // Add an explanation text after `lastMonthCount`.
   lastMonthAsText?: boolean;
-}
-
-interface StatsSectionProps {
-  externalData?: PollStats;
 }
 
 export const Metrics = ({
@@ -58,28 +54,17 @@ export const Metrics = ({
  * If `externalData` is provided, the component displays it instead of
  * retrieving the data from the API.
  */
-const StatsSection = ({ externalData }: StatsSectionProps) => {
+const StatsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [data, setData] = useState<PollStats>(DEFAULT_POLL_STATS);
+  const publicStats = useSelector(selectStats);
 
-  useEffect(() => {
-    async function getPollStatsAsync(pollName: string) {
-      try {
-        const pollStats = await getPollStats(pollName);
-        if (pollStats) {
-          setData(pollStats);
-        }
-      } catch (reason) {
-        console.error(reason);
-      }
+  const pollStats = publicStats.polls.find((poll) => {
+    if (poll.name === pollName) {
+      return poll;
     }
-
-    if (!externalData) {
-      getPollStatsAsync(pollName);
-    }
-  }, [externalData, pollName]);
+  });
 
   const comparedEntitiesTitle = useMemo(() => {
     switch (pollName) {
@@ -105,31 +90,23 @@ const StatsSection = ({ externalData }: StatsSectionProps) => {
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.activatedAccounts')}
-            count={externalData?.userCount ?? data.userCount}
-            lastMonthCount={
-              externalData?.lastMonthUserCount ?? data.lastMonthUserCount
-            }
+            count={publicStats.active_users.total}
+            lastMonthCount={publicStats.active_users.joined_last_30_days}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.comparisons')}
-            count={externalData?.comparisonCount ?? data.comparisonCount}
-            lastMonthCount={
-              externalData?.lastMonthComparisonCount ??
-              data.lastMonthComparisonCount
-            }
+            count={pollStats?.comparisons.total ?? 0}
+            lastMonthCount={pollStats?.comparisons.added_last_30_days ?? 0}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
             text={comparedEntitiesTitle}
-            count={
-              externalData?.comparedEntityCount ?? data.comparedEntityCount
-            }
+            count={pollStats?.compared_entities.total ?? 0}
             lastMonthCount={
-              externalData?.lastMonthComparedEntityCount ??
-              data.lastMonthComparedEntityCount
+              pollStats?.compared_entities.added_last_30_days ?? 0
             }
           />
         </Grid>

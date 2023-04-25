@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -6,50 +6,26 @@ import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
-import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
-import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
-import { PollStats } from 'src/utils/types';
 import TempStudyBanner from '../banners/TempStudyBanner';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
 
   const { isLoggedIn } = useLoginState();
-  const { showWarningAlert } = useNotifications();
-  const { baseUrl, active, name: pollName } = useCurrentPoll();
-
-  const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
+  const { baseUrl, active } = useCurrentPoll();
 
   const homeSectionSx = {
     width: '100%',
     padding: 6,
     px: { xs: 2, md: 6 },
   };
-
-  /**
-   * Retrieve the Tournesol's statistics at the root of the home page to
-   * provide them to each section needing them.
-   */
-  useEffect(() => {
-    async function getPollStatsAsync(pollName: string) {
-      try {
-        const pollStats = await getPollStats(pollName);
-        if (pollStats) {
-          setStats(pollStats);
-        }
-      } catch (reason) {
-        showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
-      }
-    }
-
-    getPollStatsAsync(pollName);
-  }, [pollName, showWarningAlert, t]);
 
   return (
     <>
@@ -124,20 +100,10 @@ const HomeVideosPage = () => {
 
       <Grid2 container width="100%" flexDirection="column" alignItems="center">
         <Grid2 sx={homeSectionSx}>
-          <ComparisonSection
-            comparisonStats={{
-              comparisonCount: stats.comparisonCount,
-              lastMonthComparisonCount: stats.lastMonthComparisonCount,
-            }}
-          />
+          <ComparisonSection />
         </Grid2>
         <Grid2 sx={homeSectionSx} bgcolor="background.emphatic">
-          <RecommendationsSection
-            comparedEntityStats={{
-              comparedEntityCount: stats.comparedEntityCount,
-              lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
-            }}
-          />
+          <RecommendationsSection />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
           <FundingSection />
@@ -146,7 +112,7 @@ const HomeVideosPage = () => {
           <ResearchSection />
         </Grid2>
         <Grid2 sx={homeSectionSx} bgcolor="rgba(0, 0, 0, 0.08)">
-          <UsageStatsSection externalData={stats} />
+          <UsageStatsSection />
         </Grid2>
         <Grid2 sx={homeSectionSx} display="flex" justifyContent="center">
           <PollListSection />

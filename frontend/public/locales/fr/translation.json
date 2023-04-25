@@ -177,6 +177,9 @@
   "topbar": {
     "search": "Rechercher"
   },
+  "collectiveGoalWeeklyProgress": {
+    "weeklyCollectiveGoal": "Objectif collectif hebdomadaire - {{collectiveComparisonsPercent}}%"
+  },
   "login": {
     "loginToTournesol": "Se connecter à Tournesol",
     "logInAction": "Connexion",
@@ -510,7 +513,6 @@
       "pollIsClosed": "Le scrutin est maintenant fermé.",
       "seeResults": "Voir les résultats"
     },
-    "theStatsCouldNotBeDisplayed": "Les statistiques n'ont pas pu être affichées.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
     "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent sur l'éthique des systèmes de recommandations.",
     "helpUsAdvanceResearch": "Aidez-nous à faire avancer la recherche en donnant votre avis sur les vidéos que vous avez regardées pour identifier les vidéos d'utilité publique qui devraient être largement recommandées.",

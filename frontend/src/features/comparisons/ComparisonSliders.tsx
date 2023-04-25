@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -19,6 +21,8 @@ import {
   resetPendingRatings,
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
+
+import { fetchStats } from './statsSlice';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -51,6 +55,7 @@ const ComparisonSliders = ({
 }) => {
   const classes = useStyles();
 
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const {
     criteriaByName,
@@ -123,6 +128,7 @@ const ComparisonSliders = ({
       await submit(comparison);
     } finally {
       setDisableSubmit(false);
+      dispatch(fetchStats());
     }
 
     // avoid a "memory leak" warning if the component is unmounted on submit.
