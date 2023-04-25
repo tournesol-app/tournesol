@@ -65,7 +65,7 @@ def count_accounts_by_domains_on_day(
     day: datetime.date, status: str = EmailDomain.STATUS_ACCEPTED, min_n_account: int = 1
 ) -> RawQuerySet:
     """
-    Return the email domains with the number of accounts created on
+    Return all email domains with the number of related user accounts created on
     the given date.
     """
     return EmailDomain.objects.raw(
@@ -98,11 +98,11 @@ def count_accounts_by_domains_on_day(
 
 
 def count_accounts_by_filtered_domains_until(
-    pks: [int], until: datetime.datetime, min_n_account: int = 1
+    pks: list[int], until: datetime.datetime, min_n_account: int = 1
 ) -> RawQuerySet:
     """
-    Return the email domains with the number of accounts created on
-    before the given date
+    Given a list of EmailDomain pk, return the number of related user accounts
+    created before the given date.
     """
     return EmailDomain.objects.raw(
         """
