@@ -14,7 +14,7 @@ from drf_spectacular.utils import (
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
-from tournesol.models import Entity, Poll
+from tournesol.models import ContributorRating, Entity, Poll
 from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
@@ -148,6 +148,13 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
             tournesol_score__gt=0,
         )
+
+    def exclude_rated_entities(self, queryset, filters, user):
+        if filters["exclude_rated_entities"] and user.is_authenticated:
+            user_rating_qs = ContributorRating.objects.filter(user=user)
+            rated_entities = [rating.entity_id for rating in user_rating_qs]
+            return queryset.exclude(id__in=rated_entities)
+        return queryset
 
     def sort_results(self, queryset, filters):
         """
@@ -297,10 +304,12 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
 
     def get_queryset(self):
         poll = self.poll_from_url
+        user = self.request.user
         queryset = Entity.objects.all()
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_and_prefetch_scores(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
+        queryset = self.exclude_rated_entities(queryset, filters, user)
         queryset = self.sort_results(queryset, filters)
         return queryset
 

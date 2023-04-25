@@ -62,3 +62,8 @@ class RecommendationsFilterSerializer(serializers.Serializer):
         help_text="If true, entities considered as unsafe recommendations because of a"
         " low score or due to too few contributions will be included.",
     )
+    exclude_rated_entities = serializers.BooleanField(
+        default=False,
+        help_text="If true and a user is authenticated, then entities compared by the"
+        " user will be removed from the response",
+    )
