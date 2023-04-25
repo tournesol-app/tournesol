@@ -1,4 +1,4 @@
-export const WEEKLY_COMPARISON_GOAL = 1000;
+export const WEEKLY_COMPARISON_GOAL = 2000;
 
 /**
  * Return an emoji to reward the users for their progression in the weekly
