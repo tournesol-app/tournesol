@@ -14,7 +14,6 @@ export class BannerOptions {
   }
 }
 
-// TODO: these values are placeholder values that should be updated.
 export const defaultBannerOptions = new BannerOptions(
   '2023-04-01T00:00:00Z',
   '2023-05-20T00:00:00Z',
