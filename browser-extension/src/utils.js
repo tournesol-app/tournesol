@@ -150,13 +150,3 @@ export const isNavigatorLang = (lang) => {
 
   return false;
 };
-
-export const convertDurationToClockDuration = (duration) => {
-  const roundToTwoDigits = (number) => {
-    return number < 10 ? `0${number}` : `${number}`;
-  };
-  const hours = Math.floor(duration / 3600);
-  const minutes = roundToTwoDigits(Math.floor((duration % 3600) / 60));
-  const seconds = roundToTwoDigits(duration % 60);
-  return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
-};

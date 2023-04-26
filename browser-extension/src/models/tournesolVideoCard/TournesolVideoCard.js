@@ -1,4 +1,20 @@
-import { convertDurationToClockDuration } from '../../utils.js';
+/**
+ * Convert a duration in seconds to a string representing the time.
+ *
+ * Ex:
+ *
+ *  secondsToTime(61)   -> '01:01'
+ *  secondsToTime(3600) -> '01:00:00'
+ */
+const videoDurationToTime = (duration) => {
+  const roundToTwoDigits = (number) => {
+    return number < 10 ? `0${number}` : `${number}`;
+  };
+  const hours = Math.floor(duration / 3600);
+  const minutes = roundToTwoDigits(Math.floor((duration % 3600) / 60));
+  const seconds = roundToTwoDigits(duration % 60);
+  return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
+};
 
 export class TournesolVideoCard {
   static makeCard(video, displayCriteria) {
@@ -88,11 +104,7 @@ export class TournesolVideoCard {
     const video_duration = document.createElement('p');
     video_duration.setAttribute('class', 'time_span');
 
-    // Convert SECONDS to hh:mm:ss or mm:ss format depending on the duration
-
-    var formatted_video_duration = convertDurationToClockDuration(
-      video.metadata.duration
-    );
+    var formatted_video_duration = videoDurationToTime(video.metadata.duration);
 
     video_duration.append(document.createTextNode(formatted_video_duration));
     thumb_div.append(video_duration);
