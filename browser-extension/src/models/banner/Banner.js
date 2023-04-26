@@ -20,15 +20,15 @@ export class Banner {
     this.TS_BANNER_PROOF_KW = options.TS_BANNER_PROOF_KW;
 
     // Create the banner at the initialisation.
-    this.banner = this.createBanner();
+    this.element = this.createBanner();
   }
 
   display() {
-    this.banner.classList.add('displayed');
+    this.element.classList.add('displayed');
   }
 
   hide() {
-    this.banner.classList.remove('displayed');
+    this.element.classList.remove('displayed');
   }
 
   bannerShouldBeDisplayed() {

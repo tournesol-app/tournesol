@@ -109,7 +109,7 @@ export class TournesolContainer {
     tournesol_container.append(inline_div);
 
     if (this.banner.bannerShouldBeDisplayed()) {
-      tournesol_container.append(this.banner.banner);
+      tournesol_container.append(this.banner.element);
     }
 
     const videosFlexContainer = this._createVideosFlexContainer();
