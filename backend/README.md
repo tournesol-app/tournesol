@@ -177,7 +177,7 @@ alert on Discord.
 
 It takes 2 optional arguments:
 - `-s` display the results only in the standard output (no alert sent)
-- `-d date` with format YYYY-mm-dd check between the date and the day before
+- `-d date` check the accounts created on that date (format yyyy-mm-dd).
 
 ```shell
 # default -s is false and -d is today
