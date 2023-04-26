@@ -180,7 +180,7 @@ It takes 2 optional arguments:
 - `-d date` check the accounts created on that date (format yyyy-mm-dd).
 
 ```shell
-# default -s is false and -d is today
+# By default -s is false and -d is today.
 python manage.py watch_account_number
 
 python manage.py watch_account_nulber -s -d 2020-01-31
