@@ -63,7 +63,7 @@ class WatchAccountNumberTestCase(TestCase):
         self.assertNotIn("trusted_1.test", output)
         self.assertIn(self.expected_msg_domain2, output)
         self.assertIn(self.expected_msg_domain3, output)
-        self.assertEqual(write_in_channel_mock.call_count, 2)
+        self.assertEqual(write_in_channel_mock.call_count, 3)
 
     @MockNow.Context()
     @patch("core.management.commands.watch_account_number.write_in_channel")

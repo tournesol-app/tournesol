@@ -49,6 +49,15 @@ class Command(BaseCommand):
             help="Display the results only in the standard output.",
         )
 
+    def _send_on_discord(self, msgs, options, day_before):
+        if msgs:
+            write_in_channel(
+                "infra_alert_private",
+                f"comparing {options['date']} with {day_before}\n"
+                )
+        for message in msgs:
+            write_in_channel("infra_alert_private", message)
+
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
 
@@ -63,6 +72,9 @@ class Command(BaseCommand):
         email_domains_before = count_accounts_by_filtered_domains_until(
             [domain.id for domain in email_domains_since], day_before, 1
         )
+
+        alert_messages = []
+        self.stdout.write(f"comparing {options['date']} with {day_before}\n")
 
         for domain in email_domains_since:
             try:
@@ -81,18 +93,19 @@ class Command(BaseCommand):
                 )
             except ValueError:
                 continue
-            
+
             msg = (
-                f"comparing {options['date']} with {day_before}\n"
                 f"**{settings.MAIN_URL}** - {n_users_total} accounts use the trusted domain"
                 f" '{domain.domain}' - the day before it was {n_users_before} "
                 f"(threshold exceeded: {threshold})"
             )
             self.stdout.write(msg)
+            alert_messages.append(msg)
 
-            # Post the alert on Discord
-            if not options['stdout_only']:
-                write_in_channel("infra_alert_private", msg)
+        # Post the alert on Discord
+        if not options['stdout_only']:
+            self._send_on_discord(alert_messages, options, day_before)   
+
 
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
