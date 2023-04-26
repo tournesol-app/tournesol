@@ -104,8 +104,7 @@ class Command(BaseCommand):
 
         # Post the alert on Discord
         if not options['stdout_only']:
-            self._send_on_discord(alert_messages, options, day_before)   
-
+            self._send_on_discord(alert_messages, options, day_before)
 
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
