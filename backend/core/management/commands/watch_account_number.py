@@ -28,9 +28,9 @@ def validate_date(date_str):
 
 class Command(BaseCommand):
     help = (
-        "Send an alert on Discord when the number of accounts using a"
-        " trusted email a trusted domain exceeds a defined threshold on a"
-        " given date."
+        "Send an alert on Discord when the number of accounts using an email "
+        "with a trusted domain name exceeds a predefined threshold on a "
+        "given date."
     )
 
     def add_arguments(self, parser):
@@ -46,8 +46,7 @@ class Command(BaseCommand):
             "-s",
             "--stdout-only",
             action='store_true',
-            required=False,
-            help="Display the results only on standard output",
+            help="Display the results only in the standard output.",
         )
 
     def handle(self, *args, **options):
