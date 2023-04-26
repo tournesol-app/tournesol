@@ -26,6 +26,14 @@ def validate_date(date_str):
         raise ArgumentTypeError(err) from err
 
 
+def send_on_discord(context: str, messages: list[str]):
+    if messages:
+        write_in_channel("infra_alert_private", context)
+
+    for message in messages:
+        write_in_channel("infra_alert_private", message)
+
+
 class Command(BaseCommand):
     help = (
         "Send an alert on Discord when the number of accounts using an email "
@@ -49,15 +57,6 @@ class Command(BaseCommand):
             help="Display the results only in the standard output.",
         )
 
-    def _send_on_discord(self, msgs, options, day_before):
-        if msgs:
-            write_in_channel(
-                "infra_alert_private",
-                f"comparing {options['date']} with {day_before}\n"
-                )
-        for message in msgs:
-            write_in_channel("infra_alert_private", message)
-
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
 
@@ -73,9 +72,10 @@ class Command(BaseCommand):
             [domain.id for domain in email_domains_since], day_before, 1
         )
 
-        alert_messages = []
-        self.stdout.write(f"comparing {options['date']} with {day_before}\n")
+        context_msg = f"comparing {options['date']} with {day_before}"
+        self.stdout.write(context_msg)
 
+        alert_messages = []
         for domain in email_domains_since:
             try:
                 n_users_before = next(
@@ -102,9 +102,9 @@ class Command(BaseCommand):
             self.stdout.write(msg)
             alert_messages.append(msg)
 
-        # Post the alert on Discord
+        # Post the alerts on Discord.
         if not options['stdout_only']:
-            self._send_on_discord(alert_messages, options, day_before)
+            send_on_discord(context_msg, alert_messages)
 
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
