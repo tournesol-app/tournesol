@@ -19,7 +19,7 @@ export class Banner {
     this.TS_BANNER_ACTION_EN_URL = options.TS_BANNER_ACTION_EN_URL;
     this.TS_BANNER_PROOF_KW = options.TS_BANNER_PROOF_KW;
 
-    // Create the banner once at the initialisation
+    // Create the banner at the initialisation.
     this.banner = this.createBanner();
   }
 
@@ -31,8 +31,18 @@ export class Banner {
     this.banner.classList.remove('displayed');
   }
 
+  bannerShouldBeDisplayed() {
+    const now = new Date();
+
+    if (this.TS_BANNER_DATE_START <= now && now <= this.TS_BANNER_DATE_END) {
+      return true;
+    }
+
+    return false;
+  }
+
   createBanner() {
-    let banner = document.createElement('div');
+    const banner = document.createElement('div');
     banner.id = 'tournesol_banner';
     banner.className = 'tournesol_banner';
 
@@ -122,23 +132,28 @@ export class Banner {
           window.open(url, '_blank', 'noopener');
         })
         .catch((response) => {
-          // Anonymous users should be redirected to the form without
-          // participation proof. Other errors are logged.
-          if (response.status === 401) {
-            window.open(
-              isNavigatorLang('fr')
-                ? this.TS_BANNER_ACTION_FR_URL
-                : this.TS_BANNER_ACTION_EN_URL,
-              '_blank',
-              'noopener'
-            );
-          } else {
+          /**
+           * Do not block the users in case of API error. The participation
+           * proof being optionnal, and the API tested, logging the errors
+           * should be enough.
+           *
+           * Anonymous users are expected to be redirected to the form without
+           * participation proof (HTTP 401), no logging is required.
+           */
+          if (response.status !== 401) {
             console.error(
               `Failed to retrieve user proof with keyword: ${this.TS_BANNER_PROOF_KW}`
             );
             console.error(response.body);
-            alert(chrome.i18n.getMessage('study2023JoinError'));
           }
+
+          window.open(
+            isNavigatorLang('fr')
+              ? this.TS_BANNER_ACTION_FR_URL
+              : this.TS_BANNER_ACTION_EN_URL,
+            '_blank',
+            'noopener'
+          );
         });
 
       return false;
@@ -152,15 +167,5 @@ export class Banner {
     banner.appendChild(closeButtonContainer);
 
     return banner;
-  }
-
-  bannerShouldBeDisplayed() {
-    const now = new Date();
-
-    if (this.TS_BANNER_DATE_START <= now && now <= this.TS_BANNER_DATE_END) {
-      return true;
-    }
-
-    return false;
   }
 }
