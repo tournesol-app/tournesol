@@ -7,6 +7,13 @@ CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 
 cd "$CURRENT_DIR"
 
+[[ -f "SHA256SUMS" ]] && \
+( \
+    grep "debian-${DEBIAN_VERSION}-amd64-netinst.iso" "SHA256SUMS" \
+    || \
+    rm "SHA256SUMS"* \
+) || true
+
 for f in "debian-${DEBIAN_VERSION}-amd64-netinst.iso" "SHA256SUMS" "SHA256SUMS.sign"
 do
     [[ -f "$f" ]] || wget "http://debian.ethz.ch/debian-cd/${DEBIAN_VERSION}/amd64/iso-cd/$f"
