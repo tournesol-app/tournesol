@@ -53,7 +53,6 @@ class Command(BaseCommand):
         self.stdout.write(f"start command: {__name__}")
 
         day_before = options["date"] - timedelta(days=1)
-        self.stdout.write(f"comparing {options['date']} with {day_before}")
 
         # Get the number of accounts per domain created the `options["date"]`
         email_domains_since = count_accounts_by_domains_on_day(
@@ -82,8 +81,9 @@ class Command(BaseCommand):
                 )
             except ValueError:
                 continue
-
+            
             msg = (
+                f"comparing {options['date']} with {day_before}\n"
                 f"**{settings.MAIN_URL}** - {n_users_total} accounts use the trusted domain"
                 f" '{domain.domain}' - the day before it was {n_users_before} "
                 f"(threshold exceeded: {threshold})"
