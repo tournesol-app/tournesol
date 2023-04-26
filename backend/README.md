@@ -176,7 +176,7 @@ domain exceeds predefined thresholds on a given date, and sends
 alert on Discord.
 
 It takes 2 optional arguments:
-- `-s` only display the results in stdout and don't send a Discord alert
+- `-s` display the results only in the standard output (no alert sent)
 - `-d date` with format YYYY-mm-dd check between the date and the day before
 
 ```shell
