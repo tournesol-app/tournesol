@@ -172,7 +172,7 @@ docker exec tournesol-dev-api python manage.py create_dataset
 `python manage.py watch_account_number`
 
 This command checks if the number of accounts using a trusted email
-domain exceeds a specific threshold on a given date and send an
+domain exceeds predefined thresholds on a given date, and sends
 alert on Discord.
 
 It takes 2 optional arguments:
