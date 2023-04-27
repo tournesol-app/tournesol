@@ -1,5 +1,9 @@
 import { TournesolVideoCard } from '../tournesolVideoCard/TournesolVideoCard.js';
 
+/**
+ * TODO:
+ * - Make the banner optional
+ */
 export class TournesolContainer {
   constructor(parent, banner) {
     this.isExpanded = false;
@@ -12,100 +16,8 @@ export class TournesolContainer {
     let tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
 
-    // Create the top action bar
-    // TODO: move it in a private method to reduce the code of this method
-    const topActionBar = document.createElement('div');
-    topActionBar.id = 'ts_container_top_action_bar';
-
-    // Add the Tournesol icon to the top action bar
-    const tournesol_icon = document.createElement('img');
-    tournesol_icon.setAttribute('id', 'tournesol_icon');
-    tournesol_icon.setAttribute(
-      'src',
-      //chrome.extension.getURL('rate_now_icon.png'),
-      'https://tournesol.app/svg/tournesol.svg'
-    );
-    tournesol_icon.setAttribute('width', '24');
-    topActionBar.append(tournesol_icon);
-
-    // Add the container title to the top action bar
-    const tournesol_title = document.createElement('h1');
-    tournesol_title.id = 'tournesol_title';
-    tournesol_title.append(chrome.i18n.getMessage('recommendedByTournesol'));
-    topActionBar.append(tournesol_title);
-
-    // Display the campaign button only if there is a banner.
-    if (this.banner.bannerShouldBeDisplayed()) {
-      const campaignButton = document.createElement('button');
-      campaignButton.id = 'tournesol_campaign_button';
-      campaignButton.className = 'tournesol_simple_button';
-
-      const campaignButtonImg = document.createElement('img');
-      campaignButtonImg.setAttribute(
-        'src',
-        chrome.extension.getURL('images/campaign.svg')
-      );
-      campaignButtonImg.setAttribute('alt', 'Megaphone icon');
-      campaignButton.append(campaignButtonImg);
-
-      campaignButton.onclick = () => {
-        chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
-          this.banner.display();
-        });
-      };
-
-      topActionBar.append(campaignButton);
-    }
-
-    // Add the refresh button to the top action bar
-    const refresh_button = document.createElement('button');
-    refresh_button.setAttribute('id', 'tournesol_refresh_button');
-    fetch(chrome.runtime.getURL('images/sync-alt.svg'))
-      .then((r) => r.text())
-      .then((svg) => (refresh_button.innerHTML = svg));
-
-    refresh_button.className = 'tournesol_simple_button';
-    refresh_button.onclick = () => {
-      refresh_button.disabled = true;
-      this.parent.loadRecommandations();
-    };
-    topActionBar.append(refresh_button);
-
-    // Add the learn more button to the top action bar
-    const tournesol_link = document.createElement('a');
-    tournesol_link.id = 'tournesol_link';
-    tournesol_link.href = 'https://tournesol.app?utm_source=extension';
-    tournesol_link.target = '_blank';
-    tournesol_link.rel = 'noopener';
-    tournesol_link.append(chrome.i18n.getMessage('learnMore'));
-    topActionBar.append(tournesol_link);
-
-    // Bottom action bar
-    const bottom_action_bar = document.createElement('div');
-    bottom_action_bar.id = 'ts_container_bottom_action_bar';
-    const expand_button = document.createElement('button');
-    expand_button.setAttribute('id', 'tournesol_expand_button');
-
-    // A new button is created on each video loading, the image must be loaded accordingly
-    fetch(
-      chrome.runtime.getURL(
-        this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
-      )
-    )
-      .then((r) => r.text())
-      .then((svg) => (expand_button.innerHTML = svg));
-    expand_button.className = 'tournesol_simple_button';
-    expand_button.onclick = () => {
-      expand_button.disabled = true;
-      if (!this.areRecommendationsLoading && !this.isExpanded) {
-        this.isExpanded = true;
-        this.parent.displayRecommendations();
-      } else if (this.isExpanded) {
-        this.isExpanded = false;
-        this.parent.displayRecommendations();
-      }
-    };
-    bottom_action_bar.append(expand_button);
+    const topActionBar = this._createTopActionBar();
+    const bottomActionBar = this._createBottomActionBar();
 
     tournesol_container.append(topActionBar);
 
@@ -133,7 +45,7 @@ export class TournesolContainer {
         videosFlexContainer.append(videoCard);
       });
     }
-    tournesol_container.append(bottom_action_bar);
+    tournesol_container.append(bottomActionBar);
 
     if (location.pathname == '/results') {
       tournesol_container.classList.add('search');
@@ -159,6 +71,106 @@ export class TournesolContainer {
     }
 
     return tournesol_container;
+  }
+
+  _createTopActionBar() {
+    const topActionBar = document.createElement('div');
+    topActionBar.id = 'ts_container_top_action_bar';
+
+    // Tournesol icon
+    const tournesolIcon = document.createElement('img');
+    tournesolIcon.setAttribute('id', 'tournesol_icon');
+    tournesolIcon.setAttribute(
+      'src',
+      //chrome.extension.getURL('rate_now_icon.png'),
+      'https://tournesol.app/svg/tournesol.svg'
+    );
+    tournesolIcon.setAttribute('width', '24');
+    topActionBar.append(tournesolIcon);
+
+    // Container title
+    const tournesolTitle = document.createElement('h1');
+    tournesolTitle.id = 'tournesol_title';
+    tournesolTitle.append(chrome.i18n.getMessage('recommendedByTournesol'));
+    topActionBar.append(tournesolTitle);
+
+    // Display the campaign button only if there is a banner.
+    if (this.banner.bannerShouldBeDisplayed()) {
+      const campaignButton = document.createElement('button');
+      campaignButton.id = 'tournesol_campaign_button';
+      campaignButton.className = 'tournesol_simple_button';
+
+      const campaignButtonImg = document.createElement('img');
+      campaignButtonImg.setAttribute(
+        'src',
+        chrome.extension.getURL('images/campaign.svg')
+      );
+      campaignButtonImg.setAttribute('alt', 'Megaphone icon');
+      campaignButton.append(campaignButtonImg);
+
+      campaignButton.onclick = () => {
+        chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
+          this.banner.display();
+        });
+      };
+
+      topActionBar.append(campaignButton);
+    }
+
+    // Refresh button
+    const refreshButton = document.createElement('button');
+    refreshButton.setAttribute('id', 'tournesol_refresh_button');
+    fetch(chrome.runtime.getURL('images/sync-alt.svg'))
+      .then((r) => r.text())
+      .then((svg) => (refreshButton.innerHTML = svg));
+
+    refreshButton.className = 'tournesol_simple_button';
+    refreshButton.onclick = () => {
+      refreshButton.disabled = true;
+      this.parent.loadRecommandations();
+    };
+    topActionBar.append(refreshButton);
+
+    // Learn more
+    const learnMore = document.createElement('a');
+    learnMore.id = 'tournesol_link';
+    learnMore.href = 'https://tournesol.app?utm_source=extension';
+    learnMore.target = '_blank';
+    learnMore.rel = 'noopener';
+    learnMore.append(chrome.i18n.getMessage('learnMore'));
+    topActionBar.append(learnMore);
+
+    return topActionBar;
+  }
+
+  _createBottomActionBar() {
+    const bottomActionBar = document.createElement('div');
+    bottomActionBar.id = 'ts_container_bottom_action_bar';
+    const expand_button = document.createElement('button');
+    expand_button.setAttribute('id', 'tournesol_expand_button');
+
+    // A new button is created on each video loading, the image must be loaded accordingly
+    fetch(
+      chrome.runtime.getURL(
+        this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
+      )
+    )
+      .then((r) => r.text())
+      .then((svg) => (expand_button.innerHTML = svg));
+    expand_button.className = 'tournesol_simple_button';
+    expand_button.onclick = () => {
+      expand_button.disabled = true;
+      if (!this.areRecommendationsLoading && !this.isExpanded) {
+        this.isExpanded = true;
+        this.parent.displayRecommendations();
+      } else if (this.isExpanded) {
+        this.isExpanded = false;
+        this.parent.displayRecommendations();
+      }
+    };
+    bottomActionBar.append(expand_button);
+
+    return bottomActionBar;
   }
 
   _createVideosFlexContainer() {
