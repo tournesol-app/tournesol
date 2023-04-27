@@ -19,20 +19,21 @@ EPS = 1e-7
 def coordinate_optimize(r, theta, coord, precision):
     theta = theta.copy()
 
-    # r_ab = r[coord,:]
-    # indices = (~np.isnan(r_ab)).nonzero()
-    # theta_b = theta[indices]
+    r_ab = r[coord,:]
+    indices = (~np.isnan(r_ab)).nonzero()
+    r_ab = r_ab[indices]
+    theta_b = theta[indices]
 
     def L_prime(theta_a):
-        theta[coord] = theta_a
-        theta_ab = theta_a - theta
-        result = ALPHA * theta_a + np.nansum(
+        # theta[coord] = theta_a
+        theta_ab = theta_a - theta_b
+        result = ALPHA * theta_a + np.sum(
             np.where(
                 np.abs(theta_ab) < EPS,
                 theta_ab / 3,
                 1/np.tanh(theta_ab) - 1/theta_ab,
             )
-            + r[coord,:]
+            + r_ab
         )
         return result
 
