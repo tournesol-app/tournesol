@@ -303,7 +303,7 @@ html[dark] #tournesol_campaign_button {
   font-weight: 400;
 }
 
-.inline_div {
+#ts_container_top_action_bar {
   width: 100%;
   margin-bottom: 16px;
 

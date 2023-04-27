@@ -12,11 +12,12 @@ export class TournesolContainer {
     let tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
 
-    // Add inline-block div
-    const inline_div = document.createElement('div');
-    inline_div.setAttribute('class', 'inline_div');
+    // Create the top action bar
+    // TODO: move it in a private method to reduce the code of this method
+    const topActionBar = document.createElement('div');
+    topActionBar.id = 'ts_container_top_action_bar';
 
-    // Add tournesol icon
+    // Add the Tournesol icon to the top action bar
     const tournesol_icon = document.createElement('img');
     tournesol_icon.setAttribute('id', 'tournesol_icon');
     tournesol_icon.setAttribute(
@@ -25,13 +26,13 @@ export class TournesolContainer {
       'https://tournesol.app/svg/tournesol.svg'
     );
     tournesol_icon.setAttribute('width', '24');
-    inline_div.append(tournesol_icon);
+    topActionBar.append(tournesol_icon);
 
-    // Add title
+    // Add the container title to the top action bar
     const tournesol_title = document.createElement('h1');
     tournesol_title.id = 'tournesol_title';
     tournesol_title.append(chrome.i18n.getMessage('recommendedByTournesol'));
-    inline_div.append(tournesol_title);
+    topActionBar.append(tournesol_title);
 
     // Display the campaign button only if there is a banner.
     if (this.banner.bannerShouldBeDisplayed()) {
@@ -53,10 +54,10 @@ export class TournesolContainer {
         });
       };
 
-      inline_div.append(campaignButton);
+      topActionBar.append(campaignButton);
     }
 
-    // Refresh button
+    // Add the refresh button to the top action bar
     const refresh_button = document.createElement('button');
     refresh_button.setAttribute('id', 'tournesol_refresh_button');
     fetch(chrome.runtime.getURL('images/sync-alt.svg'))
@@ -68,16 +69,16 @@ export class TournesolContainer {
       refresh_button.disabled = true;
       this.parent.loadRecommandations();
     };
-    inline_div.append(refresh_button);
+    topActionBar.append(refresh_button);
 
-    // Learn more 
+    // Add the learn more button to the top action bar
     const tournesol_link = document.createElement('a');
     tournesol_link.id = 'tournesol_link';
     tournesol_link.href = 'https://tournesol.app?utm_source=extension';
     tournesol_link.target = '_blank';
     tournesol_link.rel = 'noopener';
     tournesol_link.append(chrome.i18n.getMessage('learnMore'));
-    inline_div.append(tournesol_link);
+    topActionBar.append(tournesol_link);
 
     // Bottom action bar
     const bottom_action_bar = document.createElement('div');
@@ -106,7 +107,7 @@ export class TournesolContainer {
     };
     bottom_action_bar.append(expand_button);
 
-    tournesol_container.append(inline_div);
+    tournesol_container.append(topActionBar);
 
     if (this.banner.bannerShouldBeDisplayed()) {
       tournesol_container.append(this.banner.element);
