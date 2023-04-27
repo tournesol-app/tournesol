@@ -63,9 +63,12 @@ class ComparisonListBaseApi(
         Keyword arguments:
         uid -- the entity uid used to filter the results (default None)
         """
-        queryset = Comparison.objects.filter(
-            poll=self.poll_from_url, user=self.request.user
-        ).order_by("-datetime_lastedit")
+        queryset = (
+            Comparison.objects.select_related("entity_1", "entity_2")
+            .prefetch_related("criteria_scores")
+            .filter(poll=self.poll_from_url, user=self.request.user)
+            .order_by("-datetime_lastedit")
+        )
 
         if self.kwargs.get("uid"):
             uid = self.kwargs.get("uid")
