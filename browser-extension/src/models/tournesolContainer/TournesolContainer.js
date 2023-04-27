@@ -70,7 +70,7 @@ export class TournesolContainer {
     };
     inline_div.append(refresh_button);
 
-    // Add title
+    // Learn more 
     const tournesol_link = document.createElement('a');
     tournesol_link.id = 'tournesol_link';
     tournesol_link.href = 'https://tournesol.app?utm_source=extension';
