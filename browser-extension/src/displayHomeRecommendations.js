@@ -5,7 +5,7 @@
     )
   );
 
-  const tournesolHomeRecommendations = new TournesolRecommendations();
+  const homeRecommendations = new TournesolRecommendations();
 
   const process = () => {
     if (location.search.includes('tournesolSearch')) {
@@ -14,7 +14,7 @@
 
     // Display the home page recommendations.
     if (location.pathname === '/') {
-      tournesolHomeRecommendations.process();
+      homeRecommendations.process();
     }
   };
 

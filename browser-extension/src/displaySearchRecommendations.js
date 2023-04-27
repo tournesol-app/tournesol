@@ -17,30 +17,34 @@
     import(TournesolSearchRecommendationsUrl),
   ]);
 
-  const tournesolSearchRecommendationsOptions =
-    new TournesolRecommendationsOptions(
-      3,
-      1,
-      new Banner(),
-      '.style-scope.ytd-page-manager #container #primary',
-      true
-    );
-  const tournesolSearchRecommendations = new TournesolSearchRecommendations(
-    tournesolSearchRecommendationsOptions
+  const PARENT_CSS_SELECTORS = '#page-manager #container #primary';
+
+  const options = new TournesolRecommendationsOptions(
+    3,
+    1,
+    new Banner(),
+    PARENT_CSS_SELECTORS,
+    true
   );
+
+  const searchRecommendations = new TournesolSearchRecommendations(options);
 
   const process = () => {
     if (location.search.includes('tournesolSearch')) {
       chrome.storage.local.set({ searchEnabled: true });
     }
+
     // Add results from Tournesol to the YT search results.
     if (location.pathname === '/results') {
-      tournesolSearchRecommendations.process();
+      searchRecommendations.process();
     }
   };
 
   document.addEventListener('yt-navigate-finish', process);
 
-  if (document.body) process();
-  else document.addEventListener('DOMContentLoaded', process);
+  if (document.body) {
+    process();
+  } else {
+    document.addEventListener('DOMContentLoaded', process);
+  }
 })();
