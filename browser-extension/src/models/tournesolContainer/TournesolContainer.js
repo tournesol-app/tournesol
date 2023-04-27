@@ -13,20 +13,20 @@ export class TournesolContainer {
 
   createHTMLElement() {
     // Create container
-    let tournesol_container = document.createElement('div');
-    tournesol_container.id = 'tournesol_container';
+    const tournesolContainer = document.createElement('div');
+    tournesolContainer.id = 'tournesol_container';
 
     const topActionBar = this._createTopActionBar();
+    const videosFlexContainer = this._createVideosFlexContainer();
     const bottomActionBar = this._createBottomActionBar();
 
-    tournesol_container.append(topActionBar);
+    tournesolContainer.append(topActionBar);
 
     if (this.banner.bannerShouldBeDisplayed()) {
-      tournesol_container.append(this.banner.element);
+      tournesolContainer.append(this.banner.element);
     }
 
-    const videosFlexContainer = this._createVideosFlexContainer();
-    tournesol_container.append(videosFlexContainer);
+    tournesolContainer.append(videosFlexContainer);
 
     this.parent.videos.forEach((video) => {
       const videoCard = TournesolVideoCard.makeCard(
@@ -45,10 +45,11 @@ export class TournesolContainer {
         videosFlexContainer.append(videoCard);
       });
     }
-    tournesol_container.append(bottomActionBar);
+
+    tournesolContainer.append(bottomActionBar);
 
     if (location.pathname == '/results') {
-      tournesol_container.classList.add('search');
+      tournesolContainer.classList.add('search');
 
       const view_more_container = document.createElement('div');
       view_more_container.id = 'tournesol_view_more_results';
@@ -67,10 +68,10 @@ export class TournesolContainer {
       view_more_link.textContent = chrome.i18n.getMessage('viewMore');
 
       view_more_container.append(view_more_link);
-      tournesol_container.append(view_more_container);
+      tournesolContainer.append(view_more_container);
     }
 
-    return tournesol_container;
+    return tournesolContainer;
   }
 
   _createTopActionBar() {
