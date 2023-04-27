@@ -2,10 +2,10 @@
   roles:
     - upgrade
     - base
-    - docker
     - nftables
     - zsh
     - users
+    - docker
     - postgresql
     - nginx
     - repository

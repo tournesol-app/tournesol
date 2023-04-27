@@ -67,3 +67,12 @@
     install_recommends: no
     update_cache: yes
   notify: Restart Docker
+
+- name: Add admin users to docker group
+  user:
+    name: "{{item.name}}"
+    state: "{{ item.state | default('present') }}"
+    groups:
+      - docker
+    append: yes
+  with_items: "{{admin_users}}"
