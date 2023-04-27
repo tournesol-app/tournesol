@@ -22,16 +22,13 @@ export class TournesolRecommendations {
     this.displayRecommendations = this.displayRecommendations.bind(this);
   }
 
-  getParentComponent() {
+  getParentComponent(nthchild) {
     try {
-      // Get parent element for the boxes in youtube page
-      let contents;
+      const parent = document.querySelector(this.parentComponentQuery);
 
-      contents = document.querySelector(this.parentComponentQuery);
+      if (!parent || !parent.children[nthchild]) return;
 
-      if (!contents || !contents.children[1]) return;
-
-      return contents;
+      return parent;
     } catch (error) {
       return;
     }
@@ -56,8 +53,9 @@ export class TournesolRecommendations {
        ** Note: using .children[index] when child has no id
        */
       if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
+
       // Get the container on Youtube home page in which we will insert Tournesol's component
-      let container = this.getParentComponent();
+      const container = this.getParentComponent(nthchild);
 
       if (!container) return;
       window.clearInterval(timer);
