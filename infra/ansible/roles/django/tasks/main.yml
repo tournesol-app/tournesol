@@ -316,6 +316,25 @@
     enabled: yes
     daemon_reload: yes
 
+# scheduled task: watch the total number of accounts daily
+
+- name: Copy Tournesol API watch-account-number-yesterday service
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-number-yesterday.service
+    src: tournesol-api-watch-account-number-yesterday.service.j2
+
+- name: Copy Tournesol API watch-account-number-yesterday timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-number-yesterday.timer
+    src: tournesol-api-watch-account-number-yesterday.timer.j2
+
+- name: Enable and start Tournesol API watch-account-number-yesterday timer
+  systemd:
+    name: tournesol-api-watch-account-number-yesterday.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
 # scheduled task: Twitterbot daily tweet
 
 - name: Copy twitterbot service
