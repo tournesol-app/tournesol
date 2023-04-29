@@ -14,7 +14,6 @@ from tournesol.utils.constants import COMPARISON_MAX
 
 R_MAX = COMPARISON_MAX  # Maximum score for a comparison in the input
 ALPHA = 0.1  # Signal-to-noise hyperparameter
-
 EPSILON = 1e-5
 
 

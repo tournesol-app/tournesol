@@ -63,7 +63,7 @@ class MlInput(ABC):
         criteria: Optional[str] = None,
         user_id: Optional[int] = None,
     ) -> Optional[pd.DataFrame]:
-        return None
+        raise NotImplementedError
 
 
 class MlInputFromPublicDataset(MlInput):
@@ -116,6 +116,14 @@ class MlInputFromPublicDataset(MlInput):
         )
         dtf["is_scaling_calibration_user"] = dtf["user_id"].isin(scaling_calibration_user_ids)
         return dtf
+
+    def get_individual_scores(
+        self,
+        criteria: Optional[str] = None,
+        user_id: Optional[int] = None,
+    ) -> Optional[pd.DataFrame]:
+        # TODO: read contributor scores from individual_scores.csv
+        return None
 
 
 class MlInputFromDb(MlInput):
