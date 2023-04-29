@@ -55,7 +55,9 @@ def coordinate_optimize(r_ab, theta_b, precision):
 def get_random_coordinate(n, exclude: set):
     if len(exclude) < int(n * 0.95):
         while True:
-            coord = random.randint(0, n - 1)  # nosec B311
+            # `random.randint` would be more uniform, but random.random is faster,
+            # and that's acceptable for small values of n.
+            coord = int(n * random.random())  # nosec B311
             if coord not in exclude:
                 return coord
     return random.choice([i for i in range(n) if i not in exclude])  # nosec B311
