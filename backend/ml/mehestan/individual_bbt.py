@@ -1,3 +1,8 @@
+"""
+Computation of Contributors’ individual raw scores
+based on Binomial Bradley-Terry model (BBT)
+using coordinate descent.
+"""
 import random
 
 import numpy as np
