@@ -29,7 +29,7 @@ class TestIndividualScores:
             assert scores.loc[video].raw_score == 0
             assert scores.loc[video].raw_uncertainty > 0
 
-    def test_comparison_chain(self, compute_method):
+    def test_comparisons_chain(self, compute_method):
         comparisons = pd.DataFrame(
             [
                 {
@@ -49,9 +49,9 @@ class TestIndividualScores:
         # video_10 is in the middle with score 0.0
         assert scores.loc["video_10"].raw_score == pytest.approx(0.0, abs=1e-4)
 
-    def test_comparison_strong_preferences(self, compute_method):
+    def test_comparisons_strong_preferences(self, compute_method):
         if compute_method is compute_individual_score:
-            pytest.xfail("The original algo do not preserve preferences order :( ")
+            pytest.xfail("The non-BBT version does not preserve preferences order :( ")
 
         comparisons = [
             ("A", "B", 0),
@@ -69,3 +69,23 @@ class TestIndividualScores:
 
         # F is preferred to E
         assert scores.loc["F"].raw_score > scores.loc["E"].raw_score
+
+    def test_comparisons_non_connex(self, compute_method):
+        comparisons = [
+            # Group 1
+            ("A", "B", -1),
+            ("A", "C", 0),
+            ("A", "D", 1),
+            # Group 2
+            ("E", "F", -1),
+            ("E", "G", 0),
+            ("E", "H", 1),
+        ]
+        comparisons_df = pd.DataFrame(comparisons, columns=["entity_a", "entity_b", "score"])
+        scores = compute_method(comparisons_df)
+
+        assert scores.loc["A"].raw_score == pytest.approx(0.0, abs=1e-4)
+        assert scores.loc["A"].raw_score == pytest.approx(scores.loc["E"].raw_score, abs=1e-4)
+        assert scores.loc["B"].raw_score == pytest.approx(scores.loc["F"].raw_score, abs=1e-4)
+        assert scores.loc["C"].raw_score == pytest.approx(scores.loc["G"].raw_score, abs=1e-4)
+        assert scores.loc["D"].raw_score == pytest.approx(scores.loc["H"].raw_score, abs=1e-4)
