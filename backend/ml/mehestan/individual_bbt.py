@@ -55,10 +55,10 @@ def coordinate_optimize(r_ab, theta_b, precision):
 def get_random_coordinate(n, exclude: set):
     if len(exclude) < int(n * 0.95):
         while True:
-            coord = random.randint(0, n - 1)
+            coord = random.randint(0, n - 1)  # nosec B311
             if coord not in exclude:
                 return coord
-    return random.choice([i for i in range(n) if i not in exclude])
+    return random.choice([i for i in range(n) if i not in exclude])  # nosec B311
 
 
 def coordinate_descent(coord_to_subset, initial_scores):
