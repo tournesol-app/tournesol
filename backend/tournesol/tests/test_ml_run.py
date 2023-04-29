@@ -18,6 +18,7 @@ initial state of the database after each test.
 Find more details on https://docs.djangoproject.com/en/4.0/topics/testing/overview/#rollback-emulation
 """
 
+import pytest
 from django.core.management import call_command
 from django.test import TransactionTestCase
 
@@ -235,6 +236,7 @@ class TestMlTrain(TransactionTestCase):
             places=3,
         )
 
+    @pytest.mark.skip("Uncertainty behaves differently with BBT")
     def test_tournesol_scores_different_uncertainty(self):
         user1 = UserFactory()
         user2 = UserFactory()

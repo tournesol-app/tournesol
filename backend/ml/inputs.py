@@ -9,7 +9,13 @@ from django.db.models import Case, F, QuerySet, When
 from django.db.models.expressions import RawSQL
 
 from core.models import User
-from tournesol.models import ComparisonCriteriaScore, ContributorRating, ContributorScaling, Entity
+from tournesol.models import (
+    ComparisonCriteriaScore,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    ContributorScaling,
+    Entity,
+)
 
 
 class MlInput(ABC):
@@ -50,6 +56,14 @@ class MlInput(ABC):
             * `trust_score`: float
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def get_individual_scores(
+        self,
+        criteria: Optional[str] = None,
+        user_id: Optional[int] = None,
+    ) -> Optional[pd.DataFrame]:
+        return None
 
 
 class MlInputFromPublicDataset(MlInput):
@@ -247,3 +261,27 @@ class MlInputFromDb(MlInput):
                 ]
             )
         return pd.DataFrame(values)
+
+    def get_individual_scores(
+        self, criteria: Optional[str] = None, user_id: Optional[int] = None
+    ) -> pd.DataFrame:
+        scores_queryset = ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__poll__name=self.poll_name,
+            contributor_rating__user__is_active=True,
+        )
+        if criteria is not None:
+            scores_queryset = scores_queryset.filter(criteria=criteria)
+        if user_id is not None:
+            scores_queryset = scores_queryset.filter(contributor_rating__user_id=user_id)
+
+        values = scores_queryset.values(
+            "raw_score",
+            "criteria",
+            entity=F("contributor_rating__entity_id"),
+            user_id=F("contributor_rating__user_id"),
+        )
+        if len(values) == 0:
+            return pd.DataFrame(columns=["user_id", "entity", "criteria", "raw_score"])
+
+        dtf = pd.DataFrame(values)
+        return dtf[["user_id", "entity", "criteria", "raw_score"]]

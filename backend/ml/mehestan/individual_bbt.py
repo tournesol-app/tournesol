@@ -1,11 +1,11 @@
 import random
+
 import numpy as np
 import pandas as pd
 from numba import njit
 
 from ml.optimize import brentq
 from tournesol.utils.constants import COMPARISON_MAX
-
 
 R_MAX = COMPARISON_MAX  # Maximum score for a comparison in the input
 ALPHA = 0.1  # Signal-to-noise hyperparameter
@@ -57,11 +57,11 @@ def get_random_coordinate(n, exclude: set):
     return random.choice([i for i in range(n) if i not in exclude])
 
 
-def coordinate_descent(coord_to_subset):
+def coordinate_descent(coord_to_subset, initial_scores):
     n_alternatives = len(coord_to_subset)
     unchanged = set()
 
-    theta = np.zeros(n_alternatives)
+    theta = initial_scores
     while len(unchanged) < n_alternatives:
         coord = get_random_coordinate(n_alternatives, exclude=unchanged)
         indices, r_ab = coord_to_subset[coord]
@@ -76,7 +76,7 @@ def coordinate_descent(coord_to_subset):
     return theta
 
 
-def compute_individual_score(scores: pd.DataFrame):
+def compute_individual_score(scores: pd.DataFrame, initial_entity_scores=None):
     """
     Computation of contributor scores and score uncertainties,
     based on their comparisons.
@@ -98,13 +98,20 @@ def compute_individual_score(scores: pd.DataFrame):
     )
     r = scores_sym.pivot(index="entity_a", columns="entity_b", values="score") / R_MAX
     r_values = r.to_numpy()
+    n_entities = len(r_values)
     coord_to_subset = {}
-    for coord in range(len(r_values)):
+    for coord in range(n_entities):
         r_ab = r_values[coord, :]
         indices = (~np.isnan(r_ab)).nonzero()
         coord_to_subset[coord] = (indices, r_ab[indices])
 
-    theta_star_numpy = coordinate_descent(coord_to_subset)
+    if initial_entity_scores is None:
+        initial_scores = np.zeros(n_entities)
+    else:
+        initial_scores = pd.Series(initial_entity_scores, index=r.index)
+        initial_scores.fillna(0.0, inplace=True)
+        initial_scores = initial_scores.to_numpy()
+    theta_star_numpy = coordinate_descent(coord_to_subset, initial_scores=initial_scores)
     delta_star_numpy = np.zeros(len(theta_star_numpy))
     for idx in range(len(theta_star_numpy)):
         indices, _r_ab = coord_to_subset[idx]
