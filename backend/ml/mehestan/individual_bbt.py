@@ -57,22 +57,15 @@ def get_random_coordinate(n, exclude: set):
     return random.choice([i for i in range(n) if i not in exclude])
 
 
-def coordinate_descent(r):
-    n_alternatives = len(r)
+def coordinate_descent(coord_to_subset):
+    n_alternatives = len(coord_to_subset)
     unchanged = set()
 
     theta = np.zeros(n_alternatives)
-    coord_to_indices = {}
-
     while len(unchanged) < n_alternatives:
         coord = get_random_coordinate(n_alternatives, exclude=unchanged)
-        if coord not in coord_to_indices:
-            r_ab = r[coord, :]
-            indices = (~np.isnan(r_ab)).nonzero()
-            coord_to_indices[coord] = (indices, r_ab[indices])
-
+        indices, r_ab = coord_to_subset[coord]
         old_theta_a = theta[coord]
-        indices, r_ab = coord_to_indices[coord]
         theta_b = theta[indices]
         new_theta_a = coordinate_optimize(r_ab, theta_b, precision=EPSILON / 10)
         theta[coord] = new_theta_a
@@ -80,8 +73,7 @@ def coordinate_descent(r):
             unchanged.add(coord)
         else:
             unchanged.clear()
-
-    return theta, coord_to_indices
+    return theta
 
 
 def compute_individual_score(scores: pd.DataFrame):
@@ -105,11 +97,17 @@ def compute_individual_score(scores: pd.DataFrame):
         ]
     )
     r = scores_sym.pivot(index="entity_a", columns="entity_b", values="score") / R_MAX
-    theta_star_numpy, coord_to_indices = coordinate_descent(r.values)
+    r_values = r.to_numpy()
+    coord_to_subset = {}
+    for coord in range(len(r_values)):
+        r_ab = r_values[coord, :]
+        indices = (~np.isnan(r_ab)).nonzero()
+        coord_to_subset[coord] = (indices, r_ab[indices])
 
+    theta_star_numpy = coordinate_descent(coord_to_subset)
     delta_star_numpy = np.zeros(len(theta_star_numpy))
     for idx in range(len(theta_star_numpy)):
-        indices, _r_ab = coord_to_indices[idx]
+        indices, _r_ab = coord_to_subset[idx]
         delta_star_numpy[idx] = Delta_theta(theta_star_numpy[indices])
 
     result = pd.DataFrame(
@@ -124,8 +122,8 @@ def compute_individual_score(scores: pd.DataFrame):
 
 
 # if __name__ == "__main__":
-    # from ml.inputs import MlInputFromPublicDataset
-    # ml_input = MlInputFromPublicDataset("https://api.tournesol.app/exports/all/")
-    # comp = ml_input.get_comparisons(user_id=116, criteria="largely_recommended")
-    # res = compute_individual_score(comp)
-    # print(res.sort_values("raw_score", ascending=False))
+#     from ml.inputs import MlInputFromPublicDataset
+#     ml_input = MlInputFromPublicDataset("https://api.tournesol.app/exports/all/")
+#     comp = ml_input.get_comparisons(user_id=116, criteria="largely_recommended")
+#     res = compute_individual_score(comp)
+#     print(res.sort_values("raw_score", ascending=False))
