@@ -16,7 +16,7 @@ const EXT_MODAL_INVISIBLE_STATE = 'none';
 const IFRAME_TOURNESOL_LOGIN_ID = 'x-tournesol-iframe-login';
 
 // iframe URL of tournesol login
-const IFRAME_TOURNESOL_LOGIN_URL = 'https://tournesol.app/login?embed=1&dnt=1';
+const IFRAME_TOURNESOL_LOGIN_URL = 'https://tournesol.app/login?embed=1&dnt=1&page_not_displayed=1';
 /**
  * Youtube doesnt completely load a page, so content script doesn't
  * launch correctly without these events.
