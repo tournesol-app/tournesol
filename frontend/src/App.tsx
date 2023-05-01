@@ -67,12 +67,26 @@ const InitGlobalStates = () => {
   const dispatch = useDispatch();
   const { name: pollName } = useCurrentPoll();
 
+  const notDisplayed = new URLSearchParams(location.search).get(
+    'page_not_displayed'
+  );
+
   /**
    * Refresh the global states that contain poll specific data.
    */
   useEffect(() => {
-    dispatch(fetchStats());
-  }, [dispatch, pollName]);
+    /**
+     * For now it's not required to call the /stats/ API when the page is not
+     * displayed.
+     *
+     * This temporary hack prevents the hidden iframe of the extension to
+     * trigger a consequent amount of costly and not required requests to the
+     * API.
+     */
+    if (notDisplayed !== '1') {
+      dispatch(fetchStats());
+    }
+  }, [dispatch, notDisplayed, pollName]);
 
   useRefreshSettings();
 
