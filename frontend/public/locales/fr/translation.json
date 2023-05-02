@@ -43,9 +43,9 @@
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
   },
   "pagination": {
-    "showingCounts_one": "De {{pageFirstVideo}} à {{pageLastVideo}} sur {{count}}",
-    "showingCounts_many": "De {{pageFirstVideo}} à {{pageLastVideo}} sur {{count}}",
-    "showingCounts_other": "De {{pageFirstVideo}} à {{pageLastVideo}} sur {{count}}"
+    "showingCounts_one": "Élément {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
+    "showingCounts_many": "Éléments {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
+    "showingCounts_other": "Éléments {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}"
   },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
