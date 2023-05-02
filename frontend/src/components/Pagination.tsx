@@ -37,13 +37,15 @@ const Pagination = ({
 
   const currentPage = (offset + limit) / limit;
   const totalPages = Math.floor(count / limit) + (count % limit === 0 ? 0 : 1);
-  const pageFirstVideo = offset + 1;
+  const pageFirstVideo = (function () {
+    if (count == 0){
+      return 0;
+    } else return offset + 1;
+  })();
   const pageLastVideo = (function () {
-    let x;
-    if (currentPage == totalPages) {
-      x = count;
-    } else x = currentPage * 20;
-    return x;
+    if (currentPage == totalPages || totalPages == 0) {
+      return count;
+    } else return currentPage * 20;
   })();
 
   const { t } = useTranslation();
