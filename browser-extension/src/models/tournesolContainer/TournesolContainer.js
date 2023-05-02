@@ -5,7 +5,6 @@ import { TournesolVideoCard } from '../tournesolVideoCard/TournesolVideoCard.js'
  * - Make the banner optional
  */
 export class TournesolContainer {
-
   /**
    * @param {TournesolRecommendations} recommendations An object containing the videos to display.
    * @param {Banner} banner A banner displayed if its display conditions are satisfied.
