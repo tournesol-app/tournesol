@@ -7,6 +7,15 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
     this.searchQuery = '';
   }
 
+  process() {
+    this.isPageLoaded = true;
+    this.loadRecommandations();
+  }
+
+  displayRecommendations(nthchild = 0) {
+    super.displayRecommendations(nthchild);
+  }
+
   loadRecommandations() {
     if (this.areRecommendationsLoading) return;
 
@@ -14,7 +23,6 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
 
     chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
       if (searchEnabled) {
-        this.areRecommendationsLoading = true;
         this.searchQuery = location.search
           .substring(1)
           .split('&')
@@ -37,24 +45,15 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
           this.handleResponse
         );
       } else {
-        //Remove the component from the previous search if the search has just been turned off
+        /**
+         * Remove the Tournesol container to not keep on the screen the
+         * results of the previous request.
+         */
         if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
-
-        // reset the recommendationsLoading if search is off either it will never
-        // try to reload new videos for the search
         this.areRecommendationsLoading = false;
       }
     });
 
     return;
-  }
-
-  process() {
-    this.isPageLoaded = true;
-    this.loadRecommandations();
-  }
-
-  displayRecommendations(nthchild = 0) {
-    super.displayRecommendations(nthchild);
   }
 }
