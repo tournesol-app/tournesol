@@ -174,7 +174,7 @@ function RecommendationsPage() {
             }
           />
         </LoaderWrapper>
-        {!isLoading && entitiesCount > limit && (
+        {!isLoading && (
           <Pagination
             offset={offset}
             count={entitiesCount}

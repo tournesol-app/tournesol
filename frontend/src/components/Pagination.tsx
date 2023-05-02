@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 
 import {
   Button,
@@ -7,6 +8,7 @@ import {
   Box,
   useMediaQuery,
   useTheme,
+  Typography,
 } from '@mui/material';
 
 import { scrollToTop } from 'src/utils/ui';
@@ -35,6 +37,16 @@ const Pagination = ({
 
   const currentPage = (offset + limit) / limit;
   const totalPages = Math.floor(count / limit) + (count % limit === 0 ? 0 : 1);
+  const pageFirstVideo = offset + 1;
+  const pageLastVideo = (function () {
+    let x;
+    if (currentPage == totalPages) {
+      x = count;
+    } else x = currentPage * 20;
+    return x;
+  })();
+
+  const { t } = useTranslation();
 
   const handleChangePage = (
     _event: React.ChangeEvent<unknown>,
@@ -59,115 +71,158 @@ const Pagination = ({
       onOffsetChange(page * limit - limit);
     }
   };
-
-  return (
-    <Paper
-      square
-      variant="outlined"
-      sx={{
-        padding: 2,
-        gap: 1,
-        display: 'flex',
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-      }}
-    >
-      <PaginationComponent
-        count={totalPages}
-        page={currentPage}
-        siblingCount={lessThanLg ? 1 : 3}
-        boundaryCount={lessThanLg ? 1 : 2}
-        onChange={handleChangePage}
-        hidePrevButton
-        hideNextButton
-      />
+  
+  if (count > 20){
+    return (
+      <Paper
+        square
+        variant="outlined"
+        sx={{
+          padding: 2,
+          gap: 1,
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Box
+          width="100%"
+          display="flex"
+          justifyContent="center"
+          flexWrap="wrap"
+        >
+          <Typography>
+            <Trans t={t} i18nKey="pagination.showingCounts" count={count}>
+              Showing {{ pageFirstVideo }} - {{ pageLastVideo }} of {{ count }}
+            </Trans>
+          </Typography>
+        </Box>
+        <PaginationComponent
+          count={totalPages}
+          page={currentPage}
+          siblingCount={lessThanLg ? 1 : 3}
+          boundaryCount={lessThanLg ? 1 : 2}
+          onChange={handleChangePage}
+          hidePrevButton
+          hideNextButton
+        />
+        <Box
+          width="100%"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={1}
+        >
+          <Button
+            id="pagination_1_prev"
+            size="small"
+            variant="contained"
+            disabled={currentPage <= 1}
+            onClick={() => previousPageStep(1)}
+          >
+            {'< -1'}
+          </Button>
+          <Button
+            id="pagination_10_prev"
+            size="small"
+            variant="outlined"
+            disabled={currentPage <= 1}
+            sx={{
+              color: theme.palette.text.primary,
+              borderColor: theme.palette.text.primary,
+            }}
+            onClick={() => previousPageStep(10)}
+          >
+            {'< -10'}
+          </Button>
+          {totalPages > 100 && !lessThanSm && (
+            <>
+              <Button
+                id="pagination_100_prev"
+                size="small"
+                variant="outlined"
+                disabled={currentPage <= 1}
+                sx={{
+                  color: theme.palette.text.primary,
+                  borderColor: theme.palette.text.primary,
+                }}
+                onClick={() => previousPageStep(100)}
+              >
+                {'< -100'}
+              </Button>
+              <Button
+                id="pagination_100_next"
+                size="small"
+                variant="outlined"
+                disabled={currentPage >= totalPages}
+                sx={{
+                  color: theme.palette.text.primary,
+                  borderColor: theme.palette.text.primary,
+                }}
+                onClick={() => nextPageStep(100)}
+              >
+                {'+100 >'}
+              </Button>
+            </>
+          )}
+          <Button
+            id="pagination_10_next"
+            size="small"
+            variant="outlined"
+            disabled={currentPage >= totalPages}
+            sx={{
+              color: theme.palette.text.primary,
+              borderColor: theme.palette.text.primary,
+            }}
+            onClick={() => nextPageStep(10)}
+          >
+            {'+10 >'}
+          </Button>
+          <Button
+            id="pagination_1_next"
+            size="small"
+            variant="contained"
+            disabled={currentPage >= totalPages}
+            onClick={() => nextPageStep(1)}
+          >
+            {'+1 >'}
+          </Button>
+        </Box>
+      </Paper>
+    );}
+  else{
+    return (
+      <Paper
+        square
+        variant="outlined"
+        sx={{
+          padding: 2,
+          gap: 1,
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
       <Box
         width="100%"
         display="flex"
         justifyContent="center"
-        alignItems="center"
         flexWrap="wrap"
-        gap={1}
       >
-        <Button
-          id="pagination_1_prev"
-          size="small"
-          variant="contained"
-          disabled={currentPage <= 1}
-          onClick={() => previousPageStep(1)}
-        >
-          {'< -1'}
-        </Button>
-        <Button
-          id="pagination_10_prev"
-          size="small"
-          variant="outlined"
-          disabled={currentPage <= 1}
-          sx={{
-            color: theme.palette.text.primary,
-            borderColor: theme.palette.text.primary,
-          }}
-          onClick={() => previousPageStep(10)}
-        >
-          {'< -10'}
-        </Button>
-        {totalPages > 100 && !lessThanSm && (
-          <>
-            <Button
-              id="pagination_100_prev"
-              size="small"
-              variant="outlined"
-              disabled={currentPage <= 1}
-              sx={{
-                color: theme.palette.text.primary,
-                borderColor: theme.palette.text.primary,
-              }}
-              onClick={() => previousPageStep(100)}
-            >
-              {'< -100'}
-            </Button>
-            <Button
-              id="pagination_100_next"
-              size="small"
-              variant="outlined"
-              disabled={currentPage >= totalPages}
-              sx={{
-                color: theme.palette.text.primary,
-                borderColor: theme.palette.text.primary,
-              }}
-              onClick={() => nextPageStep(100)}
-            >
-              {'+100 >'}
-            </Button>
-          </>
-        )}
-        <Button
-          id="pagination_10_next"
-          size="small"
-          variant="outlined"
-          disabled={currentPage >= totalPages}
-          sx={{
-            color: theme.palette.text.primary,
-            borderColor: theme.palette.text.primary,
-          }}
-          onClick={() => nextPageStep(10)}
-        >
-          {'+10 >'}
-        </Button>
-        <Button
-          id="pagination_1_next"
-          size="small"
-          variant="contained"
-          disabled={currentPage >= totalPages}
-          onClick={() => nextPageStep(1)}
-        >
-          {'+1 >'}
-        </Button>
+        <Typography>
+          <Trans t={t} i18nKey="pagination.showingCounts" count={count}>
+            Showing {{ pageFirstVideo }} - {{ pageLastVideo }} of {{ count }}
+          </Trans>
+        </Typography> 
       </Box>
-    </Paper>
-  );
-};
+      </Paper>
+    );
+  }
+  };
 
 export default Pagination;
