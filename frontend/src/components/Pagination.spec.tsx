@@ -73,7 +73,7 @@ describe('Pagination component', () => {
   };
 
   describe('Screen size: lg', () => {
-    it('display the correct number of elements', () => {
+    it('displays the correct number of elements', () => {
       const paginationProps: PaginationProps = {
         offset: 20,
         limit: 20,
