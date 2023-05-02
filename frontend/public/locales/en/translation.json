@@ -39,6 +39,10 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
   },
+  "pagination": {
+    "showingCounts_one": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}",
+    "showingCounts_other": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}"
+  },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "You must be logged in to display personal scores.",

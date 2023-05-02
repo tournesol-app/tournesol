@@ -73,6 +73,19 @@ describe('Pagination component', () => {
   };
 
   describe('Screen size: lg', () => {
+    it('displays the correct number of elements', () => {
+      const paginationProps: PaginationProps = {
+        offset: 20,
+        limit: 20,
+        count: 64,
+        onOffsetChange: onOffsetChange,
+      };
+
+      setup(paginationProps);
+
+      screen.getByText(/showing 21 - 40 of 64/i);
+    });
+
     it('displays buttons -1 and -10 as disabled when current page is first', () => {
       const paginationProps: PaginationProps = {
         offset: 0,
