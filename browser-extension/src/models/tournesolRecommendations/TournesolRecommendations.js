@@ -34,11 +34,12 @@ export class TournesolRecommendations {
     }
   }
 
-  // This part creates video boxes from API's response JSON
   displayRecommendations(nthchild = 1) {
     if (!this.videos || this.videos.length === 0) {
-      // remove the component if we did not receive video from the response
-      // so it remove the videos from the previous results
+      /**
+       * When the API returns no video, remove the Tournesol container to
+       * not keep on the screen the results of the previous request.
+       */
       if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
       return;
     }
@@ -54,18 +55,17 @@ export class TournesolRecommendations {
        */
       if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
 
-      // Get the container on Youtube home page in which we will insert Tournesol's component
-      const container = this.getParentComponent(nthchild);
+      const parentContainer = this.getParentComponent(nthchild);
 
-      if (!container) return;
+      if (!parentContainer) return;
       window.clearInterval(timer);
 
-      // Generate component to display on Youtube home page
-
+      // Create the Tournesol container.
       this.tournesolHTMLElement = this.tournesolContainer.createHTMLElement();
-      container.insertBefore(
+
+      parentContainer.insertBefore(
         this.tournesolHTMLElement,
-        container.children[nthchild]
+        parentContainer.children[nthchild]
       );
     }, 300);
   }
