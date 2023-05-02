@@ -43,7 +43,7 @@ const Pagination = ({
     } else return offset + 1;
   })();
   const pageLastVideo = (function () {
-    if (currentPage == totalPages || totalPages == 0) {
+    if (currentPage == totalPages) {
       return count;
     } else return currentPage * 20;
   })();
