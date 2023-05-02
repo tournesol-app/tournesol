@@ -71,8 +71,8 @@ const Pagination = ({
       onOffsetChange(page * limit - limit);
     }
   };
-  
-  if (count > 20){
+
+  if (count > limit) {
     return (
       <Paper
         square
@@ -192,8 +192,8 @@ const Pagination = ({
           </Button>
         </Box>
       </Paper>
-    );}
-  else{
+    );
+  } else {
     return (
       <Paper
         square
@@ -208,21 +208,21 @@ const Pagination = ({
           flexWrap: 'wrap',
         }}
       >
-      <Box
-        width="100%"
-        display="flex"
-        justifyContent="center"
-        flexWrap="wrap"
-      >
-        <Typography>
-          <Trans t={t} i18nKey="pagination.showingCounts" count={count}>
-            Showing {{ pageFirstVideo }} - {{ pageLastVideo }} of {{ count }}
-          </Trans>
-        </Typography> 
-      </Box>
+        <Box
+          width="100%"
+          display="flex"
+          justifyContent="center"
+          flexWrap="wrap"
+        >
+          <Typography>
+            <Trans t={t} i18nKey="pagination.showingCounts" count={count}>
+              Showing {{ pageFirstVideo }} - {{ pageLastVideo }} of {{ count }}
+            </Trans>
+          </Typography>
+        </Box>
       </Paper>
     );
   }
-  };
+};
 
 export default Pagination;
