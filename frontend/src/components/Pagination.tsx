@@ -81,7 +81,7 @@ const Pagination = ({
         flexWrap: 'wrap',
       }}
     >
-      <Box width="100%" display="flex" justifyContent="center" flexWrap="wrap">
+      <Box width="100%" display="flex" justifyContent="center">
         <Typography variant="body2">
           <Trans t={t} i18nKey="pagination.showingCounts" count={count}>
             Showing {{ firstElementIdx }} - {{ lastElementIdx }} of {{ count }}
@@ -99,6 +99,9 @@ const Pagination = ({
             onChange={handleChangePage}
             hidePrevButton
             hideNextButton
+            sx={{
+              mt: 1,
+            }}
           />
           <Box
             width="100%"
