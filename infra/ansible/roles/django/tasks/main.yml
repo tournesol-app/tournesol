@@ -102,8 +102,8 @@
 - name: Create Virtualenv for Django project
   pip:
     name:
-      - gunicorn
-      - uvicorn
+      - "gunicorn==20.1.0"
+      - "uvicorn[standard]==0.22.0"
     virtualenv: /srv/tournesol-backend/venv
     virtualenv_python: python3.9
   become: yes
