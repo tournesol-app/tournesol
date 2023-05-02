@@ -5,10 +5,15 @@ import { TournesolVideoCard } from '../tournesolVideoCard/TournesolVideoCard.js'
  * - Make the banner optional
  */
 export class TournesolContainer {
-  constructor(parent, banner) {
+
+  /**
+   * @param {TournesolRecommendations} recommendations An object containing the videos to display.
+   * @param {Banner} banner A banner displayed if its display conditions are satisfied.
+   */
+  constructor(recommendations, banner) {
     this.isExpanded = false;
-    this.parent = parent;
     this.banner = banner;
+    this.recommendations = recommendations;
   }
 
   createHTMLElement() {
@@ -28,19 +33,19 @@ export class TournesolContainer {
 
     tournesolContainer.append(videosFlexContainer);
 
-    this.parent.videos.forEach((video) => {
+    this.recommendations.videos.forEach((video) => {
       const videoCard = TournesolVideoCard.makeCard(
         video,
-        this.parent.displayCriteria
+        this.recommendations.displayCriteria
       );
       videosFlexContainer.append(videoCard);
     });
 
     if (this.isExpanded) {
-      this.parent.additionalVideos.forEach((video) => {
+      this.recommendations.additionalVideos.forEach((video) => {
         const videoCard = TournesolVideoCard.makeCard(
           video,
-          this.parent.displayCriteria
+          this.recommendations.displayCriteria
         );
         videosFlexContainer.append(videoCard);
       });
@@ -60,8 +65,8 @@ export class TournesolContainer {
       view_more_link.target = '_blank';
       view_more_link.rel = 'noopener';
       view_more_link.href = `https://tournesol.app/recommendations/?search=${
-        this.parent.searchQuery
-      }&language=${this.parent.recommandationsLanguages.replaceAll(
+        this.recommendations.searchQuery
+      }&language=${this.recommendations.recommandationsLanguages.replaceAll(
         ',',
         '%2C'
       )}&utm_source=extension`;
@@ -128,7 +133,7 @@ export class TournesolContainer {
     refreshButton.className = 'tournesol_simple_button';
     refreshButton.onclick = () => {
       refreshButton.disabled = true;
-      this.parent.loadRecommandations();
+      this.recommendations.loadRecommandations();
     };
     topActionBar.append(refreshButton);
 
@@ -163,10 +168,10 @@ export class TournesolContainer {
       expand_button.disabled = true;
       if (!this.areRecommendationsLoading && !this.isExpanded) {
         this.isExpanded = true;
-        this.parent.displayRecommendations();
+        this.recommendations.displayRecommendations();
       } else if (this.isExpanded) {
         this.isExpanded = false;
-        this.parent.displayRecommendations();
+        this.recommendations.displayRecommendations();
       }
     };
     bottomActionBar.append(expand_button);
