@@ -44,7 +44,10 @@ onlyOn("headed", () => {
         it("shows Tournesol search results when the search is on", () => {
           cy.visit("https://www.youtube.com");
 
-          window.localStorage.setItem('searchEnabled', true);
+          cy.window().then((win) => {
+            win.localStorage.setItem('searchEnabled', true);
+          })
+
           consent();
 
           cy.visit("https://www.youtube.com/results?search_query=tournesol");
