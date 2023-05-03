@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, IconButton, Paper, Typography } from '@mui/material';
-import { Link } from '@mui/icons-material';
+import { KeyboardArrowDown, KeyboardArrowUp, Link } from '@mui/icons-material';
 
 import { useSnackbar } from 'notistack';
 import { FAQEntry } from 'src/services/openapi';
@@ -15,6 +15,8 @@ interface FAQSingleEntryProps {
 const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+
+  const [answerFolded, setAnswerFolded] = useState(true);
 
   const copyUriToClipboard = (
     event: React.MouseEvent<HTMLElement>,
@@ -32,7 +34,7 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
 
   return (
     <Box mb={4}>
-      <Paper square sx={{ p: 2, pb: '1px' }}>
+      <Paper square sx={{ p: 2 }}>
         <Grid container>
           <Grid item xs={11}>
             <Typography
@@ -47,7 +49,12 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
             </Typography>
           </Grid>
           <Grid item xs={1}>
-            <Box display="flex" alignItems="center" justifyContent="flex-end">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="flex-end"
+              gap={0.5}
+            >
               <IconButton
                 aria-label="Copy URI to clipboard"
                 onClick={(event) => {
@@ -56,20 +63,33 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
               >
                 <Link />
               </IconButton>
+              <IconButton
+                aria-label="Show question's answer"
+                onClick={() => {
+                  setAnswerFolded(!answerFolded);
+                }}
+              >
+                {answerFolded ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
+              </IconButton>
             </Box>
           </Grid>
         </Grid>
 
-        {/* An answer can be composed of several paragraphs. */}
-        {answerParagraphs.map((paragraph, index) => (
-          <Typography
-            key={`$a_{entry.name}_p${index}`}
-            paragraph
-            textAlign="justify"
-          >
-            {paragraph}
-          </Typography>
-        ))}
+        {answerParagraphs.length > 0 && (
+          <Box sx={{ 'p:last-child': { mb: 0 } }}>
+            {!answerFolded &&
+              // An answer can be composed of several paragraphs.
+              answerParagraphs.map((paragraph, index) => (
+                <Typography
+                  key={`$a_{entry.name}_p${index}`}
+                  paragraph
+                  textAlign="justify"
+                >
+                  {paragraph}
+                </Typography>
+              ))}
+          </Box>
+        )}
       </Paper>
     </Box>
   );
