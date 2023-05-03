@@ -5,7 +5,7 @@ onlyOn("headed", () => {
     "Tournesol extension",
     {
       browser: ["chromium", "chrome"],
-      defaultCommandTimeout: 32000,
+      defaultCommandTimeout: 16000,
     },
     () => {
       // Accept the cookies.
@@ -65,10 +65,10 @@ onlyOn("headed", () => {
           cy.visit("https://www.youtube.com/watch?v=6jK9bFWE--g");
           consent();
 
-          // Dismiss Youtube Ad if present
+          // Dismiss YouTube ad if present.
           cy.get("body").then(($body) => {
-            if ($body.find("button.ytp-ad-skip-button").length > 0) {
-              cy.get("button.ytp-ad-skip-button").click();
+            if ($body.find("button:contains('Dismiss')").length > 0) {
+              cy.contains('button', 'Dismiss', {matchCase: false}).click();
             }
           }).then(() => {
             cy.contains("button", "Rate Later", { matchCase: false }).should(
