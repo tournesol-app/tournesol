@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, IconButton, Paper, Typography } from '@mui/material';
+import {
+  Box,
+  Collapse,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp, Link } from '@mui/icons-material';
 
 import { useSnackbar } from 'notistack';
@@ -16,7 +23,9 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [answerFolded, setAnswerFolded] = useState(true);
+  const [answerFolded, setAnswerFolded] = useState(
+    !(location.hash.substring(1) === entry.name)
+  );
 
   const copyUriToClipboard = (
     event: React.MouseEvent<HTMLElement>,
@@ -76,19 +85,22 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
         </Grid>
 
         {answerParagraphs.length > 0 && (
-          <Box sx={{ 'p:last-child': { mb: 0 } }}>
-            {!answerFolded &&
-              // An answer can be composed of several paragraphs.
-              answerParagraphs.map((paragraph, index) => (
-                <Typography
-                  key={`$a_{entry.name}_p${index}`}
-                  paragraph
-                  textAlign="justify"
-                >
-                  {paragraph}
-                </Typography>
-              ))}
-          </Box>
+          <Collapse in={!answerFolded} timeout="auto" unmountOnExit>
+            <Box sx={{ 'p:last-child': { mb: 0 } }}>
+              {
+                // An answer can be composed of several paragraphs.
+                answerParagraphs.map((paragraph, index) => (
+                  <Typography
+                    key={`$a_{entry.name}_p${index}`}
+                    paragraph
+                    textAlign="justify"
+                  >
+                    {paragraph}
+                  </Typography>
+                ))
+              }
+            </Box>
+          </Collapse>
         )}
       </Paper>
     </Box>
