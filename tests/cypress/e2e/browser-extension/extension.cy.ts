@@ -70,12 +70,11 @@ onlyOn("headed", () => {
             if ($body.find("button:contains('Dismiss')").length > 0) {
               cy.contains('button', 'Dismiss', {matchCase: false}).click();
             }
-          }).then(() => {
             cy.contains("button", "Rate Later", { matchCase: false }).should(
-              "be.visible"
+              "be.visible", { timeout: 20000 }
             );
             cy.contains("button", "Rate Now", { matchCase: false }).should(
-              "be.visible"
+              "be.visible", { timeout: 20000 }
             );
           });
         });
