@@ -22,7 +22,12 @@ export class TournesolRecommendations {
     this.displayRecommendations = this.displayRecommendations.bind(this);
   }
 
-  getParentComponent(nthchild) {
+  /**
+   * Return the HTMLElement in which the recommendations will be displayed.
+   *
+   * Note: should this method be part of the TournesolContainer class intead?
+   */
+  getParentContainer(nthchild) {
     try {
       const parent = document.querySelector(this.parentComponentQuery);
 
@@ -34,6 +39,9 @@ export class TournesolRecommendations {
     }
   }
 
+  /**
+   * Note: should this method be part of the TournesolContainer class intead?
+   */
   displayRecommendations(nthchild = 1) {
     if (!this.videos || this.videos.length === 0) {
       /**
@@ -44,20 +52,20 @@ export class TournesolRecommendations {
       return;
     }
 
-    // Timer will run until needed elements are generated
+    /**
+     * Wait for the targetted parent container to be available.
+     *
+     * It seems like several HTML elements are dynamically created with
+     * javascript, so running this method at document_idle in the manifest
+     * doesn't work.
+     */
     var timer = window.setInterval(() => {
-      /*
-       ** Wait for needed elements to be generated
-       ** It seems those elements are generated via javascript, so run-at document_idle in manifest is not enough to prevent errors
-       **
-       ** Some ids on video pages are duplicated, so I take the first non-duplicated id and search in its childs the correct div to add the recommendations
-       ** Note: using .children[index] when child has no id
-       */
       if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
 
-      const parentContainer = this.getParentComponent(nthchild);
-
+      // Continue if the parent has not been found...
+      const parentContainer = this.getParentContainer(nthchild);
       if (!parentContainer) return;
+
       window.clearInterval(timer);
 
       // Create the Tournesol container.
