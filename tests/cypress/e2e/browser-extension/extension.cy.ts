@@ -46,7 +46,7 @@ onlyOn("headed", () => {
           consent();
 
           cy.window().then((win) => {
-            win.localStorage.setItem('searchEnabled', true);
+            win.localStorage.setItem(searchEnabledKey, true);
           }).then(() => {
             cy.visit("https://www.youtube.com/results?search_query=tournesol");
             cy.contains("Recommended by Tournesol");
