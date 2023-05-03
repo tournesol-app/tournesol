@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models
 from django.db.models import Prefetch, Q
 from django.db.models.expressions import RawSQL
 from django.utils import timezone
@@ -136,7 +136,6 @@ class Entity(models.Model):
     last_metadata_request_at = models.DateTimeField(
         null=True,
         blank=True,
-        auto_now_add=True,
         help_text="Last time fetch of metadata was attempted",
     )
     add_time = models.DateTimeField(
@@ -388,7 +387,9 @@ class Entity(models.Model):
         # pylint: disable=import-outside-toplevel
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
+        last_metadata_request_at = None
         if fetch_metadata:
+            last_metadata_request_at = timezone.now()
             try:
                 extra_data = get_video_metadata(video_id)
             except VideoNotFound:
@@ -411,14 +412,17 @@ class Entity(models.Model):
                 f"Unexpected errors in video metadata format: {serializer.errors}"
             )
 
-        entity = cls.objects.create(
-            type=TYPE_VIDEO,
-            uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
-            metadata=metadata,
-            metadata_timestamp=timezone.now(),
-        )
-
-        return entity
+        try:
+            return cls.objects.create(
+                type=TYPE_VIDEO,
+                uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
+                metadata=metadata,
+                metadata_timestamp=timezone.now(),
+                last_metadata_request_at=last_metadata_request_at,
+            )
+        except IntegrityError:
+            # A concurrent request may have created the video
+            return cls.get_from_video_id(video_id)
 
     @classmethod
     def get_from_video_id(cls, video_id):

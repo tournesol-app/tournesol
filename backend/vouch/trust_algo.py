@@ -85,7 +85,8 @@ def trust_algo():
     """
     # Import users and pretrust status
     users = list(
-        User.objects.all()
+        User.objects
+        .filter(is_active=True)
         .annotate(with_trusted_email=Q(pk__in=User.with_trusted_email()))
         .only("id")
     )

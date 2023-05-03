@@ -7,6 +7,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
+import CollectiveGoalWeeklyProgress from 'src/features/goals/CollectiveGoalWeeklyProgress';
 
 /**
  * Display the standard comparison UI or the poll tutorial.
@@ -21,7 +22,12 @@ const ComparisonPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const series: string = searchParams.get('series') || 'false';
 
-  const { options, baseUrl, active: pollActive } = useCurrentPoll();
+  const {
+    options,
+    baseUrl,
+    active: pollActive,
+    name: pollName,
+  } = useCurrentPoll();
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
@@ -53,6 +59,7 @@ const ComparisonPage = () => {
 
           {series === 'true' && tutorialLength > 0 ? (
             <ComparisonSeries
+              isTutorial={true}
               dialogs={dialogs}
               generateInitial={true}
               getAlternatives={tutorialAlternatives}
@@ -60,9 +67,14 @@ const ComparisonPage = () => {
               redirectTo={`${baseUrl}${redirectTo}`}
               keepUIDsAfterRedirect={keepUIDsAfterRedirect}
               resumable={true}
+              skipKey={`tutorialSkipped_${pollName}`}
+              skipButtonLabel={t('tutorial.skipTheTutorial')}
             />
           ) : (
-            <Comparison />
+            <>
+              <CollectiveGoalWeeklyProgress />
+              <Comparison />
+            </>
           )}
         </Box>
       </ContentBox>

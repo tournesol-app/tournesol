@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Switch, Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
@@ -7,6 +8,7 @@ import { useLoginState, useRefreshSettings } from './hooks';
 import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
 import SettingsProfilePage from './pages/settings/profile/Profile';
+import SettingsPreferencesPage from './pages/settings/preferences/Preferences';
 import SignupPage from './pages/signup/Signup';
 import VerifySignature from './pages/signup/Verify';
 import DonatePage from './pages/about/Donate';
@@ -23,10 +25,11 @@ import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
+import { fetchStats } from './features/comparisons/statsSlice';
 import { LoginState } from './features/login/LoginState.model';
 import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
-import { PollProvider } from './hooks/useCurrentPoll';
+import { PollProvider, useCurrentPoll } from './hooks/useCurrentPoll';
 import FAQ from './pages/faq/FAQ';
 import { scrollToTop } from './utils/ui';
 
@@ -60,6 +63,36 @@ const ScrollToTop = () => {
   return null;
 };
 
+const InitGlobalStates = () => {
+  const dispatch = useDispatch();
+  const { name: pollName } = useCurrentPoll();
+
+  const notDisplayed = new URLSearchParams(location.search).get(
+    'page_not_displayed'
+  );
+
+  /**
+   * Refresh the global states that contain poll specific data.
+   */
+  useEffect(() => {
+    /**
+     * For now it's not required to call the /stats/ API when the page is not
+     * displayed.
+     *
+     * This temporary hack prevents the hidden iframe of the extension to
+     * trigger a consequent amount of costly and not required requests to the
+     * API.
+     */
+    if (notDisplayed !== '1') {
+      dispatch(fetchStats());
+    }
+  }, [dispatch, notDisplayed, pollName]);
+
+  useRefreshSettings();
+
+  return null;
+};
+
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
@@ -71,11 +104,10 @@ function App() {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
 
-  useRefreshSettings();
-
   return (
     <PollProvider>
       <ScrollToTop />
+      <InitGlobalStates />
       <Frame>
         <Switch>
           {/* About routes */}
@@ -107,6 +139,9 @@ function App() {
           </PrivateRoute>
           <PrivateRoute path="/settings/account">
             <SettingsAccountPage />
+          </PrivateRoute>
+          <PrivateRoute path="/settings/preferences">
+            <SettingsPreferencesPage />
           </PrivateRoute>
           <PrivateRoute path="/vouching">
             <PersonalVouchersPage />

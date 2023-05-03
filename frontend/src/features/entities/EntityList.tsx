@@ -50,7 +50,6 @@ function EntityList({
           <Box key={entity.uid} mx={1} my={2}>
             <AvailableEntity
               uid={entity.uid}
-              type={entity.type}
               actionsIfUnavailable={actionsIfUnavailable}
             >
               <EntityCard

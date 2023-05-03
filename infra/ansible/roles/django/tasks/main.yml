@@ -102,8 +102,8 @@
 - name: Create Virtualenv for Django project
   pip:
     name:
-      - gunicorn
-      - uvicorn
+      - "gunicorn==20.1.0"
+      - "uvicorn[standard]==0.22.0"
     virtualenv: /srv/tournesol-backend/venv
     virtualenv_python: python3.9
   become: yes
@@ -312,6 +312,25 @@
 - name: Enable and start Tournesol API watch-account-creation-24h timer
   systemd:
     name: tournesol-api-watch-account-creation-24h.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# scheduled task: watch the total number of accounts daily
+
+- name: Copy Tournesol API watch-account-number-yesterday service
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-number-yesterday.service
+    src: tournesol-api-watch-account-number-yesterday.service.j2
+
+- name: Copy Tournesol API watch-account-number-yesterday timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-watch-account-number-yesterday.timer
+    src: tournesol-api-watch-account-number-yesterday.timer.j2
+
+- name: Enable and start Tournesol API watch-account-number-yesterday timer
+  systemd:
+    name: tournesol-api-watch-account-number-yesterday.timer
     state: started
     enabled: yes
     daemon_reload: yes

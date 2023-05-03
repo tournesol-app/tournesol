@@ -279,7 +279,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 30,
@@ -404,7 +403,9 @@ CACHES = {
     }
 }
 
-VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
+# The video metadata will be refreshed when the ratio between the age of last refresh attempt
+# over the age of the video is higher than this threshold.
+VIDEO_METADATA_REFRESH_THRESHOLD = 0.5
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
 

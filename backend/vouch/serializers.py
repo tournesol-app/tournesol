@@ -40,7 +40,7 @@ class GivenVoucherSerializer(ModelSerializer):
 
     def validate_to(self, value):
         try:
-            user = User.objects.get(username=value)
+            user = User.objects.get(username=value, is_active=True)
         except User.DoesNotExist as error:
             raise ValidationError(_("The target user doesn't exist.")) from error
 

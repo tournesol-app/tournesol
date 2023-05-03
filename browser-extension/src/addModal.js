@@ -18,6 +18,9 @@ const IFRAME_TOURNESOL_ID = 'x-tournesol-iframe';
 const IFRAME_TOURNESOL_LOGIN_URL =
   'https://tournesol.app/login?embed=1&dnt=1&page_not_displayed=1';
 
+// iframe URL of tournesol login
+const IFRAME_TOURNESOL_LOGIN_URL =
+  'https://tournesol.app/login?embed=1&dnt=1&page_not_displayed=1';
 /**
  * YouTube doesnt completely load a page, so content script doesn't
  * launch correctly without these events.
@@ -68,7 +71,6 @@ function initTournesolModal() {
       window.clearInterval(iframeTimer);
       return;
     }
-
     window.clearInterval(iframeTimer);
 
     const modal = document.createElement('div');

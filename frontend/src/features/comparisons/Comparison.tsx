@@ -72,10 +72,12 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
+
   const [initialComparison, setInitialComparison] =
     useState<ComparisonRequest | null>(null);
 
   const { uidA, uidB } = getUidsFromLocation(location);
+
   const [selectorA, setSelectorA] = useState<SelectorValue>({
     uid: uidA,
     rating: null,

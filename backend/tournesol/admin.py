@@ -2,6 +2,8 @@
 Administration interface of the `tournesol` app.
 """
 
+from datetime import datetime
+
 from django.contrib import admin, messages
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
@@ -10,6 +12,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from sql_util.utils import SubqueryCount
 
+from .entities.video import YOUTUBE_PUBLISHED_AT_FORMAT
 from .models import (
     Comparison,
     ComparisonCriteriaScore,
@@ -37,19 +40,19 @@ class MetadataFieldFilter(SimpleListFilter):
         """List the possible metadata filters on entities"""
         field_values = sorted(
             model_admin.model.objects.distinct()
-            .exclude(**{f"metadata__{self.metadata_key}": None})
-            .values_list(f"metadata__{self.metadata_key}", flat=True)
+            .exclude(**{f"entity__metadata__{self.metadata_key}": None})
+            .values_list(f"entity__metadata__{self.metadata_key}", flat=True)
         )
         return [("", "-")] + [(v, v) for v in field_values]
 
     def queryset(self, request, queryset):
         """Filter the queryset according to the selected metadata filter"""
         if self.value():
-            json_field_query = {f"metadata__{self.metadata_key}": self.value()}
+            json_field_query = {f"entity__metadata__{self.metadata_key}": self.value()}
             return queryset.filter(**json_field_query)
         if self.value() == "":
-            json_field_query = Q(**{f"metadata__{self.metadata_key}": ""}) | Q(
-                **{f"metadata__{self.metadata_key}": None}
+            json_field_query = Q(**{f"entity__metadata__{self.metadata_key}": ""}) | Q(
+                **{f"entity__metadata__{self.metadata_key}": None}
             )
             return queryset.filter(json_field_query)
         return queryset
@@ -69,19 +72,10 @@ class EntityAdmin(admin.ModelAdmin):
     list_display = (
         "uid",
         "get_name",
-        "get_uploader",
-        "get_publication_date",
-        "rating_n_ratings",
-        "tournesol_score",
-        "rating_n_contributors",
-        "get_language",
         "link_to_tournesol",
     )
-    search_fields = ("uid", "metadata__name", "metadata__uploader")
-    list_filter = (
-        "type",
-        EntityLanguageFilter,
-    )
+    search_fields = ("uid", "metadata__name")
+    list_filter = ("type",)
     actions = ["update_metadata"]
 
     @admin.action(description="Force metadata refresh of selected entities")
@@ -110,12 +104,6 @@ class EntityAdmin(admin.ModelAdmin):
     def get_publication_date(obj):
         return obj.metadata.get("publication_date")
 
-    @staticmethod
-    @admin.display(description="language", ordering="metadata__language")
-    def get_language(obj):
-        language_code = obj.metadata.get("language")
-        return LANGUAGE_CODE_TO_NAME_MATCHING.get(language_code, language_code)
-
 
 @admin.register(EntityPollRating)
 class EntityPollRatingAdmin(admin.ModelAdmin):
@@ -123,12 +111,21 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
         "id",
         "entity_link",
         "poll",
-        "tournesol_score",
+        "get_name",
+        "get_uploader",
+        "get_publication_date",
+        "get_tournesol_score",
         "n_comparisons",
         "n_contributors",
+        "get_language",
+        "get_link_to_tournesol",
     )
-    list_filter = ("poll",)
-    search_fields = ("entity__uid",)
+    list_filter = (
+        "poll",
+        EntityLanguageFilter,
+    )
+    search_fields = ("entity__uid", "entity__metadata__name", "entity__metadata__uploader")
+    list_select_related = ("poll", "entity")
     raw_id_fields = ("entity",)
     readonly_fields = ("poll", "entity", "tournesol_score", "n_comparisons", "n_contributors")
 
@@ -138,6 +135,48 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
         model_label = entity._meta.model_name
         url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
         return format_html(f'<a href="{url}">{entity.uid}</a>')
+
+    @staticmethod
+    @admin.display(description="name", ordering="entity__metadata__name")
+    def get_name(obj):
+        return obj.entity.metadata.get("name")
+
+    @staticmethod
+    @admin.display(description="uploader", ordering="entity__metadata__uploader")
+    def get_uploader(obj):
+        return obj.entity.metadata.get("uploader")
+
+    @staticmethod
+    @admin.display(description="publication date", ordering="entity__metadata__publication_date")
+    def get_publication_date(obj):
+        pub_date = obj.entity.metadata.get("publication_date")
+
+        if pub_date:
+            try:
+                return datetime.strptime(pub_date, YOUTUBE_PUBLISHED_AT_FORMAT)
+            except ValueError:
+                # Fallback to the legacy format.
+                return datetime.strptime(pub_date, "%Y-%m-%d")
+        return pub_date
+
+    @staticmethod
+    @admin.display(description="Tournesol score", ordering="tournesol_score")
+    def get_tournesol_score(obj):
+        try:
+            return round(obj.tournesol_score, 2)
+        except TypeError:
+            return obj.tournesol_score
+
+    @staticmethod
+    @admin.display(description="language", ordering="entity__metadata__language")
+    def get_language(obj):
+        language_code = obj.entity.metadata.get("language")
+        return LANGUAGE_CODE_TO_NAME_MATCHING.get(language_code, language_code)
+
+    @staticmethod
+    @admin.display(description="link")
+    def get_link_to_tournesol(obj):
+        return obj.entity.link_to_tournesol()
 
 
 @admin.register(EntityCriteriaScore)

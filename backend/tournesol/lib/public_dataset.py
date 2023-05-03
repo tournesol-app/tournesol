@@ -100,6 +100,8 @@ def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
           AND rating_2.is_public = true
           -- keep only comparisons made before this datetime
           AND datetime_add < %(until)s
+          -- ignore comparisons by users who deleted their account recently
+          AND core_user.is_active
 
         ORDER BY username, datetime_add
         """,
@@ -151,6 +153,7 @@ def get_users_data(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
+          AND core_user.is_active
 
         ORDER BY core_user.username
         """,
@@ -199,6 +202,7 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
 
         WHERE tournesol_poll.name = %(poll_name)s
           AND tournesol_contributorrating.is_public
+          AND core_user.is_active
 
         -- this query can be significantly faster by keeping only the username
         -- in the ORDER BY clause

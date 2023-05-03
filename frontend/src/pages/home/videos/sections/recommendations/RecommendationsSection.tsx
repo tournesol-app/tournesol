@@ -1,32 +1,27 @@
 import React, { useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
 
+import { selectStats } from 'src/features/comparisons/statsSlice';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
+import { getPollStats } from 'src/features/statistics/stats';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
 import { useCurrentPoll } from 'src/hooks';
 import SectionTitle from '../SectionTitle';
 import UseOurExtension from './UseOurExtension';
 
-interface ComparedEntityStats {
-  comparedEntityCount: number;
-  lastMonthComparedEntityCount: number;
-}
-
-interface RecommendationsSectionProps {
-  comparedEntityStats?: ComparedEntityStats;
-}
-
 /**
  * A home page section that displays a subset of recommended entities.
  */
-const RecommendationsSection = ({
-  comparedEntityStats,
-}: RecommendationsSectionProps) => {
+const RecommendationsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+
+  const publicStats = useSelector(selectStats);
+  const pollStats = getPollStats(publicStats, pollName);
 
   const titleColor = '#fff';
 
@@ -69,9 +64,9 @@ const RecommendationsSection = ({
               <Box textAlign="center">
                 <Metrics
                   text={comparedEntitiesTitle}
-                  count={comparedEntityStats?.comparedEntityCount || 0}
+                  count={pollStats?.compared_entities.total ?? 0}
                   lastMonthCount={
-                    comparedEntityStats?.lastMonthComparedEntityCount || 0
+                    pollStats?.compared_entities.added_last_30_days ?? 0
                   }
                   lastMonthAsText
                 />

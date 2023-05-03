@@ -8,7 +8,6 @@ from tournesol.tests.factories.entity import VideoFactory
 
 
 class ContributorRatingFactory(factory.django.DjangoModelFactory):
-
     class Meta:
         model = ratings_models.ContributorRating
 
@@ -19,7 +18,6 @@ class ContributorRatingFactory(factory.django.DjangoModelFactory):
 
 
 class ContributorRatingCriteriaScoreFactory(factory.django.DjangoModelFactory):
-
     class Meta:
         model = ratings_models.ContributorRatingCriteriaScore
 

@@ -26,6 +26,15 @@ If `compose up` fails with `=> ERROR resolve image config for docker.io/docker/d
 
 ## Initialize the containers
 
+The first time you start the dev-env, you will need to build the Docker
+containers with the following command.
+
+> **Note**
+>
+> If you are on Linux, you may encounter the error "Permission denied".
+> Usually you can fix it by adding your user to the `docker` group
+> (more details in  [the official documentation][docker-docs-linuxpostinstall]).
+
 ```bash
 ./run-docker-compose.sh init
 ```
@@ -51,7 +60,6 @@ Then, the application is accessible on http://localhost:3000.
 The created database includes video metadata, users and comparisons derived from a subset of Tournesol public dataset.
 An additional non-admin user is also created: `user1` with password `tournesol`.
 
-
 ## Rebuild the containers while preserving the database
 
 By default, the database content is initialized with test data.
@@ -64,6 +72,24 @@ To recreate the containers (e.g to update the backend dependencies) while preser
 
 ```bash
 ./run-docker-compose.sh help
+```
+
+## Useful docker command
+
+This will help you during the development.
+
+```bash
+# see the running containers
+docker ps
+
+# see all containers
+docker ps -a
+
+# fetch a container's logs
+docker logs tournesol-dev-api
+
+# follow the logs output
+docker logs -f tournesol-dev-api
 ```
 
 ## Dump the current database
@@ -91,3 +117,5 @@ docker build db --build-arg DUMP_FILE=YOUR_DUMP_FILE_NAME --tag ghcr.io/tourneso
 
 docker push ghcr.io/tournesol-app/postgres-dev-env:YOUR_NEW_TAG
 ```
+
+[docker-docs-linuxpostinstall]: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
