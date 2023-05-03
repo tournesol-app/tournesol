@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Typography } from '@mui/material';
 import { PeopleAlt } from '@mui/icons-material';
 
-import { FAQEntry } from 'src/services/openapi';
-
 import FAQSingleEntry from 'src/pages/faq/FAQSingleEntry';
+import { FAQEntry } from 'src/services/openapi';
 
 /**
  * The Entry List section of the FAQ page.
@@ -22,9 +21,9 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
 
   return (
     <>
-      {entries.map((entry) => {
-        return <FAQSingleEntry key={`q_${entry.name}`} entry={entry} />;
-      })}
+      {entries.map((entry) => (
+        <FAQSingleEntry key={`q_${entry.name}`} entry={entry} />
+      ))}
 
       {/* Always display an extra entry to explain how to ask more questions. */}
       <Box mb={4}>
