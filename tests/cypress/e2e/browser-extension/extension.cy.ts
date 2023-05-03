@@ -43,15 +43,14 @@ onlyOn("headed", () => {
 
         it("shows Tournesol search results when the search is on", () => {
           cy.visit("https://www.youtube.com");
+          consent();
 
           cy.window().then((win) => {
             win.localStorage.setItem('searchEnabled', true);
-          })
-
-          consent();
-
-          cy.visit("https://www.youtube.com/results?search_query=tournesol");
-          cy.contains("Recommended by Tournesol");
+          }).then(() => {
+            cy.visit("https://www.youtube.com/results?search_query=tournesol");
+            cy.contains("Recommended by Tournesol");
+          });
         });
 
         it("doesn't show Tournesol search results when the search is off", () => {
@@ -66,11 +65,12 @@ onlyOn("headed", () => {
           cy.visit("https://www.youtube.com/watch?v=6jK9bFWE--g");
           consent();
 
+          // Dismiss Youtube Ad if present
           cy.get("body").then(($body) => {
-            if ($body.find("button:contains('Dismiss')").length > 0) {
-              // Dismiss Youtube Ad if present
-              cy.contains("button", "Dismiss", { matchCase: false }).click();
+            if ($body.find("button.ytp-ad-skip-button").length > 0) {
+              cy.get("button.ytp-ad-skip-button").click();
             }
+          }).then(() => {
             cy.contains("button", "Rate Later", { matchCase: false }).should(
               "be.visible"
             );
