@@ -39,11 +39,13 @@ onlyOn("headed", () => {
       });
 
       describe("Search page", () => {
-        it("shows Tournesol search results when the search is on", () => {
-          cy.visit("https://www.youtube.com/?tournesolSearch=on");
+        const searchEnabledKey = 'searchEnabled';
 
+        it("shows Tournesol search results when the search is on", () => {
+          cy.visit("https://www.youtube.com");
+
+          window.localStorage.setItem('searchEnabled', true);
           consent();
-          cy.wait(5000);
 
           cy.visit("https://www.youtube.com/results?search_query=tournesol");
           cy.contains("Recommended by Tournesol");
@@ -57,11 +59,9 @@ onlyOn("headed", () => {
       });
 
       describe("Video page", () => {
-        it('shows "Rate later" and "Rate Now" button on video page', () => {
-          cy.visit("https://www.youtube.com/");
-          consent();
-
+        it('shows the "Rate Later" and "Rate Now" buttons', () => {
           cy.visit("https://www.youtube.com/watch?v=6jK9bFWE--g");
+          consent();
 
           cy.get("body").then(($body) => {
             if ($body.find("button:contains('Dismiss')").length > 0) {

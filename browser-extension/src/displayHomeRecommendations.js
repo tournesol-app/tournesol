@@ -8,10 +8,6 @@
   const homeRecommendations = new TournesolRecommendations();
 
   const process = () => {
-    if (location.search.includes('tournesolSearch')) {
-      chrome.storage.local.set({ searchEnabled: true });
-    }
-
     // Display the home page recommendations.
     if (location.pathname === '/') {
       homeRecommendations.process();
