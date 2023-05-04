@@ -40,6 +40,9 @@
    * YouTube page has been loaded.
    */
   const preProcess = () => {
+    // When loading a page, YouTube removes the extra URL parameters. In order
+    // to work this statement must be executed before the parameters are
+    // removed.
     const searchParams = new URLSearchParams(location.search);
     const tournesolSearch = searchParams.get('tournesolSearch') ?? '0';
 
