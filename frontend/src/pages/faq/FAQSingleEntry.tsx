@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,15 +17,17 @@ import { SNACKBAR_DYNAMIC_FEEDBACK_MS } from 'src/utils/notifications';
 
 interface FAQSingleEntryProps {
   entry: FAQEntry;
+  displayed: boolean;
+  onVisibilityChange: (name: string, visibilty: boolean) => void;
 }
 
-const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
+const FAQSingleEntry = ({
+  entry,
+  displayed,
+  onVisibilityChange,
+}: FAQSingleEntryProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-
-  const [answerFolded, setAnswerFolded] = useState(
-    !(location.hash.substring(1) === entry.name)
-  );
 
   const copyUriToClipboard = (
     event: React.MouseEvent<HTMLElement>,
@@ -75,17 +77,17 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
               <IconButton
                 aria-label="Show question's answer"
                 onClick={() => {
-                  setAnswerFolded(!answerFolded);
+                  onVisibilityChange(entry.name, !displayed);
                 }}
               >
-                {answerFolded ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
+                {displayed ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
               </IconButton>
             </Box>
           </Grid>
         </Grid>
 
         {answerParagraphs.length > 0 && (
-          <Collapse in={!answerFolded} timeout="auto" unmountOnExit>
+          <Collapse in={displayed} timeout="auto" unmountOnExit>
             <Box sx={{ 'p:last-child': { mb: 0 } }}>
               {
                 // An answer can be composed of several paragraphs.

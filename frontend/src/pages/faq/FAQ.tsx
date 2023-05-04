@@ -20,9 +20,33 @@ const FAQ = () => {
   const { contactAdministrator } = useNotifications();
 
   const alreadyScrolled = React.useRef(false);
+
   const [entries, setEntries] = useState<Array<FAQEntry>>([]);
+  const [displayedEntries, setDisplayedEntries] = useState<Array<string>>([]);
 
   const currentLang = i18n.resolvedLanguage;
+
+  const displayEntry = (name: string) => {
+    if (entries.find((entry) => entry.name === name)) {
+      if (!displayedEntries.includes(name)) {
+        setDisplayedEntries([...displayedEntries, name]);
+      }
+    }
+  };
+
+  const hideEntry = (name: string) => {
+    setDisplayedEntries(
+      displayedEntries.filter((entryName) => entryName !== name)
+    );
+  };
+
+  const setEntryVisibility = (name: string, visibility: boolean) => {
+    if (visibility) {
+      displayEntry(name);
+    } else {
+      hideEntry(name);
+    }
+  };
 
   /**
    * Automatically scroll to the requested anchor, after the entries has been
@@ -36,13 +60,17 @@ const FAQ = () => {
     if (hash && entries.length > 0) {
       // Scroll only one time.
       if (!alreadyScrolled.current) {
-        const element = document.getElementById(hash.substring(1));
+        const faqName = hash.substring(1);
+        const element = document.getElementById(faqName);
+
         if (element) {
+          displayEntry(faqName);
           element.scrollIntoView({ behavior: 'smooth' });
           alreadyScrolled.current = true;
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hash, entries]);
 
   useEffect(() => {
@@ -64,8 +92,12 @@ const FAQ = () => {
     <>
       <ContentHeader title="Frequently Asked Questions" />
       <ContentBox maxWidth="md">
-        <FAQTableOfContent entries={entries} />
-        <FAQEntryList entries={entries} />
+        <FAQTableOfContent entries={entries} onEntryClick={displayEntry} />
+        <FAQEntryList
+          entries={entries}
+          displayedEntries={displayedEntries}
+          onEntryVisibilityChange={setEntryVisibility}
+        />
       </ContentBox>
     </>
   );
