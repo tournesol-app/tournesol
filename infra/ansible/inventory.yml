@@ -28,7 +28,7 @@ all:
 
           loki_version: "v2.2.1"
           nvm_version: "v0.38.0"
-          npm_lts_version: fermium
+          npm_lts_version: "hydrogen"  # codename for Node.js 18 (LTS)
           frontend_scheme: http
           frontend_csp_connect_src: https://noembed.com
           frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
@@ -94,7 +94,7 @@ all:
 
           loki_version: "v2.2.1"
           nvm_version: "v0.38.0"
-          npm_lts_version: fermium
+          npm_lts_version: "hydrogen"  # codename for Node.js 18 (LTS)
           frontend_scheme: https
           frontend_csp_connect_src: https://noembed.com
           frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
@@ -167,7 +167,7 @@ all:
 
           loki_version: "v2.2.1"
           nvm_version: "v0.38.0"
-          npm_lts_version: fermium
+          npm_lts_version: "hydrogen"  # codename for Node.js 18 (LTS)
           frontend_scheme: https
           frontend_csp_connect_src: https://noembed.com
           frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
