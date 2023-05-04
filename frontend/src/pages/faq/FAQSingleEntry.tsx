@@ -1,8 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, IconButton, Paper, Typography } from '@mui/material';
-import { Link } from '@mui/icons-material';
+import {
+  Box,
+  Collapse,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+} from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp, Link } from '@mui/icons-material';
 
 import { useSnackbar } from 'notistack';
 import { FAQEntry } from 'src/services/openapi';
@@ -10,9 +17,15 @@ import { SNACKBAR_DYNAMIC_FEEDBACK_MS } from 'src/utils/notifications';
 
 interface FAQSingleEntryProps {
   entry: FAQEntry;
+  displayed: boolean;
+  onVisibilityChange: (name: string, visibilty: boolean) => void;
 }
 
-const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
+const FAQSingleEntry = ({
+  entry,
+  displayed,
+  onVisibilityChange,
+}: FAQSingleEntryProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -32,7 +45,7 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
 
   return (
     <Box mb={4}>
-      <Paper square sx={{ p: 2, pb: '1px' }}>
+      <Paper square sx={{ p: 2 }}>
         <Grid container>
           <Grid item xs={11}>
             <Typography
@@ -47,7 +60,12 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
             </Typography>
           </Grid>
           <Grid item xs={1}>
-            <Box display="flex" alignItems="center" justifyContent="flex-end">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="flex-end"
+              gap={0.5}
+            >
               <IconButton
                 aria-label="Copy URI to clipboard"
                 onClick={(event) => {
@@ -56,20 +74,36 @@ const FAQSingleEntry = ({ entry }: FAQSingleEntryProps) => {
               >
                 <Link />
               </IconButton>
+              <IconButton
+                aria-label="Show question's answer"
+                onClick={() => {
+                  onVisibilityChange(entry.name, !displayed);
+                }}
+              >
+                {displayed ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+              </IconButton>
             </Box>
           </Grid>
         </Grid>
 
-        {/* An answer can be composed of several paragraphs. */}
-        {answerParagraphs.map((paragraph, index) => (
-          <Typography
-            key={`$a_{entry.name}_p${index}`}
-            paragraph
-            textAlign="justify"
-          >
-            {paragraph}
-          </Typography>
-        ))}
+        {answerParagraphs.length > 0 && (
+          <Collapse in={displayed} timeout="auto" unmountOnExit>
+            <Box sx={{ 'p:last-child': { mb: 0 } }}>
+              {
+                // An answer can be composed of several paragraphs.
+                answerParagraphs.map((paragraph, index) => (
+                  <Typography
+                    key={`$a_{entry.name}_p${index}`}
+                    paragraph
+                    textAlign="justify"
+                  >
+                    {paragraph}
+                  </Typography>
+                ))
+              }
+            </Box>
+          </Collapse>
+        )}
       </Paper>
     </Box>
   );
