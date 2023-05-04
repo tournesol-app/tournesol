@@ -42,7 +42,7 @@ onlyOn("headed", () => {
         it("shows Tournesol search results when the search is on", () => {
           cy.visit("https://www.youtube.com/results?search_query=tournesol&tournesolSearch=1");
           consent();
-          cy.contains("Recommended by Tournesol");
+          cy.contains("Recommended by Tournesol", {timeout: 20000});
         });
 
         it("doesn't show Tournesol search results when the search is off", () => {
