@@ -45,12 +45,9 @@ onlyOn("headed", () => {
           cy.visit("https://www.youtube.com");
           consent();
 
-          cy.window().then((win) => {
-            win.localStorage.setItem(searchEnabledKey, true);
-          }).then(() => {
-            cy.visit("https://www.youtube.com/results?search_query=tournesol");
-            cy.contains("Recommended by Tournesol");
-          });
+          window.localStorage.setItem(searchEnabledKey, true);
+          cy.visit("https://www.youtube.com/results?search_query=tournesol");
+          cy.contains("Recommended by Tournesol");
         });
 
         it("doesn't show Tournesol search results when the search is off", () => {
