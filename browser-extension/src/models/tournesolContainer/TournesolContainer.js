@@ -13,12 +13,23 @@ export class TournesolContainer {
     this.isExpanded = false;
     this.banner = banner;
     this.recommendations = recommendations;
+
+    this.htmlID = 'tournesol_container';
+  }
+
+  /**
+   * Remove the Tournesol container from the DOM and all potential duplicates.
+   */
+  removeExistingContainers() {
+    const containers = document.querySelectorAll(`#${this.htmlID}`);
+    if (containers.length > 0) {
+      containers.forEach((container) => container.remove());
+    }
   }
 
   createHTMLElement() {
-    // Create container
     const tournesolContainer = document.createElement('div');
-    tournesolContainer.id = 'tournesol_container';
+    tournesolContainer.id = this.htmlID;
 
     const topActionBar = this._createTopActionBar();
     const videosFlexContainer = this._createVideosFlexContainer();

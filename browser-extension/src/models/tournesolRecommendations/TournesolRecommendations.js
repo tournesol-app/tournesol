@@ -69,6 +69,7 @@ export class TournesolRecommendations {
       window.clearInterval(timer);
 
       // Create the Tournesol container.
+      this.tournesolContainer.removeExistingContainers();
       this.tournesolHTMLElement = this.tournesolContainer.createHTMLElement();
 
       parentContainer.insertBefore(
