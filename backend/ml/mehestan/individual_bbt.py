@@ -13,7 +13,7 @@ from ml.optimize import brentq
 from tournesol.utils.constants import COMPARISON_MAX
 
 R_MAX = COMPARISON_MAX  # Maximum score for a comparison in the input
-ALPHA = 0.1  # Signal-to-noise hyperparameter
+ALPHA = 0.2  # Signal-to-noise hyperparameter
 EPSILON = 1e-5
 
 
