@@ -16,7 +16,7 @@ import { FAQEntry, FaqService } from 'src/services/openapi';
  */
 const FAQ = () => {
   const { hash } = useLocation();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
   const alreadyScrolled = React.useRef(false);
@@ -90,7 +90,7 @@ const FAQ = () => {
 
   return (
     <>
-      <ContentHeader title="Frequently Asked Questions" />
+      <ContentHeader title={t('faqPage.frequentlyAskedQuestions')} />
       <ContentBox maxWidth="md">
         <FAQTableOfContent entries={entries} onEntryClick={displayEntry} />
         <FAQEntryList

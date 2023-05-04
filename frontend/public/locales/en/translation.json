@@ -480,14 +480,15 @@
       "message": "An unexpected error has occurred."
     }
   },
-  "faqEntryList": {
-    "questionURLCopied": "Question's URL copied."
-  },
   "faqPage": {
+    "frequentlyAskedQuestions": "Frequently Asked Questions",
     "iDidFindTheAnswers": "I didn't find the answer to my questions",
     "comeAndAskYourQuestionsOnDiscord": "Join our Discord server to ask directly your questions. Recurring questions will be added to the FAQ.",
     "joinUsOnDiscord": "Join Us on Discord",
     "tableOfContent": "Table of Content"
+  },
+  "faqEntryList": {
+    "questionURLCopied": "Question's URL copied."
   },
   "tempStudyBanner": {
     "join": "Join",

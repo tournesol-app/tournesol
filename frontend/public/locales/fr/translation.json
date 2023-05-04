@@ -488,14 +488,15 @@
       "message": "Une erreur innatendu est survenue."
     }
   },
-  "faqEntryList": {
-    "questionURLCopied": "URL de la question copiée."
-  },
   "faqPage": {
+    "frequentlyAskedQuestions": "Foire Aux Questions",
     "iDidFindTheAnswers": "Je n'ai pas trouvé la réponse à mes questions",
     "comeAndAskYourQuestionsOnDiscord": "Venez poser vos questions directement sur notre serveur Discord. Les questions qui reviennent souvent seront ajoutées à la FAQ.",
     "joinUsOnDiscord": "Rejoignez-nous sur Discord",
     "tableOfContent": "Table des Matières"
+  },
+  "faqEntryList": {
+    "questionURLCopied": "URL de la question copiée."
   },
   "tempStudyBanner": {
     "join": "Participer",
