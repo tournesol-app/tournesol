@@ -62,7 +62,7 @@ const FAQSingleEntry = ({
           <Grid item xs={2}>
             <Box
               display="flex"
-              flexWrap={'wrap'}
+              flexWrap="wrap"
               alignItems="center"
               justifyContent="flex-end"
               gap={0.5}
