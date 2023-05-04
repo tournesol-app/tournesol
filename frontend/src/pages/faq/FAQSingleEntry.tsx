@@ -47,7 +47,7 @@ const FAQSingleEntry = ({
     <Box mb={4}>
       <Paper square sx={{ p: 2 }}>
         <Grid container>
-          <Grid item xs={11}>
+          <Grid item xs={10}>
             <Typography
               id={entry.name}
               variant="h4"
@@ -59,9 +59,10 @@ const FAQSingleEntry = ({
               {entry.question}
             </Typography>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2}>
             <Box
               display="flex"
+              flexWrap="wrap"
               alignItems="center"
               justifyContent="flex-end"
               gap={0.5}
@@ -87,7 +88,7 @@ const FAQSingleEntry = ({
         </Grid>
 
         {answerParagraphs.length > 0 && (
-          <Collapse in={displayed} timeout="auto" unmountOnExit>
+          <Collapse in={displayed} timeout="auto">
             <Box sx={{ 'p:last-child': { mb: 0 } }}>
               {
                 // An answer can be composed of several paragraphs.
