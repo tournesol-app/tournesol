@@ -488,8 +488,8 @@
       "message": "Une erreur innatendu est survenue."
     }
   },
-  "Frequently Asked Questions": " Foire Aux Questions",
   "faqPage": {
+    "frequentlyAskedQuestions": "Foire Aux Questions",
     "iDidFindTheAnswers": "Je n'ai pas trouvé la réponse à mes questions",
     "comeAndAskYourQuestionsOnDiscord": "Venez poser vos questions directement sur notre serveur Discord. Les questions qui reviennent souvent seront ajoutées à la FAQ.",
     "joinUsOnDiscord": "Rejoignez-nous sur Discord",

@@ -90,7 +90,7 @@ const FAQ = () => {
 
   return (
     <>
-      <ContentHeader title={t('Frequently Asked Questions')} />
+      <ContentHeader title={t('faqPage.frequentlyAskedQuestions')} />
       <ContentBox maxWidth="md">
         <FAQTableOfContent entries={entries} onEntryClick={displayEntry} />
         <FAQEntryList
