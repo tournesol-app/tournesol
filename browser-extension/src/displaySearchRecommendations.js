@@ -29,16 +29,37 @@
 
   const searchRecommendations = new TournesolSearchRecommendations(options);
 
-  const process = () => {
-    if (location.search.includes('tournesolSearch')) {
-      chrome.storage.local.set({ searchEnabled: true });
-    }
+  // Allow to display the Tournesol search results without modifying the
+  // user's preferences in the local storage.
+  let forceSearch = false;
 
-    // Add results from Tournesol to the YT search results.
-    if (location.pathname === '/results') {
-      searchRecommendations.process();
+  /**
+   * The pre-processing of the content script.
+   *
+   * The code here is designed to be executed as soon as possible, before the
+   * YouTube page has been loaded.
+   */
+  const preProcess = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const tournesolSearch = searchParams.get('tournesolSearch') ?? '0';
+
+    if (tournesolSearch === '1') {
+      forceSearch = true;
     }
   };
+
+  /**
+   * The main process of the content script.
+   *
+   * Should be run after the YouTube page has been loaded.
+   */
+  const process = () => {
+    if (location.pathname === '/results') {
+      searchRecommendations.process(forceSearch);
+    }
+  };
+
+  preProcess();
 
   document.addEventListener('yt-navigate-finish', process);
 

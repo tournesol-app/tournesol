@@ -39,14 +39,9 @@ onlyOn("headed", () => {
       });
 
       describe("Search page", () => {
-        const searchEnabledKey = 'searchEnabled';
-
         it("shows Tournesol search results when the search is on", () => {
-          cy.visit("https://www.youtube.com");
+          cy.visit("https://www.youtube.com/results?search_query=tournesol&tournesolSearch=1");
           consent();
-
-          window.localStorage.setItem(searchEnabledKey, true);
-          cy.visit("https://www.youtube.com/results?search_query=tournesol");
           cy.contains("Recommended by Tournesol");
         });
 

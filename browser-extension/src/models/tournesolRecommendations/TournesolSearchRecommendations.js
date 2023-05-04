@@ -7,22 +7,22 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
     this.searchQuery = '';
   }
 
-  process() {
+  process(forceSearch = false) {
     this.isPageLoaded = true;
-    this.loadRecommandations();
+    this.loadRecommandations(forceSearch);
   }
 
   displayRecommendations(nthchild = 0) {
     super.displayRecommendations(nthchild);
   }
 
-  loadRecommandations() {
+  loadRecommandations(forceSearch) {
     if (this.areRecommendationsLoading) return;
 
     this.areRecommendationsLoading = true;
 
     chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-      if (searchEnabled) {
+      if (forceSearch || searchEnabled) {
         this.searchQuery = location.search
           .substring(1)
           .split('&')
