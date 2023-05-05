@@ -179,6 +179,8 @@ class MlInputFromDb(MlInput):
 
     @cached_property
     def ratings_properties(self):
+        # This makes sure that `get_scaling_calibration_users()` is evaluated separately, as the
+        # table names mentionned in its RawSQL quey could conflict with the current queryset.
         scaling_calibration_user_ids = list(self.get_scaling_calibration_users().values_list("id"))
         values = (
             ContributorRating.objects.filter(
