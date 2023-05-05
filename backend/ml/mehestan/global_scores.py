@@ -115,14 +115,18 @@ def compute_scaling(
         else:
             ABn_all = get_significantly_different_pairs(user_scores)
 
+        ABn_all_set = set(ABn_all.index)
         for user_m in reference_users - {user_n}:
             try:
                 ABm = ref_user_scores_pairs[user_m]
             except KeyError:
+                # the reference user may not have contributed on the current criterion
                 continue
+
+            if all(pair not in ABn_all_set for pair in ABm.index):
+                continue
+
             ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
-            if len(ABnm) == 0:
-                continue
             s_nqmab = np.abs(ABnm.score_a_m - ABnm.score_b_m) / np.abs(
                 ABnm.score_a_n - ABnm.score_b_n
             )
@@ -166,24 +170,25 @@ def compute_scaling(
         delta_tau_nqm = []
         s_weights = []
         user_scores = user_scores.set_index("uid")
+        user_scores_uids = set(user_scores.index)
 
         for user_m in reference_users - {user_n}:
             try:
                 user_m_scores = ref_user_scores_by_uid[user_m]
             except KeyError:
+                # the reference user may not have contributed on the current criterion
                 continue
-            common_uids = list(set(user_scores.index).intersection(user_m_scores.index))
+            common_uids = list(user_scores_uids.intersection(user_m_scores.index))
             if len(common_uids) == 0:
                 continue
 
             m_scores = user_m_scores.loc[common_uids]
             n_scores = user_scores.loc[common_uids]
 
-            tau_nqmab = s_dict.get(user_m, 1) * m_scores.score - s_dict[user_n] * n_scores.score
-            delta_tau_nqmab = (
-                s_dict[user_n] * n_scores.uncertainty
-                + s_dict.get(user_m, 1) * m_scores.uncertainty
-            )
+            s_m = s_dict.get(user_m, 1)
+            s_n = s_dict[user_n]
+            tau_nqmab = s_m * m_scores.score - s_n * n_scores.score
+            delta_tau_nqmab = s_n * n_scores.uncertainty + s_m * m_scores.uncertainty
 
             tau = QrMed(1, 1, tau_nqmab, delta_tau_nqmab)
             tau_nqm.append(tau)
