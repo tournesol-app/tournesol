@@ -322,7 +322,7 @@
     "displayTheTheWeeklyCollectiveGoal": "Display the weekly collective goal",
     "always": "Always",
     "websiteOnly": "Website only",
-    "embeddedOnly": "Embedded only",
+    "embeddedOnly": "Extension only",
     "never": "Never",
     "rateLater": "Rate-later list",
     "autoRemove": "Automatic removal",

@@ -329,7 +329,7 @@
     "displayTheTheWeeklyCollectiveGoal": "Affichage de l'objectif collectif hebdomadaire",
     "always": "Toujours",
     "websiteOnly": "Seulement sur le site web",
-    "embeddedOnly": "Seulement en mode incrustation",
+    "embeddedOnly": "Seulement dans l'extension",
     "never": "Jamais",
     "rateLater": "Liste à comparer plus tard",
     "autoRemove": "Suppression automatique",
