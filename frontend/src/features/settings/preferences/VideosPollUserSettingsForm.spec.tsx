@@ -115,6 +115,8 @@ describe('GenericPollUserSettingsForm', () => {
       token: initialState,
       settings: {
         videos: {
+          // Here we don't define all the settings so we can ensure the form
+          // behaves correctly when initialized with undefined settings.
           rate_later__auto_remove: 0,
         },
       },
@@ -158,6 +160,8 @@ describe('GenericPollUserSettingsForm', () => {
       const { compUiWeeklyColGoalDisplay, rateLaterAutoRemove, submit } =
         setup();
 
+      // Here we check the default values used when the settings are not yet
+      // defined by the user.
       expect(rateLaterAutoRemove).toHaveValue(8);
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
