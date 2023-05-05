@@ -66,7 +66,7 @@ const ComparisonPage = () => {
     name: pollName,
   } = useCurrentPoll();
 
-  // Tutoriel parameters.
+  // Tutorial parameters.
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;

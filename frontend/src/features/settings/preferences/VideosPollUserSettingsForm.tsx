@@ -121,13 +121,16 @@ const VideosPollUserSettingsForm = () => {
             <Select
               size="small"
               color="secondary"
-              id="comparison_ui__weekly_collective_goal_displayl"
+              id="comparison_ui__weekly_collective_goal_display"
               labelId="label__comparison_ui__weekly_collective_goal_display"
               value={compUiWeeklyColGoalDisplay}
               label={t(
                 'pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal'
               )}
               onChange={changeCompUiDisplayWeeklyColGoal}
+              inputProps={{
+                'data-testid': `${pollName}_weekly_collective_goal_display`,
+              }}
             >
               <MenuItem
                 value={ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS}
