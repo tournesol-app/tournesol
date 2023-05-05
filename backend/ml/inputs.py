@@ -179,13 +179,14 @@ class MlInputFromDb(MlInput):
 
     @cached_property
     def ratings_properties(self):
+        scaling_calibration_user_ids = list(self.get_scaling_calibration_users().values_list("id"))
         values = (
             ContributorRating.objects.filter(
                 poll__name=self.poll_name,
             )
             .annotate(
                 is_scaling_calibration_user=Case(
-                    When(user__in=self.get_scaling_calibration_users().values("id"), then=True),
+                    When(user__in=scaling_calibration_user_ids, then=True),
                     default=False,
                 ),
             )
