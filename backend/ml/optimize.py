@@ -68,7 +68,7 @@ def brentq(f, a, b, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True):
         If True, raise a RuntimeError if the algorithm didn't converge.
     Returns
     -------
-    results : namedtuple
+    root : float
     """
     if xtol <= 0:
         raise ValueError("xtol is too small (<= 0)")
