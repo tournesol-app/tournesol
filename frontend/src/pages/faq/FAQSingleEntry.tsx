@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -14,6 +14,7 @@ import { KeyboardArrowDown, KeyboardArrowUp, Link } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import { FAQEntry } from 'src/services/openapi';
 import { SNACKBAR_DYNAMIC_FEEDBACK_MS } from 'src/utils/notifications';
+import { StatsContext } from 'src/features/comparisons/StatsContext';
 
 interface FAQSingleEntryProps {
   entry: FAQEntry;
@@ -42,6 +43,11 @@ const FAQSingleEntry = ({
   };
 
   const answerParagraphs = entry.answer.split('\n');
+
+  const statsContext = useContext(StatsContext);
+  const getStats = statsContext.getStats;
+  const refreshStats = statsContext.refreshStats;
+  console.log("dc");
 
   return (
     <Box mb={4}>
