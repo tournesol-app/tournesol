@@ -3,6 +3,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from numba import njit
 
 from ml.inputs import MlInput
 
@@ -28,6 +29,21 @@ def get_user_scaling_weights(ml_input: MlInput):
     return df["scaling_weight"].to_dict()
 
 
+@njit
+def get_significantly_different_pairs_indices(scores, uncertainties):
+    indices = []
+    n_alternatives = len(scores)
+    for idx_a in range(0, n_alternatives):
+        for idx_b in range(idx_a + 1, n_alternatives):
+            if abs(scores[idx_a] - scores[idx_b]) >= 2 * (
+                uncertainties[idx_a] + uncertainties[idx_b]
+            ):
+                indices.append((idx_a, idx_b))
+    if len(indices) == 0:
+        return np.empty((0, 2), dtype=np.int64)
+    return np.array(indices)
+
+
 def get_significantly_different_pairs(scores: pd.DataFrame):
     """
     Find the set of pairs of alternatives
@@ -35,21 +51,27 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     (Used for collaborative preference scaling)
     """
     scores = scores[["uid", "score", "uncertainty"]]
-    left, right = np.triu_indices(len(scores), k=1)
-    pairs = (
-        scores.iloc[left]
-        .reset_index(drop=True)
-        .join(
-            scores.iloc[right].reset_index(drop=True),
-            lsuffix="_a",
-            rsuffix="_b",
-        )
+    indices = get_significantly_different_pairs_indices(
+        scores["score"].to_numpy(), scores["uncertainty"].to_numpy()
     )
-    pairs.set_index(["uid_a", "uid_b"], inplace=True)
-    return pairs.loc[
-        np.abs(pairs.score_a - pairs.score_b)
-        >= 2 * (pairs.uncertainty_a + pairs.uncertainty_b)
-    ]
+    scores_a = scores.iloc[indices[:, 0]]
+    scores_b = scores.iloc[indices[:, 1]]
+    uids_index = pd.MultiIndex.from_arrays(
+        [
+            scores_a["uid"].to_numpy(),
+            scores_b["uid"].to_numpy(),
+        ],
+        names=["uid_a", "uid_b"],
+    )
+    return pd.DataFrame(
+        {
+            "score_a": scores_a["score"].to_numpy(),
+            "score_b": scores_b["score"].to_numpy(),
+            "uncertainty_a": scores_a["uncertainty"].to_numpy(),
+            "uncertainty_b": scores_b["uncertainty"].to_numpy(),
+        },
+        index=uids_index,
+    )
 
 
 def compute_scaling(
@@ -75,28 +97,26 @@ def compute_scaling(
     s_dict = {}
     delta_s_dict = {}
 
-    for (user_n, user_scores) in df[df.user_id.isin(users_to_compute)].groupby(
+    ref_user_scores_pairs = {}
+    ref_user_scores_by_uid = {}
+    for (ref_user_id, ref_user_scores) in df[df["user_id"].isin(reference_users)].groupby(
         "user_id"
     ):
+        ref_user_scores_pairs[ref_user_id] = get_significantly_different_pairs(ref_user_scores)
+        ref_user_scores_by_uid[ref_user_id] = ref_user_scores.set_index("uid")
+
+    for (user_n, user_scores) in df[df["user_id"].isin(users_to_compute)].groupby("user_id"):
         s_nqm = []
         delta_s_nqm = []
         s_weights = []
 
-        ABn_all = get_significantly_different_pairs(user_scores)
-        user_scores_uids = set(ABn_all.index.get_level_values("uid_a")) | set(
-            ABn_all.index.get_level_values("uid_b")
-        )
+        if calibration:
+            ABn_all = ref_user_scores_pairs[user_n]
+        else:
+            ABn_all = get_significantly_different_pairs(user_scores)
 
-        for (user_m, m_scores) in df[
-            df.user_id.isin(reference_users - {user_n})
-        ].groupby("user_id"):
-            common_uids = user_scores_uids.intersection(m_scores.uid)
-
-            if len(common_uids) == 0:
-                continue
-
-            m_scores = m_scores[m_scores.uid.isin(common_uids)]
-            ABm = get_significantly_different_pairs(m_scores)
+        for user_m in reference_users - {user_n}:
+            ABm = ref_user_scores_pairs[user_m]
             ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
             if len(ABnm) == 0:
                 continue
@@ -138,26 +158,22 @@ def compute_scaling(
 
     tau_dict = {}
     delta_tau_dict = {}
-    for (user_n, user_scores) in df[df.user_id.isin(users_to_compute)].groupby(
-        "user_id"
-    ):
+    for (user_n, user_scores) in df[df.user_id.isin(users_to_compute)].groupby("user_id"):
         tau_nqm = []
         delta_tau_nqm = []
         s_weights = []
-        for (user_m, m_scores) in df[
-            df.user_id.isin(reference_users - {user_n})
-        ].groupby("user_id"):
-            common_uids = list(set(user_scores.uid).intersection(m_scores.uid))
+        user_scores = user_scores.set_index("uid")
 
+        for user_m in reference_users - {user_n}:
+            user_m_scores = ref_user_scores_by_uid[user_m]
+            common_uids = list(set(user_scores.index).intersection(user_m_scores.index))
             if len(common_uids) == 0:
                 continue
 
-            m_scores = m_scores.set_index("uid").loc[common_uids]
-            n_scores = user_scores.set_index("uid").loc[common_uids]
+            m_scores = user_m_scores.loc[common_uids]
+            n_scores = user_scores.loc[common_uids]
 
-            tau_nqmab = (
-                s_dict.get(user_m, 1) * m_scores.score - s_dict[user_n] * n_scores.score
-            )
+            tau_nqmab = s_dict.get(user_m, 1) * m_scores.score - s_dict[user_n] * n_scores.score
             delta_tau_nqmab = (
                 s_dict[user_n] * n_scores.uncertainty
                 + s_dict.get(user_m, 1) * m_scores.uncertainty
@@ -255,9 +271,7 @@ def compute_scaled_scores(
     df["delta_tau"].fillna(0, inplace=True)
     df["score"] = df["s"] * df["raw_score"] + df["tau"]
     df["uncertainty"] = (
-        df["s"] * df["raw_uncertainty"]
-        + df["delta_s"] * df["raw_score"].abs()
-        + df["delta_tau"]
+        df["s"] * df["raw_uncertainty"] + df["delta_s"] * df["raw_score"].abs() + df["delta_tau"]
     )
     df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
 
@@ -283,9 +297,7 @@ def compute_scaled_scores(
     df["delta_s"].fillna(0, inplace=True)
     df["delta_tau"].fillna(0, inplace=True)
     df.loc[~df["is_scaling_calibration_user"], "uncertainty"] = (
-        df["s"] * df["raw_uncertainty"]
-        + df["delta_s"] * df["raw_score"].abs()
-        + df["delta_tau"]
+        df["s"] * df["raw_uncertainty"] + df["delta_s"] * df["raw_score"].abs() + df["delta_tau"]
     )
     df.loc[~df["is_scaling_calibration_user"], "score"] = df["raw_score"] * df["s"] + df["tau"]
     df.drop(
