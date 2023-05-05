@@ -105,7 +105,7 @@ def compute_scaling(
         ref_user_scores_pairs[ref_user_id] = get_significantly_different_pairs(ref_user_scores)
         ref_user_scores_by_uid[ref_user_id] = ref_user_scores.set_index("uid")
 
-    for (user_n, user_scores) in df[df["user_id"].isin(users_to_compute)].groupby("user_id"):
+    for (user_n, user_n_scores) in df[df["user_id"].isin(users_to_compute)].groupby("user_id"):
         s_nqm = []
         delta_s_nqm = []
         s_weights = []
@@ -113,44 +113,44 @@ def compute_scaling(
         if calibration:
             ABn_all = ref_user_scores_pairs[user_n]
         else:
-            ABn_all = get_significantly_different_pairs(user_scores)
+            ABn_all = get_significantly_different_pairs(user_n_scores)
 
-        ABn_all_set = set(ABn_all.index)
-        for user_m in reference_users - {user_n}:
-            try:
-                ABm = ref_user_scores_pairs[user_m]
-            except KeyError:
-                # the reference user may not have contributed on the current criterion
-                continue
+        if len(ABn_all) > 0:
+            for user_m in reference_users - {user_n}:
+                try:
+                    ABm = ref_user_scores_pairs[user_m]
+                except KeyError:
+                    # the reference user may not have contributed on the current criterion
+                    continue
 
-            if all(pair not in ABn_all_set for pair in ABm.index):
-                continue
+                if ABn_all.index.intersection(ABm.index).size == 0:
+                    continue
 
-            ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
-            s_nqmab = np.abs(ABnm.score_a_m - ABnm.score_b_m) / np.abs(
-                ABnm.score_a_n - ABnm.score_b_n
-            )
-
-            delta_s_nqmab = (
-                (
-                    np.abs(ABnm.score_a_m - ABnm.score_b_m)
-                    + ABnm.uncertainty_a_m
-                    + ABnm.uncertainty_b_m
+                ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
+                s_nqmab = np.abs(ABnm.score_a_m - ABnm.score_b_m) / np.abs(
+                    ABnm.score_a_n - ABnm.score_b_n
                 )
-                / (
-                    np.abs(ABnm.score_a_n - ABnm.score_b_n)
-                    - ABnm.uncertainty_a_n
-                    - ABnm.uncertainty_b_n
-                )
-            ) - s_nqmab
 
-            s = QrMed(1, 1, s_nqmab - 1, delta_s_nqmab)
-            s_nqm.append(s + 1)
-            delta_s_nqm.append(QrUnc(1, 1, 1, s_nqmab - 1, delta_s_nqmab, qr_med=s))
-            s_weights.append(scaling_weights[user_m])
+                delta_s_nqmab = (
+                    (
+                        np.abs(ABnm.score_a_m - ABnm.score_b_m)
+                        + ABnm.uncertainty_a_m
+                        + ABnm.uncertainty_b_m
+                    )
+                    / (
+                        np.abs(ABnm.score_a_n - ABnm.score_b_n)
+                        - ABnm.uncertainty_a_n
+                        - ABnm.uncertainty_b_n
+                    )
+                ) - s_nqmab
+
+                s = QrMed(1, 1, s_nqmab - 1, delta_s_nqmab)
+                s_nqm.append(s + 1)
+                delta_s_nqm.append(QrUnc(1, 1, 1, s_nqmab - 1, delta_s_nqmab, qr_med=s))
+                s_weights.append(scaling_weights[user_m])
 
         s_weights = np.array(s_weights)
-        theta_inf = np.max(user_scores.score.abs())
+        theta_inf = np.max(user_n_scores.score.abs())
         s_nqm = np.array(s_nqm)
         delta_s_nqm = np.array(delta_s_nqm)
         if calibration:
@@ -165,12 +165,12 @@ def compute_scaling(
 
     tau_dict = {}
     delta_tau_dict = {}
-    for (user_n, user_scores) in df[df.user_id.isin(users_to_compute)].groupby("user_id"):
+    for (user_n, user_n_scores) in df[df.user_id.isin(users_to_compute)].groupby("user_id"):
         tau_nqm = []
         delta_tau_nqm = []
         s_weights = []
-        user_scores = user_scores.set_index("uid")
-        user_scores_uids = set(user_scores.index)
+        user_n_scores = user_n_scores.set_index("uid")
+        user_n_scores_uids = set(user_n_scores.index)
 
         for user_m in reference_users - {user_n}:
             try:
@@ -178,12 +178,12 @@ def compute_scaling(
             except KeyError:
                 # the reference user may not have contributed on the current criterion
                 continue
-            common_uids = list(user_scores_uids.intersection(user_m_scores.index))
+            common_uids = list(user_n_scores_uids.intersection(user_m_scores.index))
             if len(common_uids) == 0:
                 continue
 
             m_scores = user_m_scores.loc[common_uids]
-            n_scores = user_scores.loc[common_uids]
+            n_scores = user_n_scores.loc[common_uids]
 
             s_m = s_dict.get(user_m, 1)
             s_n = s_dict[user_n]
