@@ -104,12 +104,14 @@ const VideosPollUserSettingsForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={4} direction="column" alignItems="stretch">
-        {/* Generic settings common to all polls */}
         <Grid item>
           <Typography variant="h6">
             {t('pollUserSettingsForm.comparisonPage')}
           </Typography>
         </Grid>
+        {/*
+            Comparison UI: weekly collective goal display
+        */}
         <Grid item>
           <FormControl fullWidth>
             <InputLabel
@@ -132,30 +134,30 @@ const VideosPollUserSettingsForm = () => {
                 'data-testid': `${pollName}_weekly_collective_goal_display`,
               }}
             >
-              <MenuItem
-                value={ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS}
-              >
-                {t('pollUserSettingsForm.always')}
-              </MenuItem>
-              <MenuItem
-                value={
-                  ComparisonUi_weeklyCollectiveGoalDisplayEnum.WEBSITE_ONLY
-                }
-              >
-                {t('pollUserSettingsForm.websiteOnly')}
-              </MenuItem>
-              <MenuItem
-                value={
-                  ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY
-                }
-              >
-                {t('pollUserSettingsForm.embeddedOnly')}
-              </MenuItem>
-              <MenuItem
-                value={ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER}
-              >
-                {t('pollUserSettingsForm.never')}
-              </MenuItem>
+              {[
+                {
+                  label: t('pollUserSettingsForm.always'),
+                  value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS,
+                },
+                {
+                  label: t('pollUserSettingsForm.websiteOnly'),
+                  value:
+                    ComparisonUi_weeklyCollectiveGoalDisplayEnum.WEBSITE_ONLY,
+                },
+                {
+                  label: t('pollUserSettingsForm.embeddedOnly'),
+                  value:
+                    ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY,
+                },
+                {
+                  label: t('pollUserSettingsForm.never'),
+                  value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
+                },
+              ].map((item) => (
+                <MenuItem key={item.value} value={item.value}>
+                  {item.label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
@@ -164,6 +166,9 @@ const VideosPollUserSettingsForm = () => {
             {t('pollUserSettingsForm.rateLater')}
           </Typography>
         </Grid>
+        {/*
+            Rate-later list: auto removal threshold
+        */}
         <Grid item>
           <TextField
             required
