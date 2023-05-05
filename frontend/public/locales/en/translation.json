@@ -14,7 +14,7 @@
     "continue": "continue"
   },
   "video": {
-    "notAvailableAnymore": "This video is not available anymore.",
+    "notAvailableAnymore": "This video is not available on YouTube anymore.",
     "labelShowSettings": "Show settings related to this video",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
     "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
@@ -34,10 +34,14 @@
     "personalScore": "Personal score: {{score}}"
   },
   "entityCard": {
-    "notAvailableAnymore": "This entity is not available anymore."
+    "thisElementIsNotAvailable": "This element is not available anymore."
   },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
+  },
+  "pagination": {
+    "showingCounts_one": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}",
+    "showingCounts_other": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}"
   },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
@@ -94,6 +98,7 @@
     "recommendations": "Top of the month",
     "unconnected": "To connect",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "youtubeVideoUnavailable": "YouTube video unavailable.",
     "backButton": "Back"
   },
   "tabsBox": {
@@ -260,6 +265,8 @@
   "ratingOrderByInput": {
     "lastComparisonDate": "Last comparison date",
     "numberOfComparisons": "Number of comparisons",
+    "collectiveTournesolScore": "Collective Tournesol score ",
+    "individualTournesolScore": "Individual Tournesol score",
     "orderBy": "Order by",
     "order": "Order"
   },
@@ -348,13 +355,13 @@
   },
   "about": {
     "whatIsTournesol": "What is Tournesol?",
-    "introductionTournesol": "Tournesol is an open source platform which provides a tool for collaborative decisions. The main aim of the Tournesol project is to collaboratively identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Another application of Tournesol's algorithm that we are currently exploring is to collaboratively evaluate candidates in an election. Find out more with our <2>white paper</2>, our <5>wiki</5>, our <8>GitHub</8>, our <11>Discord</11>, or our <14>LinkedIn page</14>.",
+    "introductionTournesol": "Tournesol is an open source platform which provides a tool for collaborative decisions. The main aim of the Tournesol project is to collaboratively identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Another application of Tournesol's algorithm that we are currently exploring is to collaboratively evaluate candidates in an election. Find out more with our <2>white paper</2>, our <5>GitHub</5>, our <8>Discord</8>, or our <11>LinkedIn page</11>.",
     "tournesolVision": "We seek to build the foundations of a robust and beneficial algorithmic governance of information at scale",
     "tournesolVisionRaisingAwareness": "Through raising awareness of the global information crisis",
     "tournesolVisionCollaborativePlatform": "Through the development of a collaborative platform for evaluation and recommendation of online content",
     "tournesolVisionResearchOnEthicsOfAlgorithms": "Through research on ethics of algorithms relying on a large and reliable database of human judgements",
     "whoBuildsTournesol": "Who builds Tournesol?",
-    "tournesolTransparency": "Tournesol seeks to be an extremely transparent project. All contributions to the project are openly visible on our GitHub, description of important concepts and Tournesol's vision can be found on our wiki, and discussions that guide the development of Tournesol happen openly on our Discord.",
+    "tournesolTransparency": "Tournesol seeks to be an extremely transparent project. All contributions to the project are openly visible on our GitHub, description of important concepts and Tournesol's vision can be found on this website, and discussions that guide the development of Tournesol happen openly on our Discord.",
     "considerHelpingWithDonation": "If you can, please consider helping us <2>with a donation</2>.",
     "tournesolAssociation": "Tournesol Association",
     "tournesolAssociationDetail": "Tournesol is supported by the non-profit Tournesol association based in Lausanne, Switzerland.",
@@ -388,9 +395,19 @@
   },
   "donate": {
     "ifPossibleConsiderUsingDirectTransfers": "If possible, consider using direct transfers instead (see below). This allows the association to not pay additional fees and makes the most of your contributions.",
-    "donateWithUtip": "Donate with uTip",
+    "donateWithKKBB": "Donate with KissKissBankBank",
     "donateWithPaypal": "Donate with PayPal",
-    "doYouPreferDirectTransfer": "You prefer direct transfers?"
+    "doYouPreferDirectTransfer": "You prefer direct transfers?",
+    "whatDoWeDoQuestion": "How do we spend our funding?",
+    "whatDoWeDoAnswer": "First, we employ a software developer to work on the source code of Tournesol (about 4000€ per month with taxes). Second, we pay for infrastructures and services to host and run the Tournesol platform (about 150€ per month).",
+    "whatWeWouldDoQuestion": "What would we do with more funds?",
+    "whatWeWouldDoAnswer": "Our priority is to promote Tournesol and hire a second employee. The second employee would be either focused on growing the association and funding, or would be an engineer that would develop the website with expertise either in UX/Design or in Machine Learning.",
+    "howMuchDoWeHaveQuestion": "How much do we currently have?",
+    "howMuchDoWeHaveAnswer": "Since the creation of the association in 2021, we received a few generous donations that greatly helped us build the first version of the platform (approximately 60'000€). Since then, we have received less than 1000€ per month which is not enough to cover our costs for the long term.",
+    "howMuchWeCurrentlySpendQuestion": "How much do we currently spend?",
+    "howMuchWeCurrentlySpendAnswer": "The association spends a little bit more than 4000€ per month.",
+    "haveWeConsideredQuestion": "Have we considered other funding opportunities?",
+    "haveWeConsideredAnswer": "Yes, we have tried to apply to multiple sources of fundings but have not yet been successfully selected. If you are such a funding agency and find our project promising please contact us at hello@tournesol.app."
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",
@@ -469,14 +486,15 @@
       "message": "An unexpected error has occurred."
     }
   },
-  "faqEntryList": {
-    "questionURLCopied": "Question's URL copied."
-  },
   "faqPage": {
+    "frequentlyAskedQuestions": "Frequently Asked Questions",
     "iDidFindTheAnswers": "I didn't find the answer to my questions",
     "comeAndAskYourQuestionsOnDiscord": "Join our Discord server to ask directly your questions. Recurring questions will be added to the FAQ.",
     "joinUsOnDiscord": "Join Us on Discord",
     "tableOfContent": "Table of Content"
+  },
+  "faqEntryList": {
+    "questionURLCopied": "Question's URL copied."
   },
   "tempStudyBanner": {
     "join": "Join",
@@ -763,7 +781,7 @@
         "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
-          "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to consult its dedicated wiki page."
+          "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to find its detailed description."
         },
         "title4": "Thanks a lot for following this tutorial ❤️",
         "message4": {

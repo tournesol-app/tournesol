@@ -1,12 +1,16 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { Theme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
+
+import { Theme, useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
 
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
+import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
+
 import { ActionList } from 'src/utils/types';
 import { extractVideoId } from 'src/utils/video';
 import {
@@ -19,7 +23,6 @@ import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
-import { useLoginState } from 'src/hooks';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -129,12 +132,18 @@ const EntitySelectorInnerAuth = ({
   variant,
   autoFill,
 }: Props) => {
+  const theme = useTheme();
+  const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
+
+  const { availability: entityAvailability } = useEntityAvailable(
+    value.uid ?? ''
+  );
 
   let showEntityInput = true;
   let showRatingControl = true;
@@ -184,21 +193,28 @@ const EntitySelectorInnerAuth = ({
     setLoading(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
+  /**
+   * Load the user's rating.
+   */
   useEffect(() => {
     if (isUidValid(uid) && rating == null) {
       loadRating();
     }
   }, [loadRating, rating, uid]);
 
+  /**
+   * Reload rating after the parent (comparison) form has been submitted.
+   */
   useEffect(() => {
-    // Reload rating after the parent (comparison) form has been submitted.
     if (ratingIsExpired) {
       loadRating();
     }
   }, [loadRating, ratingIsExpired]);
 
+  /**
+   * Update input value when "uid" has been changed by the parent component.
+   */
   useEffect(() => {
-    // Update input value when "uid" has been changed by the parent component
     setInputValue((previousValue) => {
       if (previousValue !== uid) {
         return uid;
@@ -277,8 +293,8 @@ const EntitySelectorInnerAuth = ({
               currentUid={uid}
               otherUid={otherUid}
               onClick={() => {
-                setInputValue('');
                 setLoading(true);
+                setInputValue('');
               }}
               onResponse={(uid) => {
                 uid ? onChange({ uid, rating: null }) : setLoading(false);
@@ -296,16 +312,41 @@ const EntitySelectorInnerAuth = ({
           </Box>
         </>
       )}
-
-      {rating ? (
-        <EntityCard
-          compact
-          entity={rating.entity}
-          settings={showRatingControl ? toggleAction : undefined}
-        />
-      ) : (
-        <EmptyEntityCard compact loading={loading} />
-      )}
+      <Box position="relative">
+        {rating ? (
+          <EntityCard
+            compact
+            entity={rating.entity}
+            settings={showRatingControl ? toggleAction : undefined}
+          ></EntityCard>
+        ) : (
+          <EmptyEntityCard compact loading={loading} />
+        )}
+        {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !loading && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            position="absolute"
+            top="0"
+            color="white"
+            bgcolor="rgba(0,0,0,.6)"
+            width="100%"
+            sx={{
+              aspectRatio: '16/9',
+              [theme.breakpoints.down('sm')]: {
+                fontSize: '0.8rem',
+              },
+            }}
+          >
+            <Typography textAlign="center" fontSize="inherit">
+              {pollName === YOUTUBE_POLL_NAME
+                ? t('entitySelector.youtubeVideoUnavailable')
+                : t('entityCard.thisElementIsNotAvailable')}
+            </Typography>
+          </Box>
+        )}
+      </Box>
     </>
   );
 };

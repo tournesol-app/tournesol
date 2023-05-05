@@ -81,7 +81,7 @@ const EntityCard = ({
             <Typography>
               {entity.type == TypeEnum.VIDEO
                 ? t('video.notAvailableAnymore')
-                : t('entityCard.notAvailableAnymore')}
+                : t('entityCard.thisElementIsNotAvailable')}
             </Typography>
           </Grid>
           <Grid item>

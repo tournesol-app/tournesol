@@ -17,7 +17,13 @@ import { FAQEntry } from 'src/services/openapi';
  * Items are anchors allowing to jump directly to the question. The anchor
  * added to the URL is the `FAQEntry.name`.
  */
-const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
+const FAQTableOfContent = ({
+  entries,
+  onEntryClick,
+}: {
+  entries: Array<FAQEntry>;
+  onEntryClick: (name: string) => void;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -38,6 +44,7 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
             key={`toc_${entry.name}`}
             component="a"
             href={`#${entry.name}`}
+            onClick={() => onEntryClick(entry.name)}
           >
             <ListItemText>{entry.question}</ListItemText>
           </ListItemButton>

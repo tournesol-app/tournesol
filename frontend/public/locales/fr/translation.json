@@ -14,7 +14,7 @@
     "continue": "continuer"
   },
   "video": {
-    "notAvailableAnymore": "Cette vidéo n'est plus disponible.",
+    "notAvailableAnymore": "Cette vidéo n'est plus disponible sur YouTube.",
     "labelShowSettings": "Voir les paramètres de cette video",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
     "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
@@ -37,10 +37,15 @@
     "personalScore": "Score personnel\u00a0: {{score}}"
   },
   "entityCard": {
-    "notAvailableAnymore": "Cette entité n'est plus disponible."
+    "thisElementIsNotAvailable": "Cet élément n'est plus disponible."
   },
   "score": {
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
+  },
+  "pagination": {
+    "showingCounts_one": "Élément {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
+    "showingCounts_many": "Éléments {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
+    "showingCounts_other": "Éléments {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}"
   },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
@@ -97,6 +102,7 @@
     "recommendations": "Top du mois",
     "unconnected": "À relier",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
     "backButton": "Retour"
   },
   "tabsBox": {
@@ -266,6 +272,8 @@
   "ratingOrderByInput": {
     "lastComparisonDate": "Dernière comparaison",
     "numberOfComparisons": "Nombre de comparaisons",
+    "collectiveTournesolScore": "Tournesol score collectif",
+    "individualTournesolScore": "Tournesol score individuel",
     "orderBy": "Trier par",
     "order": "Ordre"
   },
@@ -355,13 +363,13 @@
   },
   "about": {
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
-    "introductionTournesol": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif. Le but principal de cet outil est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfiques à grande échelle, pour toute l'humanité. Une autre application que nous explorons en ce moment est d'utiliser l'algorithme de Tournesol pour évaluer des candidats à une élection. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
+    "introductionTournesol": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif. Le but principal de cet outil est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfiques à grande échelle, pour toute l'humanité. Une autre application que nous explorons en ce moment est d'utiliser l'algorithme de Tournesol pour évaluer des candidats à une élection. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>dépôt GitHub</5>, notre <8>serveur Discord</8>, et notre <11>page LinkedIn </11>.",
     "tournesolVision": "Nous souhaitons construire les fondations d'une gouvernance algorithmique robuste et bénéfique à grande échelle pour l'information",
     "tournesolVisionRaisingAwareness": "À travers la sensibilisation à la crise globale de l'information",
     "tournesolVisionCollaborativePlatform": "À travers le développement d'une plateforme collaborative pour l'évaluation et la recommandation de contenu en ligne",
     "tournesolVisionResearchOnEthicsOfAlgorithms": "À travers la recherche sur l'éthique des algorithmes en construisant une grande base de données fiable de jugements humains",
     "whoBuildsTournesol": "Qui fabrique Tournesol ?",
-    "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub ; la description des concepts importants et la vision du projet sont consultables sur notre Wiki ; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
+    "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub ; la description des concepts importants et la vision du projet sont consultables sur ce site ; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
     "considerHelpingWithDonation": "Si vous en avez la possibilité, n'hésitez pas à nous aider <2>en faisant un don</2>.",
     "tournesolAssociation": "L'association Tournesol",
     "tournesolAssociationDetail": "Le projet est porté par l'association à but not lucratif « Association Tournesol » basée à Lausanne en Suisse.",
@@ -395,9 +403,19 @@
   },
   "donate": {
     "ifPossibleConsiderUsingDirectTransfers": "Si possible, préférez les virements directs (voir au-dessous). Cela permet à l'association de ne pas payer de frais supplémentaires, et permet de tirer le meilleur parti de vos dons.",
-    "donateWithUtip": "Faire un don avec uTip",
+    "donateWithKKBB": "Faire un don avec KissKissBankBank",
     "donateWithPaypal": "Faire un don avec PayPal",
-    "doYouPreferDirectTransfer": "Vous préférez les virements directs ?"
+    "doYouPreferDirectTransfer": "Vous préférez les virements directs ?",
+    "whatDoWeDoQuestion": "Comment dépensons-nous nos fonds\u00a0?",
+    "whatDoWeDoAnswer": "Tout d'abord, nous engageons un développeur de logiciels pour travailler sur le code source de Tournesol (environ 4\u00a0000€ par mois avec taxes). Ensuite, nous payons des infrastructures et des services pour héberger et faire fonctionner la plateforme Tournesol (environ 150€ par mois).",
+    "whatWeWouldDoQuestion": "Que ferions-nous avec plus de fonds\u00a0?",
+    "whatWeWouldDoAnswer": "Notre priorité est de promouvoir Tournesol et d'embaucher un·e deuxième employé·e. La personne serait soit axée sur la croissance de l'association et le financement, soit serait un·e ingénieur·e qui développerait le site web avec une expertise en UX/Design ou en apprentissage automatique.",
+    "howMuchDoWeHaveQuestion": "Combien avons-nous actuellement\u00a0?",
+    "howMuchDoWeHaveAnswer": "Depuis la création de l'association en 2021, nous avons reçu plusieurs dons généreux qui nous ont grandement aidés à construire la première version de la plateforme (environ 60\u00a0000€). Depuis lors, nous avons reçu moins de 1\u00a0000€ par mois, ce qui n'est pas suffisant pour couvrir nos coûts à long terme.",
+    "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement\u00a0?",
+    "howMuchWeCurrentlySpendAnswer": "L'association dépense un peu plus de 4\u00a0000€ par mois.",
+    "haveWeConsideredQuestion": "Avons-nous envisagé d'autres opportunités de financement\u00a0?",
+    "haveWeConsideredAnswer": "Oui, nous avons essayé de postuler à plusieurs sources de financement mais n'avons pas encore été sélectionnés avec succès. Si vous êtes une agence de financement et que vous trouvez notre projet prometteur, veuillez nous contacter à l'adresse hello\u00a0(at)\u00a0tournesol.app."
   },
   "privacyPolicy": {
     "privacyPolicy": "Politique de confidentialité",
@@ -476,14 +494,15 @@
       "message": "Une erreur innatendu est survenue."
     }
   },
-  "faqEntryList": {
-    "questionURLCopied": "URL de la question copiée."
-  },
   "faqPage": {
+    "frequentlyAskedQuestions": "Foire Aux Questions",
     "iDidFindTheAnswers": "Je n'ai pas trouvé la réponse à mes questions",
     "comeAndAskYourQuestionsOnDiscord": "Venez poser vos questions directement sur notre serveur Discord. Les questions qui reviennent souvent seront ajoutées à la FAQ.",
     "joinUsOnDiscord": "Rejoignez-nous sur Discord",
     "tableOfContent": "Table des Matières"
+  },
+  "faqEntryList": {
+    "questionURLCopied": "URL de la question copiée."
   },
   "tempStudyBanner": {
     "join": "Participer",
@@ -771,7 +790,7 @@
         "message3": {
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
           "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
-          "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet de consulter sa page wiki dédiée."
+          "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
         },
         "title4": "Merci beaucoup d'avoir suivi ce tutoriel ❤️",
         "message4": {

@@ -2,6 +2,8 @@
 Administration interface of the `tournesol` app.
 """
 
+from datetime import datetime
+
 from django.contrib import admin, messages
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
@@ -10,6 +12,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from sql_util.utils import SubqueryCount
 
+from .entities.video import YOUTUBE_PUBLISHED_AT_FORMAT
 from .models import (
     Comparison,
     ComparisonCriteriaScore,
@@ -146,7 +149,15 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display(description="publication date", ordering="entity__metadata__publication_date")
     def get_publication_date(obj):
-        return obj.entity.metadata.get("publication_date")
+        pub_date = obj.entity.metadata.get("publication_date")
+
+        if pub_date:
+            try:
+                return datetime.strptime(pub_date, YOUTUBE_PUBLISHED_AT_FORMAT)
+            except ValueError:
+                # Fallback to the legacy format.
+                return datetime.strptime(pub_date, "%Y-%m-%d")
+        return pub_date
 
     @staticmethod
     @admin.display(description="Tournesol score", ordering="tournesol_score")

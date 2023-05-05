@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol API watch total accounts number of yesterday
+
+[Timer]
+OnCalendar={{tournesol_api_watch_account_number_yesterday_schedule}}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target
