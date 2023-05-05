@@ -12,22 +12,22 @@ import CollectiveGoalWeeklyProgress from 'src/features/goals/CollectiveGoalWeekl
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import {
   BlankEnum,
-  ComparisonUi_displayWeeklyCollectiveGoalEnum,
+  ComparisonUi_weeklyCollectiveGoalDisplayEnum,
 } from 'src/services/openapi';
 import { TournesolUserSettingsKeys } from 'src/utils/types';
 
 const displayWeeklyCollectiveGoal = (
-  userPreference: ComparisonUi_displayWeeklyCollectiveGoalEnum | BlankEnum,
+  userPreference: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum,
   isEmbedded: boolean
 ) => {
   const displayWhenEembedded = [
-    ComparisonUi_displayWeeklyCollectiveGoalEnum.ALWAYS,
-    ComparisonUi_displayWeeklyCollectiveGoalEnum.EMBEDDED_ONLY,
+    ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS,
+    ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY,
   ];
 
   const displayWhenWebsite = [
-    ComparisonUi_displayWeeklyCollectiveGoalEnum.ALWAYS,
-    ComparisonUi_displayWeeklyCollectiveGoalEnum.WEBSITE_ONLY,
+    ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS,
+    ComparisonUi_weeklyCollectiveGoalDisplayEnum.WEBSITE_ONLY,
   ];
 
   if (!userPreference) {
@@ -79,8 +79,8 @@ const ComparisonPage = () => {
   // By default always display the weekly collective goal.
   const weeklyCollectiveGoalDisplay =
     userSettings?.[pollName as TournesolUserSettingsKeys]
-      ?.comparison_ui__display_weekly_collective_goal ??
-    ComparisonUi_displayWeeklyCollectiveGoalEnum.ALWAYS;
+      ?.comparison_ui__weekly_collective_goal_display ??
+    ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 
   return (
     <>

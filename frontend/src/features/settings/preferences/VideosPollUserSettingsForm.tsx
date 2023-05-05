@@ -26,7 +26,7 @@ import { useNotifications } from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
-  ComparisonUi_displayWeeklyCollectiveGoalEnum,
+  ComparisonUi_weeklyCollectiveGoalDisplayEnum,
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
@@ -48,11 +48,11 @@ const VideosPollUserSettingsForm = () => {
   const userSettings = useSelector(selectSettings).settings;
 
   // Comparison (page)
-  const [compUiDisplayWeeklyColGoal, setCompUiDisplayWeeklyColGoal] = useState<
-    ComparisonUi_displayWeeklyCollectiveGoalEnum | BlankEnum
+  const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
+    ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum
   >(
-    userSettings?.[pollName]?.comparison_ui__display_weekly_collective_goal ??
-      ComparisonUi_displayWeeklyCollectiveGoalEnum.ALWAYS
+    userSettings?.[pollName]?.comparison_ui__weekly_collective_goal_display ??
+      ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
   );
 
   // Rate-later settings
@@ -62,9 +62,9 @@ const VideosPollUserSettingsForm = () => {
   );
 
   const changeCompUiDisplayWeeklyColGoal = (event: SelectChangeEvent) => {
-    setCompUiDisplayWeeklyColGoal(
+    setCompUiWeeklyColGoalDisplay(
       event.target.value as
-        | ComparisonUi_displayWeeklyCollectiveGoalEnum
+        | ComparisonUi_weeklyCollectiveGoalDisplayEnum
         | BlankEnum
     );
   };
@@ -77,8 +77,8 @@ const VideosPollUserSettingsForm = () => {
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
           [pollName]: {
-            comparison_ui__display_weekly_collective_goal:
-              compUiDisplayWeeklyColGoal,
+            comparison_ui__weekly_collective_goal_display:
+              compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
           },
         },
@@ -113,7 +113,7 @@ const VideosPollUserSettingsForm = () => {
         <Grid item>
           <FormControl fullWidth>
             <InputLabel
-              id="label__comparison_ui__display_weekly_collective_goal"
+              id="label__comparison_ui__weekly_collective_goal_display"
               color="secondary"
             >
               {t('pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal')}
@@ -121,35 +121,35 @@ const VideosPollUserSettingsForm = () => {
             <Select
               size="small"
               color="secondary"
-              id="comparison_ui__display_weekly_collective_goal"
-              labelId="label__comparison_ui__display_weekly_collective_goal"
-              value={compUiDisplayWeeklyColGoal}
+              id="comparison_ui__weekly_collective_goal_displayl"
+              labelId="label__comparison_ui__weekly_collective_goal_display"
+              value={compUiWeeklyColGoalDisplay}
               label={t(
                 'pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal'
               )}
               onChange={changeCompUiDisplayWeeklyColGoal}
             >
               <MenuItem
-                value={ComparisonUi_displayWeeklyCollectiveGoalEnum.ALWAYS}
+                value={ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS}
               >
                 {t('pollUserSettingsForm.always')}
               </MenuItem>
               <MenuItem
                 value={
-                  ComparisonUi_displayWeeklyCollectiveGoalEnum.WEBSITE_ONLY
+                  ComparisonUi_weeklyCollectiveGoalDisplayEnum.WEBSITE_ONLY
                 }
               >
                 {t('pollUserSettingsForm.websiteOnly')}
               </MenuItem>
               <MenuItem
                 value={
-                  ComparisonUi_displayWeeklyCollectiveGoalEnum.EMBEDDED_ONLY
+                  ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY
                 }
               >
                 {t('pollUserSettingsForm.embeddedOnly')}
               </MenuItem>
               <MenuItem
-                value={ComparisonUi_displayWeeklyCollectiveGoalEnum.NEVER}
+                value={ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER}
               >
                 {t('pollUserSettingsForm.never')}
               </MenuItem>

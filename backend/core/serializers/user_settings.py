@@ -11,7 +11,7 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     The settings common to all polls.
     """
 
-    COMPONENT_DISPLAYED_STATE = [
+    COMPONENT_DISPLAY_STATE = [
         ("ALWAYS", "always"),
         ("EMBEDDED_ONLY", "embedded_only"),
         ("WEBSITE_ONLY", "website_only"),
@@ -21,8 +21,8 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     comparison__criteria_order = serializers.ListField(
         child=serializers.CharField(), required=False
     )
-    comparison_ui__display_weekly_collective_goal = serializers.ChoiceField(
-        choices=COMPONENT_DISPLAYED_STATE, allow_blank=True, required=False
+    comparison_ui__weekly_collective_goal_display = serializers.ChoiceField(
+        choices=COMPONENT_DISPLAY_STATE, allow_blank=True, required=False
     )
 
     rate_later__auto_remove = serializers.IntegerField(required=False)
