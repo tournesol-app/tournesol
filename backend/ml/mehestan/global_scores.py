@@ -116,7 +116,10 @@ def compute_scaling(
             ABn_all = get_significantly_different_pairs(user_scores)
 
         for user_m in reference_users - {user_n}:
-            ABm = ref_user_scores_pairs[user_m]
+            try:
+                ABm = ref_user_scores_pairs[user_m]
+            except KeyError:
+                continue
             ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
             if len(ABnm) == 0:
                 continue
@@ -165,7 +168,10 @@ def compute_scaling(
         user_scores = user_scores.set_index("uid")
 
         for user_m in reference_users - {user_n}:
-            user_m_scores = ref_user_scores_by_uid[user_m]
+            try:
+                user_m_scores = ref_user_scores_by_uid[user_m]
+            except KeyError:
+                continue
             common_uids = list(set(user_scores.index).intersection(user_m_scores.index))
             if len(common_uids) == 0:
                 continue
