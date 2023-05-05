@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -44,10 +44,10 @@ const FAQSingleEntry = ({
 
   const answerParagraphs = entry.answer.split('\n');
 
-  const statsContext = useContext(StatsContext);
-  const getStats = statsContext.getStats;
-  const refreshStats = statsContext.refreshStats;
-  console.log("dc");
+  const { getStats } = useContext(StatsContext);
+  useEffect(() => {
+    console.log(getStats());
+  }, [getStats]);
 
   return (
     <Box mb={4}>

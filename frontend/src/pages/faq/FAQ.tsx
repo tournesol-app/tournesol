@@ -7,11 +7,7 @@ import { useNotifications } from 'src/hooks/useNotifications';
 import FAQTableOfContent from 'src/pages/faq/FAQTableOfContent';
 import FAQEntryList from 'src/pages/faq/FAQEntryList';
 import { FAQEntry, FaqService } from 'src/services/openapi';
-import {
-  StatsContext,
-  StatsProvider,
-} from 'src/features/comparisons/StatsContext';
-import { Statistics } from 'src/services/openapi';
+import { StatsProvider } from 'src/features/comparisons/StatsContext';
 
 /**
  * The FAQ page.

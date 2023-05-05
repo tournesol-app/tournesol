@@ -1,10 +1,16 @@
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Statistics, StatsService } from 'src/services/openapi';
 
 interface StatsContextValue {
   stats: Statistics;
   refreshStats: () => void;
-  getStats: () => Statistics;
+  getStats: () => Statistics | void;
 }
 
 const initialState: Statistics = {
@@ -23,27 +29,32 @@ export const StatsContext = createContext<StatsContextValue>({
 });
 
 export const StatsProvider = ({ children }: { children: React.ReactNode }) => {
+  const loading = useRef(false);
   const [stats, setStats] = useState(initialState);
 
+  /**
+   * Return the current `stats` if any, else refresh them.
+   */
+  const getStats = useCallback(() => {
+    if (stats.polls.length === 0 && !loading.current) {
+      loading.current = true;
+      refreshStats();
+      return;
+    }
+
+    return stats;
+  }, [stats]);
+
   const refreshStats = useCallback(async () => {
-		const refreshedStats = await StatsService.statsRetrieve();
-		setStats(refreshedStats);
+    setStats(await StatsService.statsRetrieve());
+    loading.current = false;
   }, []);
 
-  const getStats = useCallback(() => {
-		if(stats===initialState){
-			console.log("coucuo");
-			refreshStats();
-			return stats;
-		}
-		return stats;
-	}, []);
-
-	const contextValue = useMemo(
+  const contextValue = useMemo(
     () => ({
       stats,
+      getStats,
       refreshStats,
-			getStats,
     }),
     [stats]
   );
