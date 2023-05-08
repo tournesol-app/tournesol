@@ -10,7 +10,7 @@ import { Statistics, StatsService } from 'src/services/openapi';
 interface StatsContextValue {
   stats: Statistics;
   refreshStats: () => void;
-  getStats: () => Statistics | void;
+  getStats: () => Statistics;
 }
 
 const initialState: Statistics = {
@@ -39,7 +39,7 @@ export const StatsProvider = ({ children }: { children: React.ReactNode }) => {
     if (stats.polls.length === 0 && !loading.current) {
       loading.current = true;
       refreshStats();
-      return;
+      return initialState;
     }
 
     return stats;

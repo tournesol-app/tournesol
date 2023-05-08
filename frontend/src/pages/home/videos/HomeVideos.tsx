@@ -97,7 +97,6 @@ const HomeVideosPage = () => {
           )}
         </TitleSection>
       </Box>
-
       <Grid2 container width="100%" flexDirection="column" alignItems="center">
         <Grid2 sx={homeSectionSx}>
           <ComparisonSection />

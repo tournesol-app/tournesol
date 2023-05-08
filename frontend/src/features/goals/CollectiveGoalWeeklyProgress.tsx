@@ -1,28 +1,30 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useContext, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, LinearProgress, Typography } from '@mui/material';
 
-import { selectStats } from 'src/features/comparisons/statsSlice';
 import { useCurrentPoll } from 'src/hooks';
 
 import {
   WEEKLY_COMPARISON_GOAL,
   getWeeklyProgressionEmoji,
 } from './collective';
+import { StatsContext } from '../comparisons/StatsContext';
+import { Statistics } from 'src/services/openapi';
+import { getPollStats } from '../statistics/stats';
 
 const CollectiveGoalWeeklyProgress = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const publicStats = useSelector(selectStats);
+  const [stats, setStats] = useState<Statistics>();
 
-  const pollStats = publicStats.polls.find((poll) => {
-    if (poll.name === pollName) {
-      return poll;
-    }
-  });
+  const { getStats } = useContext(StatsContext);
+  useEffect(() => {
+    setStats(getStats());
+  }, [getStats]);
+
+  const pollStats = getPollStats(stats, pollName);
 
   const collectiveComparisonsNbr =
     pollStats?.comparisons.added_current_week ?? 0;

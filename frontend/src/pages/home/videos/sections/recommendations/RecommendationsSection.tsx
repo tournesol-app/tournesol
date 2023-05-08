@@ -1,17 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
 
-import { selectStats } from 'src/features/comparisons/statsSlice';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import { getPollStats } from 'src/features/statistics/stats';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
 import { useCurrentPoll } from 'src/hooks';
 import SectionTitle from '../SectionTitle';
 import UseOurExtension from './UseOurExtension';
+import { StatsContext } from 'src/features/comparisons/StatsContext';
+import { Statistics } from 'src/services/openapi';
 
 /**
  * A home page section that displays a subset of recommended entities.
@@ -20,8 +20,14 @@ const RecommendationsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const publicStats = useSelector(selectStats);
-  const pollStats = getPollStats(publicStats, pollName);
+  const [stats, setStats] = useState<Statistics>();
+
+  const { getStats } = useContext(StatsContext);
+  useEffect(() => {
+    setStats(getStats());
+  }, [getStats]);
+
+  const pollStats = getPollStats(stats, pollName);
 
   const titleColor = '#fff';
 

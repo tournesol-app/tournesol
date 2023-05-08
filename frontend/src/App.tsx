@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Switch, Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
@@ -25,13 +24,13 @@ import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
-import { fetchStats } from './features/comparisons/statsSlice';
 import { LoginState } from './features/login/LoginState.model';
 import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
-import { PollProvider, useCurrentPoll } from './hooks/useCurrentPoll';
+import { PollProvider } from './hooks/useCurrentPoll';
 import FAQ from './pages/faq/FAQ';
 import { scrollToTop } from './utils/ui';
+import { StatsProvider } from './features/comparisons/StatsContext';
 
 // The Analysis Page uses recharts which is a rather big library,
 // thus we choose to load it lazily.
@@ -64,32 +63,7 @@ const ScrollToTop = () => {
 };
 
 const InitGlobalStates = () => {
-  const dispatch = useDispatch();
-  const { name: pollName } = useCurrentPoll();
-
-  const notDisplayed = new URLSearchParams(location.search).get(
-    'page_not_displayed'
-  );
-
-  /**
-   * Refresh the global states that contain poll specific data.
-   */
-  useEffect(() => {
-    /**
-     * For now it's not required to call the /stats/ API when the page is not
-     * displayed.
-     *
-     * This temporary hack prevents the hidden iframe of the extension to
-     * trigger a consequent amount of costly and not required requests to the
-     * API.
-     */
-    if (notDisplayed !== '1') {
-      dispatch(fetchStats());
-    }
-  }, [dispatch, notDisplayed, pollName]);
-
   useRefreshSettings();
-
   return null;
 };
 
@@ -106,73 +80,75 @@ function App() {
 
   return (
     <PollProvider>
-      <ScrollToTop />
-      <InitGlobalStates />
-      <Frame>
-        <Switch>
-          {/* About routes */}
-          <PublicRoute path="/faq">
-            <FAQ />
-          </PublicRoute>
-          <PublicRoute path="/about/privacy_policy">
-            <PrivacyPolicy />
-          </PublicRoute>
-          <PublicRoute path="/about/trusted_domains">
-            <TrustedDomains />
-          </PublicRoute>
-          <PublicRoute path="/about/donate">
-            <DonatePage />
-          </PublicRoute>
-          <PublicRoute path="/about">
-            <About />
-          </PublicRoute>
-          {/* LEGAGY route used for retro-compatibility */}
-          <PublicRoute path="/video/:video_id">
-            <VideoAnalysisPage />
-          </PublicRoute>
-          {/* User Management routes */}
-          <PublicRoute path="/login">
-            <LoginPage />
-          </PublicRoute>
-          <PrivateRoute path="/settings/profile">
-            <SettingsProfilePage />
-          </PrivateRoute>
-          <PrivateRoute path="/settings/account">
-            <SettingsAccountPage />
-          </PrivateRoute>
-          <PrivateRoute path="/settings/preferences">
-            <SettingsPreferencesPage />
-          </PrivateRoute>
-          <PrivateRoute path="/vouching">
-            <PersonalVouchersPage />
-          </PrivateRoute>
-          <PublicRoute path="/signup">
-            {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
-          </PublicRoute>
-          <PublicRoute path="/verify-user">
-            <VerifySignature verify="user" />
-          </PublicRoute>
-          <PublicRoute path="/verify-email">
-            <VerifySignature verify="email" />
-          </PublicRoute>
-          <PublicRoute path="/forgot">
-            {isLoggedIn ? (
-              <Redirect to="/settings/account" />
-            ) : (
-              <ForgotPassword />
-            )}
-          </PublicRoute>
-          <PublicRoute path="/reset-password">
-            <ResetPassword />
-          </PublicRoute>
-          {/* Polls */}
-          {polls.map(({ name, path }) => (
-            <PublicRoute key={name} path={path}>
-              <PollRoutes pollName={name}></PollRoutes>
+      <StatsProvider>
+        <ScrollToTop />
+        <InitGlobalStates />
+        <Frame>
+          <Switch>
+            {/* About routes */}
+            <PublicRoute path="/faq">
+              <FAQ />
             </PublicRoute>
-          ))}
-        </Switch>
-      </Frame>
+            <PublicRoute path="/about/privacy_policy">
+              <PrivacyPolicy />
+            </PublicRoute>
+            <PublicRoute path="/about/trusted_domains">
+              <TrustedDomains />
+            </PublicRoute>
+            <PublicRoute path="/about/donate">
+              <DonatePage />
+            </PublicRoute>
+            <PublicRoute path="/about">
+              <About />
+            </PublicRoute>
+            {/* LEGAGY route used for retro-compatibility */}
+            <PublicRoute path="/video/:video_id">
+              <VideoAnalysisPage />
+            </PublicRoute>
+            {/* User Management routes */}
+            <PublicRoute path="/login">
+              <LoginPage />
+            </PublicRoute>
+            <PrivateRoute path="/settings/profile">
+              <SettingsProfilePage />
+            </PrivateRoute>
+            <PrivateRoute path="/settings/account">
+              <SettingsAccountPage />
+            </PrivateRoute>
+            <PrivateRoute path="/settings/preferences">
+              <SettingsPreferencesPage />
+            </PrivateRoute>
+            <PrivateRoute path="/vouching">
+              <PersonalVouchersPage />
+            </PrivateRoute>
+            <PublicRoute path="/signup">
+              {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
+            </PublicRoute>
+            <PublicRoute path="/verify-user">
+              <VerifySignature verify="user" />
+            </PublicRoute>
+            <PublicRoute path="/verify-email">
+              <VerifySignature verify="email" />
+            </PublicRoute>
+            <PublicRoute path="/forgot">
+              {isLoggedIn ? (
+                <Redirect to="/settings/account" />
+              ) : (
+                <ForgotPassword />
+              )}
+            </PublicRoute>
+            <PublicRoute path="/reset-password">
+              <ResetPassword />
+            </PublicRoute>
+            {/* Polls */}
+            {polls.map(({ name, path }) => (
+              <PublicRoute key={name} path={path}>
+                <PollRoutes pollName={name}></PollRoutes>
+              </PublicRoute>
+            ))}
+          </Switch>
+        </Frame>
+      </StatsProvider>
     </PollProvider>
   );
 }

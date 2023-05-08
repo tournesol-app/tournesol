@@ -7,7 +7,6 @@ import { useNotifications } from 'src/hooks/useNotifications';
 import FAQTableOfContent from 'src/pages/faq/FAQTableOfContent';
 import FAQEntryList from 'src/pages/faq/FAQEntryList';
 import { FAQEntry, FaqService } from 'src/services/openapi';
-import { StatsProvider } from 'src/features/comparisons/StatsContext';
 
 /**
  * The FAQ page.
@@ -91,17 +90,15 @@ const FAQ = () => {
 
   return (
     <>
-      <StatsProvider>
-        <ContentHeader title={t('faqPage.frequentlyAskedQuestions')} />
-        <ContentBox maxWidth="md">
-          <FAQTableOfContent entries={entries} onEntryClick={displayEntry} />
-          <FAQEntryList
-            entries={entries}
-            displayedEntries={displayedEntries}
-            onEntryVisibilityChange={setEntryVisibility}
-          />
-        </ContentBox>
-      </StatsProvider>
+      <ContentHeader title={t('faqPage.frequentlyAskedQuestions')} />
+      <ContentBox maxWidth="md">
+        <FAQTableOfContent entries={entries} onEntryClick={displayEntry} />
+        <FAQEntryList
+          entries={entries}
+          displayedEntries={displayedEntries}
+          onEntryVisibilityChange={setEntryVisibility}
+        />
+      </ContentBox>
     </>
   );
 };
