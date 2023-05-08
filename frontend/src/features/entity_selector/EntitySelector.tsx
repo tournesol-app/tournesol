@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Theme, useTheme } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
 
@@ -23,6 +23,7 @@ import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
+import UnavailableOverlay from 'src/components/entity/UnavailableOverlay';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -132,7 +133,6 @@ const EntitySelectorInnerAuth = ({
   variant,
   autoFill,
 }: Props) => {
-  const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
 
@@ -323,28 +323,13 @@ const EntitySelectorInnerAuth = ({
           <EmptyEntityCard compact loading={loading} />
         )}
         {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !loading && (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            position="absolute"
-            top="0"
-            color="white"
-            bgcolor="rgba(0,0,0,.6)"
-            width="100%"
-            sx={{
-              aspectRatio: '16/9',
-              [theme.breakpoints.down('sm')]: {
-                fontSize: '0.8rem',
-              },
-            }}
-          >
-            <Typography textAlign="center" fontSize="inherit">
-              {pollName === YOUTUBE_POLL_NAME
+          <UnavailableOverlay
+            msg={
+              pollName === YOUTUBE_POLL_NAME
                 ? t('entitySelector.youtubeVideoUnavailable')
-                : t('entityCard.thisElementIsNotAvailable')}
-            </Typography>
-          </Box>
+                : t('entityCard.thisElementIsNotAvailable')
+            }
+          />
         )}
       </Box>
     </>

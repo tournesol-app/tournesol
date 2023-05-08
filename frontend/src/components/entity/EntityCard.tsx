@@ -25,6 +25,7 @@ import EntityCardScores from './EntityCardScores';
 import EntityImagery from './EntityImagery';
 import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import { entityCardMainSx } from './style';
+import UnavailableOverlay from './UnavailableOverlay';
 
 const EntityCard = ({
   entity,
@@ -116,28 +117,13 @@ const EntityCard = ({
               config={entityTypeConfig}
             />
             {!isAvailable && compact && (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                position="absolute"
-                top="0"
-                color="white"
-                bgcolor="rgba(0,0,0,.6)"
-                width="100%"
-                height="100%"
-                sx={{
-                  [theme.breakpoints.down('sm')]: {
-                    fontSize: '0.6rem',
-                  },
-                }}
-              >
-                <Typography textAlign="center" fontSize="inherit">
-                  {entity.type == TypeEnum.VIDEO
+              <UnavailableOverlay
+                msg={
+                  entity.type == TypeEnum.VIDEO
                     ? t('video.notAvailableAnymore')
-                    : t('entityCard.thisElementIsNotAvailable')}
-                </Typography>
-              </Box>
+                    : t('entityCard.thisElementIsNotAvailable')
+                }
+              />
             )}
           </Grid>
           <Grid

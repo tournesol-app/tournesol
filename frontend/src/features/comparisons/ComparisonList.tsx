@@ -5,9 +5,9 @@ import { Grid, Container, Tooltip, Fab, Box, useTheme } from '@mui/material';
 import { Compare as CompareIcon } from '@mui/icons-material';
 
 import type { Comparison } from 'src/services/openapi';
+import AvailableEntity from 'src/components/entity/AvailableEntity';
 import EntityCard from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import AvailableEntity from 'src/components/entity/AvailableEntity';
 
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const { t } = useTranslation();
