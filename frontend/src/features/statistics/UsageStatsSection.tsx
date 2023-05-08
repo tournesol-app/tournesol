@@ -3,9 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useStats } from 'src/hooks';
 import { getPollStats } from './stats';
-import { useStats } from 'src/hooks/useStats';
 
 interface statsProp {
   text: string;

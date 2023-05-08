@@ -7,10 +7,9 @@ import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import { getPollStats } from 'src/features/statistics/stats';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useStats } from 'src/hooks';
 import SectionTitle from '../SectionTitle';
 import UseOurExtension from './UseOurExtension';
-import { useStats } from 'src/hooks/useStats';
 
 /**
  * A home page section that displays a subset of recommended entities.

@@ -4,8 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Typography, Button } from '@mui/material';
 
 import { getPollStats } from 'src/features/statistics/stats';
-import { useCurrentPoll } from 'src/hooks';
-import { useStats } from 'src/hooks/useStats';
+import { useCurrentPoll, useStats } from 'src/hooks';
 
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case

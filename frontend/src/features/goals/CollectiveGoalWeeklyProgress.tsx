@@ -3,14 +3,13 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, LinearProgress, Typography } from '@mui/material';
 
-import { useCurrentPoll } from 'src/hooks';
+import { getPollStats } from 'src/features/statistics/stats';
+import { useCurrentPoll, useStats } from 'src/hooks';
 
 import {
   WEEKLY_COMPARISON_GOAL,
   getWeeklyProgressionEmoji,
 } from './collective';
-import { getPollStats } from '../statistics/stats';
-import { useStats } from 'src/hooks/useStats';
 
 const CollectiveGoalWeeklyProgress = () => {
   const { t } = useTranslation();

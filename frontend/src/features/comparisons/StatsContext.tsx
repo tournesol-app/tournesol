@@ -22,15 +22,24 @@ const initialState: Statistics = {
   polls: [],
 };
 
-export const StatsContext = createContext<StatsContextValue>({
+const StatsContext = createContext<StatsContextValue>({
   stats: initialState,
   refreshStats: () => undefined,
   getStats: () => initialState,
 });
 
-export const StatsProvider = ({ children }: { children: React.ReactNode }) => {
+export const StatsLazyProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const loading = useRef(false);
   const [stats, setStats] = useState(initialState);
+
+  const refreshStats = useCallback(async () => {
+    setStats(await StatsService.statsRetrieve());
+    loading.current = false;
+  }, []);
 
   /**
    * Return the current `stats` if any, else refresh them.
@@ -43,12 +52,7 @@ export const StatsProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return stats;
-  }, [stats]);
-
-  const refreshStats = useCallback(async () => {
-    setStats(await StatsService.statsRetrieve());
-    loading.current = false;
-  }, []);
+  }, [stats, refreshStats]);
 
   const contextValue = useMemo(
     () => ({
@@ -56,7 +60,7 @@ export const StatsProvider = ({ children }: { children: React.ReactNode }) => {
       getStats,
       refreshStats,
     }),
-    [stats]
+    [stats, getStats, refreshStats]
   );
 
   return (
@@ -65,3 +69,5 @@ export const StatsProvider = ({ children }: { children: React.ReactNode }) => {
     </StatsContext.Provider>
   );
 };
+
+export default StatsContext;

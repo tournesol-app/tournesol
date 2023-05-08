@@ -5,10 +5,10 @@ import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import { getPollStats } from 'src/features/statistics/stats';
+import { useCurrentPoll, useStats } from 'src/hooks';
+
 import HomeComparison from './HomeComparison';
 import SectionTitle from './SectionTitle';
-import { useCurrentPoll } from 'src/hooks';
-import { useStats } from 'src/hooks/useStats';
 
 const ComparisonSection = () => {
   const { t } = useTranslation();
