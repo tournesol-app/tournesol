@@ -6,6 +6,7 @@ import {
   EntityNoExtraField,
   Recommendation,
   RelatedEntity,
+  TournesolUserSettings,
   Video,
   VideoSerializerWithCriteria,
 } from 'src/services/openapi';
@@ -111,3 +112,15 @@ export type SelectablePoll = {
   // entities
   extraMetadataOrderBy?: Array<string>;
 };
+
+/**
+ * Useful to dynamically retrieve the user's settings of the current poll.
+ *
+ * Ex:
+ *
+ *  const {name: pollName} = useCurrentPoll();
+ *  const userSettings = useSelector(selectSettings).settings;
+ *
+ *  const displayThat = userSettings?.[pollName as TournesolUserSettingsKeys]?.displayThat ?? true;
+ */
+export type TournesolUserSettingsKeys = keyof TournesolUserSettings;

@@ -11,9 +11,20 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     The settings common to all polls.
     """
 
+    COMPONENT_DISPLAY_STATE = [
+        ("ALWAYS", "always"),
+        ("EMBEDDED_ONLY", "embedded_only"),
+        ("WEBSITE_ONLY", "website_only"),
+        ("NEVER", "never"),
+    ]
+
     comparison__criteria_order = serializers.ListField(
         child=serializers.CharField(), required=False
     )
+    comparison_ui__weekly_collective_goal_display = serializers.ChoiceField(
+        choices=COMPONENT_DISPLAY_STATE, allow_blank=True, required=False
+    )
+
     rate_later__auto_remove = serializers.IntegerField(required=False)
 
     def validate_comparison__criteria_order(self, criteria):
