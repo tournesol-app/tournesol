@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Button, Collapse, Typography } from '@mui/material';
@@ -22,7 +21,7 @@ import {
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 
-import { fetchStats } from './statsSlice';
+import StatsContext from './StatsContext';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -54,15 +53,16 @@ const ComparisonSliders = ({
   isComparisonPublic?: boolean;
 }) => {
   const classes = useStyles();
-
-  const dispatch = useDispatch();
   const { t } = useTranslation();
+
   const {
     criteriaByName,
     criterias,
     name: pollName,
     active: isPollActive,
   } = useCurrentPoll();
+
+  const { refreshStats } = useContext(StatsContext);
 
   const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -128,7 +128,7 @@ const ComparisonSliders = ({
       await submit(comparison);
     } finally {
       setDisableSubmit(false);
-      dispatch(fetchStats());
+      refreshStats();
     }
 
     // avoid a "memory leak" warning if the component is unmounted on submit.
