@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -10,8 +10,7 @@ import RecommendationsSubset from 'src/features/recommendation/subset/Recommenda
 import { useCurrentPoll } from 'src/hooks';
 import SectionTitle from '../SectionTitle';
 import UseOurExtension from './UseOurExtension';
-import { StatsContext } from 'src/features/comparisons/StatsContext';
-import { Statistics } from 'src/services/openapi';
+import { useStats } from 'src/hooks/useStats';
 
 /**
  * A home page section that displays a subset of recommended entities.
@@ -20,13 +19,7 @@ const RecommendationsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [stats, setStats] = useState<Statistics>();
-
-  const { getStats } = useContext(StatsContext);
-  useEffect(() => {
-    setStats(getStats());
-  }, [getStats]);
-
+  const stats = useStats();
   const pollStats = getPollStats(stats, pollName);
 
   const titleColor = '#fff';

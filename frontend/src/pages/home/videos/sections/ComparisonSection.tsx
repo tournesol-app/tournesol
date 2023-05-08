@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
@@ -8,20 +8,13 @@ import { getPollStats } from 'src/features/statistics/stats';
 import HomeComparison from './HomeComparison';
 import SectionTitle from './SectionTitle';
 import { useCurrentPoll } from 'src/hooks';
-import { StatsContext } from 'src/features/comparisons/StatsContext';
-import { Statistics } from 'src/services/openapi';
+import { useStats } from 'src/hooks/useStats';
 
 const ComparisonSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [stats, setStats] = useState<Statistics>();
-
-  const { getStats } = useContext(StatsContext);
-  useEffect(() => {
-    setStats(getStats());
-  }, [getStats]);
-
+  const stats = useStats();
   const pollStats = getPollStats(stats, pollName);
 
   const color = '#fff';

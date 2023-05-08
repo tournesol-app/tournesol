@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
-import { StatsContext } from '../comparisons/StatsContext';
-import { Statistics } from 'src/services/openapi';
 import { getPollStats } from './stats';
+import { useStats } from 'src/hooks/useStats';
 
 interface statsProp {
   text: string;
@@ -59,13 +58,7 @@ const StatsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [stats, setStats] = useState<Statistics>();
-
-  const { getStats } = useContext(StatsContext);
-  useEffect(() => {
-    setStats(getStats());
-  }, [getStats]);
-
+  const stats = useStats();
   const pollStats = getPollStats(stats, pollName);
 
   const comparedEntitiesTitle = useMemo(() => {

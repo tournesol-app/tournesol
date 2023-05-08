@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, LinearProgress, Typography } from '@mui/material';
@@ -9,21 +9,14 @@ import {
   WEEKLY_COMPARISON_GOAL,
   getWeeklyProgressionEmoji,
 } from './collective';
-import { StatsContext } from '../comparisons/StatsContext';
-import { Statistics } from 'src/services/openapi';
 import { getPollStats } from '../statistics/stats';
+import { useStats } from 'src/hooks/useStats';
 
 const CollectiveGoalWeeklyProgress = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [stats, setStats] = useState<Statistics>();
-
-  const { getStats } = useContext(StatsContext);
-  useEffect(() => {
-    setStats(getStats());
-  }, [getStats]);
-
+  const stats = useStats();
   const pollStats = getPollStats(stats, pollName);
 
   const collectiveComparisonsNbr =

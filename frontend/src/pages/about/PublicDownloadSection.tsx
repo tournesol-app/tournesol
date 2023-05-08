@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import { Typography, Button } from '@mui/material';
 
 import { getPollStats } from 'src/features/statistics/stats';
 import { useCurrentPoll } from 'src/hooks';
-import { StatsContext } from 'src/features/comparisons/StatsContext';
-import { Statistics } from 'src/services/openapi';
+import { useStats } from 'src/hooks/useStats';
 
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case
@@ -14,15 +13,9 @@ const PublicDownloadSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [stats, setStats] = useState<Statistics>();
-
   const api_url = process.env.REACT_APP_API_URL;
 
-  const { getStats } = useContext(StatsContext);
-  useEffect(() => {
-    setStats(getStats());
-  }, [getStats]);
-
+  const stats = useStats();
   const pollStats = getPollStats(stats, pollName);
 
   const userCount = stats?.active_users.total ?? 0;
