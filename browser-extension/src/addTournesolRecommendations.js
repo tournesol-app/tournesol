@@ -11,13 +11,9 @@ const TS_BANNER_ACTION_EN_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSfEXZLlkLA6ngx8LV-VVpIxV9AZ9MgN-H_U0aTOnVhrXv1XLQ/viewform?usp=pp_url&entry.1924714025=';
 const TS_BANNER_PROOF_KW = 'browser_extension_study_2023';
 
-const videosPerRow = 4;
-const rowsWhenExpanded = 3;
-
 let isExpanded = false;
 
 let videos = [];
-let additionalVideos = [];
 let isPageLoaded = false;
 let areRecommandationsLoading = false;
 let areRecommendationsLoaded = false;
@@ -27,6 +23,12 @@ loadRecommandations();
 document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
 else document.addEventListener('DOMContentLoaded', process);
+
+const getVideosPerRow = () => {
+  return getComputedStyle(
+    document.querySelector('ytd-rich-grid-row')
+  ).getPropertyValue('--ytd-rich-grid-items-per-row');
+};
 
 const convertDurationToClockDuration = (duration) => {
   const roundToTwoDigits = (number) => {
@@ -361,10 +363,17 @@ const getTournesolComponent = () => {
   const videosFlexContainer = createVideosFlexContainer();
   tournesol_container.append(videosFlexContainer);
 
-  function make_video_box(video) {
+  function willVideoBeOnFirstRow(index) {
+    return index < getVideosPerRow();
+  }
+
+  function make_video_box(video, index) {
     // Div whith everything about a video
     const video_box = document.createElement('div');
-    video_box.className = 'video_box';
+
+    video_box.className =
+      'video_box' +
+      (willVideoBeOnFirstRow(index) || isExpanded ? '' : ' hidden');
 
     // Div with thumbnail and video duration
     const thumb_div = document.createElement('div');
@@ -429,12 +438,9 @@ const getTournesolComponent = () => {
     return video_box;
   }
 
-  videos.forEach((video) => videosFlexContainer.append(make_video_box(video)));
-  if (isExpanded) {
-    additionalVideos.forEach((video) =>
-      videosFlexContainer.append(make_video_box(video))
-    );
-  }
+  videos.forEach((video, index) =>
+    videosFlexContainer.append(make_video_box(video, index))
+  );
 
   return tournesol_container;
 };
@@ -486,8 +492,7 @@ function process() {
 function handleResponse({ data: videosReponse }) {
   areRecommandationsLoading = false;
   areRecommendationsLoaded = true;
-  videos = videosReponse.slice(0, 4);
-  additionalVideos = videosReponse.slice(4);
+  videos = videosReponse;
 
   if (isPageLoaded) {
     displayRecommendations();
@@ -505,8 +510,8 @@ function loadRecommandations() {
   chrome.runtime.sendMessage(
     {
       message: 'getTournesolRecommendations',
-      videosNumber: videosPerRow,
-      additionalVideosNumber: videosPerRow * (rowsWhenExpanded - 1),
+      videosNumber: 16,
+      additionalVideosNumber: 0,
     },
     handleResponse
   );
@@ -530,27 +535,20 @@ function viewPublishedDate(publishedDate) {
   }
   const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
 
-  if (diffDays == 0) {
-    return 'Today';
-  } else if (diffDays == 1) {
-    return 'Yesterday';
-  } else if (diffDays < 31) {
-    if (diffDays < 14) {
-      return `${diffDays} days ago`;
-    } else {
-      return `${Math.floor(diffDays / 7)} weeks ago`;
-    }
-  } else if (diffDays < 365) {
-    if (diffDays < 61) {
-      return '1 month ago';
-    } else {
-      return `${Math.floor(diffDays / 30)} months ago`;
-    }
-  } else {
-    if (diffDays < 730) {
-      return '1 year ago';
-    } else {
-      return `${Math.floor(diffDays / 365)} years ago`;
+  const diffTable = [
+    [1, 'Today', 0],
+    [2, 'Yesterday', 0],
+    [14, '%value% day%plural% ago', 1],
+    [31, '%value% week%plural% ago', 7],
+    [365, '%value% month%plural% ago', 30],
+    [Infinity, '%value% year%plural% ago', 365],
+  ];
+
+  for (const [threshold, text, divisor] of diffTable) {
+    if (diffDays < threshold) {
+      const value = Math.floor(diffDays / divisor);
+      const plural = value > 1 ? 's' : '';
+      return text.replace('%value%', value).replace('%plural%', plural);
     }
   }
 }

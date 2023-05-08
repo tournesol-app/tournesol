@@ -1,5 +1,5 @@
 :root {
-  --ts-container-padding: 16px;
+  --ts-container-padding: 0;
 
   --ts-palette-primary-main: #ffc800;
   --ts-palette-primary-main-hover: #b28c00;
@@ -49,10 +49,8 @@
 
   /* MUI <Paper> style imitation */
   border-radius: 4px;
-  box-shadow:
-    0px 2px 1px -1px rgb(0 0 0 / 20%),
-    0px 1px 1px 0px rgb(0 0 0 / 14%),
-    0px 1px 3px 0px rgb(0 0 0 / 12%);
+  box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
 }
 
 #tournesol_banner.displayed {
@@ -92,6 +90,9 @@ html[dark] #tournesol_banner_close_icon {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
+  width: calc(100% - 2 * var(--ytd-rich-grid-item-margin));
+  margin: var(--ytd-rich-grid-item-margin);
+  gap: var(--ytd-rich-grid-item-margin);
 }
 
 #tournesol_title {
@@ -164,19 +165,15 @@ html[dark] #tournesol_campaign_button {
   background-color: var(--ts-palette-primary-main);
 
   border-radius: 4px;
-  box-shadow:
-    0px 3px 1px -2px rgb(0 0 0 / 20%),
-    0px 2px 2px 0px rgb(0 0 0 / 14%),
-    0px 1px 5px 0px rgb(0 0 0 / 12%);
+  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
+    0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
 }
 
 .tournesol_mui_like_button:hover {
   text-decoration: none;
   background-color: rgb(178, 140, 0);
-  box-shadow:
-    0px 2px 4px -1px rgb(0 0 0 / 20%),
-    0px 4px 5px 0px rgb(0 0 0 / 14%),
-    0px 1px 10px 0px rgb(0 0 0 / 12%);
+  box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
+    0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
 }
 
 .tournesol_simple_button {
@@ -239,7 +236,14 @@ html[dark] #tournesol_campaign_button {
 
 .video_box {
   position: relative;
-  width: calc(100% / 4 - var(--ytd-rich-grid-item-margin) - 0.01px);
+  width: calc(
+    100% / var(--ytd-rich-grid-items-per-row) - var(--ytd-rich-grid-item-margin) -
+      0.01px
+  );
+}
+
+.hidden {
+  display: none;
 }
 
 .video_thumb {
@@ -262,7 +266,7 @@ html[dark] #tournesol_campaign_button {
   display: -webkit-box;
   line-height: 2rem;
   max-height: 4rem;
-  min-height: 4rem;
+  min-height: 3rem;
 }
 
 .video_link {
@@ -305,14 +309,13 @@ html[dark] #tournesol_campaign_button {
 
 .time_span {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 6px;
+  right: 6px;
   color: white;
   background-color: var(--yt-spec-static-overlay-background-heavy);
-  margin: 4px;
   padding: 3px 4px;
   height: 12px;
-  border-radius: 2px;
+  border-radius: 4px;
   flex-direction: row;
   align-items: center;
   cursor: pointer;
@@ -320,6 +323,7 @@ html[dark] #tournesol_campaign_button {
   font-weight: 500;
   line-height: var(--yt-badge-line-height-size, 1.2rem);
   letter-spacing: var(--yt-badge-letter-spacing, 0.5px);
+  transition: opacity 0.2s ease-in;
 }
 
 .thumb_div {
