@@ -56,7 +56,7 @@ const WeeklyCollectiveGoalDisplay = ({
       label: t('pollUserSettingsForm.never'),
       value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
     },
-  ]
+  ];
 
   return (
     <FormControl fullWidth>
