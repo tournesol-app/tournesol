@@ -14,7 +14,7 @@ import DonatePage from './pages/about/Donate';
 import PersonalVouchersPage from './pages/personal/vouchers/VouchersPage';
 import Frame from './features/frame/Frame';
 
-import { StatsLazyProvider } from './features/comparisons/StatsContext';
+import { StatsLazyProvider } from './features/statistics/StatsContext';
 import PublicRoute from './features/login/PublicRoute';
 import PrivateRoute from './features/login/PrivateRoute';
 

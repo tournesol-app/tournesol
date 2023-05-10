@@ -11,8 +11,7 @@ import type {
   ComparisonRequest,
   ComparisonCriteriaScore,
 } from 'src/services/openapi';
-
-import CriteriaSlider from './CriteriaSlider';
+import StatsContext from 'src/features/statistics/StatsContext';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
   clearPendingRating,
@@ -20,8 +19,7 @@ import {
   resetPendingRatings,
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
-
-import StatsContext from './StatsContext';
+import CriteriaSlider from './CriteriaSlider';
 
 const useStyles = makeStyles(() => ({
   root: {

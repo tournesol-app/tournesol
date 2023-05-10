@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import StatsContext from 'src/features/comparisons/StatsContext';
+import StatsContext from 'src/features/statistics/StatsContext';
 import { Statistics } from 'src/services/openapi';
 
 export const useStats = () => {
