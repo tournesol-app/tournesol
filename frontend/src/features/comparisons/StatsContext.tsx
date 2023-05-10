@@ -22,9 +22,6 @@ const initialState: Statistics = {
   polls: [],
 };
 
-let currentTime = Date.now();
-let lastExecutionTime = 0;
-
 const StatsContext = createContext<StatsContextValue>({
   stats: initialState,
   refreshStats: () => undefined,
@@ -37,6 +34,7 @@ export const StatsLazyProvider = ({
   children: React.ReactNode;
 }) => {
   const loading = useRef(false);
+  const lastRefreshAt = useRef(0);
   const [stats, setStats] = useState(initialState);
 
   const refreshStats = useCallback(async () => {
@@ -48,7 +46,7 @@ export const StatsLazyProvider = ({
    * Return the current `stats` if any, else refresh them.
    */
   const getStats = useCallback(() => {
-    currentTime = Date.now();
+    const currentTime = Date.now();
 
     if (stats.polls.length === 0 && !loading.current) {
       loading.current = true;
@@ -56,10 +54,10 @@ export const StatsLazyProvider = ({
       return initialState;
     } else if (
       stats.polls.length !== 0 &&
-      currentTime - lastExecutionTime >= 4000
+      currentTime - lastRefreshAt.current >= 4000
     ) {
       refreshStats();
-      lastExecutionTime = currentTime;
+      lastRefreshAt.current = currentTime;
     }
 
     return stats;
