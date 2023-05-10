@@ -3,12 +3,10 @@ import { useTranslation } from 'react-i18next';
 
 import {
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
-  Typography,
 } from '@mui/material';
 
 import {
@@ -68,13 +66,11 @@ const WeeklyCollectiveGoalDisplay = ({
           },
           {
             label: t('pollUserSettingsForm.websiteOnly'),
-            value:
-              ComparisonUi_weeklyCollectiveGoalDisplayEnum.WEBSITE_ONLY,
+            value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.WEBSITE_ONLY,
           },
           {
             label: t('pollUserSettingsForm.embeddedOnly'),
-            value:
-              ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY,
+            value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY,
           },
           {
             label: t('pollUserSettingsForm.never'),

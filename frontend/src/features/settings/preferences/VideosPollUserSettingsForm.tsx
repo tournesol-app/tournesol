@@ -104,9 +104,9 @@ const VideosPollUserSettingsForm = () => {
           />
         </Grid>
         <Grid item>
-        <Typography variant="h6">
-          {t('pollUserSettingsForm.rateLater')}
-        </Typography>
+          <Typography variant="h6">
+            {t('pollUserSettingsForm.rateLater')}
+          </Typography>
         </Grid>
         {/*
             Rate-later list: auto removal threshold

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Grid, TextField, Typography } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 
 import { ApiError } from 'src/services/openapi';
 
@@ -57,9 +57,7 @@ const RateLaterAutoRemove = ({
       type="number"
       variant="outlined"
       value={rateLaterAutoRemoval}
-      onChange={(event) =>
-        setRateLaterAutoRemoval(Number(event.target.value))
-      }
+      onChange={(event) => setRateLaterAutoRemoval(Number(event.target.value))}
       inputProps={{
         min: 1,
         'data-testid': `${pollName}_rate_later__auto_remove`,
