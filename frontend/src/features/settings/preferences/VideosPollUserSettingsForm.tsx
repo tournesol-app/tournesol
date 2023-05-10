@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 
 import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
@@ -88,17 +88,37 @@ const VideosPollUserSettingsForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={4} direction="column" alignItems="stretch">
-        <WeeklyCollectiveGoalDisplay
-          compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
-          setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-          pollName={pollName}
-        />
-        <RateLaterAutoRemove
-          apiErrors={apiErrors}
-          rateLaterAutoRemoval={rateLaterAutoRemoval}
-          setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-          pollName={pollName}
-        />
+        <Grid item>
+          <Typography variant="h6">
+            {t('pollUserSettingsForm.comparisonPage')}
+          </Typography>
+        </Grid>
+        {/*
+            Comparison UI: weekly collective goal display
+        */}
+        <Grid item>
+          <WeeklyCollectiveGoalDisplay
+            compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
+            setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+        <Typography variant="h6">
+          {t('pollUserSettingsForm.rateLater')}
+        </Typography>
+        </Grid>
+        {/*
+            Rate-later list: auto removal threshold
+        */}
+        <Grid item>
+          <RateLaterAutoRemove
+            apiErrors={apiErrors}
+            rateLaterAutoRemoval={rateLaterAutoRemoval}
+            setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+            pollName={pollName}
+          />
+        </Grid>
         <Grid item>
           <Button
             fullWidth
