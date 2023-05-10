@@ -8,12 +8,12 @@ import React, {
 import { Statistics, StatsService } from 'src/services/openapi';
 
 // Stats are considered outdated after this amount of miliseconds.
-const EXPIRATION_DELAY = 4000;
+const EXPIRATION_TIME = 4000;
 
 interface StatsContextValue {
   stats: Statistics;
-  refreshStats: () => void;
   getStats: () => Statistics;
+  refreshStats: () => void;
 }
 
 const initialState: Statistics = {
@@ -27,8 +27,8 @@ const initialState: Statistics = {
 
 const StatsContext = createContext<StatsContextValue>({
   stats: initialState,
-  refreshStats: () => undefined,
   getStats: () => initialState,
+  refreshStats: () => undefined,
 });
 
 export const StatsLazyProvider = ({
@@ -63,7 +63,7 @@ export const StatsLazyProvider = ({
     // Refresh the stats when the existing stats are outdated.
     if (
       stats.polls.length !== 0 &&
-      currentTime - lastRefreshAt.current >= EXPIRATION_DELAY
+      currentTime - lastRefreshAt.current >= EXPIRATION_TIME
     ) {
       refreshStats();
       return stats;
