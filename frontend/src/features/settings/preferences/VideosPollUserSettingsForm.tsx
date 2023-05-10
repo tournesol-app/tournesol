@@ -93,9 +93,6 @@ const VideosPollUserSettingsForm = () => {
             {t('pollUserSettingsForm.comparisonPage')}
           </Typography>
         </Grid>
-        {/*
-            Comparison UI: weekly collective goal display
-        */}
         <Grid item>
           <WeeklyCollectiveGoalDisplay
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
@@ -108,9 +105,6 @@ const VideosPollUserSettingsForm = () => {
             {t('pollUserSettingsForm.rateLater')}
           </Typography>
         </Grid>
-        {/*
-            Rate-later list: auto removal threshold
-        */}
         <Grid item>
           <RateLaterAutoRemove
             apiErrors={apiErrors}
