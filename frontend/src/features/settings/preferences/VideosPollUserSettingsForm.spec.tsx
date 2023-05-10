@@ -14,7 +14,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 import { LoginState } from 'src/features/login/LoginState.model';
 import { initialState } from 'src/features/login/loginSlice';
-import { OpenAPI, TournesolUserSettings } from 'src/services/openapi';
+import {
+  ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  OpenAPI,
+  TournesolUserSettings,
+} from 'src/services/openapi';
 
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
@@ -50,7 +54,12 @@ describe('GenericPollUserSettingsForm', () => {
         url: api_url + '/users/me/settings/',
         method: 'PATCH',
         functionMatcher: (_, { body }) => {
-          return body === '{"videos":{"rate_later__auto_remove":16}}';
+          if (!body) {
+            return false;
+          }
+
+          const bodyContent = body.toString();
+          return bodyContent.includes('"rate_later__auto_remove":16');
         },
       },
       {
@@ -58,6 +67,7 @@ describe('GenericPollUserSettingsForm', () => {
         body: {
           videos: {
             rate_later__auto_remove: 16,
+            comparison_ui__weekly_collective_goal_display: 'NEVER',
           },
         },
       },
@@ -69,7 +79,12 @@ describe('GenericPollUserSettingsForm', () => {
         url: api_url + '/users/me/settings/',
         method: 'PATCH',
         functionMatcher: (_, { body }) => {
-          return body === '{"videos":{"rate_later__auto_remove":-1}}';
+          if (!body) {
+            return false;
+          }
+
+          const bodyContent = body.toString();
+          return bodyContent.includes('"rate_later__auto_remove":-1');
         },
       },
       {
@@ -100,6 +115,8 @@ describe('GenericPollUserSettingsForm', () => {
       token: initialState,
       settings: {
         videos: {
+          // Here we don't define all the settings so we can ensure the form
+          // behaves correctly when initialized with undefined settings.
           rate_later__auto_remove: 0,
         },
       },
@@ -108,12 +125,16 @@ describe('GenericPollUserSettingsForm', () => {
     storeDispatchSpy = jest.spyOn(store, 'dispatch');
     const rendered = component({ store: store });
 
+    const compUiWeeklyColGoalDisplay = screen.getByTestId(
+      'videos_weekly_collective_goal_display'
+    );
     const rateLaterAutoRemove = screen.getByTestId(
       'videos_rate_later__auto_remove'
     );
     const submit = screen.getByRole('button', { name: /update/i });
 
     return {
+      compUiWeeklyColGoalDisplay,
       rateLaterAutoRemove,
       rendered,
       storeDispatchSpy,
@@ -136,10 +157,20 @@ describe('GenericPollUserSettingsForm', () => {
 
   describe('Success', () => {
     it('displays the defined values after a submit', async () => {
-      const { rateLaterAutoRemove, submit } = setup();
+      const { compUiWeeklyColGoalDisplay, rateLaterAutoRemove, submit } =
+        setup();
 
+      // Here we check the default values used when the settings are not yet
+      // defined by the user.
       expect(rateLaterAutoRemove).toHaveValue(8);
+      expect(compUiWeeklyColGoalDisplay).toHaveValue(
+        ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
+      );
+
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
+      fireEvent.change(compUiWeeklyColGoalDisplay, {
+        target: { value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER },
+      });
       expect(submit).toBeEnabled();
 
       await act(async () => {
@@ -147,6 +178,9 @@ describe('GenericPollUserSettingsForm', () => {
       });
 
       expect(rateLaterAutoRemove).toHaveValue(16);
+      expect(compUiWeeklyColGoalDisplay).toHaveValue(
+        ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER
+      );
       expect(submit).toBeEnabled();
     });
 
@@ -168,7 +202,13 @@ describe('GenericPollUserSettingsForm', () => {
       expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
       expect(storeDispatchSpy).toBeCalledWith({
         type: 'settings/replaceSettings',
-        payload: { videos: { rate_later__auto_remove: 16 } },
+        payload: {
+          videos: {
+            comparison_ui__weekly_collective_goal_display:
+              ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
+            rate_later__auto_remove: 16,
+          },
+        },
       });
     });
 

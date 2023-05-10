@@ -1,0 +1,134 @@
+{
+  "menuRateNow": {
+    "message": "Comparer",
+    "description": "Label du bouton de menu permettant de comparer la vidéo."
+  },
+  "menuRateLater": {
+    "message": "Comparer plus tard",
+    "description": "Label du bouton de menu permettant d'ajouter la vidéo à la liste à comparer plus tard."
+  },
+  "menuAnalysis": {
+    "message": "Analyses",
+    "description": "Label du bouton de menu permettant d'accéder à la page d'analyse d'une vidéo."
+  },
+  "menuSearchEnabled": {
+    "message": "Recherche activée",
+    "description": "Label du bouton de menu recherche affiché lorsque la recherche est activée."
+  },
+  "menuSearchDisabled": {
+    "message": "Recherche désactivée",
+    "description": "Label du bouton de menu recherche affiché lorsque la recherche est désactivée."
+  },
+  "recommendedByTournesol": {
+    "message": "Recommandées par Tournesol",
+    "description": "Titre du conteneur principal affichant les recommandations."
+  },
+  "learnMore": {
+    "message": "En savoir plus",
+    "description": "Inviter les utilisateurs à en savoir plus sur le projet (texte très court)."
+  },
+  "views": {
+    "message": "$1 vues",
+    "description": "Affiche le nombre de vues d'une vidéo."
+  },
+  "publishedToday": {
+    "message": "Aujourd'hui",
+    "description": "Date affichée pour les vidéos publiées aujourd'hui."
+  },
+  "publishedYesterday": {
+    "message": "Hier",
+    "description": "Date affichée pour les vidéos publiées hier."
+  },
+  "publishedSomeDaysAgo": {
+    "message": "Il y a $1 jours",
+    "description": "Date affichée pour les vidéos publiées il y a moins de deux semaines."
+  },
+  "publishedSomeWeeksAgo": {
+    "message": "Il y a $1 semaines",
+    "description": "Date affichée pour les vidéos publiées entre: il y a deux semaines et un mois."
+  },
+  "publishedAMonthAgo": {
+    "message": "Il y a 1 mois",
+    "description": "Date affichée pour les vidéos publiées il y a un mois."
+  },
+  "publishedSomeMonthsAgo": {
+    "message": "Il y a $1 mois",
+    "description": "Date affichée pour les vidéos publiées entre: il y a deux mois et un an."
+  },
+  "publishedAYearAgo": {
+    "message": "Il y a 1 an",
+    "description": "Date affichée pour les vidéos publiées il y a un an."
+  },
+  "publishedSomeYearsAgo": {
+    "message": "Il y a $1 ans",
+    "description": "Date affichée pour les vidéos publiées il a plus d'un an."
+  },
+  "comparisonsBy": {
+    "message": " $1 comparaisons par",
+    "description": "Nombre de comparaisons impliquant la vidéo."
+  },
+  "comparisonsContributors": {
+    "message": " $1 contributeur·rices",
+    "description": "Nombre de contributeur·rices ayant notés la vidéo."
+  },
+  "reliability": {
+    "message": "Fiable & non trompeur",
+    "description": "Nom complet du critère 'fiable'."
+  },
+  "pedagogy": {
+    "message": "Clair & pédagogique",
+    "description": "Nom complet du critère 'pédagogie'."
+  },
+  "importance": {
+    "message": "Important & actionnable",
+    "description": "Nom complet du critère 'importance'."
+  },
+  "layman_friendly": {
+    "message": "Accessible aux non-spécialistes",
+    "description": "Nom complet du critère 'accessible'."
+  },
+  "entertaining_relaxing": {
+    "message": "Divertissant & relaxant",
+    "description": "Nom complet du critère 'divertissant'."
+  },
+  "engaging": {
+    "message": "Stimulant & suscite la réflexion",
+    "description": "Nom complet du critère 'stimulant'."
+  },
+  "diversity_inclusion": {
+    "message": "Diversité & inclusion",
+    "description": "Nom complet du critère 'diversité'."
+  },
+  "better_habits": {
+    "message": "Encourage de meilleurs habitudes",
+    "description": "Nom complet du critère 'meilleures habitudes'."
+  },
+  "backfire_risk": {
+    "message": "Résistant aux retours négatifs",
+    "description": "Nom complet du critère 'résistant'."
+  },
+  "ratedHigh": {
+    "message": "Notée fortement :",
+    "description": "Label du critère ayant le plus haut score positif."
+  },
+  "ratedLow": {
+    "message": "Notée faiblement :",
+    "description": "Label du critère ayant le plus faible score négatif."
+  },
+  "viewMore": {
+    "message": "Voir plus sur tournesol",
+    "Description": "Inviter les utilisateur·rices à voir plus de résultats sur le site web de Tournesol."
+  },
+  "study2023BannerText": {
+    "message": "Le projet Tournesol est-il vraiment efficace ? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !",
+    "description": "Inviter les utilisateur·rices à participer à l'étude."
+  },
+  "study2023ActionButton": {
+    "message": "Participer",
+    "description": "Label du bouton d'action principal de la bannière."
+  },
+  "study2023JoinError": {
+    "message": "Désolé, une erreur est survenue.\n\nS'il vous plaît, reportez l'erreur dans notre espace GitHub ou sur notre serveur Discord.\n\n GitHub : https://github.com/tournesol-app/tournesol/issues/new\n\n Discord : https://discord.com/invite/TvsFB8RNBV",
+    "description": "Inviter les utilisateur·rices à reporter l'erreur de participation."
+  }
+}

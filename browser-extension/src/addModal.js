@@ -12,14 +12,14 @@ const EXT_MODAL_VISIBLE_STATE = 'flex';
 // the value of the CSS property display used to make the modal invisible
 const EXT_MODAL_INVISIBLE_STATE = 'none';
 
-// unique HTML id of the Tournesol login iframe
-const IFRAME_TOURNESOL_LOGIN_ID = 'x-tournesol-iframe-login';
-
-// iframe URL of tournesol login
+// unique HTML id of the Tournesol iframe
+const IFRAME_TOURNESOL_ID = 'x-tournesol-iframe';
+// URL of the Tournesol login page
 const IFRAME_TOURNESOL_LOGIN_URL =
   'https://tournesol.app/login?embed=1&dnt=1&page_not_displayed=1';
+
 /**
- * Youtube doesnt completely load a page, so content script doesn't
+ * YouTube doesnt completely load a page, so content script doesn't
  * launch correctly without these events.
  *
  * This part is called on connection for the first time on youtube.com/*
@@ -51,7 +51,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function initTournesolModal() {
-  // Timers will run until needed elements are generated
   const iframeTimer = window.setInterval(createTournesolModal, 300);
 
   /**
@@ -75,9 +74,8 @@ function initTournesolModal() {
     modal.setAttribute('id', EXT_MODAL_ID);
 
     const iframe = document.createElement('iframe');
-    iframe.setAttribute('id', IFRAME_TOURNESOL_LOGIN_ID);
+    iframe.setAttribute('id', IFRAME_TOURNESOL_ID);
     iframe.setAttribute('src', IFRAME_TOURNESOL_LOGIN_URL);
-
     modal.append(iframe);
     document.body.prepend(modal);
 
@@ -109,7 +107,7 @@ function initTournesolModal() {
  */
 function displayModal({ src, height } = {}) {
   const modal = document.getElementById(EXT_MODAL_ID);
-  const iframe = document.getElementById(IFRAME_TOURNESOL_LOGIN_ID);
+  const iframe = document.getElementById(IFRAME_TOURNESOL_ID);
 
   if (!modal) {
     return false;

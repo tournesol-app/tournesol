@@ -43,13 +43,6 @@ function addRateButtons() {
    * Create the Rate Later and the Rate Now buttons.
    */
   function createButtonIsReady() {
-    /*
-     ** Wait for needed elements to be generated
-     ** It seems those elements are generated via javascript, so run-at document_idle in manifest is not enough to prevent errors
-     **
-     ** Some ids on video pages are duplicated, so I take the first non-duplicated id and search in its childs the correct div to add the button
-     ** Note: using .children[index] when child has no id
-     */
     const buttonsContainer = getYtButtonsContainer();
     if (!buttonsContainer) {
       return;

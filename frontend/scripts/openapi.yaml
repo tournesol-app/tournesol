@@ -1284,7 +1284,8 @@ paths:
         schema:
           type: string
         description: 'Order the results by: last_compared_at, -last_compared_at, n_comparisons,
-          -n_comparisons, or any allowed metadata field.'
+          -n_comparisons, collective_score, -collective_score, individual_score, -individual_score,
+          or any allowed metadata field.'
       tags:
       - users
       security:
@@ -2435,6 +2436,18 @@ components:
       - criteria_scores
       - entity_a
       - entity_b
+    ComparisonUi_weeklyCollectiveGoalDisplayEnum:
+      enum:
+      - ALWAYS
+      - EMBEDDED_ONLY
+      - WEBSITE_ONLY
+      - NEVER
+      type: string
+      description: |-
+        * `ALWAYS` - always
+        * `EMBEDDED_ONLY` - embedded_only
+        * `WEBSITE_ONLY` - website_only
+        * `NEVER` - never
     ComparisonUpdate:
       type: object
       description: |-
@@ -4061,6 +4074,10 @@ components:
           type: array
           items:
             type: string
+        comparison_ui__weekly_collective_goal_display:
+          oneOf:
+          - $ref: '#/components/schemas/ComparisonUi_weeklyCollectiveGoalDisplayEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         rate_later__auto_remove:
           type: integer
         recommendations__default_date:
@@ -4085,6 +4102,10 @@ components:
           items:
             type: string
             minLength: 1
+        comparison_ui__weekly_collective_goal_display:
+          oneOf:
+          - $ref: '#/components/schemas/ComparisonUi_weeklyCollectiveGoalDisplayEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         rate_later__auto_remove:
           type: integer
         recommendations__default_date:

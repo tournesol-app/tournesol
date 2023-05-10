@@ -1,0 +1,134 @@
+{
+  "menuRateNow": {
+    "message": "Rate now",
+    "description": "Label of the rate now menu button."
+  },
+  "menuRateLater": {
+    "message": "Rate later",
+    "description": "Label of the rate-later menu button."
+  },
+  "menuAnalysis": {
+    "message": "Analysis",
+    "description": "Label of the analysis menu button."
+  },
+  "menuSearchEnabled": {
+    "message": "Search is on",
+    "description": "Label of the search button when search is enabled."
+  },
+  "menuSearchDisabled": {
+    "message": "Search is off",
+    "description": "Label of the search button when search is disabled."
+  },
+  "recommendedByTournesol": {
+    "message": "Recommended by Tournesol",
+    "description": "Title of the main Tournesol container."
+  },
+  "learnMore": {
+    "message": "learn more",
+    "description": "Invite the users to learn more about the project (should be very short)."
+  },
+  "views": {
+    "message": "$1 views",
+    "description": "Display the number of views of a video."
+  },
+  "publishedToday": {
+    "message": "Today",
+    "description": "Date displayed for vides published today."
+  },
+  "publishedYesterday": {
+    "message": "Yesterday",
+    "description": "Date displayed for video published yesterday."
+  },
+  "publishedSomeDaysAgo": {
+    "message": "$1 days ago",
+    "description": "Date displayed for videos published less than two weeks ago."
+  },
+  "publishedSomeWeeksAgo": {
+    "message": "$1 weeks ago",
+    "description": "Date displayed for videos published between two weeks ago and one month ago."
+  },
+  "publishedAMonthAgo": {
+    "message": "1 month ago",
+    "description": "Date displayed for videos published one month ago."
+  },
+  "publishedSomeMonthsAgo": {
+    "message": "$1 months ago",
+    "description": "Date displayed for videos published between two month ago and one year ago."
+  },
+  "publishedAYearAgo": {
+    "message": "1 year ago",
+    "description": "Date displayed for videos published one year ago."
+  },
+  "publishedSomeYearsAgo": {
+    "message": "$1 years ago",
+    "description": "Date displayed for videos published more than one year ago."
+  },
+  "comparisonsBy": {
+    "message": " $1 comparisons by",
+    "description": "Number of comparisons involving the video."
+  },
+  "comparisonsContributors": {
+    "message": " $1 contributors",
+    "description": "Number of contributors that rated the video."
+  },
+  "reliability": {
+    "message": "Reliable & not misleading",
+    "description": "Full name of the criterion 'reliable'."
+  },
+  "pedagogy": {
+    "message": "Clear & pedagogical",
+    "description": "Full name of the criterion 'pedagogy'."
+  },
+  "importance": {
+    "message": "Important & actionable",
+    "description": "Full name of the criterion 'importance'."
+  },
+  "layman_friendly": {
+    "message": "Layman-friendly",
+    "description": "Full name of the criterion 'layman friendly'."
+  },
+  "entertaining_relaxing": {
+    "message": "Entertaining & relaxing",
+    "description": "Full name of the criterion 'entertaining'."
+  },
+  "engaging": {
+    "message": "Engaging & thought-provoking",
+    "description": "Full name of the criterion 'engaging'."
+  },
+  "diversity_inclusion": {
+    "message": "Diversity & inclusion",
+    "description": "Full name of the criterion 'diversity'."
+  },
+  "better_habits": {
+    "message": "Encourages better habits",
+    "description": "Full name of the criterion 'better habits'."
+  },
+  "backfire_risk": {
+    "message": "Resilience to backfiring risks",
+    "description": "Full name of the criterion 'backfire risk'."
+  },
+  "ratedHigh": {
+    "message": "Rated high:",
+    "description": "Label of the criterion with the highest positive score."
+  },
+  "ratedLow": {
+    "message": "Rated low:",
+    "description": "Label of the criterion with the lowest negative score."
+  },
+  "viewMore": {
+    "message": "View more on tournesol",
+    "Description": "Invite the users to see more results on the Tournesol website."
+  },
+  "study2023BannerText": {
+    "message": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!",
+    "description": "Invite the users to join the study."
+  },
+  "study2023ActionButton": {
+    "message": "Join",
+    "description": "Label of the main action button of the banner."
+  },
+  "study2023JoinError": {
+    "message": "Sorry, an error occured.\n\nPlease, report the issue on our GitHub space or on our Discord server.\n\nGitHub: https://github.com/tournesol-app/tournesol/issues/new\n\nDiscord: https://discord.com/invite/TvsFB8RNBV",
+    "description": "Invite the users to report the participation issue."
+  }
+}
