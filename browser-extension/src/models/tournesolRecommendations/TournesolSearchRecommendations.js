@@ -37,7 +37,7 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
         chrome.runtime.sendMessage(
           {
             message: 'getTournesolSearchRecommendations',
-            search: this.searchQuery,
+            search: decodeURI(this.searchQuery),
             videosNumber: this.videosPerRow,
             additionalVideosNumber:
               this.videosPerRow * (this.rowsWhenExpanded - 1),
