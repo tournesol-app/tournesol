@@ -7,6 +7,9 @@ import React, {
 } from 'react';
 import { Statistics, StatsService } from 'src/services/openapi';
 
+// Stats are considered outdated after this amount of miliseconds.
+const EXPIRATION_DELAY = 4000;
+
 interface StatsContextValue {
   stats: Statistics;
   refreshStats: () => void;
@@ -35,11 +38,13 @@ export const StatsLazyProvider = ({
 }) => {
   const loading = useRef(false);
   const lastRefreshAt = useRef(0);
+
   const [stats, setStats] = useState(initialState);
 
   const refreshStats = useCallback(async () => {
     setStats(await StatsService.statsRetrieve());
     loading.current = false;
+    lastRefreshAt.current = Date.now();
   }, []);
 
   /**
@@ -48,16 +53,20 @@ export const StatsLazyProvider = ({
   const getStats = useCallback(() => {
     const currentTime = Date.now();
 
+    // Initialize the stats if they are empty.
     if (stats.polls.length === 0 && !loading.current) {
       loading.current = true;
       refreshStats();
       return initialState;
-    } else if (
+    }
+
+    // Refresh the stats when the existing stats are outdated.
+    if (
       stats.polls.length !== 0 &&
-      currentTime - lastRefreshAt.current >= 4000
+      currentTime - lastRefreshAt.current >= EXPIRATION_DELAY
     ) {
       refreshStats();
-      lastRefreshAt.current = currentTime;
+      return stats;
     }
 
     return stats;
