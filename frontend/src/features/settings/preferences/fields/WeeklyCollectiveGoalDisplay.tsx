@@ -1,13 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 import {
   BlankEnum,
@@ -15,29 +9,19 @@ import {
 } from 'src/services/openapi';
 
 interface WeeklyCollectiveGoalDisplayProps {
-  compUiWeeklyColGoalDisplay:
-    | ComparisonUi_weeklyCollectiveGoalDisplayEnum
-    | BlankEnum;
-  setCompUiWeeklyColGoalDisplay: (
+  value: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum;
+  onChange: (
     target: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum
   ) => void;
   pollName: string;
 }
 
-const WeeklyCollectiveGoalDisplay = ({
-  setCompUiWeeklyColGoalDisplay,
-  compUiWeeklyColGoalDisplay,
+const WeeklyCollectiveGoalDisplayField = ({
+  value,
+  onChange,
   pollName,
 }: WeeklyCollectiveGoalDisplayProps) => {
   const { t } = useTranslation();
-
-  const changeCompUiDisplayWeeklyColGoal = (event: SelectChangeEvent) => {
-    setCompUiWeeklyColGoalDisplay(
-      event.target.value as
-        | ComparisonUi_weeklyCollectiveGoalDisplayEnum
-        | BlankEnum
-    );
-  };
 
   const settingChoices = [
     {
@@ -71,9 +55,15 @@ const WeeklyCollectiveGoalDisplay = ({
         color="secondary"
         id="comparison_ui__weekly_collective_goal_display"
         labelId="label__comparison_ui__weekly_collective_goal_display"
-        value={compUiWeeklyColGoalDisplay}
+        value={value}
         label={t('pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal')}
-        onChange={changeCompUiDisplayWeeklyColGoal}
+        onChange={(event) =>
+          onChange(
+            event.target.value as
+              | ComparisonUi_weeklyCollectiveGoalDisplayEnum
+              | BlankEnum
+          )
+        }
         inputProps={{
           'data-testid': `${pollName}_weekly_collective_goal_display`,
         }}
@@ -88,4 +78,4 @@ const WeeklyCollectiveGoalDisplay = ({
   );
 };
 
-export default WeeklyCollectiveGoalDisplay;
+export default WeeklyCollectiveGoalDisplayField;

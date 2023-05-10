@@ -20,8 +20,8 @@ import {
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
-import RateLaterAutoRemove from './RateLaterAutoRemove';
-import WeeklyCollectiveGoalDisplay from './WeeklyCollectiveGoalDisplay';
+import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
+import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 
 /**
  * Display a generic user settings form that can be used by any poll.
@@ -94,9 +94,9 @@ const VideosPollUserSettingsForm = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <WeeklyCollectiveGoalDisplay
-            compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
-            setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+          <WeeklyCollectiveGoalDisplayField
+            value={compUiWeeklyColGoalDisplay}
+            onChange={setCompUiWeeklyColGoalDisplay}
             pollName={pollName}
           />
         </Grid>
@@ -106,10 +106,10 @@ const VideosPollUserSettingsForm = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <RateLaterAutoRemove
+          <RateLaterAutoRemoveField
             apiErrors={apiErrors}
-            rateLaterAutoRemoval={rateLaterAutoRemoval}
-            setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+            value={rateLaterAutoRemoval}
+            onChange={setRateLaterAutoRemoval}
             pollName={pollName}
           />
         </Grid>

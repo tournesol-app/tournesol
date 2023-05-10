@@ -7,15 +7,15 @@ import { ApiError } from 'src/services/openapi';
 
 interface RateLaterAutoRemoveProps {
   apiErrors: ApiError | null;
-  rateLaterAutoRemoval: number;
-  setRateLaterAutoRemoval: (number: number) => void;
+  value: number;
+  onChange: (number: number) => void;
   pollName: string;
 }
 
-const RateLaterAutoRemove = ({
+const RateLaterAutoRemoveField = ({
   apiErrors,
-  rateLaterAutoRemoval,
-  setRateLaterAutoRemoval,
+  value,
+  onChange,
   pollName,
 }: RateLaterAutoRemoveProps) => {
   const { t } = useTranslation();
@@ -30,10 +30,10 @@ const RateLaterAutoRemove = ({
           <Trans
             t={t}
             i18nKey="pollUserSettingsForm.autoRemoveHelpText"
-            count={rateLaterAutoRemoval}
+            count={value}
           >
             Entities will be removed from your rate-later list after
-            {{ rateLaterAutoRemoval }} comparisons.
+            {{ value }} comparisons.
           </Trans>
           {apiErrors &&
             apiErrors.body[pollName]?.rate_later__auto_remove &&
@@ -56,8 +56,8 @@ const RateLaterAutoRemove = ({
       size="small"
       type="number"
       variant="outlined"
-      value={rateLaterAutoRemoval}
-      onChange={(event) => setRateLaterAutoRemoval(Number(event.target.value))}
+      value={value}
+      onChange={(event) => onChange(Number(event.target.value))}
       inputProps={{
         min: 1,
         'data-testid': `${pollName}_rate_later__auto_remove`,
@@ -66,4 +66,4 @@ const RateLaterAutoRemove = ({
   );
 };
 
-export default RateLaterAutoRemove;
+export default RateLaterAutoRemoveField;
