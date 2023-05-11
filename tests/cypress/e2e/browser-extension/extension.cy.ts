@@ -39,8 +39,8 @@ onlyOn("headed", () => {
       });
 
       describe("Search page", () => {
-        // We use an accented character ensure the search URL parameter is
-        // properly decoded.
+        // We use an accented character to ensure that the search URL
+        // parameter is properly decoded.
         const searchQuery = 'tournésol';
 
         it("shows Tournesol search results when the search is on", () => {
