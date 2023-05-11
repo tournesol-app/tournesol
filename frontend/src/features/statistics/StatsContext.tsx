@@ -45,7 +45,7 @@ export const StatsLazyProvider = ({
     const newStats = await StatsService.statsRetrieve();
     loading.current = false;
     lastRefreshAt.current = Date.now();
-    setStats(newStats)
+    setStats(newStats);
   }, []);
 
   /**
