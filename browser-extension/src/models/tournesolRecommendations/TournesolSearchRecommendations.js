@@ -23,21 +23,10 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
 
     chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
       if (forceSearch || searchEnabled) {
-        this.searchQuery = location.search
-          .substring(1)
-          .split('&')
-          .reduce((cur, next) => {
-            let param = next.split('=');
-            if (param[0] === 'search_query') {
-              return param[1];
-            }
-            return cur;
-          }, null);
-
         chrome.runtime.sendMessage(
           {
             message: 'getTournesolSearchRecommendations',
-            search: this.searchQuery,
+            search: this.refreshSearchQuery(),
             videosNumber: this.videosPerRow,
             additionalVideosNumber:
               this.videosPerRow * (this.rowsWhenExpanded - 1),
@@ -55,5 +44,10 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
     });
 
     return;
+  }
+
+  refreshSearchQuery() {
+    this.searchQuery = new URLSearchParams(location.search).get('search_query');
+    return this.searchQuery;
   }
 }
