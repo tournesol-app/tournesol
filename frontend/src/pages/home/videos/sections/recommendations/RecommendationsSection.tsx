@@ -1,15 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
 
-import { selectStats } from 'src/features/comparisons/statsSlice';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import { getPollStats } from 'src/features/statistics/stats';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useStats } from 'src/hooks';
 import SectionTitle from '../SectionTitle';
 import UseOurExtension from './UseOurExtension';
 
@@ -20,8 +18,8 @@ const RecommendationsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const publicStats = useSelector(selectStats);
-  const pollStats = getPollStats(publicStats, pollName);
+  const stats = useStats();
+  const pollStats = getPollStats(stats, pollName);
 
   const titleColor = '#fff';
 

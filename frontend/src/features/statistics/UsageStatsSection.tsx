@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 
-import { selectStats } from 'src/features/comparisons/statsSlice';
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useStats } from 'src/hooks';
+import { getPollStats } from './stats';
 
 interface statsProp {
   text: string;
@@ -58,13 +57,8 @@ const StatsSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const publicStats = useSelector(selectStats);
-
-  const pollStats = publicStats.polls.find((poll) => {
-    if (poll.name === pollName) {
-      return poll;
-    }
-  });
+  const stats = useStats();
+  const pollStats = getPollStats(stats, pollName);
 
   const comparedEntitiesTitle = useMemo(() => {
     switch (pollName) {
@@ -90,8 +84,8 @@ const StatsSection = () => {
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.activatedAccounts')}
-            count={publicStats.active_users.total}
-            lastMonthCount={publicStats.active_users.joined_last_30_days}
+            count={stats.active_users.total ?? 0}
+            lastMonthCount={stats.active_users.joined_last_30_days ?? 0}
           />
         </Grid>
         <Grid item xs={12} sm={4}>

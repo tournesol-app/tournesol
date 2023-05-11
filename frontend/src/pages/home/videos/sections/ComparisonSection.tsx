@@ -1,22 +1,21 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 
-import { selectStats } from 'src/features/comparisons/statsSlice';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import { getPollStats } from 'src/features/statistics/stats';
+import { useCurrentPoll, useStats } from 'src/hooks';
+
 import HomeComparison from './HomeComparison';
 import SectionTitle from './SectionTitle';
-import { useCurrentPoll } from 'src/hooks';
 
 const ComparisonSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const publicStats = useSelector(selectStats);
-  const pollStats = getPollStats(publicStats, pollName);
+  const stats = useStats();
+  const pollStats = getPollStats(stats, pollName);
 
   const color = '#fff';
 
