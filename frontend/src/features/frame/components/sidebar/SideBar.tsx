@@ -116,23 +116,29 @@ const SideBar = () => {
   const disabledItems = options?.disabledRouteIds ?? [];
 
   const buildRecoSearchParams = () => {
-    const recoSearchParams = new URLSearchParams();
-
-    recoSearchParams.set(
-      'unsafe',
-      userSettings?.[pollName as TournesolUserSettingsKeys]
-        ?.recommendations__default_unsafe
-        ? 'true'
-        : ''
-    );
-
     const defaultRecoSearchParams = options?.defaultRecoSearchParams
-      ? '?' +
-        options?.defaultRecoSearchParams +
-        '&' +
-        recoSearchParams.toString()
+      ? '?' + options?.defaultRecoSearchParams + '&'
       : '';
-    return defaultRecoSearchParams;
+
+    const recoSearchParams = new URLSearchParams(defaultRecoSearchParams);
+
+    if (
+      !recoSearchParams.has('unsafe') &&
+      !(
+        typeof userSettings?.[pollName as TournesolUserSettingsKeys]
+          ?.recommendations__default_unsafe === undefined
+      )
+    ) {
+      recoSearchParams.set(
+        'unsafe',
+        userSettings?.[pollName as TournesolUserSettingsKeys]
+          ?.recommendations__default_unsafe
+          ? 'true'
+          : ''
+      );
+    }
+
+    return '?' + recoSearchParams.toString();
   };
 
   const drawerOpen = useAppSelector(selectFrame);

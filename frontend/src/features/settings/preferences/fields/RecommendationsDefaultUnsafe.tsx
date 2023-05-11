@@ -22,7 +22,6 @@ const RecommendationsDefaultUnsafe = ({
           onChange={() => onChange(!value)}
           size="medium"
           color="secondary"
-          edge="start"
         />
       }
       label={t('pollUserSettingsForm.defaultUnsafe')}
