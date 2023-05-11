@@ -1,11 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, LinearProgress, Typography } from '@mui/material';
 
-import { selectStats } from 'src/features/comparisons/statsSlice';
-import { useCurrentPoll } from 'src/hooks';
+import { getPollStats } from 'src/features/statistics/stats';
+import { useCurrentPoll, useStats } from 'src/hooks';
 
 import {
   WEEKLY_COMPARISON_GOAL,
@@ -16,13 +15,8 @@ const CollectiveGoalWeeklyProgress = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const publicStats = useSelector(selectStats);
-
-  const pollStats = publicStats.polls.find((poll) => {
-    if (poll.name === pollName) {
-      return poll;
-    }
-  });
+  const stats = useStats();
+  const pollStats = getPollStats(stats, pollName);
 
   const collectiveComparisonsNbr =
     pollStats?.comparisons.added_current_week ?? 0;

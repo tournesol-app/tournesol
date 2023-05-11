@@ -5,8 +5,11 @@ import { PollStatistics, Statistics } from 'src/services/openapi';
  * by its `name`.
  */
 export const getPollStats = (
-  publicStats: Statistics,
+  publicStats: Statistics | undefined,
   name: string
 ): PollStatistics | undefined => {
+  if (!publicStats) {
+    return;
+  }
   return publicStats.polls.find((poll) => poll.name === name);
 };
