@@ -56,10 +56,9 @@ const VideosPollUserSettingsForm = () => {
 
   // Recommendations (page)
   const [unsafe, setUnsafe] = useState(
-    userSettings?.[pollName]?.recommendations__default_unsafe ??
-      false
+    userSettings?.[pollName]?.recommendations__default_unsafe ?? false
   );
-  console.log(userSettings)
+  console.log(userSettings);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
