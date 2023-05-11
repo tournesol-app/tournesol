@@ -47,7 +47,7 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
   }
 
   refreshSearchQuery() {
-    this.searchQuery = (new URLSearchParams(location.search)).get("search_query");
+    this.searchQuery = new URLSearchParams(location.search).get('search_query');
     return this.searchQuery;
   }
 }
