@@ -319,7 +319,7 @@
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "comparisonPage": "Comparison page",
-    "defaultUnsafe": "Default unsafe",
+    "defaultUnsafe": "Display videos with a low number of contributors and/or a negative Tournesol score",
     "recommendationsPage": "Recommendations page",
     "displayTheTheWeeklyCollectiveGoal": "Display the weekly collective goal",
     "always": "Always",

@@ -326,7 +326,7 @@
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "comparisonPage": "Comparaison (page)",
-    "defaultUnsafe": "Default unsafe",
+    "defaultUnsafe": "Affiche les vidéos avec peu de contributeurs et/ou avec un score Tournesol négatif",
     "recommendationsPage": "Recommandations (page)",
     "displayTheTheWeeklyCollectiveGoal": "Affichage de l'objectif collectif hebdomadaire",
     "always": "Toujours",

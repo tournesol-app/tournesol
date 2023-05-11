@@ -42,7 +42,6 @@ import {
 import { RouteID, TournesolUserSettingsKeys } from 'src/utils/types';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useSelector } from 'react-redux';
-import { TournesolUserSettings } from 'src/services/openapi';
 
 export const sideBarWidth = 264;
 
@@ -116,22 +115,28 @@ const SideBar = () => {
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
 
-  const setPreferencesSettings = () => {
-    const preferenciesSettings = new URLSearchParams();
-    preferenciesSettings.set("unsafe", (userSettings?.[pollName as TournesolUserSettingsKeys]
-      ?.recommendations__default_unsafe) ? 'true' : '');
-    
-    return preferenciesSettings.toString();
-  };
+  const buildRecoSearchParams = () => {
+    const recoSearchParams = new URLSearchParams();
 
-  const defaultRecoSearchParams = options?.defaultRecoSearchParams
-    ? '?' + options?.defaultRecoSearchParams + '&' + setPreferencesSettings()
-    : '';
-  /*(userSettings?.[pollName as TournesolUserSettingsKeys]?.recommendations__default_unsafe) ? 'unsafe' : ''*/
+    recoSearchParams.set(
+      'unsafe',
+      userSettings?.[pollName as TournesolUserSettingsKeys]
+        ?.recommendations__default_unsafe
+        ? 'true'
+        : ''
+    );
+
+    const defaultRecoSearchParams = options?.defaultRecoSearchParams
+      ? '?' +
+        options?.defaultRecoSearchParams +
+        '&' +
+        recoSearchParams.toString()
+      : '';
+    return defaultRecoSearchParams;
+  };
 
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
-
 
   // parameter 'url', which corresponds to the target url, may contain some url parameters
   // we make sure that we highlight the component the user loaded
@@ -147,7 +152,7 @@ const SideBar = () => {
     },
     {
       id: RouteID.CollectiveRecommendations,
-      targetUrl: `${path}recommendations${defaultRecoSearchParams}`,
+      targetUrl: `${path}recommendations${buildRecoSearchParams()}`,
       IconComponent:
         pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
       displayText: getRecommendationPageName(t, pollName),
