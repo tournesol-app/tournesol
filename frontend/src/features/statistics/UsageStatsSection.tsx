@@ -84,8 +84,8 @@ const StatsSection = () => {
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.activatedAccounts')}
-            count={stats?.active_users.total ?? 0}
-            lastMonthCount={stats?.active_users.joined_last_30_days ?? 0}
+            count={stats.active_users.total ?? 0}
+            lastMonthCount={stats.active_users.joined_last_30_days ?? 0}
           />
         </Grid>
         <Grid item xs={12} sm={4}>

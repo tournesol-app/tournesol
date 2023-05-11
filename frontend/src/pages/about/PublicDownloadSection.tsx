@@ -17,7 +17,7 @@ const PublicDownloadSection = () => {
   const stats = useStats();
   const pollStats = getPollStats(stats, pollName);
 
-  const userCount = stats?.active_users.total ?? 0;
+  const userCount = stats.active_users.total ?? 0;
   const comparisonCount = pollStats?.comparisons.total ?? 0;
   const comparedEntityCount = pollStats?.compared_entities.total ?? 0;
 

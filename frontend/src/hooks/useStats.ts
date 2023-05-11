@@ -3,9 +3,8 @@ import StatsContext from 'src/features/statistics/StatsContext';
 import { Statistics } from 'src/services/openapi';
 
 export const useStats = () => {
-  const [stats, setStats] = useState<Statistics>();
-
   const { getStats } = useContext(StatsContext);
+  const [stats, setStats] = useState<Statistics>(getStats());
 
   useEffect(() => {
     setStats(getStats());
