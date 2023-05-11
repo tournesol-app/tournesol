@@ -383,7 +383,10 @@ LOGGING = {
         },
         "numexpr": {
             "level": "WARN"
-        }
+        },
+        "numba": {
+            "level": "WARN"
+        },
     },
 }
 

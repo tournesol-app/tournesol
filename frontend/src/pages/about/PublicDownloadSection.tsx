@@ -1,12 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 
 import { Typography, Button } from '@mui/material';
 
-import { selectStats } from 'src/features/comparisons/statsSlice';
 import { getPollStats } from 'src/features/statistics/stats';
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useStats } from 'src/hooks';
 
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case
@@ -16,10 +14,10 @@ const PublicDownloadSection = () => {
 
   const api_url = process.env.REACT_APP_API_URL;
 
-  const publicStats = useSelector(selectStats);
-  const pollStats = getPollStats(publicStats, pollName);
+  const stats = useStats();
+  const pollStats = getPollStats(stats, pollName);
 
-  const userCount = publicStats.active_users.total;
+  const userCount = stats.active_users.total ?? 0;
   const comparisonCount = pollStats?.comparisons.total ?? 0;
   const comparedEntityCount = pollStats?.compared_entities.total ?? 0;
 
