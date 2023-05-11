@@ -39,7 +39,10 @@ import {
   getRecommendationPageName,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { RouteID } from 'src/utils/types';
+import { RouteID, TournesolUserSettingsKeys } from 'src/utils/types';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
+import { useSelector } from 'react-redux';
+import { TournesolUserSettings } from 'src/services/openapi';
 
 export const sideBarWidth = 264;
 
@@ -108,15 +111,27 @@ const SideBar = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
+  const userSettings = useSelector(selectSettings).settings;
   const { name: pollName, options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
+
+  const setPreferencesSettings = () => {
+    const preferenciesSettings = new URLSearchParams();
+    preferenciesSettings.set("unsafe", (userSettings?.[pollName as TournesolUserSettingsKeys]
+      ?.recommendations__default_unsafe) ? 'true' : '');
+    
+    return preferenciesSettings.toString();
+  };
+
   const defaultRecoSearchParams = options?.defaultRecoSearchParams
-    ? '?' + options?.defaultRecoSearchParams
+    ? '?' + options?.defaultRecoSearchParams + '&' + setPreferencesSettings()
     : '';
+  /*(userSettings?.[pollName as TournesolUserSettingsKeys]?.recommendations__default_unsafe) ? 'unsafe' : ''*/
 
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
 
   // parameter 'url', which corresponds to the target url, may contain some url parameters
   // we make sure that we highlight the component the user loaded
