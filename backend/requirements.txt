@@ -37,9 +37,13 @@ langdetect==1.0.9
 # Pandas is used extensively in the ML algorithms and for some data management
 # tasks such as building the public dataset
 pandas==1.5.3
+# Numba provides just-in-time compilation to run optimized machine code
+# for performance-critical functions in Mehestan implementation.
+numba==0.57.0
 # Numpy is used extensively in the ML algorithms and in some other algorithms
 # such as computing comparison suggestions. See https://numpy.org/
-numpy==1.24.2
+# Check the compatibility with Numba before upgrading.
+numpy==1.24.3
 # Scipy is used in some ML algorithms
 scipy==1.10.1
 # API Youtube data

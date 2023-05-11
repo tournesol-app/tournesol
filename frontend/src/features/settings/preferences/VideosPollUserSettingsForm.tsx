@@ -1,18 +1,8 @@
 import React, { useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 
 import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
@@ -30,6 +20,8 @@ import {
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
+import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
+import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 
 /**
  * Display a generic user settings form that can be used by any poll.
@@ -60,14 +52,6 @@ const VideosPollUserSettingsForm = () => {
     userSettings?.[pollName]?.rate_later__auto_remove ??
       DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
-
-  const changeCompUiDisplayWeeklyColGoal = (event: SelectChangeEvent) => {
-    setCompUiWeeklyColGoalDisplay(
-      event.target.value as
-        | ComparisonUi_weeklyCollectiveGoalDisplayEnum
-        | BlankEnum
-    );
-  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -109,110 +93,24 @@ const VideosPollUserSettingsForm = () => {
             {t('pollUserSettingsForm.comparisonPage')}
           </Typography>
         </Grid>
-        {/*
-            Comparison UI: weekly collective goal display
-        */}
         <Grid item>
-          <FormControl fullWidth>
-            <InputLabel
-              id="label__comparison_ui__weekly_collective_goal_display"
-              color="secondary"
-            >
-              {t('pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal')}
-            </InputLabel>
-            <Select
-              size="small"
-              color="secondary"
-              id="comparison_ui__weekly_collective_goal_display"
-              labelId="label__comparison_ui__weekly_collective_goal_display"
-              value={compUiWeeklyColGoalDisplay}
-              label={t(
-                'pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal'
-              )}
-              onChange={changeCompUiDisplayWeeklyColGoal}
-              inputProps={{
-                'data-testid': `${pollName}_weekly_collective_goal_display`,
-              }}
-            >
-              {[
-                {
-                  label: t('pollUserSettingsForm.always'),
-                  value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS,
-                },
-                {
-                  label: t('pollUserSettingsForm.websiteOnly'),
-                  value:
-                    ComparisonUi_weeklyCollectiveGoalDisplayEnum.WEBSITE_ONLY,
-                },
-                {
-                  label: t('pollUserSettingsForm.embeddedOnly'),
-                  value:
-                    ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY,
-                },
-                {
-                  label: t('pollUserSettingsForm.never'),
-                  value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
-                },
-              ].map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <WeeklyCollectiveGoalDisplayField
+            value={compUiWeeklyColGoalDisplay}
+            onChange={setCompUiWeeklyColGoalDisplay}
+            pollName={pollName}
+          />
         </Grid>
         <Grid item>
           <Typography variant="h6">
             {t('pollUserSettingsForm.rateLater')}
           </Typography>
         </Grid>
-        {/*
-            Rate-later list: auto removal threshold
-        */}
         <Grid item>
-          <TextField
-            required
-            fullWidth
-            label={t('pollUserSettingsForm.autoRemove')}
-            helperText={
-              <>
-                <Trans
-                  t={t}
-                  i18nKey="pollUserSettingsForm.autoRemoveHelpText"
-                  count={rateLaterAutoRemoval}
-                >
-                  Entities will be removed from your rate-later list after
-                  {{ rateLaterAutoRemoval }} comparisons.
-                </Trans>
-                {apiErrors &&
-                  apiErrors.body[pollName]?.rate_later__auto_remove &&
-                  apiErrors.body[pollName].rate_later__auto_remove.map(
-                    (error: string, idx: number) => (
-                      <Typography
-                        key={`rate_later__auto_remove_error_${idx}`}
-                        color="red"
-                        display="block"
-                        variant="caption"
-                      >
-                        {error}
-                      </Typography>
-                    )
-                  )}
-              </>
-            }
-            name="rate_later__auto_remove"
-            color="secondary"
-            size="small"
-            type="number"
-            variant="outlined"
+          <RateLaterAutoRemoveField
+            apiErrors={apiErrors}
             value={rateLaterAutoRemoval}
-            onChange={(event) =>
-              setRateLaterAutoRemoval(Number(event.target.value))
-            }
-            inputProps={{
-              min: 1,
-              'data-testid': `${pollName}_rate_later__auto_remove`,
-            }}
+            onChange={setRateLaterAutoRemoval}
+            pollName={pollName}
           />
         </Grid>
         <Grid item>

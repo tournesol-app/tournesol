@@ -2,12 +2,21 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from scipy.optimize import brentq
+from numba import njit
+
+from ml.optimize import brentq
 
 EPSILON = 1e-6  # convergence tolerance
 
 
-def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
+@njit
+def L_prime(m: float, W: float, w, x, delta_2):
+    x_minus_m = x - m
+    return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m ** 2))
+
+
+@njit
+def QrMed_inner(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
     """
     Quadratically regularized median.
     It behaves like a weighted median biased towards 0.
@@ -19,6 +28,21 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
         * `x`: partial scores vector
         * `delta`: partial scores uncertainties vector
     """
+    delta_2 = np.where(delta > 0, delta ** 2, np.spacing(0))
+
+    m_low = -1.0
+    while L_prime(m_low, W, w, x, delta_2) > 0:
+        m_low *= 2
+
+    m_up = 1.0
+    while L_prime(m_up, W, w, x, delta_2) < 0:
+        m_up *= 2
+
+    # Brent’s method is used as a faster alternative to usual bisection
+    return brentq(L_prime, m_low, m_up, args=(W, w, x, delta_2), xtol=EPSILON)
+
+
+def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
     if len(x) == 0:
         return 0.0
     if isinstance(w, pd.Series):
@@ -27,23 +51,7 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
         x = x.to_numpy()
     if isinstance(delta, pd.Series):
         delta = delta.to_numpy()
-    # Set a minimum value to prevent divisions by zero in L_prime
-    delta_2 = np.where(delta > 0, delta ** 2, np.spacing(0))
-
-    def L_prime(m: float):
-        x_minus_m = x - m
-        return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m ** 2))
-
-    m_low = -1.0
-    while L_prime(m_low) > 0:
-        m_low *= 2
-
-    m_up = 1.0
-    while L_prime(m_up) < 0:
-        m_up *= 2
-
-    # Brent’s method is used as a faster alternative to usual bisection
-    return brentq(L_prime, m_low, m_up, xtol=EPSILON)
+    return QrMed_inner(W, w, x, delta)
 
 
 def QrDev(
