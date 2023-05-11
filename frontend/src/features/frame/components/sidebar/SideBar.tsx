@@ -110,7 +110,7 @@ const SideBar = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const userSettings = useSelector(selectSettings).settings;
+  const userSettings = useSelector(selectSettings)?.settings;
   const { name: pollName, options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
