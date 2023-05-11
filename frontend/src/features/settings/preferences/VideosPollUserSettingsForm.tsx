@@ -22,6 +22,7 @@ import {
 } from 'src/services/openapi';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
+import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
 
 /**
  * Display a generic user settings form that can be used by any poll.
@@ -53,6 +54,13 @@ const VideosPollUserSettingsForm = () => {
       DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
+  // Recommendations (page)
+  const [unsafe, setUnsafe] = useState(
+    userSettings?.[pollName]?.recommendations__default_unsafe ??
+      false
+  );
+  console.log(userSettings)
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setDisabled(true);
@@ -64,6 +72,7 @@ const VideosPollUserSettingsForm = () => {
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
+            recommendations__default_unsafe: unsafe,
           },
         },
       }).catch((reason: ApiError) => {
@@ -112,6 +121,14 @@ const VideosPollUserSettingsForm = () => {
             onChange={setRateLaterAutoRemoval}
             pollName={pollName}
           />
+        </Grid>
+        <Grid item>
+          <Typography variant="h6">
+            {t('pollUserSettingsForm.recommendationsPage')}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultUnsafe value={unsafe} onChange={setUnsafe} />
         </Grid>
         <Grid item>
           <Button
