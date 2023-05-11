@@ -48,25 +48,22 @@ export const StatsLazyProvider = ({
   }, []);
 
   /**
-   * Return the current `stats` if any, else refresh them.
+   * Initialize the stats if they are empty or refresh them if they are
+   * outdated.
    */
   const getStats = useCallback(() => {
     const currentTime = Date.now();
 
-    // Initialize the stats if they are empty.
-    if (stats.polls.length === 0 && !loading.current) {
-      loading.current = true;
-      refreshStats();
-      return initialState;
+    if (loading.current) {
+      return stats;
     }
 
-    // Refresh the stats when the existing stats are outdated.
     if (
-      stats.polls.length !== 0 &&
+      stats.polls.length === 0 ||
       currentTime - lastRefreshAt.current >= EXPIRATION_TIME
     ) {
+      loading.current = true;
       refreshStats();
-      return stats;
     }
 
     return stats;
