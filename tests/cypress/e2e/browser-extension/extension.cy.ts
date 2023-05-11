@@ -39,14 +39,18 @@ onlyOn("headed", () => {
       });
 
       describe("Search page", () => {
+        // We use an accented character ensure the search URL parameter is
+        // properly decoded.
+        const searchQuery = 'tournésol';
+
         it("shows Tournesol search results when the search is on", () => {
-          cy.visit("https://www.youtube.com/results?search_query=tournesol&tournesolSearch=1");
+          cy.visit(`https://www.youtube.com/results?search_query=${searchQuery}&tournesolSearch=1`);
           consent();
           cy.contains("Recommended by Tournesol", {timeout: 20000});
         });
 
         it("doesn't show Tournesol search results when the search is off", () => {
-          cy.visit("https://www.youtube.com/results?search_query=tournesol");
+          cy.visit(`https://www.youtube.com/results?search_query=${searchQuery}`);
           consent();
           cy.contains("Recommended by Tournesol").should("not.exist");
         });
