@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Poll
+from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import (
     EntityFactory,
     UserFactory,
@@ -390,20 +391,21 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         ]
         self.user_no_comparisons = UserFactory()
         self.user_with_ratings = UserFactory()
-        ContributorRatingFactory(user=self.user_with_ratings, entity=self.video_1)
-        ContributorRatingFactory(user=self.user_with_ratings, entity=self.video_3)
+        ComparisonFactory(user=self.user_with_ratings, entity_1=self.video_1, entity_2=self.video_3)
+        # User has created a Rating, but has not compared the video
+        ContributorRatingFactory(user=self.user_with_ratings, entity=self.video_4)
 
     def test_exclude_option_ignored_for_anonymous(self):
-        response_exclude_false = self.client.get("/polls/videos/recommendations/?exclude_rated_entities=false")
+        response_exclude_false = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
         results_exclude_false = response_exclude_false.data["results"]
-        response_exclude_true = self.client.get("/polls/videos/recommendations/?exclude_rated_entities=true")
+        response_exclude_true = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
         results_exclude_true = response_exclude_true.data["results"]
         self.assertEqual(len(results_exclude_false), 4)
         self.assertListEqual(results_exclude_false, results_exclude_true)
 
     def test_user_no_comparison_has_no_entity_excluded(self):
         self.client.force_authenticate(user=self.user_no_comparisons)
-        response = self.client.get("/polls/videos/recommendations/?exclude_rated_entities=true")
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
         results = response.data["results"]
         self.assertEqual(len(results), 4)
 
@@ -415,23 +417,32 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
 
     def test_user_with_ratings_can_list_all_entities(self):
         self.client.force_authenticate(user=self.user_with_ratings)
-        response = self.client.get("/polls/videos/recommendations/?exclude_rated_entities=false")
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
         results = response.data["results"]
         self.assertEqual(len(results), 4)
 
     def test_user_with_ratings_can_exclude_entities(self):
         self.client.force_authenticate(user=self.user_with_ratings)
-        response = self.client.get("/polls/videos/recommendations/?exclude_rated_entities=true")
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
         results = response.data["results"]
         self.assertSetEqual(set(e["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
 
     def test_user_rated_everything_sees_empty_results(self):
         self.client.force_authenticate(user=self.user_with_ratings)
-        ContributorRatingFactory(user=self.user_with_ratings, entity=self.video_2)
-        ContributorRatingFactory(user=self.user_with_ratings, entity=self.video_4)
-        response = self.client.get("/polls/videos/recommendations/?exclude_rated_entities=true")
+        ComparisonFactory(user=self.user_with_ratings, entity_1=self.video_2, entity_2=self.video_4)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
         results = response.data["results"]
         self.assertEqual(len(results), 0)
+
+    def test_exluced_compared_entities_with_duplicated_entities_in_comparisons(self):
+        self.client.force_authenticate(user=self.user_with_ratings)
+        ComparisonFactory(user=self.user_with_ratings, entity_1=self.video_1, entity_2=self.video_2)
+        ComparisonFactory(user=self.user_with_ratings, entity_1=self.video_2, entity_2=self.video_3)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertSetEqual(set(e["uid"] for e in results), {self.video_4.uid})
+
 
 
 class PollsEntityTestCase(TestCase):

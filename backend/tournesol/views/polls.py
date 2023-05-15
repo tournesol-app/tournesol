@@ -14,7 +14,7 @@ from drf_spectacular.utils import (
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
-from tournesol.models import ContributorRating, Entity, Poll
+from tournesol.models import Comparison, Entity, Poll
 from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
@@ -149,11 +149,15 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             tournesol_score__gt=0,
         )
 
-    def exclude_rated_entities(self, queryset, filters, user):
-        if filters["exclude_rated_entities"] and user.is_authenticated:
-            user_rating_qs = ContributorRating.objects.filter(user=user)
-            rated_entities = [rating.entity_id for rating in user_rating_qs]
-            return queryset.exclude(id__in=rated_entities)
+    def exclude_compared_entities(self, queryset, filters, user):
+        if filters["exclude_compared_entities"] and user.is_authenticated:
+            comparison_qs = Comparison.objects.filter(user=user, poll=self.poll_from_url)
+            compared_entities = set(
+                entity_id
+                for comparison in comparison_qs
+                for entity_id in [comparison.entity_1_id, comparison.entity_2_id]
+            )
+            return queryset.exclude(id__in=compared_entities)
         return queryset
 
     def sort_results(self, queryset, filters):
@@ -309,7 +313,7 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_and_prefetch_scores(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
-        queryset = self.exclude_rated_entities(queryset, filters, user)
+        queryset = self.exclude_compared_entities(queryset, filters, user)
         queryset = self.sort_results(queryset, filters)
         return queryset
 
