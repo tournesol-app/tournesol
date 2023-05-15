@@ -138,11 +138,22 @@ const SideBar = () => {
       );
     }
 
-    if (recoSearchParams.has('date') && !(typeof userSettings?.[pollName as TournesolUserSettingsKeys]?.recommendations__default_date === undefined)) {
-      let date = userSettings?.[pollName as TournesolUserSettingsKeys]?.recommendations__default_date ?? 'Month';
-      date === "ALL_TIME" ? date='' : date;
-      recoSearchParams.set( 'date', date.charAt(0) + date.slice(1).toLowerCase());
-    }   
+    if (
+      recoSearchParams.has('date') &&
+      !(
+        typeof userSettings?.[pollName as TournesolUserSettingsKeys]
+          ?.recommendations__default_date === undefined
+      )
+    ) {
+      let date =
+        userSettings?.[pollName as TournesolUserSettingsKeys]
+          ?.recommendations__default_date ?? 'Month';
+      date === 'ALL_TIME' ? (date = '') : date;
+      recoSearchParams.set(
+        'date',
+        date.charAt(0) + date.slice(1).toLowerCase()
+      );
+    }
 
     return '?' + recoSearchParams.toString();
   };

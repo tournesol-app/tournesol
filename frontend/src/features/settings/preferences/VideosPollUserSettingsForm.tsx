@@ -61,7 +61,8 @@ const VideosPollUserSettingsForm = () => {
     userSettings?.[pollName]?.recommendations__default_unsafe ?? false
   );
   const [date, setDate] = useState(
-    userSettings?.[pollName]?.recommendations__default_date ?? Recommendations_defaultDateEnum.MONTH
+    userSettings?.[pollName]?.recommendations__default_date ??
+      Recommendations_defaultDateEnum.MONTH
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -135,10 +136,7 @@ const VideosPollUserSettingsForm = () => {
           <RecommendationsDefaultUnsafe value={unsafe} onChange={setUnsafe} />
         </Grid>
         <Grid item>
-          <RecommendationsDefaultDate value={date}
-            onChange={setDate}
-            pollName={pollName}
-          />
+          <RecommendationsDefaultDate value={date} onChange={setDate} />
         </Grid>
         <Grid item>
           <Button
