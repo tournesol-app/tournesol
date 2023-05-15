@@ -17,12 +17,14 @@ import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  Recommendations_defaultDateEnum,
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
+import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 
 /**
  * Display a generic user settings form that can be used by any poll.
@@ -58,6 +60,9 @@ const VideosPollUserSettingsForm = () => {
   const [unsafe, setUnsafe] = useState(
     userSettings?.[pollName]?.recommendations__default_unsafe ?? false
   );
+  const [date, setDate] = useState(
+    userSettings?.[pollName]?.recommendations__default_date ?? Recommendations_defaultDateEnum.MONTH
+  );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -71,6 +76,7 @@ const VideosPollUserSettingsForm = () => {
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_unsafe: unsafe,
+            recommendations__default_date: date,
           },
         },
       }).catch((reason: ApiError) => {
@@ -127,6 +133,12 @@ const VideosPollUserSettingsForm = () => {
         </Grid>
         <Grid item>
           <RecommendationsDefaultUnsafe value={unsafe} onChange={setUnsafe} />
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultDate value={date}
+            onChange={setDate}
+            pollName={pollName}
+          />
         </Grid>
         <Grid item>
           <Button
