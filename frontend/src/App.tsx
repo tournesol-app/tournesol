@@ -62,11 +62,6 @@ const ScrollToTop = () => {
   return null;
 };
 
-const InitGlobalStates = () => {
-  useRefreshSettings();
-  return null;
-};
-
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
@@ -78,11 +73,12 @@ function App() {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
 
+  useRefreshSettings();
+
   return (
     <PollProvider>
       <StatsLazyProvider>
         <ScrollToTop />
-        <InitGlobalStates />
         <Frame>
           <Switch>
             {/* About routes */}
