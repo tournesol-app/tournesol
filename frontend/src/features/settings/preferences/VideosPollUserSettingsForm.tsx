@@ -25,6 +25,7 @@ import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
+import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 
 /**
  * Display a generic user settings form that can be used by any poll.
@@ -64,6 +65,9 @@ const VideosPollUserSettingsForm = () => {
     userSettings?.[pollName]?.recommendations__default_date ??
       Recommendations_defaultDateEnum.MONTH
   );
+  const [language, setLanguage] = useState(
+    userSettings?.[pollName]?.recommendations__default_language ?? ['en', 'fr']
+  );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -78,6 +82,7 @@ const VideosPollUserSettingsForm = () => {
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_unsafe: unsafe,
             recommendations__default_date: date,
+            recommendations__default_language: language,
           },
         },
       }).catch((reason: ApiError) => {
@@ -137,6 +142,12 @@ const VideosPollUserSettingsForm = () => {
         </Grid>
         <Grid item>
           <RecommendationsDefaultDate value={date} onChange={setDate} />
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultLanguage
+            value={language}
+            onChange={setLanguage}
+          />
         </Grid>
         <Grid item>
           <Button

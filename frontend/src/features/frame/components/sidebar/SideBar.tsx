@@ -139,7 +139,6 @@ const SideBar = () => {
     }
 
     if (
-      recoSearchParams.has('date') &&
       !(
         typeof userSettings?.[pollName as TournesolUserSettingsKeys]
           ?.recommendations__default_date === undefined
@@ -152,6 +151,22 @@ const SideBar = () => {
       recoSearchParams.set(
         'date',
         date.charAt(0) + date.slice(1).toLowerCase()
+      );
+    }
+
+    if (
+      !recoSearchParams.has('language') &&
+      !(
+        typeof userSettings?.[pollName as TournesolUserSettingsKeys]
+          ?.recommendations__default_language === undefined
+      )
+    ) {
+      recoSearchParams.set(
+        'language',
+        (
+          userSettings?.[pollName as TournesolUserSettingsKeys]
+            ?.recommendations__default_language ?? ['en', 'fr']
+        ).join(',')
       );
     }
 
