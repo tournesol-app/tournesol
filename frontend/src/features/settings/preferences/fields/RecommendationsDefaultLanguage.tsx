@@ -16,9 +16,9 @@ const RecommendationsDefaultLanguage = ({
 
   return (
     <LanguageField
-      label={t('pollUserSettingsForm.recommendations.defaultLanguages')}
+      label={t('videosUserSettingsForm.recommendations.defaultLanguages')}
       helperText={t(
-        'pollUserSettingsForm.recommendations.keepEmptyToSelectAllLang'
+        'videosUserSettingsForm.recommendations.keepEmptyToSelectAllLang'
       )}
       value={value.join(',')}
       onChange={(target) => {

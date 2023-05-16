@@ -45,7 +45,7 @@ const RecommendationsDefaultDate = ({
   return (
     <FormControl fullWidth>
       <InputLabel id="label__recommendations__default_date" color="secondary">
-        {t('filter.uploadDate')}
+        {t('videosUserSettingsForm.recommendations.defaultUploadDate')}
       </InputLabel>
       <Select
         size="small"
@@ -53,7 +53,7 @@ const RecommendationsDefaultDate = ({
         id="recommendations__default_date"
         labelId="label__recommendations__default_date"
         value={value}
-        label={t('filter.uploadDate')}
+        label={t('videosUserSettingsForm.recommendations.defaultUploadDate')}
         onChange={(event) =>
           onChange(
             event.target.value as Recommendations_defaultDateEnum | BlankEnum

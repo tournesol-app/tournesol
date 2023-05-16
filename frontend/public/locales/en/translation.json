@@ -319,11 +319,6 @@
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
     "autoRemoveHelpText_other": "Elements will be removed from your rate-later list after {{value}} comparisons.",
-    "recommendations": {
-      "defaultLanguages": "Languages selected by default.",
-      "keepEmptyToSelectAllLang": "Keep this field empty to select all languages.",
-      "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
-    },
     "always": "Always",
     "websiteOnly": "Website only",
     "embeddedOnly": "Extension only",
@@ -335,6 +330,14 @@
     "rateLater": "Rate-later list",
     "recommendationsPage": "Recommendations page",
     "updatePreferences": "Update preferences"
+  },
+  "videosUserSettingsForm": {
+    "recommendations": {
+      "defaultUploadDate": "Default value of the Uploaded filter",
+      "defaultLanguages": "Default value of the Languages filter",
+      "keepEmptyToSelectAllLang": "Keep this field empty to select all languages.",
+      "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
+    }
   },
   "username": "Username",
   "metrics": {

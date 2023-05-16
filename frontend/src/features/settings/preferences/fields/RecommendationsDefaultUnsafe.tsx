@@ -24,7 +24,7 @@ const RecommendationsDefaultUnsafe = ({
           color="secondary"
         />
       }
-      label={t('pollUserSettingsForm.recommendations.defaultUnsafe')}
+      label={t('videosUserSettingsForm.recommendations.defaultUnsafe')}
     />
   );
 };

@@ -327,11 +327,6 @@
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
     "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
     "autoRemoveHelpText_other": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
-    "recommendations": {
-      "defaultLanguages": "Langues sélectionnées par défaut.",
-      "keepEmptyToSelectAllLang": "Gardez ce champ vide pour sélectionner toutes les langues.",
-      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
-    },
     "always": "Toujours",
     "websiteOnly": "Seulement sur le site web",
     "embeddedOnly": "Seulement dans l'extension",
@@ -343,6 +338,14 @@
     "rateLater": "Liste à comparer plus tard",
     "recommendationsPage": "Recommandations (page)",
     "updatePreferences": "Mettre à jour les préférences"
+  },
+  "videosUserSettingsForm": {
+    "recommendations": {
+      "defaultUploadDate": "Valeur par défaut du filtre Mis en ligne",
+      "defaultLanguages": "Valeur par défaut du champ Langues",
+      "keepEmptyToSelectAllLang": "Gardez ce champ vide pour sélectionner toutes les langues.",
+      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
+    }
   },
   "username": "Nom d'utilisateur",
   "metrics": {
