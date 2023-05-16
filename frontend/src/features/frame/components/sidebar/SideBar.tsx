@@ -42,6 +42,10 @@ import {
 import { RouteID, TournesolUserSettingsKeys } from 'src/utils/types';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useSelector } from 'react-redux';
+import {
+  BlankEnum,
+  Recommendations_defaultDateEnum,
+} from 'src/services/openapi';
 
 export const sideBarWidth = 264;
 
@@ -122,51 +126,31 @@ const SideBar = () => {
 
     const recoSearchParams = new URLSearchParams(defaultRecoSearchParams);
 
-    if (
-      !recoSearchParams.has('unsafe') &&
-      !(
-        typeof userSettings?.[pollName as TournesolUserSettingsKeys]
-          ?.recommendations__default_unsafe === undefined
-      )
-    ) {
+    const userPollSettings =
+      userSettings?.[pollName as TournesolUserSettingsKeys];
+
+    if (userPollSettings?.recommendations__default_unsafe !== undefined) {
       recoSearchParams.set(
         'unsafe',
-        userSettings?.[pollName as TournesolUserSettingsKeys]
-          ?.recommendations__default_unsafe
-          ? 'true'
-          : ''
+        userPollSettings.recommendations__default_unsafe === true ? 'true' : ''
       );
     }
 
-    if (
-      !(
-        typeof userSettings?.[pollName as TournesolUserSettingsKeys]
-          ?.recommendations__default_date === undefined
-      )
-    ) {
-      let date =
-        userSettings?.[pollName as TournesolUserSettingsKeys]
-          ?.recommendations__default_date ?? 'Month';
-      date === 'ALL_TIME' ? (date = '') : date;
+    if (userPollSettings?.recommendations__default_date !== undefined) {
+      let date = userPollSettings.recommendations__default_date;
+      date === Recommendations_defaultDateEnum.ALL_TIME
+        ? (date = '' as BlankEnum)
+        : date;
       recoSearchParams.set(
         'date',
         date.charAt(0) + date.slice(1).toLowerCase()
       );
     }
 
-    if (
-      !recoSearchParams.has('language') &&
-      !(
-        typeof userSettings?.[pollName as TournesolUserSettingsKeys]
-          ?.recommendations__default_language === undefined
-      )
-    ) {
+    if (userPollSettings?.recommendations__default_language !== undefined) {
       recoSearchParams.set(
         'language',
-        (
-          userSettings?.[pollName as TournesolUserSettingsKeys]
-            ?.recommendations__default_language ?? ['en', 'fr']
-        ).join(',')
+        userPollSettings.recommendations__default_language.join(',')
       );
     }
 

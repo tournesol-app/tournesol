@@ -22,23 +22,23 @@ const RecommendationsDefaultDate = ({
   const settingChoices = [
     {
       label: t('filter.today'),
-      value: 'TODAY',
+      value: Recommendations_defaultDateEnum.TODAY,
     },
     {
       label: t('filter.thisWeek'),
-      value: 'WEEK',
+      value: Recommendations_defaultDateEnum.WEEK,
     },
     {
       label: t('filter.thisMonth'),
-      value: 'MONTH',
+      value: Recommendations_defaultDateEnum.MONTH,
     },
     {
       label: t('filter.thisYear'),
-      value: 'YEAR',
+      value: Recommendations_defaultDateEnum.YEAR,
     },
     {
       label: t('filter.allTime'),
-      value: 'ALL_TIME',
+      value: Recommendations_defaultDateEnum.ALL_TIME,
     },
   ];
 
