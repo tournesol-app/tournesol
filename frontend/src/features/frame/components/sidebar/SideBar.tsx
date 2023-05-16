@@ -127,25 +127,27 @@ const SideBar = () => {
     const userPollSettings =
       userSettings?.[pollName as TournesolUserSettingsKeys];
 
-    if (userPollSettings?.recommendations__default_unsafe !== undefined) {
+    if (userPollSettings?.recommendations__default_unsafe != undefined) {
       recoSearchParams.set(
         'unsafe',
         userPollSettings.recommendations__default_unsafe === true ? 'true' : ''
       );
     }
 
-    if (userPollSettings?.recommendations__default_date !== undefined) {
+    if (userPollSettings?.recommendations__default_date != undefined) {
       let date = userPollSettings.recommendations__default_date;
-      date === Recommendations_defaultDateEnum.ALL_TIME
-        ? (date = '' as BlankEnum)
-        : date;
+
+      if (date === Recommendations_defaultDateEnum.ALL_TIME) {
+        date = '' as BlankEnum;
+      }
+
       recoSearchParams.set(
         'date',
         date.charAt(0) + date.slice(1).toLowerCase()
       );
     }
 
-    if (userPollSettings?.recommendations__default_language !== undefined) {
+    if (userPollSettings?.recommendations__default_language != undefined) {
       recoSearchParams.set(
         'language',
         userPollSettings.recommendations__default_language.join(',')
