@@ -52,10 +52,9 @@ const VideosPollUserSettingsForm = () => {
   const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
     Recommendations_defaultDateEnum | BlankEnum
   >(Recommendations_defaultDateEnum.MONTH);
-  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState([
-    'en',
-    'fr',
-  ]);
+  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
+    Array<string>
+  >([]);
 
   useEffect(() => {
     UsersService.usersMeSettingsRetrieve().then((settings) => {
