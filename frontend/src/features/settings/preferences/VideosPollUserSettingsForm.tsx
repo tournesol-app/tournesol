@@ -48,11 +48,14 @@ const VideosPollUserSettingsForm = () => {
   );
 
   // Recommendations (page)
-  const [unsafe, setUnsafe] = useState(false);
-  const [date, setDate] = useState<Recommendations_defaultDateEnum | BlankEnum>(
-    Recommendations_defaultDateEnum.MONTH
-  );
-  const [language, setLanguage] = useState(['en', 'fr']);
+  const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(false);
+  const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
+    Recommendations_defaultDateEnum | BlankEnum
+  >(Recommendations_defaultDateEnum.MONTH);
+  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState([
+    'en',
+    'fr',
+  ]);
 
   useEffect(() => {
     UsersService.usersMeSettingsRetrieve().then((settings) => {
@@ -68,13 +71,13 @@ const VideosPollUserSettingsForm = () => {
         setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
       }
       if (pollSettings?.recommendations__default_unsafe != undefined) {
-        setUnsafe(pollSettings.recommendations__default_unsafe);
+        setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
       }
       if (pollSettings?.recommendations__default_date != undefined) {
-        setDate(pollSettings.recommendations__default_date);
+        setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
       }
       if (pollSettings?.recommendations__default_language != undefined) {
-        setLanguage(pollSettings.recommendations__default_language);
+        setRecoDefaultLanguages(pollSettings.recommendations__default_language);
       }
 
       dispatch(replaceSettings(settings));
@@ -93,9 +96,9 @@ const VideosPollUserSettingsForm = () => {
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
-            recommendations__default_unsafe: unsafe,
-            recommendations__default_date: date,
-            recommendations__default_language: language,
+            recommendations__default_unsafe: recoDefaultUnsafe,
+            recommendations__default_date: recoDefaultUploadDate,
+            recommendations__default_language: recoDefaultLanguages,
           },
         },
       }).catch((reason: ApiError) => {
@@ -152,15 +155,21 @@ const VideosPollUserSettingsForm = () => {
         </Grid>
         <Grid item>
           <RecommendationsDefaultLanguage
-            value={language}
-            onChange={setLanguage}
+            value={recoDefaultLanguages}
+            onChange={setRecoDefaultLanguages}
           />
         </Grid>
         <Grid item>
-          <RecommendationsDefaultDate value={date} onChange={setDate} />
+          <RecommendationsDefaultDate
+            value={recoDefaultUploadDate}
+            onChange={setRecoDefaultUploadDate}
+          />
         </Grid>
         <Grid item>
-          <RecommendationsDefaultUnsafe value={unsafe} onChange={setUnsafe} />
+          <RecommendationsDefaultUnsafe
+            value={recoDefaultUnsafe}
+            onChange={setRecoDefaultUnsafe}
+          />
         </Grid>
         <Grid item>
           <Button
