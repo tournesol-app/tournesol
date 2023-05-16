@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { Button, Grid, Typography } from '@mui/material';
 
@@ -8,10 +8,7 @@ import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import {
-  replaceSettings,
-  selectSettings,
-} from 'src/features/settings/userSettingsSlice';
+import { replaceSettings } from 'src/features/settings/userSettingsSlice';
 import { useNotifications } from 'src/hooks';
 import {
   ApiError,
@@ -40,34 +37,50 @@ const VideosPollUserSettingsForm = () => {
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
-  // List of user's settings.
-  const userSettings = useSelector(selectSettings).settings;
-
   // Comparison (page)
   const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
     ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum
-  >(
-    userSettings?.[pollName]?.comparison_ui__weekly_collective_goal_display ??
-      ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
-  );
+  >(ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS);
 
   // Rate-later settings
   const [rateLaterAutoRemoval, setRateLaterAutoRemoval] = useState(
-    userSettings?.[pollName]?.rate_later__auto_remove ??
-      DEFAULT_RATE_LATER_AUTO_REMOVAL
+    DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
   // Recommendations (page)
-  const [unsafe, setUnsafe] = useState(
-    userSettings?.[pollName]?.recommendations__default_unsafe ?? false
+  const [unsafe, setUnsafe] = useState(false);
+  const [date, setDate] = useState<Recommendations_defaultDateEnum | BlankEnum>(
+    Recommendations_defaultDateEnum.MONTH
   );
-  const [date, setDate] = useState(
-    userSettings?.[pollName]?.recommendations__default_date ??
-      Recommendations_defaultDateEnum.MONTH
-  );
-  const [language, setLanguage] = useState(
-    userSettings?.[pollName]?.recommendations__default_language ?? ['en', 'fr']
-  );
+  const [language, setLanguage] = useState(['en', 'fr']);
+
+  useEffect(() => {
+    UsersService.usersMeSettingsRetrieve().then((settings) => {
+      const pollSettings = settings?.[pollName];
+      if (
+        pollSettings?.comparison_ui__weekly_collective_goal_display != undefined
+      ) {
+        setCompUiWeeklyColGoalDisplay(
+          pollSettings.comparison_ui__weekly_collective_goal_display
+        );
+      }
+      if (pollSettings?.rate_later__auto_remove != undefined) {
+        setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
+      }
+      if (pollSettings?.recommendations__default_unsafe != undefined) {
+        setUnsafe(pollSettings.recommendations__default_unsafe);
+      }
+      if (pollSettings?.recommendations__default_date != undefined) {
+        setDate(pollSettings.recommendations__default_date);
+      }
+      if (pollSettings?.recommendations__default_language != undefined) {
+        setLanguage(pollSettings.recommendations__default_language);
+      }
+
+      dispatch(replaceSettings(settings));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

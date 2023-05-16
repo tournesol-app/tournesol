@@ -120,7 +120,9 @@ const SideBar = () => {
   const disabledItems = options?.disabledRouteIds ?? [];
 
   const buildRecoSearchParams = () => {
-    const recoSearchParams = new URLSearchParams(options?.defaultRecoSearchParams);
+    const recoSearchParams = new URLSearchParams(
+      options?.defaultRecoSearchParams
+    );
 
     const userPollSettings =
       userSettings?.[pollName as TournesolUserSettingsKeys];
