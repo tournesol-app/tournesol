@@ -323,16 +323,13 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
-    "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
-    "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
-    "comparisonPage": "Comparaison (page)",
-    "defaultUnsafe": "Affiche les vidéos avec peu de contributeurs et/ou avec un score Tournesol négatif",
-    "recommendationsPage": "Recommandations (page)",
-    "displayTheTheWeeklyCollectiveGoal": "Affichage de l'objectif collectif hebdomadaire",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
     "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
     "autoRemoveHelpText_other": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
+    "recommendations": {
+      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
+    },
     "always": "Toujours",
     "websiteOnly": "Seulement sur le site web",
     "embeddedOnly": "Seulement dans l'extension",
@@ -342,6 +339,7 @@
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "comparisonPage": "Comparaison (page)",
     "rateLater": "Liste à comparer plus tard",
+    "recommendationsPage": "Recommandations (page)",
     "updatePreferences": "Mettre à jour les préférences"
   },
   "username": "Nom d'utilisateur",

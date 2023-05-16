@@ -24,7 +24,7 @@ const RecommendationsDefaultUnsafe = ({
           color="secondary"
         />
       }
-      label={t('pollUserSettingsForm.defaultUnsafe')}
+      label={t('pollUserSettingsForm.recommendations.defaultUnsafe')}
     />
   );
 };
