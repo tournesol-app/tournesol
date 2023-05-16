@@ -70,7 +70,7 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
     )
     recommendations__default_language = serializers.ListField(
-        child=serializers.CharField(), required=False
+        child=serializers.CharField(), allow_empty=True, required=False
     )
     recommendations__default_unsafe = serializers.BooleanField(required=False)
 

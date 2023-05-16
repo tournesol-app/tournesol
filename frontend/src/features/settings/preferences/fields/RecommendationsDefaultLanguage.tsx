@@ -22,7 +22,12 @@ const RecommendationsDefaultLanguage = ({
       )}
       value={value.join(',')}
       onChange={(target) => {
-        onChange(target.split(','));
+        if (target != null){
+          onChange(target.split(','));
+        }
+        else{
+          onChange([]);
+        }
       }}
     />
   );
