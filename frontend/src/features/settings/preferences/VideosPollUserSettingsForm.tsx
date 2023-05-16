@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -84,6 +84,18 @@ const VideosPollUserSettingsForm = () => {
     }
     setDisabled(false);
   };
+
+  //Use effect to refresh settings when user logs in on the preferences form
+  useEffect(() => {
+    setCompUiWeeklyColGoalDisplay(
+      userSettings?.[pollName]?.comparison_ui__weekly_collective_goal_display ??
+        ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
+    );
+    setRateLaterAutoRemoval(
+      userSettings?.[pollName]?.rate_later__auto_remove ??
+        DEFAULT_RATE_LATER_AUTO_REMOVAL
+    );
+  }, [userSettings, pollName]);
 
   return (
     <form onSubmit={handleSubmit}>
