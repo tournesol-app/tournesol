@@ -151,16 +151,16 @@ const VideosPollUserSettingsForm = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <RecommendationsDefaultUnsafe value={unsafe} onChange={setUnsafe} />
+          <RecommendationsDefaultLanguage
+            value={language}
+            onChange={setLanguage}
+          />
         </Grid>
         <Grid item>
           <RecommendationsDefaultDate value={date} onChange={setDate} />
         </Grid>
         <Grid item>
-          <RecommendationsDefaultLanguage
-            value={language}
-            onChange={setLanguage}
-          />
+          <RecommendationsDefaultUnsafe value={unsafe} onChange={setUnsafe} />
         </Grid>
         <Grid item>
           <Button
