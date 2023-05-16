@@ -84,15 +84,19 @@ const VideosPollUserSettingsForm = () => {
   //Use effect to refresh settings when user logs in on the preferences form
   useEffect(() => {
     async function retrieveProfile() {
-      const response = await UsersService.usersMeSettingsRetrieve();
-      setCompUiWeeklyColGoalDisplay(
-        response?.[pollName]?.comparison_ui__weekly_collective_goal_display ??
-          ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
-      );
-      setRateLaterAutoRemoval(
-        response?.[pollName]?.rate_later__auto_remove ??
-          DEFAULT_RATE_LATER_AUTO_REMOVAL
-      );
+      const settings = await UsersService.usersMeSettingsRetrieve();
+      const pollSettings = settings?.[pollName];
+      if (
+        pollSettings?.comparison_ui__weekly_collective_goal_display !==
+        undefined
+      ) {
+        setCompUiWeeklyColGoalDisplay(
+          pollSettings.comparison_ui__weekly_collective_goal_display
+        );
+      }
+      if (pollSettings?.rate_later__auto_remove !== undefined) {
+        setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
+      }
     }
     retrieveProfile();
   }, [userSettings, pollName]);
