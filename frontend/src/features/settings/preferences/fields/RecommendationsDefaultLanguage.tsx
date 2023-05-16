@@ -1,6 +1,7 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import LanguageFilter from 'src/features/recommendation/LanguageFilter';
+import { LanguageField } from 'src/features/recommendation/LanguageFilter';
 
 interface RecommendationsDefaultLanguageProps {
   value: string[];
@@ -11,8 +12,14 @@ const RecommendationsDefaultLanguage = ({
   value,
   onChange,
 }: RecommendationsDefaultLanguageProps) => {
+  const { t } = useTranslation();
+
   return (
-    <LanguageFilter
+    <LanguageField
+      label={t('pollUserSettingsForm.recommendations.defaultLanguages')}
+      helperText={t(
+        'pollUserSettingsForm.recommendations.keepEmptyToSelectAllLang'
+      )}
       value={value.join(',')}
       onChange={(target) => {
         onChange(target.split(','));

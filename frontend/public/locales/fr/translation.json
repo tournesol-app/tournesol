@@ -328,6 +328,8 @@
     "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
     "autoRemoveHelpText_other": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
     "recommendations": {
+      "defaultLanguages": "Langues sélectionnées par défaut.",
+      "keepEmptyToSelectAllLang": "Gardez ce champ vide pour sélectionner toutes les langues.",
       "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
     },
     "always": "Toujours",

@@ -8,12 +8,22 @@ import {
 } from 'src/utils/recommendationsLanguages';
 import { TitledSection } from 'src/components';
 
-interface Props {
+interface LanguageFilterProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-function LanguageFilter({ value, onChange }: Props) {
+interface LanguageFieldProps extends LanguageFilterProps {
+  label?: string;
+  helperText?: string;
+}
+
+export const LanguageField = ({
+  label,
+  helperText,
+  value,
+  onChange,
+}: LanguageFieldProps) => {
   const { t, i18n } = useTranslation();
 
   const getOptionLabel = useCallback(
@@ -46,35 +56,45 @@ function LanguageFilter({ value, onChange }: Props) {
   );
 
   return (
+    <Autocomplete
+      multiple
+      options={sortedLanguages}
+      getOptionLabel={getOptionLabel}
+      value={arrayValue}
+      onChange={handleChange}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          helperText={helperText}
+          variant="outlined"
+          color="secondary"
+          size="small"
+          placeholder={placeholder}
+        />
+      )}
+      filterSelectedOptions
+      limitTags={3}
+      disableClearable
+      data-testid="autocomplete"
+      sx={{
+        '& .MuiAutocomplete-inputRoot': {
+          minHeight: '50px',
+        },
+        '& .MuiAutocomplete-endAdornment': {
+          top: 'calc(100% - 39px)',
+        },
+      }}
+    />
+  );
+};
+
+function LanguageFilter({ value, onChange }: LanguageFilterProps) {
+  const { t } = useTranslation();
+
+  return (
     <TitledSection title={t('filter.language')}>
-      <Autocomplete
-        multiple
-        options={sortedLanguages}
-        getOptionLabel={getOptionLabel}
-        value={arrayValue}
-        onChange={handleChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            color="secondary"
-            size="small"
-            placeholder={placeholder}
-          />
-        )}
-        filterSelectedOptions
-        limitTags={3}
-        disableClearable
-        data-testid="autocomplete"
-        sx={{
-          '& .MuiAutocomplete-inputRoot': {
-            minHeight: '50px',
-          },
-          '& .MuiAutocomplete-endAdornment': {
-            top: 'calc(100% - 39px)',
-          },
-        }}
-      />
+      <LanguageField value={value} onChange={onChange} />
     </TitledSection>
   );
 }
