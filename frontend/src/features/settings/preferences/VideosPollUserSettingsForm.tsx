@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -42,15 +42,11 @@ const VideosPollUserSettingsForm = () => {
   // Comparison (page)
   const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
     ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum
-  >(
-    userSettings?.[pollName]?.comparison_ui__weekly_collective_goal_display ??
-      ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
-  );
+  >(ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS);
 
   // Rate-later settings
   const [rateLaterAutoRemoval, setRateLaterAutoRemoval] = useState(
-    userSettings?.[pollName]?.rate_later__auto_remove ??
-      DEFAULT_RATE_LATER_AUTO_REMOVAL
+    DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -84,6 +80,22 @@ const VideosPollUserSettingsForm = () => {
     }
     setDisabled(false);
   };
+
+  //Use effect to refresh settings when user logs in on the preferences form
+  useEffect(() => {
+    async function retrieveProfile() {
+      const response = await UsersService.usersMeSettingsRetrieve();
+      setCompUiWeeklyColGoalDisplay(
+        response?.[pollName]?.comparison_ui__weekly_collective_goal_display ??
+          ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
+      );
+      setRateLaterAutoRemoval(
+        response?.[pollName]?.rate_later__auto_remove ??
+          DEFAULT_RATE_LATER_AUTO_REMOVAL
+      );
+    }
+    retrieveProfile();
+  }, [userSettings, pollName]);
 
   return (
     <form onSubmit={handleSubmit}>
