@@ -116,11 +116,7 @@ const SideBar = () => {
   const disabledItems = options?.disabledRouteIds ?? [];
 
   const buildRecoSearchParams = () => {
-    const defaultRecoSearchParams = options?.defaultRecoSearchParams
-      ? '?' + options?.defaultRecoSearchParams + '&'
-      : '';
-
-    const recoSearchParams = new URLSearchParams(defaultRecoSearchParams);
+    const recoSearchParams = new URLSearchParams(options?.defaultRecoSearchParams);
 
     if (
       !recoSearchParams.has('unsafe') &&
