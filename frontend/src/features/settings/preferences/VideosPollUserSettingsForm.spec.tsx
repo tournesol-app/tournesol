@@ -47,6 +47,11 @@ describe('GenericPollUserSettingsForm', () => {
   const api_url = process.env.REACT_APP_API_URL || '';
   OpenAPI.BASE = api_url;
 
+  // The values used by the store and the API are different to ensure the form
+  // is initialized with the correct source of information.
+  const INIT_AUTO_REMOVAL_API = 8;
+  const INIT_AUTO_REMOVAL_STORE = 0;
+
   fetchMock
     .mock(
       {
@@ -59,10 +64,7 @@ describe('GenericPollUserSettingsForm', () => {
         status: 200,
         body: {
           videos: {
-            // The value of `rate_later__auto_remove` should be different
-            // than the one used to initialize the store to make the tests
-            // relevant.
-            rate_later__auto_remove: 8,
+            rate_later__auto_remove: INIT_AUTO_REMOVAL_API,
           },
         },
       },
@@ -145,7 +147,7 @@ describe('GenericPollUserSettingsForm', () => {
         videos: {
           // Here we don't define all the settings so we can ensure the form
           // behaves correctly when initialized with undefined settings.
-          rate_later__auto_remove: 0,
+          rate_later__auto_remove: INIT_AUTO_REMOVAL_STORE,
         },
       },
     };
