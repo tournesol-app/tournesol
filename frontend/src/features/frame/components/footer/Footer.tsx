@@ -90,6 +90,10 @@ const Footer = () => {
           to: `${apiUrl}/exports/all/`,
         },
         {
+          name: t('footer.tournesolTalksPage'),
+          to: '/talks',
+        },
+        {
           name: t('footer.tournesolTalksMailingList'),
           to: tournesolTalksMailingListUrl,
         },

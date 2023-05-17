@@ -143,6 +143,7 @@
     "research": "Research",
     "whitePaper": "White Paper",
     "publicDatabase": "Public database",
+    "tournesolTalksPage": "Tournesol Talks",
     "tournesolTalksMailingList": "Tournesol Talks - mailing list",
     "more": "More",
     "privacyPolicy": "Privacy policy"
@@ -872,5 +873,17 @@
     "uk": "Ukrainian",
     "ur": "Urdu",
     "vi": "Vietnamese"
+  },
+  "talksPage": {
+    "sections": {
+      "title": {
+        "upcoming": "Coming soon",
+        "past": "Past"
+      }
+    },
+    "link": {
+        "joinus": "Join us",
+        "review": "Review"
+    }
   }
 }

@@ -149,6 +149,7 @@
     "research": "Recherche",
     "whitePaper": "White Paper",
     "publicDatabase": "Base de données publique",
+    "tournesolTalksPage": "Tournesol Talks",
     "tournesolTalksMailingList": "Tournesol Talks - liste de diffusion",
     "more": "Plus",
     "privacyPolicy": "Politique de confidentialité"
@@ -881,5 +882,17 @@
     "uk": "Ukrainien",
     "ur": "Ourdou",
     "vi": "Vietnamien"
+  },
+  "talksPage": {
+    "sections": {
+      "title": {
+        "upcoming": "À venir",
+        "past": "Passé"
+      }
+    },
+    "link": {
+        "joinus": "Rejoignez-nous",
+        "review": "Revisionez"
+    }
   }
 }
