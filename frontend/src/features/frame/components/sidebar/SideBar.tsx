@@ -39,13 +39,11 @@ import {
   getRecommendationPageName,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { RouteID, TournesolUserSettingsKeys } from 'src/utils/types';
+import { RouteID } from 'src/utils/types';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useSelector } from 'react-redux';
-import {
-  BlankEnum,
-  Recommendations_defaultDateEnum,
-} from 'src/services/openapi';
+
+import { getDefaultRecommendationsSearchParams } from 'src/utils/userSettings';
 
 export const sideBarWidth = 264;
 
@@ -119,44 +117,6 @@ const SideBar = () => {
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
 
-  const buildRecoSearchParams = () => {
-    const recoSearchParams = new URLSearchParams(
-      options?.defaultRecoSearchParams
-    );
-
-    const userPollSettings =
-      userSettings?.[pollName as TournesolUserSettingsKeys];
-
-    if (userPollSettings?.recommendations__default_unsafe != undefined) {
-      recoSearchParams.set(
-        'unsafe',
-        userPollSettings.recommendations__default_unsafe === true ? 'true' : ''
-      );
-    }
-
-    if (userPollSettings?.recommendations__default_date != undefined) {
-      let date = userPollSettings.recommendations__default_date;
-
-      if (date === Recommendations_defaultDateEnum.ALL_TIME) {
-        date = '' as BlankEnum;
-      }
-
-      recoSearchParams.set(
-        'date',
-        date.charAt(0) + date.slice(1).toLowerCase()
-      );
-    }
-
-    if (userPollSettings?.recommendations__default_language != undefined) {
-      recoSearchParams.set(
-        'language',
-        userPollSettings.recommendations__default_language.join(',')
-      );
-    }
-
-    return '?' + recoSearchParams.toString();
-  };
-
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -174,7 +134,11 @@ const SideBar = () => {
     },
     {
       id: RouteID.CollectiveRecommendations,
-      targetUrl: `${path}recommendations${buildRecoSearchParams()}`,
+      targetUrl: `${path}recommendations${getDefaultRecommendationsSearchParams(
+        pollName,
+        options,
+        userSettings
+      )}`,
       IconComponent:
         pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
       displayText: getRecommendationPageName(t, pollName),
