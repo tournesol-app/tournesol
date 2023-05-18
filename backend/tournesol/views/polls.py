@@ -14,7 +14,7 @@ from drf_spectacular.utils import (
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
-from tournesol.models import Entity, Poll
+from tournesol.models import Comparison, Entity, Poll
 from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
@@ -100,12 +100,25 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         return metadata_filter.split("[")[1][:-1]
 
+    def _exclude_compared_entities(self, queryset, exclude_compared, poll: Poll, user):
+        if exclude_compared and user.is_authenticated:
+            comparison_qs = Comparison.objects.filter(user=user, poll=poll)
+            compared_entities = set(
+                entity_id
+                for comparison in comparison_qs
+                for entity_id in [comparison.entity_1_id, comparison.entity_2_id]
+            )
+            return queryset.exclude(id__in=compared_entities)
+        return queryset
+
     def filter_by_parameters(self, request, queryset, poll: Poll):
         """
         Filter the queryset according to the URL parameters.
 
         The `unsafe` parameter is not processed by this method.
         """
+        user = self.request.user
+
         filter_serializer = RecommendationsFilterSerializer(data=request.query_params)
         filter_serializer.is_valid(raise_exception=True)
         filters = filter_serializer.validated_data
@@ -131,6 +144,9 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         if search:
             languages = request.query_params.getlist("metadata[language]")
             queryset = poll.entity_cls.filter_search(queryset, search, languages)
+
+        exclude_compared = filters["exclude_compared_entities"]
+        queryset = self._exclude_compared_entities(queryset, exclude_compared, poll, user)
 
         return queryset, filters
 
