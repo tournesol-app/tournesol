@@ -100,12 +100,25 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         return metadata_filter.split("[")[1][:-1]
 
+    def _exclude_compared_entities(self, queryset, exclude_compared, poll: Poll, user):
+        if exclude_compared and user.is_authenticated:
+            comparison_qs = Comparison.objects.filter(user=user, poll=poll)
+            compared_entities = set(
+                entity_id
+                for comparison in comparison_qs
+                for entity_id in [comparison.entity_1_id, comparison.entity_2_id]
+            )
+            return queryset.exclude(id__in=compared_entities)
+        return queryset
+
     def filter_by_parameters(self, request, queryset, poll: Poll):
         """
         Filter the queryset according to the URL parameters.
 
         The `unsafe` parameter is not processed by this method.
         """
+        user = self.request.user
+
         filter_serializer = RecommendationsFilterSerializer(data=request.query_params)
         filter_serializer.is_valid(raise_exception=True)
         filters = filter_serializer.validated_data
@@ -132,6 +145,9 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             languages = request.query_params.getlist("metadata[language]")
             queryset = poll.entity_cls.filter_search(queryset, search, languages)
 
+        exclude_compared = filters["exclude_compared_entities"]
+        queryset = self._exclude_compared_entities(queryset, exclude_compared, poll, user)
+
         return queryset, filters
 
     def filter_unsafe(self, queryset, filters):
@@ -148,17 +164,6 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
             tournesol_score__gt=0,
         )
-
-    def exclude_compared_entities(self, queryset, filters, user):
-        if filters["exclude_compared_entities"] and user.is_authenticated:
-            comparison_qs = Comparison.objects.filter(user=user, poll=self.poll_from_url)
-            compared_entities = set(
-                entity_id
-                for comparison in comparison_qs
-                for entity_id in [comparison.entity_1_id, comparison.entity_2_id]
-            )
-            return queryset.exclude(id__in=compared_entities)
-        return queryset
 
     def sort_results(self, queryset, filters):
         """
@@ -308,12 +313,10 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
 
     def get_queryset(self):
         poll = self.poll_from_url
-        user = self.request.user
         queryset = Entity.objects.all()
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_and_prefetch_scores(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
-        queryset = self.exclude_compared_entities(queryset, filters, user)
         queryset = self.sort_results(queryset, filters)
         return queryset
 
