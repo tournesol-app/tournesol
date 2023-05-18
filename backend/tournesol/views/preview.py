@@ -18,7 +18,8 @@ from requests.exceptions import Timeout
 from rest_framework.views import APIView
 
 from tournesol.entities.video import TYPE_VIDEO
-from tournesol.models.entity import Entity
+from tournesol.models import Entity
+from tournesol.renderers import ImageRenderer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.utils.constants import REQUEST_TIMEOUT
 
@@ -30,6 +31,9 @@ CACHE_DEFAULT_PREVIEW = 3600 * 24  # 24h
 CACHE_ENTITY_PREVIEW = 3600 * 2
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
+LIGHT_FONT_LOCATION = "tournesol/resources/Poppins-Light.ttf"
+LIGHT_ITALIC_FONT_LOCATION = "tournesol/resources/Poppins-LightItalic.ttf"
+REGULAR_FONT_LOCATION = "tournesol/resources/Poppins-Regular.ttf"
 DURATION_FONT_LOCATION = "tournesol/resources/Roboto-Bold.ttf"
 ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 194)
@@ -42,6 +46,7 @@ COLOR_YELLOW_BACKGROUND = (255, 200, 0, 16)
 COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_WHITE_FONT = (255, 255, 255, 255)
+COLOR_GREY_FONT = (160, 155, 135, 255)
 COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 COLOR_DURATION_RECTANGLE = (0, 0, 0, 201)
 
@@ -53,6 +58,7 @@ class BasePreviewAPIView(APIView):
     A generic mixin that provides common behaviours that can be used by all
     dynamic preview `APIView`.
     """
+    renderer_classes = [ImageRenderer]
 
     def default_preview(self):
         # The file needs to remain open to be streamed and will be closed automatically
@@ -154,6 +160,21 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
         "entity_ratings_label": ImageFont.truetype(
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
         ),
+        "recommendations_headline": ImageFont.truetype(
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
+        ),
+        "recommendations_title": ImageFont.truetype(
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 11 * upscale_ratio
+        ),
+        "recommendations_rating": ImageFont.truetype(
+            str(BASE_DIR / LIGHT_ITALIC_FONT_LOCATION), 10 * upscale_ratio
+        ),
+        "recommendations_metadata": ImageFont.truetype(
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 9 * upscale_ratio
+        ),
+        "recommendations_ts_score": ImageFont.truetype(
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 16 * upscale_ratio
+        )
     }
     return config
 
@@ -332,13 +353,16 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
             )
 
-    def _draw_duration(self, image: Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
+    def draw_duration(self, image: Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
         # pylint: disable=too-many-locals
 
         """
         Draw the duration on the preview.
         Adapts the overlay position and size in function of the duration text size.
         """
+        font = ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 4 * upscale_ratio
+        )
 
         duration = entity.metadata.get("duration")
         if not duration:
@@ -394,8 +418,6 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         if not self.is_video(entity):
             return self.default_preview()
 
-        response = HttpResponse(content_type="image/png")
-
         upscale_ratio = 2
         fnt_config = get_preview_font_config(upscale_ratio=upscale_ratio)
         preview_image = get_preview_frame(
@@ -416,10 +438,11 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             youtube_thumbnail, box=tuple(youtube_thumbnail_bbox[2:4])
         )
 
-        self._draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
+        self.draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
         self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
 
-        preview_image.save(response, "png")
+        response = HttpResponse(content_type="image/jpeg")
+        preview_image.convert("RGB").save(response, "jpeg")
         return response
 
 
@@ -757,6 +780,6 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         generator = ComparisonPreviewGenerator()
         final = generator.render(entity_a, entity_b, thumbnail_a, thumbnail_b)
 
-        response = HttpResponse(content_type="image/png")
-        final.save(response, "png")
+        response = HttpResponse(content_type="image/jpeg")
+        final.convert("RGB").save(response, "jpeg")
         return response

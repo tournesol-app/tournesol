@@ -33,6 +33,10 @@ from .views.preview import (
     DynamicWebsitePreviewDefault,
     DynamicWebsitePreviewEntity,
 )
+from .views.preview_recommendations import (
+    DynamicWebsitePreviewRecommendations,
+    get_preview_recommendations_redirect_params,
+)
 from .views.proof import ProofView
 from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
@@ -191,7 +195,7 @@ urlpatterns = [
     ),
     # Website Previews
     re_path(
-        "^preview/comparison/?$",
+        r"^preview/comparison/?$",
         DynamicWebsitePreviewComparison.as_view(),
         name="website_preview_comparison",
     ),
@@ -199,6 +203,20 @@ urlpatterns = [
         "preview/entities/<str:uid>",
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
+    ),
+    # This route show the preview for the recommendations page
+    # after preview/recommendations route rewrite the url paramaters
+    # to match backend parameters and redirect
+    path(
+        "preview/_recommendations/",
+        DynamicWebsitePreviewRecommendations.as_view(),
+        name="website_preview_recommendations_internal",
+    ),
+    # This route rewrite the url for the recommendations page preview
+    re_path(
+        r"^preview/recommendations/?$",
+        get_preview_recommendations_redirect_params,
+        name="website_preview_recommendations_redirect",
     ),
     re_path(
         r"^preview/.*$",
