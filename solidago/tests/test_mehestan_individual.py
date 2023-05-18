@@ -70,6 +70,36 @@ class TestIndividualScores:
         # F is preferred to E
         assert scores.loc["F"].raw_score > scores.loc["E"].raw_score
 
+    def test_comparisons_monotony(self, compute_method):
+        if compute_method is compute_individual_score:
+            pytest.xfail("The non-BBT version does not preserve monotony")
+
+        comparisons_1 = [
+            ("A", "B", 8),
+            ("A", "C", 9),
+            ("A", "D", 10),
+            ("B", "C", 8),
+            ("B", "D", 9),
+            ("C", "D", 10),
+        ]
+
+        # Move preferences towards A
+        comparisons_2 = [
+            ("A", "B", 7),
+            ("A", "C", 8),
+            ("A", "D", 9),
+            ("B", "C", 8),
+            ("B", "D", 9),
+            ("C", "D", 10),
+        ]
+
+        comparisons_1_df = pd.DataFrame(comparisons_1, columns=["entity_a", "entity_b", "score"])
+        scores_1 = compute_method(comparisons_1_df)
+        comparisons_2_df = pd.DataFrame(comparisons_2, columns=["entity_a", "entity_b", "score"])
+        scores_2 = compute_method(comparisons_2_df)
+
+        assert scores_2.loc["A"].raw_score > scores_1.loc["A"].raw_score
+
     def test_comparisons_non_connex(self, compute_method):
         comparisons = [
             # Group 1
