@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -18,6 +18,8 @@ import {
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
+import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
+
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
@@ -25,7 +27,8 @@ import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 
 /**
- * Display a generic user settings form that can be used by any poll.
+ * Display a form allowing the logged user to update it's preferences for the
+ * `videos` poll.
  */
 const VideosPollUserSettingsForm = () => {
   const pollName = YOUTUBE_POLL_NAME;
@@ -56,6 +59,15 @@ const VideosPollUserSettingsForm = () => {
     Array<string>
   >([]);
 
+  const handleDefaultLanguagesChange = useCallback((languages: string[]) => {
+    setRecoDefaultLanguages(languages);
+    saveRecommendationsLanguages(languages.join(','));
+  }, []);
+
+  /**
+   * Initialize the form with up-to-date settings from the API, and dispatch
+   * them in the Redux store.
+   */
   useEffect(() => {
     UsersService.usersMeSettingsRetrieve().then((settings) => {
       const pollSettings = settings?.[pollName];
@@ -155,7 +167,7 @@ const VideosPollUserSettingsForm = () => {
         <Grid item>
           <RecommendationsDefaultLanguage
             value={recoDefaultLanguages}
-            onChange={setRecoDefaultLanguages}
+            onChange={handleDefaultLanguagesChange}
           />
         </Grid>
         <Grid item>
