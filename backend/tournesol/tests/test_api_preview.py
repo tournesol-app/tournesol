@@ -117,7 +117,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         response = self.client.get(f"{self.preview_url}{self.valid_uid}")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         # The absence of the Content-Disposition header indicates that the
         # default preview image is not returned, as expected in our case. This
         # check is not very robust.
@@ -142,7 +142,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         )
         response = self.client.get(f"{self.preview_url}{self.valid_uid}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         # The absence of the Content-Disposition header indicates that the
         # default preview image is not returned, as expected in our case. This
         # check is not very robust.
@@ -178,7 +178,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         video = VideoFactory(metadata__duration=None)
         response = self.client.get(f"{self.preview_url}{video.uid}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
 
     @patch("requests.get", lambda x, timeout=None: raise_(ConnectionError))
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
@@ -257,7 +257,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         # The absence of the Content-Disposition header indicates that the
         # default preview image is not returned, as expected in our case. This
         # check is not very robust.
@@ -268,7 +268,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
             f"{self.preview_url}/", {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         self.assertNotIn("Content-Disposition", response.headers)
 
     @patch("requests.get", mock_yt_thumbnail_response)
@@ -303,7 +303,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
             self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         # The absence of the Content-Disposition header indicates that the
         # default preview image is not returned, as expected in our case. This
         # check is not very robust.

@@ -19,6 +19,7 @@ from rest_framework.views import APIView
 
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
+from tournesol.renderers import ImageRenderer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.utils.constants import REQUEST_TIMEOUT
 
@@ -57,6 +58,7 @@ class BasePreviewAPIView(APIView):
     A generic mixin that provides common behaviours that can be used by all
     dynamic preview `APIView`.
     """
+    renderer_classes = [ImageRenderer]
 
     def default_preview(self):
         # The file needs to remain open to be streamed and will be closed automatically
@@ -159,19 +161,19 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
         ),
         "recommendations_headline": ImageFont.truetype(
-            str(BASE_DIR / REGULAR_FONT_LOCATION), 11 * upscale_ratio
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
         ),
         "recommendations_title": ImageFont.truetype(
-            str(BASE_DIR / LIGHT_FONT_LOCATION), 10 * upscale_ratio
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 11 * upscale_ratio
         ),
         "recommendations_rating": ImageFont.truetype(
-            str(BASE_DIR / LIGHT_ITALIC_FONT_LOCATION), 8 * upscale_ratio
+            str(BASE_DIR / LIGHT_ITALIC_FONT_LOCATION), 10 * upscale_ratio
         ),
         "recommendations_metadata": ImageFont.truetype(
-            str(BASE_DIR / LIGHT_FONT_LOCATION), 8 * upscale_ratio
+            str(BASE_DIR / LIGHT_FONT_LOCATION), 9 * upscale_ratio
         ),
         "recommendations_ts_score": ImageFont.truetype(
-            str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 16 * upscale_ratio
         )
     }
     return config
@@ -416,8 +418,6 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         if not self.is_video(entity):
             return self.default_preview()
 
-        response = HttpResponse(content_type="image/png")
-
         upscale_ratio = 2
         fnt_config = get_preview_font_config(upscale_ratio=upscale_ratio)
         preview_image = get_preview_frame(
@@ -441,7 +441,8 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         self.draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
         self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
 
-        preview_image.save(response, "png")
+        response = HttpResponse(content_type="image/jpeg")
+        preview_image.convert("RGB").save(response, "jpeg")
         return response
 
 
@@ -779,6 +780,6 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         generator = ComparisonPreviewGenerator()
         final = generator.render(entity_a, entity_b, thumbnail_a, thumbnail_b)
 
-        response = HttpResponse(content_type="image/png")
-        final.save(response, "png")
+        response = HttpResponse(content_type="image/jpeg")
+        final.convert("RGB").save(response, "jpeg")
         return response
