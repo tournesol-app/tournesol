@@ -440,3 +440,24 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
             response.headers["Content-Disposition"],
             'inline; filename="tournesol_screenshot_og.png"',
         )
+
+
+class DynamicRecommendationsPreviewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.preview_url = "/preview/recommendations"
+        self.preview_internal_url = "/preview/_recommendations"
+
+    def test_recommendations_preview_query_redirection(self):
+        response = self.client.get(f"{self.preview_url}/?language=fr&date=Month")
+        self.assertEqual(response.status_code, 302)
+        self.assertRegex(
+            response.headers["location"],
+            rf"{self.preview_internal_url}/\?metadata%5Blanguage%5D=fr&date_gte=.*",
+        )
+
+    def test_recommendations_preview_internal_route(self):
+        response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
+        self.assertNotIn("Content-Disposition", response.headers)

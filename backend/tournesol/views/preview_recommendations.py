@@ -172,15 +172,15 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         # Expected date format are 2022-06-19T00:00:00Z or 2022-06-19
         publication_date = video.metadata["publication_date"].split("T")[0]
 
-        views_number_size = draw.textsize(
+        views_number_width = draw.textlength(
             views_number, self.fnt_config["recommendations_metadata"]
         )
-        publication_date_size = draw.textsize(
+        publication_date_width = draw.textlength(
             publication_date, self.fnt_config["recommendations_metadata"]
         )
 
         gap = 8 * upscale_ratio
-        publication_date_x_gap = views_number_size[0] + gap
+        publication_date_x_gap = views_number_width + gap
 
         # Draw video title
         draw.text(
@@ -206,7 +206,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         )
         draw.text(
             (
-                publication_date_x_gap + publication_date_size[0] + gap,
+                publication_date_x_gap + publication_date_width + gap,
                 second_line_y * upscale_ratio,
             ),
             video.metadata.get("uploader", ""),
@@ -238,7 +238,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         score = str(round(ts_score))
 
         comparisons = f"{recommendation.rating_n_ratings} comparisons by "
-        comparisons_size = ts_score_box_draw.textsize(
+        comparisons_width = ts_score_box_draw.textlength(
             comparisons, self.fnt_config["recommendations_rating"]
         )
 
@@ -260,7 +260,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         )
 
         ts_score_box_draw.text(
-            (comparisons_x_gap + comparisons_size[0], 2 * upscale_ratio),
+            (comparisons_x_gap + comparisons_width, 2 * upscale_ratio),
             f"{recommendation.rating_n_contributors} contributors",
             font=self.fnt_config["recommendations_rating"],
             fill="#B38B00",
@@ -271,8 +271,8 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
     def draw_no_recommendations_text(self, image: Image):
         draw = ImageDraw.Draw(image)
         text = "No video corresponds to search criteria."
-        text_size = draw.textsize(text, self.fnt_config["recommendations_headline"])
-        text_pos = ((image.size[0] - text_size[0]) / 2, (image.size[1] - text_size[1]) / 2)
+        text_width = draw.textlength(text, self.fnt_config["recommendations_headline"])
+        text_pos = ((image.size[0] - text_width) / 2, (image.size[1] - 20*self.upscale_ratio) / 2)
         draw.text(
             text_pos,
             text,
