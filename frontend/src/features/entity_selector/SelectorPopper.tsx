@@ -1,5 +1,12 @@
 import React from 'react';
-import { Dialog, Popper, PopperProps, Button, Box } from '@mui/material';
+import {
+  Dialog,
+  Popper,
+  PopperProps,
+  Button,
+  Box,
+  useTheme,
+} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
@@ -16,6 +23,7 @@ const SelectorPopper = ({
   ...rest
 }: Props) => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   if (modal) {
     return (
@@ -38,7 +46,7 @@ const SelectorPopper = ({
     <Popper
       open={open}
       {...rest}
-      style={{ width: 'fit-content' }}
+      style={{ width: 'fit-content', zIndex: theme.zIndex.modal }}
       placement="bottom-start"
       modifiers={[
         {

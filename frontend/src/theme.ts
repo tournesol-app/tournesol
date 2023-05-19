@@ -1,6 +1,6 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
-declare module '@mui/material/styles/createPalette' {
+declare module '@mui/material/styles' {
   interface Palette {
     neutral: Palette['primary'];
   }
@@ -13,6 +13,10 @@ declare module '@mui/material/styles/createPalette' {
     primary: string;
     menu: string;
     emphatic?: string;
+  }
+
+  interface ZIndex {
+    videoCardDuration: number;
   }
 }
 
@@ -67,6 +71,9 @@ export const theme = responsiveFontSizes(
         '"Segoe UI Emoji"',
         '"Segoe UI Symbol"',
       ].join(','),
+    },
+    zIndex: {
+      videoCardDuration: 1,
     },
   })
 );

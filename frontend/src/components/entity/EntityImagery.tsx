@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Avatar, Box } from '@mui/material';
+import { Avatar, Box, useTheme } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
@@ -19,6 +19,7 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
   },
   ref
 ) {
+  const theme = useTheme();
   const [isDurationVisible, setIsDurationVisible] = useState(true);
   const formattedDuration: string | null = duration
     ? convertDurationToClockDuration(duration)
@@ -46,7 +47,7 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
           lineHeight={1.5}
           // Prevent the duration to be hidden by an additional layer
           // displayed on top of it (like the unavailable box).
-          zIndex={10}
+          zIndex={theme.zIndex.videoCardDuration}
           sx={{ pointerEvents: 'none' }}
         >
           {formattedDuration}

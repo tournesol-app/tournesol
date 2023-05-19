@@ -28,12 +28,6 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     marginTop: '20px',
   },
-  stickyPagination: {
-    position: 'sticky',
-    top: 4,
-    zIndex: 1,
-    padding: '6px',
-  },
 });
 
 const RateLaterPage = () => {
@@ -186,14 +180,12 @@ const RateLaterPage = () => {
             </LoaderWrapper>
           </Box>
           {!!entityCount && entityCount > limit && (
-            <div className={classes.stickyPagination}>
-              <Pagination
-                offset={offset}
-                count={entityCount}
-                onOffsetChange={onOffsetChange}
-                limit={limit}
-              />
-            </div>
+            <Pagination
+              offset={offset}
+              count={entityCount}
+              onOffsetChange={onOffsetChange}
+              limit={limit}
+            />
           )}
         </div>
       </ContentBox>
