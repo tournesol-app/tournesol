@@ -343,7 +343,7 @@
     "recommendations": {
       "defaultUploadDate": "Valeur par défaut du filtre Mis en ligne",
       "defaultLanguages": "Valeur par défaut du champ Langues",
-      "keepEmptyToSelectAllLang": "Gardez ce champ vide pour sélectionner toutes les langues.",
+      "keepEmptyToSelectAllLang": "Affecte aussi les recommandations de l'extension. Gardez ce champ vide pour sélectionner toutes les langues.",
       "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
     }
   },

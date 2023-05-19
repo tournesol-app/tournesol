@@ -335,7 +335,7 @@
     "recommendations": {
       "defaultUploadDate": "Default value of the Uploaded filter",
       "defaultLanguages": "Default value of the Languages filter",
-      "keepEmptyToSelectAllLang": "Keep this field empty to select all languages.",
+      "keepEmptyToSelectAllLang": "Also affects the extension'e recommendations. Keep this field empty to select all languages.",
       "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
     }
   },
