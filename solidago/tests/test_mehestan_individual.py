@@ -46,8 +46,10 @@ class TestIndividualScores:
         # Video are ranked according to the chain of comparisons
         assert list(scores.index) == sorted(scores.index)
 
-        # video_10 is in the middle with score 0.0
+        # Compared videos are indexed 0 to 20 included; video_10 is in the middle with score 0.0
         assert scores.loc["video_10"].raw_score == pytest.approx(0.0, abs=1e-4)
+        for idx in range(10):
+            assert scores.iloc[idx].raw_score == pytest.approx(-1 * scores.iloc[20-idx].raw_score, abs=1e-4)
 
     def test_comparisons_strong_preferences(self, compute_method):
         if compute_method is compute_individual_score:
