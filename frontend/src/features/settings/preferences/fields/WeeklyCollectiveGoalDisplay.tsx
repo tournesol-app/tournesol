@@ -45,7 +45,7 @@ const WeeklyCollectiveGoalDisplayField = ({
   return (
     <FormControl fullWidth>
       <InputLabel
-        id="label__comparison_ui__weekly_collective_goal_display"
+        id={`label_${pollName}_comparison_ui__weekly_collective_goal_display`}
         color="secondary"
       >
         {t('pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal')}
@@ -53,8 +53,8 @@ const WeeklyCollectiveGoalDisplayField = ({
       <Select
         size="small"
         color="secondary"
-        id="comparison_ui__weekly_collective_goal_display"
-        labelId="label__comparison_ui__weekly_collective_goal_display"
+        id={`${pollName}_comparison_ui__weekly_collective_goal_display`}
+        labelId={`label_${pollName}_comparison_ui__weekly_collective_goal_display`}
         value={value}
         label={t('pollUserSettingsForm.displayTheTheWeeklyCollectiveGoal')}
         onChange={(event) =>
