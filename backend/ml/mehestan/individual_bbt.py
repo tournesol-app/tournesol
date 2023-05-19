@@ -58,24 +58,23 @@ def coordinate_optimize(r_ab, theta_b, precision):
     )
 
 
-def get_random_coordinate(n, exclude: set):
-    if len(exclude) < int(n * 0.95):
-        while True:
-            # `random.randint` would be more uniform, but random.random is faster,
-            # and that's acceptable for small values of n.
-            coord = int(n * random.random())  # nosec B311
-            if coord not in exclude:
-                return coord
-    return random.choice([i for i in range(n) if i not in exclude])  # nosec B311
-
-
 def coordinate_descent(coord_to_subset, initial_scores):
     n_alternatives = len(coord_to_subset)
     unchanged = set()
+    to_pick = []
+
+    def pick_next_coordinate():
+        nonlocal to_pick
+        if len(to_pick) == 0:
+            to_pick = list(range(n_alternatives))
+            random.shuffle(to_pick)
+        return to_pick.pop()
 
     theta = initial_scores
     while len(unchanged) < n_alternatives:
-        coord = get_random_coordinate(n_alternatives, exclude=unchanged)
+        coord = pick_next_coordinate()
+        if coord in unchanged:
+            continue
         indices, r_ab = coord_to_subset[coord]
         old_theta_a = theta[coord]
         theta_b = theta[indices]
