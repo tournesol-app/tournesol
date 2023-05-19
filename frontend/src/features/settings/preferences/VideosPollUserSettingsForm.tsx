@@ -174,12 +174,14 @@ const VideosPollUserSettingsForm = () => {
           <RecommendationsDefaultDate
             value={recoDefaultUploadDate}
             onChange={setRecoDefaultUploadDate}
+            pollName={pollName}
           />
         </Grid>
         <Grid item>
           <RecommendationsDefaultUnsafe
             value={recoDefaultUnsafe}
             onChange={setRecoDefaultUnsafe}
+            pollName={pollName}
           />
         </Grid>
         <Grid item>

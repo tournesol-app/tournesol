@@ -11,11 +11,13 @@ import {
 interface RecommendationsDefaultDateProps {
   value: Recommendations_defaultDateEnum | BlankEnum;
   onChange: (target: Recommendations_defaultDateEnum | BlankEnum) => void;
+  pollName: string;
 }
 
 const RecommendationsDefaultDate = ({
   value,
   onChange,
+  pollName,
 }: RecommendationsDefaultDateProps) => {
   const { t } = useTranslation();
 
@@ -44,14 +46,17 @@ const RecommendationsDefaultDate = ({
 
   return (
     <FormControl fullWidth>
-      <InputLabel id="label__recommendations__default_date" color="secondary">
+      <InputLabel
+        id={`label_${pollName}_recommendations__default_date`}
+        color="secondary"
+      >
         {t('videosUserSettingsForm.recommendations.defaultUploadDate')}
       </InputLabel>
       <Select
         size="small"
         color="secondary"
-        id="recommendations__default_date"
-        labelId="label__recommendations__default_date"
+        id={`${pollName}_recommendations__default_date`}
+        labelId={`label_${pollName}_recommendations__default_date`}
         value={value}
         label={t('videosUserSettingsForm.recommendations.defaultUploadDate')}
         onChange={(event) =>

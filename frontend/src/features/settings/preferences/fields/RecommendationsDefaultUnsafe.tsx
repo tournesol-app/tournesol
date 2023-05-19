@@ -6,11 +6,13 @@ import { FormControlLabel, Switch } from '@mui/material';
 interface RecommendationsDefaultUnsafeProps {
   value: boolean;
   onChange: (target: boolean) => void;
+  pollName: string;
 }
 
 const RecommendationsDefaultUnsafe = ({
   value,
   onChange,
+  pollName,
 }: RecommendationsDefaultUnsafeProps) => {
   const { t } = useTranslation();
 
@@ -18,6 +20,7 @@ const RecommendationsDefaultUnsafe = ({
     <FormControlLabel
       control={
         <Switch
+          name={`${pollName}_recommendations__default_unsafe`}
           checked={value}
           onChange={() => onChange(!value)}
           size="medium"
