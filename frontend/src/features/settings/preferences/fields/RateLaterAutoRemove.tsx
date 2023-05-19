@@ -40,7 +40,7 @@ const RateLaterAutoRemoveField = ({
             apiErrors.body[pollName].rate_later__auto_remove.map(
               (error: string, idx: number) => (
                 <Typography
-                  key={`rate_later__auto_remove_error_${idx}`}
+                  key={`${pollName}_rate_later__auto_remove_error_${idx}`}
                   color="red"
                   display="block"
                   variant="caption"
@@ -51,7 +51,7 @@ const RateLaterAutoRemoveField = ({
             )}
         </>
       }
-      name="rate_later__auto_remove"
+      name={`${pollName}_rate_later__auto_remove`}
       color="secondary"
       size="small"
       type="number"
