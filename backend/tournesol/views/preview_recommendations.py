@@ -61,7 +61,7 @@ def get_preview_recommendations_redirect_params(request):
 
     for (key, value) in params.items():
         if key == "language":
-            languages = value.split(",")
+            languages = [lang for lang in value.split(",") if lang != ""]
             if languages:
                 query.setlist("metadata[language]", languages)
         elif key == "date":
