@@ -18,7 +18,7 @@ EPSILON = 1e-5
 
 
 @njit
-def L_prime(theta_a, theta_b, r_ab):
+def contributor_loss_partial_derivative(theta_a, theta_b, r_ab):
     theta_ab = theta_a - theta_b
     return ALPHA * theta_a + np.sum(
         np.where(
@@ -42,14 +42,20 @@ def Delta_theta(theta_ab):
 @njit
 def coordinate_optimize(r_ab, theta_b, precision):
     theta_low = -5.0
-    while L_prime(theta_low, theta_b, r_ab) > 0:
+    while contributor_loss_partial_derivative(theta_low, theta_b, r_ab) > 0:
         theta_low *= 2
 
     theta_up = 5.0
-    while L_prime(theta_up, theta_b, r_ab) < 0:
+    while contributor_loss_partial_derivative(theta_up, theta_b, r_ab) < 0:
         theta_up *= 2
 
-    return brentq(L_prime, theta_low, theta_up, args=(theta_b, r_ab), xtol=precision)
+    return brentq(
+        contributor_loss_partial_derivative,
+        theta_low,
+        theta_up,
+        args=(theta_b, r_ab),
+        xtol=precision,
+    )
 
 
 def get_random_coordinate(n, exclude: set):
