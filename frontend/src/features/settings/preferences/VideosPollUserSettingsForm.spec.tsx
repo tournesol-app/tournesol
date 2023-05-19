@@ -91,6 +91,7 @@ describe('GenericPollUserSettingsForm', () => {
           videos: {
             rate_later__auto_remove: 16,
             comparison_ui__weekly_collective_goal_display: 'NEVER',
+            recommendations__default_unsafe: true,
           },
         },
       },
@@ -251,10 +252,16 @@ describe('GenericPollUserSettingsForm', () => {
     });
 
     it("calls the store's dispatch function after a submit", async () => {
-      const { rateLaterAutoRemove, storeDispatchSpy, submit } = await setup();
+      const {
+        rateLaterAutoRemove,
+        recommendationsDefaultUnsafe,
+        storeDispatchSpy,
+        submit,
+      } = await setup();
       expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
+      fireEvent.click(recommendationsDefaultUnsafe);
 
       await act(async () => {
         fireEvent.click(submit);
@@ -268,6 +275,7 @@ describe('GenericPollUserSettingsForm', () => {
             comparison_ui__weekly_collective_goal_display:
               ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
             rate_later__auto_remove: 16,
+            recommendations__default_unsafe: true,
           },
         },
       });
