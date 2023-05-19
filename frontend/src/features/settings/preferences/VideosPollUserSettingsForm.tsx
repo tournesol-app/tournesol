@@ -90,8 +90,10 @@ const VideosPollUserSettingsForm = () => {
       if (pollSettings?.recommendations__default_date != undefined) {
         setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
       }
-      if (pollSettings?.recommendations__default_language != undefined) {
-        setRecoDefaultLanguages(pollSettings.recommendations__default_language);
+      if (pollSettings?.recommendations__default_languages != undefined) {
+        setRecoDefaultLanguages(
+          pollSettings.recommendations__default_languages
+        );
       } else {
         setRecoDefaultLanguages(initRecommendationsLanguages().split(','));
       }
@@ -112,9 +114,9 @@ const VideosPollUserSettingsForm = () => {
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
-            recommendations__default_unsafe: recoDefaultUnsafe,
             recommendations__default_date: recoDefaultUploadDate,
-            recommendations__default_language: recoDefaultLanguages,
+            recommendations__default_languages: recoDefaultLanguages,
+            recommendations__default_unsafe: recoDefaultUnsafe,
           },
         },
       }).catch((reason: ApiError) => {

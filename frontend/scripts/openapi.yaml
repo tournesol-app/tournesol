@@ -4084,7 +4084,7 @@ components:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
           - $ref: '#/components/schemas/BlankEnum'
-        recommendations__default_language:
+        recommendations__default_languages:
           type: array
           items:
             type: string
@@ -4112,7 +4112,7 @@ components:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
           - $ref: '#/components/schemas/BlankEnum'
-        recommendations__default_language:
+        recommendations__default_languages:
           type: array
           items:
             type: string

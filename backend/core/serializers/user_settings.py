@@ -69,12 +69,12 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
     recommendations__default_date = serializers.ChoiceField(
         choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
     )
-    recommendations__default_language = serializers.ListField(
+    recommendations__default_languages = serializers.ListField(
         child=serializers.CharField(), allow_empty=True, required=False
     )
     recommendations__default_unsafe = serializers.BooleanField(required=False)
 
-    def validate_recommendations__default_language(self, default_languages):
+    def validate_recommendations__default_languages(self, default_languages):
         for lang in default_languages:
             if lang not in ACCEPTED_LANGUAGE_CODES:
                 raise ValidationError(_("Unknown language code: %(lang)s.") % {"lang": lang})

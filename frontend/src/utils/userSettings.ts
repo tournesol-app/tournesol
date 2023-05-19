@@ -60,11 +60,11 @@ export const buildVideosDefaultRecoSearchParams = (
     );
   }
 
-  if (userSettings?.recommendations__default_language != undefined) {
+  if (userSettings?.recommendations__default_languages != undefined) {
     searchParams.set(
       'language',
       recoDefaultLanguagesToSearchFilter(
-        userSettings.recommendations__default_language
+        userSettings.recommendations__default_languages
       )
     );
   }

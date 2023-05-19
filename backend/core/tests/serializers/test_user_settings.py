@@ -107,38 +107,38 @@ class VideosPollUserSettingsSerializerTestCase(TestCase):
     TestCase of the `VideosPollUserSettingsSerializer` serializer.
     """
 
-    def test_validate_recommendations__default_language(self):
+    def test_validate_recommendations__default_languages(self):
         """
-        The `validate_recommendations__default_language` setting must raise
+        The `validate_recommendations__default_languages` setting must raise
         an error for unknown languages.
         """
 
         serializer = VideosPollUserSettingsSerializer(
-            data={"recommendations__default_language": []}
+            data={"recommendations__default_languages": []}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         serializer = VideosPollUserSettingsSerializer(
-            data={"recommendations__default_language": ["fr"]}
+            data={"recommendations__default_languages": ["fr"]}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         serializer = VideosPollUserSettingsSerializer(
-            data={"recommendations__default_language": ["fr", "en"]}
+            data={"recommendations__default_languages": ["fr", "en"]}
         )
         self.assertEqual(serializer.is_valid(), True)
 
         serializer = VideosPollUserSettingsSerializer(
-            data={"recommendations__default_language": ["not_a_language"]}
+            data={"recommendations__default_languages": ["not_a_language"]}
         )
         self.assertEqual(serializer.is_valid(), False)
-        self.assertIn("recommendations__default_language", serializer.errors)
+        self.assertIn("recommendations__default_languages", serializer.errors)
 
         serializer = VideosPollUserSettingsSerializer(
-            data={"recommendations__default_language": ["en", "not_a_language"]}
+            data={"recommendations__default_languages": ["en", "not_a_language"]}
         )
         self.assertEqual(serializer.is_valid(), False)
-        self.assertIn("recommendations__default_language", serializer.errors)
+        self.assertIn("recommendations__default_languages", serializer.errors)
 
     def test_validate_recommendations__default_date(self):
         """
