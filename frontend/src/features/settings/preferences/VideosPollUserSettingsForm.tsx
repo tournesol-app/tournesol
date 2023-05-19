@@ -27,8 +27,8 @@ import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 
 /**
- * Display a form allowing the logged user to update it's preferences for the
- * `videos` poll.
+ * Display a form allowing the logged users to update their preferences for
+ * the `videos` poll.
  */
 const VideosPollUserSettingsForm = () => {
   const pollName = YOUTUBE_POLL_NAME;
