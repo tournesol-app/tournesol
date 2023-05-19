@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -31,19 +32,18 @@ import {
   WatchLater as WatchLaterIcon,
 } from '@mui/icons-material';
 
-import { closeDrawer } from '../../drawerOpenSlice';
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import {
   getRecommendationPageName,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
-import { selectSettings } from 'src/features/settings/userSettingsSlice';
-import { useSelector } from 'react-redux';
-
 import { getDefaultRecommendationsSearchParams } from 'src/utils/userSettings';
+
+import { closeDrawer } from '../../drawerOpenSlice';
 
 export const sideBarWidth = 264;
 
