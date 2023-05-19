@@ -1,3 +1,5 @@
+import random
+
 import pandas as pd
 import pytest
 
@@ -50,6 +52,19 @@ class TestIndividualScores:
         assert scores.loc["video_10"].raw_score == pytest.approx(0.0, abs=1e-4)
         for idx in range(10):
             assert scores.iloc[idx].raw_score == pytest.approx(-1 * scores.iloc[20-idx].raw_score, abs=1e-4)
+
+    def test_individual_scores_mean_is_zero(self, compute_method):
+        comparisons = [
+            ("A", "B", random.randint(-10, 10)),
+            ("A", "C", random.randint(-10, 10)),
+            ("A", "D", random.randint(-10, 10)),
+            ("B", "C", random.randint(-10, 10)),
+            ("B", "D", random.randint(-10, 10)),
+            ("C", "D", random.randint(-10, 10)),
+        ]
+        comparisons_df = pd.DataFrame(comparisons, columns=["entity_a", "entity_b", "score"])
+        scores = compute_method(comparisons_df)
+        assert scores.raw_score.mean() == pytest.approx(0.0, abs=1e-4)
 
     def test_comparisons_strong_preferences(self, compute_method):
         if compute_method is compute_individual_score:
