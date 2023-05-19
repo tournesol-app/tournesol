@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -18,16 +18,11 @@ import {
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
-import {
-  initRecommendationsLanguages,
-  saveRecommendationsLanguages,
-} from 'src/utils/recommendationsLanguages';
 
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
-import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 
 /**
  * Display a form allowing the logged users to update their preferences for
@@ -58,14 +53,6 @@ const VideosPollUserSettingsForm = () => {
   const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
     Recommendations_defaultDateEnum | BlankEnum
   >(Recommendations_defaultDateEnum.MONTH);
-  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
-    Array<string>
-  >([]);
-
-  const handleDefaultLanguagesChange = useCallback((languages: string[]) => {
-    setRecoDefaultLanguages(languages);
-    saveRecommendationsLanguages(languages.join(','));
-  }, []);
 
   /**
    * Initialize the form with up-to-date settings from the API, and dispatch
@@ -90,13 +77,6 @@ const VideosPollUserSettingsForm = () => {
       if (pollSettings?.recommendations__default_date != undefined) {
         setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
       }
-      if (pollSettings?.recommendations__default_languages != undefined) {
-        setRecoDefaultLanguages(
-          pollSettings.recommendations__default_languages
-        );
-      } else {
-        setRecoDefaultLanguages(initRecommendationsLanguages().split(','));
-      }
 
       dispatch(replaceSettings(settings));
     });
@@ -115,7 +95,6 @@ const VideosPollUserSettingsForm = () => {
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_date: recoDefaultUploadDate,
-            recommendations__default_languages: recoDefaultLanguages,
             recommendations__default_unsafe: recoDefaultUnsafe,
           },
         },
@@ -170,12 +149,6 @@ const VideosPollUserSettingsForm = () => {
           <Typography variant="h6">
             {t('pollUserSettingsForm.recommendationsPage')}
           </Typography>
-        </Grid>
-        <Grid item>
-          <RecommendationsDefaultLanguage
-            value={recoDefaultLanguages}
-            onChange={handleDefaultLanguagesChange}
-          />
         </Grid>
         <Grid item>
           <RecommendationsDefaultDate
