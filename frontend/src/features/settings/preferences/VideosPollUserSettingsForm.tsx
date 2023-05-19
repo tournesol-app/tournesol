@@ -18,7 +18,10 @@ import {
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
-import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
+import {
+  initRecommendationsLanguages,
+  saveRecommendationsLanguages,
+} from 'src/utils/recommendationsLanguages';
 
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
@@ -89,6 +92,8 @@ const VideosPollUserSettingsForm = () => {
       }
       if (pollSettings?.recommendations__default_language != undefined) {
         setRecoDefaultLanguages(pollSettings.recommendations__default_language);
+      } else {
+        setRecoDefaultLanguages(initRecommendationsLanguages().split(','));
       }
 
       dispatch(replaceSettings(settings));
