@@ -456,6 +456,15 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
             rf"{self.preview_internal_url}/\?metadata%5Blanguage%5D=fr&date_gte=.*",
         )
 
+    def test_recommendations_preview_query_redirection_all_languages_filter(self):
+        response = self.client.get(f"{self.preview_url}/?language=")
+        self.assertEqual(response.status_code, 302)
+        # No filter should be present in the redirection
+        self.assertEqual(
+            response.headers["location"],
+            f"{self.preview_internal_url}/?"
+        )
+
     def test_recommendations_preview_internal_route(self):
         response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")
         self.assertEqual(response.status_code, 200)
