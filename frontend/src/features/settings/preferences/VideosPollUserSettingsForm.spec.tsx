@@ -17,6 +17,7 @@ import { initialState } from 'src/features/login/loginSlice';
 import {
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
   OpenAPI,
+  Recommendations_defaultDateEnum,
   TournesolUserSettings,
 } from 'src/services/openapi';
 
@@ -162,11 +163,20 @@ describe('GenericPollUserSettingsForm', () => {
     const rateLaterAutoRemove = screen.getByTestId(
       'videos_rate_later__auto_remove'
     );
+    const recommendationsDefaultDate = screen.getByTestId(
+      'videos_recommendations__default_date'
+    );
+    const recommendationsDefaultUnsafe = screen.getByTestId(
+      'videos_recommendations__default_unsafe'
+    );
+
     const submit = screen.getByRole('button', { name: /update/i });
 
     return {
       compUiWeeklyColGoalDisplay,
       rateLaterAutoRemove,
+      recommendationsDefaultDate,
+      recommendationsDefaultUnsafe,
       rendered,
       storeDispatchSpy,
       submit,
@@ -179,8 +189,13 @@ describe('GenericPollUserSettingsForm', () => {
 
   describe('Success', () => {
     it('displays the defined values after a submit', async () => {
-      const { compUiWeeklyColGoalDisplay, rateLaterAutoRemove, submit } =
-        await setup();
+      const {
+        compUiWeeklyColGoalDisplay,
+        rateLaterAutoRemove,
+        recommendationsDefaultDate,
+        recommendationsDefaultUnsafe,
+        submit,
+      } = await setup();
 
       expect(rateLaterAutoRemove).toHaveValue(8);
       // Here we check the default values used when the settings are not yet
@@ -188,11 +203,20 @@ describe('GenericPollUserSettingsForm', () => {
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
       );
+      expect(recommendationsDefaultDate).toHaveValue(
+        Recommendations_defaultDateEnum.MONTH
+      );
+      expect(recommendationsDefaultUnsafe).toHaveProperty('checked', false);
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.change(compUiWeeklyColGoalDisplay, {
         target: { value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER },
       });
+      fireEvent.change(recommendationsDefaultDate, {
+        target: { value: Recommendations_defaultDateEnum.ALL_TIME },
+      });
+      fireEvent.click(recommendationsDefaultUnsafe);
+
       expect(submit).toBeEnabled();
 
       await act(async () => {
@@ -203,6 +227,10 @@ describe('GenericPollUserSettingsForm', () => {
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER
       );
+      expect(recommendationsDefaultDate).toHaveValue(
+        Recommendations_defaultDateEnum.ALL_TIME
+      );
+      expect(recommendationsDefaultUnsafe).toHaveProperty('checked', true);
       expect(submit).toBeEnabled();
     });
 

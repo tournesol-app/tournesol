@@ -64,6 +64,9 @@ const RecommendationsDefaultDate = ({
             event.target.value as Recommendations_defaultDateEnum | BlankEnum
           )
         }
+        inputProps={{
+          'data-testid': `${pollName}_recommendations__default_date`,
+        }}
       >
         {settingChoices.map((item) => (
           <MenuItem key={item.value} value={item.value}>

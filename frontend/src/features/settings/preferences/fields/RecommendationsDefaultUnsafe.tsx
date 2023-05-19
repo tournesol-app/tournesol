@@ -25,6 +25,11 @@ const RecommendationsDefaultUnsafe = ({
           onChange={() => onChange(!value)}
           size="medium"
           color="secondary"
+          inputProps={
+            {
+              'data-testid': `${pollName}_recommendations__default_unsafe`,
+            } as React.InputHTMLAttributes<HTMLInputElement>
+          }
         />
       }
       label={t('videosUserSettingsForm.recommendations.defaultUnsafe')}
