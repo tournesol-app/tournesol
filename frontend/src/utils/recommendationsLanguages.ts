@@ -86,16 +86,6 @@ export const saveRecommendationsLanguages = (value: string) => {
   document.dispatchEvent(event);
 };
 
-export const initRecommendationsLanguages = () => {
-  const languages = loadRecommendationsLanguages();
-
-  if (languages === null) {
-    return recommendationsLanguagesFromNavigator();
-  }
-
-  return languages;
-};
-
 export const loadRecommendationsLanguages = (): string | null =>
   localStorage.getItem('recommendationsLanguages');
 
