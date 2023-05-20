@@ -95,7 +95,9 @@ def QrUnc(
         qr_med = QrMed(W, w, x, delta)
     delta_2 = delta**2
     bound = np.inf if W <= 0 else 1 / W
-    L_second_capped = W + np.sum(w * np.minimum(bound, delta_2 * (delta_2 + (x - qr_med) ** 2) ** (-3 / 2)))
+    L_second_capped = W + np.sum(
+        w * np.minimum(bound, delta_2 * (delta_2 + (x - qr_med) ** 2) ** (-3 / 2))
+    )
     return ((default_dev**-2) + 2 * default_dev**-3 * (L_second_capped - W)) ** (-1 / 2)
 
 

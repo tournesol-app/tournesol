@@ -167,11 +167,10 @@ def run_mehestan_for_criterion(
             scale_function(global_scores["score"] + global_scores["uncertainty"])
             - scale_function(global_scores["score"] - global_scores["uncertainty"])
         )
-        global_scores["deviation"] = 0.5 * (
-            scale_function(global_scores["score"] + global_scores["deviation"])
-            - scale_function(global_scores["score"] - global_scores["deviation"])
-        )
         global_scores["score"] = scale_function(global_scores["score"])
+
+        # 2023-05-20: deviation is no longer computed by Mehestan
+        global_scores["deviation"] = None
 
         logger.info(
             "Mehestan for poll '%s': scores computed for crit '%s' and mode '%s'",
