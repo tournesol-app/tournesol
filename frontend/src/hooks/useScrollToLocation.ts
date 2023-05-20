@@ -14,5 +14,5 @@ export const useScrollToLocation = () => {
         scrolledRef.current = true;
       }
     }
-  });
+  }, []);
 };
