@@ -93,22 +93,12 @@ def QrUnc(
 
     if qr_med is None:
         qr_med = QrMed(W, w, x, delta)
-    qr_dev = QrDev(W, default_dev, w, x, delta, qr_med=qr_med)
-    delta_2 = delta ** 2
+    delta_2 = delta**2
     bound = np.inf if W <= 0 else 1 / W
-    h = W + np.sum(
+    L_second_capped = W + np.sum(
         w * np.minimum(bound, delta_2 * (delta_2 + (x - qr_med) ** 2) ** (-3 / 2))
     )
-
-    if h <= W:
-        return qr_dev
-
-    k = (h - W) ** (-1 / 2)
-
-    # Use LogSumExp with a negative value of alpha to have a smooth minimum instead
-    # of a smooth maximum (c.f. https://github.com/tournesol-app/tournesol/issues/1232).
-    alpha = -1.0
-    return np.maximum(0.0, alpha * np.log(np.exp(alpha * qr_dev) + np.exp(alpha * k)))
+    return ((default_dev**-2) + 2 * default_dev**-3 * (L_second_capped - W)) ** (-1 / 2)
 
 
 def Clip(x: np.ndarray, center: float, radius: float):

@@ -332,12 +332,10 @@ def get_global_scores(scaled_scores: pd.DataFrame):
         theta = scores.score
         delta = scores.uncertainty
         rho = QrMed(2 * W, w, theta, delta)
-        rho_uncertainty = QrUnc(2 * W, 1, w, theta, delta, qr_med=rho)
-        rho_deviation = QrDev(2 * W, 1, w, theta, delta, qr_med=rho)
+        rho_uncertainty = QrDev(2 * W, 1, w, theta, delta, qr_med=rho)
         global_scores[entity_id] = {
             "score": rho,
             "uncertainty": rho_uncertainty,
-            "deviation": rho_deviation,
             "n_contributors": len(scores),
         }
 

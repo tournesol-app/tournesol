@@ -67,7 +67,7 @@ class QrDevTest(TestCase):
         self.assertAlmostEqual(
             QrDev(
                 W=2.,
-                default_dev=0.,
+                default_dev=1.,
                 w=100000.,
                 x=x,
                 delta=0.,
@@ -82,7 +82,7 @@ class QrDevTest(TestCase):
         self.assertAlmostEqual(
             QrDev(
                 W=0.,
-                default_dev=0.,
+                default_dev=1.,
                 w=1.,
                 x=x,
                 delta=0.,
@@ -119,12 +119,12 @@ class QrUncTest(TestCase):
         self.assertAlmostEqual(
             QrUnc(
                 W,
-                default_dev=0,
+                default_dev=1,
                 w=weight,
                 x=np.array([-10.0, 1.0, 10.0]),
                 delta=np.array([1e-3, 1e-3, 1e-3]),
             ),
-            0.506,
+            1.0,
             places=3,
         )
 
@@ -134,11 +134,11 @@ class QrUncTest(TestCase):
         self.assertAlmostEqual(
             QrUnc(
                 W,
-                default_dev=0,
+                default_dev=1,
                 w=weight,
                 x=np.array([-10.0, 1.0, 10.0]),
                 delta=np.array([1e-3, 1e-3, 1e-3]),
             ),
-            0.03,
+            0.02,
             places=2,
         )
