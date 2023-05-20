@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 import {
   ContentBox,
@@ -6,8 +6,7 @@ import {
   CriteriaIcon,
   TitledPaper,
 } from 'src/components';
-import { useCurrentPoll } from 'src/hooks';
-import { useLocation } from 'react-router-dom';
+import { useCurrentPoll, useScrollToLocation } from 'src/hooks';
 import * as descriptions from './descriptions';
 import { useTranslation } from 'react-i18next';
 
@@ -32,22 +31,8 @@ const CriteriaPage = () => {
   const { t } = useTranslation();
   const poll = useCurrentPoll();
   const criteria = poll.criterias;
-  const { hash } = useLocation();
-  const alreadyScrolled = React.useRef(false);
 
-  useEffect(() => {
-    // Do not scroll when it's not required.
-    if (hash) {
-      // Scroll only one time.
-      if (!alreadyScrolled.current) {
-        const element = document.getElementById(hash.substring(1));
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-          alreadyScrolled.current = true;
-        }
-      }
-    }
-  }, [hash]);
+  useScrollToLocation();
 
   return (
     <>
