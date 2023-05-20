@@ -14,5 +14,6 @@ export const useScrollToLocation = () => {
         scrolledRef.current = true;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
