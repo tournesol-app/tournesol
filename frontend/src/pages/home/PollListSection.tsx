@@ -14,7 +14,7 @@ const PollListSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography id="explore" variant="h4" gutterBottom>
         {t('home.exploreTournesolPossibilities')}
       </Typography>
       <Typography paragraph>

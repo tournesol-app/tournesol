@@ -6,9 +6,11 @@ import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
+import { useScrollToLocation } from 'src/hooks';
 
 const HomePage = () => {
   const { name: pollName } = useCurrentPoll();
+  useScrollToLocation();
 
   if (pollName === YOUTUBE_POLL_NAME) {
     return <HomeVideoPage />;

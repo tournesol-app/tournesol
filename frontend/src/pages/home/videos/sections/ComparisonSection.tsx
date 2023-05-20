@@ -21,7 +21,10 @@ const ComparisonSection = () => {
 
   return (
     <Box>
-      <SectionTitle title={t('comparisonSection.contribute')} />
+      <SectionTitle
+        title={t('comparisonSection.contribute')}
+        headingId="contribute"
+      />
       <Grid container justifyContent="center" spacing={4}>
         <Grid item lg={3} xl={3}>
           <Paper elevation={0}>

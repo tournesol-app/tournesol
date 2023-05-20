@@ -13,7 +13,10 @@ const ResearchSection = () => {
 
   return (
     <Box>
-      <SectionTitle title={t('researchSection.research')} />
+      <SectionTitle
+        title={t('researchSection.research')}
+        headingId="research"
+      />
       <Box display="flex" justifyContent="center" mb={6}>
         <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
           <Typography variant="h3" textAlign="center" letterSpacing="0.8px">

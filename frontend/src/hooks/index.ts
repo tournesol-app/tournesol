@@ -5,4 +5,5 @@ export { useLoginState } from './useLoginState';
 export { useListFilter } from './useListFilter';
 export { useNotifications } from './useNotifications';
 export { useRefreshSettings } from './useRefreshSettings';
+export { useScrollToLocation } from './useScrollToLocation';
 export { useStats } from './useStats';

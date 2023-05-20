@@ -7,6 +7,7 @@ interface SectionTitleProps {
   color?: string;
   dividerColor?: string;
   dividerWidthXl?: string;
+  headingId?: string;
 }
 
 /**
@@ -17,6 +18,7 @@ const SectionTitle = ({
   color,
   dividerColor,
   dividerWidthXl = '75%',
+  headingId,
 }: SectionTitleProps) => {
   const theme = useTheme();
 
@@ -38,6 +40,7 @@ const SectionTitle = ({
     >
       <Divider component="div" role="presentation" sx={sx}>
         <Typography
+          id={headingId}
           variant="h1"
           component="h2"
           textAlign="center"
