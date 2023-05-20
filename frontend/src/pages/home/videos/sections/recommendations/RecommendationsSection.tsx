@@ -47,6 +47,7 @@ const RecommendationsSection = () => {
         title={t('recommendationsSection.recommendations')}
         color={titleColor}
         dividerColor={titleColor}
+        headingId="recommendations"
       />
 
       <Grid container justifyContent="center" spacing={4}>

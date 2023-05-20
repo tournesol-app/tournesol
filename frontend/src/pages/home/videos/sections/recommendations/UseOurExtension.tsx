@@ -19,9 +19,10 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
     <Box>
       <Box my={6}>
         <SectionTitle
+          title={t('home.useOurExtension')}
           color={titleColor}
           dividerColor={titleColor}
-          title={t('home.useOurExtension')}
+          headingId="use-extension"
         />
       </Box>
       <Grid container flexDirection="column" alignItems="center">

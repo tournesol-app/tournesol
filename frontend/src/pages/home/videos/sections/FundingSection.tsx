@@ -32,6 +32,7 @@ const FundingSection = ({
       <SectionTitle
         title={t('fundingSection.supportUs')}
         dividerWidthXl={fullWidth ? '100%' : undefined}
+        headingId="funding"
       />
       <Box display="flex" justifyContent="center" mb={6}>
         <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
