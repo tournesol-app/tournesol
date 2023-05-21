@@ -333,7 +333,7 @@
   },
   "videosUserSettingsForm": {
     "recommendations": {
-      "defaultUploadDate": "Default value of the Uploaded filter",
+      "defaultUploadDate": "Default value of the uploaded date filter",
       "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
     }
   },
