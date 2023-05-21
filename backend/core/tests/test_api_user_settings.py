@@ -17,7 +17,7 @@ class UserSettingsDetailTestCase(TestCase):
             "videos": {
                 "comparison__criteria_order": ["reliability"],
                 "rate_later__auto_remove": 16,
-                "recommendation__default_language": ["en"],
+                "recommendation__default_languages": ["en"],
                 "recommendation__default_date": "Week",
                 "recommendation__default_unsafe": False,
             }
@@ -43,7 +43,7 @@ class UserSettingsDetailTestCase(TestCase):
             "videos": {
                 "comparison__criteria_order": ["reliability"],
                 "rate_later__auto_remove": 99,
-                "recommendations__default_language": ["en"],
+                "recommendations__default_languages": ["en"],
                 "recommendations__default_date": "WEEK",
                 "recommendations__default_unsafe": False,
             }

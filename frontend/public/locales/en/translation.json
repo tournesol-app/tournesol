@@ -328,7 +328,14 @@
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "comparisonPage": "Comparison page",
     "rateLater": "Rate-later list",
+    "recommendationsPage": "Recommendations page",
     "updatePreferences": "Update preferences"
+  },
+  "videosUserSettingsForm": {
+    "recommendations": {
+      "defaultUploadDate": "Default value of the uploaded date filter",
+      "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
+    }
   },
   "username": "Username",
   "metrics": {

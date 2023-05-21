@@ -4,24 +4,30 @@ import { useDispatch } from 'react-redux';
 
 import { Button, Grid, Typography } from '@mui/material';
 
-import {
-  DEFAULT_RATE_LATER_AUTO_REMOVAL,
-  YOUTUBE_POLL_NAME,
-} from 'src/utils/constants';
+import { LoaderWrapper } from 'src/components';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
 import { useNotifications } from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  Recommendations_defaultDateEnum,
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
+import {
+  DEFAULT_RATE_LATER_AUTO_REMOVAL,
+  YOUTUBE_POLL_NAME,
+} from 'src/utils/constants';
+
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
+import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
+import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 
 /**
- * Display a generic user settings form that can be used by any poll.
+ * Display a form allowing the logged users to update their preferences for
+ * the `videos` poll.
  */
 const VideosPollUserSettingsForm = () => {
   const pollName = YOUTUBE_POLL_NAME;
@@ -30,6 +36,7 @@ const VideosPollUserSettingsForm = () => {
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
 
+  const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
@@ -43,22 +50,43 @@ const VideosPollUserSettingsForm = () => {
     DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
-  useEffect(() => {
-    UsersService.usersMeSettingsRetrieve().then((settings) => {
-      const pollSettings = settings?.[pollName];
-      if (
-        pollSettings?.comparison_ui__weekly_collective_goal_display != undefined
-      ) {
-        setCompUiWeeklyColGoalDisplay(
-          pollSettings.comparison_ui__weekly_collective_goal_display
-        );
-      }
-      if (pollSettings?.rate_later__auto_remove != undefined) {
-        setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
-      }
+  // Recommendations (page)
+  const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(false);
+  const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
+    Recommendations_defaultDateEnum | BlankEnum
+  >(Recommendations_defaultDateEnum.MONTH);
 
-      dispatch(replaceSettings(settings));
-    });
+  /**
+   * Initialize the form with up-to-date settings from the API, and dispatch
+   * them in the Redux store.
+   */
+  useEffect(() => {
+    UsersService.usersMeSettingsRetrieve()
+      .then((settings) => {
+        const pollSettings = settings?.[pollName];
+        if (
+          pollSettings?.comparison_ui__weekly_collective_goal_display !=
+          undefined
+        ) {
+          setCompUiWeeklyColGoalDisplay(
+            pollSettings.comparison_ui__weekly_collective_goal_display
+          );
+        }
+        if (pollSettings?.rate_later__auto_remove != undefined) {
+          setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
+        }
+        if (pollSettings?.recommendations__default_unsafe != undefined) {
+          setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
+        }
+        if (pollSettings?.recommendations__default_date != undefined) {
+          setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
+        }
+
+        dispatch(replaceSettings(settings));
+      })
+      .finally(() => {
+        setLoading(false);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -73,6 +101,8 @@ const VideosPollUserSettingsForm = () => {
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
+            recommendations__default_date: recoDefaultUploadDate,
+            recommendations__default_unsafe: recoDefaultUnsafe,
           },
         },
       }).catch((reason: ApiError) => {
@@ -95,46 +125,67 @@ const VideosPollUserSettingsForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
-        <Grid item>
-          <Typography variant="h6">
-            {t('pollUserSettingsForm.comparisonPage')}
-          </Typography>
+    <LoaderWrapper isLoading={loading}>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={4} direction="column" alignItems="stretch">
+          <Grid item>
+            <Typography variant="h6">
+              {t('pollUserSettingsForm.comparisonPage')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <WeeklyCollectiveGoalDisplayField
+              value={compUiWeeklyColGoalDisplay}
+              onChange={setCompUiWeeklyColGoalDisplay}
+              pollName={pollName}
+            />
+          </Grid>
+          <Grid item>
+            <Typography variant="h6">
+              {t('pollUserSettingsForm.rateLater')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <RateLaterAutoRemoveField
+              apiErrors={apiErrors}
+              value={rateLaterAutoRemoval}
+              onChange={setRateLaterAutoRemoval}
+              pollName={pollName}
+            />
+          </Grid>
+          <Grid item>
+            <Typography variant="h6">
+              {t('pollUserSettingsForm.recommendationsPage')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <RecommendationsDefaultDate
+              value={recoDefaultUploadDate}
+              onChange={setRecoDefaultUploadDate}
+              pollName={pollName}
+            />
+          </Grid>
+          <Grid item>
+            <RecommendationsDefaultUnsafe
+              value={recoDefaultUnsafe}
+              onChange={setRecoDefaultUnsafe}
+              pollName={pollName}
+            />
+          </Grid>
+          <Grid item>
+            <Button
+              fullWidth
+              type="submit"
+              color="secondary"
+              variant="contained"
+              disabled={disabled}
+            >
+              {t('pollUserSettingsForm.updatePreferences')}
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item>
-          <WeeklyCollectiveGoalDisplayField
-            value={compUiWeeklyColGoalDisplay}
-            onChange={setCompUiWeeklyColGoalDisplay}
-            pollName={pollName}
-          />
-        </Grid>
-        <Grid item>
-          <Typography variant="h6">
-            {t('pollUserSettingsForm.rateLater')}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <RateLaterAutoRemoveField
-            apiErrors={apiErrors}
-            value={rateLaterAutoRemoval}
-            onChange={setRateLaterAutoRemoval}
-            pollName={pollName}
-          />
-        </Grid>
-        <Grid item>
-          <Button
-            fullWidth
-            type="submit"
-            color="secondary"
-            variant="contained"
-            disabled={disabled}
-          >
-            {t('pollUserSettingsForm.updatePreferences')}
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+      </form>
+    </LoaderWrapper>
   );
 };
 

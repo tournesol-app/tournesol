@@ -336,7 +336,14 @@
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "comparisonPage": "Comparaison (page)",
     "rateLater": "Liste à comparer plus tard",
+    "recommendationsPage": "Recommandations (page)",
     "updatePreferences": "Mettre à jour les préférences"
+  },
+  "videosUserSettingsForm": {
+    "recommendations": {
+      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
+      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
+    }
   },
   "username": "Nom d'utilisateur",
   "metrics": {

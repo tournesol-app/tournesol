@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -31,15 +32,18 @@ import {
   WatchLater as WatchLaterIcon,
 } from '@mui/icons-material';
 
-import { closeDrawer } from '../../drawerOpenSlice';
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import {
   getRecommendationPageName,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
+import { getDefaultRecommendationsSearchParams } from 'src/utils/userSettings';
+
+import { closeDrawer } from '../../drawerOpenSlice';
 
 export const sideBarWidth = 264;
 
@@ -108,12 +112,10 @@ const SideBar = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
+  const userSettings = useSelector(selectSettings)?.settings;
   const { name: pollName, options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
-  const defaultRecoSearchParams = options?.defaultRecoSearchParams
-    ? '?' + options?.defaultRecoSearchParams
-    : '';
 
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -132,7 +134,11 @@ const SideBar = () => {
     },
     {
       id: RouteID.CollectiveRecommendations,
-      targetUrl: `${path}recommendations${defaultRecoSearchParams}`,
+      targetUrl: `${path}recommendations${getDefaultRecommendationsSearchParams(
+        pollName,
+        options,
+        userSettings
+      )}`,
       IconComponent:
         pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
       displayText: getRecommendationPageName(t, pollName),
