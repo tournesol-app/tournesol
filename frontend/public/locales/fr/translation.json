@@ -341,7 +341,7 @@
   },
   "videosUserSettingsForm": {
     "recommendations": {
-      "defaultUploadDate": "Valeur par défaut du filtre Mis en ligne",
+      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
       "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
     }
   },
