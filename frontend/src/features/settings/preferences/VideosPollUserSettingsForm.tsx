@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
-import { replaceSettings } from 'src/features/settings/userSettingsSlice';
+import {
+  replaceSettings,
+  selectSettings,
+} from 'src/features/settings/userSettingsSlice';
 import { useNotifications } from 'src/hooks';
 import {
   ApiError,
@@ -40,55 +43,55 @@ const VideosPollUserSettingsForm = () => {
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
+  const userSettings = useSelector(selectSettings).settings;
+  const pollSettings = userSettings.videos;
+
   // Comparison (page)
   const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
     ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum
-  >(ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS);
+  >(
+    pollSettings?.comparison_ui__weekly_collective_goal_display ??
+      ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
+  );
 
   // Rate-later settings
   const [rateLaterAutoRemoval, setRateLaterAutoRemoval] = useState(
-    DEFAULT_RATE_LATER_AUTO_REMOVAL
+    pollSettings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
   // Recommendations (page)
-  const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(false);
+  const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
+    pollSettings?.recommendations__default_unsafe ?? false
+  );
   const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
     Recommendations_defaultDateEnum | BlankEnum
-  >(Recommendations_defaultDateEnum.MONTH);
+  >(
+    pollSettings?.recommendations__default_date ??
+      Recommendations_defaultDateEnum.MONTH
+  );
 
-  /**
-   * Initialize the form with up-to-date settings from the API, and dispatch
-   * them in the Redux store.
-   */
   useEffect(() => {
-    UsersService.usersMeSettingsRetrieve()
-      .then((settings) => {
-        const pollSettings = settings?.[pollName];
-        if (
-          pollSettings?.comparison_ui__weekly_collective_goal_display !=
-          undefined
-        ) {
-          setCompUiWeeklyColGoalDisplay(
-            pollSettings.comparison_ui__weekly_collective_goal_display
-          );
-        }
-        if (pollSettings?.rate_later__auto_remove != undefined) {
-          setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
-        }
-        if (pollSettings?.recommendations__default_unsafe != undefined) {
-          setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
-        }
-        if (pollSettings?.recommendations__default_date != undefined) {
-          setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
-        }
-
-        dispatch(replaceSettings(settings));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!pollSettings) {
+      return;
+    }
+    if (
+      pollSettings.comparison_ui__weekly_collective_goal_display != undefined
+    ) {
+      setCompUiWeeklyColGoalDisplay(
+        pollSettings.comparison_ui__weekly_collective_goal_display
+      );
+    }
+    if (pollSettings.rate_later__auto_remove != undefined) {
+      setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
+    }
+    if (pollSettings.recommendations__default_unsafe != undefined) {
+      setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
+    }
+    if (pollSettings.recommendations__default_date != undefined) {
+      setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
+    }
+    setLoading(false);
+  }, [userSettings]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
