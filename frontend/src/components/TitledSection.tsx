@@ -41,6 +41,16 @@ const TitledSection = ({ title, children, canSave = false, value }: Props) => {
 
   const [disabled, setDisabled] = useState(false);
 
+  const settingToUpdate = () => {
+    if (title === t('filter.uploadDate'))
+      return { recommendations__default_date: getDateTranslation(value || '') };
+    else if (title === t('filter.advanced'))
+      return {
+        recommendations__default_unsafe: value === 'true' ? true : false,
+      };
+    else return {};
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setDisabled(true);
@@ -48,9 +58,7 @@ const TitledSection = ({ title, children, canSave = false, value }: Props) => {
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
-          [YOUTUBE_POLL_NAME]: {
-            recommendations__default_date: getDateTranslation(value || ''),
-          },
+          [YOUTUBE_POLL_NAME]: settingToUpdate(),
         },
       }).catch(() => {
         showErrorAlert(

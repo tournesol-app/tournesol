@@ -21,6 +21,7 @@ function AdvancedFilter(props: Props) {
       choices={safeChoice}
       tooltip={t('filter.unsafeTooltip')}
       {...props}
+      canSave={true}
     ></ChoicesFilterSection>
   );
 }
