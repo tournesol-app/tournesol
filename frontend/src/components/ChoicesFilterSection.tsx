@@ -80,7 +80,7 @@ const ChoicesFilterSection = ({
   }, [multipleChoice, radio]);
 
   return (
-    <TitledSection title={title} canSave={canSave}>
+    <TitledSection title={title} canSave={canSave} value={value}>
       <Box display="flex" flexDirection="column">
         {Object.entries(choices).map(([choiceValue, choiceLabel]) => {
           const checked = valuesList.includes(choiceValue);
