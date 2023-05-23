@@ -170,7 +170,7 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
             return
 
     # Tweet the video
-    resp = twitterbot.client.create_tweet(text=tweet_text)
+    resp = twitterbot.client.create_tweet(text=tweet_text, user_auth=False)
 
     # Post the tweet on Discord
     discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
@@ -277,6 +277,7 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
     resp = twitterbot.client.create_tweet(
         text=settings.top_contrib_tweet_text_template[language],
         media_ids=[media.media_id],
+        user_auth=False,
     )
 
     # Post the tweet on Discord
