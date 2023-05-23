@@ -93,7 +93,7 @@ function LanguageFilter({ value, onChange }: LanguageFilterProps) {
   const { t } = useTranslation();
 
   return (
-    <TitledSection title={t('filter.language')}>
+    <TitledSection title={t('filter.language')} canSave={true}>
       <LanguageField value={value} onChange={onChange} />
     </TitledSection>
   );

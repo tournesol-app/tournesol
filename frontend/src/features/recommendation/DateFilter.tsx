@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { ChoicesFilterSection } from 'src/components';
 
 interface Props {
@@ -19,12 +20,15 @@ function DateFilter(props: Props) {
   };
 
   return (
-    <ChoicesFilterSection
-      title={t('filter.uploadDate')}
-      choices={dateChoices}
-      radio
-      {...props}
-    />
+    <>
+      <ChoicesFilterSection
+        title={t('filter.uploadDate')}
+        choices={dateChoices}
+        radio
+        {...props}
+        canSave={true}
+      />
+    </>
   );
 }
 

@@ -24,6 +24,7 @@ interface Props {
   multipleChoice?: boolean;
   radio?: boolean;
   tooltip?: string;
+  canSave?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -34,6 +35,7 @@ const ChoicesFilterSection = ({
   multipleChoice = false,
   radio = false,
   tooltip = '',
+  canSave = false,
   onChange,
 }: Props) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +80,7 @@ const ChoicesFilterSection = ({
   }, [multipleChoice, radio]);
 
   return (
-    <TitledSection title={title}>
+    <TitledSection title={title} canSave={canSave}>
       <Box display="flex" flexDirection="column">
         {Object.entries(choices).map(([choiceValue, choiceLabel]) => {
           const checked = valuesList.includes(choiceValue);
