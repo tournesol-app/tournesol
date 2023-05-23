@@ -6,7 +6,7 @@ import { Button, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
-import { useNotifications } from 'src/hooks';
+import { useNotifications, useScrollToLocation } from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
@@ -39,6 +39,8 @@ const VideosPollUserSettingsForm = () => {
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
+
+  useScrollToLocation();
 
   // Comparison (page)
   const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
@@ -154,7 +156,7 @@ const VideosPollUserSettingsForm = () => {
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6">
+            <Typography id="recommendations_page" variant="h6">
               {t('pollUserSettingsForm.recommendationsPage')}
             </Typography>
           </Grid>

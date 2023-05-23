@@ -163,7 +163,7 @@ function RecommendationsPage() {
             <Grid item xs={12} sm={12} md={1}>
               <Box display="flex" flexDirection="row" justifyContent="flex-end">
                 <ShareMenuButton />
-                <Link to="/settings/preferences">
+                <Link to="/settings/preferences#recommendations_page">
                   <IconButton>
                     <SettingsIcon />
                   </IconButton>
