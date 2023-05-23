@@ -13,20 +13,12 @@ class TwitterBot:
         account_cred = credentials[account]
 
         self.language = account_cred["LANGUAGE"]
-        self.consumer_key = account_cred["CONSUMER_KEY"]
-        self.consumer_secret = account_cred["CONSUMER_SECRET"]
-        self.access_token = account_cred["ACCESS_TOKEN"]
-        self.access_token_secret = account_cred["ACCESS_TOKEN_SECRET"]
-        self.api = None
+        self.bearer_token = account_cred["ACCESS_TOKEN"]
 
-    def authenticate(self):
+        # v2
+        self.client = tweepy.Client(self.bearer_token)
 
-        auth = tweepy.OAuth1UserHandler(self.consumer_key, self.consumer_secret)
-        auth.set_access_token(self.access_token, self.access_token_secret)
-
+        # v1.1
+        # We need this authentication also because to add media it only works with api v1.1
+        auth = tweepy.OAuth2BearerHandler(self.bearer_token)
         self.api = tweepy.API(auth)
-
-        if self.api.verify_credentials():
-            print("Twitter authentication OK")
-        else:
-            raise ConnectionError("Error during Twitter authentication")
