@@ -56,6 +56,6 @@ matplotlib==3.7.1
 # information 
 requests==2.31.0
 # Used for the twitter bots
-tweepy==4.13.0
+tweepy==4.14.0
 # dotenv for .env file
 python-dotenv==1.0.0
