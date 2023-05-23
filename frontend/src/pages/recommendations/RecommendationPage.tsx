@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useHistory, useParams } from 'react-router-dom';
+import { useLocation, useHistory, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, IconButton } from '@mui/material';
 import { Person } from '@mui/icons-material';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
@@ -162,6 +163,11 @@ function RecommendationsPage() {
             <Grid item xs={12} sm={12} md={1}>
               <Box display="flex" flexDirection="row" justifyContent="flex-end">
                 <ShareMenuButton />
+                <Link to="/settings/preferences">
+                  <IconButton>
+                    <SettingsIcon />
+                  </IconButton>
+                </Link>
               </Box>
             </Grid>
           </Grid>
