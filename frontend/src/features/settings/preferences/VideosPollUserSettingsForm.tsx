@@ -44,7 +44,7 @@ const VideosPollUserSettingsForm = () => {
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
   const userSettings = useSelector(selectSettings).settings;
-  const pollSettings = userSettings.videos;
+  const pollSettings = userSettings?.videos;
 
   // Comparison (page)
   const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
