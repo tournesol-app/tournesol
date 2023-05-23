@@ -171,19 +171,20 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
 
     # Tweet the video
     resp = twitterbot.client.create_tweet(text=tweet_text)
+    tweet_id = resp.data['id']
 
     # Post the tweet on Discord
     discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
     if discord_channel:
         write_in_channel(
             discord_channel,
-            f"https://twitter.com/{bot_name}/status/{resp.id}",
+            f"https://twitter.com/{bot_name}/status/{tweet_id}",
         )
 
     # Add the video to the TweetInfo table
     TweetInfo.objects.create(
         video=video,
-        tweet_id=resp.data['id'],
+        tweet_id=tweet_id,
         bot_name=bot_name,
     )
 
