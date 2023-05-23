@@ -13,12 +13,26 @@ class TwitterBot:
         account_cred = credentials[account]
 
         self.language = account_cred["LANGUAGE"]
-        self.bearer_token = account_cred["ACCESS_TOKEN"]
+
+        consumer_key = account_cred["CONSUMER_KEY"]
+        consumer_secret = account_cred["CONSUMER_SECRET"]
+        access_token = account_cred["ACCESS_TOKEN"]
+        access_token_secret = account_cred["ACCESS_TOKEN_SECRET"]
 
         # v2
-        self.client = tweepy.Client(self.bearer_token)
+        self.client = tweepy.Client(
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+        )
 
         # v1.1
         # We need this authentication also because to add media it only works with api v1.1
-        auth = tweepy.OAuth2BearerHandler(self.bearer_token)
+        auth = tweepy.OAuth1UserHandler(
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+        )
         self.api = tweepy.API(auth)
