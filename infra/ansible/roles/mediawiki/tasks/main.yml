@@ -94,9 +94,8 @@
 
 - name: Enable Nginx Mediawiki configuration
   file:
-    src: /etc/nginx/sites-available/mediawiki
-    dest: /etc/nginx/sites-enabled/mediawiki
-    state: link
+    path: /etc/nginx/site-enabled/mediawiki
+    state: absent  # 2023-05-21: wiki is disabled
   notify:
     - Reload Nginx
 
