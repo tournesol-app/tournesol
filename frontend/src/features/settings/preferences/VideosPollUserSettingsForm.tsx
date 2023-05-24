@@ -131,7 +131,7 @@ const VideosPollUserSettingsForm = () => {
       <form onSubmit={handleSubmit}>
         <Grid container spacing={4} direction="column" alignItems="stretch">
           <Grid item>
-            <Typography variant="h6">
+            <Typography id="comparison_page" variant="h6">
               {t('pollUserSettingsForm.comparisonPage')}
             </Typography>
           </Grid>
@@ -143,7 +143,7 @@ const VideosPollUserSettingsForm = () => {
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6">
+            <Typography id="rate_later" variant="h6">
               {t('pollUserSettingsForm.rateLater')}
             </Typography>
           </Grid>
