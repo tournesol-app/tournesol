@@ -123,15 +123,17 @@ const RateLaterPage = () => {
           justifyContent="space-between"
           alignItems="stretch"
         >
-          <Grid item xs={6} display="flex">
+          <Grid item sm={6} display="flex">
             <Paper sx={{ p: 2 }}>
               <Typography variant="h6" mb={2}>
                 {t('ratelater.addVideosToRateLaterList')}
               </Typography>
-              <RateLaterAddForm addVideo={addToRateLater} />
+              <Box pt={2}>
+                <RateLaterAddForm addVideo={addToRateLater} />
+              </Box>
             </Paper>
           </Grid>
-          <Grid item xs={6} display="flex">
+          <Grid item sm={6} display="flex">
             <Paper
               sx={{
                 p: 2,

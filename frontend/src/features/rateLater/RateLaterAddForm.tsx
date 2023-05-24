@@ -29,7 +29,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
         container
         direction="row"
         justifyContent="center"
-        alignItems="center"
+        alignItems="flex-start"
         spacing={3}
       >
         <Grid item xs={8}>
@@ -37,10 +37,11 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
             autoFocus
             required
             fullWidth
+            size="small"
+            variant="outlined"
             placeholder={t('ratelater.videoIdOrURL')}
             onChange={(e) => setFormVideo(e.target.value)}
             value={formVideo}
-            variant="standard"
             helperText="Use YouTube URLs or Tournesol URLs"
           />
         </Grid>
