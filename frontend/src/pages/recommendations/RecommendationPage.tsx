@@ -3,11 +3,11 @@ import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Grid } from '@mui/material';
-import { Person, Settings } from '@mui/icons-material';
+import { Person } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
-import InternalLinkButton from 'src/components/buttons/InternalLinkButton';
+import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
@@ -169,9 +169,7 @@ function RecommendationsPage() {
                 gap={1}
               >
                 <ShareMenuButton />
-                <InternalLinkButton to="/settings/preferences#recommendations_page">
-                  <Settings />
-                </InternalLinkButton>
+                <PreferencesIconButtonLink hash="#recommendations_page" />
               </Box>
             </Grid>
           </Grid>
