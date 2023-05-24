@@ -32,7 +32,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
         alignItems="center"
         spacing={3}
       >
-        <Grid item>
+        <Grid item xs={8}>
           <TextField
             autoFocus
             required
@@ -44,10 +44,10 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
           />
         </Grid>
 
-        <Grid item>
+        <Grid item xs={4}>
           <Button
             type="submit"
-            size="large"
+            fullWidth
             variant="contained"
             color="primary"
           >

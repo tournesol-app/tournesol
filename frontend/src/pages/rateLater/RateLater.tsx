@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Card, Box, CardContent, CardActions } from '@mui/material';
+import { Card, Box, CardContent, CardActions, Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 
@@ -116,45 +116,55 @@ const RateLaterPage = () => {
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
       <ContentBox noMinPaddingX maxWidth="md">
-        <Card
-          elevation={4}
-          sx={{
-            textAlign: 'center',
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column',
-            fontSize: '14px',
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6">
-              {t('ratelater.addVideosToRateLaterList')}
-            </Typography>
-            <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
-              Copy-paste the id or the URL of a favorite video of yours.
-              <br />
-              You can search them in your{' '}
-              <a href="https://www.youtube.com/feed/history">
-                YouTube history page
-              </a>
-              , or your{' '}
-              <a href="https://www.youtube.com/playlist?list=LL">
-                liked video playlist
-              </a>
-              .<br />
-              Our{' '}
-              <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
-                browser extension
-              </a>{' '}
-              can also help you import videos effortlessly.
-              <br />
-              You will then be able to rate the videos you imported.
-            </Trans>
-          </CardContent>
-          <CardActions>
-            <RateLaterAddForm addVideo={addToRateLater} />
-          </CardActions>
-        </Card>
+        <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+          <Grid item xs={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">
+                  {t('ratelater.addVideosToRateLaterList')}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <RateLaterAddForm addVideo={addToRateLater} />
+              </CardActions>
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <Card
+              elevation={4}
+              sx={{
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'column',
+                fontSize: '14px',
+              }}
+            >
+              <CardContent>
+                <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
+                  Copy-paste the id or the URL of a favorite video of yours.
+                  <br />
+                  You can search them in your{' '}
+                  <a href="https://www.youtube.com/feed/history">
+                    YouTube history page
+                  </a>
+                  , or your{' '}
+                  <a href="https://www.youtube.com/playlist?list=LL">
+                    liked video playlist
+                  </a>
+                  .<br />
+                  Our{' '}
+                  <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
+                    browser extension
+                  </a>{' '}
+                  can also help you import videos effortlessly.
+                  <br />
+                  You will then be able to rate the videos you imported.
+                </Trans>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         <div className={classes.rateLaterContent} ref={videoListTopRef}>
           {entityCount !== null && (
