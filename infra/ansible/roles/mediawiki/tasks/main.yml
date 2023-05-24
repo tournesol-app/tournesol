@@ -92,7 +92,7 @@
   notify:
     - Reload Nginx
 
-- name: Enable Nginx Mediawiki configuration
+- name: Disable Nginx Mediawiki configuration
   file:
     path: /etc/nginx/site-enabled/mediawiki
     state: absent  # 2023-05-21: wiki is disabled
