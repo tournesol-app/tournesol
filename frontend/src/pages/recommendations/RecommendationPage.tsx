@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useHistory, useParams } from 'react-router-dom';
+import { useLocation, useHistory, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
-import { Person } from '@mui/icons-material';
+import { Box, Grid, IconButton } from '@mui/material';
+import { Person, Settings } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
@@ -160,8 +160,19 @@ function RecommendationsPage() {
             </Grid>
             {/* Contextual page menu. */}
             <Grid item xs={12} sm={12} md={1}>
-              <Box display="flex" flexDirection="row" justifyContent="flex-end">
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-end"
+                justifyContent="flex-start"
+                gap={1}
+              >
                 <ShareMenuButton />
+                <Link to="/settings/preferences#recommendations_page">
+                  <IconButton>
+                    <Settings />
+                  </IconButton>
+                </Link>
               </Box>
             </Grid>
           </Grid>
