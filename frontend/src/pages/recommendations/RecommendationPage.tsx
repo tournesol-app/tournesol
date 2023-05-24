@@ -3,8 +3,7 @@ import { useLocation, useHistory, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, IconButton } from '@mui/material';
-import { Person } from '@mui/icons-material';
-import SettingsIcon from '@mui/icons-material/Settings';
+import { Person, Settings } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
@@ -171,7 +170,7 @@ function RecommendationsPage() {
                 <ShareMenuButton />
                 <Link to="/settings/preferences#recommendations_page">
                   <IconButton>
-                    <SettingsIcon />
+                    <Settings />
                   </IconButton>
                 </Link>
               </Box>
