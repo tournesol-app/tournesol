@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Card, Box, CardContent, CardActions, Grid } from '@mui/material';
+import { Box, Grid, Paper } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 
@@ -116,53 +116,49 @@ const RateLaterPage = () => {
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
       <ContentBox noMinPaddingX maxWidth="md">
-        <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-          <Grid item xs={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">
-                  {t('ratelater.addVideosToRateLaterList')}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <RateLaterAddForm addVideo={addToRateLater} />
-              </CardActions>
-            </Card>
+        <Grid
+          container
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="stretch"
+        >
+          <Grid item xs={6} display="flex">
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" mb={2}>
+                {t('ratelater.addVideosToRateLaterList')}
+              </Typography>
+              <RateLaterAddForm addVideo={addToRateLater} />
+            </Paper>
           </Grid>
-          <Grid item xs={6}>
-            <Card
-              elevation={4}
+          <Grid item xs={6} display="flex">
+            <Paper
               sx={{
-                textAlign: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                flexDirection: 'column',
+                p: 2,
                 fontSize: '14px',
               }}
             >
-              <CardContent>
-                <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
-                  Copy-paste the id or the URL of a favorite video of yours.
-                  <br />
-                  You can search them in your{' '}
-                  <a href="https://www.youtube.com/feed/history">
-                    YouTube history page
-                  </a>
-                  , or your{' '}
-                  <a href="https://www.youtube.com/playlist?list=LL">
-                    liked video playlist
-                  </a>
-                  .<br />
-                  Our{' '}
-                  <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
-                    browser extension
-                  </a>{' '}
-                  can also help you import videos effortlessly.
-                  <br />
-                  You will then be able to rate the videos you imported.
-                </Trans>
-              </CardContent>
-            </Card>
+              <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
+                Copy-paste the id or the URL of a favorite video of yours.
+                <br />
+                You can search them in your{' '}
+                <a href="https://www.youtube.com/feed/history">
+                  YouTube history page
+                </a>
+                , or your{' '}
+                <a href="https://www.youtube.com/playlist?list=LL">
+                  liked video playlist
+                </a>
+                .<br />
+                Our{' '}
+                <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
+                  browser extension
+                </a>{' '}
+                can also help you import videos effortlessly.
+                <br />
+                You will then be able to rate the videos you imported.
+              </Trans>
+            </Paper>
           </Grid>
         </Grid>
 
@@ -176,7 +172,8 @@ const RateLaterPage = () => {
               >
                 Your rate-later list now has <strong>{{ entityCount }}</strong>{' '}
                 video(s).
-              </Trans>
+              </Trans>{' '}
+              They are automatically removed after Y comparisons.
             </Typography>
           )}
 

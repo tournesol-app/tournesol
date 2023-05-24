@@ -41,16 +41,12 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
             onChange={(e) => setFormVideo(e.target.value)}
             value={formVideo}
             variant="standard"
+            helperText="Use YouTube URLs or Tournesol URLs"
           />
         </Grid>
 
         <Grid item xs={4}>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-          >
+          <Button type="submit" fullWidth variant="contained" color="primary">
             {t('ratelater.addToMyRateLaterList')}
           </Button>
         </Grid>
