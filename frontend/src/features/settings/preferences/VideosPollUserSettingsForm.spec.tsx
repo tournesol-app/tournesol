@@ -1,7 +1,7 @@
 import React from 'react';
+import { MemoryRouter, Route, Switch } from 'react-router-dom';
 
 import fetchMock from 'fetch-mock-jest';
-import { SnackbarProvider } from 'notistack';
 import { act } from 'react-dom/test-utils';
 import * as reactRedux from 'react-redux';
 import configureStore, {
@@ -11,6 +11,7 @@ import configureStore, {
 import { AnyAction } from '@reduxjs/toolkit';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 
 import { LoginState } from 'src/features/login/LoginState.model';
 import { initialState } from 'src/features/login/loginSlice';
@@ -132,7 +133,13 @@ describe('GenericPollUserSettingsForm', () => {
         render(
           <reactRedux.Provider store={store}>
             <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
-              <VideosPollUserSettingsForm />
+              <MemoryRouter initialEntries={['settings/preferences']}>
+                <Switch>
+                  <Route path="settings/preferences">
+                    <VideosPollUserSettingsForm />
+                  </Route>
+                </Switch>
+              </MemoryRouter>
             </SnackbarProvider>
           </reactRedux.Provider>
         )
