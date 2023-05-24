@@ -161,7 +161,13 @@ function RecommendationsPage() {
             </Grid>
             {/* Contextual page menu. */}
             <Grid item xs={12} sm={12} md={1}>
-              <Box display="flex" flexDirection="row" justifyContent="flex-end">
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-end"
+                justifyContent="flex-start"
+                gap={1}
+              >
                 <ShareMenuButton />
                 <Link to="/settings/preferences#recommendations_page">
                   <IconButton>
