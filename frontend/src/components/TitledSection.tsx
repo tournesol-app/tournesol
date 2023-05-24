@@ -7,10 +7,13 @@ import {
   UsersService,
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
-import { useNotifications } from 'src/hooks';
+import { useLoginState, useNotifications } from 'src/hooks';
 import { useTranslation } from 'react-i18next';
-import { replaceSettings } from 'src/features/settings/userSettingsSlice';
-import { useDispatch } from 'react-redux';
+import {
+  replaceSettings,
+  selectSettings,
+} from 'src/features/settings/userSettingsSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface Props {
   title: string;
@@ -38,8 +41,24 @@ const TitledSection = ({ title, children, canSave = false, value }: Props) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
+  const { isLoggedIn } = useLoginState();
+  const userSettings = useSelector(selectSettings).settings.videos;
 
   const [disabled, setDisabled] = useState(false);
+
+  const isChangedSetting = () => {
+    if (title === t('filter.uploadDate')) {
+      const setting = userSettings?.recommendations__default_date;
+      if (setting != undefined)
+        return setting.charAt(0) + setting.slice(1).toLowerCase() != value;
+      else if (isLoggedIn) return true;
+    } else if (title === t('filter.advanced')) {
+      const setting = userSettings?.recommendations__default_unsafe;
+      if (setting != undefined) return (setting ? 'true' : '') != value;
+      else if (isLoggedIn) return true;
+    }
+    return false;
+  };
 
   const settingToUpdate = () => {
     if (title === t('filter.uploadDate'))
@@ -90,7 +109,7 @@ const TitledSection = ({ title, children, canSave = false, value }: Props) => {
         >
           {title}
         </Typography>
-        {canSave ? (
+        {canSave && isChangedSetting() ? (
           <IconButton onClick={handleSubmit} disabled={disabled}>
             <Save />
           </IconButton>
