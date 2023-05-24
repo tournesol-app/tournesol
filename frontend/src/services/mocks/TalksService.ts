@@ -19,6 +19,7 @@ export class TalksService {
     const entries: TalkEntry[] = talks.map((talk) => ({
       uid: talk.uid,
       title: talk.title,
+      name: talk.name,
       abstract: talk.abstract,
       date: talk.date,
       invitation_link: talk.invitation_link,

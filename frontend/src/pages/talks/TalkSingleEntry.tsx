@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import { TalkEntry } from 'src/services/mocks';
 import { extractVideoId } from 'src/utils/video';
 import { useTranslation } from 'react-i18next';
@@ -37,85 +37,95 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry; compact?: boolean }) => {
     return dateString;
   };
 
-  return (
+  const talkContent = (
     <>
-      <a
-        className="no-decoration"
-        href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
+      <Box
+        id={talk.name}
+        p={2}
+        color="#fff"
+        bgcolor="background.emphatic"
+        sx={{
+          borderTopLeftRadius: 'inherit',
+          borderTopRightRadius: 'inherit',
+        }}
       >
-        <Paper sx={{ mb: 2 }}>
-          <Box
-            id={talk.uid}
-            p={2}
-            color="#fff"
-            bgcolor="background.emphatic"
-            sx={{
-              borderTopLeftRadius: 'inherit',
-              borderTopRightRadius: 'inherit',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Typography variant="h4">{title}</Typography>
-            <Box>{formatDate(talk.date)}</Box>
-          </Box>
-          <Box
-            className="image-wrapper"
-            p={2}
-            display="flex"
-            sx={{
-              flexWrap: 'wrap',
-            }}
-          >
-            <Box
-              sx={{
-                flex: '0 0 100%',
-                maxWidth: '240px',
-                marginRight: { sm: '10px' },
+        <Grid container alignItems="center" flexWrap="nowrap">
+          <Grid item xs={9}>
+            <Typography variant="h4" sx={{ maxWidth: '100%' }}>
+              {title}
+            </Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Typography
+              variant="body1"
+              sx={{ textAlign: 'right', fontSize: '1em' }}
+            >
+              {formatDate(talk.date)}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box p={2} sx={{ overflow: 'auto' }}>
+        <Box
+          className="image-wrapper"
+          display="flex"
+          sx={{
+            maxWidth: '240px',
+            marginRight: { sm: '10px' },
+            borderRadius: '4px',
+            float: 'left',
+          }}
+        >
+          {isPast(talk) && talk.youtube_link ? (
+            <img
+              className="full-width entity-thumbnail"
+              src={`https://i.ytimg.com/vi/${extractVideoId(
+                talk.youtube_link
+              )}/mqdefault.jpg`}
+              style={{
+                width: '240px',
+                height: 'auto',
                 borderRadius: '4px',
               }}
-            >
-              {isPast(talk) ? (
-                <img
-                  className="full-width entity-thumbnail"
-                  src={`https://i.ytimg.com/vi/${extractVideoId(
-                    talk.youtube_link
-                  )}/mqdefault.jpg`}
-                  style={{
-                    width: '240px',
-                    height: 'auto',
-                    borderRadius: '4px',
-                  }}
-                />
-              ) : (
-                <img
-                  className="full-width entity-thumbnail"
-                  src={`/images/coming-soon.jpg`}
-                  style={{
-                    width: '240px',
-                    height: 'auto',
-                    borderRadius: '4px',
-                  }}
-                />
-              )}
-            </Box>
+            />
+          ) : (
+            <img
+              className="full-width entity-thumbnail"
+              src={`/images/coming-soon.jpg`}
+              style={{
+                width: '240px',
+                height: 'auto',
+                borderRadius: '4px',
+              }}
+            />
+          )}
+        </Box>
 
-            {abstractParagraphs.map((abstractParagraph, index) => (
-              <Typography
-                key={`$p_{talk.title}_p${index}`}
-                textAlign="justify"
-                sx={{
-                  fontSize: '0.8em',
-                  marginBottom: '10px',
-                }}
-              >
-                {abstractParagraph}
-              </Typography>
-            ))}
-          </Box>
-        </Paper>
-      </a>
+        {abstractParagraphs.map((abstractParagraph, index) => (
+          <Typography
+            key={`$p_${talk.title}_p${index}`}
+            textAlign="justify"
+            paragraph
+          >
+            {abstractParagraph}
+          </Typography>
+        ))}
+      </Box>
+    </>
+  );
+
+  return (
+    <>
+      {talk.invitation_link || talk.youtube_link ? (
+        <a
+          className="no-decoration"
+          href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
+        >
+          <Paper sx={{ mb: 2 }}>{talkContent}</Paper>
+        </a>
+      ) : (
+        <Paper sx={{ mb: 2 }}>{talkContent}</Paper>
+      )}
     </>
   );
 };

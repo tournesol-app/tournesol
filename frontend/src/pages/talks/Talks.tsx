@@ -51,7 +51,7 @@ const Talks = () => {
     }
 
     getTalksEntries();
-  }, [contactAdministrator, setUpcomingTalks, setPastTalks, i18n.language]);
+  }, [contactAdministrator, i18n.language]);
 
   return (
     <>

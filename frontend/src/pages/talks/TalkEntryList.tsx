@@ -8,7 +8,7 @@ const TalkEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
   return (
     <>
       {talks.map((talk) => (
-        <Box key={talk.uid} mx={1} my={2}>
+        <Box key={talk.uid} my={2}>
           <TalkSingleEntry key={`q_${talk.title}`} talk={talk} />
         </Box>
       ))}

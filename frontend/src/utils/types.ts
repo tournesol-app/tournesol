@@ -45,7 +45,7 @@ export enum RouteID {
   CollectiveRecommendations = 'collectiveRecommendations',
   EntityAnalysis = 'entityAnalysis',
   FAQ = 'FAQ',
-  TALKS = 'TASKS',
+  TALKS = 'TALKS',
   About = 'about',
   Criteria = 'criteria',
   // public yet personal routes
