@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useHistory, useParams, Link } from 'react-router-dom';
+import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, IconButton } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { Person, Settings } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
+import InternalLinkButton from 'src/components/buttons/InternalLinkButton';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
@@ -168,11 +169,9 @@ function RecommendationsPage() {
                 gap={1}
               >
                 <ShareMenuButton />
-                <Link to="/settings/preferences#recommendations_page">
-                  <IconButton>
-                    <Settings />
-                  </IconButton>
-                </Link>
+                <InternalLinkButton to="/settings/preferences#recommendations_page">
+                  <Settings />
+                </InternalLinkButton>
               </Box>
             </Grid>
           </Grid>
