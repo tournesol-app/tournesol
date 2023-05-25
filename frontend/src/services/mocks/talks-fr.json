@@ -1,7 +1,7 @@
 [
   {
       "uid" : "123",
-      "title" : "Introduction au Tournesol + titre un peu long pour tester la vue mobile",
+      "title" : "Introduction à Tournesol + titre un peu long pour tester la vue mobile",
       "name": "introduction_to_tournesol",
       "abstract" : "Cette présentation couvrira les bases de l'application Tournesol",
       "date" : "2022-06-04",

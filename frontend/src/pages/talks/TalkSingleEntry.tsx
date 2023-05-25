@@ -85,10 +85,10 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
           ) : (
             <img
               className="full-width entity-thumbnail"
-              src={`/images/coming-soon.jpg`}
+              src="/svg/Watering.svg"
               style={{
                 width: '240px',
-                height: 'auto',
+                height: '135px',
                 borderRadius: '4px',
               }}
             />
