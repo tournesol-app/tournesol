@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "solidago"
 authors = [
-  #{ name="Example Author", email="author@example.com" },
+  { name="Tournesol Association", email="hello@tournesol.app" },
 ]
 description = "Algorithms for the Tournesol platform"
 readme = "README.md"
