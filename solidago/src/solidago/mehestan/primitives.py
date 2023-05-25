@@ -12,7 +12,7 @@ EPSILON = 1e-6  # convergence tolerance
 @njit
 def L_prime(m: float, W: float, w, x, delta_2):
     x_minus_m = x - m
-    return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m ** 2))
+    return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m**2))
 
 
 @njit
@@ -28,7 +28,7 @@ def QrMed_inner(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Se
         * `x`: partial scores vector
         * `delta`: partial scores uncertainties vector
     """
-    delta_2 = np.where(delta > 0, delta ** 2, np.spacing(0))
+    delta_2 = np.where(delta > 0, delta**2, np.spacing(0))
 
     m_low = -1.0
     while L_prime(m_low, W, w, x, delta_2) > 0:
