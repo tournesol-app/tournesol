@@ -30,9 +30,9 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
         direction="row"
         justifyContent="center"
         alignItems="flex-start"
-        spacing={3}
+        spacing={2}
       >
-        <Grid item xs={8}>
+        <Grid item xs={9}>
           <TextField
             autoFocus
             required
@@ -46,7 +46,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
           />
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <Button type="submit" fullWidth variant="contained" color="primary">
             {t('ratelater.addToMyRateLaterList')}
           </Button>

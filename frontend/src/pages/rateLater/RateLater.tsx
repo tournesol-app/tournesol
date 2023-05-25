@@ -115,7 +115,7 @@ const RateLaterPage = () => {
   return (
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
-      <ContentBox noMinPaddingX maxWidth="md">
+      <ContentBox noMinPaddingX maxWidth="lg">
         <Grid
           container
           direction="row"
@@ -124,7 +124,7 @@ const RateLaterPage = () => {
           alignItems="stretch"
         >
           <Grid item sm={6} display="flex">
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: 2, width: '100%' }}>
               <Typography variant="h6" mb={2}>
                 {t('ratelater.addVideosToRateLaterList')}
               </Typography>
@@ -134,32 +134,20 @@ const RateLaterPage = () => {
             </Paper>
           </Grid>
           <Grid item sm={6} display="flex">
-            <Paper
-              sx={{
-                p: 2,
-                fontSize: '14px',
-              }}
-            >
-              <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
-                Copy-paste the id or the URL of a favorite video of yours.
-                <br />
-                You can search them in your{' '}
-                <a href="https://www.youtube.com/feed/history">
-                  YouTube history page
-                </a>
-                , or your{' '}
-                <a href="https://www.youtube.com/playlist?list=LL">
-                  liked video playlist
-                </a>
-                .<br />
-                Our{' '}
+            <Paper sx={{ p: 2 }}>
+              <Typography paragraph>
+                {t('ratelater.addVideosToYourListToCompareThemLater')}
+              </Typography>
+              <Trans t={t} i18nKey="ratelater.useOurBrowserExtension">
+                Use our{' '}
                 <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
                   browser extension
                 </a>{' '}
-                can also help you import videos effortlessly.
-                <br />
-                You will then be able to rate the videos you imported.
+                to effortlessly add videos directly from YouTube.
               </Trans>
+              <Typography paragraph mt={2} mb={0}>
+                {t('ratelater.orCopyPasteVideoUrlHere')}
+              </Typography>
             </Paper>
           </Grid>
         </Grid>
