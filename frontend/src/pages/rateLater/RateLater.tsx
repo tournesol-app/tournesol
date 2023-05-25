@@ -183,7 +183,7 @@ const RateLaterPage = () => {
           justifyContent="space-between"
           alignItems="stretch"
         >
-          <Grid item sm={6} display="flex">
+          <Grid item sm={6} display="flex" width="100%">
             <Paper sx={{ p: 2, width: '100%' }}>
               <Stack direction="row" alignItems="center" mb={2}>
                 <Typography variant="h6">
@@ -202,8 +202,8 @@ const RateLaterPage = () => {
               </Box>
             </Paper>
           </Grid>
-          <Grid item sm={6} display="flex">
-            <Paper sx={{ p: 2 }}>
+          <Grid item sm={6} display="flex" width="100%">
+            <Paper sx={{ p: 2, width: '100%' }}>
               <Typography paragraph>
                 {t('ratelater.addVideosToYourListToCompareThemLater')}
               </Typography>
