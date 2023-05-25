@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-import { Box, Grid, IconButton, Paper, Stack } from '@mui/material';
+import { Box, Divider, Grid, IconButton, Paper, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import InfoIcon from '@mui/icons-material/Info';
@@ -184,21 +184,28 @@ const RateLaterPage = () => {
           alignItems="stretch"
         >
           <Grid item sm={6} display="flex" width="100%">
-            <Paper sx={{ p: 2, width: '100%' }}>
-              <Stack direction="row" alignItems="center" mb={2}>
-                <Typography variant="h6">
-                  {t('ratelater.addVideosToRateLaterList')}
-                </Typography>
-                <IconButton onClick={onInfoClick}>
-                  <InfoIcon fontSize="small" />
-                </IconButton>
-                <WhereToFindVideosDialog
-                  open={where2findVideosOpen}
-                  onClose={onWhereToFindVideosDialogClose}
-                />
-              </Stack>
-              <Box pt={2}>
-                <RateLaterAddForm addVideo={addToRateLater} />
+            <Paper sx={{ p: 2, display: 'flex', width: '100%' }}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="stretch"
+                justifyContent="space-around"
+              >
+                <Stack direction="row" alignItems="center" mb={2} spacing={1}>
+                  <Typography variant="h6">
+                    {t('ratelater.addVideosToRateLaterList')}
+                  </Typography>
+                  <IconButton onClick={onInfoClick}>
+                    <InfoIcon fontSize="small" />
+                  </IconButton>
+                  <WhereToFindVideosDialog
+                    open={where2findVideosOpen}
+                    onClose={onWhereToFindVideosDialogClose}
+                  />
+                </Stack>
+                <Box pt={2}>
+                  <RateLaterAddForm addVideo={addToRateLater} />
+                </Box>
               </Box>
             </Paper>
           </Grid>
@@ -208,16 +215,27 @@ const RateLaterPage = () => {
               <Typography paragraph>
                 {t('ratelater.addVideosToYourListToCompareThemLater')}
               </Typography>
-              <Trans t={t} i18nKey="ratelater.useOurBrowserExtension">
-                Use our{' '}
-                <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
-                  browser extension
-                </a>{' '}
-                to effortlessly add videos directly from YouTube.
-              </Trans>
-              <Typography paragraph mt={2} mb={0}>
-                {t('ratelater.orCopyPasteVideoUrlHere')}
-              </Typography>
+              <Divider />
+              <ul>
+                <li>
+                  <Trans t={t} i18nKey="ratelater.useOurBrowserExtension">
+                    Use our{' '}
+                    <a
+                      href={
+                        getWebExtensionUrl() ?? getWebExtensionUrl('chrome')
+                      }
+                    >
+                      browser extension
+                    </a>{' '}
+                    to effortlessly add videos directly from YouTube.
+                  </Trans>
+                </li>
+                <li>
+                  <Typography paragraph mt={2} mb={0}>
+                    {t('ratelater.orCopyPasteVideoUrlHere')}
+                  </Typography>
+                </li>
+              </ul>
             </Paper>
           </Grid>
         </Grid>
