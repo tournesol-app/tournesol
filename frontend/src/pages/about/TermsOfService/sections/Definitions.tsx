@@ -2,7 +2,7 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
-import { LooksOne, LooksTwo } from '@mui/icons-material';
+import { LooksOne, LooksTwo, Looks3, Looks4 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const Definitions = () => {
@@ -12,7 +12,7 @@ const Definitions = () => {
       <Box display="flex" gap={1}>
         <LooksOne />
         <Typography paragraph>
-          {t('termsOfService.definitionsSection.anAccountRepresents')}
+          {t('termsOfService.definitionsSection.account')}
         </Typography>
       </Box>
       <Box display="flex" gap={1}>
@@ -29,6 +29,18 @@ const Definitions = () => {
             </Link>
             ).
           </Trans>
+        </Typography>
+      </Box>
+      <Box display="flex" gap={1}>
+        <Looks3 />
+        <Typography paragraph>
+          {t('termsOfService.definitionsSection.association')}
+        </Typography>
+      </Box>
+      <Box display="flex" gap={1}>
+        <Looks4 />
+        <Typography paragraph>
+          {t('termsOfService.definitionsSection.user')}
         </Typography>
       </Box>
     </>
