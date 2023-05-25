@@ -208,7 +208,7 @@
     "addVideosToYourListToCompareThemLater": "Ajoutez des vidéos à votre liste pour les comparer plus tard.",
     "findVideosTitle": "Où trouver des vidéos",
     "findVideosYoutube": "Vous pouvez les retrouver dans votre historique YouTube ou dans votre playlist de vidéos aimées.",
-    "findVideosTournesol":"Vous pouvez aussi ajouter les vidéos que vous trouvez sur Tournesol à l'aide du bouton plus affiché avec chaque carte de vidéo.",
+    "findVideosTournesol":"Vous pouvez aussi ajouter les vidéos que vous trouvez sur Tournesol à l'aide du bouton \"plus\" affiché avec chaque carte de vidéo.",
     "useOurBrowserExtension": "Utilisez notre <2>extension navigateur</2> pour ajouter sans effort des vidéos directement depuis YouTube.",
     "orCopyPasteVideoUrlHere": "Ou copiez collez des URLs de vidéos ici.",
     "listHasNbVideos_one": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéo. Elle sera automatiquement retirée après <1>{{rateLaterSetting}}</1> comparaison(s).",
