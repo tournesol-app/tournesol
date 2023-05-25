@@ -5,11 +5,11 @@ on:
   push:
     paths:
       - 'solidago/**'
-      - '.github/workflows/solidago-ci.yml'
+      - '.github/workflows/solidago-test.yml'
   pull_request:
     paths:
       - 'solidago/**'
-      - '.github/workflows/solidago-ci.yml'
+      - '.github/workflows/solidago-test.yml'
 
 defaults:
   run:

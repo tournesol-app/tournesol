@@ -1,3 +1,3 @@
 """Solidago library, robust and secure algorithms for the Tournesol platform"""
 
-__version__ = "0.0.1"
+from .__version__ import __version__

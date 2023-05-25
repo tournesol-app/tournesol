@@ -33,7 +33,7 @@ test = [
 ]
 
 [tool.hatch.version]
-path = "src/solidago/__init__.py"
+path = "src/solidago/__version__.py"
 
 [tool.pytest.ini_options]
 filterwarnings = [
