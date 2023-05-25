@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from ml.optimize import brentq
+from solidago.optimize import brentq
 
 EPSILON = 1e-6  # convergence tolerance
 

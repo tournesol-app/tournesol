@@ -1,3 +1,6 @@
+# Tournesol algorithms (editable)
+-e ./../solidago
+
 # Full stack Web Framework used for Tournesol's backend
 # https://docs.djangoproject.com
 Django==4.1.9

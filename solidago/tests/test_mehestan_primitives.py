@@ -1,7 +1,8 @@
-import numpy as np
-from django.test import TestCase
+from unittest import TestCase
 
-from ml.mehestan.primitives import QrDev, QrMed, QrUnc
+import numpy as np
+
+from solidago.mehestan.primitives import QrDev, QrMed, QrUnc
 
 
 class QrMedTest(TestCase):

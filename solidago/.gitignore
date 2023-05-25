@@ -1,0 +1,7 @@
+/dist/
+**__pycache__/
+.flake8/
+.pylint/
+.pytest/
+.pytest_cache/
+.python-version
