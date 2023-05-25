@@ -63,19 +63,16 @@
     - swagger_ui_oauth2_client_id
     - swagger_ui_oauth2_client_secret
 
-- name: Create Django application directory
+- name: Create directories
   file:
-    path: /srv/tournesol-backend
+    path: "{{ item }}"
     state: directory
     owner: gunicorn
     group: gunicorn
-
-- name: Create remote_tmp directory for Gunicorn user
-  file:
-    path: /home/gunicorn/.ansible/tmp
-    state: directory
-    owner: gunicorn
-    group: gunicorn
+  loop:
+    - /srv/tournesol-backend  # Django application directory
+    - /srv/solidago  # Solidago package directory
+    - /home/gunicorn/.ansible/tmp  # remote_tmp directory
 
 - name: Copy Django application repository
   synchronize:
@@ -96,6 +93,23 @@
     - Compile Django messages
     - Create database cache
     - Collect Django static assets
+    - Restart Gunicorn
+    - Notify backend upgrade
+
+- name: Copy Solidago directory
+  synchronize:
+    src: "/home/git/tournesol/solidago/"
+    dest: /srv/solidago
+    archive: no
+    recursive: yes
+    delete: yes
+    checksum: yes
+    rsync_opts:
+      - "--exclude=*.pyc"
+  delegate_to: "{{ inventory_hostname }}"
+  become: yes
+  become_user: gunicorn
+  notify:
     - Restart Gunicorn
     - Notify backend upgrade
 
