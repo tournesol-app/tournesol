@@ -2,7 +2,13 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
-import { LooksOne, LooksTwo, Looks3, Looks4 } from '@mui/icons-material';
+import {
+  LooksOne,
+  LooksTwo,
+  Looks3,
+  Looks4,
+  Looks5,
+} from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const DefinitionSection = ({
@@ -47,9 +53,13 @@ const Definitions = () => {
       <DefinitionSection
         icon={<Looks3 />}
         text={t('termsOfService.definitionsSection.association')}
-      />
+      />{' '}
       <DefinitionSection
         icon={<Looks4 />}
+        text={t('termsOfService.definitionsSection.service')}
+      />
+      <DefinitionSection
+        icon={<Looks5 />}
         text={t('termsOfService.definitionsSection.user')}
       />
     </>

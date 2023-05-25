@@ -150,7 +150,8 @@
       "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
       "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
       "association": "\"Association\", \"Tournesol Association\", \"We\" and \"Us\" refer to the non-profit association that develops the Tournesol Project, including its committee, members and employees.",
-      "user": "\"The User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Website or Service; that accesses or uses any part of the Account. A User must be at least 13 years of age."
+      "service": "The \"Service\" refers to the applications, forms, surveys, software, products and services provided by the Tournesol Association in the context of the Tournesol project.",
+      "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Website or Service; that accesses or uses any part of the Account. A User must be at least 13 years of age."
     },
     "definitions": "A. Definitions",
     "accountTerms": "B. Account Terms",
