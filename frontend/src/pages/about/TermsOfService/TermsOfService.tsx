@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
+import Definitions from './sections/Definitions';
 
 const TermsOfServicePage = () => {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ const TermsOfServicePage = () => {
         >
           {t('termsOfService.definitions')}
         </Typography>
+        <Definitions />
         <Typography
           variant="h4"
           fontStyle="italic"

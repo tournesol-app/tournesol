@@ -22,7 +22,7 @@ import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
-import TermsOfService from './pages/about/TermsOfService';
+import TermsOfService from './pages/about/TermsOfService/TermsOfService';
 import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';

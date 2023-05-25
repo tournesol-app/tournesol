@@ -146,6 +146,10 @@
   },
   "termsOfService": {
     "termsOfService": "Terms of service",
+    "definitionsSection": {
+      "anAccountRepresents": "An \"Account\" represents your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
+      "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>)."
+    },
     "definitions": "A. Definitions",
     "accountTerms": "B. Account Terms",
     "acceptableUse": "C. Acceptable Use",
