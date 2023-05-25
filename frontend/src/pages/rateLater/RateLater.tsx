@@ -247,7 +247,7 @@ const RateLaterPage = () => {
         <div className={classes.rateLaterContent} ref={videoListTopRef}>
           {entityCount !== null && (
             <Typography
-              paragraph
+              variant="subtitle1"
               mb={0}
               sx={{
                 '& strong': {

@@ -72,9 +72,8 @@ function ComparisonsPage() {
   const nbComparisonsMessage = (
     <Typography
       variant="subtitle1"
+      textAlign="center"
       sx={{
-        textAlign: 'center',
-        pt: 2,
         '& strong': {
           color: 'secondary.main',
           fontSize: '1.4em',
