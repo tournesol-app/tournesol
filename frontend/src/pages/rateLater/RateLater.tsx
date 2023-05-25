@@ -1,8 +1,9 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Box, Grid, Paper } from '@mui/material';
+import { Box, Grid, IconButton, Paper, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
+import InfoIcon from '@mui/icons-material/Info';
 
 import {
   ContentBox,
@@ -18,6 +19,11 @@ import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
+import { useSelector } from 'react-redux';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
+import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
+import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
+import DialogBox from 'src/components/DialogBox';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -45,6 +51,10 @@ const RateLaterPage = () => {
   const videoListTopRef = React.useRef<HTMLDivElement>(null);
   const [offset, setOffset] = React.useState(0);
   const limit = 20;
+  const settings = useSelector(selectSettings).settings?.[YOUTUBE_POLL_NAME];
+  const rateLaterSetting = settings?.rate_later__auto_remove
+    ? settings.rate_later__auto_remove
+    : DEFAULT_RATE_LATER_AUTO_REMOVAL;
 
   const loadList = useCallback(async () => {
     setIsLoading(true);
@@ -112,10 +122,44 @@ const RateLaterPage = () => {
     RemoveFromRateLater(loadList),
   ];
 
+  const [descriptionDialogOpen, setDescriptionDialogOpen] = useState(false);
+
+  const handleDescriptionInfoClick = useCallback(() => {
+    setDescriptionDialogOpen(true);
+  }, []);
+
+  const handleDescriptionDialogClose = useCallback(() => {
+    setDescriptionDialogOpen(false);
+  }, []);
+
+  const DescriptionDialog = ({
+    open,
+    onClose,
+  }: {
+    open: boolean;
+    onClose: () => void;
+  }) => {
+    const { t } = useTranslation();
+    const dialog = useMemo(
+      () => ({
+        title: t('ratelater.findVideosTitle'),
+        messages: [
+          t('ratelater.findVideosYoutube'),
+          t('ratelater.findVideosTournesol'),
+        ],
+      }),
+      [t]
+    );
+    return <DialogBox open={open} onClose={onClose} dialog={dialog} />;
+  };
+
   return (
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
       <ContentBox noMinPaddingX maxWidth="lg">
+        <Box display={'flex'} justifyContent={'end'} mb={2}>
+          <PreferencesIconButtonLink hash="#rate_later" />
+        </Box>
         <Grid
           container
           direction="row"
@@ -125,9 +169,18 @@ const RateLaterPage = () => {
         >
           <Grid item sm={6} display="flex">
             <Paper sx={{ p: 2, width: '100%' }}>
-              <Typography variant="h6" mb={2}>
-                {t('ratelater.addVideosToRateLaterList')}
-              </Typography>
+              <Stack direction="row" alignItems="center" mb={2}>
+                <Typography variant="h6">
+                  {t('ratelater.addVideosToRateLaterList')}
+                </Typography>
+                <IconButton onClick={handleDescriptionInfoClick}>
+                  <InfoIcon fontSize="small" />
+                </IconButton>
+                <DescriptionDialog
+                  open={descriptionDialogOpen}
+                  onClose={handleDescriptionDialogClose}
+                />
+              </Stack>
               <Box pt={2}>
                 <RateLaterAddForm addVideo={addToRateLater} />
               </Box>
@@ -149,6 +202,7 @@ const RateLaterPage = () => {
                 {t('ratelater.orCopyPasteVideoUrlHere')}
               </Typography>
             </Paper>
+            {/* <PreferencesIconButtonLink hash='#rate_later'/> */}
           </Grid>
         </Grid>
 
@@ -161,9 +215,10 @@ const RateLaterPage = () => {
                 count={entityCount}
               >
                 Your rate-later list now has <strong>{{ entityCount }}</strong>{' '}
-                video(s).
+                video(s). They are automatically removed after{' '}
+                <strong>{{ rateLaterSetting }}</strong> comparison(s).
               </Trans>{' '}
-              They are automatically removed after Y comparisons.
+              {/* <PreferencesIconButtonLink hash='#rate_later'/> */}
             </Typography>
           )}
 

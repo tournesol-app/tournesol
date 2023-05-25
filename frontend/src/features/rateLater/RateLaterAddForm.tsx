@@ -42,7 +42,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
             placeholder={t('ratelater.videoIdOrURL')}
             onChange={(e) => setFormVideo(e.target.value)}
             value={formVideo}
-            helperText="Use YouTube URLs or Tournesol URLs"
+            helperText={t('ratelater.youtubeOrTournesolURL')}
           />
         </Grid>
 
