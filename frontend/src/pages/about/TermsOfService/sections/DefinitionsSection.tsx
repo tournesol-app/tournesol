@@ -11,7 +11,7 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
-const DefinitionSection = ({
+const Section = ({
   icon,
   text,
 }: {
@@ -26,15 +26,18 @@ const DefinitionSection = ({
   );
 };
 
-const Definitions = () => {
+const DefinitionsSection = () => {
   const { t } = useTranslation();
   return (
-    <>
-      <DefinitionSection
+    <Box>
+      <Typography variant="h4" fontStyle="italic" gutterBottom id="definitions">
+        {t('termsOfService.definitions')}
+      </Typography>
+      <Section
         icon={<LooksOne />}
         text={t('termsOfService.definitionsSection.account')}
       />
-      <DefinitionSection
+      <Section
         icon={<LooksTwo />}
         text={
           <Trans t={t} i18nKey="termsOfService.definitionsSection.agreement">
@@ -50,20 +53,20 @@ const Definitions = () => {
           </Trans>
         }
       />
-      <DefinitionSection
+      <Section
         icon={<Looks3 />}
         text={t('termsOfService.definitionsSection.association')}
       />{' '}
-      <DefinitionSection
+      <Section
         icon={<Looks4 />}
         text={t('termsOfService.definitionsSection.service')}
       />
-      <DefinitionSection
+      <Section
         icon={<Looks5 />}
         text={t('termsOfService.definitionsSection.user')}
       />
-    </>
+    </Box>
   );
 };
 
-export default Definitions;
+export default DefinitionsSection;

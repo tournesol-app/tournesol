@@ -6,7 +6,7 @@ import { Box, Typography } from '@mui/material';
 import { ContentBox, ContentHeader } from 'src/components';
 
 import AccountTerms from './sections/AccountTerms';
-import Definitions from './sections/Definitions';
+import Definitions from './sections/DefinitionsSection';
 
 const TermsOfServicePage = () => {
   const { t } = useTranslation();
@@ -20,28 +20,8 @@ const TermsOfServicePage = () => {
           {t('termsOfService.termsOfService')}
         </Typography>
         <Box display="flex" flexDirection="column" gap={4}>
-          <Box>
-            <Typography
-              variant="h4"
-              fontStyle="italic"
-              gutterBottom
-              id="definitions"
-            >
-              {t('termsOfService.definitions')}
-            </Typography>
-            <Definitions />
-          </Box>
-          <Box>
-            <Typography
-              variant="h4"
-              fontStyle="italic"
-              gutterBottom
-              id="account-terms"
-            >
-              {t('termsOfService.accountTerms')}
-            </Typography>
-            <AccountTerms />
-          </Box>
+          <Definitions />
+          <AccountTerms />
           <Typography
             variant="h4"
             fontStyle="italic"
