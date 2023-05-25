@@ -77,7 +77,9 @@ const RateLaterPage = () => {
 
   const { t } = useTranslation();
   const { displayErrorsFrom, showSuccessAlert } = useNotifications();
+
   const { name: pollName } = useCurrentPoll();
+  const settings = useSelector(selectSettings).settings?.[YOUTUBE_POLL_NAME];
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -87,10 +89,9 @@ const RateLaterPage = () => {
   const videoListTopRef = React.useRef<HTMLDivElement>(null);
   const [offset, setOffset] = React.useState(0);
   const limit = 20;
-  const settings = useSelector(selectSettings).settings?.[YOUTUBE_POLL_NAME];
-  const rateLaterSetting = settings?.rate_later__auto_remove
-    ? settings.rate_later__auto_remove
-    : DEFAULT_RATE_LATER_AUTO_REMOVAL;
+
+  const rateLaterSetting =
+    settings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL;
 
   const loadList = useCallback(async () => {
     setIsLoading(true);
@@ -201,6 +202,7 @@ const RateLaterPage = () => {
               </Box>
             </Paper>
           </Grid>
+
           <Grid item sm={6} display="flex" width="100%">
             <Paper sx={{ p: 2, width: '100%' }}>
               <Typography paragraph>
@@ -217,7 +219,6 @@ const RateLaterPage = () => {
                 {t('ratelater.orCopyPasteVideoUrlHere')}
               </Typography>
             </Paper>
-            {/* <PreferencesIconButtonLink hash='#rate_later'/> */}
           </Grid>
         </Grid>
 
@@ -233,7 +234,6 @@ const RateLaterPage = () => {
                 video(s). They are automatically removed after{' '}
                 <strong>{{ rateLaterSetting }}</strong> comparison(s).
               </Trans>{' '}
-              {/* <PreferencesIconButtonLink hash='#rate_later'/> */}
             </Typography>
           )}
 
