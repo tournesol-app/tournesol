@@ -242,14 +242,23 @@ const RateLaterPage = () => {
 
         <div className={classes.rateLaterContent} ref={videoListTopRef}>
           {entityCount !== null && (
-            <Typography variant="subtitle1">
+            <Typography
+              paragraph
+              mb={0}
+              sx={{
+                '& strong': {
+                  color: 'secondary.main',
+                  fontSize: '1.4em',
+                },
+              }}
+            >
               <Trans
                 t={t}
                 i18nKey="ratelater.listHasNbVideos"
                 count={entityCount}
               >
-                Your rate-later list now has <strong>{{ entityCount }}</strong>{' '}
-                video(s). They are automatically removed after{' '}
+                Your rate-later list contains <strong>{{ entityCount }}</strong>{' '}
+                video(s). They will be automatically removed after{' '}
                 <strong>{{ rateLaterSetting }}</strong> comparison(s).
               </Trans>{' '}
             </Typography>

@@ -48,7 +48,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
 
         <Grid item xs={3}>
           <Button type="submit" fullWidth variant="contained" color="primary">
-            {t('ratelater.addToMyRateLaterList')}
+            {t('ratelater.add')}
           </Button>
         </Grid>
       </Grid>

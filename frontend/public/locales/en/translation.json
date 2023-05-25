@@ -192,21 +192,21 @@
     "copyAddress": "Copy the page address"
   },
   "ratelater": {
-    "videoIdOrURL": "Video id or URL",
+    "videoIdOrURL": "Video ID or URL",
     "youtubeOrTournesolURL": "Use YouTube URLs or Tournesol URLs",
-    "addToMyRateLaterList": "Add",
+    "add": "Add",
+    "findVideosTitle": "Where to find videos?",
+    "findVideosYoutube": "You can find videos in your <2>YouTube history page</2>, or in your <6>liked video playlist</6>.",
+    "findVideosTournesol": "You can also add videos you find on Tournesol thanks to the \"plus\" button displayed with each video card.",
     "errorOccurredCannotAddVideo": "Sorry, an error has occurred. Cannot add the video to your rate later list.",
     "videoAlreadyInList": "The video is already in your Rate Later list.",
     "videoAdded": "Video added to your Rate Later list!",
     "addVideosToRateLaterList": "Add videos to your rate-later list",
     "addVideosToYourListToCompareThemLater": "Add videos to your list to compare them later.",
-    "findVideosTitle": "Where to find videos",
-    "findVideosYoutube": "You can search them in your <2>YouTube history page</2>, or your <2>liked video playlist</2>.",
-    "findVideosTournesol":"You can also add the videos you find on Tournesol thanks to the plus button displayed with each video card",
     "useOurBrowserExtension": "We recommend using our <2>browser extension</2> to effortlessly add videos directly from YouTube.",
     "orCopyPasteVideoUrlHere": "Or copy paste video URLs here.",
-    "listHasNbVideos_one": "Your rate-later list now has <1>{{entityCount}}</1> video. It is automatically removed after <1>{{rateLaterSetting}}</1> comparison(s).",
-    "listHasNbVideos_other": "Your rate-later list now has <1>{{entityCount}}</1> videos. They are automatically removed after <1>{{rateLaterSetting}}</1> comparison(s)."
+    "listHasNbVideos_one": "Your rate-later list contains <1>{{entityCount}}</1> video. It will be automatically removed after <1>{{rateLaterSetting}}</1> comparison(s).",
+    "listHasNbVideos_other": "Your rate-later list contains <1>{{entityCount}}</1> videos. They will be automatically removed after <1>{{rateLaterSetting}}</1> comparison(s)."
   },
   "public": "public",
   "private": "private",
