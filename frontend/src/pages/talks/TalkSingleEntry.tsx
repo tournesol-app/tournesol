@@ -14,12 +14,6 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
     return new Date(talk.date) < new Date();
   }
 
-  const title = (
-    <Box display="flex" gap={2}>
-      <Typography variant="h4">{talk.title}</Typography>
-    </Box>
-  );
-
   const formatDate = (dateString: string) => {
     if (i18n.language == 'fr') {
       const date = new Date(dateString);
@@ -52,7 +46,7 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
         <Grid container alignItems="center" flexWrap="nowrap">
           <Grid item xs={9}>
             <Typography variant="h4" sx={{ maxWidth: '100%' }}>
-              {title}
+              {talk.title}
             </Typography>
           </Grid>
           <Grid item xs={3}>
