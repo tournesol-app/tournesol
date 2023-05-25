@@ -9,7 +9,7 @@ const TalkEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
     <>
       {talks.map((talk) => (
         <Box key={talk.uid} my={2}>
-          <TalkSingleEntry key={`q_${talk.title}`} talk={talk} />
+          <TalkSingleEntry key={talk.name} talk={talk} />
         </Box>
       ))}
     </>

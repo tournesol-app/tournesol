@@ -5,7 +5,7 @@ import { TalkEntry } from 'src/services/mocks';
 import { extractVideoId } from 'src/utils/video';
 import { useTranslation } from 'react-i18next';
 
-const TalkSingleEntry = ({ talk }: { talk: TalkEntry; compact?: boolean }) => {
+const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
   const { i18n } = useTranslation();
 
   const abstractParagraphs = talk.abstract.split('\n');
