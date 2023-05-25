@@ -7,6 +7,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 
 import AccountTerms from './sections/AccountTerms';
 import Definitions from './sections/DefinitionsSection';
+import AcceptableUse from './sections/AcceptableUse';
 
 const TermsOfServicePage = () => {
   const { t } = useTranslation();
@@ -22,14 +23,7 @@ const TermsOfServicePage = () => {
         <Box display="flex" flexDirection="column" gap={4}>
           <Definitions />
           <AccountTerms />
-          <Typography
-            variant="h4"
-            fontStyle="italic"
-            gutterBottom
-            id="acceptable-use"
-          >
-            {t('termsOfService.acceptableUse')}
-          </Typography>
+          <AcceptableUse />
           <Typography
             variant="h4"
             fontStyle="italic"
@@ -42,7 +36,7 @@ const TermsOfServicePage = () => {
             variant="h4"
             fontStyle="italic"
             gutterBottom
-            id="cancellation"
+            id="cancellation-termination"
           >
             {t('termsOfService.cancellationAndTermination')}
           </Typography>
@@ -50,7 +44,7 @@ const TermsOfServicePage = () => {
             variant="h4"
             fontStyle="italic"
             gutterBottom
-            id="communications"
+            id="communications-with-association"
           >
             {t('termsOfService.communicationsWithTheAssociation')}
           </Typography>
