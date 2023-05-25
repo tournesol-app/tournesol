@@ -26,6 +26,7 @@ import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
 import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import DialogBoxGeneric from 'src/components/DialogBoxGeneric';
+import { TournesolUserSettingsKeys } from 'src/utils/types';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -79,7 +80,10 @@ const RateLaterPage = () => {
   const { displayErrorsFrom, showSuccessAlert } = useNotifications();
 
   const { name: pollName } = useCurrentPoll();
-  const settings = useSelector(selectSettings).settings?.[YOUTUBE_POLL_NAME];
+  const settings =
+    useSelector(selectSettings).settings?.[
+      pollName as TournesolUserSettingsKeys
+    ];
 
   const [isLoading, setIsLoading] = React.useState(true);
 
