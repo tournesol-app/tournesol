@@ -150,6 +150,16 @@
     "more": "Plus",
     "privacyPolicy": "Politique de confidentialité"
   },
+  "termsOfService": {
+    "termsOfService": "Conditions Générales d'Utilisation",
+    "definitions": "A. Définition",
+    "accountTerms": "B. Conditions Relatives aux Comptes",
+    "acceptableUse": "C. Bon Usage",
+    "moderation": "D. Moderation",
+    "cancellationAndTermination": "E. Annulation et Résiliation",
+    "communicationsWithTheAssociation": "F. Communications avec l'Association",
+    "changesToTheseTerms": "G. Modifications apportées aux présentes C.G.U."
+  },
   "menu": {
     "home": "Accueil",
     "compare": "Comparer 🌻",
@@ -453,9 +463,6 @@
     "whatRightsContributorsHaveOverTheirDataParagraph": "En accédant à la page de leur compte, les contributeurs peuvent télécharger les données transmises à la plateforme. Ils ont également la possibilité de demander la suppression de toutes les données personnelles les concernant que Tournesol conserve. Cela n'inclut pas les données que Tournesol a l'obligation de conserver pour des raisons administratives, légales ou à des fins de sécurité."
   },
   "clickToDownload": "Télécharger",
-  "termsOfService": {
-    "termsOfService": "Conditions générales d'utilisation"
-  },
   "tutorial": {
     "skipTheTutorial": "Passer le tutoriel"
   },

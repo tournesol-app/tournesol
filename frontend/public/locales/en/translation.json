@@ -144,6 +144,16 @@
     "more": "More",
     "privacyPolicy": "Privacy policy"
   },
+  "termsOfService": {
+    "termsOfService": "Terms of service",
+    "definitions": "A. Definitions",
+    "accountTerms": "B. Account Terms",
+    "acceptableUse": "C. Acceptable Use",
+    "moderation": "D. Moderation",
+    "cancellationAndTermination": "E. Cancellation and Termination",
+    "communicationsWithTheAssociation": "F. Communication with the Association",
+    "changesToTheseTerms": "G. Changes to these Terms"
+  },
   "menu": {
     "home": "Home",
     "compare": "Compare 🌻",
@@ -445,9 +455,6 @@
     "whatRightsContributorsHaveOverTheirDataParagraph": "By going to their contributor page, contributors can download the data they submitted to their platform. They can also request that Tournesol erases any personal data Tournesol recorded about them. This does not include the data that Tournesol is obliged to keep for administrative, legal, or security purposes."
   },
   "clickToDownload": "Click to Download",
-  "termsOfService": {
-    "termsOfService": "Terms of service"
-  },
   "tutorial": {
     "skipTheTutorial": "Skip tutorial"
   },
