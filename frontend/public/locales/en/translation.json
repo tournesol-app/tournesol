@@ -146,6 +146,16 @@
   },
   "termsOfService": {
     "termsOfService": "Terms of service",
+    "accountTermsSection": {
+      "accountControls": "1. Account Controls",
+      "usersRetainUltimateAdministrativeControl": "The User acknowledges that Users retain ultimate administrative control over their individual accounts. Tournesol's Terms of Service govern Users' use of the Service, except with respect to Users' activities under this Section B.",
+      "accountRequirements": "2. Account Requirements",
+      "inOrderToCreateAccount": "In order to create an account, the User must adhere to the following:",
+      "aUserLoginMayNotBeShared": "A User’s login may not be shared by multiple people.",
+      "userMustBeALeast15": "User must not create an account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
+      "accountSecurity": "3. Account Security",
+      "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with this Section B."
+    },
     "definitionsSection": {
       "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
       "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
