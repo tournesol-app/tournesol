@@ -118,6 +118,7 @@
     name:
       - "gunicorn==20.1.0"
       - "uvicorn[standard]==0.22.0"
+      - "pip==23.1.2"
     virtualenv: /srv/tournesol-backend/venv
     virtualenv_python: python3.9
   become: yes
@@ -126,6 +127,7 @@
 
 - name: Install requirements for Django project
   pip:
+    chdir: /srv/tournesol-backend
     requirements: /srv/tournesol-backend/requirements.txt
     virtualenv: /srv/tournesol-backend/venv
     virtualenv_python: python3.9
