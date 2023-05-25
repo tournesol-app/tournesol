@@ -26,4 +26,5 @@ jobs:
 
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
           password: ${{ secrets.SOLIDAGO_PYPI_API_TOKEN }}
