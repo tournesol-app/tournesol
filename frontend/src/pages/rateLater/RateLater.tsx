@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
 import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
-import DialogBox from 'src/components/DialogBox';
+import DialogNodeBox from 'src/components/DialogBoxGeneric';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -143,14 +143,30 @@ const RateLaterPage = () => {
     const dialog = useMemo(
       () => ({
         title: t('ratelater.findVideosTitle'),
-        messages: [
-          t('ratelater.findVideosYoutube'),
-          t('ratelater.findVideosTournesol'),
-        ],
+        content: (
+          <>
+            <Typography paragraph>
+              <Trans t={t} i18nKey="ratelater.findVideosYoutube">
+                You can search them in your{' '}
+                <a href="https://www.youtube.com/feed/history">
+                  YouTube history page
+                </a>{' '}
+                , or your{' '}
+                <a href="https://www.youtube.com/playlist?list=LL">
+                  liked video playlist
+                </a>
+                .
+              </Trans>
+            </Typography>
+            <Typography paragraph>
+              {t('ratelater.findVideosTournesol')}
+            </Typography>
+          </>
+        ),
       }),
       [t]
     );
-    return <DialogBox open={open} onClose={onClose} dialog={dialog} />;
+    return <DialogNodeBox open={open} onClose={onClose} dialog={dialog} />;
   };
 
   return (
