@@ -169,7 +169,7 @@ const VideosPollUserSettingsForm = () => {
                 Customize <strong>the default search filters</strong> according
                 to your own preferences. Those filters are applied{' '}
                 <strong>only</strong> when you access the recommendations from
-                the <strong>side bar</strong>.
+                the <strong>main menu</strong>.
               </Trans>
             </Alert>
           </Grid>
