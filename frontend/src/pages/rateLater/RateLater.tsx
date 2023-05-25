@@ -1,5 +1,7 @@
-import React, { useEffect, useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { useSelector } from 'react-redux';
+
 import { Box, Grid, IconButton, Paper, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
@@ -19,11 +21,11 @@ import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
-import { useSelector } from 'react-redux';
+
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
 import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
-import DialogNodeBox from 'src/components/DialogBoxGeneric';
+import DialogBoxGeneric from 'src/components/DialogBoxGeneric';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -35,6 +37,40 @@ const useStyles = makeStyles({
     marginTop: '20px',
   },
 });
+
+const WhereToFindVideosDialog = ({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) => {
+  const { t } = useTranslation();
+
+  const dialog = {
+    title: t('ratelater.findVideosTitle'),
+    content: (
+      <>
+        <Typography paragraph>
+          <Trans t={t} i18nKey="ratelater.findVideosYoutube">
+            You can search them in your{' '}
+            <a href="https://www.youtube.com/feed/history">
+              YouTube history page
+            </a>{' '}
+            , or your{' '}
+            <a href="https://www.youtube.com/playlist?list=LL">
+              liked video playlist
+            </a>
+            .
+          </Trans>
+        </Typography>
+        <Typography paragraph>{t('ratelater.findVideosTournesol')}</Typography>
+      </>
+    ),
+  };
+
+  return <DialogBoxGeneric open={open} onClose={onClose} dialog={dialog} />;
+};
 
 const RateLaterPage = () => {
   const classes = useStyles();
@@ -122,52 +158,15 @@ const RateLaterPage = () => {
     RemoveFromRateLater(loadList),
   ];
 
-  const [descriptionDialogOpen, setDescriptionDialogOpen] = useState(false);
+  const [where2findVideosOpen, setWhere2findVideosOpen] = useState(false);
 
-  const handleDescriptionInfoClick = useCallback(() => {
-    setDescriptionDialogOpen(true);
+  const onInfoClick = useCallback(() => {
+    setWhere2findVideosOpen(true);
   }, []);
 
-  const handleDescriptionDialogClose = useCallback(() => {
-    setDescriptionDialogOpen(false);
+  const onWhereToFindVideosDialogClose = useCallback(() => {
+    setWhere2findVideosOpen(false);
   }, []);
-
-  const DescriptionDialog = ({
-    open,
-    onClose,
-  }: {
-    open: boolean;
-    onClose: () => void;
-  }) => {
-    const { t } = useTranslation();
-    const dialog = useMemo(
-      () => ({
-        title: t('ratelater.findVideosTitle'),
-        content: (
-          <>
-            <Typography paragraph>
-              <Trans t={t} i18nKey="ratelater.findVideosYoutube">
-                You can search them in your{' '}
-                <a href="https://www.youtube.com/feed/history">
-                  YouTube history page
-                </a>{' '}
-                , or your{' '}
-                <a href="https://www.youtube.com/playlist?list=LL">
-                  liked video playlist
-                </a>
-                .
-              </Trans>
-            </Typography>
-            <Typography paragraph>
-              {t('ratelater.findVideosTournesol')}
-            </Typography>
-          </>
-        ),
-      }),
-      [t]
-    );
-    return <DialogNodeBox open={open} onClose={onClose} dialog={dialog} />;
-  };
 
   return (
     <>
@@ -189,12 +188,12 @@ const RateLaterPage = () => {
                 <Typography variant="h6">
                   {t('ratelater.addVideosToRateLaterList')}
                 </Typography>
-                <IconButton onClick={handleDescriptionInfoClick}>
+                <IconButton onClick={onInfoClick}>
                   <InfoIcon fontSize="small" />
                 </IconButton>
-                <DescriptionDialog
-                  open={descriptionDialogOpen}
-                  onClose={handleDescriptionDialogClose}
+                <WhereToFindVideosDialog
+                  open={where2findVideosOpen}
+                  onClose={onWhereToFindVideosDialogClose}
                 />
               </Stack>
               <Box pt={2}>
