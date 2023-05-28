@@ -7,7 +7,7 @@ name = "solidago"
 authors = [
   { name="Tournesol Association", email="hello@tournesol.app" },
 ]
-description = "Algorithms for the Tournesol platform"
+description = "Algorithms for Secure Algorithmic Governance"
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
