@@ -7,6 +7,10 @@ on:
     paths:
       - 'solidago/src/solidago/__version__.py'
 
+defaults:
+  run:
+    working-directory: solidago
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -27,4 +31,5 @@ jobs:
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          packages-dir: solidago/dist/
           password: ${{ secrets.SOLIDAGO_PYPI_API_TOKEN }}
