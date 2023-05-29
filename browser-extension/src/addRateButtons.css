@@ -1,10 +1,19 @@
+#ts-video-actions-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
 button.tournesol-rate-button {
   background: transparent;
   border: none;
   border-radius: 2px;
   cursor: pointer;
   font-family: 'Roboto', 'Noto', sans-serif;
-  margin-left: 8px;
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -38,21 +47,7 @@ img.tournesol-button-image.tournesol-rate-later {
   margin-right: 2px;
 }
 
-@media (min-width: 656px) and (max-width: 990px) {
-  button.tournesol-rate-button {
-    font-size: 0;
-  }
-
-  img.tournesol-button-image {
-    margin: 0;
-  }
-
-  img.tournesol-button-image.tournesol-rate-later {
-    margin: 0;
-  }
-}
-
-@media (min-width: 1017px) and (max-width: 1366px) {
+@media (max-width: 990px) {
   button.tournesol-rate-button {
     font-size: 0;
   }

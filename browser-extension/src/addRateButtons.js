@@ -4,6 +4,9 @@
  * This content script is meant to be run on each YouTube video page.
  */
 
+const TS_ACTIONS_ROW_ID = 'ts-video-actions-row';
+const TS_ACTIONS_ROW_BEFORE_REF = 'bottom-row';
+
 /**
  * Youtube doesnt completely load a video page, so content script doesn't
  * launch correctly without these events.
@@ -18,16 +21,36 @@ if (document.body) {
   document.addEventListener('DOMContentLoaded', addRateButtons);
 }
 
-function getYtButtonsContainer() {
-  return (
-    // 2022-06-06: container used by Youtube redesign will be searched first.
-    document.querySelector(
-      '#menu.ytd-watch-metadata #top-level-buttons-computed'
-    ) ||
-    document.querySelector(
-      '#menu.ytd-video-primary-info-renderer #top-level-buttons-computed'
-    )
-  );
+/**
+ * The Tournesol video actions row contains the video actions related to the
+ * Tournesol project.
+ *
+ * This container is meant to be displayed after the YouTube actions and
+ * before the video descrition container.
+ */
+const createVideoActionsRow = () => {
+  const existing = document.getElementById(TS_ACTIONS_ROW_ID);
+  if (existing) {
+    existing.remove();
+  }
+
+  const videoActions = document.createElement('div');
+  videoActions.id = TS_ACTIONS_ROW_ID;
+
+  const beforeRef = document.getElementById(TS_ACTIONS_ROW_BEFORE_REF);
+  const parent = document.getElementById(beforeRef.parentElement.id);
+
+  parent.insertBefore(videoActions, beforeRef);
+  return videoActions;
+};
+
+function createVideoActionsRowParent() {
+  const beforeRef = document.getElementById(TS_ACTIONS_ROW_BEFORE_REF);
+  if (!beforeRef) {
+    return;
+  }
+
+  return document.getElementById(beforeRef.parentElement.id);
 }
 
 function addRateButtons() {
@@ -43,21 +66,13 @@ function addRateButtons() {
    * Create the Rate Later and the Rate Now buttons.
    */
   function createButtonIsReady() {
-    const buttonsContainer = getYtButtonsContainer();
+    const buttonsContainer = createVideoActionsRowParent();
     if (!buttonsContainer) {
       return;
     }
 
-    // Remove the existing buttons to avoid duplicates.
-    if (document.getElementById('tournesol-rate-later-button')) {
-      document.getElementById('tournesol-rate-later-button').remove();
-    }
-
-    if (document.getElementById('tournesol-rate-now-button')) {
-      document.getElementById('tournesol-rate-now-button').remove();
-    }
-
     window.clearInterval(timer);
+    const videoActions = createVideoActionsRow();
 
     const addRateButton = ({ id, label, iconSrc, iconClass, onClick }) => {
       // Create Button
@@ -81,11 +96,8 @@ function addRateButtons() {
         text.textContent = label;
       };
 
-      // On click
       button.onclick = onClick;
-
-      // Insert after like and dislike buttons
-      buttonsContainer.insertBefore(button, buttonsContainer.children[2]);
+      videoActions.appendChild(button);
 
       return { button, setLabel };
     };
