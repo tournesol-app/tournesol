@@ -193,6 +193,7 @@ const RateLaterPage = () => {
           spacing={2}
           justifyContent="space-between"
           alignItems="stretch"
+          sx={{ p: 1 }}
         >
           <Grid item sm={6} display="flex" width="100%">
             <Paper sx={{ p: 2, display: 'flex', width: '100%' }}>
@@ -257,6 +258,7 @@ const RateLaterPage = () => {
               variant="subtitle1"
               mb={0}
               sx={{
+                p: 1,
                 '& strong': {
                   color: 'secondary.main',
                   fontSize: '1.4em',
