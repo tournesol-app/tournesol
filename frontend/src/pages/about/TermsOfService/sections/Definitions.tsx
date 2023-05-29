@@ -26,7 +26,7 @@ const Section = ({
   );
 };
 
-const DefinitionsSection = () => {
+const Definitions = () => {
   const { t } = useTranslation();
   return (
     <Box>
@@ -69,4 +69,4 @@ const DefinitionsSection = () => {
   );
 };
 
-export default DefinitionsSection;
+export default Definitions;

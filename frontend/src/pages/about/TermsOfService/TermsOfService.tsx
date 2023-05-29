@@ -5,9 +5,9 @@ import { Box, Typography } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 
-import AccountTerms from './sections/AccountTerms';
-import Definitions from './sections/DefinitionsSection';
 import AcceptableUse from './sections/AcceptableUse';
+import AccountTerms from './sections/AccountTerms';
+import Definitions from './sections/Definitions';
 
 const TermsOfServicePage = () => {
   const { t } = useTranslation();

@@ -15,7 +15,11 @@ const AcceptableUse = () => {
       >
         {t('termsOfService.acceptableUse.cAcceptableUse')}
       </Typography>
-      <Typography variant="h5" gutterBottom id="compliance-with-laws">
+      <Typography
+        variant="h5"
+        gutterBottom
+        id="compliance-with-laws-and-regulation"
+      >
         {t(
           'termsOfService.acceptableUse.titles.1ComplianceWithLawsAndRegulation'
         )}
@@ -40,7 +44,7 @@ const AcceptableUse = () => {
         </li>
         <li>or goes against out Code of Conduct</li>
       </ul>
-      <Typography variant="h5" gutterBottom id="account-security">
+      <Typography variant="h5" gutterBottom id="inauthentic-activity-and-spam">
         {t('termsOfService.acceptableUse.titles.3InauthenticActivityAndSpam')}
       </Typography>
       <p>
