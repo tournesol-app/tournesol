@@ -387,7 +387,7 @@ html[dark] #tournesol_campaign_button {
 
 #tournesol_container.search #tournesol_refresh_button,
 #tournesol_container.search #tournesol_expand_button,
-#tournesol_container.search .video_card .dot {
+#tournesol_container.search .video_tournesol_rating .dot {
   display: none;
 }
 
@@ -436,10 +436,7 @@ html[dark] #tournesol_campaign_button {
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-end;
-}
-
-#tournesol_container.search .video_channel_details :first-child {
-  margin-left: 8px;
+  column-gap: 16px;
 }
 
 #tournesol_view_more_results {
