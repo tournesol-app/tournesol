@@ -146,8 +146,8 @@
   },
   "termsOfService": {
     "termsOfService": "Terms of service",
-    "acceptableUse": "C. Acceptable Use",
-    "acceptableUseSection": {
+    "acceptableUse": {
+      "cAcceptableUse": "C. Acceptable Use",
       "titles": {
         "1ComplianceWithLawsAndRegulation": "1. Compliance with Laws and Regulations",
         "2UserSafety": "2. User Safety",

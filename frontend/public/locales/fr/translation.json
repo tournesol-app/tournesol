@@ -152,8 +152,8 @@
   },
   "termsOfService": {
     "termsOfService": "Conditions Générales d'Utilisation",
-    "acceptableUse": "C. Bon Usage",
-    "acceptableUseSection": {
+    "acceptableUse": {
+      "cAcceptableUse": "C. Bon Usage",
       "titles": {
         "1ComplianceWithLawsAndRegulation": "",
         "2UserSafety": "",

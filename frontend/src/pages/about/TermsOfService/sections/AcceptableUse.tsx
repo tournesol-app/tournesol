@@ -13,23 +13,23 @@ const AcceptableUse = () => {
         gutterBottom
         id="acceptable-use"
       >
-        {t('termsOfService.acceptableUse')}
+        {t('termsOfService.acceptableUse.cAcceptableUse')}
       </Typography>
       <Typography variant="h5" gutterBottom id="compliance-with-laws">
         {t(
-          'termsOfService.acceptableUseSection.titles.1ComplianceWithLawsAndRegulation'
+          'termsOfService.acceptableUse.titles.1ComplianceWithLawsAndRegulation'
         )}
       </Typography>
       <Typography paragraph>
         {t(
-          'termsOfService.acceptableUseSection.paragraphs.complianceWithLawsAndRegulation'
+          'termsOfService.acceptableUse.paragraphs.complianceWithLawsAndRegulation'
         )}
       </Typography>
       <Typography variant="h5" gutterBottom id="user-safety">
-        {t('termsOfService.acceptableUseSection.titles.2UserSafety')}
+        {t('termsOfService.acceptableUse.titles.2UserSafety')}
       </Typography>
       <Typography paragraph>
-        {t('termsOfService.acceptableUseSection.paragraphs.userSafetyIntro')}
+        {t('termsOfService.acceptableUse.paragraphs.userSafetyIntro')}
       </Typography>
       <ul>
         <li>is unlawful or promotes unlawful activities;</li>
@@ -41,9 +41,7 @@ const AcceptableUse = () => {
         <li>or goes against out Code of Conduct</li>
       </ul>
       <Typography variant="h5" gutterBottom id="account-security">
-        {t(
-          'termsOfService.acceptableUseSection.titles.3InauthenticActivityAndSpam'
-        )}
+        {t('termsOfService.acceptableUse.titles.3InauthenticActivityAndSpam')}
       </Typography>
       <p>
         We do not allow activity the Platform that is: inauthentic interactions,
@@ -51,7 +49,7 @@ const AcceptableUse = () => {
         excessive bulk activity and coordinated inauthentic activity.
       </p>
       <Typography variant="h5" gutterBottom id="service-usage-limits">
-        {t('termsOfService.acceptableUseSection.titles.4ServiceUsageLimits')}
+        {t('termsOfService.acceptableUse.titles.4ServiceUsageLimits')}
       </Typography>
       <p>
         todo: make a better distinction between the source code and the service
