@@ -48,22 +48,6 @@ const AcceptableUse = () => {
         such as fake accounts and automated inauthentic activity; or automated
         excessive bulk activity and coordinated inauthentic activity.
       </p>
-      <Typography variant="h5" gutterBottom id="service-usage-limits">
-        {t('termsOfService.acceptableUse.titles.4ServiceUsageLimits')}
-      </Typography>
-      <p>
-        todo: make a better distinction between the source code and the service
-      </p>
-      <p>
-        Our Source Code, including the code, the documentations, the images and
-        the other materials used by the Service can be used by following the
-        terms of their licenses.
-      </p>
-      <p>
-        Nevertheless, you will not reproduce, duplicate, copy, sell, resell or
-        exploit any portion of the Service itself, use of the Service, or access
-        to the Service without our express written permission.
-      </p>
     </Box>
   );
 };
