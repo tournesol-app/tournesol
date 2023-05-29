@@ -12,7 +12,7 @@
 
   margin-left: 0;
   margin-right: 0;
-  margin-top: 45px;
+  margin-top: 24px;
   margin-bottom: 16px; /* 40px for tournesol container - 24px for margin-top of youtube recommendations */
 
   padding: var(--ts-container-padding);
@@ -98,13 +98,13 @@ html[dark] #tournesol_banner_close_icon {
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 22px;
   font-weight: normal;
-  margin-right: auto;
 }
 
 #tournesol_link {
-  color: var(--yt-spec-text-primary);
+  color: var(--yt-spec-text-secondary);
   font-family: 'Roboto', 'Arial', sans-serif;
-  align-self: flex-start;
+  font-size: 12px;
+  margin-right: auto;
 }
 
 #ts_container_bottom_action_bar {
@@ -130,11 +130,6 @@ html[dark] #tournesol_campaign_button {
   opacity: 1;
 }
 
-#tournesol_refresh_button {
-  float: right;
-  margin-top: 4px;
-}
-
 .video_title_link,
 .video_channel_link {
   text-decoration: none;
@@ -147,7 +142,7 @@ html[dark] #tournesol_campaign_button {
 
 .tournesol_score_logo {
   width: 16px;
-  margin-right: 4px;
+  vertical-align: text-top;
 }
 
 .tournesol_mui_like_button {

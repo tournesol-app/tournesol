@@ -110,6 +110,15 @@ export class TournesolContainer {
     tournesolTitle.append(chrome.i18n.getMessage('recommendedByTournesol'));
     topActionBar.append(tournesolTitle);
 
+    // Learn more
+    const learnMore = document.createElement('a');
+    learnMore.id = 'tournesol_link';
+    learnMore.href = 'https://tournesol.app?utm_source=extension';
+    learnMore.target = '_blank';
+    learnMore.rel = 'noopener';
+    learnMore.append(chrome.i18n.getMessage('learnMore'));
+    topActionBar.append(learnMore);
+
     // Display the campaign button only if there is a banner.
     if (this.banner.bannerShouldBeDisplayed()) {
       const campaignButton = document.createElement('button');
@@ -146,15 +155,6 @@ export class TournesolContainer {
       this.recommendations.loadRecommandations();
     };
     topActionBar.append(refreshButton);
-
-    // Learn more
-    const learnMore = document.createElement('a');
-    learnMore.id = 'tournesol_link';
-    learnMore.href = 'https://tournesol.app?utm_source=extension';
-    learnMore.target = '_blank';
-    learnMore.rel = 'noopener';
-    learnMore.append(chrome.i18n.getMessage('learnMore'));
-    topActionBar.append(learnMore);
 
     return topActionBar;
   }
