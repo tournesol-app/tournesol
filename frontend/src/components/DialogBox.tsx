@@ -11,7 +11,8 @@ interface DialogProps {
 }
 
 /**
- * A dialog box that displays one or more messages.
+ * A dialog box that displays the provided content which can be any arbitrary
+ * React component.
  */
 const DialogBox = ({
   open,
