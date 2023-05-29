@@ -169,6 +169,17 @@
       "accountSecurity": "3. Account Security",
       "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with this Section B."
     },
+    "cancellationAndTermination": {
+      "cancellationAndTermination": "E. Cancellation and Termination",
+      "titles": {
+        "1accountCancellation": "1. Account Cancellation",
+        "2uponCancellation": "2. Upon Cancellation"
+      },
+      "paragraphs": {
+        "accountCancellation": "It is your responsibility to properly cancel your Account. You can cancel your Account at any time by going into your Settings in the personal navigation bar at the top of the screen. The Account page provides a simple, no questions asked cancellation button. We do not cancel Accounts in response to an email.",
+        "weWillDelete": "We will delete your full profile and the Content you added within 7 days of cancellation or termination. Those information can not be recovered once your Account is canceled."
+      }
+    },
     "definitions": "A. Definitions",
     "definitionsSection": {
       "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
@@ -178,7 +189,7 @@
       "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Platform or Service; that accesses or uses any part of the Account. A User must be at least 15 years of age."
     },
     "moderation": {
-      "moderation": "Moderation",
+      "moderation": "D. Moderation",
       "paragraphs": {
         "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of these policies.",
         "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",
@@ -187,7 +198,6 @@
         "removalOfAddedContents": "removal of added content (such as videos)."
       }
     },
-    "cancellationAndTermination": "E. Cancellation and Termination",
     "communicationsWithTheAssociation": "F. Communication with the Association",
     "changesToTheseTerms": "G. Changes to these Terms"
   },

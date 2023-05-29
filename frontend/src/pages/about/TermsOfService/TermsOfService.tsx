@@ -7,6 +7,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 
 import AcceptableUse from './sections/AcceptableUse';
 import AccountTerms from './sections/AccountTerms';
+import CancellationAndTermination from './sections/CancellationAndTermination';
 import Definitions from './sections/Definitions';
 import Moderation from './sections/Moderation';
 
@@ -26,14 +27,7 @@ const TermsOfServicePage = () => {
           <AccountTerms />
           <AcceptableUse />
           <Moderation />
-          <Typography
-            variant="h4"
-            fontStyle="italic"
-            gutterBottom
-            id="cancellation-termination"
-          >
-            {t('termsOfService.cancellationAndTermination')}
-          </Typography>
+          <CancellationAndTermination />
           <Typography
             variant="h4"
             fontStyle="italic"

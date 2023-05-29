@@ -175,6 +175,17 @@
       "accountSecurity": "",
       "userIsResponsibleFor": ""
     },
+    "cancellationAndTermination": {
+      "cancellationAndTermination": "",
+      "titles": {
+        "1accountCancellation": "",
+        "2uponCancellation": ""
+      },
+      "paragraphs": {
+        "accountCancellation": "",
+        "weWillDelete": ""
+      }
+    },
     "definitions": "A. Définition",
     "definitionsSection": {
       "account": "",
@@ -193,7 +204,6 @@
         "removalOfAddedContents": ""
       }
     },
-    "cancellationAndTermination": "E. Annulation et Résiliation",
     "communicationsWithTheAssociation": "F. Communications avec l'Association",
     "changesToTheseTerms": "G. Modifications apportées aux présentes C.G.U."
   },
