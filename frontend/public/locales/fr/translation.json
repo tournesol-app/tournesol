@@ -152,6 +152,20 @@
   },
   "termsOfService": {
     "termsOfService": "Conditions Générales d'Utilisation",
+    "acceptableUse": "C. Bon Usage",
+    "acceptableUseSection": {
+      "titles": {
+        "1ComplianceWithLawsAndRegulation": "",
+        "2UserSafety": "",
+        "3InauthenticActivityAndSpam": "",
+        "4ServiceUsageLimits": ""
+      },
+      "paragraphs": {
+        "complianceWithLawsAndRegulation": "",
+        "userSafetyIntro": ""
+      }
+    },
+    "accountTerms": "B. Conditions Relatives aux Comptes",
     "accountTermsSection": {
       "accountControls": "",
       "usersRetainUltimateAdministrativeControl": "",
@@ -162,6 +176,7 @@
       "accountSecurity": "",
       "userIsResponsibleFor": ""
     },
+    "definitions": "A. Définition",
     "definitionsSection": {
       "account": "",
       "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2></2>).",
@@ -169,9 +184,6 @@
       "service": "",
       "user": ""
     },
-    "definitions": "A. Définition",
-    "accountTerms": "B. Conditions Relatives aux Comptes",
-    "acceptableUse": "C. Bon Usage",
     "moderation": "D. Moderation",
     "cancellationAndTermination": "E. Annulation et Résiliation",
     "communicationsWithTheAssociation": "F. Communications avec l'Association",

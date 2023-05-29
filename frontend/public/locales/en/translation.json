@@ -146,6 +146,20 @@
   },
   "termsOfService": {
     "termsOfService": "Terms of service",
+    "acceptableUse": "C. Acceptable Use",
+    "acceptableUseSection": {
+      "titles": {
+        "1ComplianceWithLawsAndRegulation": "1. Compliance with Laws and Regulations",
+        "2UserSafety": "2. User Safety",
+        "3InauthenticActivityAndSpam": "3. Inauthentic Activity and Spam",
+        "4ServiceUsageLimits": "4. Services Usage Limits"
+      },
+      "paragraphs": {
+        "complianceWithLawsAndRegulation": "You are responsible for using the Service in compliance with all applicable laws, regulations, and this Acceptable Use policy. ",
+        "userSafetyIntro": "We do not allow activity on the Platform, such as using a public username, that:"
+      }
+    },
+    "accountTerms": "B. Account Terms",
     "accountTermsSection": {
       "accountControls": "1. Account Controls",
       "usersRetainUltimateAdministrativeControl": "The User acknowledges that Users retain ultimate administrative control over their individual accounts. Tournesol's Terms of Service govern Users' use of the Service, except with respect to Users' activities under this Section B.",
@@ -156,6 +170,7 @@
       "accountSecurity": "3. Account Security",
       "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with this Section B."
     },
+    "definitions": "A. Definitions",
     "definitionsSection": {
       "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
       "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
@@ -163,9 +178,6 @@
       "service": "The \"Service\" refers to the applications, forms, surveys, software, products and services provided by the Tournesol Association in the context of the Tournesol project.",
       "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Website or Service; that accesses or uses any part of the Account. A User must be at least 13 years of age."
     },
-    "definitions": "A. Definitions",
-    "accountTerms": "B. Account Terms",
-    "acceptableUse": "C. Acceptable Use",
     "moderation": "D. Moderation",
     "cancellationAndTermination": "E. Cancellation and Termination",
     "communicationsWithTheAssociation": "F. Communication with the Association",
