@@ -165,7 +165,9 @@ export class TournesolContainer {
     bottomActionBar.id = 'ts_container_bottom_action_bar';
     const expand_button = document.createElement('button');
     expand_button.id = 'tournesol_expand_button';
-    expand_button.title = chrome.i18n.getMessage('seeMoreRecommendations');
+    if (!this.isExpanded) {
+      expand_button.title = chrome.i18n.getMessage('seeMoreRecommendations');
+    }
 
     // A new button is created on each video loading, the image must be loaded accordingly
     fetch(
