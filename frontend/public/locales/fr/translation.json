@@ -183,7 +183,16 @@
       "service": "",
       "user": ""
     },
-    "moderation": "D. Moderation",
+    "moderation": {
+      "moderation": "Modération",
+      "paragraphs": {
+        "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of these policies.",
+        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",
+        "accountSuspension": "",
+        "accountTermination": "",
+        "removalOfAddedContents": ""
+      }
+    },
     "cancellationAndTermination": "E. Annulation et Résiliation",
     "communicationsWithTheAssociation": "F. Communications avec l'Association",
     "changesToTheseTerms": "G. Modifications apportées aux présentes C.G.U."

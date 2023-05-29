@@ -177,7 +177,16 @@
       "service": "The \"Service\", sometimes called the \"Platform\", refers to the websites, browser extensions, applications, forms, surveys and services provided by the Tournesol Association in the context of the Tournesol project.",
       "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Platform or Service; that accesses or uses any part of the Account. A User must be at least 15 years of age."
     },
-    "moderation": "D. Moderation",
+    "moderation": {
+      "moderation": "Moderation",
+      "paragraphs": {
+        "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of these policies.",
+        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",
+        "accountSuspension": "account suspension;",
+        "accountTermination": "account termination;",
+        "removalOfAddedContents": "removal of added content (such as videos)."
+      }
+    },
     "cancellationAndTermination": "E. Cancellation and Termination",
     "communicationsWithTheAssociation": "F. Communication with the Association",
     "changesToTheseTerms": "G. Changes to these Terms"

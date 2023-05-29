@@ -8,6 +8,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 import AcceptableUse from './sections/AcceptableUse';
 import AccountTerms from './sections/AccountTerms';
 import Definitions from './sections/Definitions';
+import Moderation from './sections/Moderation';
 
 const TermsOfServicePage = () => {
   const { t } = useTranslation();
@@ -24,14 +25,7 @@ const TermsOfServicePage = () => {
           <Definitions />
           <AccountTerms />
           <AcceptableUse />
-          <Typography
-            variant="h4"
-            fontStyle="italic"
-            gutterBottom
-            id="moderation"
-          >
-            {t('termsOfService.moderation')}
-          </Typography>
+          <Moderation />
           <Typography
             variant="h4"
             fontStyle="italic"
