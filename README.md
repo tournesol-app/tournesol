@@ -52,19 +52,20 @@ on [Discord][tournesol-discord-join].
 
 ## Structure of the repository
 
+- [backend](./backend) is a Django application that serves as Tournesol's API
+- [browser-extension](./browser-extension) is a JavaScript extension for
+  Google Chrome and Mozilla Firefox
 - [data-visualization](./data-visualization) contains a Streamlit app to
   visualize the Tournesol public data
-- [docs](./docs) contains different kinds of documentations related to the
-  project
 - [dev-env](./dev-env) contains the info to create the Tournesol development
   environment with docker-compose
-- [backend](./backend) is a Django application that serves as Tournesol's API
+- [docs](./docs) contains different kinds of documentations related to the
+  project
 - [frontend](./frontend) is a React JS application which is the main website
   and a frontend to Tournesol's API
 - [infra](./infra) contains an ansible recipe used to configure the servers
   running Tournesol
-- [browser-extension](./browser-extension) is a JavaScript extension for
-  Google Chrome and Mozilla Firefox
+- [solidago](./solidago/) the library that implements Tournesol algorithms
 - [tests](./tests) contains end-to-end tests for Tournesol
 
 ## Set-up

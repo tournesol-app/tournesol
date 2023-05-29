@@ -1,0 +1,34 @@
+name: Test Solidago
+
+on:
+  # Run tests only when relevant files have changed
+  push:
+    paths:
+      - 'solidago/**'
+      - '.github/workflows/solidago-test.yml'
+  pull_request:
+    paths:
+      - 'solidago/**'
+      - '.github/workflows/solidago-test.yml'
+
+defaults:
+  run:
+    working-directory: solidago
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install -e .[test]
+
+      - name: Run pytest
+        run: pytest

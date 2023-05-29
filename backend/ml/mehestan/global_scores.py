@@ -4,10 +4,9 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from numba import njit
+from solidago.mehestan.primitives import BrMean, QrDev, QrMed, QrUnc
 
 from ml.inputs import MlInput
-
-from .primitives import BrMean, QrDev, QrMed, QrUnc
 
 # `W` is the Byzantine resilience parameter,
 # i.e the number of voting rights needed to modify a global score by 1 unit.
