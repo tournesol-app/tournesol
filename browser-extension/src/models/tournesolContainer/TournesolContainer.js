@@ -144,7 +144,8 @@ export class TournesolContainer {
 
     // Refresh button
     const refreshButton = document.createElement('button');
-    refreshButton.setAttribute('id', 'tournesol_refresh_button');
+    refreshButton.id = 'tournesol_refresh_button';
+    refreshButton.title = chrome.i18n.getMessage('refreshRecommendations');
     fetch(chrome.runtime.getURL('images/sync-alt.svg'))
       .then((r) => r.text())
       .then((svg) => (refreshButton.innerHTML = svg));
@@ -163,7 +164,8 @@ export class TournesolContainer {
     const bottomActionBar = document.createElement('div');
     bottomActionBar.id = 'ts_container_bottom_action_bar';
     const expand_button = document.createElement('button');
-    expand_button.setAttribute('id', 'tournesol_expand_button');
+    expand_button.id = 'tournesol_expand_button';
+    expand_button.title = chrome.i18n.getMessage('seeMoreRecommendations');
 
     // A new button is created on each video loading, the image must be loaded accordingly
     fetch(

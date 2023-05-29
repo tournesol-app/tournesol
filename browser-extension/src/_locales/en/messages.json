@@ -24,8 +24,16 @@
     "description": "Title of the main Tournesol container."
   },
   "learnMore": {
-    "message": "learn more",
+    "message": "Learn more",
     "description": "Invite the users to learn more about the project (should be very short)."
+  },
+  "refreshRecommendations": {
+    "message": "Refresh",
+    "description": "Button title to refresh the Tournesol container content with other videos."
+  },
+  "seeMoreRecommendations": {
+    "message": "See more videos",
+    "description": "Button title to expand the Tournesol container to show more recommended videos."
   },
   "views": {
     "message": "$1 views",
