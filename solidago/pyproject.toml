@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "solidago"
+authors = [
+  { name="Tournesol Association", email="hello@tournesol.app" },
+]
+description = "Algorithms for Secure Algorithmic Governance"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+]
+keywords = ["tournesol", "collaborative recommendations", "judgement aggregation", "comparison based", "mehestan"]
+dependencies = [
+    "pandas>=1.5.3,<2.0",
+    "numpy>=1.24.3,<1.25",
+    "numba==0.57.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+"Homepage" = "https://github.com/tournesol-app/tournesol/tree/main/solidago"
+"Bug Tracker" = "https://github.com/tournesol-app/tournesol/issues"
+
+[project.optional-dependencies]
+test = [
+    "pytest >=7.1.3,<8.0.0",
+]
+
+[tool.hatch.version]
+path = "src/solidago/__version__.py"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # Will be removed in Numba 0.58. See https://github.com/numba/numba/issues/8936
+    "ignore:Use of isinstance():numba.NumbaExperimentalFeatureWarning",
+]

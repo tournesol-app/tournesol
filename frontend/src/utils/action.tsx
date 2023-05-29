@@ -27,7 +27,7 @@ export const CompareNowAction = ({ uid }: { uid: string }) => {
         sx={{ color: '#CDCABC' }}
         size="medium"
         component={Link}
-        to={`${baseUrl}/comparison/?uidA=${uid}`}
+        to={`${baseUrl}/comparison?uidA=${uid}`}
       >
         <CompareIcon />
       </IconButton>

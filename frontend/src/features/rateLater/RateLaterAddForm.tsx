@@ -29,29 +29,26 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
         container
         direction="row"
         justifyContent="center"
-        alignItems="center"
-        spacing={3}
+        alignItems="flex-start"
+        spacing={2}
       >
-        <Grid item>
+        <Grid item xs={9}>
           <TextField
             autoFocus
             required
             fullWidth
+            size="small"
+            variant="outlined"
             placeholder={t('ratelater.videoIdOrURL')}
             onChange={(e) => setFormVideo(e.target.value)}
             value={formVideo}
-            variant="standard"
+            helperText={t('ratelater.youtubeOrTournesolURL')}
           />
         </Grid>
 
-        <Grid item>
-          <Button
-            type="submit"
-            size="large"
-            variant="contained"
-            color="primary"
-          >
-            {t('ratelater.addToMyRateLaterList')}
+        <Grid item xs={3}>
+          <Button type="submit" fullWidth variant="contained" color="primary">
+            {t('ratelater.add')}
           </Button>
         </Grid>
       </Grid>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-import { Button, Grid, Typography } from '@mui/material';
+import { Alert, Button, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
@@ -159,6 +159,19 @@ const VideosPollUserSettingsForm = () => {
             <Typography id="recommendations_page" variant="h6">
               {t('pollUserSettingsForm.recommendationsPage')}
             </Typography>
+          </Grid>
+          <Grid item>
+            <Alert severity="info">
+              <Trans
+                t={t}
+                i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
+              >
+                Customize <strong>the default search filters</strong> according
+                to your own preferences. Those filters are applied{' '}
+                <strong>only</strong> when you access the recommendations from
+                the <strong>main menu</strong>.
+              </Trans>
+            </Alert>
           </Grid>
           <Grid item>
             <RecommendationsDefaultDate
