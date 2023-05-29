@@ -25,7 +25,7 @@ import { getWebExtensionUrl } from 'src/utils/extension';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
 import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
-import DialogBoxGeneric from 'src/components/DialogBoxGeneric';
+import DialogBox from 'src/components/DialogBox';
 import { TournesolUserSettingsKeys } from 'src/utils/types';
 
 const useStyles = makeStyles({
@@ -70,7 +70,14 @@ const WhereToFindVideosDialog = ({
     ),
   };
 
-  return <DialogBoxGeneric open={open} onClose={onClose} dialog={dialog} />;
+  return (
+    <DialogBox
+      open={open}
+      onClose={onClose}
+      title={dialog.title}
+      content={dialog.content}
+    />
+  );
 };
 
 const RateLaterPage = () => {
