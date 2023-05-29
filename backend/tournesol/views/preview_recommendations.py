@@ -60,7 +60,15 @@ def get_preview_recommendations_redirect_params(request):
     query = QueryDict("", mutable=True)
 
     for (key, value) in params.items():
-        if key == "language":
+        if key == "uploader":
+            query["metadata[uploader]"] = params[key]
+        elif key == "duration_lte":
+            # Durations are in seconds in the backend but minutes in the frontend URL
+            query["metadata[duration:lte:int]"] = int(params[key]) * 60
+        elif key == "duration_gte":
+            # Durations are in seconds in the backend but minutes in the frontend URL
+            query["metadata[duration:gte:int]"] = int(params[key]) * 60
+        elif key == "language":
             languages = [lang for lang in value.split(",") if lang != ""]
             if languages:
                 query.setlist("metadata[language]", languages)
@@ -283,6 +291,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
     @method_decorator(cache_page_no_i18n(CACHE_RECOMMENDATIONS_PREVIEW))
     @extend_schema(exclude=True)
     def get(self, request, *args, **kwargs):
+        print("HELLO")
         upscale_ratio = self.upscale_ratio
 
         preview_image = Image.new("RGBA", (440 * upscale_ratio, 240 * upscale_ratio), "#FAFAFA")
