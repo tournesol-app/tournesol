@@ -7,6 +7,10 @@ on:
     paths:
       - 'solidago/src/solidago/__version__.py'
 
+defaults:
+  run:
+    working-directory: solidago
+
 jobs:
   publish:
     runs-on: ubuntu-latest
