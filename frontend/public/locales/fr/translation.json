@@ -3,6 +3,9 @@
     "copy": "Copier URI",
     "copied": "Copié !"
   },
+  "preferencesIconButtonLink": {
+    "linkToThePreferencesPage": "Lien vers la page des préférences"
+  },
   "components": {
     "filtersButton": "filtres"
   },
