@@ -291,7 +291,6 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
     @method_decorator(cache_page_no_i18n(CACHE_RECOMMENDATIONS_PREVIEW))
     @extend_schema(exclude=True)
     def get(self, request, *args, **kwargs):
-        print("HELLO")
         upscale_ratio = self.upscale_ratio
 
         preview_image = Image.new("RGBA", (440 * upscale_ratio, 240 * upscale_ratio), "#FAFAFA")
