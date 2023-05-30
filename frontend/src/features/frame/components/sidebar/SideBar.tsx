@@ -220,53 +220,55 @@ const SideBar = () => {
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
         sx={{ flexGrow: 1 }}
       >
-        {menuItems.map(({ id, targetUrl, IconComponent, displayText, label }) => {
-          if (!IconComponent || !targetUrl)
-            return <Divider key={displayText} />;
-          if (id && disabledItems.includes(id)) {
-            return;
-          }
+        {menuItems.map(
+          ({ id, targetUrl, IconComponent, displayText, label }) => {
+            if (!IconComponent || !targetUrl)
+              return <Divider key={displayText} />;
+            if (id && disabledItems.includes(id)) {
+              return;
+            }
 
-          const selected = isItemSelected(targetUrl);
-          return (
-            <ListItem
-              aria-label={label}
-              key={id}
-              button
-              selected={selected}
-              className={classes.listItem}
-              component={Link}
-              to={targetUrl}
-              sx={{
-                '&.Mui-selected': {
-                  bgcolor: 'action.selected',
-                },
-                '&.Mui-selected:hover': {
-                  bgcolor: 'action.selected',
-                },
-              }}
-            >
-              <Tooltip
-                title={drawerOpen === true ? '' : displayText}
-                placement="right"
-                arrow
+            const selected = isItemSelected(targetUrl);
+            return (
+              <ListItem
+                aria-label={label}
+                key={id}
+                button
+                selected={selected}
+                className={classes.listItem}
+                component={Link}
+                to={targetUrl}
+                sx={{
+                  '&.Mui-selected': {
+                    bgcolor: 'action.selected',
+                  },
+                  '&.Mui-selected:hover': {
+                    bgcolor: 'action.selected',
+                  },
+                }}
               >
-                <ListItemIcon sx={{ minWidth: '40px' }}>
-                  <IconComponent
-                    className={clsx({
-                      [classes.listItemIcon]: !selected,
-                      [classes.listItemIconSelected]: selected,
-                    })}
-                  />
-                </ListItemIcon>
-              </Tooltip>
-              <ListItemText
-                primary={displayText}
-                primaryTypographyProps={{ className: classes.listItemText }}
-              />
-            </ListItem>
-          );
-        })}
+                <Tooltip
+                  title={drawerOpen === true ? '' : displayText}
+                  placement="right"
+                  arrow
+                >
+                  <ListItemIcon sx={{ minWidth: '40px' }}>
+                    <IconComponent
+                      className={clsx({
+                        [classes.listItemIcon]: !selected,
+                        [classes.listItemIconSelected]: selected,
+                      })}
+                    />
+                  </ListItemIcon>
+                </Tooltip>
+                <ListItemText
+                  primary={displayText}
+                  primaryTypographyProps={{ className: classes.listItemText }}
+                />
+              </ListItem>
+            );
+          }
+        )}
       </List>
       <Divider />
       <LanguageSelector languageName={drawerOpen} />
