@@ -6,7 +6,7 @@ import { Settings } from '@mui/icons-material';
 
 const PreferencesIconButtonLink = ({ hash = '' }: { hash?: string }) => {
   return (
-    <Link to={`settings/preferences${hash}`}>
+    <Link aria-label='Link to the preferences page' to={`settings/preferences${hash}`}>
       <IconButton>
         <Settings />
       </IconButton>
