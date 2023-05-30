@@ -1,76 +1,108 @@
-describe("Settings - preferences page", () => {
+describe('Settings - preferences page', () => {
   before(() => {
-    cy.recreateUser("blankuser", "blankuser@preferences.test", "tournesol");
+    cy.recreateUser("test-preferences-page", "test-preferences-page@example.com", "tournesol");
   });
 
-  describe("Setting - display weekly collective goal", () => {
-    it('Show weekly collective goal', () => { 
-      cy.visit('/settings/preferences');
-      cy.focused().type("blankuser");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-      cy.get('#videos_comparison_ui__weekly_collective_goal_display');
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('be.visible');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('be.visible');
-    });
-  
-    it('Show weekly collective goal', () => { 
-      cy.visit('/settings/preferences');
-      cy.focused().type("blankuser");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-      cy.get('#videos_comparison_ui__weekly_collective_goal_display').click();
-      cy.get('[data-value="WEBSITE_ONLY"]').click();
-      cy.contains('Update preferences').click();
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('be.visible');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('not.exist');
-  
-    });
-
-    it('Show weekly collective goal', () => { 
-      cy.visit('/settings/preferences');
-      cy.focused().type("blankuser");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-      cy.get('#videos_comparison_ui__weekly_collective_goal_display').click();
-      cy.get('[data-value="EMBEDDED_ONLY"]').click();
-      cy.contains('Update preferences').click();
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('not.exist');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('be.visible');
-    });
-
-    it('Show weekly collective goal', () => { 
-      cy.visit('/settings/preferences');
-      cy.focused().type("blankuser");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-      cy.get('#videos_comparison_ui__weekly_collective_goal_display').click();
-      cy.get('[data-value="NEVER"]').click();
-      cy.contains('Update preferences').click();
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('not.exist');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('not.exist');
-    });
-  });
-
-  it('Rate later setting', () => {
-    cy.visit('/rate_later');
-    cy.focused().type("blankuser");
+  const login = () => {
+    cy.focused().type('test-preferences-page');
     cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-    cy.contains('removed after 4 comparison(s)').should('be.visible');
-    cy.visit('/settings/preferences');
-    cy.contains('Automatic removal').click().type('{selectAll}1');
-    cy.contains('Update preferences').click();
-    cy.visit('/rate_later');
-    cy.contains('removed after 1 comparison(s)').should('be.visible');
-    cy.get('input[placeholder="Video ID or URL"]').type('dQw4w9WgXcQ').type('{enter}');
-    cy.visit('/comparison?uidA=yt%3AdQw4w9WgXcQ&uidB=yt%3APayvWj2piKg');
-    cy.get('button').contains('submit').click();
-    cy.visit('/rate_later');
-    cy.contains('Your rate-later list contains 0 videos').should('be.visible');
+  }
+
+  describe('Navigation', () => {
+    it('is accessible from the personal menu', () => {
+      cy.visit('/login');
+      login();
+
+      cy.get('button#personal-menu-button').click();
+      cy.get('#personal-menu').contains('Preferences').click();
+
+      cy.location('pathname').should('equal', '/settings/preferences');
+    });
   });
 
+  describe('Setting - display weekly collective goal', () => {
+    const fieldSelector = '#videos_comparison_ui__weekly_collective_goal_display';
+
+    it('handles the value ALWAYS', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      // Ensure the default value is ALWAYS
+      cy.get(
+        '[data-testid=videos_weekly_collective_goal_display]'
+      ).should('have.value', 'ALWAYS');
+
+      cy.visit('/comparison');
+      cy.contains('Weekly collective goal').should('be.visible');
+      cy.visit('/comparison?embed=1');
+      cy.contains('Weekly collective goal').should('be.visible');
+    });
+
+    it('handles the value WEBSITE_ONLY', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get(fieldSelector).click();
+      cy.contains('Website only').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+      cy.contains('Weekly collective goal').should('be.visible');
+      cy.visit('/comparison?embed=1');
+      cy.contains('Weekly collective goal').should('not.exist');
+
+    });
+
+    it('handles the value EMBEDDED_ONLY', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get(fieldSelector).click();
+      cy.contains('Extension only').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+      cy.contains('Weekly collective goal').should('not.exist');
+      cy.visit('/comparison?embed=1');
+      cy.contains('Weekly collective goal').should('be.visible');
+    });
+
+    it('handles the value NEVER', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get(fieldSelector).click();
+      cy.contains('Never').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+      cy.contains('Weekly collective goal').should('not.exist');
+      cy.visit('/comparison?embed=1');
+      cy.contains('Weekly collective goal').should('not.exist');
+    });
+  });
+
+  describe('Setting - rate-later auto removal', () => {
+    it('handles changing the value', () => {
+      cy.visit('/rate_later');
+      login();
+
+      cy.contains('removed after 4 comparison(s)').should('be.visible');
+
+      cy.visit('/settings/preferences');
+      cy.contains('Automatic removal').click().type('{selectAll}1');
+      cy.contains('Update preferences').click();
+
+      cy.visit('/rate_later');
+      cy.contains('removed after 1 comparison(s)').should('be.visible');
+
+      cy.get('input[placeholder="Video ID or URL"]').type('nffV2ZuEy_M').type('{enter}');
+      cy.contains('Your rate-later list contains 1 video').should('be.visible');
+
+      cy.visit('/comparison?uidA=yt%3AnffV2ZuEy_M&uidB=yt%3APayvWj2piKg');
+      cy.get('button').contains('submit').click();
+      cy.visit('/rate_later');
+      cy.contains('Your rate-later list contains 0 videos').should('be.visible');
+    });
+  });
 });
