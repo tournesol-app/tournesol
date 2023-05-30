@@ -1,5 +1,5 @@
 describe('Settings - preferences page', () => {
-  before(() => {
+  beforeEach(() => {
     cy.recreateUser("test-preferences-page", "test-preferences-page@example.com", "tournesol");
   });
 
@@ -172,8 +172,11 @@ describe('Settings - preferences page', () => {
       login();
 
       cy.get('[data-testid=videos_recommendations__default_unsafe]');
+      cy.contains('Update preferences').click();
 
-      cy.get('a[href="/recommendations?date=&unsafe="]');
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Month&unsafe='
+      );
     });
 
     it('handles the value true (show)', () => {
@@ -183,7 +186,9 @@ describe('Settings - preferences page', () => {
       cy.get('[data-testid=videos_recommendations__default_unsafe]').click();
       cy.contains('Update preferences').click();
 
-      cy.get('a[href="/recommendations?date=&unsafe=true"]');
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Month&unsafe=true'
+      );
     });
   });
 });

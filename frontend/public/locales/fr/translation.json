@@ -162,7 +162,16 @@
     "myResults": "Mes résultats",
     "faq": "FAQ",
     "about": "À propos",
-    "donate": "Faire un don"
+    "donate": "Faire un don",
+    "homeButtonLabel": "Lien vers la page d'accueil",
+    "recommendationsButtonLabel": "Lien vers la page des recommandations",
+    "compareButtonLabel": "Lien vers la page comparer",
+    "myComparisonsButtonLabel": "Lien vers la page des comparaisons",
+    "myComparedItemsButtonLabel": "Lien vers mes objets comparés",
+    "myRateLaterListButtonLabel": "Lien vers ma liste à comparer plus tard",
+    "myFeedbackButtonLabel": "Lien vers ma réaction",
+    "FAQButtonLabel": "Lien vers la page FAQ",
+    "aboutButtonLabel": "Lien vers la page à propos"
   },
   "frame": {
     "onChromeOrDerivatives": "Sur Chrome, Chromium, ou dérivés",

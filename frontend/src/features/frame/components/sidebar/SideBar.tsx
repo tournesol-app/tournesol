@@ -127,12 +127,14 @@ const SideBar = () => {
 
   const menuItems = [
     {
+      label: t('menu.homeButtonLabel'),
       id: RouteID.Home,
       targetUrl: path,
       IconComponent: HomeIcon,
       displayText: t('menu.home'),
     },
     {
+      label: t('menu.recommendationsButtonLabel'),
       id: RouteID.CollectiveRecommendations,
       targetUrl: `${path}recommendations${getDefaultRecommendationsSearchParams(
         pollName,
@@ -145,30 +147,35 @@ const SideBar = () => {
     },
     { displayText: 'divider_1' },
     {
+      label: t('menu.compareButtonLabel'),
       id: RouteID.Comparison,
       targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
     },
     {
+      label: t('menu.myComparisonsButtonLabel'),
       id: RouteID.MyComparisons,
       targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
     },
     {
+      label: t('menu.myComparedItemsButtonLabel'),
       id: RouteID.MyComparedItems,
       targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
       displayText: t('menu.comparedItems'),
     },
     {
+      label: t('menu.myRateLaterListButtonLabel'),
       id: RouteID.MyRateLaterList,
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
     },
     {
+      label: t('menu.myFeedbackButtonLabel'),
       id: RouteID.MyFeedback,
       targetUrl: `${path}personal/feedback`,
       IconComponent: EmojiEventsIcon,
@@ -176,12 +183,14 @@ const SideBar = () => {
     },
     { displayText: 'divider_2' },
     {
+      label: t('menu.FAQButtonLabel'),
       id: RouteID.FAQ,
       targetUrl: '/faq',
       IconComponent: HelpIcon,
       displayText: t('menu.faq'),
     },
     {
+      label: t('menu.aboutButtonLabel'),
       id: RouteID.About,
       targetUrl: '/about',
       IconComponent: InfoIcon,
@@ -211,7 +220,7 @@ const SideBar = () => {
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
         sx={{ flexGrow: 1 }}
       >
-        {menuItems.map(({ id, targetUrl, IconComponent, displayText }) => {
+        {menuItems.map(({ id, targetUrl, IconComponent, displayText, label }) => {
           if (!IconComponent || !targetUrl)
             return <Divider key={displayText} />;
           if (id && disabledItems.includes(id)) {
@@ -221,6 +230,7 @@ const SideBar = () => {
           const selected = isItemSelected(targetUrl);
           return (
             <ListItem
+              aria-label={label}
               key={id}
               button
               selected={selected}

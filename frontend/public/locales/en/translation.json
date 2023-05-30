@@ -156,7 +156,16 @@
     "myResults": "My results",
     "faq": "FAQ",
     "about": "About",
-    "donate": "Donate"
+    "donate": "Donate",
+    "homeButtonLabel": "Link to the home page",
+    "recommendationsButtonLabel": "Link to the recommendations page",
+    "compareButtonLabel": "Link to the comparison page",
+    "myComparisonsButtonLabel": "Link to my comparisons page",
+    "myComparedItemsButtonLabel": "Link to my compared items page",
+    "myRateLaterListButtonLabel": "Link to my rate later list",
+    "myFeedbackButtonLabel": "Link to my feedback page",
+    "FAQButtonLabel": "Link to the FAQ page",
+    "aboutButtonLabel": "Link to the about page"
   },
   "frame": {
     "onChromeOrDerivatives": "On Chrome, Chromium, or derivatives",
