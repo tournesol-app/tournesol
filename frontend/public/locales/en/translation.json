@@ -156,7 +156,16 @@
     "myResults": "My results",
     "faq": "FAQ",
     "about": "About",
-    "donate": "Donate"
+    "donate": "Donate",
+    "homeAriaLabel": "Link to the home page",
+    "recommendationsAriaLabel": "Link to the recommendations page",
+    "compareAriaLabel": "Link to the comparison page",
+    "myComparisonsAriaLabel": "Link to my comparisons page",
+    "myComparedItemsAriaLabel": "Link to my compared items page",
+    "myRateLaterListAriaLabel": "Link to my rate later list",
+    "myFeedbackAriaLabel": "Link to my feedback page",
+    "FAQAriaLabel": "Link to the FAQ page",
+    "aboutAriaLabel": "Link to the about page"
   },
   "frame": {
     "onChromeOrDerivatives": "On Chrome, Chromium, or derivatives",
