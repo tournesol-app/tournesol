@@ -127,14 +127,13 @@ const SideBar = () => {
 
   const menuItems = [
     {
-      label: t('menu.homeButtonLabel'),
       id: RouteID.Home,
       targetUrl: path,
       IconComponent: HomeIcon,
       displayText: t('menu.home'),
+      ariaLabel: t('menu.homeAriaLabel'),
     },
     {
-      label: t('menu.recommendationsButtonLabel'),
       id: RouteID.CollectiveRecommendations,
       targetUrl: `${path}recommendations${getDefaultRecommendationsSearchParams(
         pollName,
@@ -144,57 +143,58 @@ const SideBar = () => {
       IconComponent:
         pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
       displayText: getRecommendationPageName(t, pollName),
+      ariaLabel: t('menu.recommendationsAriaLabel'),
     },
     { displayText: 'divider_1' },
     {
-      label: t('menu.compareButtonLabel'),
       id: RouteID.Comparison,
       targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
+      ariaLabel: t('menu.compareAriaLabel'),
     },
     {
-      label: t('menu.myComparisonsButtonLabel'),
       id: RouteID.MyComparisons,
       targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
+      ariaLabel: t('menu.myComparisonsAriaLabel'),
     },
     {
-      label: t('menu.myComparedItemsButtonLabel'),
       id: RouteID.MyComparedItems,
       targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
       displayText: t('menu.comparedItems'),
+      ariaLabel: t('menu.myComparedItemsAriaLabel'),
     },
     {
-      label: t('menu.myRateLaterListButtonLabel'),
       id: RouteID.MyRateLaterList,
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
+      ariaLabel: t('menu.myRateLaterListAriaLabel'),
     },
     {
-      label: t('menu.myFeedbackButtonLabel'),
       id: RouteID.MyFeedback,
       targetUrl: `${path}personal/feedback`,
       IconComponent: EmojiEventsIcon,
       displayText: t('menu.myResults'),
+      ariaLabel: t('menu.myFeedbackAriaLabel'),
     },
     { displayText: 'divider_2' },
     {
-      label: t('menu.FAQButtonLabel'),
       id: RouteID.FAQ,
       targetUrl: '/faq',
       IconComponent: HelpIcon,
       displayText: t('menu.faq'),
+      ariaLabel: t('menu.FAQAriaLabel'),
     },
     {
-      label: t('menu.aboutButtonLabel'),
       id: RouteID.About,
       targetUrl: '/about',
       IconComponent: InfoIcon,
       displayText: t('menu.about'),
+      ariaLabel: t('menu.aboutAriaLabel'),
     },
   ];
 
@@ -221,7 +221,7 @@ const SideBar = () => {
         sx={{ flexGrow: 1 }}
       >
         {menuItems.map(
-          ({ id, targetUrl, IconComponent, displayText, label }) => {
+          ({ id, targetUrl, IconComponent, displayText, ariaLabel }) => {
             if (!IconComponent || !targetUrl)
               return <Divider key={displayText} />;
             if (id && disabledItems.includes(id)) {
@@ -231,8 +231,8 @@ const SideBar = () => {
             const selected = isItemSelected(targetUrl);
             return (
               <ListItem
-                aria-label={label}
                 key={id}
+                aria-label={ariaLabel}
                 button
                 selected={selected}
                 className={classes.listItem}
