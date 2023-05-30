@@ -118,7 +118,9 @@ describe('Settings - preferences page', () => {
         '[data-testid=videos_recommendations__default_date]'
       ).should('have.value', 'MONTH');
 
-      cy.get('a[href="/recommendations?date=Month"]');
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Month'
+      );
     });
 
     it('handles the value A day ago', () => {
@@ -129,7 +131,9 @@ describe('Settings - preferences page', () => {
       cy.contains('A day ago').click();
       cy.contains('Update preferences').click();
 
-      cy.get('a[href="/recommendations?date=Today&unsafe="]');
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Today&unsafe='
+      );
     });
 
     it('handles the value A week ago', () => {
@@ -140,7 +144,9 @@ describe('Settings - preferences page', () => {
       cy.contains('A week ago').click();
       cy.contains('Update preferences').click();
 
-      cy.get('a[href="/recommendations?date=Week&unsafe="]');
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Week&unsafe='
+      );
     });
 
     it('handles the value A year ago', () => {
@@ -151,7 +157,9 @@ describe('Settings - preferences page', () => {
       cy.contains('A year ago').click();
       cy.contains('Update preferences').click();
 
-      cy.get('a[href="/recommendations?date=Year&unsafe="]');
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Year&unsafe='
+      );
     });
 
     it('handles the value All time', () => {
@@ -162,7 +170,9 @@ describe('Settings - preferences page', () => {
       cy.contains('All time').click();
       cy.contains('Update preferences').click();
 
-      cy.get('a[href="/recommendations?date=&unsafe="]');
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=&unsafe='
+      );
     });
   });
 
