@@ -183,7 +183,7 @@ const RateLaterPage = () => {
   return (
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
-      <ContentBox noMinPaddingX maxWidth="lg">
+      <ContentBox maxWidth="lg">
         <Box display={'flex'} justifyContent={'end'} mb={2}>
           <PreferencesIconButtonLink hash="#rate_later" />
         </Box>
