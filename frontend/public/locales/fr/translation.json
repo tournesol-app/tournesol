@@ -188,16 +188,19 @@
         "theTournesolAssociationHasTheRight": ""
       }
     },
-    "definitions": "A. Définition",
-    "definitionsSection": {
+    "definitions": {
+      "definitions": "A. DéfinitionS",
+      "shortVersion": "",
       "account": "",
-      "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2></2>).",
+      "agreement": "The &quot;Agreement&quot; refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the &quot;Terms of Service&quot; or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
       "association": "",
+      "content": "",
       "service": "",
       "user": ""
     },
+    "shortVersion": "",
     "moderation": {
-      "moderation": "Modération",
+      "moderation": "D. Modération",
       "paragraphs": {
         "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of these policies.",
         "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",

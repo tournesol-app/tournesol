@@ -155,19 +155,19 @@
       },
       "paragraphs": {
         "complianceWithLawsAndRegulation": "You are responsible for using the Service in compliance with all applicable laws, regulations, and these Acceptable Use policies. ",
-        "userSafetyIntro": "We do not allow activity on the Platform, such as using a public username, that:"
+        "userSafetyIntro": "We do not allow activity on the Platform, including using a public username, that:"
       }
     },
     "accountTerms": "B. Account Terms",
     "accountTermsSection": {
       "accountControls": "1. Account Controls",
-      "usersRetainUltimateAdministrativeControl": "The User acknowledges that Users retain ultimate administrative control over their individual accounts. Tournesol's Terms of Service govern Users' use of the Service, except with respect to Users' activities under this Section B.",
+      "usersRetainUltimateAdministrativeControl": "The User acknowledges that Users retain ultimate administrative control over their individual Accounts. Tournesol's Terms of Service govern Users' use of the Service, except with respect to Users' activities under this Section B.",
       "accountRequirements": "2. Account Requirements",
       "inOrderToCreateAccount": "In order to create an Account, the User must adhere to the following:",
-      "aUserLoginMayNotBeShared": "A User’s login may not be shared by multiple people.",
-      "userMustBeALeast15": "User must not create an account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
+      "aUserLoginMayNotBeShared": "A User's Account may not be shared by multiple people.",
+      "userMustBeALeast15": "User must not create an Account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
       "accountSecurity": "3. Account Security",
-      "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with this Section B."
+      "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its Account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with the Account Terms."
     },
     "cancellationAndTermination": {
       "cancellationAndTermination": "E. Cancellation and Termination",
@@ -182,22 +182,25 @@
         "theTournesolAssociationHasTheRight": "The Association has the right to suspend or terminate your access to all or any part of the Service at any time, with or without notice, effective immediately, if any infringement to the Agreement is detected."
       }
     },
-    "definitions": "A. Definitions",
-    "definitionsSection": {
+    "definitions": {
+      "definitions": "A. Definitions",
+      "shortVersion": "We use these basic terms throughout the Agreement. This section clarifies their specific meanings.",
       "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
       "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
       "association": "\"Association\", \"Tournesol Association\", \"We\" and \"Us\" refer to the non-profit association that develops the Tournesol project, including its committee, members and employees.",
+      "content": "The \"Content\" refers to all different type of content that can be added by the User on the Platform, such as entities (like videos) and comparisons between entities.",
       "service": "The \"Service\", sometimes called the \"Platform\", refers to the websites, browser extensions, applications, forms, surveys and services provided by the Tournesol Association in the context of the Tournesol project.",
       "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Platform or Service; that accesses or uses any part of the Account. A User must be at least 15 years of age."
     },
+    "shortVersion": "Short version",
     "moderation": {
       "moderation": "D. Moderation",
       "paragraphs": {
         "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of these policies.",
-        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",
-        "accountSuspension": "account suspension;",
-        "accountTermination": "account termination;",
-        "removalOfAddedContents": "removal of added Content (such as videos)."
+        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the Service or its users are impacted, we can take the following actions:",
+        "accountSuspension": "Account suspension;",
+        "accountTermination": "Account termination;",
+        "removalOfAddedContents": "removal of added Content."
       }
     },
     "communicationsWithTheAssociation": "F. Communication with the Association",
@@ -461,7 +464,7 @@
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
     "trustedEmailDomains": "Email domains considered trustworthy",
-    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
+    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake Accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a domain considered trustworthy</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
     "trustedDomainsCurrentList": "Current list of domains considered trustworthy"

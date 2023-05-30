@@ -1,15 +1,16 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
-import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 import {
   LooksOne,
   LooksTwo,
   Looks3,
   Looks4,
   Looks5,
+  Looks6,
 } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
 
 const Section = ({
   icon,
@@ -31,16 +32,22 @@ const Definitions = () => {
   return (
     <Box>
       <Typography variant="h4" fontStyle="italic" gutterBottom id="definitions">
-        {t('termsOfService.definitions')}
+        {t('termsOfService.definitions.definitions')}
       </Typography>
+      <Box my={1}>
+        <Alert severity="info">
+          <AlertTitle>{t('termsOfService.shortVersion')}</AlertTitle>
+          {t('termsOfService.definitions.shortVersion')}
+        </Alert>
+      </Box>
       <Section
         icon={<LooksOne />}
-        text={t('termsOfService.definitionsSection.account')}
+        text={t('termsOfService.definitions.account')}
       />
       <Section
         icon={<LooksTwo />}
         text={
-          <Trans t={t} i18nKey="termsOfService.definitionsSection.agreement">
+          <Trans t={t} i18nKey="termsOfService.definitions.agreement">
             The &quot;Agreement&quot; refers, collectively, to all the terms,
             conditions, notices contained or referenced in this document (the
             &quot;Terms of Service&quot; or the Terms) and all other operating
@@ -55,16 +62,17 @@ const Definitions = () => {
       />
       <Section
         icon={<Looks3 />}
-        text={t('termsOfService.definitionsSection.association')}
-      />{' '}
+        text={t('termsOfService.definitions.association')}
+      />
       <Section
         icon={<Looks4 />}
-        text={t('termsOfService.definitionsSection.service')}
+        text={t('termsOfService.definitions.content')}
       />
       <Section
         icon={<Looks5 />}
-        text={t('termsOfService.definitionsSection.user')}
+        text={t('termsOfService.definitions.service')}
       />
+      <Section icon={<Looks6 />} text={t('termsOfService.definitions.user')} />
     </Box>
   );
 };

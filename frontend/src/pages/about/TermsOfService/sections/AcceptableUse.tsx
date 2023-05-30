@@ -49,7 +49,7 @@ const AcceptableUse = () => {
       </Typography>
       <p>
         We do not allow activity the Platform that is: inauthentic interactions,
-        such as fake accounts and automated inauthentic activity; or automated
+        such as fake Accounts and automated inauthentic activity; or automated
         excessive bulk activity and coordinated inauthentic activity.
       </p>
     </Box>
