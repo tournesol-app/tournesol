@@ -105,4 +105,85 @@ describe('Settings - preferences page', () => {
       cy.contains('Your rate-later list contains 0 videos').should('be.visible');
     });
   });
+
+  describe('Setting - upload date', () => {
+    const fieldSelector = '#videos_recommendations__default_date';
+
+    it('handles the value A month ago', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      // Ensure the default value is A month ago
+      cy.get(
+        '[data-testid=videos_recommendations__default_date]'
+      ).should('have.value', 'MONTH');
+
+      cy.get('a[href="/recommendations?date=Month"]');
+    });
+
+    it('handles the value A day ago', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get(fieldSelector).click();
+      cy.contains('A day ago').click();
+      cy.contains('Update preferences').click();
+
+      cy.get('a[href="/recommendations?date=Today&unsafe="]');
+    });
+
+    it('handles the value A week ago', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get(fieldSelector).click();
+      cy.contains('A week ago').click();
+      cy.contains('Update preferences').click();
+
+      cy.get('a[href="/recommendations?date=Week&unsafe="]');
+    });
+
+    it('handles the value A year ago', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get(fieldSelector).click();
+      cy.contains('A year ago').click();
+      cy.contains('Update preferences').click();
+
+      cy.get('a[href="/recommendations?date=Year&unsafe="]');
+    });
+
+    it('handles the value All time', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get(fieldSelector).click();
+      cy.contains('All time').click();
+      cy.contains('Update preferences').click();
+
+      cy.get('a[href="/recommendations?date=&unsafe="]');
+    });
+  });
+
+  describe('Setting - unsafe', () => {
+    it('handles the value false (hide)', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid=videos_recommendations__default_unsafe]');
+
+      cy.get('a[href="/recommendations?date=&unsafe="]');
+    });
+
+    it('handles the value true (show)', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid=videos_recommendations__default_unsafe]').click();
+      cy.contains('Update preferences').click();
+
+      cy.get('a[href="/recommendations?date=&unsafe=true"]');
+    });
+  });
 });
