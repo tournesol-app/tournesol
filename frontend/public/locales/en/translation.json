@@ -154,7 +154,7 @@
         "3InauthenticActivityAndSpam": "3. Inauthentic Activity and Spam"
       },
       "paragraphs": {
-        "complianceWithLawsAndRegulation": "You are responsible for using the Service in compliance with all applicable laws, regulations, and this Acceptable Use policy. ",
+        "complianceWithLawsAndRegulation": "You are responsible for using the Service in compliance with all applicable laws, regulations, and these Acceptable Use policies. ",
         "userSafetyIntro": "We do not allow activity on the Platform, such as using a public username, that:"
       }
     },
@@ -163,7 +163,7 @@
       "accountControls": "1. Account Controls",
       "usersRetainUltimateAdministrativeControl": "The User acknowledges that Users retain ultimate administrative control over their individual accounts. Tournesol's Terms of Service govern Users' use of the Service, except with respect to Users' activities under this Section B.",
       "accountRequirements": "2. Account Requirements",
-      "inOrderToCreateAccount": "In order to create an account, the User must adhere to the following:",
+      "inOrderToCreateAccount": "In order to create an Account, the User must adhere to the following:",
       "aUserLoginMayNotBeShared": "A User’s login may not be shared by multiple people.",
       "userMustBeALeast15": "User must not create an account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
       "accountSecurity": "3. Account Security",
@@ -195,7 +195,7 @@
         "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",
         "accountSuspension": "account suspension;",
         "accountTermination": "account termination;",
-        "removalOfAddedContents": "removal of added content (such as videos)."
+        "removalOfAddedContents": "removal of added Content (such as videos)."
       }
     },
     "communicationsWithTheAssociation": "F. Communication with the Association",

@@ -42,7 +42,7 @@ const AcceptableUse = () => {
           likely to adversely affect the public interest (including health,
           safety, election integrity, and civic participation);
         </li>
-        <li>or goes against out Code of Conduct</li>
+        <li>or goes against out Code of Conduct.</li>
       </ul>
       <Typography variant="h5" gutterBottom id="inauthentic-activity-and-spam">
         {t('termsOfService.acceptableUse.titles.3InauthenticActivityAndSpam')}
