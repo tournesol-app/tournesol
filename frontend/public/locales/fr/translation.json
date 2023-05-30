@@ -179,11 +179,13 @@
       "cancellationAndTermination": "",
       "titles": {
         "1accountCancellation": "",
-        "2uponCancellation": ""
+        "2uponCancellation": "",
+        "3theTournesolAssociationMayTerminate": ""
       },
       "paragraphs": {
         "accountCancellation": "",
-        "weWillDelete": ""
+        "weWillDelete": "",
+        "theTournesolAssociationHasTheRight": ""
       }
     },
     "definitions": "A. Définition",

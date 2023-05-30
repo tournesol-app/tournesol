@@ -30,10 +30,24 @@ const CancellationAndTermination = () => {
       <Typography variant="h5" gutterBottom id="upon-cancellation">
         {t(
           'termsOfService.cancellationAndTermination.titles.2uponCancellation'
-        )}{' '}
-      </Typography>{' '}
+        )}
+      </Typography>
       <Typography paragraph>
         {t('termsOfService.cancellationAndTermination.paragraphs.weWillDelete')}
+      </Typography>
+      <Typography
+        variant="h5"
+        gutterBottom
+        id="the-tournesol-association-may-terminate"
+      >
+        {t(
+          'termsOfService.cancellationAndTermination.titles.3theTournesolAssociationMayTerminate'
+        )}
+      </Typography>
+      <Typography paragraph>
+        {t(
+          'termsOfService.cancellationAndTermination.paragraphs.theTournesolAssociationHasTheRight'
+        )}
       </Typography>
     </Box>
   );

@@ -173,11 +173,13 @@
       "cancellationAndTermination": "E. Cancellation and Termination",
       "titles": {
         "1accountCancellation": "1. Account Cancellation",
-        "2uponCancellation": "2. Upon Cancellation"
+        "2uponCancellation": "2. Upon Cancellation",
+        "3theTournesolAssociationMayTerminate": "3. The Tournesol Association May Terminate"
       },
       "paragraphs": {
         "accountCancellation": "It is your responsibility to properly cancel your Account. You can cancel your Account at any time by going into your Settings in the personal navigation bar at the top of the screen. The Account page provides a simple, no questions asked cancellation button. We do not cancel Accounts in response to an email.",
-        "weWillDelete": "We will delete your full profile and the Content you added within 7 days of cancellation or termination. Those information can not be recovered once your Account is canceled."
+        "weWillDelete": "We will delete your full profile and the Content you added within 7 days of cancellation or termination. Those information can not be recovered once your Account is canceled.",
+        "theTournesolAssociationHasTheRight": "The Association has the right to suspend or terminate your access to all or any part of the Service at any time, with or without notice, effective immediately, if any infringement to the Agreement is detected."
       }
     },
     "definitions": "A. Definitions",
