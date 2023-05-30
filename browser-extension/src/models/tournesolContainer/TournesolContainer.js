@@ -110,6 +110,15 @@ export class TournesolContainer {
     tournesolTitle.append(chrome.i18n.getMessage('recommendedByTournesol'));
     topActionBar.append(tournesolTitle);
 
+    // Learn more
+    const learnMore = document.createElement('a');
+    learnMore.id = 'tournesol_link';
+    learnMore.href = 'https://tournesol.app?utm_source=extension';
+    learnMore.target = '_blank';
+    learnMore.rel = 'noopener';
+    learnMore.append(chrome.i18n.getMessage('learnMore'));
+    topActionBar.append(learnMore);
+
     // Display the campaign button only if there is a banner.
     if (this.banner.bannerShouldBeDisplayed()) {
       const campaignButton = document.createElement('button');
@@ -135,7 +144,8 @@ export class TournesolContainer {
 
     // Refresh button
     const refreshButton = document.createElement('button');
-    refreshButton.setAttribute('id', 'tournesol_refresh_button');
+    refreshButton.id = 'tournesol_refresh_button';
+    refreshButton.title = chrome.i18n.getMessage('refreshRecommendations');
     fetch(chrome.runtime.getURL('images/sync-alt.svg'))
       .then((r) => r.text())
       .then((svg) => (refreshButton.innerHTML = svg));
@@ -147,15 +157,6 @@ export class TournesolContainer {
     };
     topActionBar.append(refreshButton);
 
-    // Learn more
-    const learnMore = document.createElement('a');
-    learnMore.id = 'tournesol_link';
-    learnMore.href = 'https://tournesol.app?utm_source=extension';
-    learnMore.target = '_blank';
-    learnMore.rel = 'noopener';
-    learnMore.append(chrome.i18n.getMessage('learnMore'));
-    topActionBar.append(learnMore);
-
     return topActionBar;
   }
 
@@ -163,7 +164,10 @@ export class TournesolContainer {
     const bottomActionBar = document.createElement('div');
     bottomActionBar.id = 'ts_container_bottom_action_bar';
     const expand_button = document.createElement('button');
-    expand_button.setAttribute('id', 'tournesol_expand_button');
+    expand_button.id = 'tournesol_expand_button';
+    if (!this.isExpanded) {
+      expand_button.title = chrome.i18n.getMessage('seeMoreRecommendations');
+    }
 
     // A new button is created on each video loading, the image must be loaded accordingly
     fetch(
