@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 
 const AccountTerms = () => {
   const { t } = useTranslation();
@@ -13,39 +13,57 @@ const AccountTerms = () => {
         gutterBottom
         id="account-terms"
       >
-        {t('termsOfService.accountTerms')}
+        {t('termsOfService.accountTerms.accountTerms')}
       </Typography>
+      <Box my={1}>
+        <Alert severity="info">
+          <AlertTitle>{t('termsOfService.shortVersion')}</AlertTitle>
+          {t('termsOfService.accountTerms.shortVersion')}
+        </Alert>
+      </Box>
       <Typography variant="h5" gutterBottom id="account-controls">
-        {t('termsOfService.accountTermsSection.accountControls')}
+        {t('termsOfService.accountTerms.accountControls')}
       </Typography>
       <Typography paragraph>
         {t(
-          'termsOfService.accountTermsSection.usersRetainUltimateAdministrativeControl'
+          'termsOfService.accountTerms.usersRetainUltimateAdministrativeControl'
         )}
       </Typography>
       <Typography variant="h5" gutterBottom id="account-requirements">
-        {t('termsOfService.accountTermsSection.accountRequirements')}
+        {t('termsOfService.accountTerms.accountRequirements')}
       </Typography>
       <Typography paragraph>
-        {t('termsOfService.accountTermsSection.inOrderToCreateAccount')}
+        {t('termsOfService.accountTerms.inOrderToCreateAccount')}
       </Typography>
       <ul>
         <li>
           <Typography paragraph>
-            {t('termsOfService.accountTermsSection.aUserLoginMayNotBeShared')}
+            {t('termsOfService.accountTerms.aUserLoginMayNotBeShared')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
-            {t('termsOfService.accountTermsSection.userMustBeALeast15')}
+            {t('termsOfService.accountTerms.aUserMayNotUseMoreThanOneAccount')}
+          </Typography>
+        </li>
+        <li>
+          <Typography paragraph>
+            {t(
+              'termsOfService.accountTerms.aUserMustProvideAValidEmailAddress'
+            )}
+          </Typography>
+        </li>
+        <li>
+          <Typography paragraph>
+            {t('termsOfService.accountTerms.userMustBeALeast15')}
           </Typography>
         </li>
       </ul>
       <Typography variant="h5" gutterBottom id="account-security">
-        {t('termsOfService.accountTermsSection.accountSecurity')}
+        {t('termsOfService.accountTerms.accountSecurity')}
       </Typography>
       <Typography paragraph>
-        {t('termsOfService.accountTermsSection.userIsResponsibleFor')}
+        {t('termsOfService.accountTerms.userIsResponsibleFor')}
       </Typography>
     </Box>
   );

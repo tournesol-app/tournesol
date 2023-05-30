@@ -164,17 +164,21 @@
         "userSafetyIntro": ""
       }
     },
-    "accountTerms": "B. Conditions Relatives aux Comptes",
-    "accountTermsSection": {
+    "accountTerms": {
+      "accountTerms": "B. Conditions Relatives aux Comptes",
+      "shortVersion": "",
       "accountControls": "",
       "usersRetainUltimateAdministrativeControl": "",
       "accountRequirements": "",
       "inOrderToCreateAccount": "",
       "aUserLoginMayNotBeShared": "",
+      "aUserMayNotUseMoreThanOneAccount": "",
+      "aUserMustProvideAValidEmailAddress": "",
       "userMustBeALeast15": "",
       "accountSecurity": "",
       "userIsResponsibleFor": ""
     },
+    "shortVersion": "",
     "cancellationAndTermination": {
       "cancellationAndTermination": "",
       "titles": {
@@ -189,7 +193,7 @@
       }
     },
     "definitions": {
-      "definitions": "A. DéfinitionS",
+      "definitions": "A. Définitions",
       "shortVersion": "",
       "account": "",
       "agreement": "The &quot;Agreement&quot; refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the &quot;Terms of Service&quot; or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
@@ -198,7 +202,6 @@
       "service": "",
       "user": ""
     },
-    "shortVersion": "",
     "moderation": {
       "moderation": "D. Modération",
       "paragraphs": {

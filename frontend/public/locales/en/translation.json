@@ -158,17 +158,21 @@
         "userSafetyIntro": "We do not allow activity on the Platform, including using a public username, that:"
       }
     },
-    "accountTerms": "B. Account Terms",
-    "accountTermsSection": {
+    "accountTerms": {
+      "accountTerms": "B. Account Terms",
+      "shortVersion": "A human must create your Account; you must be 15 or over; you must provide a valid email address; and you may not have more than one free Account. You alone are responsible for your Account and anything that happens while you are signed in to or using your Account. You are responsible for keeping your Account secure.",
       "accountControls": "1. Account Controls",
       "usersRetainUltimateAdministrativeControl": "The User acknowledges that Users retain ultimate administrative control over their individual Accounts. Tournesol's Terms of Service govern Users' use of the Service, except with respect to Users' activities under this Section B.",
       "accountRequirements": "2. Account Requirements",
       "inOrderToCreateAccount": "In order to create an Account, the User must adhere to the following:",
       "aUserLoginMayNotBeShared": "A User's Account may not be shared by multiple people.",
+      "aUserMayNotUseMoreThanOneAccount": "A User may not use, or have more than one Account.",
+      "aUserMustProvideAValidEmailAddress": "A User must provide a valid e-mail address.",
       "userMustBeALeast15": "User must not create an Account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
       "accountSecurity": "3. Account Security",
       "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its Account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with the Account Terms."
     },
+    "shortVersion": "Short version",
     "cancellationAndTermination": {
       "cancellationAndTermination": "E. Cancellation and Termination",
       "titles": {
@@ -192,7 +196,6 @@
       "service": "The \"Service\", sometimes called the \"Platform\", refers to the websites, browser extensions, applications, forms, surveys and services provided by the Tournesol Association in the context of the Tournesol project.",
       "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Platform or Service; that accesses or uses any part of the Account. A User must be at least 15 years of age."
     },
-    "shortVersion": "Short version",
     "moderation": {
       "moderation": "D. Moderation",
       "paragraphs": {
