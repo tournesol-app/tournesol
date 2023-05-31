@@ -46,7 +46,17 @@ const CancellationAndTermination = () => {
       </Typography>
       <Typography paragraph>
         {t(
+          'termsOfService.cancellationAndTermination.paragraphs.theAssociationWillCancel'
+        )}
+      </Typography>
+      <Typography paragraph>
+        {t(
           'termsOfService.cancellationAndTermination.paragraphs.theTournesolAssociationHasTheRight'
+        )}
+      </Typography>
+      <Typography paragraph>
+        {t(
+          'termsOfService.cancellationAndTermination.paragraphs.suspendAllAccessInCaseOfThreat'
         )}
       </Typography>
     </Box>

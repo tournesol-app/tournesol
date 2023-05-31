@@ -189,7 +189,9 @@
       "paragraphs": {
         "accountCancellation": "",
         "weWillDelete": "",
-        "theTournesolAssociationHasTheRight": ""
+        "theAssociationWillCancel": "",
+        "theTournesolAssociationHasTheRight": "",
+        "suspendAllAccessInCaseOfThreat": ""
       }
     },
     "definitions": {

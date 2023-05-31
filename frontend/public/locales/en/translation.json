@@ -183,7 +183,9 @@
       "paragraphs": {
         "accountCancellation": "It is your responsibility to properly cancel your Account. You can cancel your Account at any time by going into your Settings in the personal navigation bar at the top of the screen. The Account page provides a simple, no questions asked cancellation button. We do not cancel Accounts in response to an email.",
         "weWillDelete": "We will delete your full profile and the Content you added within 7 days of cancellation or termination. Those information can not be recovered once your Account is canceled.",
-        "theTournesolAssociationHasTheRight": "The Association has the right to suspend or terminate your access to all or any part of the Service at any time, with or without notice, effective immediately, if any infringement to the Agreement is detected."
+        "theAssociationWillCancel": "The Association will cancel your Account if it has not been activated withing the 7 days following its creation.",
+        "theTournesolAssociationHasTheRight": "The Association has the right to suspend or terminate your access to all or any part of the Service at any time, with or without notice, effective immediately, if any infringement to the Agreement is detected.",
+        "suspendAllAccessInCaseOfThreat": "The Association may suspend all accesses of all or a group of Users, to all or any part of the Service at any time, with or without notice, effective immediately, for an underterminate amount of time, if the security of the Users, their data, or the Service could be compromised by an event identified as a direct or an indirect threat."
       }
     },
     "definitions": {
