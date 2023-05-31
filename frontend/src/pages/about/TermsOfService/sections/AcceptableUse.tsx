@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 
 const AcceptableUse = () => {
   const { t } = useTranslation();
@@ -13,8 +13,16 @@ const AcceptableUse = () => {
         gutterBottom
         id="acceptable-use"
       >
-        {t('termsOfService.acceptableUse.cAcceptableUse')}
+        {t('termsOfService.acceptableUse.acceptableUse')}
       </Typography>
+      <Box my={2}>
+        <Alert severity="info">
+          <AlertTitle>
+            <strong>{t('termsOfService.shortVersion')}</strong>
+          </AlertTitle>
+          {t('termsOfService.acceptableUse.shortVersion')}
+        </Alert>
+      </Box>
       <Typography
         variant="h5"
         gutterBottom

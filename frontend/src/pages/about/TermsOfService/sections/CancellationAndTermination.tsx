@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 
 const CancellationAndTermination = () => {
   const { t } = useTranslation();
@@ -17,6 +17,14 @@ const CancellationAndTermination = () => {
           'termsOfService.cancellationAndTermination.cancellationAndTermination'
         )}
       </Typography>
+      <Box my={2}>
+        <Alert severity="info">
+          <AlertTitle>
+            <strong>{t('termsOfService.shortVersion')}</strong>
+          </AlertTitle>
+          {t('termsOfService.cancellationAndTermination.shortVersion')}
+        </Alert>
+      </Box>
       <Typography variant="h5" gutterBottom id="account-cancellation">
         {t(
           'termsOfService.cancellationAndTermination.titles.1accountCancellation'

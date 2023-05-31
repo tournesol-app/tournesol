@@ -147,7 +147,8 @@
   "termsOfService": {
     "termsOfService": "Terms of service",
     "acceptableUse": {
-      "cAcceptableUse": "C. Acceptable Use",
+      "acceptableUse": "C. Acceptable Use",
+      "shortVersion": "While using the service, you must follow the terms of this section, which include not harming other Users or the Service, and having an authentic activity.",
       "titles": {
         "1ComplianceWithLawsAndRegulation": "1. Compliance with Laws and Regulations",
         "2UserSafety": "2. User Safety",
@@ -158,6 +159,7 @@
         "userSafetyIntro": "We do not allow activity on the Platform, including using a public username, that:"
       }
     },
+    "shortVersion": "Short version",
     "accountTerms": {
       "accountTerms": "B. Account Terms",
       "shortVersion": "A human must create your Account; you must be 15 or over; you must provide a valid email address; and you may not have more than one free Account. You alone are responsible for your Account and anything that happens while you are signed in to or using your Account. You are responsible for keeping your Account secure.",
@@ -172,9 +174,9 @@
       "accountSecurity": "3. Account Security",
       "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its Account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with the Account Terms."
     },
-    "shortVersion": "Short version",
     "cancellationAndTermination": {
       "cancellationAndTermination": "E. Cancellation and Termination",
+      "shortVersion": "You may close your Account at any time. If you do, we'll treat your information responsibly.",
       "titles": {
         "1accountCancellation": "1. Account Cancellation",
         "2uponCancellation": "2. Upon Cancellation",

@@ -34,9 +34,11 @@ const Definitions = () => {
       <Typography variant="h4" fontStyle="italic" gutterBottom id="definitions">
         {t('termsOfService.definitions.definitions')}
       </Typography>
-      <Box my={1}>
+      <Box my={2}>
         <Alert severity="info">
-          <AlertTitle>{t('termsOfService.shortVersion')}</AlertTitle>
+          <AlertTitle>
+            <strong>{t('termsOfService.shortVersion')}</strong>
+          </AlertTitle>
           {t('termsOfService.definitions.shortVersion')}
         </Alert>
       </Box>
