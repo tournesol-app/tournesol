@@ -8,6 +8,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 import AcceptableUse from './sections/AcceptableUse';
 import AccountTerms from './sections/AccountTerms';
 import CancellationAndTermination from './sections/CancellationAndTermination';
+import ChangesToTheseTerms from './sections/ChangesToTheseTerms';
 import CommunicationWithAssociation from './sections/CommunicationWithAssociation';
 import Definitions from './sections/Definitions';
 import Moderation from './sections/Moderation';
@@ -30,14 +31,7 @@ const TermsOfServicePage = () => {
           <Moderation />
           <CancellationAndTermination />
           <CommunicationWithAssociation />
-          <Typography
-            variant="h4"
-            fontStyle="italic"
-            gutterBottom
-            id="changes-to-these-terms"
-          >
-            {t('termsOfService.changesToTheseTerms')}
-          </Typography>
+          <ChangesToTheseTerms />
         </Box>
       </ContentBox>
     </>

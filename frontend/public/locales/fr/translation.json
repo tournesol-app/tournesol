@@ -196,6 +196,11 @@
         "suspendAllAccessInCaseOfThreat": ""
       }
     },
+    "changesToTheseTerms": {
+      "changesToTheseTerms": "",
+      "shortVersion": "",
+      "weMayAmendTheseTerms": ""
+    },
     "communicationWithAssociation": {
       "communicationWithAssociation": "",
       "shortVersion": "",
@@ -225,8 +230,7 @@
         "accountTermination": "",
         "removalOfAddedContents": ""
       }
-    },
-    "changesToTheseTerms": "G. Modifications apportées aux présentes C.G.U."
+    }
   },
   "menu": {
     "home": "Accueil",
