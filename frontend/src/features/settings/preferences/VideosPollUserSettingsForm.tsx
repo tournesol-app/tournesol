@@ -6,7 +6,7 @@ import { Alert, Button, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
-import { useNotifications, useScrollToLocation } from 'src/hooks';
+import { useCurrentPoll, useNotifications, useScrollToLocation } from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
@@ -24,6 +24,7 @@ import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
+import ComparisonCriteriaOrderField from './fields/ComparisonCriteriaOrder';
 
 /**
  * Display a form allowing the logged users to update their preferences for
@@ -57,6 +58,17 @@ const VideosPollUserSettingsForm = () => {
   const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
     Recommendations_defaultDateEnum | BlankEnum
   >(Recommendations_defaultDateEnum.MONTH);
+
+  // comparison criteria à reorganiser
+  const { criterias } = useCurrentPoll();
+
+  let criteriasPosArray: any[] = [];
+  criterias.filter((c) => c.optional).forEach((criteria, index) => {
+    criteriasPosArray[index] = criteria;
+  });
+
+  const [criteriasPos, setCriteriasPos] = useState(criteriasPosArray)
+  //zzzzzzzzzzzzzzz
 
   /**
    * Initialize the form with up-to-date settings from the API, and dispatch
@@ -140,6 +152,12 @@ const VideosPollUserSettingsForm = () => {
               value={compUiWeeklyColGoalDisplay}
               onChange={setCompUiWeeklyColGoalDisplay}
               pollName={pollName}
+            />
+          </Grid>
+          <Grid item>
+            <ComparisonCriteriaOrderField
+              criterias={criteriasPos}
+              onChange={setCriteriasPos}
             />
           </Grid>
           <Grid item>

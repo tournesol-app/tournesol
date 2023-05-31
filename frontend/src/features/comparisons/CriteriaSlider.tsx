@@ -84,7 +84,7 @@ const CriteriaLabelWithLink = ({ children, criteria }: Props) => {
   return <>{children}</>;
 };
 
-const CriteriaLabel = ({
+export const CriteriaLabel = ({
   criteria,
   criteriaLabel,
 }: {
