@@ -196,6 +196,16 @@
         "suspendAllAccessInCaseOfThreat": ""
       }
     },
+    "communicationWithAssociation": {
+      "communicationWithAssociation": "",
+      "shortVersion": "",
+      "titles": {
+        "1electronicCommunicationRequired": ""
+      },
+      "paragraphs": {
+        "youConsentToReceiveEmails": ""
+      }
+    },
     "definitions": {
       "definitions": "A. Définitions",
       "shortVersion": "",
@@ -216,7 +226,6 @@
         "removalOfAddedContents": ""
       }
     },
-    "communicationsWithTheAssociation": "F. Communications avec l'Association",
     "changesToTheseTerms": "G. Modifications apportées aux présentes C.G.U."
   },
   "menu": {

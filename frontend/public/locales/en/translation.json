@@ -148,7 +148,7 @@
     "termsOfService": "Terms of service",
     "acceptableUse": {
       "acceptableUse": "C. Acceptable Use",
-      "shortVersion": "While using the service, you must follow the terms of this section, which include not harming other Users or the Service, and having an authentic activity.",
+      "shortVersion": "While using the service, you must follow the terms of this section, which include not harming other Users, not disturbing the Service, and having an authentic activity.",
       "titles": {
         "1ComplianceWithLawsAndRegulation": "1. Compliance with Laws and Regulations",
         "2UserSafety": "2. User Safety",
@@ -169,7 +169,7 @@
       "inOrderToCreateAccount": "In order to create an Account, the User must adhere to the following:",
       "aUserLoginMayNotBeShared": "A User's Account may not be shared by multiple people.",
       "aUserMayNotUseMoreThanOneAccount": "A User may not use, or have more than one Account.",
-      "aUserMustProvideAValidEmailAddress": "A User must provide a valid e-mail address.",
+      "aUserMustProvideAValidEmailAddress": "A User must provide a valid email address.",
       "userMustBeALeast15": "User must not create an Account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
       "accountSecurity": "3. Account Security",
       "userIsResponsibleFor": "User is responsible for: (i) all Content posted and activity that occurs under its Account; (ii) maintaining the security of its Account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through its account. The Association will not be liable for any loss or damage from the User's failure to comply with the Account Terms."
@@ -188,6 +188,16 @@
         "theAssociationWillCancel": "The Association will cancel your Account if it has not been activated withing the 7 days following its creation.",
         "theTournesolAssociationHasTheRight": "The Association has the right to suspend or terminate your access to all or any part of the Service at any time, with or without notice, effective immediately, if any infringement to the Agreement is detected.",
         "suspendAllAccessInCaseOfThreat": "The Association may suspend all accesses of all or a group of Users, to all or any part of the Service at any time, with or without notice, effective immediately, for an underterminate amount of time, if the security of the Users, their data, or the Service could be compromised by an event identified as a direct or an indirect threat."
+      }
+    },
+    "communicationWithAssociation": {
+      "communicationWithAssociation": "F. Communication with the Association",
+      "shortVersion": "We use email to stay in touch with the Users. We do not send emails without explicit consent.",
+      "titles": {
+        "1electronicCommunicationRequired": "1. Electronic Communication Required"
+      },
+      "paragraphs": {
+        "youConsentToReceiveEmails": "You (1) consent to receive communications from us in an electronic form via the email address you have submitted or via the Service; and (2) agree that all Terms of Service, agreements, notices, disclosures, and other communications that we provide to you electronically satisfy any legal requirement that those communications would satisfy if they were on paper. This section does not affect your non-waivable rights."
       }
     },
     "definitions": {
@@ -210,7 +220,6 @@
         "removalOfAddedContents": "removal of added Content."
       }
     },
-    "communicationsWithTheAssociation": "F. Communication with the Association",
     "changesToTheseTerms": "G. Changes to these Terms"
   },
   "menu": {
