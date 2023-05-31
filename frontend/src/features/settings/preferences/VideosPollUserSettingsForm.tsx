@@ -6,11 +6,16 @@ import { Alert, Button, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
-import { useCurrentPoll, useNotifications, useScrollToLocation } from 'src/hooks';
+import {
+  useCurrentPoll,
+  useNotifications,
+  useScrollToLocation,
+} from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  PollCriteria,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
   UsersService,
@@ -36,6 +41,7 @@ const VideosPollUserSettingsForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
+  const { criterias } = useCurrentPoll();
 
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
@@ -59,16 +65,14 @@ const VideosPollUserSettingsForm = () => {
     Recommendations_defaultDateEnum | BlankEnum
   >(Recommendations_defaultDateEnum.MONTH);
 
-  // comparison criteria à reorganiser
-  const { criterias } = useCurrentPoll();
-
-  let criteriasPosArray: any[] = [];
-  criterias.filter((c) => c.optional).forEach((criteria, index) => {
-    criteriasPosArray[index] = criteria;
-  });
-
-  const [criteriasPos, setCriteriasPos] = useState(criteriasPosArray)
-  //zzzzzzzzzzzzzzz
+  // Criteria
+  const criteriasPosArray: PollCriteria[] = [];
+  criterias
+    .filter((c) => c.optional)
+    .forEach((criteria, index) => {
+      criteriasPosArray[index] = criteria;
+    });
+  const [criteriasPos, setCriteriasPos] = useState(criteriasPosArray);
 
   /**
    * Initialize the form with up-to-date settings from the API, and dispatch
