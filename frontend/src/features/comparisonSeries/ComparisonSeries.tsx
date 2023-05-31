@@ -128,14 +128,14 @@ const ComparisonSeries = ({
    * series.
    */
   useEffect(() => {
-    let isMounted = true;
+    if (skipped) return;
 
     async function getAlternativesAsync(
       getAlts: () => Promise<Array<Entity | Recommendation>>
     ) {
       const alts = await getAlts();
       if (alts.length > 0) {
-        if (isMounted) setAlternatives(alts);
+        setAlternatives(alts);
         return alts;
       }
       return [];
@@ -147,7 +147,7 @@ const ComparisonSeries = ({
         (c) => c.entity_a.uid + '/' + c.entity_b.uid
       );
 
-      if (isMounted) setComparisonsMade(formattedComparisons);
+      setComparisonsMade(formattedComparisons);
       return formattedComparisons;
     }
 
@@ -160,29 +160,23 @@ const ComparisonSeries = ({
       Promise.all([comparisonsPromise, alternativesPromise])
         .then(([comparisons, entities]) => {
           if (resumable && comparisons.length > 0) {
-            if (isMounted) setStep(comparisons.length);
+            setStep(comparisons.length);
           }
 
           if (entities && initialize.current && (uidA === '' || uidB === '')) {
-            if (isMounted) {
-              setFirstComparisonParams(
-                genInitialComparisonParams(entities, comparisons, uidA, uidB)
-              );
-            }
+            setFirstComparisonParams(
+              genInitialComparisonParams(entities, comparisons, uidA, uidB)
+            );
           }
         })
         .then(() => {
-          if (isMounted) setIsLoading(false);
+          setIsLoading(false);
         });
     } else {
       // stop loading if no series is going to be rendered
-      if (isMounted) setIsLoading(false);
+      setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   const afterSubmitCallback = (
