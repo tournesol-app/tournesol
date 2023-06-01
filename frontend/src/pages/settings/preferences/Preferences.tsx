@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Grid } from '@mui/material';
 
-import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
+import {
+  ContentBox,
+  ContentHeader,
+  LoaderWrapper,
+  SettingsSection,
+} from 'src/components';
 import { useNotifications } from 'src/hooks';
 import VideosPollUserSettingsForm from 'src/features/settings/preferences/VideosPollUserSettingsForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
@@ -19,6 +24,8 @@ const PreferencePage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { contactAdministrator } = useNotifications();
+
+  const [loading, setLoading] = useState(true);
 
   /**
    * In order to display the up-to-date user's preferences in all child
@@ -39,6 +46,8 @@ const PreferencePage = () => {
       if (response) {
         dispatch(replaceSettings(response));
       }
+
+      setLoading(false);
     }
 
     retrieveProfile();
@@ -69,7 +78,9 @@ const PreferencePage = () => {
               )}`}
               {...subSectionBreakpoints}
             >
-              <VideosPollUserSettingsForm />
+              <LoaderWrapper isLoading={loading}>
+                <VideosPollUserSettingsForm />
+              </LoaderWrapper>
             </SettingsSection>
           </Grid>
         </Grid>

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert, Button, Grid, Typography } from '@mui/material';
 
-import { LoaderWrapper } from 'src/components';
 import {
   replaceSettings,
   selectSettings,
@@ -39,7 +38,6 @@ const VideosPollUserSettingsForm = () => {
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
 
-  const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
@@ -92,7 +90,6 @@ const VideosPollUserSettingsForm = () => {
     if (pollSettings.recommendations__default_date != undefined) {
       setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
     }
-    setLoading(false);
   }, [pollSettings]);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -130,80 +127,78 @@ const VideosPollUserSettingsForm = () => {
   };
 
   return (
-    <LoaderWrapper isLoading={loading}>
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={4} direction="column" alignItems="stretch">
-          <Grid item>
-            <Typography id="comparison_page" variant="h6">
-              {t('pollUserSettingsForm.comparisonPage')}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <WeeklyCollectiveGoalDisplayField
-              value={compUiWeeklyColGoalDisplay}
-              onChange={setCompUiWeeklyColGoalDisplay}
-              pollName={pollName}
-            />
-          </Grid>
-          <Grid item>
-            <Typography id="rate_later" variant="h6">
-              {t('pollUserSettingsForm.rateLater')}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <RateLaterAutoRemoveField
-              apiErrors={apiErrors}
-              value={rateLaterAutoRemoval}
-              onChange={setRateLaterAutoRemoval}
-              pollName={pollName}
-            />
-          </Grid>
-          <Grid item>
-            <Typography id="recommendations_page" variant="h6">
-              {t('pollUserSettingsForm.recommendationsPage')}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Alert severity="info">
-              <Trans
-                t={t}
-                i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
-              >
-                Customize <strong>the default search filters</strong> according
-                to your own preferences. Those filters are applied{' '}
-                <strong>only</strong> when you access the recommendations from
-                the <strong>main menu</strong>.
-              </Trans>
-            </Alert>
-          </Grid>
-          <Grid item>
-            <RecommendationsDefaultDate
-              value={recoDefaultUploadDate}
-              onChange={setRecoDefaultUploadDate}
-              pollName={pollName}
-            />
-          </Grid>
-          <Grid item>
-            <RecommendationsDefaultUnsafe
-              value={recoDefaultUnsafe}
-              onChange={setRecoDefaultUnsafe}
-              pollName={pollName}
-            />
-          </Grid>
-          <Grid item>
-            <Button
-              fullWidth
-              type="submit"
-              color="secondary"
-              variant="contained"
-              disabled={disabled}
-            >
-              {t('pollUserSettingsForm.updatePreferences')}
-            </Button>
-          </Grid>
+    <form onSubmit={handleSubmit}>
+      <Grid container spacing={4} direction="column" alignItems="stretch">
+        <Grid item>
+          <Typography id="comparison_page" variant="h6">
+            {t('pollUserSettingsForm.comparisonPage')}
+          </Typography>
         </Grid>
-      </form>
-    </LoaderWrapper>
+        <Grid item>
+          <WeeklyCollectiveGoalDisplayField
+            value={compUiWeeklyColGoalDisplay}
+            onChange={setCompUiWeeklyColGoalDisplay}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+          <Typography id="rate_later" variant="h6">
+            {t('pollUserSettingsForm.rateLater')}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <RateLaterAutoRemoveField
+            apiErrors={apiErrors}
+            value={rateLaterAutoRemoval}
+            onChange={setRateLaterAutoRemoval}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+          <Typography id="recommendations_page" variant="h6">
+            {t('pollUserSettingsForm.recommendationsPage')}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Alert severity="info">
+            <Trans
+              t={t}
+              i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
+            >
+              Customize <strong>the default search filters</strong> according to
+              your own preferences. Those filters are applied{' '}
+              <strong>only</strong> when you access the recommendations from the{' '}
+              <strong>main menu</strong>.
+            </Trans>
+          </Alert>
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultDate
+            value={recoDefaultUploadDate}
+            onChange={setRecoDefaultUploadDate}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultUnsafe
+            value={recoDefaultUnsafe}
+            onChange={setRecoDefaultUnsafe}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+          <Button
+            fullWidth
+            type="submit"
+            color="secondary"
+            variant="contained"
+            disabled={disabled}
+          >
+            {t('pollUserSettingsForm.updatePreferences')}
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
   );
 };
 
