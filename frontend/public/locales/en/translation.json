@@ -193,7 +193,7 @@
     "changesToTheseTerms": {
       "changesToTheseTerms": "G. Changes to these Terms",
       "shortVersion": "We want the Users to be informed of important changes to our terms, but some changes aren't that important. We don't want to bother you every time we fix a typo. So while we may modify this Agreement at any time, we will notify Users of any material changes and give you time to adjust to them.",
-      "weMayAmendTheseTerms": "We may amend these Terms of Service at any time. We will notify the Users of material changes to this Agreement, at least 30 days prior to the change taking effect by posting a notice on our website or sending email to the email address specified in your Account. User's continued use of the Service after those 30 days constitutes agreement to those revisions of this Agreement. For any other non-impacting modifications, User's continued use of the Service constitutes agreement to our revisions of these Terms of Service. You can view all changes to these Terms in our <2>GitHub repository.</2>"
+      "weMayAmendTheseTerms": "We may amend these Terms of Service at any time. We will notify the Users of material changes to this Agreement, at least 30 days prior to the change taking effect by posting a notice on our Website or sending email to the email address specified in your Account. User's continued use of the Service after those 30 days constitutes agreement to those revisions of this Agreement. For any other non-impacting modifications, User's continued use of the Service constitutes agreement to our revisions of these Terms of Service. You can view all changes to these Terms in our <2>GitHub repository.</2>"
     },
     "communicationWithAssociation": {
       "communicationWithAssociation": "F. Communication with the Association",
@@ -209,11 +209,12 @@
       "definitions": "A. Definitions",
       "shortVersion": "We use these basic terms throughout the Agreement. This section clarifies their specific meanings.",
       "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
-      "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
+      "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including our <2>Privacy Policy</2>) and procedures that we may publish from time to time on the Website.",
       "association": "\"Association\", \"Tournesol Association\", \"We\" and \"Us\" refer to the non-profit association that develops the Tournesol project, including its committee, members and employees.",
       "content": "The \"Content\" refers to all different type of content that can be added by the User on the Platform, such as entities (like videos) and comparisons between entities.",
       "service": "The \"Service\", sometimes called the \"Platform\", refers to the websites, browser extensions, applications, forms, surveys and services provided by the Tournesol Association in the context of the Tournesol project.",
-      "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Platform or Service; that accesses or uses any part of the Account. A User must be at least 15 years of age."
+      "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Platform or Service; that accesses or uses any part of the Account. A User must be at least 15 years of age.",
+      "website": "The \"Website\" refers to the Tournesol project's website located at <1>tournesol.app</1>, and all content and services provided by the Association at or through the Website. It also refers to the Association-owned subdomains of tournesol.app, such as <3>api.tournesol.app</3>. Occasionally, websites owned by the Association may provide different or additional terms of service. If those additional terms conflict with this Agreement, the more specific terms apply to the relevant page or service."
     },
     "moderation": {
       "moderation": "D. Moderation",
