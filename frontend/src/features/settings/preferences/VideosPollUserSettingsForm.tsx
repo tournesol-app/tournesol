@@ -131,7 +131,7 @@ const VideosPollUserSettingsForm = () => {
     setDisabled(false);
   };
 
-  const [checkedCriterias] = useState([
+  const [checkedCriterias, setCheckedCriterias] = useState([
     'entertaining_relaxing',
     'pedagogy',
     'backfire_risk',
@@ -154,7 +154,10 @@ const VideosPollUserSettingsForm = () => {
             />
           </Grid>
           <Grid item>
-            <ComparisonCriteriaOrderField checkedCriterias={checkedCriterias} />
+            <ComparisonCriteriaOrderField
+              checkedCriterias={checkedCriterias}
+              setCheckedCriterias={setCheckedCriterias}
+            />
           </Grid>
           <Grid item>
             <Typography id="rate_later" variant="h6">
