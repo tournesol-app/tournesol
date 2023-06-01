@@ -20,6 +20,8 @@ import {
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 import CriteriaSlider from './CriteriaSlider';
+import { useSelector } from 'react-redux';
+import { selectSettings } from '../settings/userSettingsSlice';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -61,6 +63,8 @@ const ComparisonSliders = ({
   } = useCurrentPoll();
 
   const { refreshStats } = useContext(StatsContext);
+  const userSettings = useSelector(selectSettings)?.settings;
+  const criteriasOrdered = userSettings.videos?.comparison__criteria_order;
 
   const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -212,8 +216,29 @@ const ComparisonSliders = ({
           timeout="auto"
           sx={{ width: '100%' }}
         >
+          {criteriasOrdered != undefined ? (
+            criteriasOrdered
+              .filter(
+                (criteria) =>
+                  criterias.find((c) => c.name == criteria)?.optional
+              )
+              .map((criteria) => (
+                <CriteriaSlider
+                  key={criteria}
+                  criteria={criteria}
+                  criteriaLabel={
+                    criterias.find((c) => c.name == criteria)?.label ?? ''
+                  }
+                  criteriaValue={criteriaValues[criteria]}
+                  disabled={submitted}
+                  handleSliderChange={handleSliderChange}
+                />
+              ))
+          ) : (
+            <></>
+          )}
           {criterias
-            .filter((c) => c.optional)
+            .filter((c) => c.optional && !criteriasOrdered?.includes(c.name))
             .map((criteria) => (
               <CriteriaSlider
                 key={criteria.name}
