@@ -51,7 +51,7 @@ describe('Preferences Page', () => {
   // The values used by the store and the API are different to ensure the form
   // is initialized with the correct source of information.
   const INIT_AUTO_REMOVAL_API = 8;
-  const INIT_AUTO_REMOVAL_STORE = 0;
+  const INIT_AUTO_REMOVAL_STORE = 2;
 
   const component = async ({
     store,
