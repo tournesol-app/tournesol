@@ -18,17 +18,17 @@ const Moderation = () => {
       </Typography>
       <ul>
         <li>
-          <Typography variant="body1">
+          <Typography paragraph>
             {t('termsOfService.moderation.paragraphs.accountSuspension')}
           </Typography>
         </li>
         <li>
-          <Typography variant="body1">
+          <Typography paragraph>
             {t('termsOfService.moderation.paragraphs.accountTermination')}
           </Typography>
         </li>
         <li>
-          <Typography variant="body1">
+          <Typography paragraph>
             {t('termsOfService.moderation.paragraphs.removalOfAddedContents')}
           </Typography>
         </li>

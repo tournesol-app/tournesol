@@ -47,34 +47,40 @@ const AcceptableUse = () => {
       </Typography>
       <ul>
         <li>
-          {t(
-            'termsOfService.acceptableUse.paragraphs.isUnlawlfulOrPromoteUnlawful'
-          )}
+          <Typography paragraph>
+            {t(
+              'termsOfService.acceptableUse.paragraphs.isUnlawlfulOrPromoteUnlawful'
+            )}
+          </Typography>
         </li>
         <li>
-          {t(
-            'termsOfService.acceptableUse.paragraphs.isFalseInaccurateOrDeceptive'
-          )}
+          <Typography paragraph>
+            {t(
+              'termsOfService.acceptableUse.paragraphs.isFalseInaccurateOrDeceptive'
+            )}
+          </Typography>
         </li>
         <li>
-          <Trans
-            t={t}
-            i18nKey="termsOfService.acceptableUse.paragraphs.orGoesAgainstOurCodeOfConduct"
-          >
-            or goes against our{' '}
-            <Link
-              href={githubTournesolCodeOfConductUrl}
-              target="_blank"
-              rel="noopener"
-              sx={{
-                color: 'revert',
-                textDecoration: 'revert',
-              }}
+          <Typography paragraph>
+            <Trans
+              t={t}
+              i18nKey="termsOfService.acceptableUse.paragraphs.orGoesAgainstOurCodeOfConduct"
             >
-              Code of Conduct
-            </Link>
-            .
-          </Trans>
+              or goes against our{' '}
+              <Link
+                href={githubTournesolCodeOfConductUrl}
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: 'revert',
+                  textDecoration: 'revert',
+                }}
+              >
+                Code of Conduct
+              </Link>
+              .
+            </Trans>
+          </Typography>
         </li>
       </ul>
       <Typography variant="h5" gutterBottom id="inauthentic-activity-and-spam">

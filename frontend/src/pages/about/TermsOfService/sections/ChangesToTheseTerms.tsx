@@ -49,8 +49,9 @@ const ChangesToTheseTerms = () => {
               textDecoration: 'revert',
             }}
           >
-            GitHub repository.
+            GitHub repository
           </Link>
+          .
         </Trans>
       </Typography>
     </Box>
