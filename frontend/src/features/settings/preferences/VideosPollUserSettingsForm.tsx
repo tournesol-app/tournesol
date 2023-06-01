@@ -132,9 +132,9 @@ const VideosPollUserSettingsForm = () => {
   };
 
   const [checkedCriterias] = useState([
-    'reliability',
+    'entertaining_relaxing',
     'pedagogy',
-    'importance',
+    'backfire_risk',
   ]);
 
   return (
