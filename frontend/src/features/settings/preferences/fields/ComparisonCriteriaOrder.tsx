@@ -1,33 +1,26 @@
 import React from 'react';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { Grid, IconButton, Typography } from '@mui/material';
+import { Checkbox, Grid, IconButton, Typography } from '@mui/material';
 
 import { useTranslation } from 'react-i18next';
 import { CriteriaIcon } from 'src/components';
 import { CriteriaLabel } from 'src/features/comparisons/CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks';
 
-const ComparisonCriteriaOrderField = () => {
+const ComparisonCriteriaOrderField = ({
+  checkedCriterias,
+}: {
+  checkedCriterias: string[];
+}) => {
   const { t } = useTranslation();
   const { criterias } = useCurrentPoll();
 
-  // const tempCriterias = criterias;
-
   const handleUp = () => {
-    // if (index == 0) return;
-    // const temp = criterias[index - 1];
-    // tempCriterias[index - 1] = criterias[index];
-    // tempCriterias[index] = temp;
-    // onChange([...tempCriterias]);
+    return;
   };
-
   const handleDown = () => {
-    // if (index == criterias.length - 1) return;
-    // const temp = criterias[index + 1];
-    // tempCriterias[index + 1] = criterias[index];
-    // tempCriterias[index] = temp;
-    // onChange([...tempCriterias]);
+    return;
   };
 
   return (
@@ -45,7 +38,16 @@ const ComparisonCriteriaOrderField = () => {
             alignItems="center"
             container
           >
-            <Grid item display="flex">
+            <Grid item display="flex" alignItems={'center'}>
+              <Checkbox
+                id={`id_checkbox_skip_${criteria}`}
+                size="small"
+                checked={checkedCriterias.includes(criteria.name)}
+                color="secondary"
+                sx={{
+                  pr: 2,
+                }}
+              />
               <CriteriaIcon
                 criteriaName={criteria.name}
                 sx={{

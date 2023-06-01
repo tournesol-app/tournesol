@@ -59,28 +59,6 @@ const VideosPollUserSettingsForm = () => {
     Recommendations_defaultDateEnum | BlankEnum
   >(Recommendations_defaultDateEnum.MONTH);
 
-  // Criteria
-  // useEffect(() => {
-  //   if (criterias.length > 0) {
-  //     const criteriasPosArray: PollCriteria[] = [];
-  //     criterias
-  //       .filter((c) => c.optional)
-  //       .forEach((criteria, index) => {
-  //         criteriasPosArray[index] = criteria;
-  //       });
-  //     setCriteriasPos(criteriasPosArray);
-  //   }
-  // }, [criterias]);
-  // const [criteriasPos, setCriteriasPos] = useState([] as PollCriteria[]);
-  // const criteriasPosToString = (criteriasPos: PollCriteria[]) => {
-  //   return criteriasPos.map((c) => c.name);
-  // };
-  // const stringToCriteriasPos = (criteriasPosString: string[]) => {
-  //   return criteriasPosString.map((c) => {
-  //     return criterias.find((criteria) => criteria.name === c) ?? criterias[0];
-  //   });
-  // };
-
   /**
    * Initialize the form with up-to-date settings from the API, and dispatch
    * them in the Redux store.
@@ -153,6 +131,12 @@ const VideosPollUserSettingsForm = () => {
     setDisabled(false);
   };
 
+  const [checkedCriterias] = useState([
+    'reliability',
+    'pedagogy',
+    'importance',
+  ]);
+
   return (
     <LoaderWrapper isLoading={loading}>
       <form onSubmit={handleSubmit}>
@@ -170,7 +154,7 @@ const VideosPollUserSettingsForm = () => {
             />
           </Grid>
           <Grid item>
-            <ComparisonCriteriaOrderField />
+            <ComparisonCriteriaOrderField checkedCriterias={checkedCriterias} />
           </Grid>
           <Grid item>
             <Typography id="rate_later" variant="h6">
