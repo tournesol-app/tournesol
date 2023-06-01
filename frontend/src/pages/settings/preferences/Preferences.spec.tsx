@@ -53,26 +53,6 @@ describe('Preferences Page', () => {
   const INIT_AUTO_REMOVAL_API = 8;
   const INIT_AUTO_REMOVAL_STORE = 0;
 
-  fetchMock.mock(
-    {
-      name: 'success_get',
-      url: api_url + '/users/me/settings/',
-      method: 'GET',
-      functionMatcher: () => true,
-    },
-    {
-      status: 200,
-      body: {
-        videos: {
-          rate_later__auto_remove: INIT_AUTO_REMOVAL_API,
-          weekly_collective_goal_display:
-            ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
-        },
-      },
-    },
-    { sendAsJson: true }
-  );
-
   const component = async ({
     store,
   }: {
@@ -110,10 +90,9 @@ describe('Preferences Page', () => {
     };
     const store = mockStore(state);
     storeDispatchSpy = jest.spyOn(store, 'dispatch');
-    const rendered = await component({ store: store });
+    await component({ store: store });
 
     return {
-      rendered,
       storeDispatchSpy,
     };
   };
@@ -122,19 +101,86 @@ describe('Preferences Page', () => {
     storeDispatchSpy.mockClear();
   });
 
-  it('retrieves the preferences from the API and dispatch them', async () => {
-    const { storeDispatchSpy } = await setup();
-    expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
-
-    expect(storeDispatchSpy).toBeCalledWith({
-      type: 'settings/replaceSettings',
-      payload: {
-        videos: {
-          rate_later__auto_remove: 8,
-          weekly_collective_goal_display:
-            ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
+  describe("Successfully fetch the user's settings", () => {
+    beforeAll(() => {
+      fetchMock.mockReset();
+      fetchMock.mock(
+        {
+          name: 'success_get',
+          url: api_url + '/users/me/settings/',
+          method: 'GET',
         },
-      },
+        {
+          status: 200,
+          body: {
+            videos: {
+              rate_later__auto_remove: INIT_AUTO_REMOVAL_API,
+              weekly_collective_goal_display:
+                ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
+            },
+          },
+        },
+        { sendAsJson: true }
+      );
+    });
+
+    it('retrieves the preferences from the API and dispatch them', async () => {
+      const { storeDispatchSpy } = await setup();
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
+
+      expect(storeDispatchSpy).toBeCalledWith({
+        type: 'settings/replaceSettings',
+        payload: {
+          videos: {
+            rate_later__auto_remove: 8,
+            weekly_collective_goal_display:
+              ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
+          },
+        },
+      });
+    });
+  });
+
+  describe("Error while fetching the user's settings", () => {
+    beforeAll(() => {
+      fetchMock.mockReset();
+      fetchMock.mock(
+        {
+          name: 'error_get',
+          url: api_url + '/users/me/settings/',
+          method: 'GET',
+        },
+        {
+          status: 429,
+          body: {},
+        },
+        { sendAsJson: true }
+      );
+    });
+
+    it('displays human readable errors', async () => {
+      await setup();
+
+      expect(mockEnqueueSnackbar).toBeCalledTimes(2);
+      expect(mockEnqueueSnackbar).toHaveBeenNthCalledWith(
+        1,
+        'notifications.tryAgainLaterOrContactAdministrator',
+        {
+          variant: 'warning',
+        }
+      );
+      expect(mockEnqueueSnackbar).toHaveBeenNthCalledWith(
+        2,
+        'preferences.errorOccurredWhileRetrievingPreferences',
+        {
+          variant: 'error',
+        }
+      );
+    });
+
+    it("doesn't dispatch the user's settings", async () => {
+      const { storeDispatchSpy } = await setup();
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(0);
     });
   });
 });
