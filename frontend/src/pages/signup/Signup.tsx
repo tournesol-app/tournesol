@@ -66,7 +66,7 @@ const Signup = () => {
   return (
     <>
       <ContentHeader title={t('signup.title')} />
-      <ContentBox maxWidth="xs">
+      <ContentBox maxWidth="sm">
         {successEmailAddress !== null ? (
           <SignupSuccess email={successEmailAddress} />
         ) : (
@@ -119,19 +119,27 @@ const Signup = () => {
                   formError={formError}
                 />
               </Grid>
-              <Grid item xs={12} display="flex" alignItems="center">
+              <Grid item xs={12} display="flex" alignItems="center" gap={1}>
                 <Checkbox
                   color="secondary"
                   checked={acceptPolicy}
                   onClick={() => setAcceptPolicy(!acceptPolicy)}
                 />
                 <span>
-                  <Trans t={t} i18nKey="signup.iAgreeWithThePrivacyPolicy">
-                    I have read and agree with the{' '}
-                    <Link to="/about/privacy_policy" target="_blank">
-                      privacy policy
-                    </Link>
-                  </Trans>
+                  <Typography>
+                    <Trans t={t} i18nKey="signup.iAgreeWithTheTerms">
+                      I&apos;m at least 15 years old. I have read and I agree
+                      with the{' '}
+                      <Link to="/about/terms-of-service" target="_blank">
+                        Terms of Service
+                      </Link>{' '}
+                      and the{' '}
+                      <Link to="/about/privacy_policy" target="_blank">
+                        Privacy Policy
+                      </Link>
+                      .
+                    </Trans>
+                  </Typography>
                 </span>
               </Grid>
               <Grid item xs={12}>

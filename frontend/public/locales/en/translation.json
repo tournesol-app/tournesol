@@ -771,7 +771,7 @@
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithThePrivacyPolicy": "I have read and agree with the <2>privacy policy</2>."
+    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
   },
   "emailAddress": "Email address",
   "confirmYourPassword": "Confirm your password",
