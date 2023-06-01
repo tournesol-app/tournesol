@@ -234,7 +234,7 @@ describe('GenericPollUserSettingsForm', () => {
 
     it('retrieves its initial values from the Redux store', async () => {
       const { rateLaterAutoRemove } = await setup();
-      expect(useSelectorSpy).toHaveBeenCalledTimes(2);
+      expect(useSelectorSpy).toHaveBeenCalledTimes(1);
       expect(rateLaterAutoRemove).toHaveValue(8);
     });
 
