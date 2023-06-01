@@ -121,35 +121,20 @@ const ComparisonCriteriaOrderField = ({
   };
 
   return (
-    <>
-      <Typography paragraph>
-        <strong>{t('pollUserSettingsForm.criteriaPersonalization')}</strong>
-      </Typography>
-      <Box mt={2} mb={1}>
-        <Typography>Always displayed criteria</Typography>
-        <Divider />
-      </Box>
-      {checkedCriterias.map((criteria, index) => (
-        <OrderableCriterionRow
-          key={criteria}
-          criteria={criteria}
-          criterias={criterias}
-          checkedCriterias={checkedCriterias}
-          index={index}
-          handleDown={handleDown}
-          handleUp={handleUp}
-          setCheckedCriterias={setCheckedCriterias}
-        />
-      ))}
-      <Box mt={2} mb={1}>
-        <Typography>Optional criteria</Typography>
-        <Divider />
-      </Box>
-      {criterias
-        .filter((c) => !checkedCriterias.includes(c.name) && c.optional)
-        .map((criteria, index) => (
+    <Grid flexDirection="row-reverse" container columnSpacing={5}>
+      <Grid item xs={12}>
+        <Typography paragraph>
+          <strong>{t('pollUserSettingsForm.criteriaPersonalization')}</strong>
+        </Typography>
+      </Grid>
+      <Grid item xs={6}>
+        <Box mt={2} mb={1}>
+          <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
+          <Divider />
+        </Box>
+        {checkedCriterias.map((criteria, index) => (
           <OrderableCriterionRow
-            key={criteria.name}
+            key={criteria}
             criteria={criteria}
             criterias={criterias}
             checkedCriterias={checkedCriterias}
@@ -159,7 +144,28 @@ const ComparisonCriteriaOrderField = ({
             setCheckedCriterias={setCheckedCriterias}
           />
         ))}
-    </>
+      </Grid>
+      <Grid item xs={6}>
+        <Box mt={2} mb={1}>
+          <Typography>{t('pollUserSettingsForm.optionalCriteria')}</Typography>
+          <Divider />
+        </Box>
+        {criterias
+          .filter((c) => !checkedCriterias.includes(c.name) && c.optional)
+          .map((criteria, index) => (
+            <OrderableCriterionRow
+              key={criteria.name}
+              criteria={criteria}
+              criterias={criterias}
+              checkedCriterias={checkedCriterias}
+              index={index}
+              handleDown={handleDown}
+              handleUp={handleUp}
+              setCheckedCriterias={setCheckedCriterias}
+            />
+          ))}
+      </Grid>
+    </Grid>
   );
 };
 
