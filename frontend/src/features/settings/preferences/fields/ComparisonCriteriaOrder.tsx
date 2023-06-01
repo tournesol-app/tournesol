@@ -1,7 +1,14 @@
 import React from 'react';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { Checkbox, Divider, Grid, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  Divider,
+  Grid,
+  IconButton,
+  Typography,
+} from '@mui/material';
 
 import { useTranslation } from 'react-i18next';
 import { CriteriaIcon } from 'src/components';
@@ -13,6 +20,7 @@ const OrderableCriterionRow = ({
   criterias,
   criteria,
   checkedCriterias,
+  index,
   handleUp,
   handleDown,
   setCheckedCriterias,
@@ -20,8 +28,9 @@ const OrderableCriterionRow = ({
   criterias: PollCriteria[];
   criteria: string | PollCriteria;
   checkedCriterias: string[];
-  handleUp: () => void;
-  handleDown: () => void;
+  index: number;
+  handleUp: (index: number) => void;
+  handleDown: (index: number) => void;
   setCheckedCriterias: (target: string[]) => void;
 }) => {
   const criteriaIsString = typeof criteria === 'string';
@@ -74,10 +83,10 @@ const OrderableCriterionRow = ({
       </Grid>
       {criteriaIsString && (
         <Grid item display={'flex'}>
-          <IconButton onClick={() => handleUp()}>
+          <IconButton onClick={() => handleUp(index)}>
             <KeyboardArrowUp />
           </IconButton>
-          <IconButton onClick={() => handleDown()}>
+          <IconButton onClick={() => handleDown(index)}>
             <KeyboardArrowDown />
           </IconButton>
         </Grid>
@@ -96,38 +105,55 @@ const ComparisonCriteriaOrderField = ({
   const { t } = useTranslation();
   const { criterias } = useCurrentPoll();
 
-  const handleUp = () => {
-    return;
+  const handleUp = (index: number) => {
+    if (index === 0) return;
+    const tempCriteria = checkedCriterias[index];
+    checkedCriterias[index] = checkedCriterias[index - 1];
+    checkedCriterias[index - 1] = tempCriteria;
+    setCheckedCriterias([...checkedCriterias]);
   };
-  const handleDown = () => {
-    return;
+  const handleDown = (index: number) => {
+    if (index === checkedCriterias.length - 1) return;
+    const tempCriteria = checkedCriterias[index];
+    checkedCriterias[index] = checkedCriterias[index + 1];
+    checkedCriterias[index + 1] = tempCriteria;
+    setCheckedCriterias([...checkedCriterias]);
   };
 
   return (
     <>
       <Typography paragraph>
-        {t('pollUserSettingsForm.criteriaPersonalization')}
+        <strong>{t('pollUserSettingsForm.criteriaPersonalization')}</strong>
       </Typography>
-      {checkedCriterias.map((criteria) => (
+      <Box mt={2} mb={1}>
+        <Typography>Always displayed criteria</Typography>
+        <Divider />
+      </Box>
+      {checkedCriterias.map((criteria, index) => (
         <OrderableCriterionRow
           key={criteria}
           criteria={criteria}
           criterias={criterias}
           checkedCriterias={checkedCriterias}
+          index={index}
           handleDown={handleDown}
           handleUp={handleUp}
           setCheckedCriterias={setCheckedCriterias}
         />
       ))}
-      <Divider />
+      <Box mt={2} mb={1}>
+        <Typography>Optional criteria</Typography>
+        <Divider />
+      </Box>
       {criterias
         .filter((c) => !checkedCriterias.includes(c.name) && c.optional)
-        .map((criteria) => (
+        .map((criteria, index) => (
           <OrderableCriterionRow
             key={criteria.name}
             criteria={criteria}
             criterias={criterias}
             checkedCriterias={checkedCriterias}
+            index={index}
             handleDown={handleDown}
             handleUp={handleUp}
             setCheckedCriterias={setCheckedCriterias}
