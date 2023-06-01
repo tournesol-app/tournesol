@@ -51,7 +51,8 @@ const PreferencePage = () => {
     }
 
     retrieveProfile();
-  }, [t, dispatch, contactAdministrator]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // subSectionBreakP can be changed independently of mainSectionBp
   const subSectionBreakpoints = mainSectionBreakpoints;
