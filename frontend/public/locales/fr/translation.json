@@ -162,7 +162,11 @@
       },
       "paragraphs": {
         "complianceWithLawsAndRegulation": "",
-        "userSafetyIntro": ""
+        "userSafetyIntro": "",
+        "isUnlawlfulOrPromoteUnlawful": "",
+        "isFalseInaccurateOrDeceptive": "",
+        "orGoesAgainstOurCodeOfConduct": "",
+        "inauthenticActivityAndSpamIntro": ""
       }
     },
     "shortVersion": "",
@@ -170,11 +174,11 @@
       "accountTerms": "B. Conditions Relatives aux Comptes",
       "shortVersion": "",
       "accountControls": "",
-      "usersRetainUltimateAdministrativeControl": "",
+      "userRetainsUltimateAdministrativeControl": "",
       "accountRequirements": "",
       "inOrderToCreateAccount": "",
-      "aUserLoginMayNotBeShared": "",
       "aUserMayNotUseMoreThanOneAccount": "",
+      "aUserLoginMayNotBeShared": "",
       "aUserMustProvideAValidEmailAddress": "",
       "userMustBeALeast15": "",
       "accountSecurity": "",

@@ -3,15 +3,11 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Alert, AlertTitle, Box, Link, Typography } from '@mui/material';
 
-import { githubTournesolUrl } from 'src/utils/url';
+import { githubTournesolTermsOfServiceHistoryUrl } from 'src/utils/url';
 
 const ChangesToTheseTerms = () => {
   const { t } = useTranslation();
 
-  const termsOfServiceHistory = new URL(
-    'tournesol/commits/main/frontend/src/pages/about/TermsOfService.tsx',
-    githubTournesolUrl
-  );
   return (
     <Box>
       <Typography
@@ -45,7 +41,7 @@ const ChangesToTheseTerms = () => {
           agreement to our revisions of these Terms of Service. You can view all
           changes to these Terms in our{' '}
           <Link
-            href={termsOfServiceHistory.href}
+            href={githubTournesolTermsOfServiceHistoryUrl}
             target="_blank"
             rel="noopener"
             sx={{

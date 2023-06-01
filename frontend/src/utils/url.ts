@@ -22,6 +22,8 @@ export const twitchTournesolUrl = 'https://twitch.tv/tournesolapp';
 
 // GitHub
 export const githubTournesolUrl = 'https://github.com/tournesol-app/tournesol';
+export const githubTournesolCodeOfConductUrl = `${githubTournesolUrl}/blob/main/CODE_OF_CONDUCT.md`;
+export const githubTournesolTermsOfServiceHistoryUrl = `${githubTournesolUrl}/commits/main/frontend/src/pages/about/TermsOfService.tsx`;
 
 // LinkedIn
 export const linkedInTournesolUrl =

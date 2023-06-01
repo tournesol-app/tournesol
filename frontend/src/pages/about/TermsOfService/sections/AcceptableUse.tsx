@@ -1,7 +1,9 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, AlertTitle, Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Link, Typography } from '@mui/material';
+
+import { githubTournesolCodeOfConductUrl } from 'src/utils/url';
 
 const AcceptableUse = () => {
   const { t } = useTranslation();
@@ -44,22 +46,45 @@ const AcceptableUse = () => {
         {t('termsOfService.acceptableUse.paragraphs.userSafetyIntro')}
       </Typography>
       <ul>
-        <li>is unlawful or promotes unlawful activities;</li>
         <li>
-          is false, inaccurate, or intentionally deceptive information and
-          likely to adversely affect the public interest (including health,
-          safety, election integrity, and civic participation);
+          {t(
+            'termsOfService.acceptableUse.paragraphs.isUnlawlfulOrPromoteUnlawful'
+          )}
         </li>
-        <li>or goes against out Code of Conduct.</li>
+        <li>
+          {t(
+            'termsOfService.acceptableUse.paragraphs.isFalseInaccurateOrDeceptive'
+          )}
+        </li>
+        <li>
+          <Trans
+            t={t}
+            i18nKey="termsOfService.acceptableUse.paragraphs.orGoesAgainstOurCodeOfConduct"
+          >
+            or goes against our{' '}
+            <Link
+              href={githubTournesolCodeOfConductUrl}
+              target="_blank"
+              rel="noopener"
+              sx={{
+                color: 'revert',
+                textDecoration: 'revert',
+              }}
+            >
+              Code of Conduct
+            </Link>
+            .
+          </Trans>
+        </li>
       </ul>
       <Typography variant="h5" gutterBottom id="inauthentic-activity-and-spam">
         {t('termsOfService.acceptableUse.titles.3InauthenticActivityAndSpam')}
       </Typography>
-      <p>
-        We do not allow activity the Platform that is: inauthentic interactions,
-        such as fake Accounts and automated inauthentic activity; or automated
-        excessive bulk activity and coordinated inauthentic activity.
-      </p>
+      <Typography paragraph>
+        {t(
+          'termsOfService.acceptableUse.paragraphs.inauthenticActivityAndSpamIntro'
+        )}
+      </Typography>
     </Box>
   );
 };

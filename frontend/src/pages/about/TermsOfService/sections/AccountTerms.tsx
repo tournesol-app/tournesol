@@ -28,7 +28,7 @@ const AccountTerms = () => {
       </Typography>
       <Typography paragraph>
         {t(
-          'termsOfService.accountTerms.usersRetainUltimateAdministrativeControl'
+          'termsOfService.accountTerms.userRetainsUltimateAdministrativeControl'
         )}
       </Typography>
       <Typography variant="h5" gutterBottom id="account-requirements">
@@ -40,12 +40,12 @@ const AccountTerms = () => {
       <ul>
         <li>
           <Typography paragraph>
-            {t('termsOfService.accountTerms.aUserLoginMayNotBeShared')}
+            {t('termsOfService.accountTerms.aUserMayNotUseMoreThanOneAccount')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
-            {t('termsOfService.accountTerms.aUserMayNotUseMoreThanOneAccount')}
+            {t('termsOfService.accountTerms.aUserLoginMayNotBeShared')}
           </Typography>
         </li>
         <li>

@@ -148,7 +148,7 @@
     "termsOfService": "Terms of service",
     "acceptableUse": {
       "acceptableUse": "C. Acceptable Use",
-      "shortVersion": "While using the service, you must follow the terms of this section, which include not harming other Users, not disturbing the Service, and having an authentic activity.",
+      "shortVersion": "While using the Service, you must follow the terms of this section, which include not harming other Users, not disturbing the Service, and having an authentic activity.",
       "titles": {
         "1ComplianceWithLawsAndRegulation": "1. Compliance with Laws and Regulations",
         "2UserSafety": "2. User Safety",
@@ -156,7 +156,11 @@
       },
       "paragraphs": {
         "complianceWithLawsAndRegulation": "You are responsible for using the Service in compliance with all applicable laws, regulations, and these Acceptable Use policies. ",
-        "userSafetyIntro": "We do not allow activity on the Platform, including using a public username, that:"
+        "userSafetyIntro": "We do not allow activity on the Platform, including using a public username, that:",
+        "isUnlawlfulOrPromoteUnlawful": "is unlawful or promotes unlawful activities;",
+        "isFalseInaccurateOrDeceptive": "is false, inaccurate, or intentionally deceptive information and likely to adversely affect the public interest (including health, safety, election integrity, and civic participation);",
+        "orGoesAgainstOurCodeOfConduct": "or goes against our <2>Code of Conduct</2>.",
+        "inauthenticActivityAndSpamIntro": "We do not allow activity the Platform that is: inauthentic interactions, such as fake Accounts and automated inauthentic activity; or automated excessive bulk activity and coordinated inauthentic activity."
       }
     },
     "shortVersion": "Short version",
@@ -164,11 +168,11 @@
       "accountTerms": "B. Account Terms",
       "shortVersion": "A human must create your Account; you must be 15 or over; you must provide a valid email address; and you may not have more than one Account. You alone are responsible for your Account and anything that happens while you are signed in to or using your Account. You are responsible for keeping your Account secure.",
       "accountControls": "1. Account Controls",
-      "usersRetainUltimateAdministrativeControl": "The User acknowledges that Users retain ultimate administrative control over their individual Accounts. Tournesol's Terms of Service govern Users' use of the Service, except with respect to Users' activities under this Section B.",
+      "userRetainsUltimateAdministrativeControl": "The User retains ultimate administrative control over his or her individual Account.",
       "accountRequirements": "2. Account Requirements",
       "inOrderToCreateAccount": "In order to create an Account, the User must adhere to the following:",
-      "aUserLoginMayNotBeShared": "A User's Account may not be shared by multiple people.",
       "aUserMayNotUseMoreThanOneAccount": "A User may not use, or have more than one Account.",
+      "aUserLoginMayNotBeShared": "A User's Account may not be shared by multiple people.",
       "aUserMustProvideAValidEmailAddress": "A User must provide a valid email address.",
       "userMustBeALeast15": "User must not create an Account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
       "accountSecurity": "3. Account Security",
@@ -207,7 +211,7 @@
     },
     "definitions": {
       "definitions": "A. Definitions",
-      "shortVersion": "We use these basic terms throughout the Agreement. This section clarifies their specific meanings.",
+      "shortVersion": "We use these basic terms throughout the Agreement. This section clarifies their specific meaning.",
       "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
       "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including our <2>Privacy Policy</2>) and procedures that we may publish from time to time on the Website.",
       "association": "\"Association\", \"Tournesol Association\", \"We\" and \"Us\" refer to the non-profit association that develops the Tournesol project, including its committee, members and employees.",
