@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { Checkbox, Grid, IconButton, Typography } from '@mui/material';
@@ -21,6 +21,12 @@ const OrderableCriterionRow = ({
   handleDown: () => void;
 }) => {
   const criteriaIsString = typeof criteria === 'string';
+  const [isChecked, setIsChecked] = useState(criteriaIsString);
+
+  const onChangeCheck = () => {
+    setIsChecked(!isChecked);
+  }
+
   return (
     <Grid
       direction="row"
@@ -32,7 +38,8 @@ const OrderableCriterionRow = ({
         <Checkbox
           id={`id_checkbox_skip_${criteria}`}
           size="small"
-          checked={criteriaIsString}
+          checked={isChecked}
+          onChange={onChangeCheck}
           color="secondary"
           sx={{
             pr: 2,
@@ -55,7 +62,7 @@ const OrderableCriterionRow = ({
           />
         </Typography>
       </Grid>
-      {criteriaIsString && (
+      {isChecked && (
         <Grid item display={'flex'}>
           <IconButton onClick={() => handleUp()}>
             <KeyboardArrowUp />
