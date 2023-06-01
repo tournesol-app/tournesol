@@ -6,35 +6,28 @@ import { Grid, IconButton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { CriteriaIcon } from 'src/components';
 import { CriteriaLabel } from 'src/features/comparisons/CriteriaSlider';
-import { PollCriteria } from 'src/services/openapi';
+import { useCurrentPoll } from 'src/hooks';
 
-interface ComparisonCriteriaOrderProps {
-  criterias: PollCriteria[];
-  onChange: (target: PollCriteria[]) => void;
-}
-
-const ComparisonCriteriaOrderField = ({
-  criterias,
-  onChange,
-}: ComparisonCriteriaOrderProps) => {
+const ComparisonCriteriaOrderField = () => {
   const { t } = useTranslation();
+  const { criterias } = useCurrentPoll();
 
-  const tempCriterias = criterias;
+  // const tempCriterias = criterias;
 
-  const handleUp = (index: number) => {
-    if (index == 0) return;
-    const temp = criterias[index - 1];
-    tempCriterias[index - 1] = criterias[index];
-    tempCriterias[index] = temp;
-    onChange([...tempCriterias]);
+  const handleUp = () => {
+    // if (index == 0) return;
+    // const temp = criterias[index - 1];
+    // tempCriterias[index - 1] = criterias[index];
+    // tempCriterias[index] = temp;
+    // onChange([...tempCriterias]);
   };
 
-  const handleDown = (index: number) => {
-    if (index == criterias.length - 1) return;
-    const temp = criterias[index + 1];
-    tempCriterias[index + 1] = criterias[index];
-    tempCriterias[index] = temp;
-    onChange([...tempCriterias]);
+  const handleDown = () => {
+    // if (index == criterias.length - 1) return;
+    // const temp = criterias[index + 1];
+    // tempCriterias[index + 1] = criterias[index];
+    // tempCriterias[index] = temp;
+    // onChange([...tempCriterias]);
   };
 
   return (
@@ -67,10 +60,10 @@ const ComparisonCriteriaOrderField = ({
               </Typography>
             </Grid>
             <Grid item display={'flex'}>
-              <IconButton onClick={() => handleUp(index)}>
+              <IconButton onClick={() => handleUp()}>
                 <KeyboardArrowUp />
               </IconButton>
-              <IconButton onClick={() => handleDown(index)}>
+              <IconButton onClick={() => handleDown()}>
                 <KeyboardArrowDown />
               </IconButton>
             </Grid>

@@ -6,16 +6,11 @@ import { Alert, Button, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
-import {
-  useCurrentPoll,
-  useNotifications,
-  useScrollToLocation,
-} from 'src/hooks';
+import { useNotifications, useScrollToLocation } from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
-  PollCriteria,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
   UsersService,
@@ -41,7 +36,6 @@ const VideosPollUserSettingsForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
-  const { criterias } = useCurrentPoll();
 
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
@@ -66,13 +60,26 @@ const VideosPollUserSettingsForm = () => {
   >(Recommendations_defaultDateEnum.MONTH);
 
   // Criteria
-  const criteriasPosArray: PollCriteria[] = [];
-  criterias
-    .filter((c) => c.optional)
-    .forEach((criteria, index) => {
-      criteriasPosArray[index] = criteria;
-    });
-  const [criteriasPos, setCriteriasPos] = useState(criteriasPosArray);
+  // useEffect(() => {
+  //   if (criterias.length > 0) {
+  //     const criteriasPosArray: PollCriteria[] = [];
+  //     criterias
+  //       .filter((c) => c.optional)
+  //       .forEach((criteria, index) => {
+  //         criteriasPosArray[index] = criteria;
+  //       });
+  //     setCriteriasPos(criteriasPosArray);
+  //   }
+  // }, [criterias]);
+  // const [criteriasPos, setCriteriasPos] = useState([] as PollCriteria[]);
+  // const criteriasPosToString = (criteriasPos: PollCriteria[]) => {
+  //   return criteriasPos.map((c) => c.name);
+  // };
+  // const stringToCriteriasPos = (criteriasPosString: string[]) => {
+  //   return criteriasPosString.map((c) => {
+  //     return criterias.find((criteria) => criteria.name === c) ?? criterias[0];
+  //   });
+  // };
 
   /**
    * Initialize the form with up-to-date settings from the API, and dispatch
@@ -90,6 +97,9 @@ const VideosPollUserSettingsForm = () => {
             pollSettings.comparison_ui__weekly_collective_goal_display
           );
         }
+        // if (pollSettings?.comparison__criteria_order != undefined) {
+        //   console.log(stringToCriteriasPos(pollSettings.comparison__criteria_order));
+        // }
         if (pollSettings?.rate_later__auto_remove != undefined) {
           setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
         }
@@ -121,6 +131,7 @@ const VideosPollUserSettingsForm = () => {
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
+            // comparison__criteria_order: criteriasPosToString(criteriasPos),
           },
         },
       }).catch((reason: ApiError) => {
@@ -159,10 +170,7 @@ const VideosPollUserSettingsForm = () => {
             />
           </Grid>
           <Grid item>
-            <ComparisonCriteriaOrderField
-              criterias={criteriasPos}
-              onChange={setCriteriasPos}
-            />
+            <ComparisonCriteriaOrderField />
           </Grid>
           <Grid item>
             <Typography id="rate_later" variant="h6">
