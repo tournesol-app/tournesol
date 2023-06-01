@@ -3,6 +3,9 @@
     "copy": "Copier URI",
     "copied": "Copié !"
   },
+  "preferencesIconButtonLink": {
+    "linkToThePreferencesPage": "Lien vers la page des préférences"
+  },
   "components": {
     "filtersButton": "filtres"
   },
@@ -159,7 +162,16 @@
     "myResults": "Mes résultats",
     "faq": "FAQ",
     "about": "À propos",
-    "donate": "Faire un don"
+    "donate": "Faire un don",
+    "homeAriaLabel": "Lien vers la page d'accueil",
+    "recommendationsAriaLabel": "Lien vers la page des recommandations",
+    "compareAriaLabel": "Lien vers la page comparer",
+    "myComparisonsAriaLabel": "Lien vers la page des comparaisons",
+    "myComparedItemsAriaLabel": "Lien vers mes objets comparés",
+    "myRateLaterListAriaLabel": "Lien vers ma liste à comparer plus tard",
+    "myFeedbackAriaLabel": "Lien vers ma réaction",
+    "FAQAriaLabel": "Lien vers la page FAQ",
+    "aboutAriaLabel": "Lien vers la page à propos"
   },
   "frame": {
     "onChromeOrDerivatives": "Sur Chrome, Chromium, ou dérivés",
@@ -199,15 +211,21 @@
   },
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
-    "addToMyRateLaterList": "Ajouter à ma liste",
+    "youtubeOrTournesolURL": "Utilisez des URLs YouTube ou Tournesol",
+    "add": "Ajouter",
+    "findVideosTitle": "Où trouver des vidéos ?",
+    "findVideosYoutube": "Vous trouverez des vidéos dans votre <2>historique YouTube</2> ou dans votre <6>playlist de vidéos aimées</6>.",
+    "findVideosTournesol": "Vous pouvez aussi ajouter les vidéos que vous trouvez sur Tournesol à l'aide du bouton « plus » affiché avec chaque carte de vidéo.",
     "errorOccurredCannotAddVideo": "Désolé, une erreur est survenue. Impossible d'ajouter la vidéo à votre liste.",
     "videoAlreadyInList": "La video est déjà dans votre liste.",
     "videoAdded": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "addVideosToRateLaterList": "Ajouter des videos à votre liste",
-    "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent être comparées, puis sont enlevées de la liste après un nombre suffisant de comparaisons.",
-    "listHasNbVideos_one": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéo.",
-    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos.",
-    "listHasNbVideos_other": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos."
+    "addVideosToYourListToCompareThemLater": "Ajoutez des vidéos à votre liste pour les comparer plus tard.",
+    "useOurBrowserExtension": "Utilisez notre <2>extension navigateur</2> pour ajouter sans effort des vidéos directement depuis YouTube.",
+    "orCopyPasteVideoUrlHere": "Ou copiez collez des URLs de vidéos ici.",
+    "listHasNbVideos_one": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéo. Elle sera automatiquement retirée après <1>{{rateLaterSetting}}</1> comparaison(s).",
+    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos. Elles seront automatiquement retirées après <1>{{rateLaterSetting}}</1> comparaison(s).",
+    "listHasNbVideos_other": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos. Elles seront automatiquement retirées après <1>{{rateLaterSetting}}</1> comparaison(s)."
   },
   "public": "publique",
   "private": "privée",
@@ -337,6 +355,7 @@
     "comparisonPage": "Comparaison (page)",
     "rateLater": "Liste à comparer plus tard",
     "recommendationsPage": "Recommandations (page)",
+    "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <6>menu principal</6>.",
     "updatePreferences": "Mettre à jour les préférences"
   },
   "videosUserSettingsForm": {

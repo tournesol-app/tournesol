@@ -264,6 +264,7 @@ class TestTournesolBotTopContributor(TestCase):
 
         assert figure_path.exists()
 
+    @mock.patch("tweepy.Client")
     @mock.patch("tweepy.API")
     @override_settings(
         TWITTERBOT_CREDENTIALS={
@@ -283,9 +284,9 @@ class TestTournesolBotTopContributor(TestCase):
             },
         }
     )
-    def test_tweet_top_contributor_graph(self, api_mock):
-
+    def test_tweet_top_contributor_graph(self, api_mock, client_mock):
         mocked_api_client = api_mock.return_value
+        mocked_v2_client = client_mock.return_value
 
         tweet_top_contributor_graph("@TournesolBot", assumeyes=True)
         tweet_top_contributor_graph("@TournesolBotFR", assumeyes=True)
@@ -295,5 +296,5 @@ class TestTournesolBotTopContributor(TestCase):
         )
         self.assertEqual(mocked_api_client.media_upload.call_args_list[0].args[0].suffix, ".png")
         self.assertEqual(
-            mocked_api_client.update_status.call_count, 2, mocked_api_client.update_status.calls
+            mocked_v2_client.create_tweet.call_count, 2, mocked_api_client.update_status.calls
         )

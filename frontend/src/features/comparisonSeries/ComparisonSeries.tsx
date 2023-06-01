@@ -2,7 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Container, Step, StepLabel, Stepper } from '@mui/material';
+import {
+  Button,
+  Container,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
+} from '@mui/material';
 
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
@@ -347,7 +354,14 @@ const ComparisonSeries = ({
             step in dialogs &&
             (!getAlternatives || alternatives.length > 0) && (
               <DialogBox
-                dialog={dialogs[step]}
+                title={dialogs[step].title}
+                content={dialogs[step].messages.map((message, index) => {
+                  return (
+                    <Typography key={index} paragraph>
+                      {message}
+                    </Typography>
+                  );
+                })}
                 open={dialogOpen}
                 onClose={closeDialog}
                 additionalActionButton={

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Button, Grid, Typography } from '@mui/material';
+import { Alert, Button, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
-import { useNotifications } from 'src/hooks';
+import { useNotifications, useScrollToLocation } from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
@@ -42,6 +42,8 @@ const VideosPollUserSettingsForm = () => {
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
+
+  useScrollToLocation();
 
   const userSettings = useSelector(selectSettings).settings;
   const pollSettings = userSettings?.videos;
@@ -91,7 +93,7 @@ const VideosPollUserSettingsForm = () => {
       setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
     }
     setLoading(false);
-  }, [userSettings]);
+  }, [pollSettings]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -132,7 +134,7 @@ const VideosPollUserSettingsForm = () => {
       <form onSubmit={handleSubmit}>
         <Grid container spacing={4} direction="column" alignItems="stretch">
           <Grid item>
-            <Typography variant="h6">
+            <Typography id="comparison_page" variant="h6">
               {t('pollUserSettingsForm.comparisonPage')}
             </Typography>
           </Grid>
@@ -144,7 +146,7 @@ const VideosPollUserSettingsForm = () => {
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6">
+            <Typography id="rate_later" variant="h6">
               {t('pollUserSettingsForm.rateLater')}
             </Typography>
           </Grid>
@@ -157,9 +159,22 @@ const VideosPollUserSettingsForm = () => {
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6">
+            <Typography id="recommendations_page" variant="h6">
               {t('pollUserSettingsForm.recommendationsPage')}
             </Typography>
+          </Grid>
+          <Grid item>
+            <Alert severity="info">
+              <Trans
+                t={t}
+                i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
+              >
+                Customize <strong>the default search filters</strong> according
+                to your own preferences. Those filters are applied{' '}
+                <strong>only</strong> when you access the recommendations from
+                the <strong>main menu</strong>.
+              </Trans>
+            </Alert>
           </Grid>
           <Grid item>
             <RecommendationsDefaultDate

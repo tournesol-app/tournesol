@@ -1,8 +1,11 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Card, Box, CardContent, CardActions } from '@mui/material';
+import { useSelector } from 'react-redux';
+
+import { Box, Divider, Grid, IconButton, Paper, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
+import InfoIcon from '@mui/icons-material/Info';
 
 import {
   ContentBox,
@@ -19,6 +22,12 @@ import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
 
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
+import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
+import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
+import DialogBox from 'src/components/DialogBox';
+import { TournesolUserSettingsKeys } from 'src/utils/types';
+
 const useStyles = makeStyles({
   rateLaterContent: {
     flexDirection: 'column',
@@ -30,12 +39,58 @@ const useStyles = makeStyles({
   },
 });
 
+const WhereToFindVideosDialog = ({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) => {
+  const { t } = useTranslation();
+
+  const dialog = {
+    title: t('ratelater.findVideosTitle'),
+    content: (
+      <>
+        <Typography paragraph>
+          <Trans t={t} i18nKey="ratelater.findVideosYoutube">
+            You can search them in your{' '}
+            <a href="https://www.youtube.com/feed/history">
+              YouTube history page
+            </a>{' '}
+            , or your{' '}
+            <a href="https://www.youtube.com/playlist?list=LL">
+              liked video playlist
+            </a>
+            .
+          </Trans>
+        </Typography>
+        <Typography paragraph>{t('ratelater.findVideosTournesol')}</Typography>
+      </>
+    ),
+  };
+
+  return (
+    <DialogBox
+      open={open}
+      onClose={onClose}
+      title={dialog.title}
+      content={dialog.content}
+    />
+  );
+};
+
 const RateLaterPage = () => {
   const classes = useStyles();
 
   const { t } = useTranslation();
   const { displayErrorsFrom, showSuccessAlert } = useNotifications();
+
   const { name: pollName } = useCurrentPoll();
+  const settings =
+    useSelector(selectSettings).settings?.[
+      pollName as TournesolUserSettingsKeys
+    ];
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -45,6 +100,9 @@ const RateLaterPage = () => {
   const videoListTopRef = React.useRef<HTMLDivElement>(null);
   const [offset, setOffset] = React.useState(0);
   const limit = 20;
+
+  const rateLaterSetting =
+    settings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL;
 
   const loadList = useCallback(async () => {
     setIsLoading(true);
@@ -112,61 +170,108 @@ const RateLaterPage = () => {
     RemoveFromRateLater(loadList),
   ];
 
+  const [where2findVideosOpen, setWhere2findVideosOpen] = useState(false);
+
+  const onInfoClick = useCallback(() => {
+    setWhere2findVideosOpen(true);
+  }, []);
+
+  const onWhereToFindVideosDialogClose = useCallback(() => {
+    setWhere2findVideosOpen(false);
+  }, []);
+
   return (
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
-      <ContentBox noMinPaddingX maxWidth="md">
-        <Card
-          elevation={4}
-          sx={{
-            textAlign: 'center',
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column',
-            fontSize: '14px',
-          }}
+      <ContentBox maxWidth="lg">
+        <Box display={'flex'} justifyContent={'end'} mb={2}>
+          <PreferencesIconButtonLink hash="#rate_later" />
+        </Box>
+        <Grid
+          container
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="stretch"
         >
-          <CardContent>
-            <Typography variant="h6">
-              {t('ratelater.addVideosToRateLaterList')}
-            </Typography>
-            <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
-              Copy-paste the id or the URL of a favorite video of yours.
-              <br />
-              You can search them in your{' '}
-              <a href="https://www.youtube.com/feed/history">
-                YouTube history page
-              </a>
-              , or your{' '}
-              <a href="https://www.youtube.com/playlist?list=LL">
-                liked video playlist
-              </a>
-              .<br />
-              Our{' '}
-              <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
-                browser extension
-              </a>{' '}
-              can also help you import videos effortlessly.
-              <br />
-              You will then be able to rate the videos you imported.
-            </Trans>
-          </CardContent>
-          <CardActions>
-            <RateLaterAddForm addVideo={addToRateLater} />
-          </CardActions>
-        </Card>
+          <Grid item sm={6} display="flex" width="100%">
+            <Paper sx={{ p: 2, display: 'flex', width: '100%' }}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="stretch"
+                justifyContent="space-around"
+              >
+                <Stack direction="row" alignItems="center" mb={2} spacing={1}>
+                  <Typography variant="h6">
+                    {t('ratelater.addVideosToRateLaterList')}
+                  </Typography>
+                  <IconButton onClick={onInfoClick}>
+                    <InfoIcon fontSize="small" />
+                  </IconButton>
+                  <WhereToFindVideosDialog
+                    open={where2findVideosOpen}
+                    onClose={onWhereToFindVideosDialogClose}
+                  />
+                </Stack>
+                <Box pt={2}>
+                  <RateLaterAddForm addVideo={addToRateLater} />
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item sm={6} display="flex" width="100%">
+            <Paper sx={{ p: 2, width: '100%' }}>
+              <Typography paragraph>
+                {t('ratelater.addVideosToYourListToCompareThemLater')}
+              </Typography>
+              <Divider />
+              <ul>
+                <li>
+                  <Trans t={t} i18nKey="ratelater.useOurBrowserExtension">
+                    Use our{' '}
+                    <a
+                      href={
+                        getWebExtensionUrl() ?? getWebExtensionUrl('chrome')
+                      }
+                    >
+                      browser extension
+                    </a>{' '}
+                    to effortlessly add videos directly from YouTube.
+                  </Trans>
+                </li>
+                <li>
+                  <Typography paragraph mt={2} mb={0}>
+                    {t('ratelater.orCopyPasteVideoUrlHere')}
+                  </Typography>
+                </li>
+              </ul>
+            </Paper>
+          </Grid>
+        </Grid>
 
         <div className={classes.rateLaterContent} ref={videoListTopRef}>
           {entityCount !== null && (
-            <Typography variant="subtitle1">
+            <Typography
+              variant="subtitle1"
+              mb={0}
+              sx={{
+                '& strong': {
+                  color: 'secondary.main',
+                  fontSize: '1.4em',
+                },
+              }}
+            >
               <Trans
                 t={t}
                 i18nKey="ratelater.listHasNbVideos"
                 count={entityCount}
               >
-                Your rate-later list now has <strong>{{ entityCount }}</strong>{' '}
-                video(s).
-              </Trans>
+                Your rate-later list contains <strong>{{ entityCount }}</strong>{' '}
+                video(s). They will be automatically removed after{' '}
+                <strong>{{ rateLaterSetting }}</strong> comparison(s).
+              </Trans>{' '}
             </Typography>
           )}
 

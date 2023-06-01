@@ -27,6 +27,12 @@
     "message": "En savoir plus",
     "description": "Inviter les utilisateurs à en savoir plus sur le projet (texte très court)."
   },
+  "refreshRecommendations": {
+    "message": "Rafraîchir"
+  },
+  "seeMoreRecommendations": {
+    "message": "Voir plus de vidéos"
+  },
   "views": {
     "message": "$1 vues",
     "description": "Affiche le nombre de vues d'une vidéo."

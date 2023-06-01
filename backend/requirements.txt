@@ -1,3 +1,6 @@
+# Tournesol algorithms (editable)
+-e ./../solidago
+
 # Full stack Web Framework used for Tournesol's backend
 # https://docs.djangoproject.com
 Django==4.1.9
@@ -54,8 +57,8 @@ google-auth-httplib2==0.1.0
 matplotlib==3.7.1
 # requests is used to trigger a few external tools such as Discord or fetch
 # information 
-requests==2.28.2
+requests==2.31.0
 # Used for the twitter bots
-tweepy==4.13.0
+tweepy==4.14.0
 # dotenv for .env file
 python-dotenv==1.0.0

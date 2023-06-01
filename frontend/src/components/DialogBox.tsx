@@ -1,21 +1,24 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Dialog, DialogTitle, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle } from '@mui/material';
 
 interface DialogProps {
-  dialog: { title: string; messages: Array<string> };
+  title: string;
+  content: React.ReactNode;
   open: boolean;
   onClose: () => void;
   additionalActionButton?: React.ReactNode;
 }
 
 /**
- * A dialog box that displays one or more messages.
+ * A dialog box that displays the provided content which can be any arbitrary
+ * React component.
  */
 const DialogBox = ({
   open,
   onClose,
-  dialog,
+  title,
+  content,
   additionalActionButton,
 }: DialogProps) => {
   const { t } = useTranslation();
@@ -33,18 +36,10 @@ const DialogBox = ({
           backgroundColor: 'secondary.main',
         }}
       >
-        {dialog.title}
+        {title}
       </DialogTitle>
       <Box py={2} px={3}>
-        <Box>
-          {dialog.messages.map((message, index) => {
-            return (
-              <Typography key={index} paragraph>
-                {message}
-              </Typography>
-            );
-          })}
-        </Box>
+        <Box>{content}</Box>
         <Box display="flex" justifyContent="flex-end" gap={1}>
           {additionalActionButton}
           <Button variant="contained" onClick={handleClose}>

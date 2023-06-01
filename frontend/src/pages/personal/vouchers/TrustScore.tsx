@@ -72,15 +72,28 @@ const DescriptionDialog = ({
   const dialog = useMemo(
     () => ({
       title: t('personalVouchers.trustScore.title'),
-      messages: [
+      content: [
         t('personalVouchers.trustScore.description.explanation'),
         t('personalVouchers.trustScore.description.howToChangeIt'),
         t('personalVouchers.trustScore.description.includedInPublicDatabase'),
-      ],
+      ].map((message, index) => {
+        return (
+          <Typography key={index} paragraph>
+            {message}
+          </Typography>
+        );
+      }),
     }),
     [t]
   );
-  return <DialogBox open={open} onClose={onClose} dialog={dialog} />;
+  return (
+    <DialogBox
+      open={open}
+      onClose={onClose}
+      title={dialog.title}
+      content={dialog.content}
+    />
+  );
 };
 
 const TrustScore = () => {

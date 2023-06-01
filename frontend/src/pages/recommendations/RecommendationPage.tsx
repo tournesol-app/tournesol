@@ -7,6 +7,7 @@ import { Person } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
+import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
@@ -160,8 +161,15 @@ function RecommendationsPage() {
             </Grid>
             {/* Contextual page menu. */}
             <Grid item xs={12} sm={12} md={1}>
-              <Box display="flex" flexDirection="row" justifyContent="flex-end">
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-end"
+                justifyContent="flex-start"
+                gap={1}
+              >
                 <ShareMenuButton />
+                <PreferencesIconButtonLink hash="#recommendations_page" />
               </Box>
             </Grid>
           </Grid>

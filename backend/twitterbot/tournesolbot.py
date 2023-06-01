@@ -152,7 +152,6 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
     """
 
     twitterbot = TwitterBot(bot_name)
-    twitterbot.authenticate()
 
     tweetable_videos = get_video_recommendations(language=twitterbot.language)
     if not tweetable_videos:
@@ -171,20 +170,21 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
             return
 
     # Tweet the video
-    resp = twitterbot.api.update_status(tweet_text)
+    resp = twitterbot.client.create_tweet(text=tweet_text)
+    tweet_id = resp.data['id']
 
     # Post the tweet on Discord
     discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
     if discord_channel:
         write_in_channel(
             discord_channel,
-            f"https://twitter.com/{bot_name}/status/{resp.id}",
+            f"https://twitter.com/{bot_name}/status/{tweet_id}",
         )
 
     # Add the video to the TweetInfo table
     TweetInfo.objects.create(
         video=video,
-        tweet_id=resp.id,
+        tweet_id=tweet_id,
         bot_name=bot_name,
     )
 
@@ -252,7 +252,6 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
     """
 
     twitterbot = TwitterBot(bot_name)
-    twitterbot.authenticate()
     language = twitterbot.language
 
     top_contributors_qs = get_top_public_contributors_last_month(
@@ -276,8 +275,8 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
     media = twitterbot.api.media_upload(top_contributor_figure)
 
     # Tweet the graph
-    resp = twitterbot.api.update_status(
-        status=settings.top_contrib_tweet_text_template[language],
+    resp = twitterbot.client.create_tweet(
+        text=settings.top_contrib_tweet_text_template[language],
         media_ids=[media.media_id],
     )
 
@@ -286,5 +285,5 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
     if discord_channel:
         write_in_channel(
             discord_channel,
-            f"https://twitter.com/{bot_name}/status/{resp.id}",
+            f"https://twitter.com/{bot_name}/status/{resp.data['id']}",
         )

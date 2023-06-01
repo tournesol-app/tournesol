@@ -253,7 +253,7 @@ describe('Comparison page', () => {
       const videoAId = 'u83A7DUNMHs';
       const videoBId = '6jK9bFWE--g';
 
-      cy.visit(`/comparison/?videoA=${videoAId}&videoB=${videoBId}`);
+      cy.visit(`/comparison?videoA=${videoAId}&videoB=${videoBId}`);
       cy.focused().type('user1');
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
@@ -270,7 +270,7 @@ describe('Comparison page', () => {
       const videoAId = 'u83A7DUNMHs';
       const videoBId = '6jK9bFWE--g';
 
-      cy.visit(`/comparison/?videoA=${videoAId}&uidB=yt:${videoBId}`);
+      cy.visit(`/comparison?videoA=${videoAId}&uidB=yt:${videoBId}`);
       cy.focused().type('user1');
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 

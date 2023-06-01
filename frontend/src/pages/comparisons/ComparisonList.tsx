@@ -70,7 +70,16 @@ function ComparisonsPage() {
   );
 
   const nbComparisonsMessage = (
-    <Typography variant="subtitle1" sx={{ textAlign: 'center', pt: 2 }}>
+    <Typography
+      variant="subtitle1"
+      textAlign="center"
+      sx={{
+        '& strong': {
+          color: 'secondary.main',
+          fontSize: '1.4em',
+        },
+      }}
+    >
       <Trans
         t={t}
         i18nKey="myComparisonsPage.listHasNbComparisons"

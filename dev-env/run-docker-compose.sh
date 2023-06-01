@@ -75,6 +75,7 @@ function dev_env_restart() {
   echo "Recreating dev containers..."
   compose_up
   wait_for is_front_ready "front"
+  wait_for is_api_ready "api"
   echo "You can now access Tournesol on http://localhost:3000"
 }
 
