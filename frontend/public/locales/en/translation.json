@@ -879,7 +879,8 @@
       "title": {
         "upcoming": "Coming soon",
         "past": "Past"
-      }
+      },
+      "empty": "No Talks are planned in the near future."
     }
   }
 }

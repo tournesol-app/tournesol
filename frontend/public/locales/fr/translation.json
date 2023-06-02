@@ -888,11 +888,8 @@
       "title": {
         "upcoming": "À venir",
         "past": "Passés"
-      }
-    },
-    "link": {
-        "joinus": "Rejoignez-nous",
-        "review": "Revisionez"
+      },
+      "empty": "Aucun entretien n'est prévu dans un avenir proche."
     }
   }
 }

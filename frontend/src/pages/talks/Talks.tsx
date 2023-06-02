@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -58,12 +59,18 @@ const Talks = () => {
       <ContentHeader title="Talks" />
       <ContentBox maxWidth="lg">
         <TitledSection title={t('talksPage.sections.title.upcoming')}>
-          <TalkEntryList talks={upcomingTalks} />
+          {upcomingTalks && upcomingTalks.length > 0 ? (
+            <TalkEntryList talks={upcomingTalks} />
+          ) : (
+            <Typography>{t('talksPage.sections.empty')}</Typography>
+          )}
         </TitledSection>
 
-        <TitledSection title={t('talksPage.sections.title.past')}>
-          <TalkEntryList talks={pastTalks} />
-        </TitledSection>
+        {pastTalks && pastTalks.length > 0 && (
+          <TitledSection title={t('talksPage.sections.title.past')}>
+            <TalkEntryList talks={pastTalks} />
+          </TitledSection>
+        )}
       </ContentBox>
     </>
   );
