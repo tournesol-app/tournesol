@@ -219,44 +219,58 @@ const ComparisonSliders = ({
               />
             ))}
 
-        <Button
-          fullWidth
-          disabled={
-            !criterias.some(
-              (c) => c.optional && !critAlwaysDisplayed?.includes(c.name)
-            )
-          }
-          onClick={handleCollapseCriterias}
-          startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
-          size="medium"
-          color="secondary"
-          sx={{
-            marginBottom: '8px',
-            color: showOptionalCriterias ? 'red' : '',
-          }}
-        >
-          {showOptionalCriterias
-            ? t('comparison.removeOptionalCriterias')
-            : t('comparison.addOptionalCriterias')}
-        </Button>
-        <Collapse
-          in={showOptionalCriterias}
-          timeout="auto"
-          sx={{ width: '100%' }}
-        >
-          {criterias
-            .filter((c) => c.optional && !critAlwaysDisplayed?.includes(c.name))
-            .map((criteria) => (
-              <CriteriaSlider
-                key={criteria.name}
-                criteria={criteria.name}
-                criteriaLabel={criteria.label}
-                criteriaValue={criteriaValues[criteria.name]}
-                disabled={submitted}
-                handleSliderChange={handleSliderChange}
-              />
-            ))}
-        </Collapse>
+        {!criterias
+          .filter((c) => c.optional)
+          .every((optCriterion) => {
+            return critAlwaysDisplayed?.includes(optCriterion.name);
+          }) && (
+          <>
+            <Button
+              fullWidth
+              disabled={
+                !criterias.some(
+                  (c) => c.optional && !critAlwaysDisplayed?.includes(c.name)
+                )
+              }
+              onClick={handleCollapseCriterias}
+              startIcon={
+                showOptionalCriterias ? <ExpandLess /> : <ExpandMore />
+              }
+              size="medium"
+              color="secondary"
+              sx={{
+                marginBottom: '8px',
+                color: showOptionalCriterias ? 'red' : '',
+              }}
+            >
+              {showOptionalCriterias
+                ? t('comparison.removeOptionalCriterias')
+                : t('comparison.addOptionalCriterias')}
+            </Button>
+
+            <Collapse
+              in={showOptionalCriterias}
+              timeout="auto"
+              sx={{ width: '100%' }}
+            >
+              {criterias
+                .filter(
+                  (c) => c.optional && !critAlwaysDisplayed?.includes(c.name)
+                )
+                .map((criteria) => (
+                  <CriteriaSlider
+                    key={criteria.name}
+                    criteria={criteria.name}
+                    criteriaLabel={criteria.label}
+                    criteriaValue={criteriaValues[criteria.name]}
+                    disabled={submitted}
+                    handleSliderChange={handleSliderChange}
+                  />
+                ))}
+            </Collapse>
+          </>
+        )}
+
         {submitted && (
           <div id="id_submitted_text_info">
             <Typography>{t('comparison.changeOneItem')}</Typography>
