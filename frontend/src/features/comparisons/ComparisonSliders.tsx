@@ -81,7 +81,7 @@ const ComparisonSliders = ({
       entity_a: { uid: uidA },
       entity_b: { uid: uidB },
       criteria_scores: criterias
-        .filter((c) => !c.optional)
+        .filter((c) => !c.optional || criteriasOrdered?.includes(c.name))
         .map((c) => ({ criteria: c.name, score: pendingRatings[c.name] || 0 })),
     };
   };
