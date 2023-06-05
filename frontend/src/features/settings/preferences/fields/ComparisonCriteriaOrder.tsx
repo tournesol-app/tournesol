@@ -126,39 +126,14 @@ const ComparisonCriteriaOrderField = ({
   };
 
   return (
-    <Grid flexDirection="row-reverse" container columnSpacing={5}>
+    <Grid flexDirection="row" container rowSpacing={2} columnSpacing={5}>
       <Grid item xs={12}>
-        <Typography paragraph>
+        <Typography paragraph mb={0}>
           <strong>{t('pollUserSettingsForm.criteriaPersonalization')}</strong>
         </Typography>
       </Grid>
-      <Grid item xs={6}>
-        <Box mt={2} mb={1}>
-          <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
-          <Divider />
-        </Box>
-        {checkedCriteria.map((criterion, index) => (
-          <OrderableCriterionRow
-            key={criterion}
-            criterion={criterion}
-            criteria={criterias}
-            checkedCriteria={checkedCriteria}
-            index={index}
-            handleDown={handleDown}
-            handleUp={handleUp}
-            setCheckedCriteria={setCheckedCriteria}
-          />
-        ))}
-        {checkedCriteria.length === 0 && (
-          <Alert severity="info">
-            <Typography>
-              {t('pollUserSettingsForm.displayedCriteriaEmpty')}
-            </Typography>
-          </Alert>
-        )}
-      </Grid>
-      <Grid item xs={6}>
-        <Box mt={2} mb={1}>
+      <Grid item xs={12} sm={12} md={6}>
+        <Box mb={1}>
           <Typography>{t('pollUserSettingsForm.optionalCriteria')}</Typography>
           <Divider />
         </Box>
@@ -180,6 +155,31 @@ const ComparisonCriteriaOrderField = ({
           <Alert severity="info">
             <Typography>
               {t('pollUserSettingsForm.optionalCriteriaEmpty')}
+            </Typography>
+          </Alert>
+        )}
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <Box mb={1}>
+          <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
+          <Divider />
+        </Box>
+        {checkedCriteria.map((criterion, index) => (
+          <OrderableCriterionRow
+            key={criterion}
+            criterion={criterion}
+            criteria={criterias}
+            checkedCriteria={checkedCriteria}
+            index={index}
+            handleDown={handleDown}
+            handleUp={handleUp}
+            setCheckedCriteria={setCheckedCriteria}
+          />
+        ))}
+        {checkedCriteria.length === 0 && (
+          <Alert severity="info">
+            <Typography>
+              {t('pollUserSettingsForm.displayedCriteriaEmpty')}
             </Typography>
           </Alert>
         )}
