@@ -79,6 +79,7 @@ const OrderableCriterionRow = ({
                 ? criteria.find((c) => c.name == criterion)?.label ?? criterion
                 : criterion.label
             }
+            tooltip={false}
           />
         </Typography>
       </Grid>
