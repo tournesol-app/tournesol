@@ -128,6 +128,8 @@ const ComparisonSeries = ({
    * series.
    */
   useEffect(() => {
+    if (skipped) return;
+
     async function getAlternativesAsync(
       getAlts: () => Promise<Array<Entity | Recommendation>>
     ) {

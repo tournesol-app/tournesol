@@ -49,29 +49,9 @@ describe('GenericPollUserSettingsForm', () => {
   const api_url = process.env.REACT_APP_API_URL || '';
   OpenAPI.BASE = api_url;
 
-  // The values used by the store and the API are different to ensure the form
-  // is initialized with the correct source of information.
-  const INIT_AUTO_REMOVAL_API = 8;
-  const INIT_AUTO_REMOVAL_STORE = 0;
+  const INIT_AUTO_REMOVAL_STORE = 2;
 
   fetchMock
-    .mock(
-      {
-        name: 'success_get',
-        url: api_url + '/users/me/settings/',
-        method: 'GET',
-        functionMatcher: () => true,
-      },
-      {
-        status: 200,
-        body: {
-          videos: {
-            rate_later__auto_remove: INIT_AUTO_REMOVAL_API,
-          },
-        },
-      },
-      { sendAsJson: true }
-    )
     .mock(
       {
         name: 'success_patch',
@@ -148,6 +128,7 @@ describe('GenericPollUserSettingsForm', () => {
   };
 
   let storeDispatchSpy: jest.SpyInstance;
+  const useSelectorSpy = jest.spyOn(reactRedux, 'useSelector');
 
   const setup = async () => {
     const state = {
@@ -190,6 +171,15 @@ describe('GenericPollUserSettingsForm', () => {
       submit,
     };
   };
+
+  beforeEach(() => {
+    useSelectorSpy.mockClear();
+    // The value of `rate_later__auto_remove` should be different than the one
+    // used to initialize the store, to make the tests relevant.
+    useSelectorSpy.mockReturnValue({
+      settings: { videos: { rate_later__auto_remove: 8 } },
+    });
+  });
 
   afterEach(() => {
     storeDispatchSpy.mockClear();
@@ -242,19 +232,9 @@ describe('GenericPollUserSettingsForm', () => {
       expect(submit).toBeEnabled();
     });
 
-    it('retrieves its initial values from the API and dispatch them', async () => {
-      const { rateLaterAutoRemove, storeDispatchSpy } = await setup();
-      expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
-
-      expect(storeDispatchSpy).toBeCalledWith({
-        type: 'settings/replaceSettings',
-        payload: {
-          videos: {
-            rate_later__auto_remove: 8,
-          },
-        },
-      });
-
+    it('retrieves its initial values from the Redux store', async () => {
+      const { rateLaterAutoRemove } = await setup();
+      expect(useSelectorSpy).toHaveBeenCalledTimes(1);
       expect(rateLaterAutoRemove).toHaveValue(8);
     });
 
@@ -265,7 +245,7 @@ describe('GenericPollUserSettingsForm', () => {
         storeDispatchSpy,
         submit,
       } = await setup();
-      expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(0);
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.click(recommendationsDefaultUnsafe);
@@ -274,7 +254,7 @@ describe('GenericPollUserSettingsForm', () => {
         fireEvent.click(submit);
       });
 
-      expect(storeDispatchSpy).toHaveBeenCalledTimes(2);
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
       expect(storeDispatchSpy).lastCalledWith({
         type: 'settings/replaceSettings',
         payload: {
@@ -324,7 +304,6 @@ describe('GenericPollUserSettingsForm', () => {
 
     it("doesn't call the store's dispatch function after a submit", async () => {
       const { rateLaterAutoRemove, storeDispatchSpy, submit } = await setup();
-      expect(storeDispatchSpy).toBeCalledTimes(1);
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
 
@@ -332,7 +311,7 @@ describe('GenericPollUserSettingsForm', () => {
         fireEvent.click(submit);
       });
 
-      expect(storeDispatchSpy).toBeCalledTimes(1);
+      expect(storeDispatchSpy).toBeCalledTimes(0);
     });
 
     it('displays a generic error message with notistack', async () => {
