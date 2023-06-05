@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import { Info as InfoIcon } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
 
 import type {
   ComparisonRequest,
   ComparisonCriteriaScore,
+  PollCriteria,
 } from 'src/services/openapi';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import StatsContext from 'src/features/statistics/StatsContext';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
@@ -20,8 +23,6 @@ import {
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 import CriteriaSlider from './CriteriaSlider';
-import { useSelector } from 'react-redux';
-import { selectSettings } from '../settings/userSettingsSlice';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -38,6 +39,18 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
   },
 }));
+
+/**
+ * A criterion can be considered "collapsed" if:
+ *  - it is configured optional in the poll
+ *  - the user haven't marked it as always displayed
+ */
+const isCollapsed = (
+  criterion: PollCriteria,
+  userPreferences: string[] | undefined
+) => {
+  return criterion.optional && !userPreferences?.includes(criterion.name);
+};
 
 const ComparisonSliders = ({
   submit,
@@ -166,8 +179,9 @@ const ComparisonSliders = ({
 
   const handleCollapseCriterias = () => {
     const optionalCriteriasKeys = criterias
-      .filter((c) => c.optional && !critAlwaysDisplayed?.includes(c.name))
+      .filter((c) => isCollapsed(c, critAlwaysDisplayed))
       .map((c) => c.name);
+
     optionalCriteriasKeys.forEach((criteria) =>
       handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
     );
@@ -228,9 +242,7 @@ const ComparisonSliders = ({
             <Button
               fullWidth
               disabled={
-                !criterias.some(
-                  (c) => c.optional && !critAlwaysDisplayed?.includes(c.name)
-                )
+                !criterias.some((c) => isCollapsed(c, critAlwaysDisplayed))
               }
               onClick={handleCollapseCriterias}
               startIcon={
@@ -254,9 +266,7 @@ const ComparisonSliders = ({
               sx={{ width: '100%' }}
             >
               {criterias
-                .filter(
-                  (c) => c.optional && !critAlwaysDisplayed?.includes(c.name)
-                )
+                .filter((c) => isCollapsed(c, critAlwaysDisplayed))
                 .map((criteria) => (
                   <CriteriaSlider
                     key={criteria.name}
