@@ -46,10 +46,10 @@ const useStyles = makeStyles(() => ({
  *  - the user haven't marked it as always displayed
  */
 const isCollapsed = (
-  criterion: PollCriteria,
+  criterion: PollCriteria | undefined,
   userPreferences: string[] | undefined
 ) => {
-  return criterion.optional && !userPreferences?.includes(criterion.name);
+  return criterion?.optional && !userPreferences?.includes(criterion.name);
 };
 
 const ComparisonSliders = ({
@@ -172,9 +172,7 @@ const ComparisonSliders = ({
   };
 
   const showOptionalCriterias = comparison.criteria_scores.some(
-    ({ criteria }) =>
-      criteriaByName[criteria]?.optional &&
-      !critAlwaysDisplayed?.includes(criteria)
+    ({ criteria }) => isCollapsed(criteriaByName[criteria], critAlwaysDisplayed)
   );
 
   const handleCollapseCriterias = () => {
