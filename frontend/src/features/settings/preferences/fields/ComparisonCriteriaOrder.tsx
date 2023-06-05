@@ -17,32 +17,33 @@ import { useCurrentPoll } from 'src/hooks';
 import { PollCriteria } from 'src/services/openapi';
 
 const OrderableCriterionRow = ({
-  criterias,
   criteria,
-  checkedCriterias,
+  criterion,
+  checkedCriteria,
   index,
   handleUp,
   handleDown,
-  setCheckedCriterias,
+  setCheckedCriteria,
 }: {
-  criterias: PollCriteria[];
-  criteria: string | PollCriteria;
-  checkedCriterias: string[];
+  criteria: PollCriteria[];
+  criterion: string | PollCriteria;
+  checkedCriteria: string[];
   index: number;
   handleUp: (index: number) => void;
   handleDown: (index: number) => void;
-  setCheckedCriterias: (target: string[]) => void;
+  setCheckedCriteria: (target: string[]) => void;
 }) => {
-  const criteriaIsString = typeof criteria === 'string';
+  const criterionIsString = typeof criterion === 'string';
 
   const handleCheck = () => {
-    if (criteriaIsString) {
-      const index = checkedCriterias.indexOf(criteria);
-      checkedCriterias.splice(index, 1);
-      setCheckedCriterias([...checkedCriterias]);
+    const tempCheckedCriteria = [...checkedCriteria];
+    if (criterionIsString) {
+      const index = tempCheckedCriteria.indexOf(criterion);
+      tempCheckedCriteria.splice(index, 1);
+      setCheckedCriteria(tempCheckedCriteria);
     } else {
-      checkedCriterias.push(criteria.name);
-      setCheckedCriterias([...checkedCriterias]);
+      tempCheckedCriteria.push(criterion.name);
+      setCheckedCriteria(tempCheckedCriteria);
     }
   };
 
@@ -55,9 +56,9 @@ const OrderableCriterionRow = ({
     >
       <Grid item display="flex" alignItems={'center'}>
         <Checkbox
-          id={`id_checkbox_skip_${criteria}`}
+          id={`id_checkbox_skip_${criterion}`}
           size="small"
-          checked={criteriaIsString}
+          checked={criterionIsString}
           onChange={handleCheck}
           color="secondary"
           sx={{
@@ -65,23 +66,23 @@ const OrderableCriterionRow = ({
           }}
         />
         <CriteriaIcon
-          criteriaName={criteriaIsString ? criteria : criteria.name}
+          criteriaName={criterionIsString ? criterion : criterion.name}
           sx={{
             marginRight: '8px',
           }}
         />
         <Typography>
           <CriteriaLabel
-            criteria={criteriaIsString ? criteria : criteria.name}
+            criteria={criterionIsString ? criterion : criterion.name}
             criteriaLabel={
-              criteriaIsString
-                ? criterias.find((c) => c.name == criteria)?.label ?? criteria
-                : criteria.label
+              criterionIsString
+                ? criteria.find((c) => c.name == criterion)?.label ?? criterion
+                : criterion.label
             }
           />
         </Typography>
       </Grid>
-      {criteriaIsString && (
+      {criterionIsString && (
         <Grid item display={'flex'}>
           <IconButton onClick={() => handleUp(index)}>
             <KeyboardArrowUp />
@@ -96,28 +97,30 @@ const OrderableCriterionRow = ({
 };
 
 const ComparisonCriteriaOrderField = ({
-  checkedCriterias,
-  setCheckedCriterias,
+  checkedCriteria,
+  setCheckedCriteria,
 }: {
-  checkedCriterias: string[];
-  setCheckedCriterias: (target: string[]) => void;
+  checkedCriteria: string[];
+  setCheckedCriteria: (target: string[]) => void;
 }) => {
   const { t } = useTranslation();
   const { criterias } = useCurrentPoll();
 
   const handleUp = (index: number) => {
     if (index === 0) return;
-    const tempCriteria = checkedCriterias[index];
-    checkedCriterias[index] = checkedCriterias[index - 1];
-    checkedCriterias[index - 1] = tempCriteria;
-    setCheckedCriterias([...checkedCriterias]);
+    const tempCheckedCriteria = [...checkedCriteria];
+    const tempCriterion = tempCheckedCriteria[index];
+    tempCheckedCriteria[index] = tempCheckedCriteria[index - 1];
+    tempCheckedCriteria[index - 1] = tempCriterion;
+    setCheckedCriteria(tempCheckedCriteria);
   };
   const handleDown = (index: number) => {
-    if (index === checkedCriterias.length - 1) return;
-    const tempCriteria = checkedCriterias[index];
-    checkedCriterias[index] = checkedCriterias[index + 1];
-    checkedCriterias[index + 1] = tempCriteria;
-    setCheckedCriterias([...checkedCriterias]);
+    if (index === checkedCriteria.length - 1) return;
+    const tempCheckedCriteria = [...checkedCriteria];
+    const tempCriterion = tempCheckedCriteria[index];
+    tempCheckedCriteria[index] = tempCheckedCriteria[index + 1];
+    tempCheckedCriteria[index + 1] = tempCriterion;
+    setCheckedCriteria(tempCheckedCriteria);
   };
 
   return (
@@ -132,16 +135,16 @@ const ComparisonCriteriaOrderField = ({
           <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
           <Divider />
         </Box>
-        {checkedCriterias.map((criteria, index) => (
+        {checkedCriteria.map((criterion, index) => (
           <OrderableCriterionRow
-            key={criteria}
-            criteria={criteria}
-            criterias={criterias}
-            checkedCriterias={checkedCriterias}
+            key={criterion}
+            criterion={criterion}
+            criteria={criterias}
+            checkedCriteria={checkedCriteria}
             index={index}
             handleDown={handleDown}
             handleUp={handleUp}
-            setCheckedCriterias={setCheckedCriterias}
+            setCheckedCriteria={setCheckedCriteria}
           />
         ))}
       </Grid>
@@ -151,17 +154,17 @@ const ComparisonCriteriaOrderField = ({
           <Divider />
         </Box>
         {criterias
-          .filter((c) => !checkedCriterias.includes(c.name) && c.optional)
-          .map((criteria, index) => (
+          .filter((c) => !checkedCriteria.includes(c.name) && c.optional)
+          .map((criterion, index) => (
             <OrderableCriterionRow
-              key={criteria.name}
-              criteria={criteria}
-              criterias={criterias}
-              checkedCriterias={checkedCriterias}
+              key={criterion.name}
+              criterion={criterion}
+              criteria={criterias}
+              checkedCriteria={checkedCriteria}
               index={index}
               handleDown={handleDown}
               handleUp={handleUp}
-              setCheckedCriterias={setCheckedCriterias}
+              setCheckedCriteria={setCheckedCriteria}
             />
           ))}
       </Grid>

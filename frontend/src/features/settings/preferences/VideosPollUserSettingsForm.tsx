@@ -71,6 +71,11 @@ const VideosPollUserSettingsForm = () => {
       Recommendations_defaultDateEnum.MONTH
   );
 
+  // Criteria
+  const [checkedCriteria, setCheckedCriteria] = useState<string[]>(
+    pollSettings?.comparison__criteria_order ?? []
+  );
+
   useEffect(() => {
     if (!pollSettings) {
       return;
@@ -82,9 +87,9 @@ const VideosPollUserSettingsForm = () => {
         pollSettings.comparison_ui__weekly_collective_goal_display
       );
     }
-    // if (pollSettings?.comparison__criteria_order != undefined) {
-    //   console.log(stringToCriteriasPos(pollSettings.comparison__criteria_order));
-    // }
+    if (pollSettings?.comparison__criteria_order != undefined) {
+      setCheckedCriteria(pollSettings.comparison__criteria_order);
+    }
     if (pollSettings.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
@@ -109,7 +114,7 @@ const VideosPollUserSettingsForm = () => {
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
-            // comparison__criteria_order: criteriasPosToString(criteriasPos),
+            comparison__criteria_order: checkedCriteria,
           },
         },
       }).catch((reason: ApiError) => {
@@ -131,12 +136,6 @@ const VideosPollUserSettingsForm = () => {
     setDisabled(false);
   };
 
-  const [checkedCriterias, setCheckedCriterias] = useState([
-    'entertaining_relaxing',
-    'pedagogy',
-    'backfire_risk',
-  ]);
-
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={4} direction="column" alignItems="stretch">
@@ -154,8 +153,8 @@ const VideosPollUserSettingsForm = () => {
         </Grid>
         <Grid item>
           <ComparisonCriteriaOrderField
-            checkedCriterias={checkedCriterias}
-            setCheckedCriterias={setCheckedCriterias}
+            checkedCriteria={checkedCriteria}
+            setCheckedCriteria={setCheckedCriteria}
           />
         </Grid>
         <Grid item>
