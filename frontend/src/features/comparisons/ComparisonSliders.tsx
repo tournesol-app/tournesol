@@ -63,8 +63,9 @@ const ComparisonSliders = ({
   } = useCurrentPoll();
 
   const { refreshStats } = useContext(StatsContext);
+
   const userSettings = useSelector(selectSettings)?.settings;
-  const criteriasOrdered = userSettings.videos?.comparison__criteria_order;
+  const critAlwaysDisplayed = userSettings.videos?.comparison__criteria_order;
 
   const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -81,10 +82,11 @@ const ComparisonSliders = ({
       entity_a: { uid: uidA },
       entity_b: { uid: uidB },
       criteria_scores: criterias
-        .filter((c) => !c.optional || criteriasOrdered?.includes(c.name))
+        .filter((c) => !c.optional || critAlwaysDisplayed?.includes(c.name))
         .map((c) => ({ criteria: c.name, score: pendingRatings[c.name] || 0 })),
     };
   };
+
   const [comparison, setComparison] = useState<ComparisonRequest>(
     castToComparison(initialComparison, {})
   );
@@ -159,12 +161,12 @@ const ComparisonSliders = ({
   const showOptionalCriterias = comparison.criteria_scores.some(
     ({ criteria }) =>
       criteriaByName[criteria]?.optional &&
-      !criteriasOrdered?.includes(criteria)
+      !critAlwaysDisplayed?.includes(criteria)
   );
 
   const handleCollapseCriterias = () => {
     const optionalCriteriasKeys = criterias
-      .filter((c) => c.optional && !criteriasOrdered?.includes(c.name))
+      .filter((c) => c.optional && !critAlwaysDisplayed?.includes(c.name))
       .map((c) => c.name);
     optionalCriteriasKeys.forEach((criteria) =>
       handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
@@ -197,31 +199,31 @@ const ComparisonSliders = ({
               handleSliderChange={handleSliderChange}
             />
           ))}
-        {criteriasOrdered != undefined ? (
-          criteriasOrdered
+
+        {critAlwaysDisplayed != undefined &&
+          critAlwaysDisplayed
             .filter(
-              (criteria) => criterias.find((c) => c.name == criteria)?.optional
+              (criteria) => criterias.find((c) => c.name === criteria)?.optional
             )
-            .map((criteria) => (
+            .map((criterionName) => (
               <CriteriaSlider
-                key={criteria}
-                criteria={criteria}
+                key={criterionName}
+                criteria={criterionName}
                 criteriaLabel={
-                  criterias.find((c) => c.name == criteria)?.label ?? criteria
+                  criterias.find((c) => c.name === criterionName)?.label ??
+                  criterionName
                 }
-                criteriaValue={criteriaValues[criteria]}
+                criteriaValue={criteriaValues[criterionName]}
                 disabled={submitted}
                 handleSliderChange={handleSliderChange}
               />
-            ))
-        ) : (
-          <></>
-        )}
+            ))}
+
         <Button
           fullWidth
           disabled={
             !criterias.some(
-              (c) => c.optional && !criteriasOrdered?.includes(c.name)
+              (c) => c.optional && !critAlwaysDisplayed?.includes(c.name)
             )
           }
           onClick={handleCollapseCriterias}
@@ -243,7 +245,7 @@ const ComparisonSliders = ({
           sx={{ width: '100%' }}
         >
           {criterias
-            .filter((c) => c.optional && !criteriasOrdered?.includes(c.name))
+            .filter((c) => c.optional && !critAlwaysDisplayed?.includes(c.name))
             .map((criteria) => (
               <CriteriaSlider
                 key={criteria.name}
