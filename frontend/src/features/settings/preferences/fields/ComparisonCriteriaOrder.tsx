@@ -2,6 +2,7 @@ import React from 'react';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import {
+  Alert,
   Box,
   Checkbox,
   Divider,
@@ -148,6 +149,13 @@ const ComparisonCriteriaOrderField = ({
             setCheckedCriteria={setCheckedCriteria}
           />
         ))}
+        {checkedCriteria.length === 0 && (
+          <Alert severity="info">
+            <Typography>
+              {t('pollUserSettingsForm.displayedCriteriaEmpty')}
+            </Typography>
+          </Alert>
+        )}
       </Grid>
       <Grid item xs={6}>
         <Box mt={2} mb={1}>
@@ -168,6 +176,13 @@ const ComparisonCriteriaOrderField = ({
               setCheckedCriteria={setCheckedCriteria}
             />
           ))}
+        {checkedCriteria.length === criterias.length - 1 && (
+          <Alert severity="info">
+            <Typography>
+              {t('pollUserSettingsForm.optionalCriteriaEmpty')}
+            </Typography>
+          </Alert>
+        )}
       </Grid>
     </Grid>
   );
