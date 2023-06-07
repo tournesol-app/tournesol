@@ -69,7 +69,7 @@ describe('Comparison page', () => {
   });
 
   describe('video selectors', () => {
-    const videoAUrl = 'https://www.youtube.com/watch?v=u83A7DUNMHs';
+    const videoAUrl = 'https://www.youtube.com/watch?v=lYXQvHhfKuM';
 
     it('support pasting YouTube URLs', () => {
       cy.visit('/comparison');
@@ -104,15 +104,15 @@ describe('Comparison page', () => {
         .type(videoAUrl.split('?v=')[1], {delay: 0});
 
       // wait for the auto filled video to be replaced
-      cy.contains('Science4VeryAll');
+      cy.contains('5 IA surpuissantes');
 
       // the video title, upload date, and the number of views must be displayed
       cy.get('div[data-testid=video-card-info]').first().within(() => {
         cy.contains(
-          'Science4VeryAll : Lê fait enfin un effort de vulgarisation sur Étincelles !!',
+          '5 IA surpuissantes',
           {matchCase: false}
         ).should('be.visible');
-        cy.contains('2021-11-22', {matchCase: false}).should('be.visible');
+        cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
         cy.contains('views', {matchCase: false}).should('be.visible');
       });
     })
