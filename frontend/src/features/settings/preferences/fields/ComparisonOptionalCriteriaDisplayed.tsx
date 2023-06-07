@@ -134,7 +134,9 @@ const ComparisonOptionalCriteriaDisplayed = ({
     <Grid flexDirection="row" container spacing={2}>
       <Grid item xs={12}>
         <Typography paragraph mb={0}>
-          <strong>{t('pollUserSettingsForm.criteriaPersonalization')}</strong>
+          <strong>
+            {t('pollUserSettingsForm.selectTheCriteriaYouWantToDisplay')}
+          </strong>
         </Typography>
       </Grid>
       <Grid
@@ -169,7 +171,7 @@ const ComparisonOptionalCriteriaDisplayed = ({
         {displayedCriteria.length === criterias.length - 1 && (
           <Alert severity="info">
             <Typography>
-              {t('pollUserSettingsForm.optionalCriteriaEmpty')}
+              {t('pollUserSettingsForm.optionalCriteriaEmptyText')}
             </Typography>
           </Alert>
         )}
@@ -183,7 +185,9 @@ const ComparisonOptionalCriteriaDisplayed = ({
         minHeight={{ xs: 569, sm: 410 }}
       >
         <Box mb={1}>
-          <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
+          <Typography>
+            {t('pollUserSettingsForm.alwaysDisplayedCriteria')}
+          </Typography>
           <Divider />
         </Box>
         <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
@@ -206,7 +210,7 @@ const ComparisonOptionalCriteriaDisplayed = ({
         {displayedCriteria.length === 0 && (
           <Alert severity="info">
             <Typography>
-              {t('pollUserSettingsForm.displayedCriteriaEmpty')}
+              {t('pollUserSettingsForm.alwaysDisplayedCriteriaEmptyText')}
             </Typography>
           </Alert>
         )}
