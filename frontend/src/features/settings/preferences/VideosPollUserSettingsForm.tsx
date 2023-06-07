@@ -22,7 +22,7 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
-import ComparisonCriteriaOrderField from './fields/ComparisonCriteriaOrder';
+import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
@@ -155,10 +155,12 @@ const VideosPollUserSettingsForm = () => {
           Ideally the following field could be displayed under the title
           Comparison, instead of Comparison (page). Updating the optinal
           criteria displayed by default will affect all comparison UIs and not
-          just the comparison page.
+          just the comparison page. When an another user setting will be added
+          to customize the comparisons (not the page), consider the creation of
+          a section Comparison.
         */}
         <Grid item>
-          <ComparisonCriteriaOrderField
+          <ComparisonOptionalCriteriaDisplayed
             checkedCriteria={optionalDisplayed}
             setCheckedCriteria={setOptionalDisplayed}
           />

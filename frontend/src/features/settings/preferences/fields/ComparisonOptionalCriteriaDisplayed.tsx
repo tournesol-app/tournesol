@@ -100,7 +100,7 @@ const OrderableCriterionRow = ({
   );
 };
 
-const ComparisonCriteriaOrderField = ({
+const ComparisonOptionalCriteriaDisplayed = ({
   checkedCriteria,
   setCheckedCriteria,
 }: {
@@ -208,4 +208,4 @@ const ComparisonCriteriaOrderField = ({
   );
 };
 
-export default ComparisonCriteriaOrderField;
+export default ComparisonOptionalCriteriaDisplayed;
