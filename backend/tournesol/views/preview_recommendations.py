@@ -146,7 +146,9 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         overlay_position = (0, (240 * upscale_ratio - overlay_height))
         image.alpha_composite(gradient, dest=overlay_position)
 
-    def draw_recommendation_box(self, recommendation, image: Image.Image, upscale_ratio: int, position):
+    def draw_recommendation_box(
+            self, recommendation, image: Image.Image, upscale_ratio: int, position
+            ):
         box = Image.new("RGBA", (440 * upscale_ratio, 60 * upscale_ratio))
         box_draw = ImageDraw.Draw(box)
         box_draw.rectangle(

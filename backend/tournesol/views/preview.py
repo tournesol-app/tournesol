@@ -442,11 +442,13 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 youtube_thumbnail, box=tuple(youtube_thumbnail_bbox[2:4])
             )
 
-        self.draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
+        DynamicWebsitePreviewEntity.draw_duration(
+            preview_image, entity, youtube_thumbnail_bbox, upscale_ratio
+        )
         self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
 
         response = HttpResponse(content_type="image/jpeg")
-        preview_image.convert("RGB").save(bytes(response), "jpeg")
+        preview_image.convert("RGB").save(response, "jpeg")
         return response
 
 
@@ -785,5 +787,5 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         final = generator.render(entity_a, entity_b, thumbnail_a, thumbnail_b)
 
         response = HttpResponse(content_type="image/jpeg")
-        final.convert("RGB").save(bytes(response), "jpeg")
+        final.convert("RGB").save(response, "jpeg")
         return response
