@@ -54,6 +54,7 @@ const OrderableCriterionRow = ({
       justifyContent="space-between"
       alignItems="center"
       container
+      wrap='nowrap'
     >
       <Grid item display="flex" alignItems={'center'}>
         <Checkbox
