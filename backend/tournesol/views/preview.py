@@ -6,15 +6,15 @@ Mainly used to provide URLs that can be used by the Open Graph protocol.
 
 import logging
 from io import BytesIO
+from typing import Optional
 
 import numpy
 import requests
-from typing import Optional
 from django.conf import settings
 from django.http import FileResponse, HttpResponse
 from django.utils.decorators import method_decorator
-from drf_spectacular.utils import OpenApiParameter, extend_schema
 from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from PIL import Image, ImageDraw, ImageFont
 from requests.exceptions import Timeout
 from rest_framework.views import APIView
