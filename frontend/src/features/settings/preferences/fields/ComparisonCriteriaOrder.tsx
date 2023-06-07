@@ -126,13 +126,13 @@ const ComparisonCriteriaOrderField = ({
   };
 
   return (
-    <Grid flexDirection="row" container rowSpacing={2} columnSpacing={3}>
+    <Grid flexDirection="row" container spacing={2}>
       <Grid item xs={12}>
         <Typography paragraph mb={0}>
           <strong>{t('pollUserSettingsForm.criteriaPersonalization')}</strong>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={6} minHeight={410}>
+      <Grid item xs={12} sm={12} md={12} lg={6} minHeight={410}>
         <Box mb={1}>
           <Typography>{t('pollUserSettingsForm.optionalCriteria')}</Typography>
           <Divider />
@@ -159,7 +159,7 @@ const ComparisonCriteriaOrderField = ({
           </Alert>
         )}
       </Grid>
-      <Grid item xs={12} sm={12} md={6} minHeight={410}>
+      <Grid item xs={12} sm={12} md={12} lg={6} minHeight={410}>
         <Box mb={1}>
           <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
           <Divider />
