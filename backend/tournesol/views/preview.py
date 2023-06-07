@@ -306,6 +306,55 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image.Image:
     return tournesol_frame
 
 
+def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
+    # pylint: disable=too-many-locals
+    """
+    Draw the duration of a video `entity` on the provided `image`.
+
+    The position is determined according to the `thumbnail_bbox`, so that it
+    is displayed in the bottom right corner of the thumbnail.
+    """
+    font_size = 14 * upscale_ratio
+    font = ImageFont.truetype(str(BASE_DIR / DURATION_FONT_LOCATION), font_size)
+
+    duration = entity.metadata.get("duration")
+    if not duration:
+        return
+    minutes, seconds = divmod(duration, 60)
+    hours, minutes = divmod(minutes, 60)
+
+    # creating a PIL.Image to get a Draw context, image later resized to text length
+    overlay = Image.new('RGBA', (1, 1), COLOR_DURATION_RECTANGLE)
+    overlay_draw = ImageDraw.Draw(overlay)
+
+    padding = tuple(numpy.multiply((5, 1), upscale_ratio))
+    duration_formatted = f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}"
+    duration_text_size = (
+        int(overlay_draw.textlength(duration_formatted, font=font)) + padding[0],
+        font_size + padding[1]
+    )
+
+    overlay = overlay.resize(duration_text_size)
+    # need to reinstanciate Draw after resizing, there must be a better way
+    overlay_draw = ImageDraw.Draw(overlay)
+
+    overlay_draw.text(
+        (padding[0]//2, padding[1]//2),
+        duration_formatted,
+        font=font,
+        fill=COLOR_WHITE_FONT
+    )
+
+    image.alpha_composite(
+        overlay,
+        dest=(
+            # all values are already upscaled (if applicable)
+            thumbnail_bbox[0] + thumbnail_bbox[2] - duration_text_size[0],
+            thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1]
+        )
+    )
+
+
 class DynamicWebsitePreviewDefault(BasePreviewAPIView):
     """
     Return the default preview of the Tournesol front end.
@@ -356,59 +405,6 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
             )
 
-    @staticmethod
-    def draw_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
-        # pylint: disable=too-many-locals
-
-        """
-        Draw the duration on the preview.
-        Adapts the overlay position and size in function of the duration text size.
-        """
-        font = ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 4 * upscale_ratio
-        )
-
-        duration = entity.metadata.get("duration")
-        if not duration:
-            return
-        minutes, seconds = divmod(duration, 60)
-        hours, minutes = divmod(minutes, 60)
-
-        # creating a PIL.Image to get a Draw context, image later resized to text length
-        overlay = Image.new('RGBA', (1, 1), COLOR_DURATION_RECTANGLE)
-        overlay_draw = ImageDraw.Draw(overlay)
-
-        font_size = 14 * upscale_ratio
-        font = ImageFont.truetype(str(BASE_DIR / DURATION_FONT_LOCATION), font_size)
-
-        padding = tuple(numpy.multiply((5, 1), upscale_ratio))
-        duration_formatted = f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}"
-        duration_text_size = (
-            int(overlay_draw.textlength(duration_formatted, font=font)) + padding[0],
-            font_size + padding[1]
-        )
-
-        overlay = overlay.resize(duration_text_size)
-        # need to reinstanciate Draw after resizing, there must be a better way
-        overlay_draw = ImageDraw.Draw(overlay)
-
-        overlay_draw.text(
-            (padding[0]//2, padding[1]//2),
-            duration_formatted,
-            font=font,
-            fill=COLOR_WHITE_FONT
-        )
-
-        image.alpha_composite(
-            overlay,
-            dest=(
-                # all values are already upscaled (if applicable)
-                thumbnail_bbox[0] + thumbnail_bbox[2] - duration_text_size[0],
-                thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1]
-            )
-        )
-
-    @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW))
     @extend_schema(
         description="Generic preview of an entity.",
         responses={200: OpenApiTypes.BINARY},
@@ -442,9 +438,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 youtube_thumbnail, box=tuple(youtube_thumbnail_bbox[2:4])
             )
 
-        DynamicWebsitePreviewEntity.draw_duration(
-            preview_image, entity, youtube_thumbnail_bbox, upscale_ratio
-        )
+        draw_video_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
         self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
 
         response = HttpResponse(content_type="image/jpeg")

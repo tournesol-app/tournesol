@@ -29,7 +29,7 @@ from ..views.preview import (
     COLOR_WHITE_FONT,
     COLOR_YELLOW_BORDER,
     BasePreviewAPIView,
-    DynamicWebsitePreviewEntity,
+    draw_video_duration,
     get_preview_font_config,
 )
 
@@ -164,9 +164,8 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         if thumbnail is not None:
             thumbnail = thumbnail.resize((new_width, new_height), Image.LANCZOS)
-            draw_duration = DynamicWebsitePreviewEntity.draw_duration
             thumbnail_bbox = tuple(numpy.multiply((105, 59, 0, 0), upscale_ratio))
-            draw_duration(thumbnail, recommendation, thumbnail_bbox, upscale_ratio=1)
+            draw_video_duration(thumbnail, recommendation, thumbnail_bbox, upscale_ratio=1)
             box.paste(thumbnail, (1, 1))
 
         self.draw_video_metadata_box(recommendation, box, upscale_ratio)
