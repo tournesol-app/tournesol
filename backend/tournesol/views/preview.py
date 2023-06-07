@@ -356,7 +356,8 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
             )
 
-    def draw_duration(self, image: Image.Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
+    @staticmethod
+    def draw_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
         # pylint: disable=too-many-locals
 
         """

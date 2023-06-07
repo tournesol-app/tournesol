@@ -11,7 +11,8 @@ from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from drf_spectacular.utils import OpenApiTypes, extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
 from PIL import Image, ImageDraw
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.exceptions import NotFound
@@ -101,7 +102,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         except Poll.DoesNotExist as error:
             raise NotFound(f"The requested poll {poll_name} doesn't exist.") from error
 
-    def draw_headline(self, image: Image, upscale_ratio: int):
+    def draw_headline(self, image: Image.Image, upscale_ratio: int):
         """
         Draw find videos on Tournesol headline
         """
@@ -121,7 +122,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         full_title = "Find videos on Tournesol"
         tournesol_frame_draw.text(
-            numpy.multiply(TOURNESOL_RECOMMENDATIONS_HEADLINE_XY, upscale_ratio),
+            tuple(numpy.multiply(TOURNESOL_RECOMMENDATIONS_HEADLINE_XY, upscale_ratio)),
             full_title,
             font=self.fnt_config["recommendations_headline"],
             fill="#4a473e",
@@ -129,7 +130,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         image.paste(headline)
 
-    def draw_bottom_overlay(self, image: Image, upscale_ratio: int):
+    def draw_bottom_overlay(self, image: Image.Image, upscale_ratio: int):
         """
         Draw the bottom overlay showing there is more results
         """
@@ -145,7 +146,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         overlay_position = (0, (240 * upscale_ratio - overlay_height))
         image.alpha_composite(gradient, dest=overlay_position)
 
-    def draw_recommendation_box(self, recommendation, image: Image, upscale_ratio: int, position):
+    def draw_recommendation_box(self, recommendation, image: Image.Image, upscale_ratio: int, position):
         box = Image.new("RGBA", (440 * upscale_ratio, 60 * upscale_ratio))
         box_draw = ImageDraw.Draw(box)
         box_draw.rectangle(
@@ -158,19 +159,19 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         thumbnail = self.get_yt_thumbnail(recommendation)
         new_width = 105 * upscale_ratio
         new_height = 59 * upscale_ratio
-        thumbnail = thumbnail.resize((new_width, new_height), Image.LANCZOS)
 
-        draw_duration = DynamicWebsitePreviewEntity.draw_duration
-        thumbnail_bbox = tuple(numpy.multiply((105, 59, 0, 0), upscale_ratio))
-        draw_duration(self, thumbnail, recommendation, thumbnail_bbox, upscale_ratio=1)
-
-        box.paste(thumbnail, (1, 1))
+        if thumbnail is not None:
+            thumbnail = thumbnail.resize((new_width, new_height), Image.LANCZOS)
+            draw_duration = DynamicWebsitePreviewEntity.draw_duration
+            thumbnail_bbox = tuple(numpy.multiply((105, 59, 0, 0), upscale_ratio))
+            draw_duration(thumbnail, recommendation, thumbnail_bbox, upscale_ratio=1)
+            box.paste(thumbnail, (1, 1))
 
         self.draw_video_metadata_box(recommendation, box, upscale_ratio)
         self.draw_tournesol_score_box(recommendation, box, upscale_ratio)
         image.paste(box, position)
 
-    def draw_video_metadata_box(self, video, image: Image, upscale_ratio):
+    def draw_video_metadata_box(self, video, image: Image.Image, upscale_ratio):
         video_metadata_box = Image.new(
             "RGBA", (330 * upscale_ratio, 40 * upscale_ratio), COLOR_WHITE_FONT
         )
@@ -224,7 +225,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         image.paste(video_metadata_box, (110 * upscale_ratio, 3 * upscale_ratio))
 
-    def draw_tournesol_score_box(self, recommendation, image: Image, upscale_ratio: int):
+    def draw_tournesol_score_box(self, recommendation, image: Image.Image, upscale_ratio: int):
         ts_score_box = Image.new(
             "RGBA", (300 * upscale_ratio, 20 * upscale_ratio), COLOR_WHITE_FONT
         )
@@ -276,7 +277,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         image.paste(ts_score_box, (110 * upscale_ratio, 36 * upscale_ratio))
 
-    def draw_no_recommendations_text(self, image: Image):
+    def draw_no_recommendations_text(self, image: Image.Image):
         draw = ImageDraw.Draw(image)
         text = "No video corresponds to search criteria."
         text_width = draw.textlength(text, self.fnt_config["recommendations_headline"])
@@ -314,5 +315,5 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         self.draw_bottom_overlay(preview_image, upscale_ratio)
         response = HttpResponse(content_type="image/jpeg")
-        preview_image.convert("RGB").save(response, "jpeg")
+        preview_image.convert("RGB").save(bytes(response), "jpeg")
         return response
