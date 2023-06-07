@@ -22,11 +22,11 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
+import ComparisonCriteriaOrderField from './fields/ComparisonCriteriaOrder';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
-import ComparisonCriteriaOrderField from './fields/ComparisonCriteriaOrder';
 
 /**
  * Display a form allowing the logged users to update their preferences for
@@ -46,6 +46,11 @@ const VideosPollUserSettingsForm = () => {
 
   const userSettings = useSelector(selectSettings).settings;
   const pollSettings = userSettings?.videos;
+
+  // Comparison
+  const [optionalDisplayed, setOptionalDisplayed] = useState<string[]>(
+    pollSettings?.comparison__criteria_order ?? []
+  );
 
   // Comparison (page)
   const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
@@ -71,11 +76,6 @@ const VideosPollUserSettingsForm = () => {
       Recommendations_defaultDateEnum.MONTH
   );
 
-  // Criteria
-  const [checkedCriteria, setCheckedCriteria] = useState<string[]>(
-    pollSettings?.comparison__criteria_order ?? []
-  );
-
   useEffect(() => {
     if (!pollSettings) {
       return;
@@ -88,7 +88,7 @@ const VideosPollUserSettingsForm = () => {
       );
     }
     if (pollSettings?.comparison__criteria_order != undefined) {
-      setCheckedCriteria(pollSettings.comparison__criteria_order);
+      setOptionalDisplayed(pollSettings.comparison__criteria_order);
     }
     if (pollSettings.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
@@ -109,12 +109,12 @@ const VideosPollUserSettingsForm = () => {
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
           [pollName]: {
+            comparison__criteria_order: optionalDisplayed,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
-            comparison__criteria_order: checkedCriteria,
           },
         },
       }).catch((reason: ApiError) => {
@@ -151,10 +151,16 @@ const VideosPollUserSettingsForm = () => {
             pollName={pollName}
           />
         </Grid>
+        {/*
+          Ideally the following field could be displayed under the title
+          Comparison, instead of Comparison (page). Updating the optinal
+          criteria displayed by default will affect all comparison UIs and not
+          just the comparison page.
+        */}
         <Grid item>
           <ComparisonCriteriaOrderField
-            checkedCriteria={checkedCriteria}
-            setCheckedCriteria={setCheckedCriteria}
+            checkedCriteria={optionalDisplayed}
+            setCheckedCriteria={setOptionalDisplayed}
           />
         </Grid>
         <Grid item>
