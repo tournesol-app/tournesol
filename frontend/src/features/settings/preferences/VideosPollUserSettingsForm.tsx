@@ -48,7 +48,7 @@ const VideosPollUserSettingsForm = () => {
   const pollSettings = userSettings?.videos;
 
   // Comparison
-  const [optionalDisplayed, setOptionalDisplayed] = useState<string[]>(
+  const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
     pollSettings?.comparison__criteria_order ?? []
   );
 
@@ -88,7 +88,7 @@ const VideosPollUserSettingsForm = () => {
       );
     }
     if (pollSettings?.comparison__criteria_order != undefined) {
-      setOptionalDisplayed(pollSettings.comparison__criteria_order);
+      setDisplayedCriteria(pollSettings.comparison__criteria_order);
     }
     if (pollSettings.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
@@ -109,7 +109,7 @@ const VideosPollUserSettingsForm = () => {
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
           [pollName]: {
-            comparison__criteria_order: optionalDisplayed,
+            comparison__criteria_order: displayedCriteria,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
@@ -161,8 +161,8 @@ const VideosPollUserSettingsForm = () => {
         */}
         <Grid item>
           <ComparisonOptionalCriteriaDisplayed
-            checkedCriteria={optionalDisplayed}
-            setCheckedCriteria={setOptionalDisplayed}
+            displayedCriteria={displayedCriteria}
+            onChange={setDisplayedCriteria}
           />
         </Grid>
         <Grid item>

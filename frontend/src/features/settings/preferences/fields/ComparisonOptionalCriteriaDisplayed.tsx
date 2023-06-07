@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import {
@@ -11,87 +12,82 @@ import {
   Typography,
 } from '@mui/material';
 
-import { useTranslation } from 'react-i18next';
 import { CriteriaIcon } from 'src/components';
 import { CriteriaLabel } from 'src/features/comparisons/CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks';
-import { PollCriteria } from 'src/services/openapi';
 
 const OrderableCriterionRow = ({
-  criteria,
-  criterion,
-  checkedCriteria,
   index,
+  checked,
+  criterionName,
+  criterionLabel,
+  selectedCriteria,
   handleUp,
   handleDown,
   setCheckedCriteria,
 }: {
-  criteria: PollCriteria[];
-  criterion: string | PollCriteria;
-  checkedCriteria: string[];
   index: number;
+  checked: boolean;
+  criterionName: string;
+  criterionLabel: string;
+  selectedCriteria: string[];
   handleUp: (index: number) => void;
   handleDown: (index: number) => void;
   setCheckedCriteria: (target: string[]) => void;
 }) => {
-  const criterionIsString = typeof criterion === 'string';
-
   const handleCheck = () => {
-    const tempCheckedCriteria = [...checkedCriteria];
-    if (criterionIsString) {
-      const index = tempCheckedCriteria.indexOf(criterion);
-      tempCheckedCriteria.splice(index, 1);
-      setCheckedCriteria(tempCheckedCriteria);
+    const newSelection = [...selectedCriteria];
+
+    if (checked) {
+      const index = selectedCriteria.indexOf(criterionName);
+      if (index === -1) return;
+
+      newSelection.splice(index, 1);
+      setCheckedCriteria(newSelection);
     } else {
-      tempCheckedCriteria.push(criterion.name);
-      setCheckedCriteria(tempCheckedCriteria);
+      if (selectedCriteria.includes(criterionName)) return;
+
+      newSelection.push(criterionName);
+      setCheckedCriteria(newSelection);
     }
   };
 
   return (
     <Grid
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
       container
+      direction="row"
+      alignItems="center"
+      justifyContent="space-between"
       wrap="nowrap"
     >
-      <Grid item display="flex" alignItems={'center'}>
+      <Grid item display="flex" alignItems="center">
         <Checkbox
-          id={`id_checkbox_skip_${criterion}`}
-          size="small"
-          checked={criterionIsString}
+          id={`id_selected_optional_${criterionName}`}
+          checked={checked}
           onChange={handleCheck}
+          size="small"
           color="secondary"
-          sx={{
-            pl: 0,
-            pr: 2,
-          }}
+          sx={{ pl: 0, pr: 2 }}
         />
-        <CriteriaIcon
-          criteriaName={criterionIsString ? criterion : criterion.name}
-          sx={{
-            marginRight: '8px',
-          }}
-        />
+        <CriteriaIcon criteriaName={criterionName} sx={{ marginRight: 1 }} />
         <Typography>
           <CriteriaLabel
-            criteria={criterionIsString ? criterion : criterion.name}
-            criteriaLabel={
-              criterionIsString
-                ? criteria.find((c) => c.name == criterion)?.label ?? criterion
-                : criterion.label
-            }
+            criteria={criterionName}
+            criteriaLabel={criterionLabel}
             tooltip={false}
           />
         </Typography>
       </Grid>
-      {criterionIsString && (
-        <Grid item display={'flex'}>
-          <IconButton onClick={() => handleUp(index)}>
+      {checked && (
+        <Grid item display="flex" flexWrap="nowrap">
+          <IconButton onClick={() => handleUp(index)} disabled={index <= 0}>
             <KeyboardArrowUp />
           </IconButton>
-          <IconButton onClick={() => handleDown(index)}>
+
+          <IconButton
+            onClick={() => handleDown(index)}
+            disabled={index >= selectedCriteria.length - 1}
+          >
             <KeyboardArrowDown />
           </IconButton>
         </Grid>
@@ -101,30 +97,37 @@ const OrderableCriterionRow = ({
 };
 
 const ComparisonOptionalCriteriaDisplayed = ({
-  checkedCriteria,
-  setCheckedCriteria,
+  displayedCriteria,
+  onChange,
 }: {
-  checkedCriteria: string[];
-  setCheckedCriteria: (target: string[]) => void;
+  displayedCriteria: string[];
+  onChange: (target: string[]) => void;
 }) => {
   const { t } = useTranslation();
   const { criterias } = useCurrentPoll();
 
-  const handleUp = (index: number) => {
-    if (index === 0) return;
-    const tempCheckedCriteria = [...checkedCriteria];
-    const tempCriterion = tempCheckedCriteria[index];
-    tempCheckedCriteria[index] = tempCheckedCriteria[index - 1];
-    tempCheckedCriteria[index - 1] = tempCriterion;
-    setCheckedCriteria(tempCheckedCriteria);
+  const moveUp = (index: number) => {
+    if (index <= 0) return;
+    const newSelection = [...displayedCriteria];
+
+    const selectedCriterion = newSelection[index];
+    const opponent = newSelection[index - 1];
+
+    newSelection[index - 1] = selectedCriterion;
+    newSelection[index] = opponent;
+    onChange(newSelection);
   };
-  const handleDown = (index: number) => {
-    if (index === checkedCriteria.length - 1) return;
-    const tempCheckedCriteria = [...checkedCriteria];
-    const tempCriterion = tempCheckedCriteria[index];
-    tempCheckedCriteria[index] = tempCheckedCriteria[index + 1];
-    tempCheckedCriteria[index + 1] = tempCriterion;
-    setCheckedCriteria(tempCheckedCriteria);
+
+  const moveDown = (index: number) => {
+    if (index >= displayedCriteria.length - 1) return;
+    const newSelection = [...displayedCriteria];
+
+    const selectedCriterion = newSelection[index];
+    const opponent = newSelection[index + 1];
+
+    newSelection[index] = opponent;
+    newSelection[index + 1] = selectedCriterion;
+    onChange(newSelection);
   };
 
   return (
@@ -148,21 +151,22 @@ const ComparisonOptionalCriteriaDisplayed = ({
         </Box>
         <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
           {criterias
-            .filter((c) => !checkedCriteria.includes(c.name) && c.optional)
+            .filter((c) => !displayedCriteria.includes(c.name) && c.optional)
             .map((criterion, index) => (
               <OrderableCriterionRow
                 key={criterion.name}
-                criterion={criterion}
-                criteria={criterias}
-                checkedCriteria={checkedCriteria}
                 index={index}
-                handleDown={handleDown}
-                handleUp={handleUp}
-                setCheckedCriteria={setCheckedCriteria}
+                checked={false}
+                criterionName={criterion.name}
+                criterionLabel={criterion.label}
+                selectedCriteria={displayedCriteria}
+                handleUp={moveUp}
+                handleDown={moveDown}
+                setCheckedCriteria={onChange}
               />
             ))}
         </Box>
-        {checkedCriteria.length === criterias.length - 1 && (
+        {displayedCriteria.length === criterias.length - 1 && (
           <Alert severity="info">
             <Typography>
               {t('pollUserSettingsForm.optionalCriteriaEmpty')}
@@ -183,20 +187,23 @@ const ComparisonOptionalCriteriaDisplayed = ({
           <Divider />
         </Box>
         <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
-          {checkedCriteria.map((criterion, index) => (
+          {displayedCriteria.map((criterion, index) => (
             <OrderableCriterionRow
               key={criterion}
-              criterion={criterion}
-              criteria={criterias}
-              checkedCriteria={checkedCriteria}
               index={index}
-              handleDown={handleDown}
-              handleUp={handleUp}
-              setCheckedCriteria={setCheckedCriteria}
+              checked={true}
+              criterionName={criterion}
+              criterionLabel={
+                criterias.find((c) => c.name === criterion)?.label ?? criterion
+              }
+              selectedCriteria={displayedCriteria}
+              handleDown={moveDown}
+              handleUp={moveUp}
+              setCheckedCriteria={onChange}
             />
           ))}
         </Box>
-        {checkedCriteria.length === 0 && (
+        {displayedCriteria.length === 0 && (
           <Alert severity="info">
             <Typography>
               {t('pollUserSettingsForm.displayedCriteriaEmpty')}
