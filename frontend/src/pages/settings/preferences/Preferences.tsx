@@ -17,6 +17,7 @@ import { replaceSettings } from 'src/features/settings/userSettingsSlice';
 import {
   mainSectionBreakpoints,
   settingsMenuBreakpoints,
+  subSectionBreakpoints,
 } from 'src/pages/settings/layout';
 import { UsersService } from 'src/services/openapi';
 
@@ -54,8 +55,6 @@ const PreferencePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // subSectionBreakP can be changed independently of mainSectionBp
-  const subSectionBreakpoints = mainSectionBreakpoints;
   return (
     <>
       <ContentHeader
