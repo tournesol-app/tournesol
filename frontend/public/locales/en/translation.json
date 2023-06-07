@@ -345,7 +345,7 @@
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "comparisonPage": "Comparison page",
-    "criteriaPersonalization": "Select the criteria you want to display",
+    "criteriaPersonalization": "Select the criteria you want to display by default",
     "optionalCriteria": "Optional criteria",
     "optionalCriteriaEmpty": "All optional criteria will be displayed by default.",
     "displayedCriteria": "Always displayed criteria",

@@ -353,7 +353,7 @@
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "comparisonPage": "Comparaison (page)",
-    "criteriaPersonalization": "Sélectionnez les critères que vous voulez afficher",
+    "criteriaPersonalization": "Sélectionnez les critères que vous souhaitez afficher par défaut",
     "optionalCriteria": "Critères optionnels",
     "optionalCriteriaEmpty": "Tous les critères optionnels seront affichés par défaut.",
     "displayedCriteria": "Critères toujours affichés",
