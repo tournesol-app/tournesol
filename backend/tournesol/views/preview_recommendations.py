@@ -317,5 +317,5 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         self.draw_bottom_overlay(preview_image, upscale_ratio)
         response = HttpResponse(content_type="image/jpeg")
-        preview_image.convert("RGB").save(bytes(response), "jpeg")
+        preview_image.convert("RGB").save(response, "jpeg")
         return response
