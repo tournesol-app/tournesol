@@ -54,7 +54,7 @@ const OrderableCriterionRow = ({
       justifyContent="space-between"
       alignItems="center"
       container
-      wrap='nowrap'
+      wrap="nowrap"
     >
       <Grid item display="flex" alignItems={'center'}>
         <Checkbox
@@ -64,6 +64,7 @@ const OrderableCriterionRow = ({
           onChange={handleCheck}
           color="secondary"
           sx={{
+            pl: 0,
             pr: 2,
           }}
         />
@@ -133,16 +134,58 @@ const ComparisonCriteriaOrderField = ({
           <strong>{t('pollUserSettingsForm.criteriaPersonalization')}</strong>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={6} minHeight={410}>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={12}
+        lg={6}
+        minHeight={{ xs: 569, sm: 410 }}
+      >
         <Box mb={1}>
           <Typography>{t('pollUserSettingsForm.optionalCriteria')}</Typography>
           <Divider />
         </Box>
-        {criterias
-          .filter((c) => !checkedCriteria.includes(c.name) && c.optional)
-          .map((criterion, index) => (
+        <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
+          {criterias
+            .filter((c) => !checkedCriteria.includes(c.name) && c.optional)
+            .map((criterion, index) => (
+              <OrderableCriterionRow
+                key={criterion.name}
+                criterion={criterion}
+                criteria={criterias}
+                checkedCriteria={checkedCriteria}
+                index={index}
+                handleDown={handleDown}
+                handleUp={handleUp}
+                setCheckedCriteria={setCheckedCriteria}
+              />
+            ))}
+        </Box>
+        {checkedCriteria.length === criterias.length - 1 && (
+          <Alert severity="info">
+            <Typography>
+              {t('pollUserSettingsForm.optionalCriteriaEmpty')}
+            </Typography>
+          </Alert>
+        )}
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={12}
+        lg={6}
+        minHeight={{ xs: 569, sm: 410 }}
+      >
+        <Box mb={1}>
+          <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
+          <Divider />
+        </Box>
+        <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
+          {checkedCriteria.map((criterion, index) => (
             <OrderableCriterionRow
-              key={criterion.name}
+              key={criterion}
               criterion={criterion}
               criteria={criterias}
               checkedCriteria={checkedCriteria}
@@ -152,31 +195,7 @@ const ComparisonCriteriaOrderField = ({
               setCheckedCriteria={setCheckedCriteria}
             />
           ))}
-        {checkedCriteria.length === criterias.length - 1 && (
-          <Alert severity="info">
-            <Typography>
-              {t('pollUserSettingsForm.optionalCriteriaEmpty')}
-            </Typography>
-          </Alert>
-        )}
-      </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={6} minHeight={410}>
-        <Box mb={1}>
-          <Typography>{t('pollUserSettingsForm.displayedCriteria')}</Typography>
-          <Divider />
         </Box>
-        {checkedCriteria.map((criterion, index) => (
-          <OrderableCriterionRow
-            key={criterion}
-            criterion={criterion}
-            criteria={criterias}
-            checkedCriteria={checkedCriteria}
-            index={index}
-            handleDown={handleDown}
-            handleUp={handleUp}
-            setCheckedCriteria={setCheckedCriteria}
-          />
-        ))}
         {checkedCriteria.length === 0 && (
           <Alert severity="info">
             <Typography>
