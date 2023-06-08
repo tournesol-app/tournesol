@@ -5,6 +5,7 @@ Mainly used to provide URLs that can be used by the Open Graph protocol.
 """
 
 import logging
+import textwrap
 from io import BytesIO
 from typing import Optional
 
@@ -19,6 +20,7 @@ from PIL import Image, ImageDraw, ImageFont
 from requests.exceptions import Timeout
 from rest_framework.views import APIView
 
+from faq.models import FAQEntry
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
 from tournesol.renderers import ImageRenderer
@@ -39,6 +41,9 @@ REGULAR_FONT_LOCATION = "tournesol/resources/Poppins-Regular.ttf"
 DURATION_FONT_LOCATION = "tournesol/resources/Roboto-Bold.ttf"
 ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 194)
+
+FAQ_TOURNESOL_TITLE_XY = (128, 194)
+FAQ_HEADLINE_XY = (30, 3)
 
 TOURNESOL_SCORE_XY = (84, 30)
 TOURNESOL_SCORE_NEGATIVE_XY = (60, 30)
@@ -177,7 +182,13 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
         ),
         "recommendations_ts_score": ImageFont.truetype(
             str(BASE_DIR / REGULAR_FONT_LOCATION), 16 * upscale_ratio
-        )
+        ),
+        "faq_tournesol_title": ImageFont.truetype(
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
+        ),
+        "faq_title": ImageFont.truetype(
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 18 * upscale_ratio
+        ),
     }
     return config
 
@@ -320,6 +331,96 @@ class DynamicWebsitePreviewDefault(BasePreviewAPIView):
     )
     def get(self, request):
         return self.default_preview()
+
+
+class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
+    """
+    Return a preview of an question, with its answer.
+    """
+
+    permission_classes = []
+
+    fnt_config = get_preview_font_config(upscale_ratio=2)
+
+    def _draw_logo(self, image: Image.Image, upscale_ratio: int):
+        image.alpha_composite(
+            self.get_ts_logo(tuple(numpy.multiply((20, 20), upscale_ratio))),
+            dest=tuple(numpy.multiply((5, 3), upscale_ratio)),
+        )
+
+    def draw_headline(self, image: Image.Image, upscale_ratio: int):
+        headline_height = 30
+        border_width = 6
+        headline = Image.new(
+            "RGBA", (440 * upscale_ratio, headline_height * upscale_ratio), COLOR_WHITE_BACKGROUND
+        )
+        tournesol_frame_draw = ImageDraw.Draw(headline)
+
+        headline_border = Image.new(
+            "RGBA", (440 * upscale_ratio, border_width * upscale_ratio), COLOR_YELLOW_BORDER
+        )
+        headline_border_position = (0, (headline_height - border_width) * upscale_ratio)
+
+        headline.paste(headline_border, headline_border_position)
+
+        tournesol_frame_draw.text(
+            tuple(numpy.multiply(FAQ_HEADLINE_XY, upscale_ratio)),
+            "FAQ Tournesol",
+            font=self.fnt_config["faq_tournesol_title"],
+            fill="#4a473e",
+        )
+
+        image.paste(headline)
+        self._draw_logo(image, upscale_ratio)
+
+    def draw_question(self, image: Image.Image, title, upscale_ratio: int):
+        headline_height = 30
+        text_box_image = Image.new(
+            "RGBA", (440 * upscale_ratio, (240 - headline_height) * upscale_ratio),
+            COLOR_WHITE_FONT
+        )
+        text_box = ImageDraw.Draw(text_box_image)
+
+        title_lines = textwrap.wrap(title, width=40)
+        line_height = 20
+        line_nb = 0
+        for line in title_lines:
+            text_box.text(
+                tuple(numpy.multiply((0, line_height*line_nb), upscale_ratio)),
+                line,
+                font=self.fnt_config["faq_title"],
+                fill="#4a473e",
+            )
+            line_nb += 1
+
+        image.paste(text_box_image, (
+            30,
+            int(1/2 * ((240 + headline_height - line_height * len(title_lines)) * upscale_ratio))
+        ))
+
+    @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW))
+    @extend_schema(
+        description="FAQ preview",
+        responses={200: OpenApiTypes.BINARY},
+    )
+    def get(self, request, qid):
+        upscale_ratio = 2
+        try:
+            question = FAQEntry.objects.get(name=qid)
+        except FAQEntry.DoesNotExist:
+            return self.default_preview()
+
+        title = question.get_text(related="questions")
+
+        preview_image = Image.new(
+            "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_FONT
+        )
+        self.draw_headline(preview_image, upscale_ratio)
+        self.draw_question(preview_image, title, upscale_ratio)
+
+        response = HttpResponse(content_type="image/jpeg")
+        preview_image.convert("RGB").save(response, "jpeg")
+        return response
 
 
 class DynamicWebsitePreviewEntity(BasePreviewAPIView):
