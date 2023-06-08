@@ -74,23 +74,19 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
   );
 };
 
-const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
-  const abstractParagraphs = talk.abstract.split('\n');
-
-  const imageWrapper = (
+const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
+  return (
     <Box
-      className="image-wrapper"
       display="flex"
       sx={{
         maxWidth: '240px',
-        marginRight: { sm: '10px' },
+        marginRight: 2,
         borderRadius: '4px',
         float: 'left',
       }}
     >
       {isPast(talk) && talk.youtube_link ? (
         <img
-          className="full-width entity-thumbnail"
           src={`https://i.ytimg.com/vi/${extractVideoId(
             talk.youtube_link
           )}/mqdefault.jpg`}
@@ -102,7 +98,6 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
         />
       ) : (
         <img
-          className="full-width entity-thumbnail"
           src="/svg/Watering.svg"
           style={{
             width: '240px',
@@ -113,6 +108,11 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
       )}
     </Box>
   );
+};
+
+const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
+  const abstractParagraphs = talk.abstract.split('\n');
+
   return (
     <Paper>
       <TalkHeading talk={talk} />
@@ -122,15 +122,15 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
             className="no-decoration"
             href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
           >
-            {imageWrapper}
+            <TalkImagery talk={talk} />
           </a>
         ) : (
-          { imageWrapper }
+          <TalkImagery talk={talk} />
         )}
 
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
-            key={`$p_${talk.title}_p${index}`}
+            key={`${talk.title}_p${index}`}
             textAlign="justify"
             paragraph
           >
