@@ -103,7 +103,7 @@ class EntityType(ABC):
                 return func(value)
             except ValueError as exc:
                 raise ValidationError(
-                    f"invalid value '{value}' for function '{asked_func}"
+                    f"invalid value '{value}' for function '{asked_func}'"
                 ) from exc
         return value
 
