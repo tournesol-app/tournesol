@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
-import { ContentBox, ContentHeader, TitledSection } from 'src/components';
+import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import TalkEntryList from 'src/pages/talks/TalkEntryList';
 import { TalkEntry, TalksService } from 'src/services/mocks';
@@ -64,21 +64,35 @@ const Talks = () => {
     <>
       <ContentHeader title={t('talksPage.title')} />
       <ContentBox maxWidth="lg">
-        <TitledSection
-          title={t('talksPage.upcomingEvents')}
-          titleComponent="h3"
-        >
+        <Box mb={4}>
+          <Typography
+            variant="h6"
+            component="h3"
+            mb={2}
+            borderBottom="1px solid #E7E5DB"
+          >
+            {t('talksPage.upcomingEvents')}
+          </Typography>
+
           {upcomingTalks && upcomingTalks.length > 0 ? (
             <TalkEntryList talks={upcomingTalks} />
           ) : (
-            <Typography>{t('talksPage.sections.empty')}</Typography>
+            <Typography paragraph>{t('talksPage.sections.empty')}</Typography>
           )}
-        </TitledSection>
-
+        </Box>
         {pastTalks && pastTalks.length > 0 && (
-          <TitledSection title={t('talksPage.pastEvents')} titleComponent="h3">
+          <Box mb={4}>
+            <Typography
+              variant="h6"
+              component="h3"
+              mb={2}
+              borderBottom="1px solid #E7E5DB"
+            >
+              {t('talksPage.pastEvents')}
+            </Typography>
+
             <TalkEntryList talks={pastTalks} />
-          </TitledSection>
+          </Box>
         )}
       </ContentBox>
     </>

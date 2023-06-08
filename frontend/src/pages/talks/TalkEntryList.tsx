@@ -1,18 +1,19 @@
-import { Box } from '@mui/material';
 import React from 'react';
+
+import Grid from '@mui/material/Unstable_Grid2';
 
 import TalkSingleEntry from 'src/pages/talks/TalkSingleEntry';
 import { TalkEntry } from 'src/services/mocks';
 
 const TalkEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
   return (
-    <>
+    <Grid container justifyContent="column" spacing={2}>
       {talks.map((talk) => (
-        <Box key={talk.uid} my={2}>
+        <Grid key={talk.uid} width="100%">
           <TalkSingleEntry key={talk.name} talk={talk} />
-        </Box>
+        </Grid>
       ))}
-    </>
+    </Grid>
   );
 };
 

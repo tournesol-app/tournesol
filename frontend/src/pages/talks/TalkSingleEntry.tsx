@@ -1,18 +1,17 @@
 import React from 'react';
-
-import { Box, Grid, Paper, Typography } from '@mui/material';
-import { TalkEntry } from 'src/services/mocks';
-import { extractVideoId } from 'src/utils/video';
 import { useTranslation } from 'react-i18next';
 
-const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
+import { Box, Grid, Paper, Typography, Link } from '@mui/material';
+
+import { TalkEntry } from 'src/services/mocks';
+import { extractVideoId } from 'src/utils/video';
+
+function isPast(talk: TalkEntry) {
+  return new Date(talk.date) < new Date();
+}
+
+const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
   const { i18n } = useTranslation();
-
-  const abstractParagraphs = talk.abstract.split('\n');
-
-  function isPast(talk: TalkEntry) {
-    return new Date(talk.date) < new Date();
-  }
 
   const formatDate = (dateString: string) => {
     if (i18n.language == 'fr') {
@@ -31,7 +30,7 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
     return dateString;
   };
 
-  const titleGrid = (
+  return (
     <Box
       id={talk.name}
       p={2}
@@ -45,7 +44,22 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
       <Grid container alignItems="center" flexWrap="nowrap">
         <Grid item xs={9}>
           <Typography variant="h4" sx={{ maxWidth: '100%' }}>
-            {talk.title}
+            {talk.invitation_link || talk.youtube_link ? (
+              <Link
+                href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
+                sx={{
+                  color: '#fff',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                {talk.title}
+              </Link>
+            ) : (
+              talk.title
+            )}
           </Typography>
         </Grid>
         <Grid item xs={3}>
@@ -59,6 +73,11 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
       </Grid>
     </Box>
   );
+};
+
+const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
+  const abstractParagraphs = talk.abstract.split('\n');
+
   const imageWrapper = (
     <Box
       className="image-wrapper"
@@ -96,42 +115,31 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
     </Box>
   );
   return (
-    <>
-      <Paper sx={{ mb: 2 }}>
+    <Paper>
+      <TalkHeading talk={talk} />
+      <Box p={2} sx={{ overflow: 'auto' }}>
         {talk.invitation_link || talk.youtube_link ? (
           <a
             className="no-decoration"
             href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
           >
-            {titleGrid}
+            {imageWrapper}
           </a>
         ) : (
-          { titleGrid }
+          { imageWrapper }
         )}
-        <Box p={2} sx={{ overflow: 'auto' }}>
-          {talk.invitation_link || talk.youtube_link ? (
-            <a
-              className="no-decoration"
-              href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
-            >
-              {imageWrapper}
-            </a>
-          ) : (
-            { imageWrapper }
-          )}
 
-          {abstractParagraphs.map((abstractParagraph, index) => (
-            <Typography
-              key={`$p_${talk.title}_p${index}`}
-              textAlign="justify"
-              paragraph
-            >
-              {abstractParagraph}
-            </Typography>
-          ))}
-        </Box>
-      </Paper>
-    </>
+        {abstractParagraphs.map((abstractParagraph, index) => (
+          <Typography
+            key={`$p_${talk.title}_p${index}`}
+            textAlign="justify"
+            paragraph
+          >
+            {abstractParagraph}
+          </Typography>
+        ))}
+      </Box>
+    </Paper>
   );
 };
 

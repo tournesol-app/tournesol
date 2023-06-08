@@ -3,9 +3,9 @@ import { Typography } from '@mui/material';
 
 interface Props {
   title: string;
+  children: React.ReactNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   titleComponent?: React.ElementType<any>;
-  children: React.ReactNode;
 }
 
 const TitledSection = ({ title, titleComponent, children }: Props) => {
