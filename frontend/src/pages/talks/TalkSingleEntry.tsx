@@ -1,34 +1,33 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Paper, Typography, Link } from '@mui/material';
 
 import { TalkEntry } from 'src/services/mocks';
 import { extractVideoId } from 'src/utils/video';
 
+const toPaddedString = (num: number): string => {
+  return num.toString().padStart(2, '0');
+};
+
 function isPast(talk: TalkEntry) {
   return new Date(talk.date) < new Date();
 }
 
 const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
-  const { i18n } = useTranslation();
+  let headingLink;
+  if (isPast(talk) && talk.youtube_link) {
+    headingLink = talk.youtube_link;
+  } else if (!isPast(talk) && talk.invitation_link) {
+    headingLink = talk.invitation_link;
+  }
 
-  const formatDate = (dateString: string) => {
-    if (i18n.language == 'fr') {
-      const date = new Date(dateString);
-
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-
-      const formattedDate = `${day < 10 ? '0' + day : day}/${
-        month < 10 ? '0' + month : month
-      }/${year}`;
-
-      return formattedDate;
-    }
-    return dateString;
-  };
+  let displayedDate;
+  if (talk.date) {
+    const talkDate = new Date(talk.date);
+    displayedDate = `${talkDate.getUTCFullYear()}-${toPaddedString(
+      talkDate.getUTCMonth() + 1
+    )}-${toPaddedString(talkDate.getUTCDate())}`;
+  }
 
   return (
     <Box
@@ -41,12 +40,17 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
         borderTopRightRadius: 'inherit',
       }}
     >
-      <Grid container alignItems="center" flexWrap="nowrap">
-        <Grid item xs={9}>
-          <Typography variant="h4" sx={{ maxWidth: '100%' }}>
-            {talk.invitation_link || talk.youtube_link ? (
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={1}
+      >
+        <Grid item>
+          <Typography variant="h4">
+            {headingLink ? (
               <Link
-                href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
+                href={headingLink}
                 sx={{
                   color: '#fff',
                   textDecoration: 'none',
@@ -62,13 +66,8 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
             )}
           </Typography>
         </Grid>
-        <Grid item xs={3}>
-          <Typography
-            variant="body1"
-            sx={{ textAlign: 'right', fontSize: '1em' }}
-          >
-            {formatDate(talk.date)}
-          </Typography>
+        <Grid item>
+          <Typography variant="body1">{displayedDate}</Typography>
         </Grid>
       </Grid>
     </Box>
