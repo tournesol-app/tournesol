@@ -58,7 +58,10 @@ const Talks = () => {
     <>
       <ContentHeader title={t('talksPage.title')} />
       <ContentBox maxWidth="lg">
-        <TitledSection title={t('talksPage.upcomingEvents')}>
+        <TitledSection
+          title={t('talksPage.upcomingEvents')}
+          titleComponent="h3"
+        >
           {upcomingTalks && upcomingTalks.length > 0 ? (
             <TalkEntryList talks={upcomingTalks} />
           ) : (
@@ -67,7 +70,7 @@ const Talks = () => {
         </TitledSection>
 
         {pastTalks && pastTalks.length > 0 && (
-          <TitledSection title={t('talksPage.pastEvents')}>
+          <TitledSection title={t('talksPage.pastEvents')} titleComponent="h3">
             <TalkEntryList talks={pastTalks} />
           </TitledSection>
         )}
