@@ -709,13 +709,11 @@
   },
   "talksPage": {
     "title": "Tournesol Talks",
+    "upcomingEvents": "Upcoming event(s)",
     "sections": {
-      "title": {
-        "upcoming": "Coming soon",
-        "past": "Past"
-      },
       "empty": "No Talks are planned in the near future."
-    }
+    },
+    "pastEvents": "Past events"
   },
   "myRatedVideosPage": {
     "title": "My rated videos"

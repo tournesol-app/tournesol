@@ -718,13 +718,11 @@
   },
   "talksPage": {
     "title": "Tournesol Talks",
+    "upcomingEvents": "Évènement(s) à venir",
     "sections": {
-      "title": {
-        "upcoming": "À venir",
-        "past": "Passés"
-      },
       "empty": "Aucun entretien n'est prévu dans un avenir proche."
-    }
+    },
+    "pastEvents": "Passés"
   },
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"
