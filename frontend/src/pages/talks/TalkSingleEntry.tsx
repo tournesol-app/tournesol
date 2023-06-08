@@ -22,11 +22,18 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
   }
 
   let displayedDate;
+  const talkDate = new Date(talk.date);
+
   if (talk.date) {
-    const talkDate = new Date(talk.date);
     displayedDate = `${talkDate.getUTCFullYear()}-${toPaddedString(
       talkDate.getUTCMonth() + 1
     )}-${toPaddedString(talkDate.getUTCDate())}`;
+  }
+
+  if (!isPast(talk)) {
+    displayedDate += ` ${toPaddedString(
+      talkDate.getUTCHours()
+    )}:${toPaddedString(talkDate.getUTCMinutes())} CET`;
   }
 
   return (
