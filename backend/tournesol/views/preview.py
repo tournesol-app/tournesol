@@ -366,6 +366,23 @@ def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upsc
     )
 
 
+def get_headline(upscale_ratio: int):
+    headline_height = 30
+    border_width = 6
+    headline = Image.new(
+        "RGBA", (440 * upscale_ratio, headline_height * upscale_ratio), COLOR_WHITE_BACKGROUND
+    )
+
+    headline_border = Image.new(
+        "RGBA", (440 * upscale_ratio, border_width * upscale_ratio), COLOR_YELLOW_BORDER
+    )
+    headline_border_position = (0, (headline_height - border_width) * upscale_ratio)
+
+    headline.paste(headline_border, headline_border_position)
+
+    return headline
+
+
 class DynamicWebsitePreviewDefault(BasePreviewAPIView):
     """
     Return the default preview of the Tournesol front end.
@@ -397,21 +414,10 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
             dest=tuple(numpy.multiply((5, 3), upscale_ratio)),
         )
 
-    def draw_headline(self, image: Image.Image, upscale_ratio: int):
-        headline_height = 30
-        border_width = 6
-        headline = Image.new(
-            "RGBA", (440 * upscale_ratio, headline_height * upscale_ratio), COLOR_WHITE_BACKGROUND
-        )
+    def draw_header(self, image: Image.Image, upscale_ratio: int):
+        headline = get_headline(upscale_ratio)
+
         tournesol_frame_draw = ImageDraw.Draw(headline)
-
-        headline_border = Image.new(
-            "RGBA", (440 * upscale_ratio, border_width * upscale_ratio), COLOR_YELLOW_BORDER
-        )
-        headline_border_position = (0, (headline_height - border_width) * upscale_ratio)
-
-        headline.paste(headline_border, headline_border_position)
-
         tournesol_frame_draw.text(
             tuple(numpy.multiply(FAQ_HEADLINE_XY, upscale_ratio)),
             "FAQ Tournesol",
@@ -464,7 +470,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
         preview_image = Image.new(
             "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_FONT
         )
-        self.draw_headline(preview_image, upscale_ratio)
+        self.draw_header(preview_image, upscale_ratio)
         self.draw_question(preview_image, title, upscale_ratio)
 
         response = HttpResponse(content_type="image/jpeg")
