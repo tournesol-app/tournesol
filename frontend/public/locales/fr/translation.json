@@ -209,10 +209,13 @@
       "communicationWithAssociation": "",
       "shortVersion": "",
       "titles": {
-        "1electronicCommunicationRequired": ""
+        "1electronicCommunicationRequired": "",
+        "2necessaryEmails": "",
+        "3optionalEmails": ""
       },
       "paragraphs": {
-        "youConsentToReceiveEmails": ""
+        "youConsentToReceiveEmails": "",
+        "necessaryEmails": ""
       }
     },
     "definitions": {

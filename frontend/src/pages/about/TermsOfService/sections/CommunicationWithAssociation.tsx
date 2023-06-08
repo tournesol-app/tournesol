@@ -39,6 +39,21 @@ const CommunicationWithAssociation = () => {
           'termsOfService.communicationWithAssociation.paragraphs.youConsentToReceiveEmails'
         )}
       </Typography>
+      <Typography variant="h5" gutterBottom id="necessary-emails">
+        {t(
+          'termsOfService.communicationWithAssociation.titles.2necessaryEmails'
+        )}
+      </Typography>
+      <Typography paragraph>
+        {t(
+          'termsOfService.communicationWithAssociation.paragraphs.necessaryEmails'
+        )}
+      </Typography>
+      <Typography variant="h5" gutterBottom id="optional-emails">
+        {t(
+          'termsOfService.communicationWithAssociation.titles.3optionalEmails'
+        )}
+      </Typography>
     </Box>
   );
 };
