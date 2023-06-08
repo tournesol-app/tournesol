@@ -15,14 +15,14 @@ const AcceptableUse = () => {
         gutterBottom
         id="acceptable-use"
       >
-        {t('termsOfService.acceptableUse.acceptableUse')}
+        {t('terms.acceptableUse.acceptableUse')}
       </Typography>
       <Box my={2}>
         <Alert severity="info">
           <AlertTitle>
-            <strong>{t('termsOfService.shortVersion')}</strong>
+            <strong>{t('terms.shortVersion')}</strong>
           </AlertTitle>
-          {t('termsOfService.acceptableUse.shortVersion')}
+          {t('terms.acceptableUse.shortVersion')}
         </Alert>
       </Box>
       <Typography
@@ -30,41 +30,33 @@ const AcceptableUse = () => {
         gutterBottom
         id="compliance-with-laws-and-regulation"
       >
-        {t(
-          'termsOfService.acceptableUse.titles.1ComplianceWithLawsAndRegulation'
-        )}
+        {t('terms.acceptableUse.titles.1ComplianceWithLawsAndRegulation')}
       </Typography>
       <Typography paragraph>
-        {t(
-          'termsOfService.acceptableUse.paragraphs.complianceWithLawsAndRegulation'
-        )}
+        {t('terms.acceptableUse.paragraphs.complianceWithLawsAndRegulation')}
       </Typography>
       <Typography variant="h5" gutterBottom id="user-safety">
-        {t('termsOfService.acceptableUse.titles.2UserSafety')}
+        {t('terms.acceptableUse.titles.2UserSafety')}
       </Typography>
       <Typography paragraph>
-        {t('termsOfService.acceptableUse.paragraphs.userSafetyIntro')}
+        {t('terms.acceptableUse.paragraphs.userSafetyIntro')}
       </Typography>
       <ul>
         <li>
           <Typography paragraph>
-            {t(
-              'termsOfService.acceptableUse.paragraphs.isUnlawlfulOrPromoteUnlawful'
-            )}
+            {t('terms.acceptableUse.paragraphs.isUnlawlfulOrPromoteUnlawful')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
-            {t(
-              'termsOfService.acceptableUse.paragraphs.isFalseInaccurateOrDeceptive'
-            )}
+            {t('terms.acceptableUse.paragraphs.isFalseInaccurateOrDeceptive')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
             <Trans
               t={t}
-              i18nKey="termsOfService.acceptableUse.paragraphs.orGoesAgainstOurCodeOfConduct"
+              i18nKey="terms.acceptableUse.paragraphs.orGoesAgainstOurCodeOfConduct"
             >
               or goes against our{' '}
               <Link
@@ -84,12 +76,10 @@ const AcceptableUse = () => {
         </li>
       </ul>
       <Typography variant="h5" gutterBottom id="inauthentic-activity-and-spam">
-        {t('termsOfService.acceptableUse.titles.3InauthenticActivityAndSpam')}
+        {t('terms.acceptableUse.titles.3InauthenticActivityAndSpam')}
       </Typography>
       <Typography paragraph>
-        {t(
-          'termsOfService.acceptableUse.paragraphs.inauthenticActivityAndSpamIntro'
-        )}
+        {t('terms.acceptableUse.paragraphs.inauthenticActivityAndSpamIntro')}
       </Typography>
     </Box>
   );

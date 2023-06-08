@@ -18,11 +18,11 @@ const TermsOfServicePage = () => {
   return (
     <>
       <ContentHeader
-        title={`${t('menu.about')} > ${t('termsOfService.termsOfService')}`}
+        title={`${t('menu.about')} > ${t('terms.termsOfService')}`}
       />
       <ContentBox maxWidth="md">
         <Typography variant="h3" gutterBottom>
-          {t('termsOfService.termsOfService')}
+          {t('terms.termsOfService')}
         </Typography>
         <Box display="flex" flexDirection="column" gap={4}>
           <Definitions />

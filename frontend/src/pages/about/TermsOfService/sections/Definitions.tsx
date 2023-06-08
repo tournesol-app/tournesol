@@ -41,21 +41,21 @@ const Definitions = () => {
   return (
     <Box>
       <Typography variant="h4" fontStyle="italic" gutterBottom id="definitions">
-        {t('termsOfService.definitions.definitions')}
+        {t('terms.definitions.definitions')}
       </Typography>
       <Box my={2}>
         <Alert severity="info">
           <AlertTitle>
-            <strong>{t('termsOfService.shortVersion')}</strong>
+            <strong>{t('terms.shortVersion')}</strong>
           </AlertTitle>
-          {t('termsOfService.definitions.shortVersion')}
+          {t('terms.definitions.shortVersion')}
         </Alert>
       </Box>
-      <Section num={1} text={t('termsOfService.definitions.account')} />
+      <Section num={1} text={t('terms.definitions.account')} />
       <Section
         num={2}
         text={
-          <Trans t={t} i18nKey="termsOfService.definitions.agreement">
+          <Trans t={t} i18nKey="terms.definitions.agreement">
             The &quot;Agreement&quot; refers, collectively, to all the terms,
             conditions, notices contained or referenced in this document (the
             &quot;Terms of Service&quot; or the Terms) and all other operating
@@ -65,14 +65,14 @@ const Definitions = () => {
           </Trans>
         }
       />
-      <Section num={3} text={t('termsOfService.definitions.association')} />
-      <Section num={4} text={t('termsOfService.definitions.content')} />
-      <Section num={5} text={t('termsOfService.definitions.service')} />
-      <Section num={6} text={t('termsOfService.definitions.user')} />
+      <Section num={3} text={t('terms.definitions.association')} />
+      <Section num={4} text={t('terms.definitions.content')} />
+      <Section num={5} text={t('terms.definitions.service')} />
+      <Section num={6} text={t('terms.definitions.user')} />
       <Section
         num={7}
         text={
-          <Trans t={t} i18nKey="termsOfService.definitions.website">
+          <Trans t={t} i18nKey="terms.definitions.website">
             The &quot;Website&quot; refers to the Tournesol project&apos;s
             website located at <Link to="/">tournesol.app</Link>, and all
             content and services provided by the Association at or through the

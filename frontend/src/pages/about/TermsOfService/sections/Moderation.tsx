@@ -8,36 +8,36 @@ const Moderation = () => {
   return (
     <Box>
       <Typography variant="h4" fontStyle="italic" gutterBottom id="moderation">
-        {t('termsOfService.moderation.moderation')}
+        {t('terms.moderation.moderation')}
       </Typography>
       <Box my={2}>
         <Alert severity="info">
           <AlertTitle>
-            <strong>{t('termsOfService.shortVersion')}</strong>
+            <strong>{t('terms.shortVersion')}</strong>
           </AlertTitle>
-          {t('termsOfService.moderation.shortVersion')}
+          {t('terms.moderation.shortVersion')}
         </Alert>
       </Box>
       <Typography paragraph>
-        {t('termsOfService.moderation.paragraphs.theTournesolAssociationWill')}
+        {t('terms.moderation.paragraphs.theTournesolAssociationWill')}
       </Typography>
       <Typography paragraph>
-        {t('termsOfService.moderation.paragraphs.dependingOnTheSeverityWe')}
+        {t('terms.moderation.paragraphs.dependingOnTheSeverityWe')}
       </Typography>
       <ul>
         <li>
           <Typography paragraph>
-            {t('termsOfService.moderation.paragraphs.accountSuspension')}
+            {t('terms.moderation.paragraphs.accountSuspension')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
-            {t('termsOfService.moderation.paragraphs.accountTermination')}
+            {t('terms.moderation.paragraphs.accountTermination')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
-            {t('termsOfService.moderation.paragraphs.removalOfAddedContents')}
+            {t('terms.moderation.paragraphs.removalOfAddedContents')}
           </Typography>
         </li>
       </ul>

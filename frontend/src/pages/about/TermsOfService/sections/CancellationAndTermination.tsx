@@ -13,35 +13,27 @@ const CancellationAndTermination = () => {
         gutterBottom
         id="cancellation-and-termination"
       >
-        {t(
-          'termsOfService.cancellationAndTermination.cancellationAndTermination'
-        )}
+        {t('terms.cancellationAndTermination.cancellationAndTermination')}
       </Typography>
       <Box my={2}>
         <Alert severity="info">
           <AlertTitle>
-            <strong>{t('termsOfService.shortVersion')}</strong>
+            <strong>{t('terms.shortVersion')}</strong>
           </AlertTitle>
-          {t('termsOfService.cancellationAndTermination.shortVersion')}
+          {t('terms.cancellationAndTermination.shortVersion')}
         </Alert>
       </Box>
       <Typography variant="h5" gutterBottom id="account-cancellation">
-        {t(
-          'termsOfService.cancellationAndTermination.titles.1accountCancellation'
-        )}
+        {t('terms.cancellationAndTermination.titles.1accountCancellation')}
       </Typography>
       <Typography paragraph>
-        {t(
-          'termsOfService.cancellationAndTermination.paragraphs.accountCancellation'
-        )}
+        {t('terms.cancellationAndTermination.paragraphs.accountCancellation')}
       </Typography>
       <Typography variant="h5" gutterBottom id="upon-cancellation">
-        {t(
-          'termsOfService.cancellationAndTermination.titles.2uponCancellation'
-        )}
+        {t('terms.cancellationAndTermination.titles.2uponCancellation')}
       </Typography>
       <Typography paragraph>
-        {t('termsOfService.cancellationAndTermination.paragraphs.weWillDelete')}
+        {t('terms.cancellationAndTermination.paragraphs.weWillDelete')}
       </Typography>
       <Typography
         variant="h5"
@@ -49,22 +41,22 @@ const CancellationAndTermination = () => {
         id="the-tournesol-association-may-terminate"
       >
         {t(
-          'termsOfService.cancellationAndTermination.titles.3theTournesolAssociationMayTerminate'
+          'terms.cancellationAndTermination.titles.3theTournesolAssociationMayTerminate'
         )}
       </Typography>
       <Typography paragraph>
         {t(
-          'termsOfService.cancellationAndTermination.paragraphs.theAssociationWillCancel'
+          'terms.cancellationAndTermination.paragraphs.theAssociationWillCancel'
         )}
       </Typography>
       <Typography paragraph>
         {t(
-          'termsOfService.cancellationAndTermination.paragraphs.theTournesolAssociationHasTheRight'
+          'terms.cancellationAndTermination.paragraphs.theTournesolAssociationHasTheRight'
         )}
       </Typography>
       <Typography paragraph>
         {t(
-          'termsOfService.cancellationAndTermination.paragraphs.suspendAllAccessInCaseOfThreat'
+          'terms.cancellationAndTermination.paragraphs.suspendAllAccessInCaseOfThreat'
         )}
       </Typography>
     </Box>

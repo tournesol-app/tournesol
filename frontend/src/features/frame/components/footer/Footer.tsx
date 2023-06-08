@@ -100,7 +100,7 @@ const Footer = () => {
       title: t('footer.more'),
       items: [
         {
-          name: t('termsOfService.termsOfService'),
+          name: t('terms.termsOfService'),
           to: '/about/terms-of-service',
         },
         { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },

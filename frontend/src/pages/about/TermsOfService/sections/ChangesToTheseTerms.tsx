@@ -16,21 +16,18 @@ const ChangesToTheseTerms = () => {
         gutterBottom
         id="changes-to-these-terms"
       >
-        {t('termsOfService.changesToTheseTerms.changesToTheseTerms')}
+        {t('terms.changesToTheseTerms.changesToTheseTerms')}
       </Typography>
       <Box my={2}>
         <Alert severity="info">
           <AlertTitle>
-            <strong>{t('termsOfService.shortVersion')}</strong>
+            <strong>{t('terms.shortVersion')}</strong>
           </AlertTitle>
-          {t('termsOfService.changesToTheseTerms.shortVersion')}
+          {t('terms.changesToTheseTerms.shortVersion')}
         </Alert>
       </Box>
       <Typography paragraph>
-        <Trans
-          t={t}
-          i18nKey="termsOfService.changesToTheseTerms.weMayAmendTheseTerms"
-        >
+        <Trans t={t} i18nKey="terms.changesToTheseTerms.weMayAmendTheseTerms">
           We may amend these Terms of Service at any time. We will notify the
           Users of material changes to this Agreement, at least 30 days prior to
           the change taking effect by posting a notice on our website or sending
