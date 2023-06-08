@@ -6,13 +6,15 @@ Mainly used to provide URLs that can be used by the Open Graph protocol.
 
 import logging
 from io import BytesIO
+from typing import Optional
 
 import numpy
 import requests
 from django.conf import settings
 from django.http import FileResponse, HttpResponse
 from django.utils.decorators import method_decorator
-from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from PIL import Image, ImageDraw, ImageFont
 from requests.exceptions import Timeout
 from rest_framework.views import APIView
@@ -78,7 +80,7 @@ class BasePreviewAPIView(APIView):
             raise exc
         return entity
 
-    def is_video(self, entity: Entity) -> None:
+    def is_video(self, entity: Entity) -> bool:
         if entity.type != TYPE_VIDEO:
             logger.info("Preview not implemented for entity with UID %s.", entity.uid)
             return False
@@ -93,7 +95,7 @@ class BasePreviewAPIView(APIView):
 
     def get_yt_thumbnail(
         self, entity: Entity, quality="mq", return_none_on_404=False
-    ) -> Image:
+    ) -> Optional[Image.Image]:
         # Quality can be: hq, mq, sd, or maxres (https://stackoverflow.com/a/34784842/188760)
         url = f"https://img.youtube.com/vi/{entity.video_id}/{quality}default.jpg"
         try:
@@ -118,7 +120,7 @@ class BasePreviewAPIView(APIView):
 
         return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
 
-    def get_best_quality_yt_thumbnail(self, entity: Entity) -> Image:
+    def get_best_quality_yt_thumbnail(self, entity: Entity) -> Optional[Image.Image]:
         result = self.get_yt_thumbnail(
             entity, quality="maxres", return_none_on_404=True
         )
@@ -137,9 +139,10 @@ class BasePreviewAPIView(APIView):
 
         # If the thumbnail doesn't exist a placeholder is returned with a different aspect ratio.
         # We always crop to make sure we always return the expected aspect ratio (16:9).
-        width, height = result.size
-        border_height = (height - width * 9 / 16) // 2
-        result = result.crop((0, border_height, width - 1, height - 1 - border_height))
+        if result is not None:
+            width, height = result.size
+            border_height = int((height - width * 9 / 16) // 2)
+            result = result.crop((0, border_height, width - 1, height - 1 - border_height))
         return result
 
 
@@ -206,7 +209,7 @@ def font_height(font):
     return ascent + descent
 
 
-def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
+def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image.Image:
     tournesol_frame = Image.new(
         "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_BACKGROUND
     )
@@ -229,13 +232,13 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
     )
 
     tournesol_frame_draw.text(
-        numpy.multiply(ENTITY_TITLE_XY, upscale_ratio),
+        tuple(numpy.multiply((ENTITY_TITLE_XY), upscale_ratio)),
         truncated_uploader,
         font=fnt_config["entity_uploader"],
         fill=COLOR_BROWN_FONT,
     )
     tournesol_frame_draw.text(
-        numpy.multiply((ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 18), upscale_ratio),
+        tuple(numpy.multiply((ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 18), upscale_ratio)),
         truncated_title,
         font=fnt_config["entity_title"],
         fill=COLOR_BROWN_FONT,
@@ -251,7 +254,7 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
             score_xy = TOURNESOL_SCORE_NEGATIVE_XY
 
         tournesol_frame_draw.text(
-            numpy.multiply(score_xy, upscale_ratio),
+            tuple(numpy.multiply(score_xy, upscale_ratio)),
             f"{score:.0f}",
             font=fnt_config["ts_score"],
             fill=score_color,
@@ -259,28 +262,28 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
         )
     x_coordinate, y_coordinate = ENTITY_N_CONTRIBUTORS_XY
     tournesol_frame_draw.text(
-        numpy.multiply((x_coordinate, y_coordinate), upscale_ratio),
+        tuple(numpy.multiply((x_coordinate, y_coordinate), upscale_ratio)),
         f"{entity.rating_n_ratings}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        numpy.multiply((x_coordinate, y_coordinate + 26), upscale_ratio),
+        tuple(numpy.multiply((x_coordinate, y_coordinate + 26), upscale_ratio)),
         "comparisons",
         font=fnt_config["entity_ratings_label"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        numpy.multiply((x_coordinate, y_coordinate + 82), upscale_ratio),
+        tuple(numpy.multiply((x_coordinate, y_coordinate + 82), upscale_ratio)),
         f"{entity.rating_n_contributors}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        numpy.multiply((x_coordinate, y_coordinate + 108), upscale_ratio),
+        tuple(numpy.multiply((x_coordinate, y_coordinate + 108), upscale_ratio)),
         "contributors",
         font=fnt_config["entity_ratings_label"],
         fill=COLOR_BROWN_FONT,
@@ -301,6 +304,55 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
         fill=COLOR_YELLOW_BORDER,
     )
     return tournesol_frame
+
+
+def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
+    # pylint: disable=too-many-locals
+    """
+    Draw the duration of a video `entity` on the provided `image`.
+
+    The position is determined according to the `thumbnail_bbox`, so that it
+    is displayed in the bottom right corner of the thumbnail.
+    """
+    font_size = 14 * upscale_ratio
+    font = ImageFont.truetype(str(BASE_DIR / DURATION_FONT_LOCATION), font_size)
+
+    duration = entity.metadata.get("duration")
+    if not duration:
+        return
+    minutes, seconds = divmod(duration, 60)
+    hours, minutes = divmod(minutes, 60)
+
+    # creating a PIL.Image to get a Draw context, image later resized to text length
+    overlay = Image.new('RGBA', (1, 1), COLOR_DURATION_RECTANGLE)
+    overlay_draw = ImageDraw.Draw(overlay)
+
+    padding = tuple(numpy.multiply((5, 1), upscale_ratio))
+    duration_formatted = f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}"
+    duration_text_size = (
+        int(overlay_draw.textlength(duration_formatted, font=font)) + padding[0],
+        font_size + padding[1]
+    )
+
+    overlay = overlay.resize(duration_text_size)
+    # need to reinstanciate Draw after resizing, there must be a better way
+    overlay_draw = ImageDraw.Draw(overlay)
+
+    overlay_draw.text(
+        (padding[0]//2, padding[1]//2),
+        duration_formatted,
+        font=font,
+        fill=COLOR_WHITE_FONT
+    )
+
+    image.alpha_composite(
+        overlay,
+        dest=(
+            # all values are already upscaled (if applicable)
+            thumbnail_bbox[0] + thumbnail_bbox[2] - duration_text_size[0],
+            thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1]
+        )
+    )
 
 
 class DynamicWebsitePreviewDefault(BasePreviewAPIView):
@@ -327,7 +379,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
     permission_classes = []
 
-    def _draw_logo(self, image: Image, entity: Entity, upscale_ratio: int):
+    def _draw_logo(self, image: Image.Image, entity: Entity, upscale_ratio: int):
         """
         Draw the Tournesol logo on the provided image.
 
@@ -341,7 +393,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         # If the score has not been computed yet, display a centered flower.
         if score is None:
             image.alpha_composite(
-                self.get_ts_logo(numpy.multiply((34, 34), upscale_ratio)),
+                self.get_ts_logo(tuple(numpy.multiply((34, 34), upscale_ratio))),
                 dest=tuple(numpy.multiply((43, 24), upscale_ratio)),
             )
 
@@ -349,60 +401,9 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         # just before the score.
         if score and score > 0:
             image.alpha_composite(
-                self.get_ts_logo(numpy.multiply((34, 34), upscale_ratio)),
+                self.get_ts_logo(tuple(numpy.multiply((34, 34), upscale_ratio))),
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
             )
-
-    def draw_duration(self, image: Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
-        # pylint: disable=too-many-locals
-
-        """
-        Draw the duration on the preview.
-        Adapts the overlay position and size in function of the duration text size.
-        """
-        font = ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 4 * upscale_ratio
-        )
-
-        duration = entity.metadata.get("duration")
-        if not duration:
-            return
-        minutes, seconds = divmod(duration, 60)
-        hours, minutes = divmod(minutes, 60)
-
-        # creating a PIL.Image to get a Draw context, image later resized to text length
-        overlay = Image.new('RGBA', (1, 1), COLOR_DURATION_RECTANGLE)
-        overlay_draw = ImageDraw.Draw(overlay)
-
-        font_size = 14 * upscale_ratio
-        font = ImageFont.truetype(str(BASE_DIR / DURATION_FONT_LOCATION), font_size)
-
-        padding = tuple(numpy.multiply((5, 1), upscale_ratio))
-        duration_formatted = f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}"
-        duration_text_size = (
-            int(overlay_draw.textlength(duration_formatted, font=font)) + padding[0],
-            font_size + padding[1]
-        )
-
-        overlay = overlay.resize(duration_text_size)
-        # need to reinstanciate Draw after resizing, there must be a better way
-        overlay_draw = ImageDraw.Draw(overlay)
-
-        overlay_draw.text(
-            (padding[0]//2, padding[1]//2),
-            duration_formatted,
-            font=font,
-            fill=COLOR_WHITE_FONT
-        )
-
-        image.alpha_composite(
-            overlay,
-            dest=(
-                # all values are already upscaled (if applicable)
-                thumbnail_bbox[0] + thumbnail_bbox[2] - duration_text_size[0],
-                thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1]
-            )
-        )
 
     @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW))
     @extend_schema(
@@ -432,13 +433,13 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         # (width, height, left, top)
         youtube_thumbnail_bbox = tuple(numpy.multiply((320, 180, 120, 0), upscale_ratio))
 
-        youtube_thumbnail = youtube_thumbnail.resize(youtube_thumbnail_bbox[0:2])
+        if youtube_thumbnail is not None:
+            youtube_thumbnail = youtube_thumbnail.resize(youtube_thumbnail_bbox[0:2])
+            preview_image.paste(
+                youtube_thumbnail, box=tuple(youtube_thumbnail_bbox[2:4])
+            )
 
-        preview_image.paste(
-            youtube_thumbnail, box=tuple(youtube_thumbnail_bbox[2:4])
-        )
-
-        self.draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
+        draw_video_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
         self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
 
         response = HttpResponse(content_type="image/jpeg")
