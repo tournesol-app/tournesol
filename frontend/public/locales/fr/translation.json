@@ -210,12 +210,12 @@
       "shortVersion": "",
       "titles": {
         "1electronicCommunicationRequired": "",
-        "2necessaryEmails": "",
-        "3optionalEmails": ""
+        "2necessaryEmails": ""
       },
       "paragraphs": {
         "youConsentToReceiveEmails": "",
-        "necessaryEmails": ""
+        "necessaryEmails": "",
+        "additionalNecessaryEmails": ""
       }
     },
     "definitions": {

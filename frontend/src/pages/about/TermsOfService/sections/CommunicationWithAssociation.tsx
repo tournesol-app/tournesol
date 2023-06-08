@@ -43,8 +43,10 @@ const CommunicationWithAssociation = () => {
       <Typography paragraph>
         {t('terms.communicationWithAssociation.paragraphs.necessaryEmails')}
       </Typography>
-      <Typography variant="h5" gutterBottom id="optional-emails">
-        {t('terms.communicationWithAssociation.titles.3optionalEmails')}
+      <Typography paragraph>
+        {t(
+          'terms.communicationWithAssociation.paragraphs.additionalNecessaryEmails'
+        )}
       </Typography>
     </Box>
   );
