@@ -201,7 +201,7 @@
     },
     "communicationWithAssociation": {
       "communicationWithAssociation": "F. Communication with the Association",
-      "shortVersion": "We use email to stay in touch with the Users. We do not send emails without explicit consent.",
+      "shortVersion": "We use email to stay in touch with the Users. You consent to receive emails required by the operation of the Service. We do not send additional emails without explicit consent.",
       "titles": {
         "1electronicCommunicationRequired": "1. Electronic Communication Required",
         "2necessaryEmails": "2. Necessary Emails"
