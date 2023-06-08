@@ -150,23 +150,23 @@
   },
   "menu": {
     "home": "Home",
-    "compare": "Compare 🌻",
-    "myComparisons": "My comparisons",
-    "comparedItems": "My compared items",
-    "myRateLaterList": "My rate later list",
-    "myResults": "My results",
-    "faq": "FAQ",
-    "about": "About",
-    "donate": "Donate",
     "homeAriaLabel": "Link to the home page",
     "recommendationsAriaLabel": "Link to the recommendations page",
+    "compare": "Compare 🌻",
     "compareAriaLabel": "Link to the comparison page",
+    "myComparisons": "My comparisons",
     "myComparisonsAriaLabel": "Link to my comparisons page",
+    "comparedItems": "My compared items",
     "myComparedItemsAriaLabel": "Link to my compared items page",
+    "myRateLaterList": "My rate later list",
     "myRateLaterListAriaLabel": "Link to my rate later list",
+    "myResults": "My results",
     "myFeedbackAriaLabel": "Link to my feedback page",
+    "faq": "FAQ",
     "FAQAriaLabel": "Link to the FAQ page",
-    "aboutAriaLabel": "Link to the about page"
+    "about": "About",
+    "aboutAriaLabel": "Link to the about page",
+    "donate": "Donate"
   },
   "frame": {
     "onChromeOrDerivatives": "On Chrome, Chromium, or derivatives",
@@ -707,6 +707,16 @@
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
   },
+  "talksPage": {
+    "title": "Tournesol Talks",
+    "sections": {
+      "title": {
+        "upcoming": "Coming soon",
+        "past": "Past"
+      },
+      "empty": "No Talks are planned in the near future."
+    }
+  },
   "myRatedVideosPage": {
     "title": "My rated videos"
   },
@@ -873,14 +883,5 @@
     "uk": "Ukrainian",
     "ur": "Urdu",
     "vi": "Vietnamese"
-  },
-  "talksPage": {
-    "sections": {
-      "title": {
-        "upcoming": "Coming soon",
-        "past": "Past"
-      },
-      "empty": "No Talks are planned in the near future."
-    }
   }
 }

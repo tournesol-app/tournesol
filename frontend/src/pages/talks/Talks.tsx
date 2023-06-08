@@ -56,7 +56,7 @@ const Talks = () => {
 
   return (
     <>
-      <ContentHeader title="Talks" />
+      <ContentHeader title={t('talksPage.title')} />
       <ContentBox maxWidth="lg">
         <TitledSection title={t('talksPage.sections.title.upcoming')}>
           {upcomingTalks && upcomingTalks.length > 0 ? (

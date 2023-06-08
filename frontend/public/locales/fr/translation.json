@@ -156,23 +156,23 @@
   },
   "menu": {
     "home": "Accueil",
-    "compare": "Comparer 🌻",
-    "myComparisons": "Mes comparaisons",
-    "comparedItems": "Élements comparés",
-    "myRateLaterList": "À comparer plus tard",
-    "myResults": "Mes résultats",
-    "faq": "FAQ",
-    "about": "À propos",
-    "donate": "Faire un don",
     "homeAriaLabel": "Lien vers la page d'accueil",
     "recommendationsAriaLabel": "Lien vers la page des recommandations",
+    "compare": "Comparer 🌻",
     "compareAriaLabel": "Lien vers la page comparer",
+    "myComparisons": "Mes comparaisons",
     "myComparisonsAriaLabel": "Lien vers la page des comparaisons",
+    "comparedItems": "Élements comparés",
     "myComparedItemsAriaLabel": "Lien vers mes objets comparés",
+    "myRateLaterList": "À comparer plus tard",
     "myRateLaterListAriaLabel": "Lien vers ma liste à comparer plus tard",
+    "myResults": "Mes résultats",
     "myFeedbackAriaLabel": "Lien vers ma réaction",
+    "faq": "FAQ",
     "FAQAriaLabel": "Lien vers la page FAQ",
-    "aboutAriaLabel": "Lien vers la page à propos"
+    "about": "À propos",
+    "aboutAriaLabel": "Lien vers la page à propos",
+    "donate": "Faire un don"
   },
   "frame": {
     "onChromeOrDerivatives": "Sur Chrome, Chromium, ou dérivés",
@@ -716,6 +716,16 @@
     "yourNewEmailAddressIsNowVerified": "Votre nouvelle adresse e-mail est maintenant vérifiée.",
     "verificationFailed": "La vérification a échoué"
   },
+  "talksPage": {
+    "title": "Tournesol Talks",
+    "sections": {
+      "title": {
+        "upcoming": "À venir",
+        "past": "Passés"
+      },
+      "empty": "Aucun entretien n'est prévu dans un avenir proche."
+    }
+  },
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"
   },
@@ -882,14 +892,5 @@
     "uk": "Ukrainien",
     "ur": "Ourdou",
     "vi": "Vietnamien"
-  },
-  "talksPage": {
-    "sections": {
-      "title": {
-        "upcoming": "À venir",
-        "past": "Passés"
-      },
-      "empty": "Aucun entretien n'est prévu dans un avenir proche."
-    }
   }
 }
