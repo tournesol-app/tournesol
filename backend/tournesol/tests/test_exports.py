@@ -2,7 +2,6 @@ import csv
 import io
 import json
 import random
-import re
 import shutil
 import zipfile
 from collections import ChainMap
@@ -10,7 +9,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict
-from unittest.mock import ANY
 
 import requests
 from django.conf import settings
@@ -24,8 +22,6 @@ from core.models import User
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago, time_ahead
 from ml.inputs import MlInputFromPublicDataset
-from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
-from ml.mehestan.individual import ALPHA, R_MAX
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -37,7 +33,6 @@ from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory,
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
 from tournesol.tests.utils.mock_now import MockNow
-from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
 
 @override_settings(
@@ -298,8 +293,6 @@ class ExportTest(TestCase):
                 self.assertEqual(
                     set(metadata["algorithms_parameters"]["mehestan"].keys()),
                     {
-                        "ALPHA",
-                        "R_MAX",
                         "W",
                         "SCALING_WEIGHT_CALIBRATION",
                         "OVER_TRUST_BIAS",
@@ -310,6 +303,13 @@ class ExportTest(TestCase):
                         "POLL_SCALING_MIN_CONTRIBUTORS",
                         "POLL_SCALING_QUANTILE",
                         "POLL_SCALING_SCORE_AT_QUANTILE",
+                    }
+                )
+                self.assertEqual(
+                    set(metadata["algorithms_parameters"]["individual_scores"]["parameters"].keys()),
+                    {
+                        "R_MAX",
+                        "ALPHA",
                     }
                 )
 

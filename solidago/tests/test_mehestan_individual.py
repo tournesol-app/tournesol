@@ -3,15 +3,22 @@ import random
 import pandas as pd
 import pytest
 
-from ml.mehestan.individual import compute_individual_score
-from ml.mehestan.individual_bbt import compute_individual_score as compute_individual_score_bbt
+from solidago.mehestan.individual import ContinuousBradleyTerry, MatrixInversionInvididualAlgo
+
+
+matrix_inversion = MatrixInversionInvididualAlgo(r_max=10)
+continuous_bradley_terry = ContinuousBradleyTerry(r_max=10)
 
 
 @pytest.mark.parametrize(
-    "compute_method", [compute_individual_score, compute_individual_score_bbt]
+    "algo",
+    [
+        matrix_inversion,
+        continuous_bradley_terry,
+    ],
 )
 class TestIndividualScores:
-    def test_all_comparisons_zero(self, compute_method):
+    def test_all_comparisons_zero(self, algo):
         comparisons = pd.DataFrame(
             [
                 {
@@ -26,12 +33,12 @@ class TestIndividualScores:
                 },
             ]
         )
-        scores = compute_method(comparisons)
+        scores = algo.compute_individual_scores(comparisons)
         for video in ["video_1", "video_2", "video_3"]:
             assert scores.loc[video].raw_score == 0
             assert scores.loc[video].raw_uncertainty > 0
 
-    def test_comparisons_chain(self, compute_method):
+    def test_comparisons_chain(self, algo):
         comparisons = pd.DataFrame(
             [
                 {
@@ -42,7 +49,7 @@ class TestIndividualScores:
                 for idx in range(20)
             ]
         )
-        scores = compute_method(comparisons)
+        scores = algo.compute_individual_scores(comparisons)
         scores.sort_values("raw_score", inplace=True)
 
         # Video are ranked according to the chain of comparisons
@@ -51,9 +58,11 @@ class TestIndividualScores:
         # Compared videos are indexed 0 to 20 included; video_10 is in the middle with score 0.0
         assert scores.loc["video_10"].raw_score == pytest.approx(0.0, abs=1e-4)
         for idx in range(10):
-            assert scores.iloc[idx].raw_score == pytest.approx(-1 * scores.iloc[20-idx].raw_score, abs=1e-4)
+            assert scores.iloc[idx].raw_score == pytest.approx(
+                -1 * scores.iloc[20 - idx].raw_score, abs=1e-4
+            )
 
-    def test_individual_scores_mean_is_zero(self, compute_method):
+    def test_individual_scores_mean_is_zero(self, algo):
         comparisons = [
             ("A", "B", random.randint(-10, 10)),
             ("A", "C", random.randint(-10, 10)),
@@ -63,12 +72,12 @@ class TestIndividualScores:
             ("C", "D", random.randint(-10, 10)),
         ]
         comparisons_df = pd.DataFrame(comparisons, columns=["entity_a", "entity_b", "score"])
-        scores = compute_method(comparisons_df)
+        scores = algo.compute_individual_scores(comparisons_df)
         assert scores.raw_score.mean() == pytest.approx(0.0, abs=1e-4)
 
-    def test_comparisons_strong_preferences(self, compute_method):
-        if compute_method is compute_individual_score:
-            pytest.xfail("The non-BBT version does not preserve preferences order :( ")
+    def test_comparisons_strong_preferences(self, algo):
+        if algo is matrix_inversion:
+            pytest.xfail("The legacy algorithm does not preserve preferences order :( ")
 
         comparisons = [
             ("A", "B", 0),
@@ -82,14 +91,14 @@ class TestIndividualScores:
             ("B", "F", 10),
         ]
         comparisons_df = pd.DataFrame(comparisons, columns=["entity_a", "entity_b", "score"])
-        scores = compute_method(comparisons_df)
+        scores = algo.compute_individual_scores(comparisons_df)
 
         # F is preferred to E
         assert scores.loc["F"].raw_score > scores.loc["E"].raw_score
 
-    def test_comparisons_monotony(self, compute_method):
-        if compute_method is compute_individual_score:
-            pytest.xfail("The non-BBT version does not preserve monotony")
+    def test_comparisons_monotony(self, algo):
+        if algo is matrix_inversion:
+            pytest.xfail("The legacy algorithm does not preserve monotony")
 
         comparisons_1 = [
             ("A", "B", 8),
@@ -111,13 +120,13 @@ class TestIndividualScores:
         ]
 
         comparisons_1_df = pd.DataFrame(comparisons_1, columns=["entity_a", "entity_b", "score"])
-        scores_1 = compute_method(comparisons_1_df)
+        scores_1 = algo.compute_individual_scores(comparisons_1_df)
         comparisons_2_df = pd.DataFrame(comparisons_2, columns=["entity_a", "entity_b", "score"])
-        scores_2 = compute_method(comparisons_2_df)
+        scores_2 = algo.compute_individual_scores(comparisons_2_df)
 
         assert scores_2.loc["A"].raw_score > scores_1.loc["A"].raw_score
 
-    def test_comparisons_non_connex(self, compute_method):
+    def test_comparisons_non_connex(self, algo):
         comparisons = [
             # Group 1
             ("A", "B", -1),
@@ -129,7 +138,7 @@ class TestIndividualScores:
             ("E", "H", 1),
         ]
         comparisons_df = pd.DataFrame(comparisons, columns=["entity_a", "entity_b", "score"])
-        scores = compute_method(comparisons_df)
+        scores = algo.compute_individual_scores(comparisons_df)
 
         assert scores.loc["A"].raw_score == pytest.approx(0.0, abs=1e-4)
         assert scores.loc["A"].raw_score == pytest.approx(scores.loc["E"].raw_score, abs=1e-4)

@@ -236,7 +236,6 @@ class TestMlTrain(TransactionTestCase):
             places=3,
         )
 
-    @pytest.mark.skip("Uncertainty behaves differently with BBT")
     def test_tournesol_scores_different_uncertainty(self):
         user1 = UserFactory()
         user2 = UserFactory()

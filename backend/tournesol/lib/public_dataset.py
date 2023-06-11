@@ -14,7 +14,6 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
-from ml.mehestan.individual import ALPHA, R_MAX
 from ml.mehestan.run import (
     MEHESTAN_MAX_SCALED_SCORE,
     POLL_SCALING_MIN_CONTRIBUTORS,
@@ -22,6 +21,7 @@ from ml.mehestan.run import (
     POLL_SCALING_SCORE_AT_QUANTILE,
     VOTE_WEIGHT_PRIVATE_RATINGS,
     VOTE_WEIGHT_PUBLIC_RATINGS,
+    individual_scores_algo,
 )
 from tournesol.entities.base import UID_DELIMITER
 from vouch.trust_algo import SINK_VOUCH, TRUSTED_EMAIL_PRETRUST, VOUCH_DECAY
@@ -264,9 +264,8 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
                 "TRUSTED_EMAIL_PRETRUST": TRUSTED_EMAIL_PRETRUST,
                 "VOUCH_DECAY": VOUCH_DECAY,
             },
+            "individual_scores": individual_scores_algo.get_metadata(),
             "mehestan": {
-                "ALPHA": ALPHA,
-                "R_MAX": R_MAX,
                 "W": W,
                 "SCALING_WEIGHT_CALIBRATION": SCALING_WEIGHT_CALIBRATION,
                 "VOTE_WEIGHT_PUBLIC_RATINGS": VOTE_WEIGHT_PUBLIC_RATINGS,

@@ -8,6 +8,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django import db
+from solidago.mehestan.individual import MatrixInversionInvididualAlgo
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
@@ -19,11 +20,10 @@ from ml.outputs import (
 )
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
-from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
+from tournesol.utils.constants import COMPARISON_MAX, MEHESTAN_MAX_SCALED_SCORE
 from vouch.voting_rights import compute_voting_rights
 
 from .global_scores import compute_scaled_scores, get_global_scores
-from .individual_bbt import compute_individual_score
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,9 @@ POLL_SCALING_MIN_CONTRIBUTORS = 4
 
 VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
+
+
+individual_scores_algo = MatrixInversionInvididualAlgo(r_max=COMPARISON_MAX)
 
 
 def get_individual_scores(
@@ -53,12 +56,13 @@ def get_individual_scores(
         else:
             try:
                 contributor_score_df = initial_contributor_scores.get_group(user_id)
-                initial_entity_scores = dict(
-                    zip(contributor_score_df.entity, contributor_score_df.raw_score)
+                initial_entity_scores = pd.Series(
+                    data=contributor_score_df.raw_score,
+                    index=contributor_score_df.entity
                 )
             except KeyError:
                 initial_entity_scores = None
-        scores = compute_individual_score(
+        scores = individual_scores_algo.compute_individual_scores(
             user_comparisons, initial_entity_scores=initial_entity_scores
         )
         if scores is None:
