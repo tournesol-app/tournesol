@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import { Info as InfoIcon } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
 
 import type {
   ComparisonRequest,
   ComparisonCriteriaScore,
+  PollCriteria,
 } from 'src/services/openapi';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import StatsContext from 'src/features/statistics/StatsContext';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
@@ -37,6 +40,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+/**
+ * A criterion can be considered "collapsed" if:
+ *  - it is configured optional in the poll
+ *  - the user haven't marked it as always displayed
+ */
+const isCollapsed = (
+  criterion: PollCriteria | undefined,
+  userPreferences: string[] | undefined
+) => {
+  return criterion?.optional && !userPreferences?.includes(criterion.name);
+};
+
 const ComparisonSliders = ({
   submit,
   initialComparison,
@@ -62,6 +77,9 @@ const ComparisonSliders = ({
 
   const { refreshStats } = useContext(StatsContext);
 
+  const userSettings = useSelector(selectSettings)?.settings;
+  const critAlwaysDisplayed = userSettings.videos?.comparison__criteria_order;
+
   const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
@@ -77,10 +95,11 @@ const ComparisonSliders = ({
       entity_a: { uid: uidA },
       entity_b: { uid: uidB },
       criteria_scores: criterias
-        .filter((c) => !c.optional)
+        .filter((c) => !c.optional || critAlwaysDisplayed?.includes(c.name))
         .map((c) => ({ criteria: c.name, score: pendingRatings[c.name] || 0 })),
     };
   };
+
   const [comparison, setComparison] = useState<ComparisonRequest>(
     castToComparison(initialComparison, {})
   );
@@ -153,13 +172,14 @@ const ComparisonSliders = ({
   };
 
   const showOptionalCriterias = comparison.criteria_scores.some(
-    ({ criteria }) => criteriaByName[criteria]?.optional
+    ({ criteria }) => isCollapsed(criteriaByName[criteria], critAlwaysDisplayed)
   );
 
   const handleCollapseCriterias = () => {
     const optionalCriteriasKeys = criterias
-      .filter((c) => c.optional)
+      .filter((c) => isCollapsed(c, critAlwaysDisplayed))
       .map((c) => c.name);
+
     optionalCriteriasKeys.forEach((criteria) =>
       handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
     );
@@ -191,40 +211,74 @@ const ComparisonSliders = ({
               handleSliderChange={handleSliderChange}
             />
           ))}
-        <Button
-          fullWidth
-          disabled={!criterias.some((c) => c.optional)}
-          onClick={handleCollapseCriterias}
-          startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
-          size="medium"
-          color="secondary"
-          sx={{
-            marginBottom: '8px',
-            color: showOptionalCriterias ? 'red' : '',
-          }}
-        >
-          {showOptionalCriterias
-            ? t('comparison.removeOptionalCriterias')
-            : t('comparison.addOptionalCriterias')}
-        </Button>
-        <Collapse
-          in={showOptionalCriterias}
-          timeout="auto"
-          sx={{ width: '100%' }}
-        >
-          {criterias
-            .filter((c) => c.optional)
-            .map((criteria) => (
+
+        {critAlwaysDisplayed != undefined &&
+          critAlwaysDisplayed
+            .filter(
+              (criteria) => criterias.find((c) => c.name === criteria)?.optional
+            )
+            .map((criterionName) => (
               <CriteriaSlider
-                key={criteria.name}
-                criteria={criteria.name}
-                criteriaLabel={criteria.label}
-                criteriaValue={criteriaValues[criteria.name]}
+                key={criterionName}
+                criteria={criterionName}
+                criteriaLabel={
+                  criterias.find((c) => c.name === criterionName)?.label ??
+                  criterionName
+                }
+                criteriaValue={criteriaValues[criterionName]}
                 disabled={submitted}
                 handleSliderChange={handleSliderChange}
               />
             ))}
-        </Collapse>
+
+        {!criterias
+          .filter((c) => c.optional)
+          .every((optCriterion) => {
+            return critAlwaysDisplayed?.includes(optCriterion.name);
+          }) && (
+          <>
+            <Button
+              fullWidth
+              disabled={
+                !criterias.some((c) => isCollapsed(c, critAlwaysDisplayed))
+              }
+              onClick={handleCollapseCriterias}
+              startIcon={
+                showOptionalCriterias ? <ExpandLess /> : <ExpandMore />
+              }
+              size="medium"
+              color="secondary"
+              sx={{
+                marginBottom: '8px',
+                color: showOptionalCriterias ? 'red' : '',
+              }}
+            >
+              {showOptionalCriterias
+                ? t('comparison.removeOptionalCriterias')
+                : t('comparison.addOptionalCriterias')}
+            </Button>
+
+            <Collapse
+              in={showOptionalCriterias}
+              timeout="auto"
+              sx={{ width: '100%' }}
+            >
+              {criterias
+                .filter((c) => isCollapsed(c, critAlwaysDisplayed))
+                .map((criteria) => (
+                  <CriteriaSlider
+                    key={criteria.name}
+                    criteria={criteria.name}
+                    criteriaLabel={criteria.label}
+                    criteriaValue={criteriaValues[criteria.name]}
+                    disabled={submitted}
+                    handleSliderChange={handleSliderChange}
+                  />
+                ))}
+            </Collapse>
+          </>
+        )}
+
         {submitted && (
           <div id="id_submitted_text_info">
             <Typography>{t('comparison.changeOneItem')}</Typography>

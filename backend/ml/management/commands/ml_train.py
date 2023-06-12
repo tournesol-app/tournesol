@@ -8,14 +8,19 @@ from vouch.trust_algo import trust_algo
 
 
 class Command(BaseCommand):
-    """
-    Runs Machine Learning task, to update scores periodically
-    """
-    help = "Runs the ml"
+    help = "Runs Machine Learning tasks, to update scores periodically"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--no-trust-algo",
+            action="store_true",
+            help="Disable trust scores computation and preserve existing trust_score values",
+        )
 
     def handle(self, *args, **options):
-        # Update "trust_score" for all users
-        trust_algo()
+        if not options["no_trust_algo"]:
+            # Update "trust_score" for all users
+            trust_algo()
 
         # Update scores for all polls
         for poll in Poll.objects.filter(active=True):

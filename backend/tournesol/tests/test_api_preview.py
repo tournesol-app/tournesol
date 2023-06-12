@@ -81,6 +81,13 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
+    def test_preview_get_random_url_accept_html(self):
+        """
+        A request that requires a text/html response should receive a 406 error.
+        """
+        response = self.client.get(f"{self.preview_url}random_url", HTTP_ACCEPT="text/html")
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
+
 
 class DynamicWebsitePreviewEntityTestCase(TestCase):
     """
@@ -460,10 +467,12 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
         response = self.client.get(f"{self.preview_url}/?language=")
         self.assertEqual(response.status_code, 302)
         # No filter should be present in the redirection
-        self.assertEqual(
-            response.headers["location"],
-            f"{self.preview_internal_url}/?"
-        )
+        self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
+
+    def test_recommendations_preview_empty_fields(self):
+        response = self.client.get(f"{self.preview_url}/?duration_lte&duration_gte")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
 
     def test_recommendations_preview_internal_route(self):
         response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")

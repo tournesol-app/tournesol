@@ -1,7 +1,7 @@
-from rest_framework.renderers import BaseRenderer
+from rest_framework.renderers import StaticHTMLRenderer
 
 
-class ImageRenderer(BaseRenderer):
+class ImageRenderer(StaticHTMLRenderer):
     media_type = "image/*"
     format = ""
     render_style = "binary"

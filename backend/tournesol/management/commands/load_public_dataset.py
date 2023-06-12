@@ -1,5 +1,4 @@
 import concurrent
-import random
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -10,13 +9,13 @@ from django.db import transaction
 
 from core.models import User
 from core.models.user import EmailDomain
+from ml.inputs import MlInputFromPublicDataset
 from tournesol.models import Comparison, ComparisonCriteriaScore, ContributorRating, Entity, Poll
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 
-PUBLIC_DATASET_URL = "https://api.tournesol.app/exports/comparisons/"
+PUBLIC_DATASET_URL = "https://api.tournesol.app/exports/all/"
 RANDOM_SEED = 0
 SEED_USERS = ["aidjango", "le_science4all", "lpfaucon", "biscuissec", "amatissart"]
-PRETRUSTED_PROBABILITY = 0.1
 
 thread_pool = ThreadPoolExecutor(max_workers=10)
 
@@ -28,15 +27,15 @@ class Command(BaseCommand):
         parser.add_argument("--user-sampling", type=float, default=None)
         parser.add_argument("--comparisons-url", type=str, default=PUBLIC_DATASET_URL)
 
-    def create_user(self, username):
-        is_pretrusted = (
-            username in SEED_USERS
-        ) or random.random() < PRETRUSTED_PROBABILITY  # nosec B311
+    def create_user(self, username: str, ml_input: MlInputFromPublicDataset):
+        user = ml_input.users.loc[ml_input.users.public_username == username].iloc[0]
+        is_pretrusted = user.trust_score > 0.5
         email = f"{username}@trusted.example" if is_pretrusted else f"{username}@example.com"
         user = User.objects.create_user(
             username=username,
             email=email,
-            is_staff=username in SEED_USERS
+            is_staff=username in SEED_USERS,
+            trust_score=user.trust_score,
         )
         if user.is_staff:
             # Set a default password for staff accounts (used in e2e tests, etc.)
@@ -63,15 +62,11 @@ class Command(BaseCommand):
 
     def create_test_user(self):
         User.objects.create_user(  # hardcoded password is deliberate # nosec B106
-            username="user1",
-            password="tournesol",
-            email="user1@tournesol.app"
+            username="user1", password="tournesol", email="user1@tournesol.app"
         )
 
     def handle(self, *args, **options):
-        random.seed(RANDOM_SEED)
-
-        public_dataset = pd.read_csv(options["comparisons_url"])
+        public_dataset = MlInputFromPublicDataset(options["comparisons_url"])
         nb_comparisons = 0
 
         with transaction.atomic():
@@ -79,28 +74,30 @@ class Command(BaseCommand):
             poll.algorithm = ALGORITHM_MEHESTAN
             poll.save()
 
-            usernames = public_dataset.public_username.unique()
+            usernames = public_dataset.users.public_username.unique()
+            comparisons = public_dataset.comparisons
             if options["user_sampling"]:
                 usernames = set(
                     pd.Series(usernames)
                     .sample(frac=options["user_sampling"], random_state=RANDOM_SEED)
                     .values
                 ).union(SEED_USERS)
-                public_dataset = public_dataset[public_dataset.public_username.isin(usernames)]
+                comparisons = comparisons[comparisons.public_username.isin(usernames)]
 
             EmailDomain.objects.create(
-                domain="@trusted.example",
-                status=EmailDomain.STATUS_ACCEPTED
+                domain="@trusted.example", status=EmailDomain.STATUS_ACCEPTED
             )
 
-            users = {username: self.create_user(username) for username in usernames}
+            users = {
+                username: self.create_user(username, public_dataset) for username in usernames
+            }
             print(f"Created {len(users)} users")
 
-            videos = self.create_videos(set(public_dataset.video_a) | set(public_dataset.video_b))
+            videos = self.create_videos(set(comparisons.entity_a) | set(comparisons.entity_b))
             print(f"Created {len(videos)} video entities")
 
-            for ((username, video_a, video_b), rows) in public_dataset.groupby(
-                ["public_username", "video_a", "video_b"]
+            for ((username, video_a, video_b), rows) in comparisons.groupby(
+                ["public_username", "entity_a", "entity_b"]
             ):
                 comparison = Comparison.objects.create(
                     user=users[username],
@@ -119,6 +116,7 @@ class Command(BaseCommand):
 
             for entity in Entity.objects.iterator():
                 entity.update_n_ratings()
+                entity.update_entity_poll_rating(poll=poll)
 
             self.create_test_user()
             ContributorRating.objects.update(is_public=True)
@@ -129,4 +127,4 @@ class Command(BaseCommand):
             print("Done.")
 
         print("Running ml-train...")
-        call_command("ml_train")
+        call_command("ml_train", "--no-trust-algo")
