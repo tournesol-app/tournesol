@@ -1,17 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Typography } from '@mui/material';
+import { Alert, Box, Button, Link, Paper, Typography } from '@mui/material';
+import { Email } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import TalkEntryList from 'src/pages/talks/TalkEntryList';
 import { TalkEntry, TalksService } from 'src/services/mocks';
+import { tournesolTalksMailingListUrl } from 'src/utils/url';
 
 interface SortedTalkAccumulator {
   past: TalkEntry[];
   future: TalkEntry[];
 }
+
+const IntroductionPaper = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Paper sx={{ p: 2, mb: 4 }}>
+      <Typography component="h2" variant="h4" gutterBottom>
+        {t('talksPage.whatAreTournesolTalks')}
+      </Typography>
+      <Typography paragraph>
+        {t('talksPage.tournesolTalksIntroduction')}
+      </Typography>
+      <Box display="flex" justifyContent="flex-end">
+        <Button
+          size="small"
+          variant="contained"
+          component={Link}
+          href={tournesolTalksMailingListUrl}
+          startIcon={<Email />}
+        >
+          {t('talksPage.beInformedOfUpcomingEvents')}
+        </Button>
+      </Box>
+    </Paper>
+  );
+};
 
 const Talks = () => {
   const { t, i18n } = useTranslation();
@@ -64,6 +92,7 @@ const Talks = () => {
     <>
       <ContentHeader title={t('talksPage.title')} />
       <ContentBox maxWidth="lg">
+        <IntroductionPaper />
         <Box mb={4}>
           <Typography
             variant="h6"

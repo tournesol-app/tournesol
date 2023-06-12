@@ -717,6 +717,9 @@
     "verificationFailed": "La vérification a échoué"
   },
   "talksPage": {
+    "whatAreTournesolTalks": "C'est quoi les Tournesol Talks ?",
+    "tournesolTalksIntroduction": "L'association Tournesol organise des événements en ligne publics et libres avec des experts et des chercheurs pour parler de leurs travaux concernant l'éthique, les algorithmes et systèmes de recommandation, l'information, la démocratie et plus encore.",
+    "beInformedOfUpcomingEvents": "Être informer des évènements à venir",
     "title": "Tournesol Talks",
     "upcomingEvents": "Évènement(s) à venir",
     "noTalksInTheNearFuture": "Aucun entretien n'est prévu dans un avenir proche.",
