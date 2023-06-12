@@ -82,6 +82,24 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
 };
 
 const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
+  const talkIsPast = isPast(talk);
+
+  const imgSrc =
+    talkIsPast && talk.youtube_link
+      ? `https://i.ytimg.com/vi/${extractVideoId(
+          talk.youtube_link
+        )}/mqdefault.jpg`
+      : '/svg/Watering.svg';
+
+  let imageLink;
+  if (talkIsPast && talk.youtube_link) {
+    imageLink = talk.youtube_link;
+  }
+
+  if (!talkIsPast && talk.invitation_link) {
+    imageLink = talk.invitation_link;
+  }
+
   return (
     <Box
       display="flex"
@@ -93,20 +111,20 @@ const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
         float: { xs: 'none', sm: 'left' },
       }}
     >
-      {isPast(talk) && talk.youtube_link ? (
-        <img
-          src={`https://i.ytimg.com/vi/${extractVideoId(
-            talk.youtube_link
-          )}/mqdefault.jpg`}
-          style={{
-            width: '320px',
-            height: 'auto',
-            borderRadius: '4px',
-          }}
-        />
+      {imageLink ? (
+        <a className="no-decoration" href={imageLink}>
+          <img
+            src={imgSrc}
+            style={{
+              width: '320px',
+              height: '180px',
+              borderRadius: '4px',
+            }}
+          />
+        </a>
       ) : (
         <img
-          src="/svg/Watering.svg"
+          src={imgSrc}
           style={{
             width: '320px',
             height: '180px',
@@ -125,16 +143,7 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
     <Paper>
       <TalkHeading talk={talk} />
       <Box p={2} sx={{ overflow: 'auto' }}>
-        {talk.invitation_link || talk.youtube_link ? (
-          <a
-            className="no-decoration"
-            href={isPast(talk) ? talk.youtube_link : talk.invitation_link}
-          >
-            <TalkImagery talk={talk} />
-          </a>
-        ) : (
-          <TalkImagery talk={talk} />
-        )}
+        <TalkImagery talk={talk} />
 
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
