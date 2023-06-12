@@ -347,7 +347,12 @@ class PollsRecommendationsTestCase(TestCase):
         response = self.client.get(
             "/polls/videos/recommendations/?metadata[duration__lte::int]=10"
         )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_anon_can_list_videos_duration_reject_empty_value(self):
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration:lte:int]="
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_can_list_recommendations_with_score_mode(self):
