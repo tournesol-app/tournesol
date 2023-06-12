@@ -86,10 +86,11 @@ const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
     <Box
       display="flex"
       sx={{
-        maxWidth: '240px',
-        marginRight: 2,
+        maxWidth: '320px',
+        marginRight: { xs: 0, sm: 2 },
+        marginBottom: { xs: 2, sm: 0 },
         borderRadius: '4px',
-        float: 'left',
+        float: { xs: 'none', sm: 'left' },
       }}
     >
       {isPast(talk) && talk.youtube_link ? (
@@ -98,7 +99,7 @@ const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
             talk.youtube_link
           )}/mqdefault.jpg`}
           style={{
-            width: '240px',
+            width: '320px',
             height: 'auto',
             borderRadius: '4px',
           }}
@@ -107,8 +108,8 @@ const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
         <img
           src="/svg/Watering.svg"
           style={{
-            width: '240px',
-            height: '135px',
+            width: '320px',
+            height: '180px',
             borderRadius: '4px',
           }}
         />
