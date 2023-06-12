@@ -166,6 +166,9 @@ changes that involve new texts, please ensure that translation keys
 are defined and localized messages are updated, for English at least.
 Reviewers can help with the translation to French if necessary.
 
+**status:**
+[![translation badge](https://inlang.com/badge?url=github.com/tournesol-app/tournesol)](https://inlang.com/editor/github.com/tournesol-app/tournesol?ref=badge)
+
 On the frontend, translations are handled by `react-i18next`.
 
 - [This guide](https://react.i18next.com/guides/quick-start#translate-your-content)
