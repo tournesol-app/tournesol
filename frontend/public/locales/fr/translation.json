@@ -723,7 +723,9 @@
     "title": "Tournesol Talks",
     "upcomingEvents": "Évènement(s) à venir",
     "noTalksInTheNearFuture": "Aucun entretien n'est prévu dans un avenir proche.",
-    "pastEvents": "Passés"
+    "pastEvents": "Passés",
+    "replay": "Revoir",
+    "join": "Rejoindre"
   },
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"

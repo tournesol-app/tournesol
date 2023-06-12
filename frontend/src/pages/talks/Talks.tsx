@@ -30,9 +30,11 @@ const IntroductionPaper = () => {
         <Button
           size="small"
           variant="contained"
+          startIcon={<Email />}
           component={Link}
           href={tournesolTalksMailingListUrl}
-          startIcon={<Email />}
+          rel="noopener"
+          target="_blank"
         >
           {t('talksPage.beInformedOfUpcomingEvents')}
         </Button>

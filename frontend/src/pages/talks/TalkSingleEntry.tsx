@@ -1,9 +1,11 @@
 import React from 'react';
 
-import { Box, Grid, Paper, Typography, Link } from '@mui/material';
+import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
 
 import { TalkEntry } from 'src/services/mocks';
 import { extractVideoId } from 'src/utils/video';
+import { useTranslation } from 'react-i18next';
+import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
 
 const toPaddedString = (num: number): string => {
   return num.toString().padStart(2, '0');
@@ -137,14 +139,25 @@ const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
 };
 
 const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
+  const { t } = useTranslation();
+
+  const talkIsPast = isPast(talk);
   const abstractParagraphs = talk.abstract.split('\n');
+
+  let actionLink;
+  if (talkIsPast && talk.youtube_link) {
+    actionLink = talk.youtube_link;
+  }
+
+  if (!talkIsPast && talk.invitation_link) {
+    actionLink = talk.invitation_link;
+  }
 
   return (
     <Paper>
       <TalkHeading talk={talk} />
       <Box p={2} sx={{ overflow: 'auto' }}>
         <TalkImagery talk={talk} />
-
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
             key={`${talk.title}_p${index}`}
@@ -155,6 +168,22 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
           </Typography>
         ))}
       </Box>
+      {actionLink && (
+        <Box p={2} pt={0} display="flex" justifyContent="flex-end">
+          <Button
+            size="small"
+            color="secondary"
+            variant="outlined"
+            startIcon={talkIsPast ? <PlayArrow /> : <PersonAddAlt1 />}
+            component={Link}
+            href={actionLink}
+            rel="noopener"
+            target="_blank"
+          >
+            {talkIsPast ? t('talksPage.replay') : t('talksPage.join')}
+          </Button>
+        </Box>
+      )}
     </Paper>
   );
 };

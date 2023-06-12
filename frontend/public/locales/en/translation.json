@@ -714,7 +714,9 @@
     "title": "Tournesol Talks",
     "upcomingEvents": "Upcoming event(s)",
     "noTalksInTheNearFuture": "No Talks are planned in the near future.",
-    "pastEvents": "Past events"
+    "pastEvents": "Past events",
+    "replay": "Replay",
+    "join": "Join"
   },
   "myRatedVideosPage": {
     "title": "My rated videos"

@@ -7,7 +7,7 @@ import { TalkEntry } from 'src/services/mocks';
 
 const TalkEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
   return (
-    <Grid container justifyContent="column" spacing={2}>
+    <Grid container justifyContent="column" spacing={4}>
       {talks.map((talk) => (
         <Grid key={talk.uid} width="100%">
           <TalkSingleEntry key={talk.name} talk={talk} />

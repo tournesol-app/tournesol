@@ -1,29 +1,74 @@
 [
   {
-      "uid": "123",
-      "title": "Introduction to Tournesol",
-      "name": "use_tournesol_apis",
-      "abstract": "This talk will cover the basics of Tournesol app.",
-      "date": "2022-06-04",
-      "invitation_link": "https://example.com/invite/123",
-      "youtube_link": "https://www.youtube.com/watch?v=dblEwDMeJTo"
-    },
-    {
-      "uid": "456",
-      "title": "Use Tournesol APIs",
-      "name": "use_tournesol_apis",
-      "abstract": "In this talk, we'll cover the basics of Tournesol APIs. \nPart 1 : abc\nPart 2 : xyz\nLorem ipsum dolor sit amet. Aut atque voluptatem non consequuntur dignissimos est possimus molestiae 33 fugiat nihil id sapiente perferendis non culpa nihil et veritatis repellat. Quo voluptatem accusamus eum sequi iure qui fugiat laborum 33 impedit totam qui magnam impedit 33 natus voluptas ex doloribus excepturi!\nSed consectetur delectus eos velit quis ut voluptates dignissimos qui similique ipsa aut doloribus sint. Cum ipsa veritatis id culpa corporis ea voluptatem quasi in possimus itaque rem nesciunt commodi et nobis officia.\nVel impedit odio rem obcaecati expedita est nesciunt aperiam ea voluptatibus maiores sit delectus impedit et vero deserunt. Eum rerum quod id temporibus maiores sed dolorem repellat et magni atque non tempora perspiciatis.",
-      "date": "2023-01-15",
-      "invitation_link": "https://example.com/invite/456",
-      "youtube_link": "https://www.youtube.com/watch?v=THOqgNsClt4"
-    },
-    {
-      "uid": "789",
-      "title": "upcoming features + title a bit long to test the mobile view",
-      "name": "upcoming_features",
-      "abstract": "Next changes you want to see on Tournesol",
-      "date": "2023-09-01",
-      "invitation_link": "https://example.com/invite/456",
-      "youtube_link": ""
-    }
+    "uid": "230518",
+    "title": "The institutional design problem",
+    "name": "how_industry_academia_collaborations_influence_research_direction",
+    "abstract": "Abstract: Proposals to change ballot types, channel decisions through citizens' assemblies, or participatory budgeting are being researched and tested in the real world. Liquid democracy, a transitive proxy voting system, is making its way to the democratic innovation table as it may stand for non-active stakeholders and enhance collective intelligence using the wealth of interpersonal information embedded in social networks. Herein, we study the propensity of liquid democracy to track the truth: we model votes on a binary issue for which there is a ground truth and examine stochastic delegation behaviors that guarantee that the liquid vote finds the correct answer with a probability approaching 1. Technically, we demonstrate that transitive delegations dynamics compare to well-known random graphs processes that are sufficiently bounded for our purposes. We confront our models to practice, running twelve liquid democracy experiments with various organizations; the experimental results largely support our theoretical predictions. In all, we identify theoretically and empirically regimes of interest where liquid democracy is an effective alternative to existing voting schemes, bolstering the case for this emerging paradigm. This is based on joint work with Adam Berinsky, Daniel Halpern, Joe Halpern, Ali Jadbabaie, Elchanan Mossel and Ariel Procaccia.",
+    "date": "2023-05-18",
+    "invitation_link": "",
+    "youtube_link": "https://www.youtube.com/watch?v=ZLhBskoICjg"
+  },
+  {
+    "uid": "230406",
+    "title": "How Industry-Academia Collaborations Influence Research Direction",
+    "name": "how_industry_academia_collaborations_influence_research_direction",
+    "abstract": "Abstract: Recently, greater attention has been dedicated to studying the societal effects of AI/ML algorithms. This talk will draw comparisons between Big Tech & Big Tobacco and show how, regardless of intentions, Big Tech firms are positioning themselves to be able to significantly change the direction of research being performed in academia and public discourse.",
+    "date": "2023-04-06",
+    "invitation_link": "",
+    "youtube_link": ""
+  },
+  {
+    "uid": "230323",
+    "title": "Fairness in Rankings: Insights from Normative Economics",
+    "name": "fairness_in_rankins_insights_from_normative_economics",
+    "abstract": "Abstract: Fairness recently appeared as a major issue in search and recommendation systems, while it has been studied for long in normative economics. In this talk, I will first give a high-level overview of fairness in recommender systems. Then, I will present our framework and algorithms for fairness in ranked recommendations based on welfare economics concepts.",
+    "date": "2023-03-23",
+    "invitation_link": "",
+    "youtube_link": ""
+  },
+  {
+    "uid": "230309",
+    "title": "Red Herring or Whistleblower",
+    "name": "red_herring_or_whistleblower",
+    "abstract": "Abstract: During the covid-19 pandemic, trust in science eroded quickly, especially in France. Lone mavericks can draw way more media political attention than the scientific consensus and official scientific communities. False claims or various red herrings can be pushed forward by lobbying and astroturfing in an information war context. Popular sympathy for whistleblowers can encourage scientific misconduct and exaggerated or irresponsible claims, some anti-vaccine groups even identify as “big pharma whistleblower”. Conspiracy believers tend to encourage and spread such disinformation, especially by engaging in a community of like-minded individuals.\nActual whistleblowers often experience retaliation. Support and help for whistleblowers is often insufficient and needs to be developed. Of note, whistleblowers can be called conspiracy theorists to discredit them, a tactic widely used by former US president Donald Trump. In such a context, some whistleblowers may end up trapped in conspirationist networks that support them. Multiple stage influence networks can therefore link a serious whistleblower to various disinformation networks.\nA single case will serve as an observational example. Tear gas is widely used as a chemical weapon for riot control purpose. First studies were performed in secret military bases during the cold war era, and modern studies are scarce. Therefore, little attention is given to long term health effects of tear gas exposure, especially through toxicological consequences of an exposure. The French Association of Toxicology and Chemistry published a public health alert review. The whistleblower had many legal and financial consequences. First described as “fake news” by fact checking media agencies, his work is now accepted. Various networks have invited him and promoted his work. Some changing his claims, turning them into conspiracy theories...",
+    "date": "2023-03-09",
+    "invitation_link": "",
+    "youtube_link": "https://www.youtube.com/watch?v=1QsQEfeTnko"
+  },
+  {
+    "uid": "230223",
+    "title": "Disinformation and Crisis Response during 2023 Turkish Earthquake",
+    "name": "disinformation_and_crisis_response_during_2023_turkish_earthquake",
+    "abstract": "Abstract: Turkey and Syria have been shaken by a big earthquake on the 6th of February which claimed more than 41 thousand lives as of the 16th of February. The scale of the disaster instigated country-level and global crisis responses that employed digital communication; victims asked for help through social media platforms, and software engineers collaborated to collect the data victims organized. It also instigated disinformation, threats, and narratives amplified by media and political users to control public opinion.\nIn this talk, I will focus on two aspects of digital communication during this crisis. First, I will present how the volunteers and the software engineers coordinated to help the victims. Then I'll introduce the tools and solutions created by software engineers during the crisis. I'll conclude with fallbacks of the platforms, and the current methods and provide some suggestions for better crisis response which are open to discussion.\nSecondly, I will provide an overview of coordinated manipulation, disinformation, and security vulnerabilities that occurred during the crisis. I'll provide my analysis of coordinated pro-government narratives propagated that exploited interviews with foreign seismologists. I'll also briefly talk about other instances of disinformation and cyber threats to exploit victims and volunteers. I'll talk about how such disinformation campaigns could be countered using data science methods and how platforms could help. ",
+    "date": "2023-02-23",
+    "invitation_link": "",
+    "youtube_link": "https://www.youtube.com/watch?v=77SHjab6V0s"
+  },
+  {
+    "uid": "230209",
+    "title": "Online Heuristic Implementation on Tournesol Algorithm",
+    "name": "online_heuristic_implementation_on_tournesol_algorithm",
+    "abstract": "Abstract: Tournesol association has implemented Mehestan for its machine learning algorithm to compute individual scores and then global scaled aggregated scores, called Tournesol scores. To compute individual scores, the first step of the algorithm is based on a (sparse) matrix inversion, which is roughly of speed rate of complexity n^3. We investigated an online heuristic computation solution for the individual scores. We then evaluated the quality of the heuristic with various performance indicators, such as speed or bias with the machine learning baseline. Since the voting system is complex to simulate entirely, we took an empirical approach to evaluate its quality through Monte-Carlo simulations.",
+    "date": "2023-02-09",
+    "invitation_link": "",
+    "youtube_link": "https://www.youtube.com/watch?v=Lv3_KJc1gh0"
+  },
+  {
+    "uid": "230126",
+    "title": "Introduction to the Psychology of Persuasion",
+    "name": "introduction_to_the_psychology_of_persuasion",
+    "abstract": "Abstract: Persuasion is a key component of marketing, communication and science vulgarization. Yet, agents in traditional STEM fields (engineering, mathematics, computer science...) are not trained to the principles and laws governing human behavior and attitude change. In this brief introduction to the subject matter, we will familiarize the audience with an overview of the literature and of basic social psychological models of persuasion. We will highlight some critical elements, DOs and DON'Ts as well as provide useful insights for application.",
+    "date": "2023-01-26",
+    "invitation_link": "",
+    "youtube_link": "https://www.youtube.com/watch?v=qaUd3AFsms0"
+  },
+  {
+    "uid": "221129",
+    "title": "Platform Design and Governance for Social Justice",
+    "name": "platform_design_and_governance_for_social_justice",
+    "abstract": "Missing abstract",
+    "date": "2022-11-29",
+    "invitation_link": "",
+    "youtube_link": "https://www.youtube.com/watch?v=0UqA0K7W1ZI"
+  }
 ]
