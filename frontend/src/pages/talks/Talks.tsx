@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
@@ -77,7 +77,9 @@ const Talks = () => {
           {upcomingTalks && upcomingTalks.length > 0 ? (
             <TalkEntryList talks={upcomingTalks} />
           ) : (
-            <Typography paragraph>{t('talksPage.sections.empty')}</Typography>
+            <Alert severity="info">
+              {t('talksPage.noTalksInTheNearFuture')}
+            </Alert>
           )}
         </Box>
         {pastTalks && pastTalks.length > 0 && (

@@ -710,9 +710,7 @@
   "talksPage": {
     "title": "Tournesol Talks",
     "upcomingEvents": "Upcoming event(s)",
-    "sections": {
-      "empty": "No Talks are planned in the near future."
-    },
+    "noTalksInTheNearFuture": "No Talks are planned in the near future.",
     "pastEvents": "Past events"
   },
   "myRatedVideosPage": {
