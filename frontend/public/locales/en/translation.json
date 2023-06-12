@@ -471,8 +471,7 @@
     "noComparisonYet": "No comparison",
     "listHasNbComparisons_one": "You already did <1>{{comparisonCount}}</1> comparison.",
     "listHasNbComparisons_other": "You already did <1>{{comparisonCount}}</1> comparisons.",
-    "title": "My comparisons",
-    "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
+    "title": "My comparisons"
   },
   "criteriaDescriptions": {
     "backfire_risk": "<0>Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?</0><1>This criterion aims to measure the probability that a user may misunderstand or negatively react to the information presented. This may be particularly likely to occur for contents presented with a strong \"us versus them\" atmosphere on controversial topics<1>(<1>BailABBC+-18</1>)</1>. Note, however, that this <4>Veritasium video</4> (based on his <8>PhD thesis</8>) shows that backfiring also occurs for clean presentation of a counter-intuitive scientific concept, if the content does not pinpoint the risks of misunderstandings.</1><2>Contents that score high on \"resilience to backfiring risks\" should be safe to recommend to all sorts of viewers, with limited risks of misunderstandings.</2>",
