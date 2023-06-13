@@ -159,9 +159,11 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
       <Box p={2} sx={{ overflow: 'auto' }}>
         <TalkImagery talk={talk} />
         <Typography variant="h6" color="secondary" gutterBottom>
-          <Trans t={t} i18nKey="talksPage.by">
-            By {{ speaker: talk.speaker }}
-          </Trans>
+          {talk.speaker && (
+            <Trans t={t} i18nKey="talksPage.by">
+              By {{ speaker: talk.speaker }}
+            </Trans>
+          )}
         </Typography>
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography

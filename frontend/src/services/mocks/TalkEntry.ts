@@ -4,7 +4,7 @@ export type TalkEntry = {
   name: string;
   abstract: string;
   date: string;
-  speaker: string;
+  speaker?: string;
   invitation_link?: string;
   youtube_link?: string;
 };
