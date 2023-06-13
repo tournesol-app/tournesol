@@ -469,6 +469,11 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
         # No filter should be present in the redirection
         self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
 
+    def test_recommendations_preview_empty_fields(self):
+        response = self.client.get(f"{self.preview_url}/?duration_lte&duration_gte")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
+
     def test_recommendations_preview_internal_route(self):
         response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")
         self.assertEqual(response.status_code, 200)
