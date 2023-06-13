@@ -4,7 +4,7 @@ import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
 
 import { TalkEntry } from 'src/services/mocks';
 import { extractVideoId } from 'src/utils/video';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
 
 const toPaddedString = (num: number): string => {
@@ -158,6 +158,11 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
       <TalkHeading talk={talk} />
       <Box p={2} sx={{ overflow: 'auto' }}>
         <TalkImagery talk={talk} />
+        <Typography variant="h6" color="secondary" gutterBottom>
+          <Trans t={t} i18nKey="talksPage.by">
+            By {{ speaker: talk.speaker }}
+          </Trans>
+        </Typography>
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
             key={`${talk.title}_p${index}`}

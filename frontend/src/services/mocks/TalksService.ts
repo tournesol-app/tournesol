@@ -22,6 +22,7 @@ export class TalksService {
       name: talk.name,
       abstract: talk.abstract,
       date: talk.date,
+      speaker: talk.speaker,
       invitation_link: talk.invitation_link,
       youtube_link: talk.youtube_link,
     }));

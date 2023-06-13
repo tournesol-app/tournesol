@@ -4,6 +4,7 @@ export type TalkEntry = {
   name: string;
   abstract: string;
   date: string;
-  invitation_link: string | undefined;
-  youtube_link: string | undefined;
+  speaker: string;
+  invitation_link?: string;
+  youtube_link?: string;
 };
