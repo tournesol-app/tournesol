@@ -121,36 +121,41 @@ function addRateButtons() {
       },
     });
 
-    const { button: rateLaterButton, setLabel: setRateLaterButtonLabel, setIcon: setRateLaterButtonIcon } =
-      addRateButton({
-        id: 'tournesol-rate-later-button',
-        label: 'Rate Later',
-        iconSrc: chrome.runtime.getURL('images/add.svg'),
-        iconClass: 'tournesol-rate-later',
-        onClick: () => {
-          rateLaterButton.disabled = true;
+    const {
+      button: rateLaterButton,
+      setLabel: setRateLaterButtonLabel,
+      setIcon: setRateLaterButtonIcon,
+    } = addRateButton({
+      id: 'tournesol-rate-later-button',
+      label: 'Rate Later',
+      iconSrc: chrome.runtime.getURL('images/add.svg'),
+      iconClass: 'tournesol-rate-later',
+      onClick: () => {
+        rateLaterButton.disabled = true;
 
-          new Promise((resolve, reject) => {
-            chrome.runtime.sendMessage(
-              {
-                message: 'addRateLater',
-                video_id: videoId,
-              },
-              (data) => {
-                if (data.success) {
-                  setRateLaterButtonLabel('Done!');
-                  setRateLaterButtonIcon(chrome.runtime.getURL('images/checkmark.svg'));  // Change the button icon to checkmark
-                  resolve();
-                } else {
-                  rateLaterButton.disabled = false;
-                  reject();
-                }
+        new Promise((resolve, reject) => {
+          chrome.runtime.sendMessage(
+            {
+              message: 'addRateLater',
+              video_id: videoId,
+            },
+            (data) => {
+              if (data.success) {
+                setRateLaterButtonLabel('Done!');
+                setRateLaterButtonIcon(
+                  chrome.runtime.getURL('images/checkmark.svg')
+                );
+                resolve();
+              } else {
+                rateLaterButton.disabled = false;
+                reject();
               }
-            );
-          }).catch(() => {
-            chrome.runtime.sendMessage({ message: 'displayModal' });
-          });
-        },
-      });
+            }
+          );
+        }).catch(() => {
+          chrome.runtime.sendMessage({ message: 'displayModal' });
+        });
+      },
+    });
   }
 }
