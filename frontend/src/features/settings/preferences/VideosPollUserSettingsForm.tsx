@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Alert, Button, Grid, Typography } from '@mui/material';
+import { Alert, Fab, Grid, Typography } from '@mui/material';
+import { Save } from '@mui/icons-material';
 
 import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
 import { useNotifications, useScrollToLocation } from 'src/hooks';
+import { theme } from 'src/theme';
 import {
   ApiError,
   BlankEnum,
@@ -137,21 +139,22 @@ const VideosPollUserSettingsForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
-        <Grid item>
-          <Typography id="comparison_page" variant="h6">
-            {t('pollUserSettingsForm.comparisonPage')}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <WeeklyCollectiveGoalDisplayField
-            value={compUiWeeklyColGoalDisplay}
-            onChange={setCompUiWeeklyColGoalDisplay}
-            pollName={pollName}
-          />
-        </Grid>
-        {/*
+    <>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={4} direction="column" alignItems="stretch">
+          <Grid item>
+            <Typography id="comparison_page" variant="h6">
+              {t('pollUserSettingsForm.comparisonPage')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <WeeklyCollectiveGoalDisplayField
+              value={compUiWeeklyColGoalDisplay}
+              onChange={setCompUiWeeklyColGoalDisplay}
+              pollName={pollName}
+            />
+          </Grid>
+          {/*
           Ideally the following field could be displayed under the title
           Comparison, instead of Comparison (page). Updating the optinal
           criteria displayed by default will affect all comparison UIs and not
@@ -159,70 +162,73 @@ const VideosPollUserSettingsForm = () => {
           to customize the comparisons (not the page), consider the creation of
           a section Comparison.
         */}
-        <Grid item>
-          <ComparisonOptionalCriteriaDisplayed
-            displayedCriteria={displayedCriteria}
-            onChange={setDisplayedCriteria}
-          />
+          <Grid item>
+            <ComparisonOptionalCriteriaDisplayed
+              displayedCriteria={displayedCriteria}
+              onChange={setDisplayedCriteria}
+            />
+          </Grid>
+          <Grid item>
+            <Typography id="rate_later" variant="h6">
+              {t('pollUserSettingsForm.rateLater')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <RateLaterAutoRemoveField
+              apiErrors={apiErrors}
+              value={rateLaterAutoRemoval}
+              onChange={setRateLaterAutoRemoval}
+              pollName={pollName}
+            />
+          </Grid>
+          <Grid item>
+            <Typography id="recommendations_page" variant="h6">
+              {t('pollUserSettingsForm.recommendationsPage')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Alert severity="info">
+              <Trans
+                t={t}
+                i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
+              >
+                Customize <strong>the default search filters</strong> according
+                to your own preferences. Those filters are applied{' '}
+                <strong>only</strong> when you access the recommendations from
+                the <strong>main menu</strong>.
+              </Trans>
+            </Alert>
+          </Grid>
+          <Grid item>
+            <RecommendationsDefaultDate
+              value={recoDefaultUploadDate}
+              onChange={setRecoDefaultUploadDate}
+              pollName={pollName}
+            />
+          </Grid>
+          <Grid item>
+            <RecommendationsDefaultUnsafe
+              value={recoDefaultUnsafe}
+              onChange={setRecoDefaultUnsafe}
+              pollName={pollName}
+            />
+          </Grid>
         </Grid>
-        <Grid item>
-          <Typography id="rate_later" variant="h6">
-            {t('pollUserSettingsForm.rateLater')}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <RateLaterAutoRemoveField
-            apiErrors={apiErrors}
-            value={rateLaterAutoRemoval}
-            onChange={setRateLaterAutoRemoval}
-            pollName={pollName}
-          />
-        </Grid>
-        <Grid item>
-          <Typography id="recommendations_page" variant="h6">
-            {t('pollUserSettingsForm.recommendationsPage')}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Alert severity="info">
-            <Trans
-              t={t}
-              i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
-            >
-              Customize <strong>the default search filters</strong> according to
-              your own preferences. Those filters are applied{' '}
-              <strong>only</strong> when you access the recommendations from the{' '}
-              <strong>main menu</strong>.
-            </Trans>
-          </Alert>
-        </Grid>
-        <Grid item>
-          <RecommendationsDefaultDate
-            value={recoDefaultUploadDate}
-            onChange={setRecoDefaultUploadDate}
-            pollName={pollName}
-          />
-        </Grid>
-        <Grid item>
-          <RecommendationsDefaultUnsafe
-            value={recoDefaultUnsafe}
-            onChange={setRecoDefaultUnsafe}
-            pollName={pollName}
-          />
-        </Grid>
-        <Grid item>
-          <Button
-            fullWidth
-            type="submit"
-            color="secondary"
-            variant="contained"
-            disabled={disabled}
-          >
-            {t('pollUserSettingsForm.updatePreferences')}
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+        <Fab
+          color="primary"
+          type="submit"
+          disabled={disabled}
+          aria-label={t('pollUserSettingsForm.updatePreferences')}
+          sx={{
+            position: 'fixed',
+            right: theme.spacing(4),
+            bottom: theme.spacing(4),
+          }}
+        >
+          <Save />
+        </Fab>
+      </form>
+    </>
   );
 };
 
