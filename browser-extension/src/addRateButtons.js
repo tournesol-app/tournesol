@@ -96,10 +96,14 @@ function addRateButtons() {
         text.textContent = label;
       };
 
+      const setIcon = (iconSrc) => {
+        image.setAttribute('src', iconSrc);
+      };
+
       button.onclick = onClick;
       videoActions.appendChild(button);
 
-      return { button, setLabel };
+      return { button, setLabel, setIcon };
     };
 
     addRateButton({
@@ -117,7 +121,7 @@ function addRateButtons() {
       },
     });
 
-    const { button: rateLaterButton, setLabel: setRateLaterButtonLabel } =
+    const { button: rateLaterButton, setLabel: setRateLaterButtonLabel, setIcon: setRateLaterButtonIcon } =
       addRateButton({
         id: 'tournesol-rate-later-button',
         label: 'Rate Later',
@@ -135,6 +139,7 @@ function addRateButtons() {
               (data) => {
                 if (data.success) {
                   setRateLaterButtonLabel('Done!');
+                  setRateLaterButtonIcon(chrome.runtime.getURL('images/checkmark.svg'));  // Change the button icon to checkmark
                   resolve();
                 } else {
                   rateLaterButton.disabled = false;
