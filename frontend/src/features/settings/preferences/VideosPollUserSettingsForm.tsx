@@ -98,6 +98,8 @@ const VideosPollUserSettingsForm = () => {
     if (target) {
       observer.observe(target);
     }
+
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
