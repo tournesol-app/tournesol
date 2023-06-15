@@ -219,7 +219,7 @@ const VideosPollUserSettingsForm = () => {
           />
         </Grid>
       </Grid>
-      <Box position="sticky" bottom={theme.spacing(2)}>
+      <Box position="sticky" bottom={theme.spacing(2)} bgcolor="#fafafa">
         <Button
           fullWidth
           type="submit"
