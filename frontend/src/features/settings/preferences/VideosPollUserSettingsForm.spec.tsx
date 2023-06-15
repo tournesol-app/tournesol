@@ -159,7 +159,7 @@ describe('GenericPollUserSettingsForm', () => {
       'videos_recommendations__default_unsafe'
     );
 
-    const submit = screen.getByRole('button', { name: /update/i });
+    const submit = screen.getByTestId('preferences-main-submit');
 
     return {
       compUiWeeklyColGoalDisplay,

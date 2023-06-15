@@ -248,6 +248,7 @@ const VideosPollUserSettingsForm = () => {
         <Grid item>
           <Button
             id="preferences-main-submit"
+            data-testid="preferences-main-submit"
             fullWidth
             type="submit"
             color="secondary"
@@ -265,6 +266,7 @@ const VideosPollUserSettingsForm = () => {
           type="submit"
           disabled={disabled}
           aria-label={t('pollUserSettingsForm.updatePreferencesAltButton')}
+          data-testid="preferences-alt-submit"
           sx={{
             position: 'fixed',
             right: theme.spacing(mediaBelowSm ? 2 : 4),
