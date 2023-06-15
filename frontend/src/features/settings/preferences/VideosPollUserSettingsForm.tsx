@@ -2,15 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  Alert,
-  Button,
-  Fab,
-  Grid,
-  Typography,
-  Zoom,
-  useMediaQuery,
-} from '@mui/material';
+import { Alert, Box, Button, Grid, Typography } from '@mui/material';
 import { Save } from '@mui/icons-material';
 
 import {
@@ -48,12 +40,9 @@ const VideosPollUserSettingsForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
-  const mediaBelowSm = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
-
-  const [displayFab, setDisplayFab] = useState(true);
 
   useScrollToLocation();
 
@@ -88,28 +77,6 @@ const VideosPollUserSettingsForm = () => {
     pollSettings?.recommendations__default_date ??
       Recommendations_defaultDateEnum.MONTH
   );
-
-  useEffect(() => {
-    const toggleFab = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setDisplayFab(false);
-        } else {
-          setDisplayFab(true);
-        }
-      });
-    };
-
-    const options = { threshold: 0.94 };
-    const observer = new IntersectionObserver(toggleFab, options);
-
-    const target = document.querySelector('#preferences-main-submit');
-    if (target) {
-      observer.observe(target);
-    }
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     if (!pollSettings) {
@@ -173,7 +140,13 @@ const VideosPollUserSettingsForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={4}
+        mb={4}
+        direction="column"
+        alignItems="stretch"
+      >
         <Grid item>
           <Typography id="comparison_page" variant="h6">
             {t('pollUserSettingsForm.comparisonPage')}
@@ -245,41 +218,19 @@ const VideosPollUserSettingsForm = () => {
             pollName={pollName}
           />
         </Grid>
-        <Grid item>
-          <Button
-            id="preferences-main-submit"
-            data-testid="preferences-main-submit"
-            fullWidth
-            type="submit"
-            color="secondary"
-            variant="contained"
-            startIcon={<Save />}
-            disabled={disabled}
-          >
-            {t('pollUserSettingsForm.updatePreferences')}
-          </Button>
-        </Grid>
       </Grid>
-
-      <Zoom in={displayFab} unmountOnExit={true}>
-        <Fab
+      <Box position="sticky" bottom={theme.spacing(2)}>
+        <Button
+          fullWidth
           type="submit"
-          size="large"
-          variant={mediaBelowSm ? 'circular' : 'extended'}
           color="secondary"
+          variant="contained"
+          startIcon={<Save />}
           disabled={disabled}
-          aria-label={t('pollUserSettingsForm.updatePreferencesAltButton')}
-          data-testid="preferences-alt-submit"
-          sx={{
-            position: 'fixed',
-            right: theme.spacing(mediaBelowSm ? 2 : 4),
-            bottom: theme.spacing(mediaBelowSm ? 2 : 4),
-          }}
         >
-          <Save sx={{ mr: 1 }} />
           {t('pollUserSettingsForm.updatePreferences')}
-        </Fab>
-      </Zoom>
+        </Button>
+      </Box>
     </form>
   );
 };

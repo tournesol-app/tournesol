@@ -353,8 +353,7 @@
     "rateLater": "Rate-later list",
     "recommendationsPage": "Recommendations page",
     "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>.",
-    "updatePreferences": "Update preferences",
-    "updatePreferencesAltButton": "Update preferences (alternative button)"
+    "updatePreferences": "Update preferences"
   },
   "videosUserSettingsForm": {
     "recommendations": {
