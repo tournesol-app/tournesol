@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Alert, Fab, Grid, Typography } from '@mui/material';
+import { Alert, Button, Fab, Grid, Typography, Zoom } from '@mui/material';
 import { Save } from '@mui/icons-material';
 
 import {
@@ -44,6 +44,8 @@ const VideosPollUserSettingsForm = () => {
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
+  const [displayFab, setDisplayFab] = useState(true);
+
   useScrollToLocation();
 
   const userSettings = useSelector(selectSettings).settings;
@@ -77,6 +79,26 @@ const VideosPollUserSettingsForm = () => {
     pollSettings?.recommendations__default_date ??
       Recommendations_defaultDateEnum.MONTH
   );
+
+  useEffect(() => {
+    const toggleFab = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setDisplayFab(false);
+        } else {
+          setDisplayFab(true);
+        }
+      });
+    };
+
+    const options = { threshold: 0.94 };
+    const observer = new IntersectionObserver(toggleFab, options);
+
+    const target = document.querySelector('#preferences-main-submit');
+    if (target) {
+      observer.observe(target);
+    }
+  }, []);
 
   useEffect(() => {
     if (!pollSettings) {
@@ -212,20 +234,35 @@ const VideosPollUserSettingsForm = () => {
             pollName={pollName}
           />
         </Grid>
+        <Grid item>
+          <Button
+            id="preferences-main-submit"
+            fullWidth
+            type="submit"
+            color="secondary"
+            variant="contained"
+            disabled={disabled}
+          >
+            {t('pollUserSettingsForm.updatePreferences')}
+          </Button>
+        </Grid>
       </Grid>
-      <Fab
-        color="primary"
-        type="submit"
-        disabled={disabled}
-        aria-label={t('pollUserSettingsForm.updatePreferences')}
-        sx={{
-          position: 'fixed',
-          right: theme.spacing(4),
-          bottom: theme.spacing(4),
-        }}
-      >
-        <Save />
-      </Fab>
+
+      <Zoom in={displayFab} unmountOnExit={true}>
+        <Fab
+          color="primary"
+          type="submit"
+          disabled={disabled}
+          aria-label={t('pollUserSettingsForm.updatePreferences')}
+          sx={{
+            position: 'fixed',
+            right: theme.spacing(4),
+            bottom: theme.spacing(4),
+          }}
+        >
+          <Save />
+        </Fab>
+      </Zoom>
     </form>
   );
 };
