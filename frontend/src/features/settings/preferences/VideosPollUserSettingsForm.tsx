@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Alert, Button, Grid, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid, Typography } from '@mui/material';
+import { Save } from '@mui/icons-material';
 
 import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
 import { useNotifications, useScrollToLocation } from 'src/hooks';
+import { theme } from 'src/theme';
 import {
   ApiError,
   BlankEnum,
@@ -138,7 +140,13 @@ const VideosPollUserSettingsForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={4}
+        mb={4}
+        direction="column"
+        alignItems="stretch"
+      >
         <Grid item>
           <Typography id="comparison_page" variant="h6">
             {t('pollUserSettingsForm.comparisonPage')}
@@ -210,18 +218,19 @@ const VideosPollUserSettingsForm = () => {
             pollName={pollName}
           />
         </Grid>
-        <Grid item>
-          <Button
-            fullWidth
-            type="submit"
-            color="secondary"
-            variant="contained"
-            disabled={disabled}
-          >
-            {t('pollUserSettingsForm.updatePreferences')}
-          </Button>
-        </Grid>
       </Grid>
+      <Box position="sticky" bottom={theme.spacing(2)} bgcolor="#fafafa">
+        <Button
+          fullWidth
+          type="submit"
+          color="secondary"
+          variant="contained"
+          startIcon={<Save />}
+          disabled={disabled}
+        >
+          {t('pollUserSettingsForm.updatePreferences')}
+        </Button>
+      </Box>
     </form>
   );
 };
