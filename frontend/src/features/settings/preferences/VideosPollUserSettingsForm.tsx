@@ -253,6 +253,7 @@ const VideosPollUserSettingsForm = () => {
             type="submit"
             color="secondary"
             variant="contained"
+            startIcon={<Save />}
             disabled={disabled}
           >
             {t('pollUserSettingsForm.updatePreferences')}
@@ -262,8 +263,10 @@ const VideosPollUserSettingsForm = () => {
 
       <Zoom in={displayFab} unmountOnExit={true}>
         <Fab
-          color="primary"
           type="submit"
+          size="large"
+          variant={mediaBelowSm ? 'circular' : 'extended'}
+          color="secondary"
           disabled={disabled}
           aria-label={t('pollUserSettingsForm.updatePreferencesAltButton')}
           data-testid="preferences-alt-submit"
@@ -273,7 +276,8 @@ const VideosPollUserSettingsForm = () => {
             bottom: theme.spacing(mediaBelowSm ? 2 : 4),
           }}
         >
-          <Save />
+          <Save sx={{ mr: 1 }} />
+          {t('pollUserSettingsForm.updatePreferences')}
         </Fab>
       </Zoom>
     </form>
