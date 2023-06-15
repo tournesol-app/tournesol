@@ -84,19 +84,29 @@ const CriteriaLabelWithLink = ({ children, criteria }: Props) => {
   return <>{children}</>;
 };
 
-const CriteriaLabel = ({
+export const CriteriaLabel = ({
   criteria,
   criteriaLabel,
+  tooltip = true,
 }: {
   criteria: string;
   criteriaLabel: string;
+  tooltip?: boolean;
 }) => {
   return (
-    <CriteriaLabelWithTooltip criteria={criteria}>
-      <CriteriaLabelWithLink criteria={criteria}>
-        {criteriaLabel}
-      </CriteriaLabelWithLink>
-    </CriteriaLabelWithTooltip>
+    <>
+      {tooltip ? (
+        <CriteriaLabelWithTooltip criteria={criteria}>
+          <CriteriaLabelWithLink criteria={criteria}>
+            {criteriaLabel}
+          </CriteriaLabelWithLink>
+        </CriteriaLabelWithTooltip>
+      ) : (
+        <CriteriaLabelWithLink criteria={criteria}>
+          {criteriaLabel}
+        </CriteriaLabelWithLink>
+      )}
+    </>
   );
 };
 

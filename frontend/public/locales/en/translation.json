@@ -334,6 +334,11 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
+    "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
+    "optionalCriteria": "Optional criteria",
+    "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",
+    "alwaysDisplayedCriteria": "Always displayed criteria",
+    "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
     "autoRemoveHelpText_other": "Elements will be removed from your rate-later list after {{value}} comparisons.",

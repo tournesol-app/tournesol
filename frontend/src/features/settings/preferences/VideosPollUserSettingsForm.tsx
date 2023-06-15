@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Alert, Button, Grid, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid, Typography } from '@mui/material';
+import { Save } from '@mui/icons-material';
 
 import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
 import { useNotifications, useScrollToLocation } from 'src/hooks';
+import { theme } from 'src/theme';
 import {
   ApiError,
   BlankEnum,
@@ -22,6 +24,7 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
+import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
@@ -45,6 +48,11 @@ const VideosPollUserSettingsForm = () => {
 
   const userSettings = useSelector(selectSettings).settings;
   const pollSettings = userSettings?.videos;
+
+  // Comparison
+  const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
+    pollSettings?.comparison__criteria_order ?? []
+  );
 
   // Comparison (page)
   const [compUiWeeklyColGoalDisplay, setCompUiWeeklyColGoalDisplay] = useState<
@@ -81,6 +89,9 @@ const VideosPollUserSettingsForm = () => {
         pollSettings.comparison_ui__weekly_collective_goal_display
       );
     }
+    if (pollSettings?.comparison__criteria_order != undefined) {
+      setDisplayedCriteria(pollSettings.comparison__criteria_order);
+    }
     if (pollSettings.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
@@ -100,6 +111,7 @@ const VideosPollUserSettingsForm = () => {
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
           [pollName]: {
+            comparison__criteria_order: displayedCriteria,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
@@ -128,7 +140,13 @@ const VideosPollUserSettingsForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={4}
+        mb={4}
+        direction="column"
+        alignItems="stretch"
+      >
         <Grid item>
           <Typography id="comparison_page" variant="h6">
             {t('pollUserSettingsForm.comparisonPage')}
@@ -139,6 +157,20 @@ const VideosPollUserSettingsForm = () => {
             value={compUiWeeklyColGoalDisplay}
             onChange={setCompUiWeeklyColGoalDisplay}
             pollName={pollName}
+          />
+        </Grid>
+        {/*
+          Ideally the following field could be displayed under the title
+          Comparison, instead of Comparison (page). Updating the optinal
+          criteria displayed by default will affect all comparison UIs and not
+          just the comparison page. When an another user setting will be added
+          to customize the comparisons (not the page), consider the creation of
+          a section Comparison.
+        */}
+        <Grid item>
+          <ComparisonOptionalCriteriaDisplayed
+            displayedCriteria={displayedCriteria}
+            onChange={setDisplayedCriteria}
           />
         </Grid>
         <Grid item>
@@ -186,18 +218,24 @@ const VideosPollUserSettingsForm = () => {
             pollName={pollName}
           />
         </Grid>
-        <Grid item>
-          <Button
-            fullWidth
-            type="submit"
-            color="secondary"
-            variant="contained"
-            disabled={disabled}
-          >
-            {t('pollUserSettingsForm.updatePreferences')}
-          </Button>
-        </Grid>
       </Grid>
+      <Box
+        position="sticky"
+        bottom={theme.spacing(2)}
+        zIndex={theme.zIndex.fab}
+        bgcolor="#fafafa"
+      >
+        <Button
+          fullWidth
+          type="submit"
+          color="secondary"
+          variant="contained"
+          startIcon={<Save />}
+          disabled={disabled}
+        >
+          {t('pollUserSettingsForm.updatePreferences')}
+        </Button>
+      </Box>
     </form>
   );
 };

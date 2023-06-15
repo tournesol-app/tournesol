@@ -341,6 +341,11 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
+    "selectTheCriteriaYouWantToDisplay": "Sélectionnez les critères que vous souhaitez afficher par défaut",
+    "optionalCriteria": "Critères optionnels",
+    "optionalCriteriaEmptyText": "Tous les critères optionnels seront affichés par défaut.",
+    "alwaysDisplayedCriteria": "Critères toujours affichés",
+    "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
     "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
