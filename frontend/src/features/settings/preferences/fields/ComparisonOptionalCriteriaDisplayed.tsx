@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 
 import { CriteriaIcon } from 'src/components';
-import { CriteriaLabel } from 'src/features/comparisons/CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks';
 
 const OrderableCriterionRow = ({
@@ -70,13 +69,7 @@ const OrderableCriterionRow = ({
           sx={{ pl: 0, pr: 2 }}
         />
         <CriteriaIcon criteriaName={criterionName} sx={{ marginRight: 1 }} />
-        <Typography>
-          <CriteriaLabel
-            criteria={criterionName}
-            criteriaLabel={criterionLabel}
-            tooltip={false}
-          />
-        </Typography>
+        <Typography>{criterionLabel}</Typography>
       </Grid>
       {checked && (
         <Grid item display="flex" flexWrap="nowrap">
