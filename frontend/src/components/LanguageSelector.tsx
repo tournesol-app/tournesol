@@ -15,7 +15,7 @@ const codeToLanguage = Object.fromEntries(
 
 const LanguageSelector = ({ languageName = true }: LanguageSelectorProps) => {
   const { i18n } = useTranslation();
-  const currentLanguage = i18n.resolvedLanguage;
+  const currentLanguage = i18n.resolvedLanguage || i18n.language;
 
   return (
     <Box color="neutral.main">

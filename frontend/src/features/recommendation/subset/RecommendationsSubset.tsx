@@ -36,11 +36,12 @@ const RecommendationsSubset = ({
 
   const [recoDate, setRecoDate] = useState('Month');
   const [entities, setEntities] = useState<Array<Recommendation>>([]);
+  const currentLang = i18n.resolvedLanguage || i18n.language;
 
   useEffect(() => {
     const searchParams = new URLSearchParams();
     searchParams.append('date', recoDate);
-    searchParams.append('language', i18n.resolvedLanguage);
+    searchParams.append('language', currentLang);
 
     const getRecommendationsAsync = async () => {
       setIsLoading(true);
@@ -57,7 +58,7 @@ const RecommendationsSubset = ({
     };
 
     getRecommendationsAsync();
-  }, [criterias, i18n.resolvedLanguage, nbr, pollName, recoDate]);
+  }, [criterias, currentLang, nbr, pollName, recoDate]);
 
   const dateControlChangeCallback = (value: string) => {
     setRecoDate(value);
