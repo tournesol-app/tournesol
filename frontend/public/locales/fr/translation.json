@@ -361,7 +361,8 @@
     "rateLater": "Liste à comparer plus tard",
     "recommendationsPage": "Recommandations (page)",
     "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>.",
-    "updatePreferences": "Mettre à jour les préférences"
+    "updatePreferences": "Mettre à jour les préférences",
+    "updatePreferencesAltButton": "Mettre à jour les préférences (bouton altenatif)"
   },
   "videosUserSettingsForm": {
     "recommendations": {

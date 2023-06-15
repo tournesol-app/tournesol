@@ -2,7 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Alert, Button, Fab, Grid, Typography, Zoom } from '@mui/material';
+import {
+  Alert,
+  Button,
+  Fab,
+  Grid,
+  Typography,
+  Zoom,
+  useMediaQuery,
+} from '@mui/material';
 import { Save } from '@mui/icons-material';
 
 import {
@@ -40,6 +48,7 @@ const VideosPollUserSettingsForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
+  const mediaBelowSm = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
@@ -255,11 +264,11 @@ const VideosPollUserSettingsForm = () => {
           color="primary"
           type="submit"
           disabled={disabled}
-          aria-label={t('pollUserSettingsForm.updatePreferences')}
+          aria-label={t('pollUserSettingsForm.updatePreferencesAltButton')}
           sx={{
             position: 'fixed',
-            right: theme.spacing(4),
-            bottom: theme.spacing(4),
+            right: theme.spacing(mediaBelowSm ? 2 : 4),
+            bottom: theme.spacing(mediaBelowSm ? 2 : 4),
           }}
         >
           <Save />
