@@ -145,7 +145,7 @@ const ComparisonOptionalCriteriaDisplayed = ({
         sm={12}
         md={12}
         lg={6}
-        minHeight={{ xs: 569, sm: 410 }}
+        minHeight={{ xs: 'initial', sm: 410 }}
       >
         <Box mb={1}>
           <Typography>{t('pollUserSettingsForm.optionalCriteria')}</Typography>
@@ -182,7 +182,7 @@ const ComparisonOptionalCriteriaDisplayed = ({
         sm={12}
         md={12}
         lg={6}
-        minHeight={{ xs: 569, sm: 410 }}
+        minHeight={{ xs: 'initial', sm: 410 }}
       >
         <Box mb={1}>
           <Typography>
