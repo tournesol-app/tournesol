@@ -7,6 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils import translation
 
+from core.utils.locale import get_attr_in_localed_attrs
+
 
 class FAQEntry(models.Model):
     """
@@ -51,37 +53,13 @@ class FAQEntry(models.Model):
                 return self.name  # pylint: disable=no-member
         return locale.text
 
-    def get_text_prefetch(self, related="questions", lang=None):
-        """
-        Return the translated text of a related instance.
-
-        Contrary to `self.get_text` this method consider the related instances
-        as already prefetched with `prefetch_related`, and use `.all()` instead
-        of `.get()` to avoid triggering any additional SQL query.
-        """
-        if lang is None:
-            lang = translation.get_language()
-
-        try:
-            locale = [loc for loc in getattr(self, related).all()
-                      if loc.language == lang][0]
-
-        except IndexError:
-            try:
-                locale = [loc for loc in getattr(self, related).all()
-                          if loc.language == "en"][0]
-
-            except IndexError:
-                return self.name  # pylint: disable=no-member
-        return locale.text
-
     def get_question_text_prefetch(self, lang=None):
         """Return the translated text of the question."""
-        return self.get_text_prefetch(related="questions", lang=lang)
+        return get_attr_in_localed_attrs(getattr(self, "questions"), lang, "text", self.name)
 
     def get_answer_text_prefetch(self, lang=None):
         """Return the translated text of the answer."""
-        return self.get_text_prefetch(related="answers", lang=lang)
+        return get_attr_in_localed_attrs(getattr(self, "answers"), lang, "text", self.name)
 
 
 class FAQuestionLocale(models.Model):

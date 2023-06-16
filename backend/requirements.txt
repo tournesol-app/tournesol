@@ -62,3 +62,5 @@ requests==2.31.0
 tweepy==4.14.0
 # dotenv for .env file
 python-dotenv==1.0.0
+# World timezone definitions, modern and historical
+pytz==2023.3

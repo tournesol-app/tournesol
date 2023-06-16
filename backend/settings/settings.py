@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "rest_registration",
     "vouch",
+    "backoffice",
 ]
 
 # Workaround for tests using TransactionTestCase with `serialized_rollback=True`
