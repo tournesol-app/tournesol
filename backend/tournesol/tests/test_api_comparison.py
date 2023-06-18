@@ -77,10 +77,10 @@ class ComparisonApiTestCase(TestCase):
         now = datetime.datetime.now()
 
         self.videos = [
-            VideoFactory(metadata__video_id=self._uid_01.split(":")[1]),
-            VideoFactory(metadata__video_id=self._uid_02.split(":")[1]),
-            VideoFactory(metadata__video_id=self._uid_03.split(":")[1]),
-            VideoFactory(metadata__video_id=self._uid_04.split(":")[1]),
+            VideoFactory(metadata__video_id=self._uid_01.split(":")[1], make_safe_for_poll=False),
+            VideoFactory(metadata__video_id=self._uid_02.split(":")[1], make_safe_for_poll=False),
+            VideoFactory(metadata__video_id=self._uid_03.split(":")[1], make_safe_for_poll=False),
+            VideoFactory(metadata__video_id=self._uid_04.split(":")[1], make_safe_for_poll=False),
         ]
 
         self.comparisons = [

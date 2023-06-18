@@ -35,9 +35,9 @@ class RatingApi(TestCase):
         self.user1 = UserFactory()
         self.user2 = UserFactory()
 
-        self.video1 = VideoFactory()
-        self.video2 = VideoFactory()
-        self.video3 = VideoFactory()
+        self.video1 = VideoFactory(make_safe_for_poll=False)
+        self.video2 = VideoFactory(make_safe_for_poll=False)
+        self.video3 = VideoFactory(make_safe_for_poll=False)
 
         ComparisonFactory(
             user=self.user1,
@@ -310,10 +310,10 @@ class RatingApi(TestCase):
         last comparison date.
         """
 
-        video_old1 = VideoFactory()
-        video_old2 = VideoFactory()
-        video_recent1 = VideoFactory()
-        video_recent2 = VideoFactory()
+        video_old1 = VideoFactory(make_safe_for_poll=False)
+        video_old2 = VideoFactory(make_safe_for_poll=False)
+        video_recent1 = VideoFactory(make_safe_for_poll=False)
+        video_recent2 = VideoFactory(make_safe_for_poll=False)
 
         ContributorRatingFactory(user=self.user2, entity=video_old1, is_public=True)
         ContributorRatingFactory(user=self.user2, entity=video_old2, is_public=True)

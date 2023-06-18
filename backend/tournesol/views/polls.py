@@ -161,7 +161,8 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             return queryset
 
         return queryset.filter(
-            rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
+            all_poll_ratings__poll=self.poll_from_url,
+            all_poll_ratings__sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
             tournesol_score__gt=0,
         )
 

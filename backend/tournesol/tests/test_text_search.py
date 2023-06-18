@@ -87,8 +87,6 @@ class TextSearchTestCase(TestCase):
         if not rated_criteria:
             rated_criteria = poll.criterias_list
 
-        nb_contributors = 0 if unsafe else 10
-
         if poll.entity_type == TYPE_VIDEO:
             entity = VideoFactory(
                 metadata__name=field1,
@@ -97,7 +95,7 @@ class TextSearchTestCase(TestCase):
                 metadata__description=field4,
                 metadata__language=language,
                 tournesol_score=10.0,
-                rating_n_contributors=nb_contributors,
+                make_safe_for_poll=None if unsafe else poll,
             )
         elif poll.entity_type == TYPE_CANDIDATE:
             metadata = {
@@ -110,7 +108,7 @@ class TextSearchTestCase(TestCase):
                 type=TYPE_CANDIDATE,
                 metadata=metadata,
                 tournesol_score=10.0,
-                rating_n_contributors=nb_contributors,
+                make_safe_for_poll=None if unsafe else poll,
             )
         else:
             raise Exception("Unknown entity type")

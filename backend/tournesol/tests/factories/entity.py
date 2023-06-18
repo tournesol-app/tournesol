@@ -5,6 +5,7 @@ import string
 import factory
 
 from core.tests.factories.user import UserFactory
+from settings.settings import RECOMMENDATIONS_MIN_TRUST_SCORES
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity, EntityCriteriaScore, Poll, RateLater
 
@@ -14,6 +15,25 @@ class EntityFactory(factory.django.DjangoModelFactory):
         model = Entity
 
     uid = factory.Sequence(lambda n: "uid_%s" % n)
+
+    @classmethod
+    def create(cls, *args, make_safe_for_poll: Poll = True, **kwargs):
+        entity = super().create(*args, **kwargs)
+        """
+        If `make_safe_for_poll` is True, the entity will be made safe for the default Poll by
+        creating an EntityPollRating with a high `sum_trust_score`. If a poll is provided it will
+        be made safe for the specified Poll. If something else is provided, nothing will be done.
+        """
+        if make_safe_for_poll is True:
+            make_safe_for_poll = Poll.default_poll()
+        if isinstance(make_safe_for_poll, Poll):
+            from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
+            EntityPollRatingFactory(
+                sum_trust_scores=RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
+                entity=entity,
+                poll=make_safe_for_poll
+            )
+        return entity
 
 
 def generate_youtube_id():
