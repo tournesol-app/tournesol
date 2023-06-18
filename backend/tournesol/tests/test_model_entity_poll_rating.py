@@ -8,6 +8,7 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import Comparison, EntityPollRating
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
+from tournesol.tests.factories.ratings import ContributorRatingFactory
 
 
 class EntityPollRatingTestCase(TestCase):
@@ -92,3 +93,49 @@ class EntityPollRatingTestCase(TestCase):
         self.assertEqual(updated_rating_1.n_contributors, 2)
         self.assertEqual(updated_rating_2.n_comparisons, 1)
         self.assertEqual(updated_rating_2.n_contributors, 1)
+
+class EntityPollRatingBulkTrustScoreUpdate(TestCase):
+    """
+    TestCase of the `EntityPollRatingTestCase` model.
+    """
+
+    def setUp(self):
+        self.poll = PollFactory()
+        self.user_a = UserFactory(trust_score=0.01)
+        self.user_b = UserFactory(trust_score=0.9)
+        self.video_1 = VideoFactory()
+        self.video_2 = VideoFactory()
+        self.video_3 = VideoFactory()
+        ContributorRatingFactory(poll=self.poll, user=self.user_a, entity=self.video_1)
+        ContributorRatingFactory(poll=self.poll, user=self.user_a, entity=self.video_2)
+        ContributorRatingFactory(poll=self.poll, user=self.user_b, entity=self.video_1)
+
+        self.entity_poll_rating_1 = EntityPollRating.objects.create(
+            entity=self.video_1, poll=self.poll
+        )
+        self.entity_poll_rating_2 = EntityPollRating.objects.create(
+            entity=self.video_2, poll=self.poll
+        )
+        self.entity_poll_rating_3 = EntityPollRating.objects.create(
+            entity=self.video_3, poll=self.poll
+        )
+
+    def check_sum_trust_scores_are_correctly_updated(self):
+        self.entity_poll_rating_1.refresh_from_db()
+        assert self.entity_poll_rating_1.sum_trust_scores == 0.91
+        self.entity_poll_rating_2.refresh_from_db()
+        assert self.entity_poll_rating_2.sum_trust_scores == 0.01
+        self.entity_poll_rating_3.refresh_from_db()
+        assert self.entity_poll_rating_3.sum_trust_scores == 0.
+
+    def test_update_sum_trust_without_batch(self):
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll, batch_size=None)
+        self.check_sum_trust_scores_are_correctly_updated()
+
+    def test_update_sum_trust_with_batch_equal_one(self):
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll, batch_size=1)
+        self.check_sum_trust_scores_are_correctly_updated()
+
+    def test_update_sum_trust_with_default_batch(self):
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll)
+        self.check_sum_trust_scores_are_correctly_updated()

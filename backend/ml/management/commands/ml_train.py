@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from ml.inputs import MlInputFromDb
 from ml.mehestan.run import run_mehestan
-from tournesol.models import Poll
+from tournesol.models import EntityPollRating, Poll
 from tournesol.models.poll import ALGORITHM_LICCHAVI, ALGORITHM_MEHESTAN
 from vouch.trust_algo import trust_algo
 
@@ -32,3 +32,4 @@ class Command(BaseCommand):
                 raise NotImplementedError("Licchavi is no longer supported")
             else:
                 raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")
+            EntityPollRating.bulk_update_sum_trust_scores(poll)
