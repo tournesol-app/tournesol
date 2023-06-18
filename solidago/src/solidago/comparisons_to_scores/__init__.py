@@ -1,2 +1,2 @@
 from .indiv_matrix_inversion import MatrixInversionInvididualAlgo
-from .continuous_bradly_terry import ContinuousBradleyTerry
+from .continuous_bradley_terry import ContinuousBradleyTerry

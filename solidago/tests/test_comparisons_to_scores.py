@@ -3,7 +3,7 @@ import random
 import pandas as pd
 import pytest
 
-from solidago.mehestan.individual import ContinuousBradleyTerry, MatrixInversionInvididualAlgo
+from solidago.comparisons_to_scores import ContinuousBradleyTerry, MatrixInversionInvididualAlgo
 
 
 matrix_inversion = MatrixInversionInvididualAlgo(r_max=10)

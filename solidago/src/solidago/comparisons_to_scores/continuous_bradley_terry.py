@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from solidago.mehestan.individual.base import IndividualScoresAlgorithm
-from solidago.optimize import brentq
+from solidago.comparisons_to_scores.base import IndividualScoresAlgorithm
+from solidago.solvers.optimize import brentq
 
 
 DEFAULT_ALPHA = 0.2  # Signal-to-noise hyperparameter

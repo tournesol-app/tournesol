@@ -4,7 +4,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from numba import njit
-from solidago.mehestan.primitives import BrMean, QrDev, QrMed, QrUnc
+from solidago.resilient_primitives import BrMean, QrDev, QrMed, QrUnc
 
 from ml.inputs import MlInput
 

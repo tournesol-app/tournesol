@@ -8,7 +8,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django import db
-from solidago.mehestan.individual import MatrixInversionInvididualAlgo
+from solidago.comparisons_to_scores import MatrixInversionInvididualAlgo
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
