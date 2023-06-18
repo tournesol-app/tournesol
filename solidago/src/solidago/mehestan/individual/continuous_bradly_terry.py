@@ -134,9 +134,9 @@ class ContinuousBradleyTerry(IndividualScoresAlgorithm):
             initial_scores = initial_scores.to_numpy()
         theta_star_numpy = self.coordinate_descent(coord_to_subset, initial_scores=initial_scores)
         delta_star_numpy = np.zeros(len(theta_star_numpy))
-        for idx in range(len(theta_star_numpy)):
-            indices, _r_ab = coord_to_subset[idx]
-            delta_star_numpy[idx] = Delta_theta(theta_star_numpy[indices])
+        for idx_a in range(len(theta_star_numpy)):
+            indices_b, _r_ab = coord_to_subset[idx_a]
+            delta_star_numpy[idx_a] = Delta_theta(theta_star_numpy[idx_a] - theta_star_numpy[indices_b])
 
         result = pd.DataFrame(
             {
