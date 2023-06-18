@@ -41,7 +41,7 @@
     },
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": ["addVideoStatistics.js", "addModal.js", "addRateButtons.js"],
+      "js": ["addVideoStatistics.js", "addModal.js", "addRateButtons.js", "addNextVideoSuggestions.js"],
       "css": [
         "addVideoStatistics.css",
         "addModal.css",
