@@ -103,31 +103,33 @@ class ContinuousBradleyTerry(IndividualScoresAlgorithm):
 
     def compute_individual_scores(self, scores: pd.DataFrame, initial_entity_scores=None):
         scores = scores[["entity_a", "entity_b", "score"]]
-        scores_sym = pd.concat(
-            [
-                scores,
-                pd.DataFrame(
-                    {
-                        "entity_a": scores.entity_b,
-                        "entity_b": scores.entity_a,
-                        "score": -1 * scores.score,
-                    }
-                ),
-            ]
+        scores_sym = (
+            pd.concat(
+                [
+                    scores,
+                    pd.DataFrame(
+                        {
+                            "entity_a": scores.entity_b,
+                            "entity_b": scores.entity_a,
+                            "score": -1 * scores.score,
+                        }
+                    ),
+                ]
+            )
+            .set_index(["entity_a", "entity_b"])
+            .sort_index()
         )
-        r = scores_sym.pivot(index="entity_a", columns="entity_b", values="score") / self.r_max
-        r_values = r.to_numpy()
-        n_entities = len(r_values)
+        entities_index = scores_sym.index.get_level_values("entity_a").unique()
         coord_to_subset = {}
-        for coord in range(n_entities):
-            r_ab = r_values[coord, :]
-            indices = (~np.isnan(r_ab)).nonzero()
-            coord_to_subset[coord] = (indices, r_ab[indices])
+        for (coord, (_a, group)) in enumerate(scores_sym.groupby(level="entity_a", sort=False)):
+            r_ab = group["score"].to_numpy()
+            indices = entities_index.get_indexer(group.index.get_level_values("entity_b"))
+            coord_to_subset[coord] = (indices, r_ab)
 
         if initial_entity_scores is None:
-            initial_scores = np.zeros(n_entities)
+            initial_scores = np.zeros(len(entities_index))
         else:
-            initial_scores = pd.Series(initial_entity_scores, index=r.index)
+            initial_scores = pd.Series(initial_entity_scores, index=entities_index)
             initial_scores.fillna(0.0, inplace=True)
             initial_scores = initial_scores.to_numpy()
         theta_star_numpy = self.coordinate_descent(coord_to_subset, initial_scores=initial_scores)
@@ -141,7 +143,7 @@ class ContinuousBradleyTerry(IndividualScoresAlgorithm):
                 "raw_score": theta_star_numpy,
                 "raw_uncertainty": delta_star_numpy,
             },
-            index=r.index,
+            index=entities_index,
         )
         result.index.name = "entity_id"
         return result
@@ -152,5 +154,5 @@ class ContinuousBradleyTerry(IndividualScoresAlgorithm):
             "parameters": {
                 "R_MAX": self.r_max,
                 "ALPHA": self.alpha,
-            }
+            },
         }
