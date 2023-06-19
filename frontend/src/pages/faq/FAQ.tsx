@@ -69,11 +69,20 @@ const FAQ = () => {
    * `alreadyScrolled`.
    */
   useEffect(() => {
+    if (hash) {
+      const location = history.location;
+      const searchParams = new URLSearchParams();
+      searchParams.append('scrollTo', hash.substring(1));
+      location.search = searchParams.toString();
+      location.hash = '';
+      history.replace(location);
+    }
+
     // Do not scroll when it's not required.
-    if ((hash || scrollTo) && entries.length > 0) {
+    if (scrollTo && entries.length > 0) {
       // Scroll only one time.
       if (!alreadyScrolled.current) {
-        const faqName = scrollTo ?? hash.substring(1);
+        const faqName = scrollTo ?? 'no_answer_found';
         const element = document.getElementById(faqName);
 
         if (element) {
