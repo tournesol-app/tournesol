@@ -11,14 +11,13 @@ import SettingsMenu from 'src/features/settings/SettingsMenu';
 import {
   mainSectionBreakpoints,
   settingsMenuBreakpoints,
+  subSectionBreakpoints,
 } from 'src/pages/settings/layout';
 
 export const AccountPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  // subSectionBreakP can be changed independently of mainSectionBp
-  const subSectionBreakpoints = mainSectionBreakpoints;
   return (
     <>
       <ContentHeader

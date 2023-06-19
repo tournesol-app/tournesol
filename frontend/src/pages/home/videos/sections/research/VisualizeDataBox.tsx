@@ -24,7 +24,7 @@ const VisualizeDataBox = () => {
           </Trans>
         </Typography>
         <img
-          src="/images/criteria_pearson_correlation_matrix_2022_10_10.png"
+          src="/images/criteria_pearson_correlation_matrix_2023_06_13.png"
           alt={t('visualizeDataBox.personCorrelationCoefficientMatrix')}
         />
       </Box>

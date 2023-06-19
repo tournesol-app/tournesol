@@ -3,6 +3,9 @@
     "copy": "Copier URI",
     "copied": "Copié !"
   },
+  "preferencesIconButtonLink": {
+    "linkToThePreferencesPage": "Lien vers la page des préférences"
+  },
   "components": {
     "filtersButton": "filtres"
   },
@@ -243,13 +246,22 @@
   },
   "menu": {
     "home": "Accueil",
+    "homeAriaLabel": "Lien vers la page d'accueil",
+    "recommendationsAriaLabel": "Lien vers la page des recommandations",
     "compare": "Comparer 🌻",
+    "compareAriaLabel": "Lien vers la page comparer",
     "myComparisons": "Mes comparaisons",
+    "myComparisonsAriaLabel": "Lien vers la page des comparaisons",
     "comparedItems": "Élements comparés",
+    "myComparedItemsAriaLabel": "Lien vers mes objets comparés",
     "myRateLaterList": "À comparer plus tard",
+    "myRateLaterListAriaLabel": "Lien vers ma liste à comparer plus tard",
     "myResults": "Mes résultats",
+    "myFeedbackAriaLabel": "Lien vers ma réaction",
     "faq": "FAQ",
+    "FAQAriaLabel": "Lien vers la page FAQ",
     "about": "À propos",
+    "aboutAriaLabel": "Lien vers la page à propos",
     "donate": "Faire un don"
   },
   "frame": {
@@ -420,6 +432,13 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
+    "moveTheFollowingCriterionUp": "Déplacer le critère suivant vers le haut:",
+    "moveTheFollowingCriterionDown": "Déplacer le critère suivant vers le bas:",
+    "selectTheCriteriaYouWantToDisplay": "Sélectionnez les critères que vous souhaitez afficher par défaut",
+    "optionalCriteria": "Critères optionnels",
+    "optionalCriteriaEmptyText": "Tous les critères optionnels seront affichés par défaut.",
+    "alwaysDisplayedCriteria": "Critères toujours affichés",
+    "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
     "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
@@ -434,7 +453,7 @@
     "comparisonPage": "Comparaison (page)",
     "rateLater": "Liste à comparer plus tard",
     "recommendationsPage": "Recommandations (page)",
-    "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <6>menu principal</6>.",
+    "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>.",
     "updatePreferences": "Mettre à jour les préférences"
   },
   "videosUserSettingsForm": {
@@ -683,7 +702,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
     "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visualization</1> réalisée avec Streamlit.",
-    "personCorrelationCoefficientMatrix": "Matrice des coefficient de corrélation de Pearson entre les scores des critères de comparaison (2022/10/10)."
+    "personCorrelationCoefficientMatrix": "Matrice des coefficients de corrélation de Pearson entre les scores des critères de comparaison (2023/06/13)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",

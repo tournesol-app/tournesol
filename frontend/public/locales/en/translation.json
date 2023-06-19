@@ -3,6 +3,9 @@
     "copy": "Copy URI",
     "copied": "Copied!"
   },
+  "preferencesIconButtonLink": {
+    "linkToThePreferencesPage": "Link to the preferences page"
+  },
   "components": {
     "filtersButton": "filters"
   },
@@ -237,13 +240,22 @@
   },
   "menu": {
     "home": "Home",
+    "homeAriaLabel": "Link to the home page",
+    "recommendationsAriaLabel": "Link to the recommendations page",
     "compare": "Compare 🌻",
+    "compareAriaLabel": "Link to the comparison page",
     "myComparisons": "My comparisons",
+    "myComparisonsAriaLabel": "Link to my comparisons page",
     "comparedItems": "My compared items",
+    "myComparedItemsAriaLabel": "Link to my compared items page",
     "myRateLaterList": "My rate later list",
+    "myRateLaterListAriaLabel": "Link to my rate later list",
     "myResults": "My results",
+    "myFeedbackAriaLabel": "Link to my feedback page",
     "faq": "FAQ",
+    "FAQAriaLabel": "Link to the FAQ page",
     "about": "About",
+    "aboutAriaLabel": "Link to the about page",
     "donate": "Donate"
   },
   "frame": {
@@ -413,6 +425,13 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
+    "moveTheFollowingCriterionUp": "Move the following criterion up:",
+    "moveTheFollowingCriterionDown": "Move the following criterion down:",
+    "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
+    "optionalCriteria": "Optional criteria",
+    "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",
+    "alwaysDisplayedCriteria": "Always displayed criteria",
+    "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
     "autoRemoveHelpText_other": "Elements will be removed from your rate-later list after {{value}} comparisons.",
@@ -426,7 +445,7 @@
     "comparisonPage": "Comparison page",
     "rateLater": "Rate-later list",
     "recommendationsPage": "Recommendations page",
-    "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <6>main menu</6>.",
+    "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>.",
     "updatePreferences": "Update preferences"
   },
   "videosUserSettingsForm": {
@@ -675,7 +694,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
     "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> application made with Streamlit.",
-    "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of comparison criteria scores (2022/10/10)."
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficients matrix of comparison criteria scores (2023/06/13)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",

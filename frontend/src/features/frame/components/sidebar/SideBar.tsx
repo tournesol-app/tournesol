@@ -131,6 +131,7 @@ const SideBar = () => {
       targetUrl: path,
       IconComponent: HomeIcon,
       displayText: t('menu.home'),
+      ariaLabel: t('menu.homeAriaLabel'),
     },
     {
       id: RouteID.CollectiveRecommendations,
@@ -142,6 +143,7 @@ const SideBar = () => {
       IconComponent:
         pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
       displayText: getRecommendationPageName(t, pollName),
+      ariaLabel: t('menu.recommendationsAriaLabel'),
     },
     { displayText: 'divider_1' },
     {
@@ -149,30 +151,35 @@ const SideBar = () => {
       targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
+      ariaLabel: t('menu.compareAriaLabel'),
     },
     {
       id: RouteID.MyComparisons,
       targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
+      ariaLabel: t('menu.myComparisonsAriaLabel'),
     },
     {
       id: RouteID.MyComparedItems,
       targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
       displayText: t('menu.comparedItems'),
+      ariaLabel: t('menu.myComparedItemsAriaLabel'),
     },
     {
       id: RouteID.MyRateLaterList,
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
+      ariaLabel: t('menu.myRateLaterListAriaLabel'),
     },
     {
       id: RouteID.MyFeedback,
       targetUrl: `${path}personal/feedback`,
       IconComponent: EmojiEventsIcon,
       displayText: t('menu.myResults'),
+      ariaLabel: t('menu.myFeedbackAriaLabel'),
     },
     { displayText: 'divider_2' },
     {
@@ -180,12 +187,14 @@ const SideBar = () => {
       targetUrl: '/faq',
       IconComponent: HelpIcon,
       displayText: t('menu.faq'),
+      ariaLabel: t('menu.FAQAriaLabel'),
     },
     {
       id: RouteID.About,
       targetUrl: '/about',
       IconComponent: InfoIcon,
       displayText: t('menu.about'),
+      ariaLabel: t('menu.aboutAriaLabel'),
     },
   ];
 
@@ -211,52 +220,55 @@ const SideBar = () => {
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
         sx={{ flexGrow: 1 }}
       >
-        {menuItems.map(({ id, targetUrl, IconComponent, displayText }) => {
-          if (!IconComponent || !targetUrl)
-            return <Divider key={displayText} />;
-          if (id && disabledItems.includes(id)) {
-            return;
-          }
+        {menuItems.map(
+          ({ id, targetUrl, IconComponent, displayText, ariaLabel }) => {
+            if (!IconComponent || !targetUrl)
+              return <Divider key={displayText} />;
+            if (id && disabledItems.includes(id)) {
+              return;
+            }
 
-          const selected = isItemSelected(targetUrl);
-          return (
-            <ListItem
-              key={id}
-              button
-              selected={selected}
-              className={classes.listItem}
-              component={Link}
-              to={targetUrl}
-              sx={{
-                '&.Mui-selected': {
-                  bgcolor: 'action.selected',
-                },
-                '&.Mui-selected:hover': {
-                  bgcolor: 'action.selected',
-                },
-              }}
-            >
-              <Tooltip
-                title={drawerOpen === true ? '' : displayText}
-                placement="right"
-                arrow
+            const selected = isItemSelected(targetUrl);
+            return (
+              <ListItem
+                key={id}
+                aria-label={ariaLabel}
+                button
+                selected={selected}
+                className={classes.listItem}
+                component={Link}
+                to={targetUrl}
+                sx={{
+                  '&.Mui-selected': {
+                    bgcolor: 'action.selected',
+                  },
+                  '&.Mui-selected:hover': {
+                    bgcolor: 'action.selected',
+                  },
+                }}
               >
-                <ListItemIcon sx={{ minWidth: '40px' }}>
-                  <IconComponent
-                    className={clsx({
-                      [classes.listItemIcon]: !selected,
-                      [classes.listItemIconSelected]: selected,
-                    })}
-                  />
-                </ListItemIcon>
-              </Tooltip>
-              <ListItemText
-                primary={displayText}
-                primaryTypographyProps={{ className: classes.listItemText }}
-              />
-            </ListItem>
-          );
-        })}
+                <Tooltip
+                  title={drawerOpen === true ? '' : displayText}
+                  placement="right"
+                  arrow
+                >
+                  <ListItemIcon sx={{ minWidth: '40px' }}>
+                    <IconComponent
+                      className={clsx({
+                        [classes.listItemIcon]: !selected,
+                        [classes.listItemIconSelected]: selected,
+                      })}
+                    />
+                  </ListItemIcon>
+                </Tooltip>
+                <ListItemText
+                  primary={displayText}
+                  primaryTypographyProps={{ className: classes.listItemText }}
+                />
+              </ListItem>
+            );
+          }
+        )}
       </List>
       <Divider />
       <LanguageSelector languageName={drawerOpen} />

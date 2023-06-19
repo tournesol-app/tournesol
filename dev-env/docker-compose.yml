@@ -3,7 +3,7 @@ version: "3.3"
 services:
   db:
     container_name: tournesol-dev-db
-    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2022-11-09}
+    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2023-06-01}
     user: ${DB_UID}:${DB_GID}
     volumes:
       - ./db-data:/var/lib/postgresql/data
@@ -48,7 +48,7 @@ services:
         condition: service_healthy
 
   front:
-    image: node:14-bullseye-slim
+    image: node:18-bullseye-slim
     container_name: tournesol-dev-front
     working_dir: /frontend
     entrypoint: bash -c
