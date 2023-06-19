@@ -43,15 +43,20 @@ const FAQTableOfContent = ({
           <ListItemButton
             key={`toc_${entry.name}`}
             component="a"
-            href={`#${entry.name}`}
-            onClick={() => onEntryClick(entry.name)}
+            onClick={() => {
+              onEntryClick(entry.name);
+              window.history.replaceState(null, '', `?scrollTo=${entry.name}`);
+            }}
           >
             <ListItemText>{entry.question}</ListItemText>
           </ListItemButton>
         ))}
         {/* Always display an extra entry to explain how to ask more
             questions. */}
-        <ListItemButton component="a" href={`#no_answer_found`}>
+        <ListItemButton
+          component="a"
+          onClick={() => onEntryClick(`no_answer_found`)}
+        >
           <ListItemText>{t('faqPage.iDidFindTheAnswers')}</ListItemText>
         </ListItemButton>
       </List>

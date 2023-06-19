@@ -32,6 +32,10 @@ const FAQ = () => {
         setDisplayedEntries([...displayedEntries, name]);
       }
     }
+    const element = document.getElementById(name);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const hideEntry = (name: string) => {
