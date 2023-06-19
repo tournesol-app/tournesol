@@ -102,6 +102,8 @@ describe('Settings - preferences page', () => {
       cy.visit('/comparison');
 
       cy.get('div[id="id_container_criteria_backfire_risk"]').next().should('have.text', 'Layman-friendly ');
+      cy.get('div[id="id_container_criteria_backfire_risk"]').should('be.visible');
+      cy.get('div[id="id_container_criteria_layman_friendly"]').should('be.visible');
       cy.get('div[id="id_container_criteria_reliability"]').should('not.be.visible');
     });
   });  
