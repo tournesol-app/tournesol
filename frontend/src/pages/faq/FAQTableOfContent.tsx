@@ -43,10 +43,7 @@ const FAQTableOfContent = ({
           <ListItemButton
             key={`toc_${entry.name}`}
             component="a"
-            onClick={() => {
-              onEntryClick(entry.name);
-              window.history.replaceState(null, '', `?scrollTo=${entry.name}`);
-            }}
+            onClick={() => onEntryClick(entry.name)}
           >
             <ListItemText>{entry.question}</ListItemText>
           </ListItemButton>

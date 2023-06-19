@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
@@ -16,6 +16,7 @@ import { FAQEntry, FaqService } from 'src/services/openapi';
  */
 const FAQ = () => {
   const { hash } = useLocation();
+  const history = useHistory();
   const { i18n, t } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
@@ -25,6 +26,9 @@ const FAQ = () => {
   const [displayedEntries, setDisplayedEntries] = useState<Array<string>>([]);
 
   const currentLang = i18n.resolvedLanguage;
+
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const scrollTo = urlSearchParams.get('scrollTo');
 
   const displayEntry = (name: string) => {
     if (entries.find((entry) => entry.name === name)) {
@@ -36,6 +40,11 @@ const FAQ = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+    const location = history.location;
+    const searchParams = new URLSearchParams();
+    searchParams.append('scrollTo', name);
+    location.search = searchParams.toString();
+    history.replace(location);
   };
 
   const hideEntry = (name: string) => {
@@ -61,10 +70,10 @@ const FAQ = () => {
    */
   useEffect(() => {
     // Do not scroll when it's not required.
-    if (hash && entries.length > 0) {
+    if ((hash || scrollTo) && entries.length > 0) {
       // Scroll only one time.
       if (!alreadyScrolled.current) {
-        const faqName = hash.substring(1);
+        const faqName = scrollTo ?? hash.substring(1);
         const element = document.getElementById(faqName);
 
         if (element) {
@@ -75,7 +84,7 @@ const FAQ = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hash, entries]);
+  }, [hash, entries, scrollTo]);
 
   useEffect(() => {
     async function getFaqEntries() {
