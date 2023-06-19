@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 
-const CommunicationWithAssociation = () => {
+const CommunicationsWithAssociation = () => {
   const { t } = useTranslation();
   return (
     <Box>
@@ -13,14 +13,14 @@ const CommunicationWithAssociation = () => {
         gutterBottom
         id="communication-with-the-association"
       >
-        {t('terms.communicationWithAssociation.communicationWithAssociation')}
+        {t('terms.communicationsWithAssociation.communicationsWithAssociation')}
       </Typography>
       <Box my={2}>
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>
           </AlertTitle>
-          {t('terms.communicationWithAssociation.shortVersion')}
+          {t('terms.communicationsWithAssociation.shortVersion')}
         </Alert>
       </Box>
       <Typography
@@ -29,27 +29,27 @@ const CommunicationWithAssociation = () => {
         id="electronic-communication-required"
       >
         {t(
-          'terms.communicationWithAssociation.titles.1electronicCommunicationRequired'
+          'terms.communicationsWithAssociation.titles.1electronicCommunicationRequired'
         )}
       </Typography>
       <Typography paragraph>
         {t(
-          'terms.communicationWithAssociation.paragraphs.youConsentToReceiveEmails'
+          'terms.communicationsWithAssociation.paragraphs.youConsentToReceiveEmails'
         )}
       </Typography>
       <Typography variant="h5" gutterBottom id="necessary-emails">
-        {t('terms.communicationWithAssociation.titles.2necessaryEmails')}
+        {t('terms.communicationsWithAssociation.titles.2necessaryEmails')}
       </Typography>
       <Typography paragraph>
-        {t('terms.communicationWithAssociation.paragraphs.necessaryEmails')}
+        {t('terms.communicationsWithAssociation.paragraphs.necessaryEmails')}
       </Typography>
       <Typography paragraph>
         {t(
-          'terms.communicationWithAssociation.paragraphs.additionalNecessaryEmails'
+          'terms.communicationsWithAssociation.paragraphs.additionalNecessaryEmails'
         )}
       </Typography>
     </Box>
   );
 };
 
-export default CommunicationWithAssociation;
+export default CommunicationsWithAssociation;

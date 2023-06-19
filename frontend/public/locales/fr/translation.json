@@ -188,7 +188,7 @@
       "userIsResponsibleFor": ""
     },
     "cancellationAndTermination": {
-      "cancellationAndTermination": "",
+      "cancellationAndTermination": "E. Annulation et Résiliation",
       "shortVersion": "Vous pouvez fermer votre Compte à tout moment. Dans ce cas, nous traiterons vos informations de manière responsable.",
       "titles": {
         "1accountCancellation": "",
@@ -208,8 +208,8 @@
       "shortVersion": "Nous voulons que les utilisateur·rices soient informé·es des changements apportés à nos conditions, mais certains ne sont pas importants. Nous ne voulons pas vous déranger pour chaque faute d'orthographe corrigée. C'est pourquoi, bien que nous puissions modifier le présent Accord à tout moment, nous informerons les utilisateur·rices des modifications importantes et nous leur donnerons le temps de s'y adapter.",
       "weMayAmendTheseTerms": ""
     },
-    "communicationWithAssociation": {
-      "communicationWithAssociation": "",
+    "communicationsWithAssociation": {
+      "communicationsWithAssociation": "F. Communications avec l'Association",
       "shortVersion": "Nous utilisons les e-mails pour rester en contact avec les utilisateur·rices. Vous acceptez de recevoir les e-mails nécessaires au fonctionnement du Service. Nous n'envoyons pas d'autres e-mails sans votre consentement explicite.",
       "titles": {
         "1electronicCommunicationRequired": "",

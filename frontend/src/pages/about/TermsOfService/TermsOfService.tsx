@@ -9,7 +9,7 @@ import AcceptableUse from './sections/AcceptableUse';
 import AccountTerms from './sections/AccountTerms';
 import CancellationAndTermination from './sections/CancellationAndTermination';
 import ChangesToTheseTerms from './sections/ChangesToTheseTerms';
-import CommunicationWithAssociation from './sections/CommunicationWithAssociation';
+import CommunicationsWithAssociation from './sections/CommunicationsWithAssociation';
 import Definitions from './sections/Definitions';
 import Moderation from './sections/Moderation';
 
@@ -30,7 +30,7 @@ const TermsOfServicePage = () => {
           <AcceptableUse />
           <Moderation />
           <CancellationAndTermination />
-          <CommunicationWithAssociation />
+          <CommunicationsWithAssociation />
           <ChangesToTheseTerms />
         </Box>
       </ContentBox>
