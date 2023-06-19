@@ -73,11 +73,16 @@ const OrderableCriterionRow = ({
       </Grid>
       {checked && (
         <Grid item display="flex" flexWrap="nowrap">
-          <IconButton onClick={() => handleUp(index)} disabled={index <= 0}>
+          <IconButton
+            aria-label={'up_' + criterionName}
+            onClick={() => handleUp(index)}
+            disabled={index <= 0}
+          >
             <KeyboardArrowUp />
           </IconButton>
 
           <IconButton
+            aria-label={'down_' + criterionName}
             onClick={() => handleDown(index)}
             disabled={index >= selectedCriteria.length - 1}
           >

@@ -82,6 +82,32 @@ describe('Settings - preferences page', () => {
     });
   });
 
+  describe('Setting - criteria order', () => {
+    it('handles adding criteria', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.contains('No criteria selected.').should('be.visible');
+
+      cy.get('input[id="id_selected_optional_layman_friendly"]').click();
+      cy.get('input[id="id_selected_optional_backfire_risk"]').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+
+      cy.get('div[id="id_container_criteria_layman_friendly"]').next().should('have.text', 'Resilience to backfiring risks ');
+      cy.get('div[id="id_container_criteria_reliability"]').should('not.be.visible');
+
+      cy.visit('/settings/preferences');
+      cy.wait(1000);
+      cy.get('button[aria-label="down_layman_friendly"]').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+      cy.get('div[id="id_container_criteria_backfire_risk"]').next().should('have.text', 'Layman-friendly ');
+    });
+  });  
+
   describe('Setting - rate-later auto removal', () => {
     it('handles changing the value', () => {
       cy.visit('/rate_later');
