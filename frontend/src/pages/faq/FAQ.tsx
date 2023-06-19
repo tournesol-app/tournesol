@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
@@ -15,8 +15,8 @@ import { FAQEntry, FaqService } from 'src/services/openapi';
  * their questions directly on Discord.
  */
 const FAQ = () => {
-  const { hash } = useLocation();
   const history = useHistory();
+
   const { i18n, t } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
@@ -26,9 +26,7 @@ const FAQ = () => {
   const [displayedEntries, setDisplayedEntries] = useState<Array<string>>([]);
 
   const currentLang = i18n.resolvedLanguage;
-
-  const urlSearchParams = new URLSearchParams(window.location.search);
-  const scrollTo = urlSearchParams.get('scrollTo');
+  const scrollTo = new URLSearchParams(history.location.search).get('scrollTo');
 
   const displayEntry = (name: string) => {
     if (entries.find((entry) => entry.name === name)) {
@@ -69,19 +67,19 @@ const FAQ = () => {
    * `alreadyScrolled`.
    */
   useEffect(() => {
-    if (hash) {
-      const location = history.location;
-      const searchParams = new URLSearchParams();
-      searchParams.append('scrollTo', hash.substring(1));
-      location.search = searchParams.toString();
-      location.hash = '';
-      history.replace(location);
-    }
+    // Scroll only one time.
+    if (!alreadyScrolled.current) {
+      if (history.location.hash) {
+        const newLocation = history.location;
+        const searchParams = new URLSearchParams();
+        searchParams.append('scrollTo', history.location.hash.substring(1));
+        newLocation.search = searchParams.toString();
+        newLocation.hash = '';
+        history.replace(newLocation);
+      }
 
-    // Do not scroll when it's not required.
-    if (scrollTo && entries.length > 0) {
-      // Scroll only one time.
-      if (!alreadyScrolled.current) {
+      // Do not scroll when it's not required.
+      if (scrollTo && entries.length > 0) {
         const faqName = scrollTo ?? 'no_answer_found';
         const element = document.getElementById(faqName);
 
@@ -93,7 +91,7 @@ const FAQ = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hash, entries, scrollTo]);
+  }, [history.location.hash, entries, scrollTo]);
 
   useEffect(() => {
     async function getFaqEntries() {
