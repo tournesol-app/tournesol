@@ -334,6 +334,8 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
+    "moveTheFollowingCriterionUp": "Move the following criterion up:",
+    "moveTheFollowingCriterionDown": "Move the following criterion down:",
     "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
     "optionalCriteria": "Optional criteria",
     "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",

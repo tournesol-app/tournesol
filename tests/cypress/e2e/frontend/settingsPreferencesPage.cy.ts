@@ -98,7 +98,7 @@ describe('Settings - preferences page', () => {
 
       cy.get('input[id="id_selected_optional_layman_friendly"]').click();
       cy.get('input[id="id_selected_optional_backfire_risk"]').click();
-      cy.get('button[aria-label="up_backfire_risk"]').click();
+      cy.get('button[data-testid="videos_move_criterion_up_backfire_risk"]').click();
       cy.contains('Update preferences').click();
 
       cy.visit('/comparison');
