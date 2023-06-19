@@ -22,7 +22,7 @@ const FAQTableOfContent = ({
   onEntryClick,
 }: {
   entries: Array<FAQEntry>;
-  onEntryClick: (name: string) => void;
+  onEntryClick: (name: string, scroll?: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -43,7 +43,7 @@ const FAQTableOfContent = ({
           <ListItemButton
             key={`toc_${entry.name}`}
             component="a"
-            onClick={() => onEntryClick(entry.name)}
+            onClick={() => onEntryClick(entry.name, true)}
           >
             <ListItemText>{entry.question}</ListItemText>
           </ListItemButton>
@@ -52,7 +52,7 @@ const FAQTableOfContent = ({
             questions. */}
         <ListItemButton
           component="a"
-          onClick={() => onEntryClick(`no_answer_found`)}
+          onClick={() => onEntryClick('no_answer_found', true)}
         >
           <ListItemText>{t('faqPage.iDidFindTheAnswers')}</ListItemText>
         </ListItemButton>

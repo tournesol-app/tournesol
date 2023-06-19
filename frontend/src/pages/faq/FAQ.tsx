@@ -28,21 +28,24 @@ const FAQ = () => {
   const currentLang = i18n.resolvedLanguage;
   const scrollTo = new URLSearchParams(history.location.search).get('scrollTo');
 
-  const displayEntry = (name: string) => {
+  const displayEntry = (name: string, scroll = false) => {
     if (entries.find((entry) => entry.name === name)) {
       if (!displayedEntries.includes(name)) {
         setDisplayedEntries([...displayedEntries, name]);
       }
     }
-    const element = document.getElementById(name);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+
+    if (scroll === true) {
+      const element = document.getElementById(name);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+      const location = history.location;
+      const searchParams = new URLSearchParams();
+      searchParams.append('scrollTo', name);
+      location.search = searchParams.toString();
+      history.replace(location);
     }
-    const location = history.location;
-    const searchParams = new URLSearchParams();
-    searchParams.append('scrollTo', name);
-    location.search = searchParams.toString();
-    history.replace(location);
   };
 
   const hideEntry = (name: string) => {
