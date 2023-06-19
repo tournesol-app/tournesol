@@ -34,6 +34,9 @@ const OrderableCriterionRow = ({
   handleDown: (index: number) => void;
   setCheckedCriteria: (target: string[]) => void;
 }) => {
+  const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
+
   const handleCheck = () => {
     const newSelection = [...selectedCriteria];
 
@@ -73,11 +76,21 @@ const OrderableCriterionRow = ({
       </Grid>
       {checked && (
         <Grid item display="flex" flexWrap="nowrap">
-          <IconButton onClick={() => handleUp(index)} disabled={index <= 0}>
+          <IconButton
+            aria-label={`${t(
+              'pollUserSettingsForm.moveTheFollowingCriterionUp'
+            )} ${criterionLabel}`}
+            data-testid={`${pollName}_move_criterion_up_${criterionName}`}
+            onClick={() => handleUp(index)}
+            disabled={index <= 0}
+          >
             <KeyboardArrowUp />
           </IconButton>
-
           <IconButton
+            aria-label={`${t(
+              'pollUserSettingsForm.moveTheFollowingCriterionDown'
+            )} ${criterionLabel}`}
+            data-testid={`${pollName}_move_criterion_down_${criterionName}`}
             onClick={() => handleDown(index)}
             disabled={index >= selectedCriteria.length - 1}
           >
