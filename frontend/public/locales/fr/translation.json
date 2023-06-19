@@ -157,7 +157,7 @@
     "termsOfService": "Conditions Générales d'Utilisation",
     "acceptableUse": {
       "acceptableUse": "C. Bon Usage",
-      "shortVersion": "",
+      "shortVersion": "Lorsque vous utilisez le Service, vous devez respecter les conditions de cette section, notamment ne pas nuire aux autres utilisateur·rices, ne pas perturber le Service et avoir une activité authentique.",
       "titles": {
         "1ComplianceWithLawsAndRegulation": "",
         "2UserSafety": "",
@@ -175,7 +175,7 @@
     "shortVersion": "",
     "accountTerms": {
       "accountTerms": "B. Conditions Relatives aux Comptes",
-      "shortVersion": "",
+      "shortVersion": "Votre Compte doit être créé par un humain ; vous devez avoid 15 ans ou plus ; vous devez fournir une adresse électronique valide ; et vous ne pouvez pas avoir plus d'un seul Compte. Vous êtes seul·e responsable de votre Compte et de tout ce qui se passe pendant que vous êtes connecté à votre Compte ou que vous l'utilisez. Vous êtes responsable de la sécurité de votre Compte.",
       "accountControls": "",
       "userRetainsUltimateAdministrativeControl": "",
       "accountRequirements": "",
@@ -189,7 +189,7 @@
     },
     "cancellationAndTermination": {
       "cancellationAndTermination": "",
-      "shortVersion": "",
+      "shortVersion": "Vous pouvez fermer votre Compte à tout moment. Dans ce cas, nous traiterons vos informations de manière responsable.",
       "titles": {
         "1accountCancellation": "",
         "2uponCancellation": "",
@@ -204,13 +204,13 @@
       }
     },
     "changesToTheseTerms": {
-      "changesToTheseTerms": "",
-      "shortVersion": "",
+      "changesToTheseTerms": "G. Modifications des Présentes Conditions",
+      "shortVersion": "Nous voulons que les utilisateur·rices soient informé·es des changements apportés à nos conditions, mais certains ne sont pas importants. Nous ne voulons pas vous déranger pour chaque faute d'orthographe corrigée. C'est pourquoi, bien que nous puissions modifier le présent Accord à tout moment, nous informerons les utilisateur·rices des modifications importantes et nous leur donnerons le temps de s'y adapter.",
       "weMayAmendTheseTerms": ""
     },
     "communicationWithAssociation": {
       "communicationWithAssociation": "",
-      "shortVersion": "",
+      "shortVersion": "Nous utilisons les e-mails pour rester en contact avec les utilisateur·rices. Vous acceptez de recevoir les e-mails nécessaires au fonctionnement du Service. Nous n'envoyons pas d'autres e-mails sans votre consentement explicite.",
       "titles": {
         "1electronicCommunicationRequired": "",
         "2necessaryEmails": ""
@@ -223,7 +223,7 @@
     },
     "definitions": {
       "definitions": "A. Définitions",
-      "shortVersion": "",
+      "shortVersion": "Nous utilisons ces termes tout au long de l'Accord. Cette section précise leur signification spécifique.",
       "account": "",
       "agreement": "The &quot;Agreement&quot; refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the &quot;Terms of Service&quot; or the Terms) and all other operating rules, policies (including the Tournesol Privacy Policy, available at <2>https://tournesol.app/about/privacy_policy</2>).",
       "association": "",
@@ -234,7 +234,7 @@
     },
     "moderation": {
       "moderation": "D. Modération",
-      "shortVersion": "",
+      "shortVersion": "Si une infraction au présent Accord est détectée, nous pouvons suspendre temporairement ou résilier définitivement votre Compte.",
       "paragraphs": {
         "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of these policies.",
         "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",
