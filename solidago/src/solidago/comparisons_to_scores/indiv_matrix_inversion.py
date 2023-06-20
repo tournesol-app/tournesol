@@ -6,7 +6,7 @@ from .base import IndividualScoresAlgorithm
 DEFAULT_ALPHA = 1.0  # Signal-to-noise hyperparameter
 
 
-class MatrixInversionInvididualAlgo(IndividualScoresAlgorithm):
+class HookeIndividualScores(IndividualScoresAlgorithm):
     def __init__(self, r_max, alpha=DEFAULT_ALPHA):
         """
         Initialize in Matrix Inversion algorithm

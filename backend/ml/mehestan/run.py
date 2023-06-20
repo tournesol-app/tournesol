@@ -8,7 +8,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django import db
-from solidago.comparisons_to_scores import MatrixInversionInvididualAlgo
+from solidago.comparisons_to_scores import HookeIndividualScores
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
@@ -36,7 +36,7 @@ VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 
-individual_scores_algo = MatrixInversionInvididualAlgo(r_max=COMPARISON_MAX)
+individual_scores_algo = HookeIndividualScores(r_max=COMPARISON_MAX)
 
 
 def get_individual_scores(

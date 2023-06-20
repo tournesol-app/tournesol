@@ -3,10 +3,10 @@ import random
 import pandas as pd
 import pytest
 
-from solidago.comparisons_to_scores import ContinuousBradleyTerry, MatrixInversionInvididualAlgo
+from solidago.comparisons_to_scores import ContinuousBradleyTerry, HookeIndividualScores
 
 
-matrix_inversion = MatrixInversionInvididualAlgo(r_max=10)
+matrix_inversion = HookeIndividualScores(r_max=10)
 continuous_bradley_terry = ContinuousBradleyTerry(r_max=10)
 
 

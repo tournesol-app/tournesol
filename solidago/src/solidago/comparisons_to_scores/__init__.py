@@ -1,2 +1,2 @@
-from .indiv_matrix_inversion import MatrixInversionInvididualAlgo
+from .indiv_matrix_inversion import HookeIndividualScores
 from .continuous_bradley_terry import ContinuousBradleyTerry
