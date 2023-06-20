@@ -529,3 +529,18 @@ class DynamicFaqPreviewTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
+
+    def test_faq_disabled_question(self):
+        """
+        We should get the preview of the associated faq entry
+        """
+        FAQEntry.objects.create(
+            name=self.valid_qid,
+            rank=1,
+            enabled=False
+        )
+
+        response = self.client.get(self.faq_url, {"scrollTo": self.valid_qid})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")

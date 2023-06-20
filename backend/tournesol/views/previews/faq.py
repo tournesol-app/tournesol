@@ -105,6 +105,9 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
         except FAQEntry.DoesNotExist:
             return self.default_preview()
 
+        if not question.enabled:
+            return self.default_preview()
+
         title = question.get_text(related="questions")
 
         preview_image = Image.new(
