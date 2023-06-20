@@ -1,3 +1,4 @@
+from zoneinfo import ZoneInfo
 
 from django.db import models
 
@@ -23,17 +24,10 @@ class TalkEntry(models.Model):
         null=True,
         blank=True,
     )
-    speaker = models.CharField(
-        help_text="the speaker of the talk",
+    speakers = models.TextField(
+        help_text="Speakers of the talk and short description",
         null=True,
         blank=True,
-        max_length=50
-    )
-    speaker_short_desc = models.CharField(
-        help_text="A short biography of speaker",
-        null=True,
-        blank=True,
-        max_length=50
     )
     title = models.CharField(
         help_text="the title of the talk",
@@ -55,6 +49,12 @@ class TalkEntry(models.Model):
         ordering = ["date"]
         verbose_name = "Talk Entry"
         verbose_name_plural = "Talk Entries"
+
+    def get_date_gmt(self):
+        """Return the date in time zone Europe/Paris."""
+        if self.date:
+            return self.date.astimezone(ZoneInfo('Europe/Paris')).strftime('%Y-%m-%dT%H:%M:%S%z')
+        return None
 
     def __str__(self) -> str:
         return self.name

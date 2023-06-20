@@ -2,6 +2,7 @@
 API of the `backoffice` app.
 """
 
+from django.db.models import F
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListAPIView
 
@@ -26,5 +27,6 @@ class TalkEntryListView(ListAPIView):
     def get_queryset(self):
         queryset = (
             TalkEntry.objects.all().filter(display=True)
+            .order_by(F('date').desc(nulls_last=True))
         )
         return queryset

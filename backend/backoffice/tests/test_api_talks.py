@@ -2,6 +2,7 @@
 All test cases of the `faq` views.
 """
 import datetime
+from zoneinfo import ZoneInfo
 
 from django.test import TestCase
 from rest_framework import status
@@ -61,8 +62,7 @@ class TalksListViewTestCase(TestCase):
                 "abstract": None,
                 "invitation_link": None,
                 "youtube_link": None,
-                "speaker": None,
-                "speaker_short_desc": None,
+                "speakers": None,
                 "date": None,
                 "date_gmt": None
             },
@@ -77,10 +77,14 @@ class TalksListViewTestCase(TestCase):
         self.other_talk.abstract = 'an abstract'
         self.other_talk.invitation_link = 'https://wikipedia.fr'
         self.other_talk.youtube_link = 'https://you.tube'
-        self.other_talk.speaker = 'a speaker'
-        self.other_talk.speaker_short_desc = 'a speaker bio'
-        datetime_str = '09/19/22 13:55:26'
-        self.other_talk.date = datetime.datetime.strptime(datetime_str, '%m/%d/%y %H:%M:%S')
+        self.other_talk.speakers = 'a speaker'
+
+        # set a date server in utc and get date in time zone Europe Paris in date_gmt
+        date_server = datetime.datetime.strptime('09/19/22 13:55:26', '%m/%d/%y %H:%M:%S').astimezone(ZoneInfo('UTC'))
+        date_gmt = date_server.astimezone(ZoneInfo('Europe/Paris'))
+
+        self.other_talk.date = date_server
+
         self.other_talk.display = True
         self.other_talk.save()
 
@@ -97,10 +101,9 @@ class TalksListViewTestCase(TestCase):
                 "abstract": 'an abstract',
                 "invitation_link": 'https://wikipedia.fr',
                 "youtube_link": 'https://you.tube',
-                "speaker": 'a speaker',
-                "speaker_short_desc": 'a speaker bio',
-                "date": '2022-09-19T13:55:26Z',
-                "date_gmt": '2022-09-19T15:55:26+02:00'
+                "speakers": 'a speaker',
+                "date": date_server.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "date_gmt": date_gmt.strftime('%Y-%m-%dT%H:%M:%S%z')
             },
         )
         self.assertDictEqual(
@@ -111,8 +114,7 @@ class TalksListViewTestCase(TestCase):
                 "abstract": None,
                 "invitation_link": None,
                 "youtube_link": None,
-                "speaker": None,
-                "speaker_short_desc": None,
+                "speakers": None,
                 "date": None,
                 "date_gmt": None
             },
