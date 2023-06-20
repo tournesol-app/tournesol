@@ -101,7 +101,6 @@ const FAQ = () => {
   useEffect(() => {
     const newLocation = history.location;
     const searchParams = new URLSearchParams(newLocation.search);
-    console.log(searchParams.toString());
     if (currentLang) {
       searchParams.set('previewLang', currentLang);
     }

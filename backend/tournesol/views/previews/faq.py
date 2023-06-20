@@ -92,10 +92,17 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
                 location=OpenApiParameter.QUERY,
                 required=False,
             ),
+            OpenApiParameter(
+                "previewLang",
+                OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                required=False,
+            )
         ],
     )
     def get(self, request):
         scroll_to = request.query_params.get("scrollTo")
+        language = request.query_params.get("previewLang")
         if scroll_to is None:
             return self.default_preview()
 
@@ -105,7 +112,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
         except FAQEntry.DoesNotExist:
             return self.default_preview()
 
-        title = question.get_text(related="questions")
+        title = question.get_text(related="questions", lang=language)
 
         preview_image = Image.new(
             "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_FONT
