@@ -65,6 +65,7 @@ class BasePreviewAPIView(APIView):
     A generic mixin that provides common behaviours that can be used by all
     dynamic preview `APIView`.
     """
+
     renderer_classes = [ImageRenderer]
 
     def default_preview(self):
@@ -335,14 +336,14 @@ def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upsc
     hours, minutes = divmod(minutes, 60)
 
     # creating a PIL.Image to get a Draw context, image later resized to text length
-    overlay = Image.new('RGBA', (1, 1), COLOR_DURATION_RECTANGLE)
+    overlay = Image.new("RGBA", (1, 1), COLOR_DURATION_RECTANGLE)
     overlay_draw = ImageDraw.Draw(overlay)
 
     padding = tuple(numpy.multiply((5, 1), upscale_ratio))
     duration_formatted = f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}"
     duration_text_size = (
         int(overlay_draw.textlength(duration_formatted, font=font)) + padding[0],
-        font_size + padding[1]
+        font_size + padding[1],
     )
 
     overlay = overlay.resize(duration_text_size)
@@ -361,8 +362,8 @@ def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upsc
         dest=(
             # all values are already upscaled (if applicable)
             thumbnail_bbox[0] + thumbnail_bbox[2] - duration_text_size[0],
-            thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1]
-        )
+            thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1],
+        ),
     )
 
 
@@ -431,8 +432,9 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
     def draw_question(self, image: Image.Image, title, upscale_ratio: int):
         headline_height = 30
         text_box_image = Image.new(
-            "RGBA", (440 * upscale_ratio, (240 - headline_height) * upscale_ratio),
-            COLOR_WHITE_FONT
+            "RGBA",
+            (440 * upscale_ratio, (240 - headline_height) * upscale_ratio),
+            COLOR_WHITE_FONT,
         )
         text_box = ImageDraw.Draw(text_box_image)
 
@@ -448,10 +450,10 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
             )
             line_nb += 1
 
-        image.paste(text_box_image, (
-            30,
-            int(1/2 * ((240 - line_height * len(title_lines)) * upscale_ratio))
-        ))
+        image.paste(
+            text_box_image,
+            (30, int(1 / 2 * ((240 - line_height * len(title_lines)) * upscale_ratio))),
+        )
 
     @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW))
     @extend_schema(
