@@ -159,9 +159,9 @@
       "acceptableUse": "C. Bon Usage",
       "shortVersion": "Lorsque vous utilisez le Service, vous devez respecter les conditions de cette section, notamment ne pas nuire aux autres utilisateur·rices, ne pas perturber le Service et avoir une activité authentique.",
       "titles": {
-        "1ComplianceWithLawsAndRegulation": "",
-        "2UserSafety": "",
-        "3InauthenticActivityAndSpam": ""
+        "1ComplianceWithLawsAndRegulation": "1. Respect des Lois et des Réglementations",
+        "2UserSafety": "2. Sécurité des utilisateur·rices",
+        "3InauthenticActivityAndSpam": "3. Activité non Authentique et Spam"
       },
       "paragraphs": {
         "complianceWithLawsAndRegulation": "",
@@ -176,24 +176,24 @@
     "accountTerms": {
       "accountTerms": "B. Conditions Relatives aux Comptes",
       "shortVersion": "Votre Compte doit être créé par un humain ; vous devez avoid 15 ans ou plus ; vous devez fournir une adresse électronique valide ; et vous ne pouvez pas avoir plus d'un seul Compte. Vous êtes seul·e responsable de votre Compte et de tout ce qui se passe pendant que vous êtes connecté à votre Compte ou que vous l'utilisez. Vous êtes responsable de la sécurité de votre Compte.",
-      "accountControls": "",
+      "accountControls": "1. Contrôles du Compte",
       "userRetainsUltimateAdministrativeControl": "",
-      "accountRequirements": "",
+      "accountRequirements": "2. Exigences Relatives aux Comptes",
       "inOrderToCreateAccount": "",
       "aUserMayNotUseMoreThanOneAccount": "",
       "aUserLoginMayNotBeShared": "",
       "aUserMustProvideAValidEmailAddress": "",
       "userMustBeALeast15": "",
-      "accountSecurity": "",
+      "accountSecurity": "3. Sécurité du Compte",
       "userIsResponsibleFor": ""
     },
     "cancellationAndTermination": {
       "cancellationAndTermination": "E. Annulation et Résiliation",
       "shortVersion": "Vous pouvez fermer votre Compte à tout moment. Dans ce cas, nous traiterons vos informations de manière responsable.",
       "titles": {
-        "1accountCancellation": "",
-        "2uponCancellation": "",
-        "3theTournesolAssociationMayTerminate": ""
+        "1accountCancellation": "1. Annulation du Compte",
+        "2uponCancellation": "2. En cas d'Annulation",
+        "3theTournesolAssociationMayTerminate": "3. Résiliation par l'Association"
       },
       "paragraphs": {
         "accountCancellation": "",
