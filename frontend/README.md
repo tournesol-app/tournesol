@@ -13,7 +13,7 @@ This setup assumes that an API server is already configured.
 URLs and credentials can be configured in [.env.development](./.env.development).
 
 Requirements:
- * Node.js 14
+ * Node.js 18
  * yarn
 
 Setup:

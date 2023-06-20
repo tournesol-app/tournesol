@@ -342,6 +342,13 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
+    "moveTheFollowingCriterionUp": "Déplacer le critère suivant vers le haut:",
+    "moveTheFollowingCriterionDown": "Déplacer le critère suivant vers le bas:",
+    "selectTheCriteriaYouWantToDisplay": "Sélectionnez les critères que vous souhaitez afficher par défaut",
+    "optionalCriteria": "Critères optionnels",
+    "optionalCriteriaEmptyText": "Tous les critères optionnels seront affichés par défaut.",
+    "alwaysDisplayedCriteria": "Critères toujours affichés",
+    "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
     "autoRemoveHelpText_many": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparisons.",
@@ -605,7 +612,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
     "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visualization</1> réalisée avec Streamlit.",
-    "personCorrelationCoefficientMatrix": "Matrice des coefficient de corrélation de Pearson entre les scores des critères de comparaison (2022/10/10)."
+    "personCorrelationCoefficientMatrix": "Matrice des coefficients de corrélation de Pearson entre les scores des critères de comparaison (2023/06/13)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",

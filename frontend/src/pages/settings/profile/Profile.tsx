@@ -9,13 +9,12 @@ import ProfileForm from 'src/features/settings/profile/ProfileForm';
 import {
   mainSectionBreakpoints,
   settingsMenuBreakpoints,
+  subSectionBreakpoints,
 } from 'src/pages/settings/layout';
 
 function ProfilePage() {
   const { t } = useTranslation();
 
-  // subSectionBreakP can be changed independently of mainSectionBp
-  const subSectionBreakpoints = mainSectionBreakpoints;
   return (
     <>
       <ContentHeader title={`${t('settings.title')} > ${t('profile')}`} />

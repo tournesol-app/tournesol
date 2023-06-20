@@ -49,7 +49,7 @@ const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
   OpenAPI.HEADERS = async () => ({
     // Set the current language in API requests to
     // get localized error messages in the response.
-    'accept-language': i18n.resolvedLanguage,
+    'accept-language': i18n.resolvedLanguage || i18n.language,
   });
 };
 

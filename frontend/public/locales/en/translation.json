@@ -335,6 +335,13 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
+    "moveTheFollowingCriterionUp": "Move the following criterion up:",
+    "moveTheFollowingCriterionDown": "Move the following criterion down:",
+    "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
+    "optionalCriteria": "Optional criteria",
+    "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",
+    "alwaysDisplayedCriteria": "Always displayed criteria",
+    "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
     "autoRemoveHelpText_other": "Elements will be removed from your rate-later list after {{value}} comparisons.",
@@ -597,7 +604,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
     "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> application made with Streamlit.",
-    "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of comparison criteria scores (2022/10/10)."
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficients matrix of comparison criteria scores (2023/06/13)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",

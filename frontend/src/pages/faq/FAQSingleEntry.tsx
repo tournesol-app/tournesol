@@ -33,7 +33,7 @@ const FAQSingleEntry = ({
     event: React.MouseEvent<HTMLElement>,
     anchor: string
   ) => {
-    const uri = `${location.protocol}//${location.host}${location.pathname}#${anchor}`;
+    const uri = `${location.protocol}//${location.host}${location.pathname}?scrollTo=${anchor}`;
     navigator.clipboard.writeText(uri);
     enqueueSnackbar(t('faqEntryList.questionURLCopied'), {
       variant: 'success',

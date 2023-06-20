@@ -33,6 +33,7 @@ const pollContext = React.createContext<PollContextValue>({
 
 export const PollProvider = ({ children }: { children: React.ReactNode }) => {
   const { i18n } = useTranslation();
+  const currentLang = i18n.resolvedLanguage || i18n.language;
 
   const initPollContext = () => {
     const pollName =
@@ -78,7 +79,7 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Fetch poll details from API, whenever the current context relates to another poll,
     // or the UI language has changed.
-    getPoll(contextValue.name, i18n.resolvedLanguage).then((poll) => {
+    getPoll(contextValue.name, currentLang).then((poll) => {
       setContextValue((value) => {
         if (value.name === poll.name) {
           return {
@@ -89,7 +90,7 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
         return value;
       });
     });
-  }, [i18n.resolvedLanguage, contextValue.name]);
+  }, [currentLang, contextValue.name]);
 
   return (
     <pollContext.Provider value={contextValue}>{children}</pollContext.Provider>
