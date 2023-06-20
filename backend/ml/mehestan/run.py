@@ -8,7 +8,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django import db
-from solidago.comparisons_to_scores import HookeIndividualScores
+from solidago.comparisons_to_scores import ContinuousBradleyTerry
+from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_std
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
@@ -28,15 +29,17 @@ from .global_scores import compute_scaled_scores, get_global_scores
 logger = logging.getLogger(__name__)
 
 MAX_SCORE = MEHESTAN_MAX_SCALED_SCORE
-POLL_SCALING_QUANTILE = 0.75
+POLL_SCALING_QUANTILE = 0.50
 POLL_SCALING_SCORE_AT_QUANTILE = 25.0
 POLL_SCALING_MIN_CONTRIBUTORS = 4
 
 VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
+SCORE_SHIFT_W = 1.
+SCORE_SHIFT_QUANTILE = 0.10  # TODO maybe use 5% ?
 
-individual_scores_algo = HookeIndividualScores(r_max=COMPARISON_MAX)
+individual_scores_algo = ContinuousBradleyTerry(r_max=COMPARISON_MAX)
 
 
 def get_individual_scores(
@@ -145,8 +148,31 @@ def run_mehestan_for_criterion(
     )
 
     indiv_scores = get_individual_scores(ml_input, criteria=criteria)
+
     logger.debug("Individual scores computed for crit '%s'", criteria)
     scaled_scores, scalings = compute_scaled_scores(ml_input, individual_scores=indiv_scores)
+    score_shift = estimate_positive_score_shift(
+        scaled_scores,
+        SCORE_SHIFT_W,
+        SCORE_SHIFT_QUANTILE,
+    )
+    score_std = estimate_score_std(
+        scaled_scores,
+        SCORE_SHIFT_W,
+    )
+    score_std_np = np.std(scaled_scores.score)
+    print("STD", score_std)
+    print("STD_NP", score_std_np)
+
+    scaled_scores.score -= score_shift
+    scaled_scores.score /= score_std_np
+    scaled_scores.uncertainty /= score_std_np
+    print("STD", score_std)
+    print("SHIFT", score_shift)
+    print("SCORES", scaled_scores.score)
+    print("UNCERTAINTY", scaled_scores.uncertainty)
+
+    print("NEW_STD", np.std(scaled_scores.score))
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
