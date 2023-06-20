@@ -22,7 +22,7 @@ const FAQTableOfContent = ({
   onEntryClick,
 }: {
   entries: Array<FAQEntry>;
-  onEntryClick: (name: string) => void;
+  onEntryClick: (name: string, scroll?: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -43,15 +43,17 @@ const FAQTableOfContent = ({
           <ListItemButton
             key={`toc_${entry.name}`}
             component="a"
-            href={`#${entry.name}`}
-            onClick={() => onEntryClick(entry.name)}
+            onClick={() => onEntryClick(entry.name, true)}
           >
             <ListItemText>{entry.question}</ListItemText>
           </ListItemButton>
         ))}
         {/* Always display an extra entry to explain how to ask more
             questions. */}
-        <ListItemButton component="a" href={`#no_answer_found`}>
+        <ListItemButton
+          component="a"
+          onClick={() => onEntryClick('no_answer_found', true)}
+        >
           <ListItemText>{t('faqPage.iDidFindTheAnswers')}</ListItemText>
         </ListItemButton>
       </List>
