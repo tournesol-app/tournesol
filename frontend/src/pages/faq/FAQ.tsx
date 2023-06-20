@@ -43,6 +43,9 @@ const FAQ = () => {
       const location = history.location;
       const searchParams = new URLSearchParams();
       searchParams.append('scrollTo', name);
+      if (currentLang) {
+        searchParams.set('previewLang', currentLang);
+      }
       location.search = searchParams.toString();
       history.replace(location);
     }
@@ -96,6 +99,15 @@ const FAQ = () => {
   }, [history.location.hash, entries, scrollTo]);
 
   useEffect(() => {
+    const newLocation = history.location;
+    const searchParams = new URLSearchParams(newLocation.search);
+    console.log(searchParams.toString());
+    if (currentLang) {
+      searchParams.set('previewLang', currentLang);
+    }
+    newLocation.search = searchParams.toString();
+    history.replace(newLocation);
+
     async function getFaqEntries() {
       try {
         const faq = await FaqService.faqList({});
@@ -108,7 +120,7 @@ const FAQ = () => {
     }
 
     getFaqEntries();
-  }, [currentLang, contactAdministrator, setEntries]);
+  }, [currentLang, contactAdministrator, setEntries, history]);
 
   return (
     <>
