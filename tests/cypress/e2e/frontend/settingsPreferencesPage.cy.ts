@@ -82,6 +82,39 @@ describe('Settings - preferences page', () => {
     });
   });
 
+  describe('Setting - optional criteria display', () => {
+    it('handles selecting and ordering criteria', () => {
+      cy.visit('/comparison');
+      login();
+
+      cy.get('div[id="id_container_criteria_backfire_risk"]').should('not.be.visible');
+      cy.get('div[id="id_container_criteria_layman_friendly"]').should('not.be.visible');
+
+
+      cy.visit('/settings/preferences');
+      cy.contains(
+        'No criteria selected. All optional criteria will be hidden by default.'
+      ).should('be.visible');
+
+      cy.get('input[id="id_selected_optional_layman_friendly"]').click();
+      cy.get('input[id="id_selected_optional_backfire_risk"]').click();
+      cy.get('button[data-testid="videos_move_criterion_up_backfire_risk"]').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+
+      // The selected optional criteria should be visible...
+      cy.get('div[id="id_container_criteria_backfire_risk"]').should('be.visible');
+      cy.get('div[id="id_container_criteria_layman_friendly"]').should('be.visible');
+
+      // ...and correctly ordered.
+      cy.get('div[id="id_container_criteria_backfire_risk"]')
+        .next().should('have.attr', 'id', 'id_container_criteria_layman_friendly');
+
+      cy.get('div[id="id_container_criteria_reliability"]').should('not.be.visible');
+    });
+  });
+
   describe('Setting - rate-later auto removal', () => {
     it('handles changing the value', () => {
       cy.visit('/rate_later');
