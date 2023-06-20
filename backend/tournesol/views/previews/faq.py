@@ -1,5 +1,5 @@
 """
-API returning preview images of the Tournesol's FAQ entries.
+API returning preview images of frequently asked questions.
 """
 import textwrap
 
@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 from faq.models import FAQEntry
 from tournesol.utils.cache import cache_page_no_i18n
 
-from ..views.preview import (
+from .default import (
     CACHE_DEFAULT_PREVIEW,
     COLOR_WHITE_FONT,
     BasePreviewAPIView,
