@@ -187,7 +187,7 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
             str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
         ),
         "faq_title": ImageFont.truetype(
-            str(BASE_DIR / REGULAR_FONT_LOCATION), 18 * upscale_ratio
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 21 * upscale_ratio
         ),
     }
     return config
@@ -436,12 +436,12 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
         )
         text_box = ImageDraw.Draw(text_box_image)
 
-        title_lines = textwrap.wrap(title, width=40)
-        line_height = 20
+        title_lines = textwrap.wrap(title, width=34)
+        line_height = 24
         line_nb = 0
         for line in title_lines:
             text_box.text(
-                tuple(numpy.multiply((0, line_height*line_nb), upscale_ratio)),
+                tuple(numpy.multiply((0, line_height * line_nb), upscale_ratio)),
                 line,
                 font=self.fnt_config["faq_title"],
                 fill="#4a473e",
@@ -450,7 +450,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
 
         image.paste(text_box_image, (
             30,
-            int(1/2 * ((240 + headline_height - line_height * len(title_lines)) * upscale_ratio))
+            int(1/2 * ((240 - line_height * len(title_lines)) * upscale_ratio))
         ))
 
     @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW))
