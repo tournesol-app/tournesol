@@ -44,7 +44,7 @@ const IntroductionPaper = () => {
 };
 
 const Talks = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
   const [pastTalks, setPastTalks] = useState<Array<TalkEntry>>([]);
@@ -53,7 +53,7 @@ const Talks = () => {
   useEffect(() => {
     async function getTalksEntries() {
       try {
-        const talks = TalksService.talksList(i18n.language);
+        const talks = TalksService.talksList();
 
         if (!talks.results || talks.results?.length === 0) {
           return;
@@ -88,7 +88,7 @@ const Talks = () => {
     }
 
     getTalksEntries();
-  }, [contactAdministrator, i18n.language]);
+  }, [contactAdministrator]);
 
   return (
     <>
