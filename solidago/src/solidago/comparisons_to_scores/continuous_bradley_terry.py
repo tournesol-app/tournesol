@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from solidago.comparisons_to_scores.base import IndividualScoresAlgorithm
+from solidago.comparisons_to_scores.base import ComparisonsToScoresAlgorithm
 from solidago.solvers.optimize import brentq
 
 
@@ -58,7 +58,7 @@ def coordinate_optimize(r_ab, theta_b, precision, alpha):
     )
 
 
-class ContinuousBradleyTerry(IndividualScoresAlgorithm):
+class ContinuousBradleyTerry(ComparisonsToScoresAlgorithm):
     def __init__(self, r_max, alpha=DEFAULT_ALPHA):
         """
         Initialize Continous Bradley Terry (CBT) to compute individual scores

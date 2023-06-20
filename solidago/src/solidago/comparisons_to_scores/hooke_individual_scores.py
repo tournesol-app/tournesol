@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
 
-from .base import IndividualScoresAlgorithm
+from .base import ComparisonsToScoresAlgorithm
 
 DEFAULT_ALPHA = 1.0  # Signal-to-noise hyperparameter
 
 
-class HookeIndividualScores(IndividualScoresAlgorithm):
+class HookeIndividualScores(ComparisonsToScoresAlgorithm):
     def __init__(self, r_max, alpha=DEFAULT_ALPHA):
         """
         Initialize in Matrix Inversion algorithm

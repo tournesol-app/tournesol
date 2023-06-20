@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 
 
-class IndividualScoresAlgorithm(ABC):
+class ComparisonsToScoresAlgorithm(ABC):
     @abstractmethod
     def compute_individual_scores(
         self, comparison_scores: pd.DataFrame, initial_entity_scores: Optional[pd.Series] = None
