@@ -5,6 +5,8 @@ The `tournesol` app routes.
 from django.urls import include, path, re_path
 from rest_framework import routers
 
+from tournesol.views.preview_faq import DynamicWebsitePreviewFAQ
+
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.contributor_recommendations import (
     PrivateContributorRecommendationsView,
@@ -32,7 +34,6 @@ from .views.preview import (
     DynamicWebsitePreviewComparison,
     DynamicWebsitePreviewDefault,
     DynamicWebsitePreviewEntity,
-    DynamicWebsitePreviewFAQ,
 )
 from .views.preview_recommendations import (
     DynamicWebsitePreviewRecommendations,
