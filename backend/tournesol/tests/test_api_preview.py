@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+from faq.models import FAQEntry
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
 
@@ -479,3 +480,52 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         self.assertNotIn("Content-Disposition", response.headers)
+
+
+class DynamicFaqPreviewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.faq_url = "/preview/faq"
+        self.valid_qid = "question_id"
+        self.wrong_qid = "wrong_id"
+
+    def test_faq_default_preview(self):
+        """
+        We get the default preview if no parameter is provided
+        """
+        response = self.client.get(f"{self.faq_url}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_faq_wrong_question_id(self):
+        """
+        We get the default preview if the question id is not found
+        """
+        response = self.client.get(self.faq_url, {"scrollTo": self.wrong_qid})        
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_faq_question_preview(self):
+        """
+        We should get the preview of the associated faq entry
+        """
+        FAQEntry.objects.create(
+            name=self.valid_qid,
+            rank=1
+        )
+
+        response = self.client.get(self.faq_url, {"scrollTo": self.valid_qid})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
