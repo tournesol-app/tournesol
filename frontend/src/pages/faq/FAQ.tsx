@@ -83,11 +83,10 @@ const FAQ = () => {
 
       // Do not scroll when it's not required.
       if (scrollTo && entries.length > 0) {
-        const faqName = scrollTo ?? 'no_answer_found';
-        const element = document.getElementById(faqName);
+        const element = document.getElementById(scrollTo);
 
         if (element) {
-          displayEntry(faqName);
+          displayEntry(scrollTo);
           element.scrollIntoView({ behavior: 'smooth' });
           alreadyScrolled.current = true;
         }
