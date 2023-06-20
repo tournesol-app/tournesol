@@ -457,11 +457,23 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
     @extend_schema(
         description="FAQ preview",
         responses={200: OpenApiTypes.BINARY},
+        parameters=[
+            OpenApiParameter(
+                "scrollTo",
+                OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                required=False,
+            ),
+        ],
     )
-    def get(self, request, qid):
+    def get(self, request):
+        scroll_to = request.query_params.get("scrollTo")
+        if scroll_to is None:
+            return self.default_preview()
+
         upscale_ratio = 2
         try:
-            question = FAQEntry.objects.get(name=qid)
+            question = FAQEntry.objects.get(name=scroll_to)
         except FAQEntry.DoesNotExist:
             return self.default_preview()
 

@@ -205,8 +205,8 @@ urlpatterns = [
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
     ),
-    path(
-        "preview/faq/<str:qid>",
+    re_path(
+        r"^preview/faq?$",
         DynamicWebsitePreviewFAQ.as_view(),
         name="website_preview_faq",
     ),
