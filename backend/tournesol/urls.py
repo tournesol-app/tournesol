@@ -34,7 +34,7 @@ from .views.preview import (
     DynamicWebsitePreviewEntity,
 )
 from .views.preview_faq import DynamicWebsitePreviewFAQ
-from .views.preview_recommendations import (
+from .views.previews.recommendations import (
     DynamicWebsitePreviewRecommendations,
     get_preview_recommendations_redirect_params,
 )
