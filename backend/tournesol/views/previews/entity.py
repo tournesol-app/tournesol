@@ -1,5 +1,5 @@
 """
-API returning preview images of the Tournesol's FAQ entries.
+API returning preview images of entities.
 """
 import numpy
 from django.http import HttpResponse
@@ -11,7 +11,7 @@ from PIL import Image
 from tournesol.models import Entity
 from tournesol.utils.cache import cache_page_no_i18n
 
-from ..preview import (
+from .default import (
     CACHE_ENTITY_PREVIEW,
     BasePreviewAPIView,
     draw_video_duration,

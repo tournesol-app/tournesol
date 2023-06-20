@@ -1,5 +1,5 @@
 """
-API returning preview images of some Tournesol front end's page.
+API returning default preview images of the Tournesol website.
 
 Mainly used to provide URLs that can be used by the Open Graph protocol.
 """

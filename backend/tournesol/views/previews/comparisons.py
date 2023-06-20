@@ -1,5 +1,5 @@
 """
-API returning preview images of the Tournesol's FAQ entries.
+API returning preview images of comparisons.
 """
 import numpy
 from django.http import HttpResponse
@@ -13,7 +13,7 @@ from settings.settings import BASE_DIR
 from tournesol.models import Entity
 from tournesol.utils.cache import cache_page_no_i18n
 
-from ..preview import (
+from .default import (
     CACHE_ENTITY_PREVIEW,
     COLOR_BROWN_FONT,
     COLOR_WHITE_BACKGROUND,
