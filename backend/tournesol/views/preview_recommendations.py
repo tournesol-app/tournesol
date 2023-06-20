@@ -1,7 +1,5 @@
 """
-API returning preview images of some Tournesol recommendations page.
-
-Mainly used to provide URLs that can be used by the Open Graph protocol.
+API returning preview images of the Tournesol's recommendations page.
 """
 import datetime
 

@@ -179,10 +179,10 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
         "recommendations_ts_score": ImageFont.truetype(
             str(BASE_DIR / REGULAR_FONT_LOCATION), 16 * upscale_ratio
         ),
-        "faq_tournesol_title": ImageFont.truetype(
+        "faq_headline": ImageFont.truetype(
             str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
         ),
-        "faq_title": ImageFont.truetype(
+        "faq_question": ImageFont.truetype(
             str(BASE_DIR / REGULAR_FONT_LOCATION), 21 * upscale_ratio
         ),
     }

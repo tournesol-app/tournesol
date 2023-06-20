@@ -1,7 +1,5 @@
 """
-API returning preview images of some Tournesol recommendations page.
-
-Mainly used to provide URLs that can be used by the Open Graph protocol.
+API returning preview images of the Tournesol's FAQ entries.
 """
 import textwrap
 
@@ -49,7 +47,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
         tournesol_frame_draw.text(
             tuple(numpy.multiply(FAQ_HEADLINE_XY, upscale_ratio)),
             "FAQ Tournesol",
-            font=self.fnt_config["faq_tournesol_title"],
+            font=self.fnt_config["faq_headline"],
             fill="#4a473e",
         )
 
@@ -72,7 +70,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
             text_box.text(
                 tuple(numpy.multiply((0, line_height * line_nb), upscale_ratio)),
                 line,
-                font=self.fnt_config["faq_title"],
+                font=self.fnt_config["faq_question"],
                 fill="#4a473e",
             )
             line_nb += 1
