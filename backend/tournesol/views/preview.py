@@ -60,6 +60,7 @@ class BasePreviewAPIView(APIView):
     A generic mixin that provides common behaviours that can be used by all
     dynamic preview `APIView`.
     """
+
     renderer_classes = [ImageRenderer]
 
     def default_preview(self):
@@ -177,7 +178,13 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
         ),
         "recommendations_ts_score": ImageFont.truetype(
             str(BASE_DIR / REGULAR_FONT_LOCATION), 16 * upscale_ratio
-        )
+        ),
+        "faq_headline": ImageFont.truetype(
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 14 * upscale_ratio
+        ),
+        "faq_question": ImageFont.truetype(
+            str(BASE_DIR / REGULAR_FONT_LOCATION), 21 * upscale_ratio
+        ),
     }
     return config
 
@@ -324,14 +331,14 @@ def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upsc
     hours, minutes = divmod(minutes, 60)
 
     # creating a PIL.Image to get a Draw context, image later resized to text length
-    overlay = Image.new('RGBA', (1, 1), COLOR_DURATION_RECTANGLE)
+    overlay = Image.new("RGBA", (1, 1), COLOR_DURATION_RECTANGLE)
     overlay_draw = ImageDraw.Draw(overlay)
 
     padding = tuple(numpy.multiply((5, 1), upscale_ratio))
     duration_formatted = f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}"
     duration_text_size = (
         int(overlay_draw.textlength(duration_formatted, font=font)) + padding[0],
-        font_size + padding[1]
+        font_size + padding[1],
     )
 
     overlay = overlay.resize(duration_text_size)
@@ -350,9 +357,26 @@ def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upsc
         dest=(
             # all values are already upscaled (if applicable)
             thumbnail_bbox[0] + thumbnail_bbox[2] - duration_text_size[0],
-            thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1]
-        )
+            thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1],
+        ),
     )
+
+
+def get_headline(upscale_ratio: int):
+    headline_height = 30
+    border_width = 6
+    headline = Image.new(
+        "RGBA", (440 * upscale_ratio, headline_height * upscale_ratio), COLOR_WHITE_BACKGROUND
+    )
+
+    headline_border = Image.new(
+        "RGBA", (440 * upscale_ratio, border_width * upscale_ratio), COLOR_YELLOW_BORDER
+    )
+    headline_border_position = (0, (headline_height - border_width) * upscale_ratio)
+
+    headline.paste(headline_border, headline_border_position)
+
+    return headline
 
 
 class DynamicWebsitePreviewDefault(BasePreviewAPIView):

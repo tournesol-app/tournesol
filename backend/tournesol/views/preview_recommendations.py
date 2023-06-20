@@ -1,7 +1,5 @@
 """
-API returning preview images of some Tournesol recommendations page.
-
-Mainly used to provide URLs that can be used by the Open Graph protocol.
+API returning preview images of the Tournesol's recommendations page.
 """
 import datetime
 
@@ -25,11 +23,10 @@ from ..views import PollsRecommendationsView
 from ..views.preview import (
     COLOR_BROWN_FONT,
     COLOR_GREY_FONT,
-    COLOR_WHITE_BACKGROUND,
     COLOR_WHITE_FONT,
-    COLOR_YELLOW_BORDER,
     BasePreviewAPIView,
     draw_video_duration,
+    get_headline,
     get_preview_font_config,
 )
 
@@ -106,24 +103,10 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         except Poll.DoesNotExist as error:
             raise NotFound(f"The requested poll {poll_name} doesn't exist.") from error
 
-    def draw_headline(self, image: Image.Image, upscale_ratio: int):
-        """
-        Draw find videos on Tournesol headline
-        """
-        headline_height = 30
-        border_width = 6
-        headline = Image.new(
-            "RGBA", (440 * upscale_ratio, headline_height * upscale_ratio), COLOR_WHITE_BACKGROUND
-        )
+    def draw_header(self, image: Image.Image, upscale_ratio: int):
+        headline = get_headline(upscale_ratio)
+
         tournesol_frame_draw = ImageDraw.Draw(headline)
-
-        headline_border = Image.new(
-            "RGBA", (440 * upscale_ratio, border_width * upscale_ratio), COLOR_YELLOW_BORDER
-        )
-        headline_border_position = (0, (headline_height - border_width) * upscale_ratio)
-
-        headline.paste(headline_border, headline_border_position)
-
         full_title = "Find videos on Tournesol"
         tournesol_frame_draw.text(
             tuple(numpy.multiply(TOURNESOL_RECOMMENDATIONS_HEADLINE_XY, upscale_ratio)),
@@ -304,7 +287,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         recommendations = super().get_queryset()[:3]
         recommendation_x_pos = 10 * upscale_ratio
 
-        self.draw_headline(preview_image, upscale_ratio)
+        self.draw_header(preview_image, upscale_ratio)
 
         if recommendations:
             for idx, recommendation in enumerate(recommendations):

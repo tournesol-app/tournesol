@@ -33,6 +33,7 @@ from .views.preview import (
     DynamicWebsitePreviewDefault,
     DynamicWebsitePreviewEntity,
 )
+from .views.preview_faq import DynamicWebsitePreviewFAQ
 from .views.preview_recommendations import (
     DynamicWebsitePreviewRecommendations,
     get_preview_recommendations_redirect_params,
@@ -203,6 +204,11 @@ urlpatterns = [
         "preview/entities/<str:uid>",
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
+    ),
+    re_path(
+        r"^preview/faq/?$",
+        DynamicWebsitePreviewFAQ.as_view(),
+        name="website_preview_faq",
     ),
     # This route show the preview for the recommendations page
     # after preview/recommendations route rewrite the url paramaters
