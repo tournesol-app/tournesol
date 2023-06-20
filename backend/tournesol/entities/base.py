@@ -99,7 +99,12 @@ class EntityType(ABC):
         func = cls._get_meta_filter_func(asked_func)
 
         if func:
-            return func(value)
+            try:
+                return func(value)
+            except ValueError as exc:
+                raise ValidationError(
+                    f"invalid value '{value}' for function '{asked_func}'"
+                ) from exc
         return value
 
     @classmethod

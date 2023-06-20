@@ -149,23 +149,23 @@
   },
   "menu": {
     "home": "Home",
-    "compare": "Compare 🌻",
-    "myComparisons": "My comparisons",
-    "comparedItems": "My compared items",
-    "myRateLaterList": "My rate later list",
-    "myResults": "My results",
-    "faq": "FAQ",
-    "about": "About",
-    "donate": "Donate",
     "homeAriaLabel": "Link to the home page",
     "recommendationsAriaLabel": "Link to the recommendations page",
+    "compare": "Compare 🌻",
     "compareAriaLabel": "Link to the comparison page",
+    "myComparisons": "My comparisons",
     "myComparisonsAriaLabel": "Link to my comparisons page",
+    "comparedItems": "My compared items",
     "myComparedItemsAriaLabel": "Link to my compared items page",
+    "myRateLaterList": "My rate later list",
     "myRateLaterListAriaLabel": "Link to my rate later list",
+    "myResults": "My results",
     "myFeedbackAriaLabel": "Link to my feedback page",
+    "faq": "FAQ",
     "FAQAriaLabel": "Link to the FAQ page",
-    "aboutAriaLabel": "Link to the about page"
+    "about": "About",
+    "aboutAriaLabel": "Link to the about page",
+    "donate": "Donate"
   },
   "frame": {
     "onChromeOrDerivatives": "On Chrome, Chromium, or derivatives",
@@ -334,6 +334,11 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
+    "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
+    "optionalCriteria": "Optional criteria",
+    "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",
+    "alwaysDisplayedCriteria": "Always displayed criteria",
+    "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
     "autoRemoveHelpText_other": "Elements will be removed from your rate-later list after {{value}} comparisons.",
@@ -596,7 +601,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
     "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> application made with Streamlit.",
-    "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of comparison criteria scores (2022/10/10)."
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficients matrix of comparison criteria scores (2023/06/13)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",

@@ -111,7 +111,7 @@ const Footer = () => {
   });
 
   return (
-    <Box padding={2} color="#fff" bgcolor="background.emphatic">
+    <Box p={2} color="#fff" bgcolor="background.emphatic">
       <Grid
         container
         spacing={2}
