@@ -5,13 +5,16 @@ import textwrap
 
 import numpy
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from PIL import Image, ImageDraw
 
 from faq.models import FAQEntry
+from tournesol.utils.cache import cache_page_no_i18n
 
 from ..views.preview import (
+    CACHE_DEFAULT_PREVIEW,
     COLOR_WHITE_FONT,
     BasePreviewAPIView,
     get_headline,
@@ -78,6 +81,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
             (30, int(1 / 2 * ((240 - line_height * len(title_lines)) * upscale_ratio))),
         )
 
+    @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW))
     @extend_schema(
         description="FAQ preview",
         responses={200: OpenApiTypes.BINARY},
