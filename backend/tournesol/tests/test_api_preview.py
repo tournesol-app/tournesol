@@ -487,12 +487,17 @@ class DynamicFaqPreviewTestCase(TestCase):
         self.client = APIClient()
 
         self.faq_url = "/preview/faq"
-        self.valid_qid = "question_id"
-        self.wrong_qid = "wrong_id"
+        self.non_existing_name = "non_existing"
 
-    def test_faq_default_preview(self):
+        self.question1_name = "question1_name"
+        self.question2_name = "question2_name"
+
+        for rank, name in enumerate([self.question1_name, self.question2_name]):
+            FAQEntry.objects.create(name=name, rank=rank, enabled=True)
+
+    def test_default_preview(self):
         """
-        We get the default preview if no parameter is provided
+        The default preview is returned if no parameter is provided.
         """
         response = self.client.get(f"{self.faq_url}")
 
@@ -503,11 +508,12 @@ class DynamicFaqPreviewTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
-    def test_faq_wrong_question_id(self):
+    def test_default_preview_non_existent_name(self):
         """
-        We get the default preview if the question id is not found
+        The default preview is returned if the asked question's name doesn't
+        exist.
         """
-        response = self.client.get(self.faq_url, {"scrollTo": self.wrong_qid})        
+        response = self.client.get(self.faq_url, {"scrollTo": self.non_existing_name})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
@@ -516,31 +522,24 @@ class DynamicFaqPreviewTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
-    def test_faq_question_preview(self):
+    def test_default_preview_disabled_question(self):
         """
-        We should get the preview of the associated faq entry
+        An anonymous user can't get the preview of a disabled question.
         """
-        FAQEntry.objects.create(
-            name=self.valid_qid,
-            rank=1
-        )
-
-        response = self.client.get(self.faq_url, {"scrollTo": self.valid_qid})
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
-
-    def test_faq_disabled_question(self):
-        """
-        We should get the preview of the associated faq entry
-        """
-        FAQEntry.objects.create(
-            name=self.valid_qid,
-            rank=1,
-            enabled=False
-        )
-
-        response = self.client.get(self.faq_url, {"scrollTo": self.valid_qid})
-
+        FAQEntry.objects.filter(name=self.question1_name).update(enabled=False)
+        response = self.client.get(self.faq_url, {"scrollTo": self.question1_name})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_question_preview(self):
+        """
+        An anonymous user can get the preview of an enabled question.
+        """
+        response = self.client.get(self.faq_url, {"scrollTo": self.question1_name})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
+        self.assertNotIn("Content-Disposition", response.headers)
