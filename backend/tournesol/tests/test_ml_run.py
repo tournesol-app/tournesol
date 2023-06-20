@@ -18,6 +18,7 @@ initial state of the database after each test.
 Find more details on https://docs.djangoproject.com/en/4.0/topics/testing/overview/#rollback-emulation
 """
 
+import pytest
 from django.core.management import call_command
 from django.test import TransactionTestCase
 

@@ -8,6 +8,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django import db
+from solidago.comparisons_to_scores import HookeIndividualScores
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
@@ -19,11 +20,10 @@ from ml.outputs import (
 )
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
-from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
+from tournesol.utils.constants import COMPARISON_MAX, MEHESTAN_MAX_SCALED_SCORE
 from vouch.voting_rights import compute_voting_rights
 
 from .global_scores import compute_scaled_scores, get_global_scores
-from .individual import compute_individual_score
 
 logger = logging.getLogger(__name__)
 
@@ -36,26 +36,45 @@ VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 
+individual_scores_algo = HookeIndividualScores(r_max=COMPARISON_MAX)
+
+
 def get_individual_scores(
     ml_input: MlInput, criteria: str, single_user_id: Optional[int] = None
 ) -> pd.DataFrame:
     comparisons_df = ml_input.get_comparisons(criteria=criteria, user_id=single_user_id)
+    initial_contributor_scores = ml_input.get_individual_scores(
+        criteria=criteria, user_id=single_user_id
+    )
+    if initial_contributor_scores is not None:
+        initial_contributor_scores = initial_contributor_scores.groupby("user_id")
 
     individual_scores = []
     for (user_id, user_comparisons) in comparisons_df.groupby("user_id"):
-        scores = compute_individual_score(user_comparisons)
+        if initial_contributor_scores is None:
+            initial_entity_scores = None
+        else:
+            try:
+                contributor_score_df = initial_contributor_scores.get_group(user_id)
+                initial_entity_scores = pd.Series(
+                    data=contributor_score_df.raw_score,
+                    index=contributor_score_df.entity
+                )
+            except KeyError:
+                initial_entity_scores = None
+        scores = individual_scores_algo.compute_individual_scores(
+            user_comparisons, initial_entity_scores=initial_entity_scores
+        )
         if scores is None:
             continue
         scores["user_id"] = user_id
         individual_scores.append(scores.reset_index())
 
     if len(individual_scores) == 0:
-        return pd.DataFrame(
-            columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"]
-        )
+        return pd.DataFrame(columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"])
 
     result = pd.concat(individual_scores, ignore_index=True, copy=False)
-    return result[["user_id", "entity_id", "raw_score", "raw_uncertainty"]]
+    return result.reindex(columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"])
 
 
 def update_user_scores(poll: Poll, user: User):
@@ -70,9 +89,7 @@ def update_user_scores(poll: Poll, user: User):
             },
             inplace=True,
         )
-        save_contributor_scores(
-            poll, scores, single_criteria=criteria, single_user_id=user.pk
-        )
+        save_contributor_scores(poll, scores, single_criteria=criteria, single_user_id=user.pk)
 
 
 def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.DEFAULT):
@@ -86,11 +103,13 @@ def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.
         columns: user_id, entity_id, trust_score, is_public
     """
     ratings_df = ratings_properties_df.copy(deep=True)
-    ratings_df["voting_right"] = 0.
-    ratings_df["privacy_penalty"] = ratings_df.is_public.map({
-        True: VOTE_WEIGHT_PUBLIC_RATINGS,
-        False: VOTE_WEIGHT_PRIVATE_RATINGS,
-    })
+    ratings_df["voting_right"] = 0.0
+    ratings_df["privacy_penalty"] = ratings_df.is_public.map(
+        {
+            True: VOTE_WEIGHT_PUBLIC_RATINGS,
+            False: VOTE_WEIGHT_PRIVATE_RATINGS,
+        }
+    )
     if score_mode == ScoreMode.TRUSTED_ONLY:
         ratings_df = ratings_df[ratings_df["trust_score"] >= 0.8]
         ratings_df["voting_right"] = 1
@@ -127,16 +146,13 @@ def run_mehestan_for_criterion(
 
     indiv_scores = get_individual_scores(ml_input, criteria=criteria)
     logger.debug("Individual scores computed for crit '%s'", criteria)
-    scaled_scores, scalings = compute_scaled_scores(
-        ml_input, individual_scores=indiv_scores
-    )
+    scaled_scores, scalings = compute_scaled_scores(ml_input, individual_scores=indiv_scores)
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
 
     scaled_scores_with_voting_rights_per_score_mode = {
-        mode: add_voting_rights(scaled_scores, score_mode=mode)
-        for mode in ScoreMode
+        mode: add_voting_rights(scaled_scores, score_mode=mode) for mode in ScoreMode
     }
     for mode in ScoreMode:
         scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
@@ -155,8 +171,7 @@ def run_mehestan_for_criterion(
                 scale = 1.0
             else:
                 scale = (
-                    np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE))
-                    / quantile_value
+                    np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE)) / quantile_value
                 )
             poll.sigmoid_scale = scale
             poll.save(update_fields=["sigmoid_scale"])
@@ -178,9 +193,7 @@ def run_mehestan_for_criterion(
             criteria,
             mode,
         )
-        save_entity_scores(
-            poll, global_scores, single_criteria=criteria, score_mode=mode
-        )
+        save_entity_scores(poll, global_scores, single_criteria=criteria, score_mode=mode)
 
     scale_function = poll.scale_function
     scaled_scores = scaled_scores_with_voting_rights_per_score_mode[ScoreMode.DEFAULT]
