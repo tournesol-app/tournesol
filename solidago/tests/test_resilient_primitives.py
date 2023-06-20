@@ -1,8 +1,9 @@
+import pytest
 from unittest import TestCase
 
 import numpy as np
 
-from solidago.resilient_primitives import QrDev, QrMed, QrUnc
+from solidago.resilient_primitives import QrDev, QrMed, QrUnc, QrQuantile
 
 
 class QrMedTest(TestCase):
@@ -143,3 +144,18 @@ class QrUncTest(TestCase):
             0.02,
             places=2,
         )
+
+@pytest.mark.parametrize(
+    "W,w,x,delta,quantile,expected_result",
+    [
+        (10, np.array([0.1]), np.array([0]), np.array([0.1]), 0.5, 0),
+        (10, np.array([0.1]), np.array([0]), np.array([0.1]), 0.1, -0.0073),
+        (10, np.array([0.1]), np.array([0]), np.array([0.1]), 0.9, +0.0073),
+        (10, np.array([1] * 1000), np.array([-1] * 500 + [1] * 500), np.array([0.1] * 1000), 0.10, -1.0712),
+        (10, np.array([1] * 1000), np.array([-1] * 100 + [1] * 900), np.array([1e-6] * 1000), 0.10, 0.),
+        (0.0001, np.array([1] * 1000), np.array([-1] * 102 + [1] * 898), np.array([1e-6] * 1000), 0.01, -1),
+        (1e-12, np.array([1000] * 1000), np.arange(1000, 2000, 1), np.array([1e-6] * 1000), 0.90, 1899.3929),
+    ]
+)
+def test_qr_quantile_returns_expected_results(W,w,x,delta,quantile,expected_result):
+    assert pytest.approx(expected_result, abs=1e-4) == QrQuantile(W,w,x,delta,quantile)

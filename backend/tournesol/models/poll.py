@@ -87,10 +87,8 @@ class Poll(models.Model):
 
     @property
     def scale_function(self):
-        if self.algorithm == ALGORITHM_MEHESTAN and self.sigmoid_scale is not None:
-            return lambda x: (4 * MEHESTAN_MAX_SCALED_SCORE / TAU) * \
-                             np.arctan(self.sigmoid_scale * x)
-        return lambda x: x
+        # TODO: deprecate sigmoid scale stuff
+        return lambda x: MEHESTAN_MAX_SCALED_SCORE * x / np.sqrt(1 + x*x)
 
     def user_meets_proof_requirements(self, user_id: int, keyword: str) -> bool:
         """

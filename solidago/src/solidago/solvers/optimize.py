@@ -38,7 +38,7 @@ def _bisect_interval(a, b, fa, fb):
 
 
 @njit
-def brentq(f, a, b, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True):
+def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0):
     """
     Find a root of a function in a bracketing interval using Brent's method
     adapted from Scipy's brentq.
@@ -70,6 +70,11 @@ def brentq(f, a, b, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True):
     -------
     root : float
     """
+    while f(a, *args) > 0:
+        a = a - 2 * (b-a)
+    while f(b, *args) < 0:
+        b = b + 2 * (b-a)
+
     if xtol <= 0:
         raise ValueError("xtol is too small (<= 0)")
     if maxiter < 1:
