@@ -28,14 +28,14 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
-from .views.previews.comparisons import DynamicWebsitePreviewComparison
-from .views.previews.default import DynamicWebsitePreviewDefault
-from .views.previews.entity import DynamicWebsitePreviewEntity
-from .views.previews.faq import DynamicWebsitePreviewFAQ
-from .views.previews.recommendations import (
+from .views.previews import (
+    DynamicWebsitePreviewComparison,
+    DynamicWebsitePreviewDefault,
+    DynamicWebsitePreviewEntity,
+    DynamicWebsitePreviewFAQ,
     DynamicWebsitePreviewRecommendations,
-    get_preview_recommendations_redirect_params,
 )
+from .views.previews.recommendations import get_preview_recommendations_redirect_params
 from .views.proof import ProofView
 from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
