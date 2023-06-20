@@ -1,1 +1,1 @@
-from ._primitives import QrMed, QrDev, QrUnc, BrMean
+from ._primitives import QrMed, QrDev, QrUnc, BrMean, QrQuantile

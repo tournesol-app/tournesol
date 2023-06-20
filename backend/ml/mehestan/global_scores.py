@@ -10,7 +10,8 @@ from ml.inputs import MlInput
 
 # `W` is the Byzantine resilience parameter,
 # i.e the number of voting rights needed to modify a global score by 1 unit.
-W = 20.0
+# A user would approximately pull up to a score of 100 / W
+W = 5
 SCALING_WEIGHT_CALIBRATION = W
 
 
@@ -241,7 +242,7 @@ def compute_scaled_scores(
             * `uncertainty`
             * `is_public`
             * `is_scaling_calibration_user`
-        - scalings: DataFrame with index `entity_id` and columns:
+        - scalings: DataFrame with index `user_id` and columns:
             * `s`: scaling factor
             * `tau`: translation value
             * `delta_s`: uncertainty on `s`
