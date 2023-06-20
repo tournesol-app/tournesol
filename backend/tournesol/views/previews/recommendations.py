@@ -1,5 +1,5 @@
 """
-API returning preview images of the Tournesol's recommendations page.
+API returning preview images of the recommendations.
 """
 import datetime
 
@@ -19,8 +19,8 @@ from tournesol.models import Poll
 from tournesol.renderers import ImageRenderer
 from tournesol.utils.cache import cache_page_no_i18n
 
-from ..views import PollsRecommendationsView
-from ..views.preview import (
+from .. import PollsRecommendationsView
+from .default import (
     COLOR_BROWN_FONT,
     COLOR_GREY_FONT,
     COLOR_WHITE_FONT,
