@@ -21,18 +21,19 @@ from ..views.preview import (
     get_preview_font_config,
 )
 
-FAQ_TOURNESOL_TITLE_XY = (128, 194)
 FAQ_HEADLINE_XY = (30, 3)
+FAQ_TOURNESOL_TITLE_XY = (128, 194)
+FAQ_UPSCALE_RATIO = 2
 
 
 class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
     """
-    Return a preview of an question, with its answer.
+    Return a preview of a question.
     """
 
     permission_classes = []
 
-    fnt_config = get_preview_font_config(upscale_ratio=2)
+    fnt_config = get_preview_font_config(upscale_ratio=FAQ_UPSCALE_RATIO)
 
     def _draw_logo(self, image: Image.Image, upscale_ratio: int):
         image.alpha_composite(
@@ -98,7 +99,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
         if scroll_to is None:
             return self.default_preview()
 
-        upscale_ratio = 2
+        upscale_ratio = FAQ_UPSCALE_RATIO
         try:
             question = FAQEntry.objects.get(name=scroll_to)
         except FAQEntry.DoesNotExist:
