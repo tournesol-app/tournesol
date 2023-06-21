@@ -156,12 +156,12 @@
   "terms": {
     "termsOfService": "Conditions Générales d'Utilisation",
     "acceptableUse": {
-      "acceptableUse": "C. Bon Usage",
+      "acceptableUse": "C. Bon usage",
       "shortVersion": "Lorsque vous utilisez le Service, vous devez respecter les conditions de cette section, notamment ne pas nuire aux autres utilisateur·rices, ne pas perturber le Service et avoir une activité authentique.",
       "titles": {
-        "1ComplianceWithLawsAndRegulation": "1. Respect des Lois et des Réglementations",
+        "1ComplianceWithLawsAndRegulation": "1. Respect des lois et des réglementations",
         "2UserSafety": "2. Sécurité des utilisateur·rices",
-        "3InauthenticActivityAndSpam": "3. Activité non Authentique et Spam"
+        "3InauthenticActivityAndSpam": "3. Activité non authentique et Spam"
       },
       "paragraphs": {
         "complianceWithLawsAndRegulation": "",
@@ -174,11 +174,11 @@
     },
     "shortVersion": "Version courte",
     "accountTerms": {
-      "accountTerms": "B. Conditions Relatives aux Comptes",
+      "accountTerms": "B. Conditions relatives aux Comptes",
       "shortVersion": "Votre Compte doit être créé par un humain ; vous devez avoir 15 ans ou plus ; vous devez fournir une adresse électronique valide ; et vous ne pouvez pas avoir plus d'un seul Compte. Vous êtes seul·e responsable de votre Compte et de tout ce qui se passe pendant que vous êtes connecté à votre Compte ou que vous l'utilisez. Vous êtes responsable de la sécurité de votre Compte.",
       "accountControls": "1. Contrôles du Compte",
       "userRetainsUltimateAdministrativeControl": "",
-      "accountRequirements": "2. Exigences Relatives aux Comptes",
+      "accountRequirements": "2. Exigences relatives au Compte",
       "inOrderToCreateAccount": "",
       "aUserMayNotUseMoreThanOneAccount": "",
       "aUserLoginMayNotBeShared": "",
@@ -188,11 +188,11 @@
       "userIsResponsibleFor": ""
     },
     "cancellationAndTermination": {
-      "cancellationAndTermination": "E. Annulation et Résiliation",
+      "cancellationAndTermination": "E. Annulation et résiliation",
       "shortVersion": "Vous pouvez fermer votre Compte à tout moment. Dans ce cas, nous traiterons vos informations de manière responsable.",
       "titles": {
         "1accountCancellation": "1. Annulation du Compte",
-        "2uponCancellation": "2. En cas d'Annulation",
+        "2uponCancellation": "2. En cas d'annulation",
         "3theTournesolAssociationMayTerminate": "3. Résiliation par l'Association"
       },
       "paragraphs": {
@@ -204,7 +204,7 @@
       }
     },
     "changesToTheseTerms": {
-      "changesToTheseTerms": "G. Modifications des Présentes Conditions",
+      "changesToTheseTerms": "G. Modifications des présentes Conditions",
       "shortVersion": "Nous voulons que les utilisateur·rices soient informé·es des changements apportés à nos conditions, mais certains ne sont pas importants. Nous ne voulons pas vous déranger pour chaque faute d'orthographe corrigée. C'est pourquoi, bien que nous puissions modifier le présent Accord à tout moment, nous informerons les utilisateur·rices des modifications importantes et nous leur donnerons le temps de s'y adapter.",
       "weMayAmendTheseTerms": ""
     },
@@ -212,8 +212,8 @@
       "communicationsWithAssociation": "F. Communications avec l'Association",
       "shortVersion": "Nous utilisons les e-mails pour rester en contact avec les utilisateur·rices. Vous acceptez de recevoir les e-mails nécessaires au fonctionnement du Service. Nous n'envoyons pas d'autres e-mails sans votre consentement explicite.",
       "titles": {
-        "1electronicCommunicationRequired": "",
-        "2necessaryEmails": ""
+        "1electronicCommunicationRequired": "1. Communication électronique requise",
+        "2necessaryEmails": "2. E-mails nécessaires"
       },
       "paragraphs": {
         "youConsentToReceiveEmails": "",
