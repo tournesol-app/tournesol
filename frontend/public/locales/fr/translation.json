@@ -164,11 +164,11 @@
         "3InauthenticActivityAndSpam": "3. Activité non authentique et Spam"
       },
       "paragraphs": {
-        "complianceWithLawsAndRegulation": "",
-        "userSafetyIntro": "",
-        "isUnlawlfulOrPromoteUnlawful": "",
-        "isFalseInaccurateOrDeceptive": "",
-        "orGoesAgainstOurCodeOfConduct": "",
+        "complianceWithLawsAndRegulation": "Vous êtes responsable de l'utilisation du Service en conformité avec toutes les lois et réglementations applicables, ainsi qu'avec toutes nos règles de bon usage.",
+        "userSafetyIntro": "Nous n'autorisons pas les activités sur la Plateforme, ce qui comprend le choix d'un nom d'utilisateur·ric, qui :",
+        "isUnlawlfulOrPromoteUnlawful": "sont illégales ou encouragent des activités illégales ;",
+        "isFalseInaccurateOrDeceptive": "constituent une information fausse, inexacte ou intentionnellement trompeuse et sont susceptibles de nuire à l'intérêt général (comme la santé, la sécurité, l'intégrité des élections et la participation civique) ;",
+        "orGoesAgainstOurCodeOfConduct": "ou vont à l'encontre de notre <2>Code de Conduite</2>.",
         "inauthenticActivityAndSpamIntro": ""
       }
     },
@@ -180,9 +180,9 @@
       "userRetainsUltimateAdministrativeControl": "Sous réserve des présentes Conditions, vous conservez un contrôle administratif ultime sur votre Compte personnel.",
       "accountRequirements": "2. Exigences relatives au Compte",
       "inOrderToCreateAccount": "Pour créer un Compte, l'Utilisateur·rice doit respecter les conditions suivantes :",
-      "aUserMayNotUseMoreThanOneAccount": "Un·e Utilisateur·rice ne doit pas utiliser, ou avoir plus d'un seul Compte.",
+      "aUserMayNotUseMoreThanOneAccount": "L'Utilisateur·rice ne doit pas utiliser, ou avoir plus d'un seul Compte.",
       "aUserLoginMayNotBeShared": "Un Compte ne peut pas être partagé par plusieurs personnes.",
-      "aUserMustProvideAValidEmailAddress": "Un·e Utilisateur·rice doit fournir une adresse électronique valide.",
+      "aUserMustProvideAValidEmailAddress": "L'Utilisateur·rice doit fournir une adresse électronique valide.",
       "userMustBeALeast15": "L'Utilisateur·rice ne doit pas créer un Compte à l'usage d'une personne âgée de moins de 15 ans. Si l'Association Tournesol a connaissance d'un·e Utilisateur·rice âgé·e de moins de 15 ans, elle résiliera immédiatement son Compte. Si l'Utilisateur·rice réside dans un pays où l'âge minimum est plus élevé, il lui incombe de se conformer aux lois de ce pays.",
       "accountSecurity": "3. Sécurité du Compte",
       "userIsResponsibleFor": "Vous êtes responsable : (i) de tout le contenu publié et de toute l'activité qui a lieu sous votre Compte ; (ii) de maintenir la sécurité des identifiants de connexion de votre Compte ; et (iii) d'informer rapidement l'Association Tournesol si vous avez connaissance d’une utilisation ou d'un accès non autorisé à notre Service par l'intermédiaire de votre Compte. L'Association ne sera pas responsable de toute perte ou dommage résultant du non-respect par l'Utilisateur·rice des conditions relatives au Compte."
