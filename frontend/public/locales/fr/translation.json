@@ -224,13 +224,13 @@
     "definitions": {
       "definitions": "A. Définitions",
       "shortVersion": "Nous utilisons ces termes tout au long de l'Accord. Cette section précise leur signification spécifique.",
-      "account": "Un « Compte » représente votre relation juridique avec l'Association Tournesol. Il représente l'autorisation d'un Utilisateur individuel à se connecter au Service et à l'utiliser, et sert d'identité pour l'Utilisateur sur la Plateforme. ",
+      "account": "Un « Compte » représente votre relation juridique avec l'Association Tournesol. Il représente l'autorisation d'un·e Utilisateur·rice individuel·le à se connecter au Service et à l'utiliser, et sert d'identité pour l'Utilisateur·rice sur la Plateforme. ",
       "agreement": "« Accord » désigne, collectivement, l'ensemble des dispositions, conditions, avis contenus ou référencés dans le présent document (les « Conditions Générales d'Utilisation » ou les « Conditions ») et toutes les autres règles de fonctionnement, politiques (y compris notre <2>Politique de confidentialité</2>) et procédures que nous pouvons publier de temps à autre sur le Site Web.",
-      "association": "« Association », « Association Tournesol », « Nous » et « Notre » désignent l'association à but non lucratif qui développe le projet Tournesol, y compris son comité, ses membres et ses employés.",
-      "content": "Le « Contenu » désigne tous les différents types de contenu qui peuvent être ajoutés par l'Utilisateur sur la Plateforme, tels que les entités (comme les vidéos) et les comparaisons entre les entités.",
-      "service": "",
-      "user": "",
-      "website": ""
+      "association": "« Association », « Association Tournesol », « Nous » et « Notre » désignent l'association à but non lucratif qui développe le projet Tournesol.",
+      "content": "Le « Contenu » désigne tous les différents types de contenu qui peuvent être ajoutés par l'Utilisateur·rice sur la Plateforme, tels que les entités (comme les vidéos) et les comparaisons entre les entités.",
+      "service": "Le « Service », parfois appelé « Plateforme », désigne les sites web, les extensions de navigateur, les applications, les formulaires, les enquêtes et les services fournis par l'Association Tournesol dans le cadre du projet Tournesol.",
+      "user": "L'« Utilisateur·rice », « Vous » et « votre » désignent la personne physique qui a visité ou utilise la Plateforme ou le Service ; qui accède à une partie quelconque du Compte ou qui l'utilise. Un·e Utilisateur·rice doit être âgé·e d'au moins 15 ans.",
+      "website": "Le « Site Web » désigne le site web du projet Tournesol situé à l'adresse <1>tournesol.app</1>, ainsi que tous les contenus et services fournis par l'Association sur ou par l'intermédiaire du Site Web. Il désigne également les sous-domaines de tournesol.app appartenant à l'Association, tels que <3>api.tournesol.app</3>. Occasionnellement, les sites web appartenant à l'Association peuvent fournir des conditions d'utilisation différentes ou supplémentaires. Si ces conditions supplémentaires entrent en conflit avec le présent Accord, les conditions plus spécifiques s'appliquent à la page ou au service concerné."
     },
     "moderation": {
       "moderation": "D. Modération",
