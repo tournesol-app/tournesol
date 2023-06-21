@@ -177,15 +177,15 @@
       "accountTerms": "B. Conditions relatives aux Comptes",
       "shortVersion": "Votre Compte doit être créé par un humain ; vous devez avoir 15 ans ou plus ; vous devez fournir une adresse électronique valide ; et vous ne pouvez pas avoir plus d'un seul Compte. Vous êtes seul·e responsable de votre Compte et de tout ce qui se passe pendant que vous êtes connecté à votre Compte ou que vous l'utilisez. Vous êtes responsable de la sécurité de votre Compte.",
       "accountControls": "1. Contrôles du Compte",
-      "userRetainsUltimateAdministrativeControl": "",
+      "userRetainsUltimateAdministrativeControl": "Sous réserve des présentes Conditions, vous conservez un contrôle administratif ultime sur votre Compte personnel.",
       "accountRequirements": "2. Exigences relatives au Compte",
-      "inOrderToCreateAccount": "",
-      "aUserMayNotUseMoreThanOneAccount": "",
-      "aUserLoginMayNotBeShared": "",
-      "aUserMustProvideAValidEmailAddress": "",
-      "userMustBeALeast15": "",
+      "inOrderToCreateAccount": "Pour créer un Compte, l'Utilisateur·rice doit respecter les conditions suivantes :",
+      "aUserMayNotUseMoreThanOneAccount": "Un·e Utilisateur·rice ne doit pas utiliser, ou avoir plus d'un seul Compte.",
+      "aUserLoginMayNotBeShared": "Un Compte ne peut pas être partagé par plusieurs personnes.",
+      "aUserMustProvideAValidEmailAddress": "Un·e Utilisateur·rice doit fournir une adresse électronique valide.",
+      "userMustBeALeast15": "L'Utilisateur·rice ne doit pas créer un Compte à l'usage d'une personne âgée de moins de 15 ans. Si l'Association Tournesol a connaissance d'un·e Utilisateur·rice âgé·e de moins de 15 ans, elle résiliera immédiatement son Compte. Si l'Utilisateur·rice réside dans un pays où l'âge minimum est plus élevé, il lui incombe de se conformer aux lois de ce pays.",
       "accountSecurity": "3. Sécurité du Compte",
-      "userIsResponsibleFor": ""
+      "userIsResponsibleFor": "Vous êtes responsable : (i) de tout le contenu publié et de toute l'activité qui a lieu sous votre Compte ; (ii) de maintenir la sécurité des identifiants de connexion de votre Compte ; et (iii) d'informer rapidement l'Association Tournesol si vous avez connaissance d’une utilisation ou d'un accès non autorisé à notre Service par l'intermédiaire de votre Compte. L'Association ne sera pas responsable de toute perte ou dommage résultant du non-respect par l'Utilisateur·rice des conditions relatives au Compte."
     },
     "cancellationAndTermination": {
       "cancellationAndTermination": "E. Annulation et résiliation",
