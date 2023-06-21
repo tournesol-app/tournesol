@@ -196,11 +196,11 @@
         "3theTournesolAssociationMayTerminate": "3. Résiliation par l'Association"
       },
       "paragraphs": {
-        "accountCancellation": "",
-        "weWillDelete": "",
-        "theAssociationWillCancel": "",
-        "theTournesolAssociationHasTheRight": "",
-        "suspendAllAccessInCaseOfThreat": ""
+        "accountCancellation": "Il est de votre responsabilité d'annuler correctement votre Compte. Vous pouvez annuler votre Compte à tout moment en accédant à vos paramètres depuis le menu personnel situé en haut à droite de l’écran. L’écran Compte fournit un bouton d'annulation simple, sans poser de questions. Nous ne pouvons pas annuler des comptes en réponse à une demande par e-mail.",
+        "weWillDelete": "Nous supprimerons votre profil complet et le Contenu que vous avez ajouté dans les 7 jours suivant l'annulation ou la résiliation. Ces informations ne peuvent pas être récupérées une fois que votre Compte est annulé.",
+        "theAssociationWillCancel": "L'Association supprimera votre Compte s'il n'a pas été activé dans les 7 jours suivant sa création.",
+        "theTournesolAssociationHasTheRight": "L'Association a le droit de suspendre ou de résilier votre accès à tout ou partie du Service à tout moment, avec ou sans préavis, avec effet immédiat, si une violation de l'Accord de votre part est détectée.",
+        "suspendAllAccessInCaseOfThreat": "L'Association peut suspendre l'accès de tous·tes les utilisateur·rices ou d'un groupe d'utilisateur·rices, à tout ou partie du Service, à tout moment, avec ou sans préavis, avec effet immédiat, pour une durée indéterminée, si la sécurité des utilisateur·rice, de leurs données ou du Service est susceptible d'être compromise par un événement identifié comme une menace directe ou indirecte."
       }
     },
     "changesToTheseTerms": {
