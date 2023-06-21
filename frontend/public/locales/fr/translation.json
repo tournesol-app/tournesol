@@ -185,7 +185,7 @@
       "aUserMustProvideAValidEmailAddress": "L'Utilisateur·rice doit fournir une adresse électronique valide.",
       "userMustBeALeast15": "L'Utilisateur·rice ne doit pas créer un Compte à l'usage d'une personne âgée de moins de 15 ans. Si l'Association Tournesol a connaissance d'un·e Utilisateur·rice âgé·e de moins de 15 ans, elle résiliera immédiatement son Compte. Si l'Utilisateur·rice réside dans un pays où l'âge minimum est plus élevé, il lui incombe de se conformer aux lois de ce pays.",
       "accountSecurity": "3. Sécurité du Compte",
-      "userIsResponsibleFor": "Vous êtes responsable : (i) de tout le contenu publié et de toute l'activité qui a lieu sous votre Compte ; (ii) de maintenir la sécurité des identifiants de connexion de votre Compte ; et (iii) d'informer rapidement l'Association Tournesol si vous avez connaissance d’une utilisation ou d'un accès non autorisé à notre Service par l'intermédiaire de votre Compte. L'Association ne sera pas responsable de toute perte ou dommage résultant du non-respect par l'Utilisateur·rice des conditions relatives au Compte."
+      "userIsResponsibleFor": "Vous êtes responsable : (i) de tout le Contenu publié et de toute l'activité qui a lieu sous votre Compte ; (ii) de maintenir la sécurité des identifiants de connexion de votre Compte ; et (iii) d'informer rapidement l'Association Tournesol si vous avez connaissance d’une utilisation ou d'un accès non autorisé à notre Service par l'intermédiaire de votre Compte. L'Association ne sera pas responsable de toute perte ou dommage résultant du non-respect par l'Utilisateur·rice des conditions relatives au Compte."
     },
     "cancellationAndTermination": {
       "cancellationAndTermination": "E. Annulation et résiliation",
@@ -236,11 +236,11 @@
       "moderation": "D. Modération",
       "shortVersion": "Si une infraction au présent Accord est détectée, nous pouvons suspendre temporairement ou résilier définitivement votre Compte.",
       "paragraphs": {
-        "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of these policies.",
-        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the users or the Service are impacted, we can take the following actions:",
-        "accountSuspension": "",
-        "accountTermination": "",
-        "removalOfAddedContents": ""
+        "theTournesolAssociationWill": "L'association Tournesol prendra des mesures en cas de violation de cet Accord",
+        "dependingOnTheSeverityWe": "En fonction de la gravité de la violation et de l'impact sur les utilisateur.rices ou le Service, nous pouvons prendre les mesures suivantes :",
+        "accountSuspension": "suspension de Compte ;",
+        "accountTermination": "résiliation de Compte ;",
+        "removalOfAddedContents": "suppression du Contenu ajouté."
       }
     }
   },
