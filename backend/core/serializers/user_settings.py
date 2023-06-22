@@ -80,7 +80,7 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
                 raise ValidationError(_("Unknown language code: %(lang)s.") % {"lang": lang})
 
         return default_languages
-    
+
 
 class GeneralUserSettingsSerializer(serializers.Serializer):
     """
