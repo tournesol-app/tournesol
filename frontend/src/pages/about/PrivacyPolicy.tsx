@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
 import { useTranslation } from 'react-i18next';
@@ -11,21 +11,8 @@ const PrivacyPolicyPage = () => {
       <ContentHeader
         title={`${t('menu.about')} > ${t('privacyPolicy.privacyPolicy')}`}
       />
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '100%',
-            width: 840,
-            color: '#4A473E',
-            padding: 24,
-          }}
-        >
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Box maxWidth="100%" width={840} color="#4A473E" padding={3}>
           <Typography variant="h3" gutterBottom>
             {t('privacyPolicy.privacyPolicy')}
           </Typography>
@@ -130,8 +117,8 @@ const PrivacyPolicyPage = () => {
               'privacyPolicy.whatRightsContributorsHaveOverTheirDataParagraph'
             )}
           </Typography>
-        </div>
-      </div>
+        </Box>
+      </Box>
     </>
   );
 };
