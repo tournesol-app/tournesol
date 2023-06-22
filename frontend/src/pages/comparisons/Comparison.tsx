@@ -14,7 +14,7 @@ import {
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
 } from 'src/services/openapi';
-import { TournesolUserSettingsKeys } from 'src/utils/types';
+import { PollUserSettingsKeys } from 'src/utils/types';
 
 const displayWeeklyCollectiveGoal = (
   userPreference: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum,
@@ -78,7 +78,7 @@ const ComparisonPage = () => {
   const userSettings = useSelector(selectSettings).settings;
   // By default always display the weekly collective goal.
   const weeklyCollectiveGoalDisplay =
-    userSettings?.[pollName as TournesolUserSettingsKeys]
+    userSettings?.[pollName as PollUserSettingsKeys]
       ?.comparison_ui__weekly_collective_goal_display ??
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 

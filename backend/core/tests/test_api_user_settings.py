@@ -40,13 +40,17 @@ class UserSettingsDetailTestCase(TestCase):
 
         # When the user have settings, the API should return them.
         new_settings = {
+            "general": {
+                "notifications_email__research": True,
+                "notifications_email__new_features": False,
+            },
             "videos": {
                 "comparison__criteria_order": ["reliability"],
                 "rate_later__auto_remove": 99,
                 "recommendations__default_languages": ["en"],
                 "recommendations__default_date": "WEEK",
                 "recommendations__default_unsafe": False,
-            }
+            },
         }
         self.user.settings = new_settings
         self.user.save(update_fields=["settings"])
@@ -66,6 +70,7 @@ class UserSettingsDetailTestCase(TestCase):
         # [GIVEN] An initial set of settings, containing two scopes with extra
         # keys.
         initial_settings = {
+            "general": {"notifications_email__research": True},
             "videos": {"rate_later__auto_remove": 4, "extra_key": 99},
             "presidentielle2022": {"rate_later__auto_remove": 4, "extra_key": 99},
         }
@@ -73,7 +78,7 @@ class UserSettingsDetailTestCase(TestCase):
         self.user.save(update_fields=["settings"])
 
         # [WHEN] The user replace its settings by new ones containing only one
-        # scope and no extre key.
+        # scope and no extra key.
         new_settings = {"videos": {"rate_later__auto_remove": 99}}
         response = self.client.put(self.settings_base_url, data=new_settings, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

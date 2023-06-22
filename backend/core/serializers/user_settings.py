@@ -8,7 +8,7 @@ from tournesol.utils.video_language import ACCEPTED_LANGUAGE_CODES
 
 class GenericPollUserSettingsSerializer(serializers.Serializer):
     """
-    The settings common to all polls.
+    The settings common to each poll.
     """
 
     COMPONENT_DISPLAY_STATE = [
@@ -55,7 +55,7 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
     """
     The settings specific to the `videos` poll.
 
-    Also inherit the settings common to all polls.
+    Also inherit the settings common to each poll.
     """
 
     DEFAULT_DATE_CHOICES = [
@@ -82,6 +82,15 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         return default_languages
 
 
+class GeneralUserSettingsSerializer(serializers.Serializer):
+    """
+    The general user settings that are not related to Tournesol polls.
+    """
+
+    notifications_email__research = serializers.BooleanField(required=False)
+    notifications_email__new_features = serializers.BooleanField(required=False)
+
+
 class TournesolUserSettingsSerializer(serializers.Serializer):
     """A representation of all settings of the Tournesol project.
 
@@ -89,6 +98,7 @@ class TournesolUserSettingsSerializer(serializers.Serializer):
     specific settings of each poll.
     """
 
+    general = GeneralUserSettingsSerializer(required=False)
     videos = VideosPollUserSettingsSerializer(required=False, context={"poll_name": "videos"})
 
     def create(self, validated_data):

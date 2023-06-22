@@ -2959,6 +2959,22 @@ components:
       - answer
       - name
       - question
+    GeneralUserSettings:
+      type: object
+      description: The general user settings that are not related to Tournesol polls.
+      properties:
+        notifications_email__research:
+          type: boolean
+        notifications_email__new_features:
+          type: boolean
+    GeneralUserSettingsRequest:
+      type: object
+      description: The general user settings that are not related to Tournesol polls.
+      properties:
+        notifications_email__research:
+          type: boolean
+        notifications_email__new_features:
+          type: boolean
     GivenVoucher:
       type: object
       description: |-
@@ -3230,6 +3246,8 @@ components:
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
       properties:
+        general:
+          $ref: '#/components/schemas/GeneralUserSettingsRequest'
         videos:
           $ref: '#/components/schemas/VideosPollUserSettingsRequest'
     PatchedUserProfileRequest:
@@ -3730,6 +3748,8 @@ components:
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
       properties:
+        general:
+          $ref: '#/components/schemas/GeneralUserSettings'
         videos:
           $ref: '#/components/schemas/VideosPollUserSettings'
     TournesolUserSettingsRequest:
@@ -3740,6 +3760,8 @@ components:
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
       properties:
+        general:
+          $ref: '#/components/schemas/GeneralUserSettingsRequest'
         videos:
           $ref: '#/components/schemas/VideosPollUserSettingsRequest'
     TypeEnum:
@@ -4068,7 +4090,7 @@ components:
       description: |-
         The settings specific to the `videos` poll.
 
-        Also inherit the settings common to all polls.
+        Also inherit the settings common to each poll.
       properties:
         comparison__criteria_order:
           type: array
@@ -4095,7 +4117,7 @@ components:
       description: |-
         The settings specific to the `videos` poll.
 
-        Also inherit the settings common to all polls.
+        Also inherit the settings common to each poll.
       properties:
         comparison__criteria_order:
           type: array

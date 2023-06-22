@@ -26,7 +26,7 @@ import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
 import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import DialogBox from 'src/components/DialogBox';
-import { TournesolUserSettingsKeys } from 'src/utils/types';
+import { PollUserSettingsKeys } from 'src/utils/types';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -88,9 +88,7 @@ const RateLaterPage = () => {
 
   const { name: pollName } = useCurrentPoll();
   const settings =
-    useSelector(selectSettings).settings?.[
-      pollName as TournesolUserSettingsKeys
-    ];
+    useSelector(selectSettings).settings?.[pollName as PollUserSettingsKeys];
 
   const [isLoading, setIsLoading] = React.useState(true);
 
