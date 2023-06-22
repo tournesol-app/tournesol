@@ -148,7 +148,7 @@
     "privacyPolicy": "Privacy policy"
   },
   "terms": {
-    "termsOfService": "Terms of service",
+    "termsOfService": "Terms of Service",
     "acceptableUse": {
       "acceptableUse": "C. Acceptable Use",
       "shortVersion": "While using the Service, you must follow the terms of this section, which include not harming other Users, not disturbing the Service, and having an authentic activity.",
@@ -157,7 +157,7 @@
         "2UserSafety": "2. User Safety",
         "3InauthenticActivityAndSpam": "3. Inauthentic Activity and Spam"
       },
-      "paragraphs": {
+      "p": {
         "complianceWithLawsAndRegulation": "You are responsible for using the Service in compliance with all applicable laws, regulations, and these Acceptable Use policies. ",
         "userSafetyIntro": "We do not allow activities on the Platform, including using a public username, that:",
         "isUnlawlfulOrPromoteUnlawful": "are unlawful or promotes unlawful activities;",
@@ -189,7 +189,7 @@
         "2uponCancellation": "2. Upon Cancellation",
         "3theTournesolAssociationMayTerminate": "3. The Tournesol Association May Terminate"
       },
-      "paragraphs": {
+      "p": {
         "accountCancellation": "It is your responsibility to properly cancel your Account. You can cancel your Account at any time by going into your settings from the personal navigation menu at the top of the screen. The Account page provides a simple, no questions asked cancellation button. We do not cancel accounts in response to an email.",
         "weWillDelete": "We will delete your full profile and the Content you added within 7 days of cancellation or termination. Those information can not be recovered once your Account is canceled.",
         "theAssociationWillCancel": "The Association will cancel your Account if it has not been activated withing the 7 days following its creation.",
@@ -210,7 +210,7 @@
         "1electronicCommunicationRequired": "1. Electronic Communication Required",
         "2necessaryEmails": "2. Necessary Emails"
       },
-      "paragraphs": {
+      "p": {
         "youConsentToReceiveEmails": "You (i) consent to receive communications from us in an electronic form via the email address you have submitted or via the Service; and (ii) agree that all Terms of Service, agreements, notices, disclosures, and other communications that we provide to you electronically satisfy any legal requirement that those communications would satisfy if they were on paper. This section does not affect your non-waivable rights.",
         "necessaryEmails": "You acknowledge that some parts of the Service, like the Account activation process, or the password reset process, require emails to operate correctly, and consent to receive them.",
         "additionalNecessaryEmails": "We also consider security notices, and impacting updates of this Agreement as necessary emails."
@@ -230,7 +230,7 @@
     "moderation": {
       "moderation": "D. Moderation",
       "shortVersion": "If an infringement to this Agreement is detected we may temporarily suspend or definitively terminate your Account.",
-      "paragraphs": {
+      "p": {
         "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of this Agreement.",
         "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the Service or its Users are impacted, we can take the following actions:",
         "accountSuspension": "Account suspension;",

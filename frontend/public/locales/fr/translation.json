@@ -163,7 +163,7 @@
         "2UserSafety": "2. Sécurité des Utilisateur·rices",
         "3InauthenticActivityAndSpam": "3. Activité non authentique et spam"
       },
-      "paragraphs": {
+      "p": {
         "complianceWithLawsAndRegulation": "Vous êtes responsable de l'utilisation du Service en conformité avec toutes les lois et réglementations applicables, ainsi qu'avec toutes nos règles de bon usage.",
         "userSafetyIntro": "Nous n'autorisons pas les activités sur la Plateforme, ce qui comprend le choix d'un nom d'Utilisateur·rice, qui\u00a0:",
         "isUnlawlfulOrPromoteUnlawful": "sont illégales ou encouragent des activités illégales\u00a0;",
@@ -195,7 +195,7 @@
         "2uponCancellation": "2. En cas d'annulation",
         "3theTournesolAssociationMayTerminate": "3. Résiliation par l'Association"
       },
-      "paragraphs": {
+      "p": {
         "accountCancellation": "Il est de votre responsabilité d'annuler correctement votre Compte. Vous pouvez annuler votre Compte à tout moment en accédant à vos paramètres depuis le menu personnel situé en haut à droite de l’écran. L’écran Compte fournit un bouton d'annulation simple, sans poser de questions. Nous ne pouvons pas annuler des comptes en réponse à une demande par e-mail.",
         "weWillDelete": "Nous supprimerons votre profil complet et le Contenu que vous avez ajouté dans les 7 jours suivant l'annulation ou la résiliation. Ces informations ne peuvent pas être récupérées une fois que votre Compte est annulé.",
         "theAssociationWillCancel": "L'Association supprimera votre Compte s'il n'a pas été activé dans les 7 jours suivant sa création.",
@@ -216,7 +216,7 @@
         "1electronicCommunicationRequired": "1. Communication électronique requise",
         "2necessaryEmails": "2. E-mails nécessaires"
       },
-      "paragraphs": {
+      "p": {
         "youConsentToReceiveEmails": "Vous (i) consentez à recevoir des communications de notre part sous forme électronique par l'intermédiaire de l'adresse électronique que vous avez fournie ou par le biais du Service\u00a0; et (ii) vous acceptez que l'ensemble des Conditions Générales d'Utilisation, accords, avis, divulgations et autres communications que nous vous fournissons par voie électronique satisfassent à toute exigence légale que ces communications satisferaient si elles étaient sur papier. La présente section ne porte pas atteinte à vos droits inaliénables.",
         "necessaryEmails": "Vous reconnaissez que certaines parties du Service, comme la procédure d'activation du Compte ou la procédure de réinitialisation de mot de passe, nécessitent des courriels pour fonctionner correctement, et vous consentez à les recevoir.",
         "additionalNecessaryEmails": "Nous considérons également les avis de sécurité et les mises à jour du présent Accord comme des courriels nécessaires."
@@ -236,7 +236,7 @@
     "moderation": {
       "moderation": "D. Modération",
       "shortVersion": "Si une infraction au présent Accord est détectée, nous pouvons suspendre temporairement ou résilier définitivement votre Compte.",
-      "paragraphs": {
+      "p": {
         "theTournesolAssociationWill": "L'association Tournesol prendra des mesures en cas de violation de cet Accord",
         "dependingOnTheSeverityWe": "En fonction de la gravité de la violation et de l'impact sur les Utilisateur.rices ou le Service, nous pouvons prendre les mesures suivantes\u00a0:",
         "accountSuspension": "suspension de Compte\u00a0;",

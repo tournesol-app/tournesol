@@ -27,13 +27,13 @@ const CancellationAndTermination = () => {
         {t('terms.cancellationAndTermination.titles.1accountCancellation')}
       </Typography>
       <Typography paragraph>
-        {t('terms.cancellationAndTermination.paragraphs.accountCancellation')}
+        {t('terms.cancellationAndTermination.p.accountCancellation')}
       </Typography>
       <Typography variant="h5" gutterBottom id="upon-cancellation">
         {t('terms.cancellationAndTermination.titles.2uponCancellation')}
       </Typography>
       <Typography paragraph>
-        {t('terms.cancellationAndTermination.paragraphs.weWillDelete')}
+        {t('terms.cancellationAndTermination.p.weWillDelete')}
       </Typography>
       <Typography
         variant="h5"
@@ -45,19 +45,15 @@ const CancellationAndTermination = () => {
         )}
       </Typography>
       <Typography paragraph>
-        {t(
-          'terms.cancellationAndTermination.paragraphs.theAssociationWillCancel'
-        )}
+        {t('terms.cancellationAndTermination.p.theAssociationWillCancel')}
       </Typography>
       <Typography paragraph>
         {t(
-          'terms.cancellationAndTermination.paragraphs.theTournesolAssociationHasTheRight'
+          'terms.cancellationAndTermination.p.theTournesolAssociationHasTheRight'
         )}
       </Typography>
       <Typography paragraph>
-        {t(
-          'terms.cancellationAndTermination.paragraphs.suspendAllAccessInCaseOfThreat'
-        )}
+        {t('terms.cancellationAndTermination.p.suspendAllAccessInCaseOfThreat')}
       </Typography>
     </Box>
   );

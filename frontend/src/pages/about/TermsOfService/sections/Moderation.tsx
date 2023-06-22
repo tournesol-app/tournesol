@@ -19,25 +19,25 @@ const Moderation = () => {
         </Alert>
       </Box>
       <Typography paragraph>
-        {t('terms.moderation.paragraphs.theTournesolAssociationWill')}
+        {t('terms.moderation.p.theTournesolAssociationWill')}
       </Typography>
       <Typography paragraph>
-        {t('terms.moderation.paragraphs.dependingOnTheSeverityWe')}
+        {t('terms.moderation.p.dependingOnTheSeverityWe')}
       </Typography>
       <ul>
         <li>
           <Typography paragraph>
-            {t('terms.moderation.paragraphs.accountSuspension')}
+            {t('terms.moderation.p.accountSuspension')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
-            {t('terms.moderation.paragraphs.accountTermination')}
+            {t('terms.moderation.p.accountTermination')}
           </Typography>
         </li>
         <li>
           <Typography paragraph>
-            {t('terms.moderation.paragraphs.removalOfAddedContents')}
+            {t('terms.moderation.p.removalOfAddedContents')}
           </Typography>
         </li>
       </ul>

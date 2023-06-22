@@ -33,20 +33,16 @@ const CommunicationsWithAssociation = () => {
         )}
       </Typography>
       <Typography paragraph>
-        {t(
-          'terms.communicationsWithAssociation.paragraphs.youConsentToReceiveEmails'
-        )}
+        {t('terms.communicationsWithAssociation.p.youConsentToReceiveEmails')}
       </Typography>
       <Typography variant="h5" gutterBottom id="necessary-emails">
         {t('terms.communicationsWithAssociation.titles.2necessaryEmails')}
       </Typography>
       <Typography paragraph>
-        {t('terms.communicationsWithAssociation.paragraphs.necessaryEmails')}
+        {t('terms.communicationsWithAssociation.p.necessaryEmails')}
       </Typography>
       <Typography paragraph>
-        {t(
-          'terms.communicationsWithAssociation.paragraphs.additionalNecessaryEmails'
-        )}
+        {t('terms.communicationsWithAssociation.p.additionalNecessaryEmails')}
       </Typography>
     </Box>
   );
