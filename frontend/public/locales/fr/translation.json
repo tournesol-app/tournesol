@@ -216,9 +216,9 @@
         "2necessaryEmails": "2. E-mails nécessaires"
       },
       "paragraphs": {
-        "youConsentToReceiveEmails": "",
-        "necessaryEmails": "",
-        "additionalNecessaryEmails": ""
+        "youConsentToReceiveEmails": "Vous (1) consentez à recevoir des communications de notre part sous forme électronique par l'intermédiaire de l'adresse électronique que vous avez fournie ou par le biais du Service ; et (2) vous acceptez que l'ensemble des Conditions Générales d'Utilisation, accords, avis, divulgations et autres communications que nous vous fournissons par voie électronique satisfassent à toute exigence légale que ces communications satisferaient si elles étaient sur papier. La présente section ne porte pas atteinte à vos droits inaliénables.",
+        "necessaryEmails": "Vous reconnaissez que certaines parties du Service, comme la procédure d'activation du Compte ou la procédure de réinitialisation de mot de passe, nécessitent des courriels pour fonctionner correctement, et vous consentez à les recevoir.",
+        "additionalNecessaryEmails": "Nous considérons également les avis de sécurité et les mises à jour du présent Accord comme des courriels nécessaires."
       }
     },
     "definitions": {
