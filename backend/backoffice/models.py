@@ -6,10 +6,10 @@ from django.db import models
 class TalkEntry(models.Model):
     name = models.SlugField(
         unique=True,
-        help_text="the reference of the talk",
+        help_text="Unique reference of the talk",
     )
     date = models.DateTimeField(
-        help_text="Timestamp when the talk will take place or its broadcast date",
+        help_text="Date and time when the talk (please mind the server time zone).",
         null=True,
         default=None,
         blank=True,
