@@ -243,6 +243,10 @@
         "accountTermination": "résiliation de Compte ;",
         "removalOfAddedContents": "suppression du Contenu ajouté."
       }
+    },
+    "copying": {
+      "thisDocumentIsInspiredByTheGitHubTos": "Ce document est inspiré par les Conditions Générales d'Utilisations du site web GitHub.",
+      "thePresentTextsAreDedicatedToThePublicDomain": "Les présents textes sont dédiés au Domaine Public, comme indiqué par la licence <2>Creative Commons Zero v1.0 Universal (CC0 1.0)</2>."
     }
   },
   "menu": {

@@ -237,6 +237,10 @@
         "accountTermination": "Account termination;",
         "removalOfAddedContents": "removal of added Content."
       }
+    },
+    "copying": {
+      "thisDocumentIsInspiredByTheGitHubTos": "This document is inspired by the GitHub web site's Terms of Services.",
+      "thePresentTextsAreDedicatedToThePublicDomain": "The present texts are dedicated to the Public Domain, as stated by the license <2>Creative Commons Zero v1.0 Universal (CC0 1.0)</2>."
     }
   },
   "menu": {
