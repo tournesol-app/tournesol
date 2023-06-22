@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
 
-import { TalkEntry } from 'src/services/mocks';
+import { TalkEntry } from 'src/mocks';
 import { extractVideoId } from 'src/utils/video';
 import { Trans, useTranslation } from 'react-i18next';
 import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';

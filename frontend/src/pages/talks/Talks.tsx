@@ -7,7 +7,7 @@ import { Email } from '@mui/icons-material';
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import TalkEntryList from 'src/pages/talks/TalkEntryList';
-import { TalkEntry, TalksService } from 'src/services/mocks';
+import { TalkEntry, TalksService } from 'src/mocks';
 import { tournesolTalksMailingListUrl } from 'src/utils/url';
 
 interface SortedTalkAccumulator {
