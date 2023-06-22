@@ -4,7 +4,7 @@ import {
   TournesolUserSettings,
   VideosPollUserSettings,
 } from 'src/services/openapi';
-import { SelectablePoll, TournesolUserSettingsKeys } from './types';
+import { SelectablePoll, PollUserSettingsKeys } from './types';
 import { YOUTUBE_POLL_NAME } from './constants';
 
 /**
@@ -62,8 +62,7 @@ export const getDefaultRecommendationsSearchParams = (
     pollOptions?.defaultRecoSearchParams
   );
 
-  const userPollSettings =
-    userSettings?.[pollName as TournesolUserSettingsKeys];
+  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
 
   if (pollName === YOUTUBE_POLL_NAME) {
     buildVideosDefaultRecoSearchParams(searchParams, userPollSettings);
