@@ -27,16 +27,18 @@ const ChangesToTheseTerms = () => {
         </Alert>
       </Box>
       <Typography paragraph>
-        <Trans t={t} i18nKey="terms.changesToTheseTerms.weMayAmendTheseTerms">
-          We may amend these Terms of Service at any time. We will notify the
-          Users of material changes to this Agreement, at least 30 days prior to
-          the change taking effect by posting a notice on our website or sending
-          email to the email address specified in your Account. User&apos;s
-          continued use of the Service after those 30 days constitutes agreement
-          to those revisions of this Agreement. For any other non-impacting
-          modifications, User&apos;s continued use of the Service constitutes
-          agreement to our revisions of these Terms of Service. You can view all
-          changes to these Terms in our{' '}
+        {t('terms.changesToTheseTerms.weMayAmendTheseTermsAtAnyTime')}
+      </Typography>
+      <Typography paragraph>
+        <Trans t={t} i18nKey="terms.changesToTheseTerms.weWillNotifyTheUsers">
+          We will notify the Users of material changes to this Agreement, at
+          least 30 days prior to the change taking effect by posting a notice on
+          our website or sending email to the email address specified in your
+          Account. User&apos;s continued use of the Service after those 30 days
+          constitutes agreement to those revisions of this Agreement. For any
+          other non-impacting modifications, User&apos;s continued use of the
+          Service constitutes agreement to our revisions of these Terms of
+          Service. You can view all changes to these Terms in our{' '}
           <Link
             href={githubTournesolTermsOfServiceHistoryUrl}
             target="_blank"
