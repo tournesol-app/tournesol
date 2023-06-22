@@ -24,9 +24,10 @@ const Section = ({
       <Typography
         paragraph
         sx={{
-          '& pre': {
-            margin: 0,
-            display: 'inline',
+          '& span.pre': {
+            unicodeBidi: 'embed',
+            fontFamily: 'monospace',
+            whiteSpace: 'pre',
           },
         }}
       >
@@ -77,7 +78,8 @@ const Definitions = () => {
             website located at <Link to="/">tournesol.app</Link>, and all
             content and services provided by the Association at or through the
             Website. It also refers to the Association-owned subdomains of
-            tournesol.app, such as <pre>api.tournesol.app</pre>. Occasionally,
+            tournesol.app, such as{' '}
+            <span className="pre">api.tournesol.app</span>. Occasionally,
             websites owned by the Association may provide different or
             additional terms of service. If those additional terms conflict with
             this Agreement, the more specific terms apply to the relevant page
