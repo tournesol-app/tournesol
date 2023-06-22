@@ -151,7 +151,7 @@
     "termsOfService": "Terms of service",
     "acceptableUse": {
       "acceptableUse": "C. Acceptable Use",
-      "shortVersion": "While using the Service, you must follow the terms of this section, which include not harming other users, not disturbing the Service, and having an authentic activity.",
+      "shortVersion": "While using the Service, you must follow the terms of this section, which include not harming other Users, not disturbing the Service, and having an authentic activity.",
       "titles": {
         "1ComplianceWithLawsAndRegulation": "1. Compliance with Laws and Regulations",
         "2UserSafety": "2. User Safety",
@@ -232,7 +232,7 @@
       "shortVersion": "If an infringement to this Agreement is detected we may temporarily suspend or definitively terminate your Account.",
       "paragraphs": {
         "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of this Agreement.",
-        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the Service or its users are impacted, we can take the following actions:",
+        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the Service or its Users are impacted, we can take the following actions:",
         "accountSuspension": "Account suspension;",
         "accountTermination": "Account termination;",
         "removalOfAddedContents": "removal of added Content."
