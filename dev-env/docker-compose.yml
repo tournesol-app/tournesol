@@ -60,6 +60,8 @@ services:
       - yarn install --frozen-lockfile && ./scripts/generate-services-from-openapi.sh && yarn run $$START_SCRIPT
     volumes:
       - ../frontend:/frontend
+      - type: volume  # Use non-mounted volume for better performance with Docker Desktop (esp. on MacOS and Windows)
+        target: /frontend/node_modules
     ports:
       - "127.0.0.1:3000:3000"
     networks:
