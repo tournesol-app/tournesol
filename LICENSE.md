@@ -30,7 +30,12 @@ See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 
 ## GNU Lesser General Public License v3.0 or later
 
-The following source code use the GNU Lesser General Public License v3.0 or later, which is a set of additional permissions added to the GNU General Public License.
+![GNU AGPL v3.0 logo](./docs/logos/lgplv3-with-text-154x68.png)
+
+
+The following source code use the GNU Lesser General Public License v3.0 or
+later, which is a set of additional permissions added to the GNU General
+Public License.
 
 - [solidago](./solidago/README.md#copyright--license)
 
