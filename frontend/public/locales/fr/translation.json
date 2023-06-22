@@ -154,6 +154,102 @@
     "more": "Plus",
     "privacyPolicy": "Politique de confidentialité"
   },
+  "terms": {
+    "termsOfService": "Conditions Générales d'Utilisation",
+    "acceptableUse": {
+      "acceptableUse": "C. Bon usage",
+      "shortVersion": "Lorsque vous utilisez le Service, vous devez respecter les conditions de cette section, notamment ne pas nuire aux autres Utilisateur·rices, ne pas perturber le Service et avoir une activité authentique.",
+      "titles": {
+        "1ComplianceWithLawsAndRegulation": "1. Respect des lois et des réglementations",
+        "2UserSafety": "2. Sécurité des Utilisateur·rices",
+        "3InauthenticActivityAndSpam": "3. Activité non authentique et spam"
+      },
+      "p": {
+        "complianceWithLawsAndRegulation": "Vous êtes responsable de l'utilisation du Service en conformité avec toutes les lois et réglementations applicables, ainsi qu'avec toutes nos règles de bon usage.",
+        "userSafetyIntro": "Nous n'autorisons pas les activités sur la Plateforme, ce qui comprend le choix d'un nom d'Utilisateur·rice, qui\u00a0:",
+        "isUnlawlfulOrPromoteUnlawful": "sont illégales ou encouragent des activités illégales\u00a0;",
+        "isFalseInaccurateOrDeceptive": "constituent une information fausse, inexacte ou intentionnellement trompeuse et sont susceptibles de nuire à l'intérêt général (comme la santé, la sécurité, l'intégrité des élections et la participation civique)\u00a0;",
+        "orGoesAgainstOurCodeOfConduct": "ou vont à l'encontre de notre <2>Code de Conduite</2>.",
+        "inauthenticActivityAndSpamIntro": "Il est attendu des Utilisateur·rices un comportement authentique sur la Plateforme\u00a0: cela implique d'exprimer ses opinions sincères lors de la soumission de données, sans aucune intention de tromper, manipuler ou déformer les informations. Nous n'autorisons pas les interactions non authentiques sur la Plateforme\u00a0; en particulier, mais pas seulement, l'utilisation de faux comptes et l'automatisation ou la coordination d'activités non authentiques."
+      }
+    },
+    "shortVersion": "Version courte",
+    "accountTerms": {
+      "accountTerms": "B. Conditions relatives aux Comptes",
+      "shortVersion": "Votre Compte doit être créé par un humain\u00a0; vous devez avoir 15 ans ou plus\u00a0; vous devez fournir une adresse électronique valide\u00a0; et vous ne pouvez pas avoir plus d'un seul Compte. Vous êtes seul·e responsable de votre Compte et de tout ce qui se passe pendant que vous êtes connecté à votre Compte ou que vous l'utilisez. Vous êtes responsable de la sécurité de votre Compte.",
+      "accountControls": "1. Contrôles du Compte",
+      "userRetainsUltimateAdministrativeControl": "Sous réserve des présentes Conditions, vous conservez un contrôle administratif ultime sur votre Compte personnel.",
+      "accountRequirements": "2. Exigences relatives au Compte",
+      "inOrderToCreateAccount": "Pour créer un Compte, l'Utilisateur·rice doit respecter les conditions suivantes\u00a0:",
+      "aUserMayNotUseMoreThanOneAccount": "L'Utilisateur·rice ne doit pas utiliser, ou avoir plus d'un seul Compte.",
+      "aUserLoginMayNotBeShared": "Un Compte ne peut pas être partagé par plusieurs personnes.",
+      "aUserMustProvideAValidEmailAddress": "L'Utilisateur·rice doit fournir une adresse électronique valide.",
+      "userMustBeALeast15": "L'Utilisateur·rice ne doit pas créer un Compte à l'usage d'une personne âgée de moins de 15 ans. Si l'Association Tournesol a connaissance d'un·e Utilisateur·rice âgé·e de moins de 15 ans, elle résiliera immédiatement son Compte. Si l'Utilisateur·rice réside dans un pays où l'âge minimum est plus élevé, il lui incombe de se conformer aux lois de ce pays.",
+      "accountSecurity": "3. Sécurité du Compte",
+      "userIsResponsibleFor": "Vous êtes responsable\u00a0: (i) de tout le Contenu publié et de toute l'activité qui a lieu sous votre Compte\u00a0; (ii) de maintenir la sécurité des identifiants de connexion de votre Compte\u00a0; et (iii) d'informer rapidement l'Association Tournesol si vous avez connaissance d’une utilisation ou d'un accès non autorisé à notre Service par l'intermédiaire de votre Compte. L'Association ne sera pas responsable de toute perte ou dommage résultant du non-respect par l'Utilisateur·rice des conditions relatives au Compte."
+    },
+    "cancellationAndTermination": {
+      "cancellationAndTermination": "E. Annulation et résiliation",
+      "shortVersion": "Vous pouvez fermer votre Compte à tout moment. Dans ce cas, nous traiterons vos informations de manière responsable.",
+      "titles": {
+        "1accountCancellation": "1. Annulation du Compte",
+        "2uponCancellation": "2. En cas d'annulation",
+        "3theTournesolAssociationMayTerminate": "3. Résiliation par l'Association"
+      },
+      "p": {
+        "accountCancellation": "Il est de votre responsabilité d'annuler correctement votre Compte. Vous pouvez annuler votre Compte à tout moment en accédant à vos paramètres depuis le menu personnel situé en haut à droite de l’écran. L’écran Compte fournit un bouton d'annulation simple, sans poser de questions. Nous ne pouvons pas annuler des comptes en réponse à une demande par e-mail.",
+        "weWillDelete": "Nous supprimerons votre profil complet et le Contenu que vous avez ajouté dans les 7 jours suivant l'annulation ou la résiliation. Ces informations ne peuvent pas être récupérées une fois que votre Compte est annulé.",
+        "theAssociationWillCancel": "L'Association supprimera votre Compte s'il n'a pas été activé dans les 7 jours suivant sa création.",
+        "theTournesolAssociationHasTheRight": "L'Association a le droit de suspendre ou de résilier votre accès à tout ou partie du Service à tout moment, avec ou sans préavis, avec effet immédiat, si une violation de l'Accord de votre part est détectée.",
+        "suspendAllAccessInCaseOfThreat": "L'Association peut suspendre l'accès de tous·tes les Utilisateur·rices ou d'un groupe d'Utilisateur·rices, à tout ou partie du Service, à tout moment, avec ou sans préavis, avec effet immédiat, pour une durée indéterminée, si la sécurité des Utilisateur·rice, de leurs données ou du Service est susceptible d'être compromise par un événement identifié comme une menace directe ou indirecte."
+      }
+    },
+    "changesToTheseTerms": {
+      "changesToTheseTerms": "G. Modifications des présentes Conditions",
+      "shortVersion": "Nous voulons que les Utilisateur·rices soient informé·es des changements apportés à nos conditions, mais certains ne sont pas importants. Nous ne voulons pas vous déranger pour chaque faute d'orthographe corrigée. C'est pourquoi, bien que nous puissions modifier le présent Accord à tout moment, nous informerons les Utilisateur·rices des modifications importantes et nous leur donnerons le temps de s'y adapter.",
+      "weMayAmendTheseTermsAtAnyTime": "Nous nous réservons le droit, à notre seule discrétion, de modifier les présentes Conditions Générales d'Utilisation à tout moment.",
+      "weWillNotifyTheUsers": "Nous informerons les Utilisateur·rices des modifications importantes apportées au présent Accord au moins 30 jours avant l'entrée en vigueur de ladite modification en publiant un avis sur notre Site Web ou en envoyant un e-mail à l'adresse électronique spécifiée dans votre Compte. L'utilisation continue du Service par l'Utilisateur·rice après ces 30 jours constitue une acceptation de ces révisions du présent Accord. Pour les révisions non importantes, le fait de continuer à utiliser le Service constitue une acceptation des révisions du présent Accord. Vous pouvez consulter toutes les modifications apportées aux présentes Conditions sur notre <2>dépôt GitHub</2>."
+    },
+    "communicationsWithAssociation": {
+      "communicationsWithAssociation": "F. Communications avec l'Association",
+      "shortVersion": "Nous utilisons les e-mails pour rester en contact avec les Utilisateur·rices. Vous acceptez de recevoir les e-mails nécessaires au fonctionnement du Service. Nous n'envoyons pas d'autres e-mails sans votre consentement explicite.",
+      "titles": {
+        "1electronicCommunicationRequired": "1. Communication électronique requise",
+        "2necessaryEmails": "2. E-mails nécessaires"
+      },
+      "p": {
+        "youConsentToReceiveEmails": "Vous (i) consentez à recevoir des communications de notre part sous forme électronique par l'intermédiaire de l'adresse électronique que vous avez fournie ou par le biais du Service\u00a0; et (ii) vous acceptez que l'ensemble des Conditions Générales d'Utilisation, accords, avis, divulgations et autres communications que nous vous fournissons par voie électronique satisfassent à toute exigence légale que ces communications satisferaient si elles étaient sur papier. La présente section ne porte pas atteinte à vos droits inaliénables.",
+        "necessaryEmails": "Vous reconnaissez que certaines parties du Service, comme la procédure d'activation du Compte ou la procédure de réinitialisation de mot de passe, nécessitent des courriels pour fonctionner correctement, et vous consentez à les recevoir.",
+        "additionalNecessaryEmails": "Nous considérons également les avis de sécurité et les mises à jour du présent Accord comme des courriels nécessaires."
+      }
+    },
+    "definitions": {
+      "definitions": "A. Définitions",
+      "shortVersion": "Nous utilisons ces termes tout au long de l'Accord. Cette section précise leur signification spécifique.",
+      "account": "Un « Compte » représente votre relation juridique avec l'Association Tournesol. Il représente l'autorisation d'un·e Utilisateur·rice individuel·le à se connecter au Service et à l'utiliser, et sert d'identité pour l'Utilisateur·rice sur la Plateforme. ",
+      "agreement": "« Accord » désigne, collectivement, l'ensemble des dispositions, conditions, avis contenus ou référencés dans le présent document (les « Conditions Générales d'Utilisation » ou les « Conditions ») et toutes les autres règles de fonctionnement, politiques (y compris notre <2>Politique de confidentialité</2>) et procédures que nous pouvons publier de temps à autre sur le Site Web.",
+      "association": "« Association », « Association Tournesol », « Nous » et « Notre » désignent l'association à but non lucratif qui développe le projet Tournesol.",
+      "content": "Le « Contenu » désigne tous les différents types de contenu qui peuvent être ajoutés par l'Utilisateur·rice sur la Plateforme, tels que les entités (comme les vidéos) et les comparaisons entre les entités.",
+      "service": "Le « Service », parfois appelé « Plateforme », désigne les sites web, les extensions de navigateur, les applications, les formulaires, les enquêtes et les services fournis par l'Association Tournesol dans le cadre du projet Tournesol.",
+      "user": "L'« Utilisateur·rice », « Vous » et « votre » désignent la personne physique qui a visité ou utilise la Plateforme ou le Service\u00a0; qui accède à une partie quelconque du Compte ou qui l'utilise. Un·e Utilisateur·rice doit être âgé·e d'au moins 15 ans.",
+      "website": "Le « Site Web » désigne le site web du projet Tournesol situé à l'adresse <1>tournesol.app</1>, ainsi que tous les contenus et services fournis par l'Association sur ou par l'intermédiaire du Site Web. Il désigne également les sous-domaines de tournesol.app appartenant à l'Association, tels que <4>api.tournesol.app</4>. Occasionnellement, les sites web appartenant à l'Association peuvent fournir des conditions d'utilisation différentes ou supplémentaires. Si ces conditions supplémentaires entrent en conflit avec le présent Accord, les conditions plus spécifiques s'appliquent à la page ou au service concerné."
+    },
+    "moderation": {
+      "moderation": "D. Modération",
+      "shortVersion": "Si une infraction au présent Accord est détectée, nous pouvons suspendre temporairement ou résilier définitivement votre Compte.",
+      "p": {
+        "theTournesolAssociationWill": "L'association Tournesol prendra des mesures en cas de violation de cet Accord",
+        "dependingOnTheSeverityWe": "En fonction de la gravité de la violation et de l'impact sur les Utilisateur.rices ou le Service, nous pouvons prendre les mesures suivantes\u00a0:",
+        "accountSuspension": "suspension de Compte\u00a0;",
+        "accountTermination": "résiliation de Compte\u00a0;",
+        "removalOfAddedContents": "suppression du Contenu ajouté."
+      }
+    },
+    "copying": {
+      "thisDocumentIsInspiredByTheGitHubTos": "Ce document est inspiré par les Conditions Générales d'Utilisations du site web GitHub.",
+      "thePresentTextsAreDedicatedToThePublicDomain": "Les présents textes sont dédiés au Domaine Public, comme indiqué par la licence <2>Creative Commons Zero v1.0 Universal (CC0 1.0)</2>."
+    }
+  },
   "menu": {
     "home": "Accueil",
     "homeAriaLabel": "Lien vers la page d'accueil",
@@ -403,7 +499,7 @@
     "tournesolVisionCollaborativePlatform": "À travers le développement d'une plateforme collaborative pour l'évaluation et la recommandation de contenu en ligne",
     "tournesolVisionResearchOnEthicsOfAlgorithms": "À travers la recherche sur l'éthique des algorithmes en construisant une grande base de données fiable de jugements humains",
     "whoBuildsTournesol": "Qui fabrique Tournesol ?",
-    "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub ; la description des concepts importants et la vision du projet sont consultables sur ce site ; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
+    "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub\u00a0; la description des concepts importants et la vision du projet sont consultables sur ce site\u00a0; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
     "considerHelpingWithDonation": "Si vous en avez la possibilité, n'hésitez pas à nous aider <2>en faisant un don</2>.",
     "tournesolAssociation": "L'association Tournesol",
     "tournesolAssociationDetail": "Le projet est porté par l'association à but not lucratif « Association Tournesol » basée à Lausanne en Suisse.",
@@ -712,7 +808,7 @@
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithThePrivacyPolicy": "J'ai lu et j'accepte la <2>politique de confidentialité</2>."
+    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
   },
   "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",

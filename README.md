@@ -40,8 +40,8 @@
 
 This repository hosts the source code of the Tournesol platform.
 
-Learn more about the project on our [Wiki][tournesol-wiki], or meet our community
-on [Discord][tournesol-discord-join].
+To learn more about our participatory research project and its platform, join
+us on [Discord][tournesol-discord-join].
 
 **Table of Content**
 
@@ -103,8 +103,5 @@ You can find the copyright notice of each software and other production in
 their dedicated `README.md` file.
 
 [tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
-
-[tournesol-wiki]: https://wiki.tournesol.app/
-[tournesol-wiki-contribute]: https://wiki.tournesol.app/wiki/Contribute_to_Tournesol
 
 [tournesol-github-contributors]: https://github.com/tournesol-app/tournesol/graphs/contributors

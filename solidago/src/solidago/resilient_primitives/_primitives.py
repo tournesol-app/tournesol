@@ -1,10 +1,11 @@
 from typing import Union
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from numba import njit
 
-from solidago.optimize import brentq
+from solidago.solvers.optimize import brentq
 
 EPSILON = 1e-6  # convergence tolerance
 
@@ -16,7 +17,7 @@ def L_prime(m: float, W: float, w, x, delta_2):
 
 
 @njit
-def QrMed_inner(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
+def QrMed_inner(W: float, w: Union[npt.NDArray, float], x: npt.NDArray, delta: npt.NDArray):
     """
     Quadratically regularized median.
     It behaves like a weighted median biased towards 0.
@@ -42,7 +43,7 @@ def QrMed_inner(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Se
     return brentq(L_prime, m_low, m_up, args=(W, w, x, delta_2), xtol=EPSILON)
 
 
-def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
+def QrMed(W: float, w: Union[npt.ArrayLike, float], x: npt.ArrayLike, delta: npt.ArrayLike):
     if len(x) == 0:
         return 0.0
     if isinstance(w, pd.Series):
@@ -57,9 +58,9 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
 def QrDev(
     W: float,
     default_dev: float,
-    w: Union[pd.Series, float],
-    x: pd.Series,
-    delta: pd.Series,
+    w: Union[npt.ArrayLike, float],
+    x: npt.ArrayLike,
+    delta: npt.ArrayLike,
     qr_med=None,
 ):
     """
@@ -75,9 +76,9 @@ def QrDev(
 def QrUnc(
     W: float,
     default_dev: float,
-    w: pd.Series,
-    x: pd.Series,
-    delta: pd.Series,
+    w: npt.ArrayLike,
+    x: npt.ArrayLike,
+    delta: npt.ArrayLike,
     qr_med=None,
 ):
     """

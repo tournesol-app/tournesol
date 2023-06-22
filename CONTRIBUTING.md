@@ -69,7 +69,7 @@ large scale recommender systems research.
 ## Got a Question or Problem?
 
 Please do not open issues for general support questions as we want to keep
-GitHub issues for bug reports and feature requests.
+GitHub issues for bug reports.
 
 We collect and answer questions on [Discord][ts-discord-join], in the
 dedicated channels. This way all the community can benefit from your question
@@ -84,10 +84,15 @@ fix.
 
 ## Missing Feature?
 
-You can request a new feature by submitting an issue to our GitHub Repository.
-Depending on the subject or the complexity the development team will first
-evaluate the value of the feature for the whole community, then plan how it
-can be implemented and where it fits in the project's priorities.
+You can request a new feature by submitting a suggestion on
+[Discord][ts-discord-join]. We read all suggestions, even if we may not have
+the time to comment each of them.
+
+To review the suggestions, we first evaluate their value for the whole
+community, their complexity, and where they fit in the project's roadmap.
+
+When a suggestion is accepted we create ourselves the GitHub issues, and we
+mention them in the appropriate Discord threads.
 
 ## Working on the Source code
 

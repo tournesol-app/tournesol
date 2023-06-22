@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+from faq.models import FAQEntry
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
 
@@ -477,5 +478,68 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
     def test_recommendations_preview_internal_route(self):
         response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
+        self.assertNotIn("Content-Disposition", response.headers)
+
+
+class DynamicFaqPreviewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.faq_url = "/preview/faq"
+        self.non_existing_name = "non_existing"
+
+        self.question1_name = "question1_name"
+        self.question2_name = "question2_name"
+
+        for rank, name in enumerate([self.question1_name, self.question2_name]):
+            FAQEntry.objects.create(name=name, rank=rank, enabled=True)
+
+    def test_default_preview(self):
+        """
+        The default preview is returned if no parameter is provided.
+        """
+        response = self.client.get(f"{self.faq_url}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_default_preview_non_existent_name(self):
+        """
+        The default preview is returned if the asked question's name doesn't
+        exist.
+        """
+        response = self.client.get(self.faq_url, {"scrollTo": self.non_existing_name})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_default_preview_disabled_question(self):
+        """
+        An anonymous user can't get the preview of a disabled question.
+        """
+        FAQEntry.objects.filter(name=self.question1_name).update(enabled=False)
+        response = self.client.get(self.faq_url, {"scrollTo": self.question1_name})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_question_preview(self):
+        """
+        An anonymous user can get the preview of an enabled question.
+        """
+        response = self.client.get(self.faq_url, {"scrollTo": self.question1_name})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         self.assertNotIn("Content-Disposition", response.headers)

@@ -13,7 +13,7 @@
 
 ```py
 import numpy as np
-from solidago.mehestan import QrMed
+from solidago.resilient_primitives import QrMed
 
 score = QrMed(W=1, w=1, x=np.array([-1.0, 1.0, 2.0]), delta=np.array([1.0, 1.0, 1.0]))
 ```

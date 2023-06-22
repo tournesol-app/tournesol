@@ -103,6 +103,10 @@ const Footer = () => {
       id: 'more',
       title: t('footer.more'),
       items: [
+        {
+          name: t('terms.termsOfService'),
+          to: '/about/terms-of-service',
+        },
         { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
         // { name: 'FAQ', to: '' },
       ],
