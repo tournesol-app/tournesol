@@ -36,7 +36,8 @@ The following works are dedicated to the public domain, as stated by the
 license Creative Commons Zero v1.0 Universal.
 
 - [docs/architecture-decision-log](./docs/architecture-decision-log/LICENSE.md)
-
+- the front end's texts of the Terms of Service
+- the front end's texts of the Privacy Policy
 
 See the [human-readable disclaimer][cc0-1.0-disclaimer], or the
 [full legal code][cc0-1.0-full-legalcode] for more information.

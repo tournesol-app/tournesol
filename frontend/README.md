@@ -162,3 +162,15 @@ Affected materials:
 
 Affected materials:
 - `public/logos/Edge-Browser-icon-fullColor.svg`
+
+### Texts
+
+The specific texts of the front end's Terms of Service and the Privacy Policy
+are dedicated to the public domain as stated by the license Creative Commons
+Zero v1.0 Universal.
+
+See the [human-readable disclaimer][cc0-1.0-disclaimer], or the
+[full legal code][cc0-1.0-full-legalcode] for more information.
+
+[cc0-1.0-disclaimer]: https://creativecommons.org/publicdomain/zero/1.0/
+[cc0-1.0-full-legalcode]: https://creativecommons.org/publicdomain/zero/1.0/legalcode
