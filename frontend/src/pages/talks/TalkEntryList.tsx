@@ -3,7 +3,7 @@ import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import TalkSingleEntry from 'src/pages/talks/TalkSingleEntry';
-import { TalkEntry } from 'src/services/mocks';
+import { TalkEntry } from 'src/mocks';
 
 const TalkEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
   return (
