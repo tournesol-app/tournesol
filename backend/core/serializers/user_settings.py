@@ -27,9 +27,6 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
 
     rate_later__auto_remove = serializers.IntegerField(required=False)
 
-    notifications_email__research = serializers.BooleanField(required=False)
-    notifications_email__new_features = serializers.BooleanField(required=False)
-
     def validate_comparison__criteria_order(self, criteria):
         poll_name = self.context.get("poll_name", self._context["poll_name"])
         poll = Poll.objects.get(name=poll_name)
@@ -83,6 +80,15 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
                 raise ValidationError(_("Unknown language code: %(lang)s.") % {"lang": lang})
 
         return default_languages
+    
+
+class GeneralUserSettingsSerializer(serializers.Serializer):
+    """
+    The settings not depending on any poll
+    """
+
+    notifications_email__research = serializers.BooleanField(required=False)
+    notifications_email__new_features = serializers.BooleanField(required=False)
 
 
 class TournesolUserSettingsSerializer(serializers.Serializer):
@@ -93,6 +99,7 @@ class TournesolUserSettingsSerializer(serializers.Serializer):
     """
 
     videos = VideosPollUserSettingsSerializer(required=False, context={"poll_name": "videos"})
+    general = GeneralUserSettingsSerializer(required=False, context={"context", "general"})
 
     def create(self, validated_data):
         return validated_data
