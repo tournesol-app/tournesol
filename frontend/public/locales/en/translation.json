@@ -143,6 +143,7 @@
     "research": "Research",
     "whitePaper": "White Paper",
     "publicDatabase": "Public database",
+    "tournesolTalksPage": "Tournesol Talks",
     "tournesolTalksMailingList": "Tournesol Talks - mailing list",
     "more": "More",
     "privacyPolicy": "Privacy policy"
@@ -808,6 +809,18 @@
     "yourAccountIsNowVerified": "Your account is now verified.",
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
+  },
+  "talksPage": {
+    "whatAreTournesolTalks": "What are Tournesol Talks?",
+    "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
+    "beInformedOfUpcomingEvents": "Be informed of upcoming events",
+    "title": "Tournesol Talks",
+    "upcomingEvents": "Upcoming event(s)",
+    "noTalksInTheNearFuture": "No Talks are planned in the near future.",
+    "pastEvents": "Past events",
+    "by": "By\u00a0{{speaker}}",
+    "replay": "Replay",
+    "join": "Join"
   },
   "myRatedVideosPage": {
     "title": "My rated videos"

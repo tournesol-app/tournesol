@@ -31,6 +31,7 @@ import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
 import { PollProvider } from './hooks/useCurrentPoll';
 import FAQ from './pages/faq/FAQ';
+import Talks from './pages/talks/Talks';
 import { scrollToTop } from './utils/ui';
 
 // The Analysis Page uses recharts which is a rather big library,
@@ -85,6 +86,9 @@ function App() {
             {/* About routes */}
             <PublicRoute path="/faq">
               <FAQ />
+            </PublicRoute>
+            <PublicRoute path="/talks">
+              <Talks />
             </PublicRoute>
             <PublicRoute path="/about/terms-of-service">
               <TermsOfService />
