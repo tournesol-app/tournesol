@@ -28,6 +28,19 @@ License v3.0 or later.
 
 See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 
+## GNU Lesser General Public License v3.0 or later
+
+![GNU AGPL v3.0 logo](./docs/logos/lgplv3-with-text-154x68.png)
+
+
+The following source code use the GNU Lesser General Public License v3.0 or
+later, which is a set of additional permissions added to the GNU General
+Public License.
+
+- [solidago](./solidago/README.md#copyright--license)
+
+See the official [GNU LGPL page][gnu-lgpl-3.0] for more information.
+
 ## Creative Commons Zero v1.0 Universal
 
 ![CC0 Universal logo](https://mirrors.creativecommons.org/presskit/buttons/80x15/png/cc-zero.png)
@@ -53,6 +66,7 @@ See the [human-readable disclaimer][odc-by-1.0-disclaimer], or the
 [full legal code][odc-by-1.0-fulllegalcode] for more information.
 
 [gnu-agpl-3.0]: https://www.gnu.org/licenses/agpl-3.0.en.html
+[gnu-lgpl-3.0]: https://www.gnu.org/licenses/lgpl-3.0.en.html
 [gnu-freesoftware]: https://www.gnu.org/philosophy/free-sw.en.html
 
 [cc0-1.0-disclaimer]: https://creativecommons.org/publicdomain/zero/1.0/
