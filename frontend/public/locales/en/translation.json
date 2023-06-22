@@ -147,6 +147,102 @@
     "more": "More",
     "privacyPolicy": "Privacy policy"
   },
+  "terms": {
+    "termsOfService": "Terms of Service",
+    "acceptableUse": {
+      "acceptableUse": "C. Acceptable Use",
+      "shortVersion": "While using the Service, you must follow the terms of this section, which include not harming other Users, not disturbing the Service, and having an authentic activity.",
+      "titles": {
+        "1ComplianceWithLawsAndRegulation": "1. Compliance with Laws and Regulations",
+        "2UserSafety": "2. User Safety",
+        "3InauthenticActivityAndSpam": "3. Inauthentic Activity and Spam"
+      },
+      "p": {
+        "complianceWithLawsAndRegulation": "You are responsible for using the Service in compliance with all applicable laws, regulations, and these Acceptable Use policies. ",
+        "userSafetyIntro": "We do not allow activities on the Platform, including using a public username, that:",
+        "isUnlawlfulOrPromoteUnlawful": "are unlawful or promotes unlawful activities;",
+        "isFalseInaccurateOrDeceptive": "are false, inaccurate, or intentionally deceptive information and likely to adversely affect the public interest (including health, safety, election integrity, and civic participation);",
+        "orGoesAgainstOurCodeOfConduct": "or go against our <2>Code of Conduct</2>.",
+        "inauthenticActivityAndSpamIntro": "Users are expected to have an authentic behaviour on the Platform: this means expressing their sincere opinions when submitting data, without any intent to deceive, manipulate, or misrepresent information. We do not allow inauthentic interactions the Platform; such as, but not limited to, using fake accounts, automating or coordinating inauthentic activity is not allowed."
+      }
+    },
+    "shortVersion": "Short version",
+    "accountTerms": {
+      "accountTerms": "B. Account Terms",
+      "shortVersion": "A human must create your Account; you must be 15 or over; you must provide a valid email address; and you may not have more than one Account. You alone are responsible for your Account and anything that happens while you are signed in to or using your Account. You are responsible for keeping your Account secure.",
+      "accountControls": "1. Account Controls",
+      "userRetainsUltimateAdministrativeControl": "Subject to these Terms, you retain ultimate administrative control over your personal Account.",
+      "accountRequirements": "2. Account Requirements",
+      "inOrderToCreateAccount": "In order to create an Account, the User must adhere to the following:",
+      "aUserMayNotUseMoreThanOneAccount": "A User may not use, or have more than one Account.",
+      "aUserLoginMayNotBeShared": "A User's Account may not be shared by multiple people.",
+      "aUserMustProvideAValidEmailAddress": "A User must provide a valid email address.",
+      "userMustBeALeast15": "User must not create an Account for use of any person under the age of 15. If the Tournesol Association learns of any User under the age of 15, it will terminate that User's account immediately. If User(s) are located in a country with a higher minimum age, they are responsible for complying with that country's laws.",
+      "accountSecurity": "3. Account Security",
+      "userIsResponsibleFor": "You are is responsible for: (i) all Content posted and activity that occurs under your Account; (ii) maintaining the security of your Account login credentials; and (iii) promptly notifying the Tournesol Association upon becoming aware of any unauthorized use of, or access to, the Service through your Account. The Association will not be liable for any loss or damage from the User's failure to comply with the Account Terms."
+    },
+    "cancellationAndTermination": {
+      "cancellationAndTermination": "E. Cancellation and Termination",
+      "shortVersion": "You may close your Account at any time. If you do, we'll treat your information responsibly.",
+      "titles": {
+        "1accountCancellation": "1. Account Cancellation",
+        "2uponCancellation": "2. Upon Cancellation",
+        "3theTournesolAssociationMayTerminate": "3. The Tournesol Association May Terminate"
+      },
+      "p": {
+        "accountCancellation": "It is your responsibility to properly cancel your Account. You can cancel your Account at any time by going into your settings from the personal navigation menu at the top of the screen. The Account page provides a simple, no questions asked cancellation button. We do not cancel accounts in response to an email.",
+        "weWillDelete": "We will delete your full profile and the Content you added within 7 days of cancellation or termination. Those information can not be recovered once your Account is canceled.",
+        "theAssociationWillCancel": "The Association will cancel your Account if it has not been activated withing the 7 days following its creation.",
+        "theTournesolAssociationHasTheRight": "The Association has the right to suspend or terminate your access to all or any part of the Service at any time, with or without notice, effective immediately, if any infringement to the Agreement by you is detected.",
+        "suspendAllAccessInCaseOfThreat": "The Association may suspend all accesses of all or a group of Users, to all or any part of the Service at any time, with or without notice, effective immediately, for an underterminate amount of time, if the security of the Users, their data, or the Service could be compromised by an event identified as a direct or an indirect threat."
+      }
+    },
+    "changesToTheseTerms": {
+      "changesToTheseTerms": "G. Changes to these Terms",
+      "shortVersion": "We want the Users to be informed of important changes to our terms, but some changes aren't that important. We don't want to bother you every time we fix a typo. So while we may modify this Agreement at any time, we will notify Users of any material changes and give you time to adjust to them.",
+      "weMayAmendTheseTermsAtAnyTime": "We may amend these Terms of Service at any time.",
+      "weWillNotifyTheUsers": "We will notify the Users of material changes to this Agreement, at least 30 days prior to the change taking effect by posting a notice on our Website or sending email to the email address specified in your Account. User's continued use of the Service after those 30 days constitutes agreement to those revisions of this Agreement. For any other non-impacting modifications, User's continued use of the Service constitutes agreement to our revisions of these Terms of Service. You can view all changes to these Terms in our <2>GitHub repository</2>."
+    },
+    "communicationsWithAssociation": {
+      "communicationsWithAssociation": "F. Communications with the Association",
+      "shortVersion": "We use email to stay in touch with the Users. You consent to receive emails required by the operation of the Service. We do not send additional emails without explicit consent.",
+      "titles": {
+        "1electronicCommunicationRequired": "1. Electronic Communication Required",
+        "2necessaryEmails": "2. Necessary Emails"
+      },
+      "p": {
+        "youConsentToReceiveEmails": "You (i) consent to receive communications from us in an electronic form via the email address you have submitted or via the Service; and (ii) agree that all Terms of Service, agreements, notices, disclosures, and other communications that we provide to you electronically satisfy any legal requirement that those communications would satisfy if they were on paper. This section does not affect your non-waivable rights.",
+        "necessaryEmails": "You acknowledge that some parts of the Service, like the Account activation process, or the password reset process, require emails to operate correctly, and consent to receive them.",
+        "additionalNecessaryEmails": "We also consider security notices, and impacting updates of this Agreement as necessary emails."
+      }
+    },
+    "definitions": {
+      "definitions": "A. Definitions",
+      "shortVersion": "We use these basic terms throughout the Agreement. This section clarifies their specific meaning.",
+      "account": "An \"Account\" represents Your legal relationship with the Tournesol Association. It represents an individual User's authorization to log in to and use the Service and serves as a User's identity on the Platform.",
+      "agreement": "The \"Agreement\" refers, collectively, to all the terms, conditions, notices contained or referenced in this document (the \"Terms of Service\" or the Terms) and all other operating rules, policies (including our <2>Privacy Policy</2>) and procedures that we may publish from time to time on the Website.",
+      "association": "\"Association\", \"Tournesol Association\", \"We\" and \"Us\" refer to the non-profit association that develops the Tournesol project.",
+      "content": "The \"Content\" refers to all different types of content that can be added by the User on the Platform, such as entities (like videos) and comparisons between entities.",
+      "service": "The \"Service\", sometimes called the \"Platform\", refers to the websites, browser extensions, applications, forms, surveys and services provided by the Tournesol Association in the context of the Tournesol project.",
+      "user": "The \"User\", \"You\", and \"Your\", refer to the individual person, that has visited or is using the Platform or Service; that accesses or uses any part of the Account. A User must be at least 15 years of age.",
+      "website": "The \"Website\" refers to the Tournesol project's website located at <1>tournesol.app</1>, and all content and services provided by the Association at or through the Website. It also refers to the Association-owned subdomains of tournesol.app, such as <3>api.tournesol.app</3>. Occasionally, websites owned by the Association may provide different or additional terms of service. If those additional terms conflict with this Agreement, the more specific terms apply to the relevant page or service."
+    },
+    "moderation": {
+      "moderation": "D. Moderation",
+      "shortVersion": "If an infringement to this Agreement is detected we may temporarily suspend or definitively terminate your Account.",
+      "p": {
+        "theTournesolAssociationWill": "The Tournesol Association will take actions in reponse to a violation of this Agreement.",
+        "dependingOnTheSeverityWe": "Depending on the violation severity and on how much the Service or its Users are impacted, we can take the following actions:",
+        "accountSuspension": "Account suspension;",
+        "accountTermination": "Account termination;",
+        "removalOfAddedContents": "removal of added Content."
+      }
+    },
+    "copying": {
+      "thisDocumentIsInspiredByTheGitHubTos": "This document is inspired by the GitHub web site's Terms of Services.",
+      "thePresentTextsAreDedicatedToThePublicDomain": "The present texts are dedicated to the Public Domain, as stated by the license <2>Creative Commons Zero v1.0 Universal (CC0 1.0)</2>."
+    }
+  },
   "menu": {
     "home": "Home",
     "homeAriaLabel": "Link to the home page",
@@ -421,7 +517,7 @@
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
     "trustedEmailDomains": "Email domains considered trustworthy",
-    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
+    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake Accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a domain considered trustworthy</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
     "trustedDomainsCurrentList": "Current list of domains considered trustworthy"
@@ -702,7 +798,7 @@
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithThePrivacyPolicy": "I have read and agree with the <2>privacy policy</2>."
+    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
   },
   "emailAddress": "Email address",
   "confirmYourPassword": "Confirm your password",
