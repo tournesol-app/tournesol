@@ -21,17 +21,24 @@ const TermsOfServicePage = () => {
         title={`${t('menu.about')} > ${t('terms.termsOfService')}`}
       />
       <ContentBox maxWidth="md">
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3" textAlign="center" mt={2} mb={4}>
           {t('terms.termsOfService')}
         </Typography>
         <Box display="flex" flexDirection="column" gap={4}>
-          <Definitions />
-          <AccountTerms />
-          <AcceptableUse />
-          <Moderation />
-          <CancellationAndTermination />
-          <CommunicationsWithAssociation />
-          <ChangesToTheseTerms />
+          {[
+            <Definitions key="section_a" />,
+            <AccountTerms key="section_b" />,
+            <AcceptableUse key="section_c" />,
+            <Moderation key="section_d" />,
+            <CancellationAndTermination key="section_e" />,
+            <CommunicationsWithAssociation key="section_f" />,
+            <ChangesToTheseTerms key="section_g" />,
+          ].map((section) => (
+            <Paper key={`paper_${section.key}`} sx={{ p: 2 }}>
+              {section}
+            </Paper>
+          ))}
+
           <Paper sx={{ p: 2 }}>
             <Typography paragraph>
               {t('terms.copying.thisDocumentIsInspiredByTheGitHubTos')}
