@@ -807,7 +807,7 @@
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de Confidentialité</6>."
+    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
   },
   "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",
