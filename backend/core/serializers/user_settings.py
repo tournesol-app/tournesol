@@ -27,6 +27,9 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
 
     rate_later__auto_remove = serializers.IntegerField(required=False)
 
+    notifications_email__research = serializers.BooleanField(required=False)
+    notifications_email__new_features = serializers.BooleanField(required=False)
+
     def validate_comparison__criteria_order(self, criteria):
         poll_name = self.context.get("poll_name", self._context["poll_name"])
         poll = Poll.objects.get(name=poll_name)
