@@ -1,7 +1,3 @@
-"""
-The `faq` app routes.
-"""
-
 from django.urls import path
 
 from backoffice.views import TalkEntryListView
