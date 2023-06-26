@@ -8,13 +8,13 @@ from rest_framework.test import APIClient
 from backoffice.models import TalkEntry
 
 
-def create_talk_entry(name, displayed):
+def create_talk_entry(name, private):
     return TalkEntry.objects.create(
         name=name,
         title=f"{name}_title",
         speakers=f"{name}_speakers",
         abstract=f"{name}_abstract",
-        display=displayed,
+        private=private,
     )
 
 
@@ -27,8 +27,8 @@ class TalksListViewTestCase(TestCase):
         self.client = APIClient()
         self.talk_base_url = "/backoffice/talks/"
 
-        self.talk_displayed = create_talk_entry("talk_displayed", displayed=True)
-        self.talk_hidden = create_talk_entry("talk_hidden", displayed=False)
+        self.talk_public = create_talk_entry("talk_public", private=False)
+        self.talk_private = create_talk_entry("talk_private", private=True)
 
     def test_anonymous_can_list(self):
         """
@@ -49,7 +49,7 @@ class TalksListViewTestCase(TestCase):
 
         self.assertEqual(len(results), 1)
 
-        talk_name = self.talk_displayed.name
+        talk_name = self.talk_public.name
         self.assertDictEqual(
             results[0],
             {
@@ -64,23 +64,23 @@ class TalksListViewTestCase(TestCase):
             },
         )
 
-    def test_list_only_displayed_talks(self):
+    def test_list_only_public_talks(self):
         """
-        Only displayed Talks can be listed.
+        Only public Talks can be listed.
         """
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["name"], self.talk_displayed.name)
+        self.assertEqual(results[0]["name"], self.talk_public.name)
 
-        self.talk_hidden.display = True
-        self.talk_hidden.save()
+        self.talk_private.private = False
+        self.talk_private.save()
 
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
         self.assertEqual(len(results), 2)
 
-        TalkEntry.objects.update(display=False)
+        TalkEntry.objects.update(private=True)
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
         self.assertEqual(len(results), 0)
@@ -92,26 +92,26 @@ class TalksListViewTestCase(TestCase):
         now = timezone.now()
         future = now + timedelta(days=1)
 
-        self.talk_displayed.date = now
-        self.talk_displayed.save()
+        self.talk_public.date = now
+        self.talk_public.save()
 
-        self.talk_hidden.display = True
-        self.talk_hidden.date = None
-        self.talk_hidden.save()
+        self.talk_private.private = False
+        self.talk_private.date = None
+        self.talk_private.save()
 
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
 
         # The Talks with no date should be listed last.
-        self.assertEqual(results[0]["name"], self.talk_displayed.name)
-        self.assertEqual(results[1]["name"], self.talk_hidden.name)
+        self.assertEqual(results[0]["name"], self.talk_public.name)
+        self.assertEqual(results[1]["name"], self.talk_private.name)
 
-        self.talk_hidden.date = future
-        self.talk_hidden.save()
+        self.talk_private.date = future
+        self.talk_private.save()
 
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
 
         # The Talks should be ordered by date desc.
-        self.assertEqual(results[0]["name"], self.talk_hidden.name)
-        self.assertEqual(results[1]["name"], self.talk_displayed.name)
+        self.assertEqual(results[0]["name"], self.talk_private.name)
+        self.assertEqual(results[1]["name"], self.talk_public.name)

@@ -40,8 +40,8 @@ class TalkEntry(models.Model):
         null=True,
         blank=True,
     )
-    display = models.BooleanField(
-        help_text="If False, the Talk should not be returned by the API.",
+    private = models.BooleanField(
+        help_text="If True, the Talk should not be returned by the API.",
         default=False
     )
 
