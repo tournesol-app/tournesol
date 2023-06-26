@@ -28,6 +28,10 @@ import { SettingsSection } from 'src/components';
 import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
+/**
+ * Display a form allowing the logged users to update their general and the
+ * `videos` poll preferences.
+ */
 const TournesolUserSettingsForm = () => {
   const pollName = YOUTUBE_POLL_NAME;
 
