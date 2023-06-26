@@ -63,7 +63,7 @@ class TalkEntry(models.Model):
 
     def date_as_tz_europe_paris(self) -> Optional[datetime.datetime]:
         if self.date:
-            return self.date.astimezone(ZoneInfo("Europe/Paris"))
+            return self.date.astimezone(ZoneInfo("Europe/Paris")).strftime("%Y-%m-%dT%H:%M:%S%z")
         return None
 
     def html_youtube_link(self):
