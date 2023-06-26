@@ -460,6 +460,10 @@
       "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
     }
   },
+  "generalUserSettings": {
+    "notifications" : "Notifications",
+    "notificationsEmailResearch": "Receive notifications on research news by email."
+  },
   "username": "Username",
   "metrics": {
     "evolutionDuringTheLast30Days": "Evolution during the last 30 days.",
@@ -786,7 +790,8 @@
   "preferences": {
     "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences.",
     "preferences": "Preferences",
-    "preferencesRegarding": "Preferences regarding:"
+    "preferencesRegarding": "Preferences regarding:",
+    "generalPreferences": "General preferences"
   },
   "poll": {
     "videos": "videos",

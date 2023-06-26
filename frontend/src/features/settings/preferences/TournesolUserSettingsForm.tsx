@@ -27,6 +27,7 @@ import {
 import { LoaderWrapper, SettingsSection } from 'src/components';
 import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
+import GeneralSettingsForm from './GeneralSettingsForm';
 
 interface TournesolUserSettingsFormProps {
   loading: boolean;
@@ -47,6 +48,12 @@ const TournesolUserSettingsForm = ({
   const userSettings = useSelector(selectSettings).settings;
   const pollSettings = userSettings?.videos;
 
+  // General Settings
+  // Notifications
+  const [notificationsEmailResearch, setNotificationsEmailResearch] =
+    useState(true);
+
+  // Videos poll
   // Comparison
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
     pollSettings?.comparison__criteria_order ?? []
@@ -139,6 +146,17 @@ const TournesolUserSettingsForm = ({
   return (
     <>
       <form onSubmit={handleSubmit}>
+        <SettingsSection
+          title={t('preferences.generalPreferences')}
+          {...subSectionBreakpoints}
+        >
+          <LoaderWrapper isLoading={loading}>
+            <GeneralSettingsForm
+              notificationsEmailResearch={notificationsEmailResearch}
+              setNotificationsEmailResearch={setNotificationsEmailResearch}
+            />
+          </LoaderWrapper>
+        </SettingsSection>
         <SettingsSection
           title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
           {...subSectionBreakpoints}
