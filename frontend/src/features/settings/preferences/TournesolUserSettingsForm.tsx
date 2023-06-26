@@ -47,11 +47,15 @@ const TournesolUserSettingsForm = ({
 
   const userSettings = useSelector(selectSettings).settings;
   const pollSettings = userSettings?.videos;
+  const generalSettings = userSettings?.general;
 
   // General Settings
   // Notifications
-  const [notificationsEmailResearch, setNotificationsEmailResearch] =
-    useState(true);
+  const [notificationsEmailResearch, setNotificationsEmailResearch] = useState(
+    generalSettings?.notifications_email__research ?? true
+  );
+  const [notificationsEmailNewFeatures, setNotificationsEmailNewFeatures] =
+    useState(generalSettings?.notifications_email__new_features ?? true);
 
   // Videos poll
   // Comparison
@@ -106,7 +110,17 @@ const TournesolUserSettingsForm = ({
     if (pollSettings.recommendations__default_date != undefined) {
       setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
     }
-  }, [pollSettings]);
+    if (generalSettings?.notifications_email__research != undefined) {
+      setNotificationsEmailResearch(
+        generalSettings.notifications_email__research
+      );
+    }
+    if (generalSettings?.notifications_email__new_features != undefined) {
+      setNotificationsEmailNewFeatures(
+        generalSettings.notifications_email__new_features
+      );
+    }
+  }, [generalSettings, pollSettings]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -122,6 +136,10 @@ const TournesolUserSettingsForm = ({
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
+          },
+          ['general']: {
+            notifications_email__research: notificationsEmailResearch,
+            notifications_email__new_features: notificationsEmailNewFeatures,
           },
         },
       }).catch((reason: ApiError) => {
