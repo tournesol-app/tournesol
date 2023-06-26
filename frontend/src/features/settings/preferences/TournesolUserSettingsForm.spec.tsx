@@ -22,7 +22,7 @@ import {
   TournesolUserSettings,
 } from 'src/services/openapi';
 
-import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
+import TournesolUserSettingsForm from './TournesolUserSettingsForm';
 
 interface MockState {
   token: LoginState;
@@ -116,7 +116,7 @@ describe('GenericPollUserSettingsForm', () => {
               <MemoryRouter initialEntries={['settings/preferences']}>
                 <Switch>
                   <Route path="settings/preferences">
-                    <VideosPollUserSettingsForm />
+                    <TournesolUserSettingsForm loading={false} />
                   </Route>
                 </Switch>
               </MemoryRouter>

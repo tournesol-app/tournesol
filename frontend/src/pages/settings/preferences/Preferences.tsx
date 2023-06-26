@@ -4,22 +4,16 @@ import { useTranslation } from 'react-i18next';
 
 import { Grid } from '@mui/material';
 
-import {
-  ContentBox,
-  ContentHeader,
-  LoaderWrapper,
-  SettingsSection,
-} from 'src/components';
+import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks';
-import VideosPollUserSettingsForm from 'src/features/settings/preferences/VideosPollUserSettingsForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
 import {
   mainSectionBreakpoints,
   settingsMenuBreakpoints,
-  subSectionBreakpoints,
 } from 'src/pages/settings/layout';
 import { UsersService } from 'src/services/openapi';
+import TournesolUserSettingsForm from 'src/features/settings/preferences/TournesolUserSettingsForm';
 
 const PreferencePage = () => {
   const { t } = useTranslation();
@@ -72,16 +66,7 @@ const PreferencePage = () => {
             alignItems="stretch"
             {...mainSectionBreakpoints}
           >
-            <SettingsSection
-              title={`${t('preferences.preferencesRegarding')} ${t(
-                'poll.videos'
-              )}`}
-              {...subSectionBreakpoints}
-            >
-              <LoaderWrapper isLoading={loading}>
-                <VideosPollUserSettingsForm />
-              </LoaderWrapper>
-            </SettingsSection>
+            <TournesolUserSettingsForm loading={loading} />
           </Grid>
         </Grid>
       </ContentBox>
