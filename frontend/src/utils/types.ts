@@ -122,6 +122,6 @@ export type SelectablePoll = {
  *  const {name: pollName} = useCurrentPoll();
  *  const userSettings = useSelector(selectSettings).settings;
  *
- *  const displayThat = userSettings?.[pollName as TournesolUserSettingsKeys]?.displayThat ?? true;
+ *  const displayThat = userSettings?.[pollName as PollUserSettingsKeys]?.displayThat ?? true;
  */
-export type TournesolUserSettingsKeys = keyof TournesolUserSettings;
+export type PollUserSettingsKeys = keyof Omit<TournesolUserSettings, 'general'>;
