@@ -3,6 +3,10 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Alert, Grid, Typography } from '@mui/material';
 
+<<<<<<< HEAD
+=======
+import { useScrollToLocation } from 'src/hooks';
+>>>>>>> 347087f4 (move VideosPollUserSettingsForm in TournesolUserSettingsForm which contains all preferences)
 import {
   ApiError,
   BlankEnum,
@@ -57,6 +61,7 @@ const VideosPollUserSettingsForm = ({
 
   const { t } = useTranslation();
 
+<<<<<<< HEAD
   return (
     <Grid container spacing={4} direction="column" alignItems="stretch">
       <Grid item>
@@ -72,6 +77,32 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       {/*
+=======
+  useScrollToLocation();
+
+  return (
+    <>
+      <Grid
+        container
+        spacing={4}
+        mb={4}
+        direction="column"
+        alignItems="stretch"
+      >
+        <Grid item>
+          <Typography id="comparison_page" variant="h6">
+            {t('pollUserSettingsForm.comparisonPage')}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <WeeklyCollectiveGoalDisplayField
+            value={compUiWeeklyColGoalDisplay}
+            onChange={setCompUiWeeklyColGoalDisplay}
+            pollName={pollName}
+          />
+        </Grid>
+        {/*
+>>>>>>> 347087f4 (move VideosPollUserSettingsForm in TournesolUserSettingsForm which contains all preferences)
           Ideally the following field could be displayed under the title
           Comparison, instead of Comparison (page). Updating the optinal
           criteria displayed by default will affect all comparison UIs and not
@@ -130,7 +161,11 @@ const VideosPollUserSettingsForm = ({
           pollName={pollName}
         />
       </Grid>
+<<<<<<< HEAD
     </Grid>
+=======
+    </>
+>>>>>>> 347087f4 (move VideosPollUserSettingsForm in TournesolUserSettingsForm which contains all preferences)
   );
 };
 

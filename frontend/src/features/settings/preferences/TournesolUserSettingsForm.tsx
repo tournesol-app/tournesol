@@ -5,14 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Grid } from '@mui/material';
 import { Save } from '@mui/icons-material';
 
-import { SettingsSection } from 'src/components';
 import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
-import { useNotifications, useScrollToLocation } from 'src/hooks';
+import { useNotifications } from 'src/hooks';
 import { theme } from 'src/theme';
-import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import {
   ApiError,
   BlankEnum,
@@ -26,13 +24,17 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
+import { LoaderWrapper, SettingsSection } from 'src/components';
+import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
-/**
- * Display a form allowing the logged users to update all their Tournesol
- * preferences.
- */
-const TournesolUserSettingsForm = () => {
+interface TournesolUserSettingsFormProps {
+  loading: boolean;
+}
+
+const TournesolUserSettingsForm = ({
+  loading,
+}: TournesolUserSettingsFormProps) => {
   const pollName = YOUTUBE_POLL_NAME;
 
   const { t } = useTranslation();
@@ -44,8 +46,6 @@ const TournesolUserSettingsForm = () => {
 
   const userSettings = useSelector(selectSettings).settings;
   const pollSettings = userSettings?.videos;
-
-  useScrollToLocation();
 
   // Comparison
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
@@ -137,33 +137,35 @@ const TournesolUserSettingsForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <SettingsSection
-        title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
-        {...subSectionBreakpoints}
-      >
-        <VideosPollUserSettingsForm
-          compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
-          setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-          displayedCriteria={displayedCriteria}
-          setDisplayedCriteria={setDisplayedCriteria}
-          rateLaterAutoRemoval={rateLaterAutoRemoval}
-          setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-          recoDefaultUnsafe={recoDefaultUnsafe}
-          setRecoDefaultUnsafe={setRecoDefaultUnsafe}
-          recoDefaultUploadDate={recoDefaultUploadDate}
-          setRecoDefaultUploadDate={setRecoDefaultUploadDate}
-          apiErrors={apiErrors}
-        />
-      </SettingsSection>
-      <Box
-        position="sticky"
-        bottom={theme.spacing(2)}
-        zIndex={theme.zIndex.fab}
-        bgcolor="#fafafa"
-      >
-        <Grid container>
-          <Grid item {...subSectionBreakpoints}>
+    <>
+      <form onSubmit={handleSubmit}>
+        <SettingsSection
+          title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
+          {...subSectionBreakpoints}
+        >
+          <LoaderWrapper isLoading={loading}>
+            <VideosPollUserSettingsForm
+              compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
+              setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+              displayedCriteria={displayedCriteria}
+              setDisplayedCriteria={setDisplayedCriteria}
+              rateLaterAutoRemoval={rateLaterAutoRemoval}
+              setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+              recoDefaultUnsafe={recoDefaultUnsafe}
+              setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+              recoDefaultUploadDate={recoDefaultUploadDate}
+              setRecoDefaultUploadDate={setRecoDefaultUploadDate}
+              apiErrors={apiErrors}
+            />
+          </LoaderWrapper>
+        </SettingsSection>
+        <Box
+          position="sticky"
+          bottom={theme.spacing(2)}
+          zIndex={theme.zIndex.fab}
+          bgcolor="#fafafa"
+        >
+          <Grid position="sticky" {...subSectionBreakpoints}>
             <Button
               fullWidth
               type="submit"
@@ -175,9 +177,9 @@ const TournesolUserSettingsForm = () => {
               {t('pollUserSettingsForm.updatePreferences')}
             </Button>
           </Grid>
-        </Grid>
-      </Box>
-    </form>
+        </Box>
+      </form>
+    </>
   );
 };
 
