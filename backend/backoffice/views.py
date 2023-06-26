@@ -7,7 +7,7 @@ from backoffice.serializers import TalkEntrySerializer
 
 @extend_schema_view(
     get=extend_schema(
-        description="List all public Talks.",
+        description="List all scheduled public Talks.",
     ),
 )
 class TalkEntryListView(ListAPIView):
@@ -16,5 +16,5 @@ class TalkEntryListView(ListAPIView):
     serializer_class = TalkEntrySerializer
 
     def get_queryset(self):
-        qst = TalkEntry.objects.all().filter(private=False, date__isnull=False).order_by("-date")
+        qst = TalkEntry.objects.all().filter(public=True, date__isnull=False).order_by("-date")
         return qst

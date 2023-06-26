@@ -9,14 +9,14 @@ from core.utils.time import time_ago, time_ahead
 from tournesol.tests.utils.mock_now import MockNow
 
 
-def create_talk_entry(name, date, private):
+def create_talk_entry(name, date, public):
     return TalkEntry.objects.create(
         name=name,
         date=date,
         title=f"{name}_title",
         speakers=f"{name}_speakers",
         abstract=f"{name}_abstract",
-        private=private,
+        public=public,
     )
 
 
@@ -31,10 +31,10 @@ class TalksListViewTestCase(TestCase):
         self.talk_base_url = "/backoffice/talks/"
 
         self.talk_public = create_talk_entry(
-            "talk_public", date=time_ago(days=10), private=False
+            "talk_public", date=time_ago(days=10), public=True
         )
         self.talk_private = create_talk_entry(
-            "talk_private", date=time_ahead(days=10), private=True
+            "talk_private", date=time_ahead(days=10), public=False
         )
 
     def test_anonymous_can_list(self):
@@ -81,14 +81,14 @@ class TalksListViewTestCase(TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["name"], self.talk_public.name)
 
-        self.talk_private.private = False
+        self.talk_private.public = True
         self.talk_private.save()
 
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
         self.assertEqual(len(results), 2)
 
-        TalkEntry.objects.update(private=True)
+        TalkEntry.objects.update(public=False)
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
         self.assertEqual(len(results), 0)
@@ -97,7 +97,7 @@ class TalksListViewTestCase(TestCase):
         """
         Only scheduled Talks can be listed.
         """
-        TalkEntry.objects.update(private=False)
+        TalkEntry.objects.update(public=True)
         TalkEntry.objects.update(date=None)
 
         response = self.client.get(self.talk_base_url)
@@ -109,7 +109,7 @@ class TalksListViewTestCase(TestCase):
         The Talks should be ordered by date in the descending order.
         """
 
-        self.talk_private.private = False
+        self.talk_private.public = True
         self.talk_private.save()
 
         response = self.client.get(self.talk_base_url)
