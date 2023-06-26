@@ -12,7 +12,7 @@ const PrivacyPolicyPage = () => {
         title={`${t('menu.about')} > ${t('privacyPolicy.privacyPolicy')}`}
       />
       <ContentBox maxWidth="md">
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3" textAlign="center" mt={2} mb={4}>
           {t('privacyPolicy.privacyPolicy')}
         </Typography>
         <Box display="flex" flexDirection="column" gap={4}>
