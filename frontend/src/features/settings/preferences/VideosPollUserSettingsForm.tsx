@@ -62,7 +62,7 @@ const VideosPollUserSettingsForm = ({
   useScrollToLocation();
 
   return (
-    <Grid container spacing={4} mb={4} direction="column" alignItems="stretch">
+    <Grid container spacing={4} direction="column" alignItems="stretch">
       <Grid item>
         <Typography id="comparison_page" variant="h6">
           {t('pollUserSettingsForm.comparisonPage')}
