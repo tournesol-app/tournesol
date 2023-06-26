@@ -59,13 +59,7 @@ const PreferencePage = () => {
           <Grid item {...settingsMenuBreakpoints}>
             <SettingsMenu />
           </Grid>
-          <Grid
-            container
-            item
-            direction="column"
-            alignItems="stretch"
-            {...mainSectionBreakpoints}
-          >
+          <Grid item {...mainSectionBreakpoints}>
             <LoaderWrapper isLoading={loading}>
               <TournesolUserSettingsForm />
             </LoaderWrapper>

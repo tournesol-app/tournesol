@@ -135,33 +135,33 @@ const TournesolUserSettingsForm = () => {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <SettingsSection
-          title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
-          {...subSectionBreakpoints}
-        >
-          <VideosPollUserSettingsForm
-            compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
-            setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-            displayedCriteria={displayedCriteria}
-            setDisplayedCriteria={setDisplayedCriteria}
-            rateLaterAutoRemoval={rateLaterAutoRemoval}
-            setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-            recoDefaultUnsafe={recoDefaultUnsafe}
-            setRecoDefaultUnsafe={setRecoDefaultUnsafe}
-            recoDefaultUploadDate={recoDefaultUploadDate}
-            setRecoDefaultUploadDate={setRecoDefaultUploadDate}
-            apiErrors={apiErrors}
-          />
-        </SettingsSection>
-        <Box
-          position="sticky"
-          bottom={theme.spacing(2)}
-          zIndex={theme.zIndex.fab}
-          bgcolor="#fafafa"
-        >
-          <Grid position="sticky" {...subSectionBreakpoints}>
+    <form onSubmit={handleSubmit}>
+      <SettingsSection
+        title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
+        {...subSectionBreakpoints}
+      >
+        <VideosPollUserSettingsForm
+          compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
+          setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+          displayedCriteria={displayedCriteria}
+          setDisplayedCriteria={setDisplayedCriteria}
+          rateLaterAutoRemoval={rateLaterAutoRemoval}
+          setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+          recoDefaultUnsafe={recoDefaultUnsafe}
+          setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+          recoDefaultUploadDate={recoDefaultUploadDate}
+          setRecoDefaultUploadDate={setRecoDefaultUploadDate}
+          apiErrors={apiErrors}
+        />
+      </SettingsSection>
+      <Box
+        position="sticky"
+        bottom={theme.spacing(2)}
+        zIndex={theme.zIndex.fab}
+        bgcolor="#fafafa"
+      >
+        <Grid container>
+          <Grid item {...subSectionBreakpoints}>
             <Button
               fullWidth
               type="submit"
@@ -173,9 +173,9 @@ const TournesolUserSettingsForm = () => {
               {t('pollUserSettingsForm.updatePreferences')}
             </Button>
           </Grid>
-        </Box>
-      </form>
-    </>
+        </Grid>
+      </Box>
+    </form>
   );
 };
 
