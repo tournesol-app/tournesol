@@ -52,6 +52,8 @@ const TournesolUserSettingsForm = ({
   // Notifications
   const [notificationsEmailResearch, setNotificationsEmailResearch] =
     useState(true);
+  const [notificationsEmailNewFeatures, setNotificationsEmailNewFeatures] =
+    useState(true);
 
   // Videos poll
   // Comparison
@@ -154,6 +156,10 @@ const TournesolUserSettingsForm = ({
             <GeneralSettingsForm
               notificationsEmailResearch={notificationsEmailResearch}
               setNotificationsEmailResearch={setNotificationsEmailResearch}
+              notificationsEmailNewFeatures={notificationsEmailNewFeatures}
+              setNotificationsEmailNewFeatures={
+                setNotificationsEmailNewFeatures
+              }
             />
           </LoaderWrapper>
         </SettingsSection>

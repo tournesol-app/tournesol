@@ -8,6 +8,8 @@ import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeature
 interface GeneralSettingsFormProps {
   notificationsEmailResearch: boolean;
   setNotificationsEmailResearch: (target: boolean) => void;
+  notificationsEmailNewFeatures: boolean;
+  setNotificationsEmailNewFeatures: (target: boolean) => void;
 }
 
 /**
@@ -16,6 +18,8 @@ interface GeneralSettingsFormProps {
 const GeneralSettingsForm = ({
   notificationsEmailResearch,
   setNotificationsEmailResearch,
+  notificationsEmailNewFeatures,
+  setNotificationsEmailNewFeatures,
 }: GeneralSettingsFormProps) => {
   const { t } = useTranslation();
 
@@ -41,8 +45,8 @@ const GeneralSettingsForm = ({
         </Grid>
         <Grid item>
           <NotificationsEmailNewFeatures
-            value={notificationsEmailResearch}
-            onChange={setNotificationsEmailResearch}
+            value={notificationsEmailNewFeatures}
+            onChange={setNotificationsEmailNewFeatures}
           />
         </Grid>
       </Grid>
