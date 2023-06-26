@@ -3,7 +3,6 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Alert, Grid, Typography } from '@mui/material';
 
-import { useScrollToLocation } from 'src/hooks';
 import {
   ApiError,
   BlankEnum,
@@ -58,8 +57,6 @@ const VideosPollUserSettingsForm = ({
   const pollName = YOUTUBE_POLL_NAME;
 
   const { t } = useTranslation();
-
-  useScrollToLocation();
 
   return (
     <Grid container spacing={4} direction="column" alignItems="stretch">

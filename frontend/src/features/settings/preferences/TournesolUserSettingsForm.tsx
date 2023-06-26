@@ -9,7 +9,7 @@ import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
-import { useNotifications } from 'src/hooks';
+import { useNotifications, useScrollToLocation } from 'src/hooks';
 import { theme } from 'src/theme';
 import {
   ApiError,
@@ -44,6 +44,8 @@ const TournesolUserSettingsForm = () => {
 
   const userSettings = useSelector(selectSettings).settings;
   const pollSettings = userSettings?.videos;
+
+  useScrollToLocation();
 
   // Comparison
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
