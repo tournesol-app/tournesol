@@ -468,6 +468,10 @@
       "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
     }
   },
+  "generalUserSettings": {
+    "notifications" : "Notifications",
+    "notificationsEmailResearch": "Recevoir les notifications de nouvelles recherches par mail."
+  },
   "username": "Nom d'utilisateur",
   "metrics": {
     "evolutionDuringTheLast30Days": "Évolution au cours des 30 derniers jours.",
@@ -795,7 +799,8 @@
   "preferences": {
     "errorOccurredWhileRetrievingPreferences": "Désolé, une erreur est survenue, impossible de récupérer vos préférences.",
     "preferences": "Préférences",
-    "preferencesRegarding": "Préférences concernant :"
+    "preferencesRegarding": "Préférences concernant :",
+    "generalPreferences": "Préférences générales"
   },
   "poll": {
     "videos": "vidéos",
