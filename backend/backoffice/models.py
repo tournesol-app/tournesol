@@ -4,16 +4,19 @@ from zoneinfo import ZoneInfo
 
 from django.db import models
 from django.utils.html import format_html
+from django.utils.text import slugify
 
 
 class TalkEntry(models.Model):
     title = models.CharField(
         help_text="The title of the Talk.",
+        unique=True,
         max_length=255,
     )
     name = models.SlugField(
+        help_text="Used as an URL slug. Leave it blank to automatically build it from the title.",
+        blank=True,
         unique=True,
-        help_text="Unique identifier of the Talk (usable as an URL slug).",
     )
     date = models.DateTimeField(
         help_text="Date and time of the Talk (please mind the server time zone).",
@@ -41,8 +44,7 @@ class TalkEntry(models.Model):
         blank=True,
     )
     private = models.BooleanField(
-        help_text="If True, the Talk should not be returned by the API.",
-        default=False
+        help_text="If True, the Talk should not be returned by the API.", default=False
     )
 
     class Meta:
@@ -51,11 +53,17 @@ class TalkEntry(models.Model):
         verbose_name_plural = "Talk Entries"
 
     def __str__(self) -> str:
-        return self.name
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = slugify(self.title)
+
+        super().save(*args, **kwargs)
 
     def date_as_tz_europe_paris(self) -> Optional[datetime.datetime]:
         if self.date:
-            return self.date.astimezone(ZoneInfo('Europe/Paris'))
+            return self.date.astimezone(ZoneInfo("Europe/Paris"))
         return None
 
     def html_youtube_link(self):
