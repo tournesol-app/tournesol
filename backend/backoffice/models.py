@@ -1,4 +1,3 @@
-import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -61,7 +60,7 @@ class TalkEntry(models.Model):
 
         super().save(*args, **kwargs)
 
-    def date_as_tz_europe_paris(self) -> Optional[datetime.datetime]:
+    def date_as_tz_europe_paris(self) -> Optional[str]:
         if self.date:
             return self.date.astimezone(ZoneInfo("Europe/Paris")).strftime("%Y-%m-%dT%H:%M:%S%z")
         return None
