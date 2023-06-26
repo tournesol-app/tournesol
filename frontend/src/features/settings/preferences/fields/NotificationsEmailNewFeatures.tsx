@@ -3,15 +3,15 @@ import { useTranslation } from 'react-i18next';
 
 import { FormControlLabel, Switch } from '@mui/material';
 
-interface NotificationsEmailResearchProps {
+interface NotificationsEmailNewFeaturesProps {
   value: boolean;
   onChange: (target: boolean) => void;
 }
 
-const NotificationsEmailResearch = ({
+const NotificationsEmailNewFeatures = ({
   value,
   onChange,
-}: NotificationsEmailResearchProps) => {
+}: NotificationsEmailNewFeaturesProps) => {
   const { t } = useTranslation();
 
   return (
@@ -25,9 +25,9 @@ const NotificationsEmailResearch = ({
           color="secondary"
         />
       }
-      label={t('generalUserSettings.notificationsEmailResearch')}
+      label={t('generalUserSettings.notificationsEmailNewFeatures')}
     />
   );
 };
 
-export default NotificationsEmailResearch;
+export default NotificationsEmailNewFeatures;
