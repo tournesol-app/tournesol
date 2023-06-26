@@ -47,7 +47,7 @@ class TalkEntry(models.Model):
     )
 
     class Meta:
-        ordering = ["date"]
+        ordering = ["-date"]
         verbose_name = "Talk Entry"
         verbose_name_plural = "Talk Entries"
 
