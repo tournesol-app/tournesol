@@ -4,16 +4,16 @@ import { useTranslation } from 'react-i18next';
 
 import { Grid } from '@mui/material';
 
-import { ContentBox, ContentHeader } from 'src/components';
+import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import { useNotifications } from 'src/hooks';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
+import TournesolUserSettingsForm from 'src/features/settings/preferences/TournesolUserSettingsForm';
 import { replaceSettings } from 'src/features/settings/userSettingsSlice';
 import {
   mainSectionBreakpoints,
   settingsMenuBreakpoints,
 } from 'src/pages/settings/layout';
 import { UsersService } from 'src/services/openapi';
-import TournesolUserSettingsForm from 'src/features/settings/preferences/TournesolUserSettingsForm';
 
 const PreferencePage = () => {
   const { t } = useTranslation();
@@ -66,7 +66,9 @@ const PreferencePage = () => {
             alignItems="stretch"
             {...mainSectionBreakpoints}
           >
-            <TournesolUserSettingsForm loading={loading} />
+            <LoaderWrapper isLoading={loading}>
+              <TournesolUserSettingsForm />
+            </LoaderWrapper>
           </Grid>
         </Grid>
       </ContentBox>

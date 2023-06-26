@@ -24,17 +24,11 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
-import { LoaderWrapper, SettingsSection } from 'src/components';
+import { SettingsSection } from 'src/components';
 import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
-interface TournesolUserSettingsFormProps {
-  loading: boolean;
-}
-
-const TournesolUserSettingsForm = ({
-  loading,
-}: TournesolUserSettingsFormProps) => {
+const TournesolUserSettingsForm = () => {
   const pollName = YOUTUBE_POLL_NAME;
 
   const { t } = useTranslation();
@@ -143,21 +137,19 @@ const TournesolUserSettingsForm = ({
           title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
           {...subSectionBreakpoints}
         >
-          <LoaderWrapper isLoading={loading}>
-            <VideosPollUserSettingsForm
-              compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
-              setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-              displayedCriteria={displayedCriteria}
-              setDisplayedCriteria={setDisplayedCriteria}
-              rateLaterAutoRemoval={rateLaterAutoRemoval}
-              setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-              recoDefaultUnsafe={recoDefaultUnsafe}
-              setRecoDefaultUnsafe={setRecoDefaultUnsafe}
-              recoDefaultUploadDate={recoDefaultUploadDate}
-              setRecoDefaultUploadDate={setRecoDefaultUploadDate}
-              apiErrors={apiErrors}
-            />
-          </LoaderWrapper>
+          <VideosPollUserSettingsForm
+            compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
+            setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+            displayedCriteria={displayedCriteria}
+            setDisplayedCriteria={setDisplayedCriteria}
+            rateLaterAutoRemoval={rateLaterAutoRemoval}
+            setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+            recoDefaultUnsafe={recoDefaultUnsafe}
+            setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+            recoDefaultUploadDate={recoDefaultUploadDate}
+            setRecoDefaultUploadDate={setRecoDefaultUploadDate}
+            apiErrors={apiErrors}
+          />
         </SettingsSection>
         <Box
           position="sticky"

@@ -116,7 +116,7 @@ describe('GenericPollUserSettingsForm', () => {
               <MemoryRouter initialEntries={['settings/preferences']}>
                 <Switch>
                   <Route path="settings/preferences">
-                    <TournesolUserSettingsForm loading={false} />
+                    <TournesolUserSettingsForm />
                   </Route>
                 </Switch>
               </MemoryRouter>
