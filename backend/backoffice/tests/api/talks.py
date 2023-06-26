@@ -1,8 +1,4 @@
-"""
-All test cases of the `Talks` views.
-"""
 from datetime import timedelta
-from zoneinfo import ZoneInfo
 
 from django.utils import timezone
 from django.test import TestCase
