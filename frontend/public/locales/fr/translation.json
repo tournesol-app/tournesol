@@ -470,7 +470,8 @@
   },
   "generalUserSettings": {
     "notifications" : "Notifications",
-    "notificationsEmailResearch": "Recevoir les notifications de nouvelles recherches par mail."
+    "notificationsEmailResearch": "Recevoir les notifications sur les nouvelles recherches par mail.",
+    "notificationsEmailNewFeatures": "Recevoir les notifications des nouveautés par mail."
   },
   "username": "Nom d'utilisateur",
   "metrics": {

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Grid, Typography } from '@mui/material';
 import NotificationsEmailResearch from './fields/NotificationsEmailResearch';
+import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeatures';
 
 interface GeneralSettingsFormProps {
   notificationsEmailResearch: boolean;
@@ -34,6 +35,12 @@ const GeneralSettingsForm = ({
         </Grid>
         <Grid item>
           <NotificationsEmailResearch
+            value={notificationsEmailResearch}
+            onChange={setNotificationsEmailResearch}
+          />
+        </Grid>
+        <Grid item>
+          <NotificationsEmailNewFeatures
             value={notificationsEmailResearch}
             onChange={setNotificationsEmailResearch}
           />
