@@ -1,9 +1,10 @@
 """
-All test cases of the `faq` views.
+All test cases of the `Talks` views.
 """
-import datetime
+from datetime import timedelta
 from zoneinfo import ZoneInfo
 
+from django.utils import timezone
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -11,8 +12,14 @@ from rest_framework.test import APIClient
 from backoffice.models import TalkEntry
 
 
-def create_talk_entry(name):
-    return TalkEntry.objects.create(name=name)
+def create_talk_entry(name, displayed):
+    return TalkEntry.objects.create(
+        name=name,
+        title=f"{name}_title",
+        speakers=f"{name}_speakers",
+        abstract=f"{name}_abstract",
+        display=displayed,
+    )
 
 
 class TalksListViewTestCase(TestCase):
@@ -20,103 +27,95 @@ class TalksListViewTestCase(TestCase):
     TestCase of the `TalkEntryListView` view.
     """
 
-    default_lang = "en"
-    available_lang = "fr"
-    unavailable_lang = "zz"
-
     def setUp(self):
         self.client = APIClient()
-        self.talk_base_url = "/talks/"
+        self.talk_base_url = "/backoffice/talks/"
 
-        self.talk = create_talk_entry("the_first_talk")
+        self.talk_displayed = create_talk_entry("talk_displayed", displayed=True)
+        self.talk_hidden = create_talk_entry("talk_hidden", displayed=False)
 
-    def test_anon_200_list(self):
+    def test_anonymous_can_list(self):
         """
-        An anonymous user can access the Talk.
+        An anonymous user can list the Talks.
         """
         response = self.client.get(self.talk_base_url)
+        results = response.data["results"]
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(results), 1)
 
-    def test_list_talks_are_not_display(self):
+    def test_list_return_all_expected_fields(self):
+        """
+        Only the expected fields are returned by the API.
+        """
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
 
-        # all talks are display by defaults
-        self.assertEqual(0, len(results))
+        self.assertEqual(len(results), 1)
 
-    def test_list_talks_displayed(self):
-
-        self.talk.display = True
-        self.talk.save()
-
-        response = self.client.get(self.talk_base_url)
-        results = response.data["results"]
-
-        # all talks are display by defaults
-        self.assertEqual(1, len(results))
+        talk_name = self.talk_displayed.name
         self.assertDictEqual(
             results[0],
             {
-                "name": self.talk.name,
-                "title": None,
-                "abstract": None,
+                "name": talk_name,
+                "title": f"{talk_name}_title",
+                "date": None,
+                "date_as_tz_europe_paris": None,
+                "speakers": f"{talk_name}_speakers",
+                "abstract": f"{talk_name}_abstract",
                 "invitation_link": None,
                 "youtube_link": None,
-                "speakers": None,
-                "date": None,
-                "date_gmt": None
             },
         )
 
-    def test_list_talks_displayed_with_data(self):
-        self.talk.display = True
-        self.talk.save()
+    def test_list_only_displayed_talks(self):
+        """
+        Only displayed Talks can be listed.
+        """
+        response = self.client.get(self.talk_base_url)
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["name"], self.talk_displayed.name)
 
-        self.other_talk = create_talk_entry("the_second_talk")
-        self.other_talk.title = 'a title'
-        self.other_talk.abstract = 'an abstract'
-        self.other_talk.invitation_link = 'https://wikipedia.fr'
-        self.other_talk.youtube_link = 'https://you.tube'
-        self.other_talk.speakers = 'a speaker'
+        self.talk_hidden.display = True
+        self.talk_hidden.save()
 
-        # set a date server in utc and get date in time zone Europe Paris in date_gmt
-        date_server = datetime.datetime.strptime('09/19/22 13:55:26', '%m/%d/%y %H:%M:%S').astimezone(ZoneInfo('UTC'))
-        date_gmt = date_server.astimezone(ZoneInfo('Europe/Paris'))
+        response = self.client.get(self.talk_base_url)
+        results = response.data["results"]
+        self.assertEqual(len(results), 2)
 
-        self.other_talk.date = date_server
+        TalkEntry.objects.update(display=False)
+        response = self.client.get(self.talk_base_url)
+        results = response.data["results"]
+        self.assertEqual(len(results), 0)
 
-        self.other_talk.display = True
-        self.other_talk.save()
+    def test_list_ordering(self):
+        """
+        The Talks should be ordered by date in the descending order.
+        """
+        now = timezone.now()
+        future = now + timedelta(days=1)
+
+        self.talk_displayed.date = now
+        self.talk_displayed.save()
+
+        self.talk_hidden.display = True
+        self.talk_hidden.date = None
+        self.talk_hidden.save()
 
         response = self.client.get(self.talk_base_url)
         results = response.data["results"]
 
-        # all talks are display by defaults
-        self.assertEqual(2, len(results))
-        self.assertDictEqual(
-            results[0],
-            {
-                "name": self.other_talk.name,
-                "title": 'a title',
-                "abstract": 'an abstract',
-                "invitation_link": 'https://wikipedia.fr',
-                "youtube_link": 'https://you.tube',
-                "speakers": 'a speaker',
-                "date": date_server.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                "date_gmt": date_gmt.strftime('%Y-%m-%dT%H:%M:%S%z')
-            },
-        )
-        self.assertDictEqual(
-            results[1],
-            {
-                "name": self.talk.name,
-                "title": None,
-                "abstract": None,
-                "invitation_link": None,
-                "youtube_link": None,
-                "speakers": None,
-                "date": None,
-                "date_gmt": None
-            },
-        )
-        self.maxDiff = None
+        # The Talks with no date should be listed last.
+        self.assertEqual(results[0]["name"], self.talk_displayed.name)
+        self.assertEqual(results[1]["name"], self.talk_hidden.name)
+
+        self.talk_hidden.date = future
+        self.talk_hidden.save()
+
+        response = self.client.get(self.talk_base_url)
+        results = response.data["results"]
+
+        # The Talks should be ordered by date desc.
+        self.assertEqual(results[0]["name"], self.talk_hidden.name)
+        self.assertEqual(results[1]["name"], self.talk_displayed.name)
