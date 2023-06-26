@@ -1,7 +1,6 @@
 from zoneinfo import ZoneInfo
 
 from django.db import models
-
 from django.utils.html import format_html
 
 
@@ -52,17 +51,17 @@ class TalkEntry(models.Model):
         verbose_name = "Talk Entry"
         verbose_name_plural = "Talk Entries"
 
+    def __str__(self) -> str:
+        return self.name
+
     def get_date_gmt(self):
         """Return the date in time zone Europe/Paris."""
         if self.date:
             return self.date.astimezone(ZoneInfo('Europe/Paris')).strftime('%Y-%m-%dT%H:%M:%S%z')
         return None
 
-    def link_to_youtube(self):
+    def html_youtube_link(self):
         if not self.youtube_link:
             return None
 
         return format_html('<a href="{}" target="_blank">Play ▶</a>', self.youtube_link)
-
-    def __str__(self) -> str:
-        return self.name
