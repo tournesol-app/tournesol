@@ -7,8 +7,8 @@ import { Email } from '@mui/icons-material';
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import TalkEntryList from 'src/pages/talks/TalkEntryList';
-import { TalkEntry, TalksService } from 'src/mocks';
 import { tournesolTalksMailingListUrl } from 'src/utils/url';
+import { BackofficeService, TalkEntry } from 'src/services/openapi';
 
 interface SortedTalkAccumulator {
   past: TalkEntry[];
@@ -52,13 +52,13 @@ const Talks = () => {
 
   useEffect(() => {
     async function getTalksEntries() {
-      try {
-        const talks = TalksService.talksList();
+      const talks = await BackofficeService.backofficeTalksList({
+        limit: 100,
+      }).catch((reason) => {
+        contactAdministrator('error');
+      });
 
-        if (!talks.results || talks.results?.length === 0) {
-          return;
-        }
-
+      if (talks && talks.results) {
         const now = new Date();
 
         const sortedTalks = talks.results.reduce<{
@@ -66,6 +66,11 @@ const Talks = () => {
           future: TalkEntry[];
         }>(
           (acc: SortedTalkAccumulator, talk: TalkEntry) => {
+            // Do not display not scheduled Talk.
+            if (!talk.date) {
+              return acc;
+            }
+
             const talkDate = new Date(talk.date);
             if (talkDate < now) {
               acc.past.push(talk);
@@ -79,11 +84,6 @@ const Talks = () => {
 
         setPastTalks(sortedTalks.past);
         setUpcomingTalks(sortedTalks.future);
-
-        // TODO: when the talks API will be available, make this try/catch
-        // wrap only the API call, instead of the whole function.
-      } catch (error) {
-        contactAdministrator('error');
       }
     }
 

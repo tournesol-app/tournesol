@@ -1,17 +1,21 @@
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
-
-import { TalkEntry } from 'src/mocks';
-import { extractVideoId } from 'src/utils/video';
-import { Trans, useTranslation } from 'react-i18next';
 import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
+
+import { TalkEntry } from 'src/services/openapi';
+import { extractVideoId } from 'src/utils/video';
 
 const toPaddedString = (num: number): string => {
   return num.toString().padStart(2, '0');
 };
 
 function isPast(talk: TalkEntry) {
+  if (!talk.date) {
+    return false;
+  }
+
   return new Date(talk.date) < new Date();
 }
 
@@ -24,18 +28,18 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
   }
 
   let displayedDate;
-  const talkDate = new Date(talk.date);
+  const talkDate = talk.date ? new Date(talk.date) : undefined;
 
-  if (talk.date) {
+  if (talkDate) {
     displayedDate = `${talkDate.getUTCFullYear()}-${toPaddedString(
       talkDate.getUTCMonth() + 1
     )}-${toPaddedString(talkDate.getUTCDate())}`;
-  }
 
-  if (!isPast(talk)) {
-    displayedDate += ` ${toPaddedString(
-      talkDate.getUTCHours()
-    )}:${toPaddedString(talkDate.getUTCMinutes())} CET`;
+    if (!isPast(talk)) {
+      displayedDate += ` ${toPaddedString(
+        talkDate.getUTCHours()
+      )}:${toPaddedString(talkDate.getUTCMinutes())} CET`;
+    }
   }
 
   return (
@@ -75,9 +79,11 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
             )}
           </Typography>
         </Grid>
-        <Grid item>
-          <Typography variant="body1">{displayedDate}</Typography>
-        </Grid>
+        {displayedDate && (
+          <Grid item>
+            <Typography variant="body1">{displayedDate}</Typography>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );
@@ -142,7 +148,7 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
   const { t } = useTranslation();
 
   const talkIsPast = isPast(talk);
-  const abstractParagraphs = talk.abstract.split('\n');
+  const abstractParagraphs = talk.abstract ? talk.abstract.split('\n') : [];
 
   let actionLink;
   if (talkIsPast && talk.youtube_link) {
@@ -159,9 +165,9 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
       <Box p={2} sx={{ overflow: 'auto' }}>
         <TalkImagery talk={talk} />
         <Typography variant="h6" color="secondary" gutterBottom>
-          {talk.speaker && (
+          {talk.speakers && (
             <Trans t={t} i18nKey="talksPage.by">
-              By {{ speaker: talk.speaker }}
+              By {{ speaker: talk.speakers }}
             </Trans>
           )}
         </Typography>
