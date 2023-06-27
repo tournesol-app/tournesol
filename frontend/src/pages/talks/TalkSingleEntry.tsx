@@ -26,8 +26,7 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
 
   let displayedDatetime;
 
-  // We display the local date according to the Europe/Paris timezone. Be
-  // careful while manipulating local dates and times.
+  // We display the local date according to the Europe/Paris timezone.
   if (talk.date_as_tz_europe_paris) {
     const date = localDate(talk.date_as_tz_europe_paris);
     const time = localTime(talk.date_as_tz_europe_paris);
