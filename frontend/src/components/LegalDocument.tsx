@@ -7,7 +7,14 @@ interface LegalDocumentProps {
   mainTitle: string;
 }
 
-export const LegalDocument = ({ children, mainTitle }: LegalDocumentProps) => {
+/**
+ * A ContentBox with a pre-defined style to display legal documents such as
+ * the Terms of Service, the Privacy Policy and more.
+ */
+const ContentBoxLegalDocument = ({
+  children,
+  mainTitle,
+}: LegalDocumentProps) => {
   return (
     <ContentBox maxWidth="md">
       <Typography variant="h3" textAlign="center" mt={2} mb={4}>
@@ -23,3 +30,5 @@ export const LegalDocument = ({ children, mainTitle }: LegalDocumentProps) => {
 export const LegalPaper = ({ children }: { children: React.ReactNode }) => {
   return <Paper sx={{ p: 2 }}>{children}</Paper>;
 };
+
+export default ContentBoxLegalDocument;

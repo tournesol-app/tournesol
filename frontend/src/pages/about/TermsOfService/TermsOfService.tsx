@@ -3,7 +3,11 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Link, Typography } from '@mui/material';
 
-import { ContentHeader } from 'src/components';
+import {
+  ContentHeader,
+  ContentBoxLegalDocument,
+  LegalPaper,
+} from 'src/components';
 
 import AcceptableUse from './sections/AcceptableUse';
 import AccountTerms from './sections/AccountTerms';
@@ -12,7 +16,6 @@ import ChangesToTheseTerms from './sections/ChangesToTheseTerms';
 import CommunicationsWithAssociation from './sections/CommunicationsWithAssociation';
 import Definitions from './sections/Definitions';
 import Moderation from './sections/Moderation';
-import { LegalDocument, LegalPaper } from 'src/components/LegalDocument';
 
 const TermsOfServicePage = () => {
   const { t } = useTranslation();
@@ -21,7 +24,7 @@ const TermsOfServicePage = () => {
       <ContentHeader
         title={`${t('menu.about')} > ${t('terms.termsOfService')}`}
       />
-      <LegalDocument mainTitle={t('terms.termsOfService')}>
+      <ContentBoxLegalDocument mainTitle={t('terms.termsOfService')}>
         {[
           <Definitions key="section_a" />,
           <AccountTerms key="section_b" />,
@@ -60,7 +63,7 @@ const TermsOfServicePage = () => {
             </Trans>
           </Typography>
         </LegalPaper>
-      </LegalDocument>
+      </ContentBoxLegalDocument>
     </>
   );
 };

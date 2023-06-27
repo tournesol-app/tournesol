@@ -1,9 +1,12 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 
-import { ContentHeader } from 'src/components';
+import {
+  ContentHeader,
+  ContentBoxLegalDocument,
+  LegalPaper,
+} from 'src/components';
 import { useTranslation } from 'react-i18next';
-import { LegalDocument, LegalPaper } from 'src/components/LegalDocument';
 
 const PrivacyPolicyPage = () => {
   const { t } = useTranslation();
@@ -12,7 +15,7 @@ const PrivacyPolicyPage = () => {
       <ContentHeader
         title={`${t('menu.about')} > ${t('privacyPolicy.privacyPolicy')}`}
       />
-      <LegalDocument mainTitle={t('privacyPolicy.privacyPolicy')}>
+      <ContentBoxLegalDocument mainTitle={t('privacyPolicy.privacyPolicy')}>
         <LegalPaper>
           <Typography
             id="what-personal-data-tournesol-collects-and-why"
@@ -130,7 +133,7 @@ const PrivacyPolicyPage = () => {
             )}
           </Typography>
         </LegalPaper>
-      </LegalDocument>
+      </ContentBoxLegalDocument>
     </>
   );
 };
