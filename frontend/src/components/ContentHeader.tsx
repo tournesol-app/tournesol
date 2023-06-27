@@ -33,7 +33,9 @@ const ContentHeader = ({
     >
       <Grid container spacing={1} justifyContent="space-between">
         <Grid item>
-          <Typography variant="h4">{title}</Typography>
+          <Typography variant="h4" component="h2">
+            {title}
+          </Typography>
         </Grid>
         {/* The <ContentHeader> component could use a list of <Chip> instead
             of only one. */}
