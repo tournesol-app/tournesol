@@ -5,12 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Grid } from '@mui/material';
 import { Save } from '@mui/icons-material';
 
+import { SettingsSection } from 'src/components';
 import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
 import { useNotifications, useScrollToLocation } from 'src/hooks';
 import { theme } from 'src/theme';
+import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import {
   ApiError,
   BlankEnum,
@@ -24,13 +26,11 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
-import { SettingsSection } from 'src/components';
-import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
 /**
- * Display a form allowing the logged users to update their general and the
- * `videos` poll preferences.
+ * Display a form allowing the logged users to update all their Tournesol
+ * preferences.
  */
 const TournesolUserSettingsForm = () => {
   const pollName = YOUTUBE_POLL_NAME;

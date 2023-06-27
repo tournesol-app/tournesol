@@ -38,8 +38,7 @@ interface VideosPollUserSettingsFormProps {
 }
 
 /**
- * Display a form allowing the logged users to update their preferences for
- * the `videos` poll.
+ * Display a set of fields representing the preferences of the poll `videos`.
  */
 const VideosPollUserSettingsForm = ({
   compUiWeeklyColGoalDisplay,
