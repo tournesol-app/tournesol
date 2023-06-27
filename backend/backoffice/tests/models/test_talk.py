@@ -2,6 +2,9 @@
 All test cases of the `TalkEntry` model.
 """
 
+import random
+import string
+
 from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
@@ -11,7 +14,29 @@ from backoffice.models import TalkEntry
 from tournesol.tests.utils.mock_now import MockNow
 
 
-class TalkEntryTestCase(TestCase):
+class TalkEntryFieldsTestCase(TestCase):
+    """
+    This test case contains all tests related to the model fields and their
+    expected configuration.
+    """
+
+    def test_field_name_max_length(self):
+        """
+        The field `name` should be able to handle titles containing 255
+        characters.
+        """
+        talk = TalkEntry.objects.create(
+            title="".join(random.choice(string.ascii_lowercase) for i in range(255))
+        )
+        self.assertEqual(talk.name, slugify(talk.title))
+
+
+class TalkEntrySaveTestCase(TestCase):
+    """
+    This test case contains all tests related to behaviour of the model's
+    save() method.
+    """
+
     def test_save_name_is_automatically_generated(self):
         talk = TalkEntry.objects.create(title="The first talk")
         self.assertEqual(talk.name, slugify(talk.title))
@@ -25,6 +50,16 @@ class TalkEntryTestCase(TestCase):
 
         with self.assertRaises(IntegrityError):
             TalkEntry.objects.create(title="The second talk", name="the-first-talk")
+
+
+class TalkEntryMethodsTestCase(TestCase):
+    """
+    This test case contains all tests related to behaviour of the model's
+    methods.
+
+    See the `TalkEntrySaveTestCase` for the specific behaviour of the save()
+    method.
+    """
 
     @MockNow.Context()
     def test_date_as_tz_europe_paris(self):
