@@ -16,14 +16,15 @@ class TalkEntry(models.Model):
         help_text="Used as an URL slug. Leave it blank to automatically build it from the title.",
         blank=True,
         unique=True,
+        max_length=255,
     )
     date = models.DateTimeField(
-        help_text="Date and time of the Talk (please mind the server time zone).",
+        help_text="Date and time of the Talk according to the server time.",
         null=True,
         blank=True,
     )
     invitation_link = models.URLField(
-        help_text="Allow the users to join the Talk.",
+        help_text="Allows the users to join the Talk.",
         null=True,
         blank=True,
     )
