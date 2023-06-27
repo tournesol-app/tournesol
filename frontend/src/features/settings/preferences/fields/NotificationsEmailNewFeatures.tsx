@@ -23,6 +23,11 @@ const NotificationsEmailNewFeatures = ({
           onChange={() => onChange(!value)}
           size="medium"
           color="secondary"
+          inputProps={
+            {
+              'data-testid': `notifications_email__new_features`,
+            } as React.InputHTMLAttributes<HTMLInputElement>
+          }
         />
       }
       label={t('generalUserSettings.notificationsEmailNewFeatures')}

@@ -74,6 +74,10 @@ describe('GenericPollUserSettingsForm', () => {
             comparison_ui__weekly_collective_goal_display: 'NEVER',
             recommendations__default_unsafe: true,
           },
+          general: {
+            notifications_email__research: true,
+            notifications_email__new_features: true,
+          },
         },
       },
       { sendAsJson: true }
@@ -158,6 +162,12 @@ describe('GenericPollUserSettingsForm', () => {
     const recommendationsDefaultUnsafe = screen.getByTestId(
       'videos_recommendations__default_unsafe'
     );
+    const notificationsEmailResearch = screen.getByTestId(
+      'notifications_email__research'
+    );
+    const notificationsEmailNewFeatures = screen.getByTestId(
+      'notifications_email__new_features'
+    );
 
     const submit = screen.getByRole('button', { name: /update/i });
 
@@ -166,6 +176,8 @@ describe('GenericPollUserSettingsForm', () => {
       rateLaterAutoRemove,
       recommendationsDefaultDate,
       recommendationsDefaultUnsafe,
+      notificationsEmailResearch,
+      notificationsEmailNewFeatures,
       rendered,
       storeDispatchSpy,
       submit,
@@ -192,6 +204,8 @@ describe('GenericPollUserSettingsForm', () => {
         rateLaterAutoRemove,
         recommendationsDefaultDate,
         recommendationsDefaultUnsafe,
+        notificationsEmailResearch,
+        notificationsEmailNewFeatures,
         submit,
       } = await setup();
 
@@ -205,6 +219,8 @@ describe('GenericPollUserSettingsForm', () => {
         Recommendations_defaultDateEnum.MONTH
       );
       expect(recommendationsDefaultUnsafe).toHaveProperty('checked', false);
+      expect(notificationsEmailResearch).toHaveProperty('checked', false);
+      expect(notificationsEmailNewFeatures).toHaveProperty('checked', false);
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.change(compUiWeeklyColGoalDisplay, {
@@ -214,6 +230,8 @@ describe('GenericPollUserSettingsForm', () => {
         target: { value: Recommendations_defaultDateEnum.ALL_TIME },
       });
       fireEvent.click(recommendationsDefaultUnsafe);
+      fireEvent.click(notificationsEmailResearch);
+      fireEvent.click(notificationsEmailNewFeatures);
 
       expect(submit).toBeEnabled();
 
@@ -229,6 +247,8 @@ describe('GenericPollUserSettingsForm', () => {
         Recommendations_defaultDateEnum.ALL_TIME
       );
       expect(recommendationsDefaultUnsafe).toHaveProperty('checked', true);
+      expect(notificationsEmailResearch).toHaveProperty('checked', true);
+      expect(notificationsEmailNewFeatures).toHaveProperty('checked', true);
       expect(submit).toBeEnabled();
     });
 
@@ -242,6 +262,8 @@ describe('GenericPollUserSettingsForm', () => {
       const {
         rateLaterAutoRemove,
         recommendationsDefaultUnsafe,
+        notificationsEmailResearch,
+        notificationsEmailNewFeatures,
         storeDispatchSpy,
         submit,
       } = await setup();
@@ -249,6 +271,8 @@ describe('GenericPollUserSettingsForm', () => {
 
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.click(recommendationsDefaultUnsafe);
+      fireEvent.click(notificationsEmailResearch);
+      fireEvent.click(notificationsEmailNewFeatures);
 
       await act(async () => {
         fireEvent.click(submit);
@@ -263,6 +287,10 @@ describe('GenericPollUserSettingsForm', () => {
               ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
             rate_later__auto_remove: 16,
             recommendations__default_unsafe: true,
+          },
+          general: {
+            notifications_email__research: true,
+            notifications_email__new_features: true,
           },
         },
       });
