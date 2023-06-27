@@ -25,7 +25,7 @@ class TalkEntryAdmin(admin.ModelAdmin):
 
     @admin.display(description="Time (Europe/Paris)", ordering="date")
     def get_human_time_europe_paris(self, obj):
-        human_format = "%Y-%m-%d %H:%M"
+        human_format = "%d of %B %Y %H:%M (%Z)"
 
         if not obj.date:
             return None
