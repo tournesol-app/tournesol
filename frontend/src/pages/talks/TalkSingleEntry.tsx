@@ -5,11 +5,8 @@ import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
 import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
 
 import { TalkEntry } from 'src/services/openapi';
+import { localDate, localTime } from 'src/utils/datetime';
 import { extractVideoId } from 'src/utils/video';
-
-const toPaddedString = (num: number): string => {
-  return num.toString().padStart(2, '0');
-};
 
 function isPast(talk: TalkEntry) {
   if (!talk.date) {
@@ -27,18 +24,20 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
     headingLink = talk.invitation_link;
   }
 
-  let displayedDate;
-  const talkDate = talk.date ? new Date(talk.date) : undefined;
+  let displayedDatetime;
 
-  if (talkDate) {
-    displayedDate = `${talkDate.getUTCFullYear()}-${toPaddedString(
-      talkDate.getUTCMonth() + 1
-    )}-${toPaddedString(talkDate.getUTCDate())}`;
+  // We display the local date according to the Europe/Paris timezone. Be
+  // careful while manipulating local dates and times.
+  if (talk.date_as_tz_europe_paris) {
+    const date = localDate(talk.date_as_tz_europe_paris);
+    const time = localTime(talk.date_as_tz_europe_paris);
 
-    if (!isPast(talk)) {
-      displayedDate += ` ${toPaddedString(
-        talkDate.getUTCHours()
-      )}:${toPaddedString(talkDate.getUTCMinutes())} CET`;
+    if (date) {
+      displayedDatetime = date;
+
+      if (!isPast(talk) && time) {
+        displayedDatetime += ` ${time} Europe/Paris`;
+      }
     }
   }
 
@@ -79,9 +78,9 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
             )}
           </Typography>
         </Grid>
-        {displayedDate && (
+        {displayedDatetime && (
           <Grid item>
-            <Typography variant="body1">{displayedDate}</Typography>
+            <Typography variant="body1">{displayedDatetime}</Typography>
           </Grid>
         )}
       </Grid>

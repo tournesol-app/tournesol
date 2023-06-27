@@ -54,7 +54,7 @@ const Talks = () => {
     async function getTalksEntries() {
       const talks = await BackofficeService.backofficeTalksList({
         limit: 100,
-      }).catch((reason) => {
+      }).catch(() => {
         contactAdministrator('error');
       });
 
@@ -72,6 +72,7 @@ const Talks = () => {
             }
 
             const talkDate = new Date(talk.date);
+
             if (talkDate < now) {
               acc.past.push(talk);
             } else {
