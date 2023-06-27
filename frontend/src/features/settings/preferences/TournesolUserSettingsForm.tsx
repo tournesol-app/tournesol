@@ -5,12 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Grid } from '@mui/material';
 import { Save } from '@mui/icons-material';
 
+import { SettingsSection } from 'src/components';
 import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
-import { useNotifications } from 'src/hooks';
+import { useNotifications, useScrollToLocation } from 'src/hooks';
 import { theme } from 'src/theme';
+import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import {
   ApiError,
   BlankEnum,
@@ -24,18 +26,14 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
-import { LoaderWrapper, SettingsSection } from 'src/components';
-import { subSectionBreakpoints } from 'src/pages/settings/layout';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 import GeneralSettingsForm from './GeneralSettingsForm';
 
-interface TournesolUserSettingsFormProps {
-  loading: boolean;
-}
-
-const TournesolUserSettingsForm = ({
-  loading,
-}: TournesolUserSettingsFormProps) => {
+/**
+ * Display a form allowing the logged users to update all their Tournesol
+ * preferences.
+ */
+const TournesolUserSettingsForm = () => {
   const pollName = YOUTUBE_POLL_NAME;
 
   const { t } = useTranslation();
@@ -49,13 +47,15 @@ const TournesolUserSettingsForm = ({
   const pollSettings = userSettings?.videos;
   const generalSettings = userSettings?.general;
 
+  useScrollToLocation();
+
   // General Settings
   // Notifications
   const [notificationsEmailResearch, setNotificationsEmailResearch] = useState(
-    generalSettings?.notifications_email__research ?? true
+    generalSettings?.notifications_email__research ?? false
   );
   const [notificationsEmailNewFeatures, setNotificationsEmailNewFeatures] =
-    useState(generalSettings?.notifications_email__new_features ?? true);
+    useState(generalSettings?.notifications_email__new_features ?? false);
 
   // Videos poll
   // Comparison
@@ -162,46 +162,44 @@ const TournesolUserSettingsForm = ({
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <SettingsSection
-          title={t('preferences.generalPreferences')}
-          {...subSectionBreakpoints}
-        >
-          <LoaderWrapper isLoading={loading}>
-            <GeneralSettingsForm
-              notificationsEmailResearch={notificationsEmailResearch}
-              setNotificationsEmailResearch={setNotificationsEmailResearch}
-            />
-          </LoaderWrapper>
-        </SettingsSection>
-        <SettingsSection
-          title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
-          {...subSectionBreakpoints}
-        >
-          <LoaderWrapper isLoading={loading}>
-            <VideosPollUserSettingsForm
-              compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
-              setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-              displayedCriteria={displayedCriteria}
-              setDisplayedCriteria={setDisplayedCriteria}
-              rateLaterAutoRemoval={rateLaterAutoRemoval}
-              setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-              recoDefaultUnsafe={recoDefaultUnsafe}
-              setRecoDefaultUnsafe={setRecoDefaultUnsafe}
-              recoDefaultUploadDate={recoDefaultUploadDate}
-              setRecoDefaultUploadDate={setRecoDefaultUploadDate}
-              apiErrors={apiErrors}
-            />
-          </LoaderWrapper>
-        </SettingsSection>
-        <Box
-          position="sticky"
-          bottom={theme.spacing(2)}
-          zIndex={theme.zIndex.fab}
-          bgcolor="#fafafa"
-        >
-          <Grid position="sticky" {...subSectionBreakpoints}>
+    <form onSubmit={handleSubmit}>
+      <SettingsSection
+        title={t('preferences.generalPreferences')}
+        {...subSectionBreakpoints}
+      >
+        <GeneralSettingsForm
+          notificationsEmailResearch={notificationsEmailResearch}
+          setNotificationsEmailResearch={setNotificationsEmailResearch}
+          notificationsEmailNewFeatures={notificationsEmailNewFeatures}
+          setNotificationsEmailNewFeatures={setNotificationsEmailNewFeatures}
+        />
+      </SettingsSection>
+      <SettingsSection
+        title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
+        {...subSectionBreakpoints}
+      >
+        <VideosPollUserSettingsForm
+          compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
+          setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+          displayedCriteria={displayedCriteria}
+          setDisplayedCriteria={setDisplayedCriteria}
+          rateLaterAutoRemoval={rateLaterAutoRemoval}
+          setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+          recoDefaultUnsafe={recoDefaultUnsafe}
+          setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+          recoDefaultUploadDate={recoDefaultUploadDate}
+          setRecoDefaultUploadDate={setRecoDefaultUploadDate}
+          apiErrors={apiErrors}
+        />
+      </SettingsSection>
+      <Box
+        position="sticky"
+        bottom={theme.spacing(2)}
+        zIndex={theme.zIndex.fab}
+        bgcolor="#fafafa"
+      >
+        <Grid container>
+          <Grid item {...subSectionBreakpoints}>
             <Button
               fullWidth
               type="submit"
@@ -213,9 +211,9 @@ const TournesolUserSettingsForm = ({
               {t('pollUserSettingsForm.updatePreferences')}
             </Button>
           </Grid>
-        </Box>
-      </form>
-    </>
+        </Grid>
+      </Box>
+    </form>
   );
 };
 

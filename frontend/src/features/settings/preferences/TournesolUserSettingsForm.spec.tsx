@@ -116,11 +116,7 @@ describe('GenericPollUserSettingsForm', () => {
               <MemoryRouter initialEntries={['settings/preferences']}>
                 <Switch>
                   <Route path="settings/preferences">
-<<<<<<< HEAD:frontend/src/features/settings/preferences/TournesolUserSettingsForm.spec.tsx
                     <TournesolUserSettingsForm />
-=======
-                    <TournesolUserSettingsForm loading={false} />
->>>>>>> 347087f4 (move VideosPollUserSettingsForm in TournesolUserSettingsForm which contains all preferences):frontend/src/features/settings/preferences/VideosPollUserSettingsForm.spec.tsx
                   </Route>
                 </Switch>
               </MemoryRouter>

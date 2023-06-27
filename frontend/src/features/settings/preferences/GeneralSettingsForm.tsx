@@ -8,6 +8,8 @@ import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeature
 interface GeneralSettingsFormProps {
   notificationsEmailResearch: boolean;
   setNotificationsEmailResearch: (target: boolean) => void;
+  notificationsEmailNewFeatures: boolean;
+  setNotificationsEmailNewFeatures: (target: boolean) => void;
 }
 
 /**
@@ -16,37 +18,31 @@ interface GeneralSettingsFormProps {
 const GeneralSettingsForm = ({
   notificationsEmailResearch,
   setNotificationsEmailResearch,
+  notificationsEmailNewFeatures,
+  setNotificationsEmailNewFeatures,
 }: GeneralSettingsFormProps) => {
   const { t } = useTranslation();
 
   return (
-    <>
-      <Grid
-        container
-        spacing={4}
-        mb={4}
-        direction="column"
-        alignItems="stretch"
-      >
-        <Grid item>
-          <Typography id="notifications" variant="h6">
-            {t('generalUserSettings.notifications')}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <NotificationsEmailResearch
-            value={notificationsEmailResearch}
-            onChange={setNotificationsEmailResearch}
-          />
-        </Grid>
-        <Grid item>
-          <NotificationsEmailNewFeatures
-            value={notificationsEmailResearch}
-            onChange={setNotificationsEmailResearch}
-          />
-        </Grid>
+    <Grid container spacing={4} mb={4} direction="column" alignItems="stretch">
+      <Grid item>
+        <Typography id="notifications" variant="h6">
+          {t('generalUserSettings.notifications')}
+        </Typography>
       </Grid>
-    </>
+      <Grid item>
+        <NotificationsEmailResearch
+          value={notificationsEmailResearch}
+          onChange={setNotificationsEmailResearch}
+        />
+      </Grid>
+      <Grid item>
+        <NotificationsEmailNewFeatures
+          value={notificationsEmailNewFeatures}
+          onChange={setNotificationsEmailNewFeatures}
+        />
+      </Grid>
+    </Grid>
   );
 };
 

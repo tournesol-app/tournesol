@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Grid } from '@mui/material';
 
-import { ContentBox, ContentHeader } from 'src/components';
+import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import { useNotifications } from 'src/hooks';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import TournesolUserSettingsForm from 'src/features/settings/preferences/TournesolUserSettingsForm';
@@ -14,7 +14,6 @@ import {
   settingsMenuBreakpoints,
 } from 'src/pages/settings/layout';
 import { UsersService } from 'src/services/openapi';
-
 
 const PreferencePage = () => {
   const { t } = useTranslation();
@@ -60,14 +59,10 @@ const PreferencePage = () => {
           <Grid item {...settingsMenuBreakpoints}>
             <SettingsMenu />
           </Grid>
-          <Grid
-            container
-            item
-            direction="column"
-            alignItems="stretch"
-            {...mainSectionBreakpoints}
-          >
-            <TournesolUserSettingsForm loading={loading} />
+          <Grid item {...mainSectionBreakpoints}>
+            <LoaderWrapper isLoading={loading}>
+              <TournesolUserSettingsForm />
+            </LoaderWrapper>
           </Grid>
         </Grid>
       </ContentBox>
