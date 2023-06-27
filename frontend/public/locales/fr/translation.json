@@ -469,9 +469,9 @@
     }
   },
   "generalUserSettings": {
-    "notifications" : "Notifications",
-    "notificationsEmailResearch": "Recevoir les notifications sur les nouvelles recherches par mail.",
-    "notificationsEmailNewFeatures": "Recevoir les notifications des nouveautés par mail."
+    "emailNotifications" : "Notifications par mail",
+    "notificationsEmailResearch": "Recevoir les invitations aux études de recherches et aux enquêtes.",
+    "notificationsEmailNewFeatures": "Être informé des nouvelles fonctionnalités."
   },
   "username": "Nom d'utilisateur",
   "metrics": {

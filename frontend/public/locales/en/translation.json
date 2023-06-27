@@ -461,9 +461,9 @@
     }
   },
   "generalUserSettings": {
-    "notifications" : "Notifications",
-    "notificationsEmailResearch": "Receive notifications on research news by email.",
-    "notificationsEmailNewFeatures": "Receive notifications on new features by email."
+    "emailNotifications" : "Email notifications",
+    "notificationsEmailResearch": "Receive invitations to research studies and surveys.",
+    "notificationsEmailNewFeatures": "Receive notifications about new features."
   },
   "username": "Username",
   "metrics": {

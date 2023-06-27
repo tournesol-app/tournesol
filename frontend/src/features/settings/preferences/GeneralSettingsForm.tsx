@@ -24,23 +24,25 @@ const GeneralSettingsForm = ({
   const { t } = useTranslation();
 
   return (
-    <Grid container spacing={4} mb={4} direction="column" alignItems="stretch">
+    <Grid container spacing={2} mb={2} direction="column" alignItems="stretch">
       <Grid item>
         <Typography id="notifications" variant="h6">
-          {t('generalUserSettings.notifications')}
+          {t('generalUserSettings.emailNotifications')}
         </Typography>
       </Grid>
-      <Grid item>
-        <NotificationsEmailResearch
-          value={notificationsEmailResearch}
-          onChange={setNotificationsEmailResearch}
-        />
-      </Grid>
-      <Grid item>
-        <NotificationsEmailNewFeatures
-          value={notificationsEmailNewFeatures}
-          onChange={setNotificationsEmailNewFeatures}
-        />
+      <Grid item container spacing={1} direction="column" alignItems="stretch">
+        <Grid item>
+          <NotificationsEmailResearch
+            value={notificationsEmailResearch}
+            onChange={setNotificationsEmailResearch}
+          />
+        </Grid>
+        <Grid item>
+          <NotificationsEmailNewFeatures
+            value={notificationsEmailNewFeatures}
+            onChange={setNotificationsEmailNewFeatures}
+          />
+        </Grid>
       </Grid>
     </Grid>
   );
