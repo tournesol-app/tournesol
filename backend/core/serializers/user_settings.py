@@ -93,7 +93,7 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
 
 class TournesolUserSettingsSerializer(serializers.Serializer):
     """
-    A representation of all user's settings of the Tournesol project.
+    A representation of all user settings of the Tournesol project.
 
     This representation includes poll-agnostic settings in addition to the
     specific settings of each poll.
