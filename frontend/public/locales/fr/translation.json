@@ -463,9 +463,11 @@
     "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
   },
   "generalUserSettingsForm": {
-    "notificationsEmailNewFeatures": "Être informé des nouvelles fonctionnalités.",
-    "notificationsEmailResearch": "Recevoir les invitations aux études de recherches et aux enquêtes.",
-    "emailNotifications": "Notifications par mail"
+    "notificationsEmailNewFeatures": "Être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
+    "notificationsEmailResearch": "Recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
+    "emailNotifications": "Notifications par e-mail",
+    "joinTheResearchStudies": "Participez aux études de recherche !",
+    "joinTheResearchStudiesDesc": "Plusieurs projets de recherches ont choisi Tournesol ou sa communauté comme objet d'étude. Si vous souhaitez faire avancer la science nous vous invitons à accepter de recevoir des invitations par e-mail. Vous serez ainsi notifié·e lorsque de nouveaux projets démarrent."
   },
   "videosUserSettingsForm": {
     "recommendations": {

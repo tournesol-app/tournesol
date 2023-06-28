@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Grid, Typography } from '@mui/material';
+import { Alert, AlertTitle, Grid, Typography } from '@mui/material';
 
 import NotificationsEmailResearch from './fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeatures';
@@ -26,13 +26,23 @@ const GeneralUserSettingsForm = ({
   const { t } = useTranslation();
 
   return (
-    <Grid container spacing={2} mb={2} direction="column" alignItems="stretch">
+    <Grid container spacing={2} direction="column" alignItems="stretch">
       <Grid item>
         <Typography id="notifications" variant="h6">
           {t('generalUserSettingsForm.emailNotifications')}
         </Typography>
       </Grid>
       <Grid item container spacing={1} direction="column" alignItems="stretch">
+        <Grid item>
+          <Alert severity="info">
+            <AlertTitle>
+              <strong>
+                {t('generalUserSettingsForm.joinTheResearchStudies')}
+              </strong>
+            </AlertTitle>
+            {t('generalUserSettingsForm.joinTheResearchStudiesDesc')}
+          </Alert>
+        </Grid>
         <Grid item>
           <NotificationsEmailResearch
             value={notificationsEmailResearch}
