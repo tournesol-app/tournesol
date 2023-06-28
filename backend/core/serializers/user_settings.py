@@ -6,6 +6,15 @@ from tournesol.models.poll import Poll
 from tournesol.utils.video_language import ACCEPTED_LANGUAGE_CODES
 
 
+class GeneralUserSettingsSerializer(serializers.Serializer):
+    """
+    The general user settings that are not related to Tournesol polls.
+    """
+
+    notifications_email__research = serializers.BooleanField(required=False)
+    notifications_email__new_features = serializers.BooleanField(required=False)
+
+
 class GenericPollUserSettingsSerializer(serializers.Serializer):
     """
     The settings common to each poll.
@@ -82,17 +91,9 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         return default_languages
 
 
-class GeneralUserSettingsSerializer(serializers.Serializer):
-    """
-    The general user settings that are not related to Tournesol polls.
-    """
-
-    notifications_email__research = serializers.BooleanField(required=False)
-    notifications_email__new_features = serializers.BooleanField(required=False)
-
-
 class TournesolUserSettingsSerializer(serializers.Serializer):
-    """A representation of all settings of the Tournesol project.
+    """
+    A representation of all user's settings of the Tournesol project.
 
     This representation includes poll-agnostic settings in addition to the
     specific settings of each poll.
