@@ -1,8 +1,9 @@
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListAPIView
 
-from backoffice.models import TalkEntry
-from backoffice.serializers import TalkEntrySerializer
+from backoffice.banner.models import Banner
+from backoffice.serializers import BannerSerializer, TalkEntrySerializer
+from backoffice.talk.models import TalkEntry
 
 
 @extend_schema_view(
@@ -17,4 +18,19 @@ class TalkEntryListView(ListAPIView):
 
     def get_queryset(self):
         qst = TalkEntry.objects.all().filter(public=True, date__isnull=False).order_by("-date")
+        return qst
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description="List all enabled banners",
+    ),
+)
+class BannerListView(ListAPIView):
+    permission_classes = []
+    queryset = Banner.objects.none()
+    serializer_class = BannerSerializer
+
+    def get_queryset(self):
+        qst = Banner.objects.all().filter(enabled=True).order_by("-date_start")
         return qst

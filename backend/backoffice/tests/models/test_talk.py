@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.utils.text import slugify
 
-from backoffice.models import TalkEntry
+from backoffice.talk.models import TalkEntry
 from tournesol.tests.utils.mock_now import MockNow
 
 
