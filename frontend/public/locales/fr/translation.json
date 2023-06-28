@@ -456,17 +456,36 @@
     "displayTheTheWeeklyCollectiveGoal": "Affichage de l'objectif collectif hebdomadaire",
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
+    "updatePreferences": "Mettre à jour les préférences",
     "comparisonPage": "Comparaison (page)",
     "rateLater": "Liste à comparer plus tard",
     "recommendationsPage": "Recommandations (page)",
-    "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>.",
-    "updatePreferences": "Mettre à jour les préférences"
+    "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
+  },
+  "generalUserSettingsForm": {
+    "notificationsEmailNewFeatures": "Être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
+    "notificationsEmailResearch": "Recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
+    "emailNotifications": "Notifications par e-mail",
+    "joinTheResearchStudies": "Participez aux études de recherche !",
+    "joinTheResearchStudiesDesc": "Plusieurs projets de recherches ont choisi Tournesol ou sa communauté comme objet d'étude. Si vous souhaitez faire avancer la science nous vous invitons à accepter de recevoir des invitations par e-mail. Vous serez ainsi notifié·e lorsque de nouveaux projets démarrent."
   },
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
       "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
     }
+  },
+  "preferences": {
+    "generalPreferences": "Préférences générales",
+    "preferencesRegarding": "Préférences concernant :",
+    "errorOccurredWhileRetrievingPreferences": "Désolé, une erreur est survenue, impossible de récupérer vos préférences.",
+    "preferences": "Préférences"
+  },
+  "poll": {
+    "videos": "vidéos",
+    "presidential2022": "présidentielle FR 2022",
+    "entityCandidate": "candidat",
+    "entityVideo": "vidéo"
   },
   "username": "Nom d'utilisateur",
   "metrics": {
@@ -792,17 +811,6 @@
     }
   },
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
-  "preferences": {
-    "errorOccurredWhileRetrievingPreferences": "Désolé, une erreur est survenue, impossible de récupérer vos préférences.",
-    "preferences": "Préférences",
-    "preferencesRegarding": "Préférences concernant :"
-  },
-  "poll": {
-    "videos": "vidéos",
-    "presidential2022": "présidentielle FR 2022",
-    "entityCandidate": "candidat",
-    "entityVideo": "vidéo"
-  },
   "profile": "Profil",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",

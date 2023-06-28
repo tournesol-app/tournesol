@@ -26,6 +26,7 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
+import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
 /**
@@ -33,8 +34,6 @@ import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
  * preferences.
  */
 const TournesolUserSettingsForm = () => {
-  const pollName = YOUTUBE_POLL_NAME;
-
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
@@ -43,9 +42,26 @@ const TournesolUserSettingsForm = () => {
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
   const userSettings = useSelector(selectSettings).settings;
+  const generalSettings = userSettings?.general;
   const pollSettings = userSettings?.videos;
 
   useScrollToLocation();
+
+  /**
+   * General user settings
+   */
+
+  // Notifications (must be false by default according to the ToS)
+  const [notificationsEmailResearch, setNotificationsEmailResearch] = useState(
+    generalSettings?.notifications_email__research ?? false
+  );
+
+  const [notificationsEmailNewFeatures, setNotificationsEmailNewFeatures] =
+    useState(generalSettings?.notifications_email__new_features ?? false);
+
+  /**
+   * Poll `videos`
+   */
 
   // Comparison
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
@@ -77,29 +93,46 @@ const TournesolUserSettingsForm = () => {
   );
 
   useEffect(() => {
-    if (!pollSettings) {
+    if (!generalSettings && !pollSettings) {
       return;
     }
-    if (
-      pollSettings.comparison_ui__weekly_collective_goal_display != undefined
-    ) {
-      setCompUiWeeklyColGoalDisplay(
-        pollSettings.comparison_ui__weekly_collective_goal_display
+
+    if (generalSettings?.notifications_email__research != undefined) {
+      setNotificationsEmailResearch(
+        generalSettings.notifications_email__research
       );
     }
+
+    if (generalSettings?.notifications_email__new_features != undefined) {
+      setNotificationsEmailNewFeatures(
+        generalSettings.notifications_email__new_features
+      );
+    }
+
+    if (
+      pollSettings?.comparison_ui__weekly_collective_goal_display != undefined
+    ) {
+      setCompUiWeeklyColGoalDisplay(
+        pollSettings?.comparison_ui__weekly_collective_goal_display
+      );
+    }
+
     if (pollSettings?.comparison__criteria_order != undefined) {
       setDisplayedCriteria(pollSettings.comparison__criteria_order);
     }
-    if (pollSettings.rate_later__auto_remove != undefined) {
+
+    if (pollSettings?.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
-    if (pollSettings.recommendations__default_unsafe != undefined) {
+
+    if (pollSettings?.recommendations__default_unsafe != undefined) {
       setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
     }
-    if (pollSettings.recommendations__default_date != undefined) {
+
+    if (pollSettings?.recommendations__default_date != undefined) {
       setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
     }
-  }, [pollSettings]);
+  }, [generalSettings, pollSettings]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -108,7 +141,11 @@ const TournesolUserSettingsForm = () => {
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
-          [pollName]: {
+          general: {
+            notifications_email__research: notificationsEmailResearch,
+            notifications_email__new_features: notificationsEmailNewFeatures,
+          },
+          [YOUTUBE_POLL_NAME]: {
             comparison__criteria_order: displayedCriteria,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
@@ -138,6 +175,17 @@ const TournesolUserSettingsForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <SettingsSection
+        title={t('preferences.generalPreferences')}
+        {...subSectionBreakpoints}
+      >
+        <GeneralUserSettingsForm
+          notificationsEmailResearch={notificationsEmailResearch}
+          setNotificationsEmailResearch={setNotificationsEmailResearch}
+          notificationsEmailNewFeatures={notificationsEmailNewFeatures}
+          setNotificationsEmailNewFeatures={setNotificationsEmailNewFeatures}
+        />
+      </SettingsSection>
       <SettingsSection
         title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
         {...subSectionBreakpoints}

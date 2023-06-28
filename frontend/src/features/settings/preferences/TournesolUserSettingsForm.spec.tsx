@@ -74,6 +74,10 @@ describe('GenericPollUserSettingsForm', () => {
             comparison_ui__weekly_collective_goal_display: 'NEVER',
             recommendations__default_unsafe: true,
           },
+          general: {
+            notifications_email__research: true,
+            notifications_email__new_features: true,
+          },
         },
       },
       { sendAsJson: true }
@@ -146,6 +150,13 @@ describe('GenericPollUserSettingsForm', () => {
 
     const rendered = await component({ store: store });
 
+    const notificationsEmailResearch = screen.getByTestId(
+      'notifications_email__research'
+    );
+    const notificationsEmailNewFeatures = screen.getByTestId(
+      'notifications_email__new_features'
+    );
+
     const compUiWeeklyColGoalDisplay = screen.getByTestId(
       'videos_weekly_collective_goal_display'
     );
@@ -163,6 +174,8 @@ describe('GenericPollUserSettingsForm', () => {
 
     return {
       compUiWeeklyColGoalDisplay,
+      notificationsEmailResearch,
+      notificationsEmailNewFeatures,
       rateLaterAutoRemove,
       recommendationsDefaultDate,
       recommendationsDefaultUnsafe,
@@ -189,6 +202,8 @@ describe('GenericPollUserSettingsForm', () => {
     it('displays the defined values after a submit', async () => {
       const {
         compUiWeeklyColGoalDisplay,
+        notificationsEmailResearch,
+        notificationsEmailNewFeatures,
         rateLaterAutoRemove,
         recommendationsDefaultDate,
         recommendationsDefaultUnsafe,
@@ -196,8 +211,13 @@ describe('GenericPollUserSettingsForm', () => {
       } = await setup();
 
       expect(rateLaterAutoRemove).toHaveValue(8);
+
       // Here we check the default values used when the settings are not yet
-      // defined by the user.
+      // defined by the user. The email notifications should always be false
+      // by default.
+      expect(notificationsEmailResearch).toHaveProperty('checked', false);
+      expect(notificationsEmailNewFeatures).toHaveProperty('checked', false);
+
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
       );
@@ -206,6 +226,8 @@ describe('GenericPollUserSettingsForm', () => {
       );
       expect(recommendationsDefaultUnsafe).toHaveProperty('checked', false);
 
+      fireEvent.click(notificationsEmailResearch);
+      fireEvent.click(notificationsEmailNewFeatures);
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.change(compUiWeeklyColGoalDisplay, {
         target: { value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER },
@@ -221,6 +243,8 @@ describe('GenericPollUserSettingsForm', () => {
         fireEvent.click(submit);
       });
 
+      expect(notificationsEmailResearch).toHaveProperty('checked', true);
+      expect(notificationsEmailNewFeatures).toHaveProperty('checked', true);
       expect(rateLaterAutoRemove).toHaveValue(16);
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER
@@ -242,11 +266,15 @@ describe('GenericPollUserSettingsForm', () => {
       const {
         rateLaterAutoRemove,
         recommendationsDefaultUnsafe,
+        notificationsEmailResearch,
+        notificationsEmailNewFeatures,
         storeDispatchSpy,
         submit,
       } = await setup();
       expect(storeDispatchSpy).toHaveBeenCalledTimes(0);
 
+      fireEvent.click(notificationsEmailResearch);
+      fireEvent.click(notificationsEmailNewFeatures);
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.click(recommendationsDefaultUnsafe);
 
@@ -258,6 +286,10 @@ describe('GenericPollUserSettingsForm', () => {
       expect(storeDispatchSpy).lastCalledWith({
         type: 'settings/replaceSettings',
         payload: {
+          general: {
+            notifications_email__research: true,
+            notifications_email__new_features: true,
+          },
           videos: {
             comparison_ui__weekly_collective_goal_display:
               ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
