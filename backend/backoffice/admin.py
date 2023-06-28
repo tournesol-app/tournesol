@@ -46,28 +46,24 @@ class TalkEntryAdmin(admin.ModelAdmin):
 
 
 class BannerTitleInline(admin.TabularInline):
-    max_num = 1
     min_num = 1
     model = BannerTitle
     extra = 0
 
 
 class BannerTextInline(admin.TabularInline):
-    max_num = 1
     min_num = 1
     model = BannerText
     extra = 0
 
 
 class BannerActionLabelInline(admin.TabularInline):
-    max_num = 1
     min_num = 0
     model = BannerActionLabel
     extra = 0
 
 
 class BannerActionLinkInline(admin.TabularInline):
-    max_num = 1
     min_num = 0
     model = BannerActionLink
     extra = 0
@@ -77,11 +73,12 @@ class BannerActionLinkInline(admin.TabularInline):
 class BannerAdmin(admin.ModelAdmin):
     actions = ["enable_banners", "disable_banners"]
     search_field = ("name")
-    ordering = ("-date_start", "-date_end")
+    ordering = ("-date_start", "-date_end", "priority")
     list_display = (
         "name",
         "date_start",
         "date_end",
+        "priority",
         "security_advisory",
         "enabled",
     )

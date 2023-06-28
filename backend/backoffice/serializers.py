@@ -29,7 +29,6 @@ class BannerSerializer(serializers.ModelSerializer):
             "name",
             "text",
             "title",
-            "get_text",
             "date_start",
             "date_end",
             "security_advisory",

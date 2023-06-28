@@ -27,11 +27,13 @@ class Banner(models.Model):
         help_text="If False, the banner should not be displayed",
         default=True,
     )
+    priority = models.IntegerField(
+        help_text="Allows to order the banners.",
+        default=0,
+    )
 
     class Meta:
-        ordering = ["-date_start", "-date_end"]
-        verbose_name = "Banner"
-        verbose_name_plural = "Banners"
+        ordering = ["-date_start", "-date_end", "priority"]
 
     def __str__(self) -> str:
         return self.name
@@ -62,8 +64,8 @@ class Banner(models.Model):
                           if loc.language == "en"][0]
 
             except IndexError:
-                return self.name  # pylint: disable=no-member
-        return locale.text
+                return ""  # pylint: disable=no-member
+        return locale
 
     def get_content_prefetch(self, lang=None):
         return self.get_text_prefetch(related="texts", lang=lang)
@@ -90,8 +92,6 @@ class BannerTitle(models.Model):
 
     class Meta:
         unique_together = ["banner", "language"]
-        verbose_name = "Banner Title"
-        verbose_name_plural = "Banner Titles"
 
     def __str__(self) -> str:
         return self.title
@@ -114,8 +114,6 @@ class BannerText(models.Model):
 
     class Meta:
         unique_together = ["banner", "language"]
-        verbose_name = "Banner Text"
-        verbose_name_plural = "Banner Texts"
 
     def __str__(self) -> str:
         return self.text
@@ -139,8 +137,6 @@ class BannerActionLabel(models.Model):
 
     class Meta:
         unique_together = ["banner", "language"]
-        verbose_name = "Banner Action Label"
-        verbose_name_plural = "Banner Action Labels"
 
     def __str__(self) -> str:
         return self.action_label
@@ -163,8 +159,6 @@ class BannerActionLink(models.Model):
 
     class Meta:
         unique_together = ["banner", "language"]
-        verbose_name = "Banner Link"
-        verbose_name_plural = "Banner Links"
 
     def __str__(self) -> str:
         return self.url

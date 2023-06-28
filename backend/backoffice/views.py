@@ -1,3 +1,4 @@
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListAPIView
 
@@ -32,5 +33,12 @@ class BannerListView(ListAPIView):
     serializer_class = BannerSerializer
 
     def get_queryset(self):
-        qst = Banner.objects.all().filter(enabled=True).order_by("-date_start")
+        now = timezone.now()
+        qst = (
+            Banner.objects.all()
+            .filter(enabled=True, date_start__lte=now, date_end__gte=now)
+            .prefetch_related("texts", "titles")
+            .order_by("date_start")
+        )
+
         return qst
