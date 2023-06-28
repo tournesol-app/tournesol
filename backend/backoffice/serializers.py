@@ -1,10 +1,10 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from backoffice.banner.models import Banner
 from backoffice.talk.models import TalkEntry
 
 
-class TalkEntrySerializer(ModelSerializer):
+class TalkEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = TalkEntry
         fields = [
@@ -19,12 +19,17 @@ class TalkEntrySerializer(ModelSerializer):
         ]
 
 
-class BannerSerializer(ModelSerializer):
+class BannerSerializer(serializers.ModelSerializer):
+    text = serializers.CharField(source="get_content_prefetch")
+    title = serializers.CharField(source="get_title_prefetch")
+
     class Meta:
         model = Banner
         fields = [
             "name",
             "text",
+            "title",
+            "get_text",
             "date_start",
             "date_end",
             "security_advisory",

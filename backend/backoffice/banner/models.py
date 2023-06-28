@@ -36,7 +36,7 @@ class Banner(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def get_text(self, related="text", lang=None):
+    def get_text(self, related="texts", lang=None):
         if lang is None:
             lang = translation.get_language()
         try:
@@ -48,7 +48,7 @@ class Banner(models.Model):
                 return self.name  # pylint: disable=no-member
         return locale.text
 
-    def get_text_prefetch(self, related="text", lang=None):
+    def get_text_prefetch(self, related="texts", lang=None):
         if lang is None:
             lang = translation.get_language()
 
@@ -65,11 +65,11 @@ class Banner(models.Model):
                 return self.name  # pylint: disable=no-member
         return locale.text
 
-    def get_content_text_prefetch(self, lang=None):
-        return self.get_text_prefetch(related="text", lang=lang)
+    def get_content_prefetch(self, lang=None):
+        return self.get_text_prefetch(related="texts", lang=lang)
 
-    def get_title_text_prefetch(self, lang=None):
-        return self.get_text_prefetch(related="title", lang=lang)
+    def get_title_prefetch(self, lang=None):
+        return self.get_text_prefetch(related="titles", lang=lang)
 
 
 class BannerTitle(models.Model):
