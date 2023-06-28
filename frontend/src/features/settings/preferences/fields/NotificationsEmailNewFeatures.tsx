@@ -30,7 +30,7 @@ const NotificationsEmailNewFeatures = ({
           }
         />
       }
-      label={t('generalUserSettings.notificationsEmailNewFeatures')}
+      label={t('generalUserSettingsForm.notificationsEmailNewFeatures')}
     />
   );
 };

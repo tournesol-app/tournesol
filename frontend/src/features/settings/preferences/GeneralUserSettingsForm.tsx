@@ -29,7 +29,7 @@ const GeneralUserSettingsForm = ({
     <Grid container spacing={2} mb={2} direction="column" alignItems="stretch">
       <Grid item>
         <Typography id="notifications" variant="h6">
-          {t('generalUserSettings.emailNotifications')}
+          {t('generalUserSettingsForm.emailNotifications')}
         </Typography>
       </Grid>
       <Grid item container spacing={1} direction="column" alignItems="stretch">

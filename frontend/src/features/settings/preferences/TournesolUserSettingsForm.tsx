@@ -29,7 +29,6 @@ import {
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
-
 /**
  * Display a form allowing the logged users to update all their Tournesol
  * preferences.

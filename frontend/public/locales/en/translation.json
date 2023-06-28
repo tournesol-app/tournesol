@@ -448,11 +448,16 @@
     "displayTheTheWeeklyCollectiveGoal": "Display the weekly collective goal",
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
+    "updatePreferences": "Update preferences",
     "comparisonPage": "Comparison page",
     "rateLater": "Rate-later list",
     "recommendationsPage": "Recommendations page",
-    "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>.",
-    "updatePreferences": "Update preferences"
+    "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>."
+  },
+  "generalUserSettingsForm": {
+    "notificationsEmailNewFeatures": "Receive notifications about new features.",
+    "notificationsEmailResearch": "Receive invitations to research studies and surveys.",
+    "emailNotifications": "Email notifications"
   },
   "videosUserSettingsForm": {
     "recommendations": {
@@ -460,10 +465,17 @@
       "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
     }
   },
-  "generalUserSettings": {
-    "emailNotifications" : "Email notifications",
-    "notificationsEmailResearch": "Receive invitations to research studies and surveys.",
-    "notificationsEmailNewFeatures": "Receive notifications about new features."
+  "preferences": {
+    "generalPreferences": "General preferences",
+    "preferencesRegarding": "Preferences regarding:",
+    "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences.",
+    "preferences": "Preferences"
+  },
+  "poll": {
+    "videos": "videos",
+    "presidential2022": "election FR 2022",
+    "entityCandidate": "candidate",
+    "entityVideo": "video"
   },
   "username": "Username",
   "metrics": {
@@ -788,18 +800,6 @@
     }
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
-  "preferences": {
-    "errorOccurredWhileRetrievingPreferences": "Sorry, an error has occurred, cannot retrieve your preferences.",
-    "preferences": "Preferences",
-    "preferencesRegarding": "Preferences regarding:",
-    "generalPreferences": "General preferences"
-  },
-  "poll": {
-    "videos": "videos",
-    "presidential2022": "election FR 2022",
-    "entityCandidate": "candidate",
-    "entityVideo": "video"
-  },
   "profile": "Profile",
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",

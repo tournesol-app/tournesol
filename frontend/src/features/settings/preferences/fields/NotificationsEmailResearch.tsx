@@ -30,7 +30,7 @@ const NotificationsEmailResearch = ({
           }
         />
       }
-      label={t('generalUserSettings.notificationsEmailResearch')}
+      label={t('generalUserSettingsForm.notificationsEmailResearch')}
     />
   );
 };
