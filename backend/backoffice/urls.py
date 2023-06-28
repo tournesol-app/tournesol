@@ -9,7 +9,7 @@ urlpatterns = [
         name="talk_list",
     ),
     path(
-        "banner/",
+        "banners/",
         BannerListView.as_view(),
         name="banner_list",
     )

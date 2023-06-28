@@ -31,5 +31,6 @@ class BannerSerializer(serializers.ModelSerializer):
             "title",
             "date_start",
             "date_end",
+            "priority",
             "security_advisory",
         ]

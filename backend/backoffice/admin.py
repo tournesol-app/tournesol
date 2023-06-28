@@ -87,14 +87,6 @@ class BannerAdmin(admin.ModelAdmin):
         BannerTitleInline, BannerTextInline, BannerActionLabelInline, BannerActionLinkInline
         )
 
-    @admin.display(description="Start Date", ordering="date_start")
-    def get_date_start(self, obj):
-        return obj.date_start
-
-    @admin.display(description="End Date", ordering="date_end")
-    def get_date_end(self, obj):
-        return obj.date_end
-
     @admin.action(description=_("Enable the selected banners."))
     def enable_banners(self, request, queryset):
         queryset.update(enabled=True)
