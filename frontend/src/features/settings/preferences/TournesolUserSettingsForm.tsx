@@ -34,8 +34,6 @@ import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
  * preferences.
  */
 const TournesolUserSettingsForm = () => {
-  const pollName = YOUTUBE_POLL_NAME;
-
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
@@ -44,20 +42,27 @@ const TournesolUserSettingsForm = () => {
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
 
   const userSettings = useSelector(selectSettings).settings;
-  const pollSettings = userSettings?.videos;
   const generalSettings = userSettings?.general;
+  const pollSettings = userSettings?.videos;
 
   useScrollToLocation();
 
-  // General Settings
-  // Notifications
+  /**
+   * General user settings
+   */
+
+  // Notifications (must be false by default according to the ToS)
   const [notificationsEmailResearch, setNotificationsEmailResearch] = useState(
     generalSettings?.notifications_email__research ?? false
   );
+
   const [notificationsEmailNewFeatures, setNotificationsEmailNewFeatures] =
     useState(generalSettings?.notifications_email__new_features ?? false);
 
-  // Videos poll
+  /**
+   * Poll `videos`
+   */
+
   // Comparison
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
     pollSettings?.comparison__criteria_order ?? []
@@ -88,37 +93,44 @@ const TournesolUserSettingsForm = () => {
   );
 
   useEffect(() => {
-    if (!pollSettings) {
+    if (!generalSettings && !pollSettings) {
       return;
     }
-    if (
-      pollSettings.comparison_ui__weekly_collective_goal_display != undefined
-    ) {
-      setCompUiWeeklyColGoalDisplay(
-        pollSettings.comparison_ui__weekly_collective_goal_display
-      );
-    }
-    if (pollSettings?.comparison__criteria_order != undefined) {
-      setDisplayedCriteria(pollSettings.comparison__criteria_order);
-    }
-    if (pollSettings.rate_later__auto_remove != undefined) {
-      setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
-    }
-    if (pollSettings.recommendations__default_unsafe != undefined) {
-      setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
-    }
-    if (pollSettings.recommendations__default_date != undefined) {
-      setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
-    }
+
     if (generalSettings?.notifications_email__research != undefined) {
       setNotificationsEmailResearch(
         generalSettings.notifications_email__research
       );
     }
+
     if (generalSettings?.notifications_email__new_features != undefined) {
       setNotificationsEmailNewFeatures(
         generalSettings.notifications_email__new_features
       );
+    }
+
+    if (
+      pollSettings?.comparison_ui__weekly_collective_goal_display != undefined
+    ) {
+      setCompUiWeeklyColGoalDisplay(
+        pollSettings?.comparison_ui__weekly_collective_goal_display
+      );
+    }
+
+    if (pollSettings?.comparison__criteria_order != undefined) {
+      setDisplayedCriteria(pollSettings.comparison__criteria_order);
+    }
+
+    if (pollSettings?.rate_later__auto_remove != undefined) {
+      setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
+    }
+
+    if (pollSettings?.recommendations__default_unsafe != undefined) {
+      setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
+    }
+
+    if (pollSettings?.recommendations__default_date != undefined) {
+      setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
     }
   }, [generalSettings, pollSettings]);
 
@@ -129,17 +141,17 @@ const TournesolUserSettingsForm = () => {
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
-          [pollName]: {
+          general: {
+            notifications_email__research: notificationsEmailResearch,
+            notifications_email__new_features: notificationsEmailNewFeatures,
+          },
+          [YOUTUBE_POLL_NAME]: {
             comparison__criteria_order: displayedCriteria,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
-          },
-          ['general']: {
-            notifications_email__research: notificationsEmailResearch,
-            notifications_email__new_features: notificationsEmailNewFeatures,
           },
         },
       }).catch((reason: ApiError) => {
