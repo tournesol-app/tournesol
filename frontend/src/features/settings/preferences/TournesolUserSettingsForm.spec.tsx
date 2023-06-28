@@ -150,6 +150,13 @@ describe('GenericPollUserSettingsForm', () => {
 
     const rendered = await component({ store: store });
 
+    const notificationsEmailResearch = screen.getByTestId(
+      'notifications_email__research'
+    );
+    const notificationsEmailNewFeatures = screen.getByTestId(
+      'notifications_email__new_features'
+    );
+
     const compUiWeeklyColGoalDisplay = screen.getByTestId(
       'videos_weekly_collective_goal_display'
     );
@@ -162,22 +169,16 @@ describe('GenericPollUserSettingsForm', () => {
     const recommendationsDefaultUnsafe = screen.getByTestId(
       'videos_recommendations__default_unsafe'
     );
-    const notificationsEmailResearch = screen.getByTestId(
-      'notifications_email__research'
-    );
-    const notificationsEmailNewFeatures = screen.getByTestId(
-      'notifications_email__new_features'
-    );
 
     const submit = screen.getByRole('button', { name: /update/i });
 
     return {
       compUiWeeklyColGoalDisplay,
+      notificationsEmailResearch,
+      notificationsEmailNewFeatures,
       rateLaterAutoRemove,
       recommendationsDefaultDate,
       recommendationsDefaultUnsafe,
-      notificationsEmailResearch,
-      notificationsEmailNewFeatures,
       rendered,
       storeDispatchSpy,
       submit,
@@ -201,17 +202,22 @@ describe('GenericPollUserSettingsForm', () => {
     it('displays the defined values after a submit', async () => {
       const {
         compUiWeeklyColGoalDisplay,
+        notificationsEmailResearch,
+        notificationsEmailNewFeatures,
         rateLaterAutoRemove,
         recommendationsDefaultDate,
         recommendationsDefaultUnsafe,
-        notificationsEmailResearch,
-        notificationsEmailNewFeatures,
         submit,
       } = await setup();
 
       expect(rateLaterAutoRemove).toHaveValue(8);
+
       // Here we check the default values used when the settings are not yet
-      // defined by the user.
+      // defined by the user. The email notifications should always be false
+      // by default.
+      expect(notificationsEmailResearch).toHaveProperty('checked', false);
+      expect(notificationsEmailNewFeatures).toHaveProperty('checked', false);
+
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
       );
@@ -219,9 +225,9 @@ describe('GenericPollUserSettingsForm', () => {
         Recommendations_defaultDateEnum.MONTH
       );
       expect(recommendationsDefaultUnsafe).toHaveProperty('checked', false);
-      expect(notificationsEmailResearch).toHaveProperty('checked', false);
-      expect(notificationsEmailNewFeatures).toHaveProperty('checked', false);
 
+      fireEvent.click(notificationsEmailResearch);
+      fireEvent.click(notificationsEmailNewFeatures);
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.change(compUiWeeklyColGoalDisplay, {
         target: { value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER },
@@ -230,8 +236,6 @@ describe('GenericPollUserSettingsForm', () => {
         target: { value: Recommendations_defaultDateEnum.ALL_TIME },
       });
       fireEvent.click(recommendationsDefaultUnsafe);
-      fireEvent.click(notificationsEmailResearch);
-      fireEvent.click(notificationsEmailNewFeatures);
 
       expect(submit).toBeEnabled();
 
@@ -239,6 +243,8 @@ describe('GenericPollUserSettingsForm', () => {
         fireEvent.click(submit);
       });
 
+      expect(notificationsEmailResearch).toHaveProperty('checked', true);
+      expect(notificationsEmailNewFeatures).toHaveProperty('checked', true);
       expect(rateLaterAutoRemove).toHaveValue(16);
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER
@@ -247,8 +253,6 @@ describe('GenericPollUserSettingsForm', () => {
         Recommendations_defaultDateEnum.ALL_TIME
       );
       expect(recommendationsDefaultUnsafe).toHaveProperty('checked', true);
-      expect(notificationsEmailResearch).toHaveProperty('checked', true);
-      expect(notificationsEmailNewFeatures).toHaveProperty('checked', true);
       expect(submit).toBeEnabled();
     });
 
@@ -269,10 +273,10 @@ describe('GenericPollUserSettingsForm', () => {
       } = await setup();
       expect(storeDispatchSpy).toHaveBeenCalledTimes(0);
 
-      fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
-      fireEvent.click(recommendationsDefaultUnsafe);
       fireEvent.click(notificationsEmailResearch);
       fireEvent.click(notificationsEmailNewFeatures);
+      fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
+      fireEvent.click(recommendationsDefaultUnsafe);
 
       await act(async () => {
         fireEvent.click(submit);
@@ -282,15 +286,15 @@ describe('GenericPollUserSettingsForm', () => {
       expect(storeDispatchSpy).lastCalledWith({
         type: 'settings/replaceSettings',
         payload: {
+          general: {
+            notifications_email__research: true,
+            notifications_email__new_features: true,
+          },
           videos: {
             comparison_ui__weekly_collective_goal_display:
               ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
             rate_later__auto_remove: 16,
             recommendations__default_unsafe: true,
-          },
-          general: {
-            notifications_email__research: true,
-            notifications_email__new_features: true,
           },
         },
       });
