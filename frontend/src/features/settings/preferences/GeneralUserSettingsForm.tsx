@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Grid, Typography } from '@mui/material';
+
 import NotificationsEmailResearch from './fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeatures';
 
@@ -13,9 +14,10 @@ interface GeneralSettingsFormProps {
 }
 
 /**
- * Display a form allowing the logged users to update their general preferences
+ * Display a form allowing the logged users to update their general
+ * preferences.
  */
-const GeneralSettingsForm = ({
+const GeneralUserSettingsForm = ({
   notificationsEmailResearch,
   setNotificationsEmailResearch,
   notificationsEmailNewFeatures,
@@ -48,4 +50,4 @@ const GeneralSettingsForm = ({
   );
 };
 
-export default GeneralSettingsForm;
+export default GeneralUserSettingsForm;

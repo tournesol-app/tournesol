@@ -26,8 +26,9 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
+import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
-import GeneralSettingsForm from './GeneralSettingsForm';
+
 
 /**
  * Display a form allowing the logged users to update all their Tournesol
@@ -167,7 +168,7 @@ const TournesolUserSettingsForm = () => {
         title={t('preferences.generalPreferences')}
         {...subSectionBreakpoints}
       >
-        <GeneralSettingsForm
+        <GeneralUserSettingsForm
           notificationsEmailResearch={notificationsEmailResearch}
           setNotificationsEmailResearch={setNotificationsEmailResearch}
           notificationsEmailNewFeatures={notificationsEmailNewFeatures}
