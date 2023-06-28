@@ -804,7 +804,8 @@
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
   "profile": "Profile",
   "signup": {
-    "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
+    "welcome": "Welcome!",
+    "successMessage": "A verification link has been sent to <1>{{email}}</1> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
     "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
