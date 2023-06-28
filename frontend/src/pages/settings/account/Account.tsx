@@ -10,6 +10,7 @@ import ExportAllDataForm from 'src/features/settings/account/ExportAllDataForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import {
   mainSectionBreakpoints,
+  mainSectionGridSpacing,
   settingsMenuBreakpoints,
   subSectionBreakpoints,
 } from 'src/pages/settings/layout';
@@ -33,7 +34,7 @@ export const AccountPage = () => {
             item
             direction="column"
             alignItems="stretch"
-            spacing={3}
+            spacing={mainSectionGridSpacing}
             {...mainSectionBreakpoints}
           >
             <SettingsSection
@@ -48,13 +49,13 @@ export const AccountPage = () => {
             >
               <PasswordForm />
             </SettingsSection>
-            <Box marginTop={8} />
             <SettingsSection
               title={t('settings.exportAllData')}
               {...subSectionBreakpoints}
             >
               <ExportAllDataForm />
             </SettingsSection>
+            <Box mt={8}></Box>
             <SettingsSection
               title={
                 <Typography

@@ -12,7 +12,10 @@ import {
 } from 'src/features/settings/userSettingsSlice';
 import { useNotifications, useScrollToLocation } from 'src/hooks';
 import { theme } from 'src/theme';
-import { subSectionBreakpoints } from 'src/pages/settings/layout';
+import {
+  mainSectionGridSpacing,
+  subSectionBreakpoints,
+} from 'src/pages/settings/layout';
 import {
   ApiError,
   BlankEnum,
@@ -175,36 +178,44 @@ const TournesolUserSettingsForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <SettingsSection
-        title={t('preferences.generalPreferences')}
-        {...subSectionBreakpoints}
+      <Grid
+        container
+        direction="column"
+        alignItems="stretch"
+        spacing={mainSectionGridSpacing}
       >
-        <GeneralUserSettingsForm
-          notificationsEmailResearch={notificationsEmailResearch}
-          setNotificationsEmailResearch={setNotificationsEmailResearch}
-          notificationsEmailNewFeatures={notificationsEmailNewFeatures}
-          setNotificationsEmailNewFeatures={setNotificationsEmailNewFeatures}
-        />
-      </SettingsSection>
-      <SettingsSection
-        title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
-        {...subSectionBreakpoints}
-      >
-        <VideosPollUserSettingsForm
-          compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
-          setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-          displayedCriteria={displayedCriteria}
-          setDisplayedCriteria={setDisplayedCriteria}
-          rateLaterAutoRemoval={rateLaterAutoRemoval}
-          setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-          recoDefaultUnsafe={recoDefaultUnsafe}
-          setRecoDefaultUnsafe={setRecoDefaultUnsafe}
-          recoDefaultUploadDate={recoDefaultUploadDate}
-          setRecoDefaultUploadDate={setRecoDefaultUploadDate}
-          apiErrors={apiErrors}
-        />
-      </SettingsSection>
+        <SettingsSection
+          title={t('preferences.generalPreferences')}
+          {...subSectionBreakpoints}
+        >
+          <GeneralUserSettingsForm
+            notificationsEmailResearch={notificationsEmailResearch}
+            setNotificationsEmailResearch={setNotificationsEmailResearch}
+            notificationsEmailNewFeatures={notificationsEmailNewFeatures}
+            setNotificationsEmailNewFeatures={setNotificationsEmailNewFeatures}
+          />
+        </SettingsSection>
+        <SettingsSection
+          title={`${t('preferences.preferencesRegarding')} ${t('poll.videos')}`}
+          {...subSectionBreakpoints}
+        >
+          <VideosPollUserSettingsForm
+            compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
+            setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+            displayedCriteria={displayedCriteria}
+            setDisplayedCriteria={setDisplayedCriteria}
+            rateLaterAutoRemoval={rateLaterAutoRemoval}
+            setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+            recoDefaultUnsafe={recoDefaultUnsafe}
+            setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+            recoDefaultUploadDate={recoDefaultUploadDate}
+            setRecoDefaultUploadDate={setRecoDefaultUploadDate}
+            apiErrors={apiErrors}
+          />
+        </SettingsSection>
+      </Grid>
       <Box
+        mt={4}
         position="sticky"
         bottom={theme.spacing(2)}
         zIndex={theme.zIndex.fab}
