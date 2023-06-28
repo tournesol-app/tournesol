@@ -8,6 +8,7 @@ import SettingsMenu from 'src/features/settings/SettingsMenu';
 import ProfileForm from 'src/features/settings/profile/ProfileForm';
 import {
   mainSectionBreakpoints,
+  mainSectionGridSpacing,
   settingsMenuBreakpoints,
   subSectionBreakpoints,
 } from 'src/pages/settings/layout';
@@ -28,6 +29,7 @@ function ProfilePage() {
             item
             direction="column"
             alignItems="stretch"
+            spacing={mainSectionGridSpacing}
             {...mainSectionBreakpoints}
           >
             <SettingsSection title={t('profile')} {...subSectionBreakpoints}>
