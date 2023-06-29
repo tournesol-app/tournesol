@@ -6,34 +6,31 @@ from django.utils import translation
 
 class Banner(models.Model):
     name = models.CharField(
-        help_text="The banner's name",
-        blank=False,
+        help_text="The banner's name.",
         unique=True,
         max_length=255,
     )
     date_start = models.DateTimeField(
-        help_text="Date at which the banner should start to be displayed",
-        blank=False,
+        help_text="Date on which the banner should be returned by the API.",
     )
     date_end = models.DateTimeField(
-        help_text="Date after which the banner should stop being displayed",
-        blank=False,
+        help_text="After this date the banner should not be returned by the API.",
     )
     security_advisory = models.BooleanField(
-        help_text="If True, the banner should be displayed in priority",
         default=False,
+        help_text="If True the banner is a security announcement.",
     )
     enabled = models.BooleanField(
-        help_text="If False, the banner should not be displayed",
         default=True,
+        help_text="Disabled banner should not be returned by the API.",
     )
     priority = models.IntegerField(
         help_text="Allows to order the banners.",
-        default=0,
+        default=1,
     )
 
     class Meta:
-        ordering = ["-date_start", "-date_end", "priority"]
+        ordering = ["-date_start", "-date_end", "-priority"]
 
     def __str__(self) -> str:
         return self.name
@@ -47,7 +44,7 @@ class Banner(models.Model):
             try:
                 locale = getattr(self, related).get(language="en")
             except ObjectDoesNotExist:
-                return self.name  # pylint: disable=no-member
+                return ""
         return locale.text
 
     def get_text_prefetch(self, related="texts", lang=None):
@@ -64,14 +61,14 @@ class Banner(models.Model):
                           if loc.language == "en"][0]
 
             except IndexError:
-                return ""  # pylint: disable=no-member
+                return ""
         return locale
-
-    def get_content_prefetch(self, lang=None):
-        return self.get_text_prefetch(related="texts", lang=lang)
 
     def get_title_prefetch(self, lang=None):
         return self.get_text_prefetch(related="titles", lang=lang)
+
+    def get_paragraph_prefetch(self, lang=None):
+        return self.get_text_prefetch(related="texts", lang=lang)
 
 
 class BannerTitle(models.Model):
@@ -81,11 +78,9 @@ class BannerTitle(models.Model):
         related_name="titles",
     )
     title = models.CharField(
-        blank=False,
         max_length=255,
     )
     language = models.CharField(
-        blank=False,
         max_length=10,
         choices=settings.LANGUAGES,
     )
@@ -103,11 +98,8 @@ class BannerText(models.Model):
         on_delete=models.CASCADE,
         related_name="texts",
     )
-    text = models.TextField(
-        blank=False,
-    )
+    text = models.TextField()
     language = models.CharField(
-        blank=False,
         max_length=10,
         choices=settings.LANGUAGES,
     )
@@ -126,11 +118,9 @@ class BannerActionLabel(models.Model):
         related_name="action_labels",
     )
     action_label = models.CharField(
-        blank=False,
         max_length=255,
     )
     language = models.CharField(
-        blank=False,
         max_length=10,
         choices=settings.LANGUAGES,
     )
@@ -146,13 +136,10 @@ class BannerActionLink(models.Model):
     banner = models.ForeignKey(
         Banner,
         on_delete=models.CASCADE,
-        related_name="links",
+        related_name="action_links",
     )
-    url = models.URLField(
-        blank=False,
-    )
+    url = models.URLField()
     language = models.CharField(
-        blank=False,
         max_length=10,
         choices=settings.LANGUAGES,
     )
