@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from backoffice.banner.models import Banner
+from backoffice.models.banner import Banner
 from core.utils.time import time_ago, time_ahead
 from tournesol.tests.utils.mock_now import MockNow
 

@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from backoffice.banner.models import (
+from backoffice.models.banner import (
     Banner,
     BannerActionLabel,
     BannerActionLink,

@@ -2,7 +2,7 @@ from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListAPIView
 
-from backoffice.banner.models import Banner
+from backoffice.models.banner import Banner
 from backoffice.serializers import BannerSerializer, TalkEntrySerializer
 from backoffice.talk.models import TalkEntry
 
