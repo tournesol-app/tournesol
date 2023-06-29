@@ -9,6 +9,7 @@ from rest_registration.api.serializers import (
 )
 
 from core.models.user import User
+from core.serializers.user_settings import TournesolUserSettingsSerializer
 
 RESERVED_USERNAMES = ["me"]
 
@@ -33,6 +34,7 @@ def _validate_username(value):
 
 class RegisterUserSerializer(DefaultRegisterUserSerializer):
     email = iunique_email
+    settings = TournesolUserSettingsSerializer(required=False)
 
     def validate_username(self, value):
         return _validate_username(value)

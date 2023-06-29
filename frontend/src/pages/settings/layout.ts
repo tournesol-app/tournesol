@@ -10,4 +10,5 @@ export const mainSectionBreakpoints = {
   lg: 10,
   xl: 10,
 };
+export const mainSectionGridSpacing = 8;
 export const subSectionBreakpoints = { xs: 12, sm: 12, md: 12, lg: 12, xl: 10 };
