@@ -8,8 +8,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django import db
-from solidago.comparisons_to_scores import ContinuousBradleyTerry
 from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_std
+from solidago.comparisons_to_scores import ContinuousBradleyTerry
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
@@ -28,16 +28,11 @@ from .global_scores import compute_scaled_scores, get_global_scores
 
 logger = logging.getLogger(__name__)
 
-MAX_SCORE = MEHESTAN_MAX_SCALED_SCORE
-POLL_SCALING_QUANTILE = 0.50
-POLL_SCALING_SCORE_AT_QUANTILE = 25.0
-POLL_SCALING_MIN_CONTRIBUTORS = 4
-
 VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 SCORE_SHIFT_W = 1.
-SCORE_SHIFT_QUANTILE = 0.10  # TODO maybe use 5% ?
+SCORE_SHIFT_QUANTILE = 0.10  # TODO maybe use 5% ?
 
 individual_scores_algo = ContinuousBradleyTerry(r_max=COMPARISON_MAX)
 
@@ -161,18 +156,21 @@ def run_mehestan_for_criterion(
         SCORE_SHIFT_W,
     )
     score_std_np = np.std(scaled_scores.score)
-    print("STD", score_std)
-    print("STD_NP", score_std_np)
+
+    print("DESCRIBE", scaled_scores.score.describe())
+    print("SCORES", scaled_scores.tail(20))
+
 
     scaled_scores.score -= score_shift
     scaled_scores.score /= score_std_np
     scaled_scores.uncertainty /= score_std_np
     print("STD", score_std)
     print("SHIFT", score_shift)
-    print("SCORES", scaled_scores.score)
-    print("UNCERTAINTY", scaled_scores.uncertainty)
-
     print("NEW_STD", np.std(scaled_scores.score))
+
+    print("DESCRIBE2", scaled_scores.score.describe())
+    print("SCORES2", scaled_scores.tail(20))
+
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
@@ -184,23 +182,6 @@ def run_mehestan_for_criterion(
         scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
         global_scores = get_global_scores(scaled_scores_with_voting_rights)
         global_scores["criteria"] = criteria
-
-        if update_poll_scaling and mode == ScoreMode.DEFAULT and len(global_scores) > 0:
-            scores_to_consider = global_scores[
-                global_scores["n_contributors"] >= POLL_SCALING_MIN_CONTRIBUTORS
-            ]["score"]
-            if len(scores_to_consider) == 0:
-                # Compute poll scaling over all entities if no entity has enough contributors
-                scores_to_consider = global_scores["score"]
-            quantile_value = np.quantile(scores_to_consider, POLL_SCALING_QUANTILE)
-            if quantile_value <= 0.0:
-                scale = 1.0
-            else:
-                scale = (
-                    np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE)) / quantile_value
-                )
-            poll.sigmoid_scale = scale
-            poll.save(update_fields=["sigmoid_scale"])
 
         # Apply poll scaling
         scale_function = poll.scale_function
