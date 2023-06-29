@@ -10,7 +10,7 @@ from backoffice.models.banner import (
     BannerText,
     BannerTitle,
 )
-from backoffice.talk.models import TalkEntry
+from backoffice.models.talk import TalkEntry
 
 
 @admin.register(TalkEntry)

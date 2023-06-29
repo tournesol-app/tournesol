@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from backoffice.talk.models import TalkEntry
+from backoffice.models.talk import TalkEntry
 from core.utils.time import time_ago, time_ahead
 from tournesol.tests.utils.mock_now import MockNow
 

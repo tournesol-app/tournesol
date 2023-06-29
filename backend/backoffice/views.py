@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView
 
 from backoffice.models.banner import Banner
 from backoffice.serializers import BannerSerializer, TalkEntrySerializer
-from backoffice.talk.models import TalkEntry
+from backoffice.models.talk import TalkEntry
 
 
 @extend_schema_view(
