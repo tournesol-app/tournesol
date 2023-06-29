@@ -3,8 +3,8 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListAPIView
 
 from backoffice.models.banner import Banner
-from backoffice.serializers import BannerSerializer, TalkEntrySerializer
 from backoffice.models.talk import TalkEntry
+from backoffice.serializers import BannerSerializer, TalkEntrySerializer
 
 
 @extend_schema_view(

@@ -72,8 +72,7 @@ class BannerActionLinkInline(admin.TabularInline):
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
     actions = ["enable_banners", "disable_banners"]
-    search_field = ("name")
-    ordering = ("-date_start", "-date_end", "priority")
+    search_field = ("name",)
     list_display = (
         "name",
         "date_start",
@@ -84,8 +83,11 @@ class BannerAdmin(admin.ModelAdmin):
     )
     list_filter = ("enabled", "security_advisory")
     inlines = (
-        BannerTitleInline, BannerTextInline, BannerActionLabelInline, BannerActionLinkInline
-        )
+        BannerTitleInline,
+        BannerTextInline,
+        BannerActionLabelInline,
+        BannerActionLinkInline,
+    )
 
     @admin.action(description=_("Enable the selected banners."))
     def enable_banners(self, request, queryset):
