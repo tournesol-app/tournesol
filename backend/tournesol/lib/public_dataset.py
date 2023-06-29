@@ -16,9 +16,6 @@ from django.utils import timezone
 from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
 from ml.mehestan.run import (
     MEHESTAN_MAX_SCALED_SCORE,
-    POLL_SCALING_MIN_CONTRIBUTORS,
-    POLL_SCALING_QUANTILE,
-    POLL_SCALING_SCORE_AT_QUANTILE,
     VOTE_WEIGHT_PRIVATE_RATINGS,
     VOTE_WEIGHT_PUBLIC_RATINGS,
     individual_scores_algo,
@@ -273,9 +270,6 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
                 "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
                 "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
                 "MAX_SCALED_SCORE": MEHESTAN_MAX_SCALED_SCORE,
-                "POLL_SCALING_MIN_CONTRIBUTORS": POLL_SCALING_MIN_CONTRIBUTORS,
-                "POLL_SCALING_QUANTILE": POLL_SCALING_QUANTILE,
-                "POLL_SCALING_SCORE_AT_QUANTILE": POLL_SCALING_SCORE_AT_QUANTILE,
             },
         },
     }

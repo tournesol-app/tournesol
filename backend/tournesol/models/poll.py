@@ -1,4 +1,3 @@
-from math import tau as TAU
 from typing import List
 
 import numpy as np

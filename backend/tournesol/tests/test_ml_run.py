@@ -141,9 +141,7 @@ class TestMlTrain(TransactionTestCase):
         self.assertEqual(video.tournesol_score, None)
         call_command("ml_train")
         video.refresh_from_db()
-        # TODO come back to this. Does it make sense to have 25?
-        # Is this a useful test?
-        self.assertAlmostEqual(video.tournesol_score, 25)
+        self.assertAlmostEqual(video.tournesol_score, 0, places=3)
 
     def test_individual_scaling_are_computed(self):
         # User 1 will belong to calibration users (as the most active trusted user)
