@@ -73,7 +73,7 @@ const Talks = () => {
 
             const talkDate = new Date(talk.date);
 
-            if (talkDate < now) {
+            if (talkDate < (new Date(now.getTime() - 2 * 3600 * 1000))) {
               acc.past.push(talk);
             } else {
               acc.future.push(talk);
