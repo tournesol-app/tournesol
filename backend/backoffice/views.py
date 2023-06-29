@@ -24,7 +24,7 @@ class TalkEntryListView(ListAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description="List all enabled banners",
+        description="List all enabled banners.",
     ),
 )
 class BannerListView(ListAPIView):
@@ -38,7 +38,7 @@ class BannerListView(ListAPIView):
             Banner.objects.all()
             .filter(enabled=True, date_start__lte=now, date_end__gte=now)
             .prefetch_related("texts", "titles")
-            .order_by("date_start")
+            .order_by("date_start", "date_end", "-priority")
         )
 
         return qst
