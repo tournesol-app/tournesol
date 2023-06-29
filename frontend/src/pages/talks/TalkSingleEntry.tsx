@@ -1,7 +1,15 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Link,
+  Button,
+  Chip,
+} from '@mui/material';
 import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
 
 import { TalkEntry } from 'src/services/openapi';
@@ -17,6 +25,18 @@ function isPast(talk: TalkEntry) {
 
   const now = new Date();
   return new Date(talk.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
+}
+
+function isOngoing(talk: TalkEntry) {
+  if (!talk.date) {
+    return false;
+  }
+
+  const now = new Date();
+  return (
+    !isPast(talk) &&
+    new Date(talk.date) < new Date(now.getTime() + TOLERANCE_PERIOD)
+  );
 }
 
 const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
@@ -60,7 +80,7 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
         alignItems="center"
         spacing={1}
       >
-        <Grid item>
+        <Grid item xs={6}>
           <Typography variant="h4">
             {headingLink ? (
               <Link
@@ -81,8 +101,21 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
           </Typography>
         </Grid>
         {displayedDatetime && (
-          <Grid item>
-            <Typography variant="body1">{displayedDatetime}</Typography>
+          <Grid
+            container
+            item
+            xs={6}
+            spacing={2}
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-end"
+          >
+            <Grid item>
+              {isOngoing(talk) && <Chip label="⚪ live" color="error" />}
+            </Grid>
+            <Grid item>
+              <Typography variant="body1">{displayedDatetime}</Typography>
+            </Grid>
           </Grid>
         )}
       </Grid>
