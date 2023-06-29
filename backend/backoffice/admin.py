@@ -3,14 +3,14 @@ from zoneinfo import ZoneInfo
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from backoffice.models.banner import (
+from backoffice.models import (
     Banner,
     BannerActionLabel,
     BannerActionLink,
     BannerText,
     BannerTitle,
+    TalkEntry,
 )
-from backoffice.models.talk import TalkEntry
 
 
 @admin.register(TalkEntry)

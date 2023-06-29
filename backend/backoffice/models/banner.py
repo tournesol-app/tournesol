@@ -26,7 +26,7 @@ class Banner(models.Model):
     )
     priority = models.IntegerField(
         help_text="Allows to order the banners.",
-        default=1,
+        default=5,
     )
 
     class Meta:

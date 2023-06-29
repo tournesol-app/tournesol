@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from backoffice.models.banner import Banner
-from backoffice.models.talk import TalkEntry
+from backoffice.models import Banner, TalkEntry
 
 
 class TalkEntrySerializer(serializers.ModelSerializer):
