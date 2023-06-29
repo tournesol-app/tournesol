@@ -8,12 +8,15 @@ import { TalkEntry } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
 import { extractVideoId } from 'src/utils/video';
 
+import { TOLERANCE_PERIOD } from './parameters';
+
 function isPast(talk: TalkEntry) {
   if (!talk.date) {
     return false;
   }
 
-  return new Date(talk.date) < new Date();
+  const now = new Date();
+  return new Date(talk.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
 }
 
 const TalkHeading = ({ talk }: { talk: TalkEntry }) => {

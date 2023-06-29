@@ -10,6 +10,8 @@ import TalkEntryList from 'src/pages/talks/TalkEntryList';
 import { tournesolTalksMailingListUrl } from 'src/utils/url';
 import { BackofficeService, TalkEntry } from 'src/services/openapi';
 
+import { TOLERANCE_PERIOD } from './parameters';
+
 interface SortedTalkAccumulator {
   past: TalkEntry[];
   future: TalkEntry[];
@@ -73,7 +75,7 @@ const Talks = () => {
 
             const talkDate = new Date(talk.date);
 
-            if (talkDate < (new Date(now.getTime() - 2 * 3600 * 1000))) {
+            if (talkDate < new Date(now.getTime() - TOLERANCE_PERIOD)) {
               acc.past.push(talk);
             } else {
               acc.future.push(talk);
