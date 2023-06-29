@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from backoffice.models.banner import Banner
+from backoffice.models.banner import Banner, BannerText, BannerTitle
 from core.utils.time import time_ago, time_ahead
 from tournesol.tests.utils.mock_now import MockNow
 
@@ -12,9 +12,22 @@ def create_banner(name, date_start, date_end, enabled):
         name=name,
         date_start=date_start,
         date_end=date_end,
-        enabled=enabled,
+        enabled=enabled,        
     )
 
+def create_title_banner(banner, language, title):
+    return BannerTitle.objects.create(
+        banner=banner,
+        language=language,
+        title=title,
+    )
+
+def create_text_banner(banner, language, text):
+    return BannerText.objects.create(
+        banner=banner,
+        language=language,
+        text=text,
+    )
 
 class BannersListViewTestCase(TestCase):
     """
@@ -78,7 +91,7 @@ class BannersListViewTestCase(TestCase):
         results = response.data["results"]
 
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["name"], self.banner_enabled_current.name)
+        self.assertEqual(results[0]["name"], self.banner_enabled_ongoing.name)
 
         self.banner_disabled.enabled = True
         self.banner_disabled.save()
@@ -114,3 +127,81 @@ class BannersListViewTestCase(TestCase):
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
         self.assertEqual(len(results), 0)
+
+    @MockNow.Context()
+    def test_language_requested(self):
+        """
+        Return the banner in the requested language.
+        If it does not exist, return the default language.
+        If there is no default language, return emptry string.
+        """
+        english_title = create_title_banner(
+            self.banner_enabled_ongoing, "en", "English title"
+        )
+        french_title = create_title_banner(
+            self.banner_enabled_ongoing, "fr", "French title"
+        )
+        english_text = create_text_banner(
+            self.banner_enabled_ongoing, "en", "English text"
+        )
+        french_text = create_text_banner(
+            self.banner_enabled_ongoing, "fr", "French text"
+        )
+        
+        self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
+        response = self.client.get(self.banner_base_url)
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertDictEqual(
+            results[0],
+            {
+                "name": self.banner_enabled_ongoing.name,
+                "title": french_title.title,
+                "text": french_text.text,
+                "date_start": "2019-12-30T00:00:00Z",
+                "date_end": "2020-01-03T00:00:00Z",
+                "priority": 5,
+                "security_advisory": False,
+            },
+        )
+
+        french_text.delete()
+        french_title.delete()
+        self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
+        response = self.client.get(self.banner_base_url)
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertDictEqual(
+            results[0],
+            {
+                "name": self.banner_enabled_ongoing.name,
+                "title": english_title.title,
+                "text": english_text.text,
+                "date_start": "2019-12-30T00:00:00Z",
+                "date_end": "2020-01-03T00:00:00Z",
+                "priority": 5,
+                "security_advisory": False,
+            },
+        )
+
+        english_text.delete()
+        english_title.delete()
+        self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
+        response = self.client.get(self.banner_base_url)
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertDictEqual(
+            results[0],
+            {
+                "name": self.banner_enabled_ongoing.name,
+                "title": "",
+                "text": "",
+                "date_start": "2019-12-30T00:00:00Z",
+                "date_end": "2020-01-03T00:00:00Z",
+                "priority": 5,
+                "security_advisory": False,
+            },
+        )
