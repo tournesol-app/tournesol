@@ -16,26 +16,24 @@ def create_banner(name, date_start, date_end, enabled):
     )
 
 
-class BannersListView(TestCase):
+class BannersListViewTestCase(TestCase):
     """
     TestCase of the `BannerListView` view.
     """
+
     @MockNow.Context()
     def setUp(self):
         self.client = APIClient()
         self.banner_base_url = "/backoffice/banners/"
 
-        self.banner_enabled_current = create_banner(
-            "banner_enabled_current", time_ago(days=2),
-            time_ahead(days=2), True
+        self.banner_enabled_ongoing = create_banner(
+            "banner_enabled_ongoing", time_ago(days=2), time_ahead(days=2), True
         )
         self.banner_enabled_old = create_banner(
-            "banner_enabled_old", time_ago(days=10),
-            time_ago(days=5), True
+            "banner_enabled_old", time_ago(days=10), time_ago(days=5), True
         )
         self.banner_disabled = create_banner(
-            "banner_disabled", time_ago(days=2),
-            time_ahead(days=2), False
+            "banner_disabled", time_ago(days=2), time_ahead(days=2), False
         )
 
     @MockNow.Context()
@@ -50,12 +48,35 @@ class BannersListView(TestCase):
         self.assertEqual(len(results), 1)
 
     @MockNow.Context()
+    def test_list_return_all_expected_fields(self):
+        """
+        Only the expected fields are returned by the API.
+        """
+        response = self.client.get(self.banner_base_url)
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertDictEqual(
+            results[0],
+            {
+                "name": self.banner_enabled_ongoing.name,
+                "title": "",
+                "text": "",
+                "date_start": "2019-12-30T00:00:00Z",
+                "date_end": "2020-01-03T00:00:00Z",
+                "priority": 5,
+                "security_advisory": False,
+            },
+        )
+
+    @MockNow.Context()
     def test_list_only_enabled_banners(self):
         """
         Only enabled Banners can be listed.
         """
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
+
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["name"], self.banner_enabled_current.name)
 
@@ -74,12 +95,13 @@ class BannersListView(TestCase):
     @MockNow.Context()
     def test_list_only_ongoing_banners(self):
         """
-        Only ongoing banners are displayed
+        Only ongoing Banners can be listed.
         """
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
+
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["name"], self.banner_enabled_current.name)
+        self.assertEqual(results[0]["name"], self.banner_enabled_ongoing.name)
 
         self.banner_enabled_old.date_end = time_ahead(days=2)
         self.banner_enabled_old.save()
