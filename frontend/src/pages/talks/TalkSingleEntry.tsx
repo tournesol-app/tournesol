@@ -1,18 +1,22 @@
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
-
-import { TalkEntry } from 'src/mocks';
-import { extractVideoId } from 'src/utils/video';
-import { Trans, useTranslation } from 'react-i18next';
 import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
 
-const toPaddedString = (num: number): string => {
-  return num.toString().padStart(2, '0');
-};
+import { TalkEntry } from 'src/services/openapi';
+import { localDate, localTime } from 'src/utils/datetime';
+import { extractVideoId } from 'src/utils/video';
+
+import { TOLERANCE_PERIOD } from './parameters';
 
 function isPast(talk: TalkEntry) {
-  return new Date(talk.date) < new Date();
+  if (!talk.date) {
+    return false;
+  }
+
+  const now = new Date();
+  return new Date(talk.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
 }
 
 const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
@@ -23,19 +27,20 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
     headingLink = talk.invitation_link;
   }
 
-  let displayedDate;
-  const talkDate = new Date(talk.date);
+  let displayedDatetime;
 
-  if (talk.date) {
-    displayedDate = `${talkDate.getUTCFullYear()}-${toPaddedString(
-      talkDate.getUTCMonth() + 1
-    )}-${toPaddedString(talkDate.getUTCDate())}`;
-  }
+  // We display the local date according to the Europe/Paris timezone.
+  if (talk.date_as_tz_europe_paris) {
+    const date = localDate(talk.date_as_tz_europe_paris);
+    const time = localTime(talk.date_as_tz_europe_paris);
 
-  if (!isPast(talk)) {
-    displayedDate += ` ${toPaddedString(
-      talkDate.getUTCHours()
-    )}:${toPaddedString(talkDate.getUTCMinutes())} CET`;
+    if (date) {
+      displayedDatetime = date;
+
+      if (!isPast(talk) && time) {
+        displayedDatetime += ` ${time} Europe/Paris`;
+      }
+    }
   }
 
   return (
@@ -75,9 +80,11 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
             )}
           </Typography>
         </Grid>
-        <Grid item>
-          <Typography variant="body1">{displayedDate}</Typography>
-        </Grid>
+        {displayedDatetime && (
+          <Grid item>
+            <Typography variant="body1">{displayedDatetime}</Typography>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );
@@ -142,7 +149,7 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
   const { t } = useTranslation();
 
   const talkIsPast = isPast(talk);
-  const abstractParagraphs = talk.abstract.split('\n');
+  const abstractParagraphs = talk.abstract ? talk.abstract.split('\n') : [];
 
   let actionLink;
   if (talkIsPast && talk.youtube_link) {
@@ -159,9 +166,9 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
       <Box p={2} sx={{ overflow: 'auto' }}>
         <TalkImagery talk={talk} />
         <Typography variant="h6" color="secondary" gutterBottom>
-          {talk.speaker && (
+          {talk.speakers && (
             <Trans t={t} i18nKey="talksPage.by">
-              By {{ speaker: talk.speaker }}
+              By {{ speaker: talk.speakers }}
             </Trans>
           )}
         </Typography>

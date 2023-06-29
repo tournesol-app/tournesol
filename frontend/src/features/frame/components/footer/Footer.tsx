@@ -21,6 +21,7 @@ import {
   paypalTournesolUrl,
   tournesolTalksMailingListUrl,
   whitePaperUrl,
+  tournesolTalksYTPlaylist,
 } from 'src/utils/url';
 import { theme } from 'src/theme';
 
@@ -89,13 +90,17 @@ const Footer = () => {
           name: t('footer.publicDatabase'),
           to: `${apiUrl}/exports/all/`,
         },
-        /*{
-          name: t('footer.tournesolTalksPage'),
+        {
+          name: t('footer.tournesolTalks'),
           to: '/talks',
-        },*/
+        },
         {
           name: t('footer.tournesolTalksMailingList'),
           to: tournesolTalksMailingListUrl,
+        },
+        {
+          name: t('footer.tournesolTalksYTPlaylist'),
+          to: tournesolTalksYTPlaylist,
         },
       ],
     },

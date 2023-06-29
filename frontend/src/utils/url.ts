@@ -35,6 +35,8 @@ export const youtubePlaylistEnUrl =
   'https://youtube.com/playlist?list=PLXX93NlSmUpayYeaNvKaeftX_QwEei3fU';
 export const youtubePlaylistFrUrl =
   'https://youtube.com/playlist?list=PLXX93NlSmUpZkR9NaBXMaPlPalESb5tDv';
+export const tournesolTalksYTPlaylist =
+  'https://www.youtube.com/playlist?list=PLXX93NlSmUpYsnPsCp_HXanwKlYmeJiNB';
 
 /**
  * Support
