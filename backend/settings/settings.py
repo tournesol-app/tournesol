@@ -117,6 +117,11 @@ REST_REGISTRATION = {
     "REGISTER_EMAIL_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "verify-email/",
     "REGISTER_SERIALIZER_CLASS": "core.serializers.user.RegisterUserSerializer",
     "PROFILE_SERIALIZER_CLASS": "core.serializers.user.UserProfileSerializer",
+    "USER_EDITABLE_FIELDS": [
+        "username",
+        "first_name",
+        "last_name",
+    ],
     "VERIFICATION_FROM_EMAIL": "noreply@tournesol.app",
     "REGISTER_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/register/body.html",
