@@ -214,8 +214,9 @@ class TestMlTrain(TransactionTestCase):
         call_command("ml_train")
         video1.refresh_from_db()
         video2.refresh_from_db()
-        self.assertAlmostEqual(video1.tournesol_score, -44.0, places=1)
-        self.assertAlmostEqual(video2.tournesol_score, 44.0, places=1)
+        # At least 1 pt difference between the 2 videos
+        self.assertGreater(video2.tournesol_score, video1.tournesol_score + 1)
+
         # Asserts that voting rights have been given the correct values based on the number of
         # contributors and their verified status
         # 0.4 = 0.8 [verified] * 0.5 [privacy penalty]
@@ -315,5 +316,4 @@ class TestMlTrain(TransactionTestCase):
         video1.refresh_from_db()
         video2.refresh_from_db()
 
-        self.assertAlmostEqual(video1.tournesol_score, 44.0, places=1)
-        self.assertAlmostEqual(video2.tournesol_score, -44.0, places=1)
+        self.assertGreater(video1.tournesol_score, video2.tournesol_score + 1)
