@@ -157,19 +157,19 @@ def run_mehestan_for_criterion(
     )
     score_std_np = np.std(scaled_scores.score)
 
-    print("DESCRIBE", scaled_scores.score.describe())
-    print("SCORES", scaled_scores.tail(20))
-
+    print("-- scaled_scores --\n", scaled_scores.score.describe())
+    print("tail:\n", scaled_scores.tail(20))
 
     scaled_scores.score -= score_shift
     scaled_scores.score /= score_std_np
     scaled_scores.uncertainty /= score_std_np
+
     print("STD", score_std)
     print("SHIFT", score_shift)
-    print("NEW_STD", np.std(scaled_scores.score))
+    print("NEW STD", np.std(scaled_scores.score))
 
-    print("DESCRIBE2", scaled_scores.score.describe())
-    print("SCORES2", scaled_scores.tail(20))
+    print("-- scaled_scores after shift --\n", scaled_scores.score.describe())
+    print("tail:\n", scaled_scores.tail(20))
 
 
     indiv_scores["criteria"] = criteria
