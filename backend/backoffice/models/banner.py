@@ -44,11 +44,15 @@ class Banner(models.Model, GetText):
     def get_action_label_prefetch(self, lang=None):
         return self.get_localized_text_prefetch("action_label", "locales", lang=lang)
 
-    def get_url_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch("url", "locales", lang=lang)
+    def get_action_link_prefetch(self, lang=None):
+        return self.get_localized_text_prefetch("action_link", "locales", lang=lang)
 
 
 class BannerLocale(models.Model):
+    language = models.CharField(
+        max_length=10,
+        choices=settings.LANGUAGES,
+    )
     banner = models.ForeignKey(
         Banner,
         on_delete=models.CASCADE,
@@ -60,11 +64,12 @@ class BannerLocale(models.Model):
     text = models.TextField()
     action_label = models.CharField(
         max_length=255,
+        null=True,
+        blank=True,
     )
-    url = models.URLField()
-    language = models.CharField(
-        max_length=10,
-        choices=settings.LANGUAGES,
+    action_link = models.URLField(
+        null=True,
+        blank=True,
     )
 
     class Meta:

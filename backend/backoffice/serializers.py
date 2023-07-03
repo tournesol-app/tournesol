@@ -22,7 +22,7 @@ class BannerSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="get_title_prefetch")
     text = serializers.CharField(source="get_paragraph_prefetch")
     action_label = serializers.CharField(source="get_action_label_prefetch")
-    url = serializers.CharField(source="get_url_prefetch")
+    action_link = serializers.CharField(source="get_action_link_prefetch")
 
     class Meta:
         model = Banner
@@ -33,7 +33,7 @@ class BannerSerializer(serializers.ModelSerializer):
             "title",
             "text",
             "action_label",
-            "url",
+            "action_link",
             "priority",
             "security_advisory",
         ]

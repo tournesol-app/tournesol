@@ -57,9 +57,7 @@ class BannerAdmin(admin.ModelAdmin):
         "enabled",
     )
     list_filter = ("enabled", "security_advisory")
-    inlines = (
-        BannerLocaleInline,
-    )
+    inlines = (BannerLocaleInline,)
 
     @admin.action(description=_("Enable the selected banners."))
     def enable_banners(self, request, queryset):

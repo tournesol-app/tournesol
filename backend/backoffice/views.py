@@ -23,7 +23,7 @@ class TalkEntryListView(ListAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description="List all enabled banners.",
+        description="List all active banners.",
     ),
 )
 class BannerListView(ListAPIView):

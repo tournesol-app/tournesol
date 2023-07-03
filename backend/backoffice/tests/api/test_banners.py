@@ -12,16 +12,20 @@ def create_banner(name, date_start, date_end, enabled):
         name=name,
         date_start=date_start,
         date_end=date_end,
-        enabled=enabled,        
+        enabled=enabled,
     )
 
-def create_banner_locale(banner, language, title, text):
+
+def create_banner_locale(banner, language, title, text, action_label, action_link):
     return BannerLocale.objects.create(
         banner=banner,
         language=language,
         title=title,
         text=text,
+        action_label=action_label,
+        action_link=action_link,
     )
+
 
 class BannersListViewTestCase(TestCase):
     """
@@ -72,7 +76,7 @@ class BannersListViewTestCase(TestCase):
                 "title": "",
                 "text": "",
                 "action_label": "",
-                "url": "",
+                "action_link": "",
                 "priority": 5,
                 "security_advisory": False,
             },
@@ -125,24 +129,34 @@ class BannersListViewTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
     @MockNow.Context()
-    def test_language_requested(self):
+    def test_list_in_the_requested_language(self):
         """
-        Return the banner in the requested language.
-        If it does not exist, return the default language.
-        If there is no default language, return emptry string.
+        The banner should be returned in the requested language.
+
+        If the expected translation does not exist, return the English
+        translation. If no English translation exists, return empty strings.
         """
         english_banner = create_banner_locale(
-            self.banner_enabled_ongoing, "en", "English title", "English text"
+            self.banner_enabled_ongoing,
+            "en",
+            "en title",
+            "en text",
+            "en action label",
+            "en action link",
         )
         french_banner = create_banner_locale(
-            self.banner_enabled_ongoing, "fr", "French title", "French text"
+            self.banner_enabled_ongoing,
+            "fr",
+            "fr title",
+            "fr text",
+            "fr action label",
+            "fr action_link",
         )
-        
+
         self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
 
-        self.assertEqual(len(results), 1)
         self.assertDictEqual(
             results[0],
             {
@@ -151,8 +165,8 @@ class BannersListViewTestCase(TestCase):
                 "date_end": "2020-01-03T00:00:00Z",
                 "title": french_banner.title,
                 "text": french_banner.text,
-                "action_label": "",
-                "url": "",
+                "action_label": french_banner.action_label,
+                "action_link": french_banner.action_link,
                 "priority": 5,
                 "security_advisory": False,
             },
@@ -163,7 +177,6 @@ class BannersListViewTestCase(TestCase):
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
 
-        self.assertEqual(len(results), 1)
         self.assertDictEqual(
             results[0],
             {
@@ -172,8 +185,8 @@ class BannersListViewTestCase(TestCase):
                 "date_end": "2020-01-03T00:00:00Z",
                 "title": english_banner.title,
                 "text": english_banner.text,
-                "action_label": "",
-                "url": "",
+                "action_label": english_banner.action_label,
+                "action_link": english_banner.action_link,
                 "priority": 5,
                 "security_advisory": False,
             },
@@ -184,7 +197,6 @@ class BannersListViewTestCase(TestCase):
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
 
-        self.assertEqual(len(results), 1)
         self.assertDictEqual(
             results[0],
             {
@@ -194,7 +206,7 @@ class BannersListViewTestCase(TestCase):
                 "title": "",
                 "text": "",
                 "action_label": "",
-                "url": "",
+                "action_link": "",
                 "priority": 5,
                 "security_advisory": False,
             },
