@@ -148,6 +148,7 @@ const Signup = () => {
               </Grid>
               <Grid item xs={12} display="flex" alignItems="center" gap={1}>
                 <Checkbox
+                  name="accept_terms"
                   color="secondary"
                   checked={acceptPolicy}
                   onClick={() => setAcceptPolicy(!acceptPolicy)}
