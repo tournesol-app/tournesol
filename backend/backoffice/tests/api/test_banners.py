@@ -16,14 +16,14 @@ def create_banner(name, date_start, date_end, enabled):
     )
 
 
-def create_banner_locale(banner, language, title, text, action_label, action_link):
+def create_banner_locale(banner, language):
     return BannerLocale.objects.create(
         banner=banner,
         language=language,
-        title=title,
-        text=text,
-        action_label=action_label,
-        action_link=action_link,
+        title=f"title_{language}",
+        text=f"text_{language}",
+        action_label=f"action_label_{language}",
+        action_link=f"action_link_{language}",
     )
 
 
@@ -139,18 +139,10 @@ class BannersListViewTestCase(TestCase):
         english_banner = create_banner_locale(
             self.banner_enabled_ongoing,
             "en",
-            "en title",
-            "en text",
-            "en action label",
-            "en action link",
         )
         french_banner = create_banner_locale(
             self.banner_enabled_ongoing,
             "fr",
-            "fr title",
-            "fr text",
-            "fr action label",
-            "fr action_link",
         )
 
         self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
