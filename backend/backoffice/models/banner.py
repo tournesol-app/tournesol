@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.db import models
 
-from tournesol.utils.get_text import GetText
+from core.models.mixin import LocalizedFieldsMixin
 
 
-class Banner(models.Model, GetText):
+class Banner(LocalizedFieldsMixin, models.Model):
     name = models.CharField(
         help_text="The banner's name.",
         unique=True,
@@ -36,16 +36,16 @@ class Banner(models.Model, GetText):
         return self.name
 
     def get_title_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch("title", "locales", lang=lang)
+        return self.get_localized_text_prefetch(field="title", related="locales", lang=lang)
 
     def get_paragraph_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch("text", "locales", lang=lang)
+        return self.get_localized_text_prefetch(field="text", related="locales", lang=lang)
 
     def get_action_label_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch("action_label", "locales", lang=lang)
+        return self.get_localized_text_prefetch(field="action_label", related="locales", lang=lang)
 
     def get_action_link_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch("action_link", "locales", lang=lang)
+        return self.get_localized_text_prefetch(field="action_link", related="locales", lang=lang)
 
 
 class BannerLocale(models.Model):

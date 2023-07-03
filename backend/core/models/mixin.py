@@ -2,12 +2,19 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import translation
 
 
-class GetText:
-    def get_localized_text(self, field, related, lang=None,):
+class LocalizedFieldsMixin:
+    """
+    A mixin that can be inherited by all models having one or more relations that contain
+    translated text.
+    """
+
+    def get_localized_text(self, related, field, lang=None, default=""):
+        """
+        Return the content of `field` from the related model `related`,
+        translated in the language `lang`.
+        """
         if lang is None:
             lang = translation.get_language()
-
-        is_faq = related in ('questions', 'answers')
 
         try:
             locale = getattr(self, related).get(language=lang)
@@ -15,12 +22,11 @@ class GetText:
             try:
                 locale = getattr(self, related).get(language="en")
             except ObjectDoesNotExist:
-                if is_faq:
-                    return self.name  # pylint: disable=no-member
-                return ""
+                return default
+
         return getattr(locale, field)
 
-    def get_localized_text_prefetch(self, field, related, lang=None):
+    def get_localized_text_prefetch(self, related, field, lang=None, default=""):
         """
         Contrary to `self.get_text` this method consider the related instances
         as already prefetched with `prefetch_related`, and use `.all()` instead
@@ -29,19 +35,16 @@ class GetText:
         if lang is None:
             lang = translation.get_language()
 
-        is_faq = related in ('questions', 'answers')
+        is_faq = related in ("questions", "answers")
 
         try:
-            locale = [loc for loc in getattr(self, related).all()
-                      if loc.language == lang][0]
+            locale = [loc for loc in getattr(self, related).all() if loc.language == lang][0]
 
         except IndexError:
             try:
-                locale = [loc for loc in getattr(self, related).all()
-                          if loc.language == "en"][0]
+                locale = [loc for loc in getattr(self, related).all() if loc.language == "en"][0]
 
             except IndexError:
-                if is_faq:
-                    return self.name  # pylint: disable=no-member
-                return ""
+                return default
+
         return getattr(locale, field)
