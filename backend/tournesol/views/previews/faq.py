@@ -108,7 +108,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
         if not question.enabled:
             return self.default_preview()
 
-        title = question.get_text(related="questions")
+        title = question.get_localized_text(related="questions", field="text")
 
         preview_image = Image.new(
             "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_FONT
