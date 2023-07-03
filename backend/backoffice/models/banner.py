@@ -1,10 +1,10 @@
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.utils import translation
+
+from tournesol.utils.get_text import GetText
 
 
-class Banner(models.Model):
+class Banner(models.Model, GetText):
     name = models.CharField(
         help_text="The banner's name.",
         unique=True,
@@ -35,46 +35,17 @@ class Banner(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def get_localized_text(self, field, related="locales", lang=None):
-        if lang is None:
-            lang = translation.get_language()
-        try:
-            locale = getattr(self, related).get(language=lang)
-        except ObjectDoesNotExist:
-            try:
-                locale = getattr(self, related).get(language="en")
-            except ObjectDoesNotExist:
-                return ""
-        return getattr(locale, field)
-
-    def get_localized_text_prefetch(self, field, related="locales", lang=None):
-        if lang is None:
-            lang = translation.get_language()
-
-        try:
-            locale = [loc for loc in getattr(self, related).all()
-                      if loc.language == lang][0]
-
-        except IndexError:
-            try:
-                locale = [loc for loc in getattr(self, related).all()
-                          if loc.language == "en"][0]
-
-            except IndexError:
-                return ""
-        return getattr(locale, field)
-
     def get_title_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch(related="locales", lang=lang, field="title")
+        return self.get_localized_text_prefetch("title", "locales", lang=lang)
 
     def get_paragraph_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch(related="locales", lang=lang, field="text")
+        return self.get_localized_text_prefetch("text", "locales", lang=lang)
 
     def get_action_label_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch(related="locales", lang=lang, field="action_label")
+        return self.get_localized_text_prefetch("action_label", "locales", lang=lang)
 
     def get_url_prefetch(self, lang=None):
-        return self.get_localized_text_prefetch(related="locales", lang=lang, field="url")
+        return self.get_localized_text_prefetch("url", "locales", lang=lang)
 
 
 class BannerLocale(models.Model):
