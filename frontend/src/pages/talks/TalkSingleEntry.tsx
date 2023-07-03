@@ -10,7 +10,11 @@ import {
   Button,
   Chip,
 } from '@mui/material';
-import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
+import {
+  FiberManualRecord,
+  PersonAddAlt1,
+  PlayArrow,
+} from '@mui/icons-material';
 
 import { TalkEntry } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
@@ -27,7 +31,7 @@ function isPast(talk: TalkEntry) {
   return new Date(talk.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
 }
 
-function isOngoing(talk: TalkEntry) {
+function isLive(talk: TalkEntry) {
   if (!talk.date) {
     return false;
   }
@@ -40,6 +44,8 @@ function isOngoing(talk: TalkEntry) {
 }
 
 const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
+  const { t } = useTranslation();
+
   let headingLink;
   if (isPast(talk) && talk.youtube_link) {
     headingLink = talk.youtube_link;
@@ -80,7 +86,7 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
         alignItems="center"
         spacing={1}
       >
-        <Grid item xs={6}>
+        <Grid item>
           <Typography variant="h4">
             {headingLink ? (
               <Link
@@ -101,21 +107,17 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
           </Typography>
         </Grid>
         {displayedDatetime && (
-          <Grid
-            container
-            item
-            xs={6}
-            spacing={2}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-end"
-          >
-            <Grid item>
-              {isOngoing(talk) && <Chip label="⚪ live" color="error" />}
-            </Grid>
-            <Grid item>
+          <Grid item>
+            <Box display="flex" alignItems="center" gap={1}>
+              {isLive(talk) && (
+                <Chip
+                  label={t('talksPage.live')}
+                  color="primary"
+                  icon={<FiberManualRecord fontSize="small" color="error" />}
+                />
+              )}
               <Typography variant="body1">{displayedDatetime}</Typography>
-            </Grid>
+            </Box>
           </Grid>
         )}
       </Grid>
