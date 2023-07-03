@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from backoffice.models.banner import Banner, BannerText, BannerTitle
+from backoffice.models.banner import Banner, BannerLocale
 from core.utils.time import time_ago, time_ahead
 from tournesol.tests.utils.mock_now import MockNow
 
@@ -15,17 +15,11 @@ def create_banner(name, date_start, date_end, enabled):
         enabled=enabled,        
     )
 
-def create_title_banner(banner, language, title):
-    return BannerTitle.objects.create(
+def create_banner_locale(banner, language, title, text):
+    return BannerLocale.objects.create(
         banner=banner,
         language=language,
         title=title,
-    )
-
-def create_text_banner(banner, language, text):
-    return BannerText.objects.create(
-        banner=banner,
-        language=language,
         text=text,
     )
 
@@ -73,10 +67,12 @@ class BannersListViewTestCase(TestCase):
             results[0],
             {
                 "name": self.banner_enabled_ongoing.name,
-                "title": "",
-                "text": "",
                 "date_start": "2019-12-30T00:00:00Z",
                 "date_end": "2020-01-03T00:00:00Z",
+                "title": "",
+                "text": "",
+                "action_label": "",
+                "url": "",
                 "priority": 5,
                 "security_advisory": False,
             },
@@ -135,17 +131,11 @@ class BannersListViewTestCase(TestCase):
         If it does not exist, return the default language.
         If there is no default language, return emptry string.
         """
-        english_title = create_title_banner(
-            self.banner_enabled_ongoing, "en", "English title"
+        english_banner = create_banner_locale(
+            self.banner_enabled_ongoing, "en", "English title", "English text"
         )
-        french_title = create_title_banner(
-            self.banner_enabled_ongoing, "fr", "French title"
-        )
-        english_text = create_text_banner(
-            self.banner_enabled_ongoing, "en", "English text"
-        )
-        french_text = create_text_banner(
-            self.banner_enabled_ongoing, "fr", "French text"
+        french_banner = create_banner_locale(
+            self.banner_enabled_ongoing, "fr", "French title", "French text"
         )
         
         self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
@@ -157,17 +147,18 @@ class BannersListViewTestCase(TestCase):
             results[0],
             {
                 "name": self.banner_enabled_ongoing.name,
-                "title": french_title.title,
-                "text": french_text.text,
                 "date_start": "2019-12-30T00:00:00Z",
                 "date_end": "2020-01-03T00:00:00Z",
+                "title": french_banner.title,
+                "text": french_banner.text,
+                "action_label": "",
+                "url": "",
                 "priority": 5,
                 "security_advisory": False,
             },
         )
 
-        french_text.delete()
-        french_title.delete()
+        french_banner.delete()
         self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
@@ -177,17 +168,18 @@ class BannersListViewTestCase(TestCase):
             results[0],
             {
                 "name": self.banner_enabled_ongoing.name,
-                "title": english_title.title,
-                "text": english_text.text,
                 "date_start": "2019-12-30T00:00:00Z",
                 "date_end": "2020-01-03T00:00:00Z",
+                "title": english_banner.title,
+                "text": english_banner.text,
+                "action_label": "",
+                "url": "",
                 "priority": 5,
                 "security_advisory": False,
             },
         )
 
-        english_text.delete()
-        english_title.delete()
+        english_banner.delete()
         self.client.credentials(HTTP_ACCEPT_LANGUAGE="fr")
         response = self.client.get(self.banner_base_url)
         results = response.data["results"]
@@ -197,11 +189,14 @@ class BannersListViewTestCase(TestCase):
             results[0],
             {
                 "name": self.banner_enabled_ongoing.name,
+                "date_start": "2019-12-30T00:00:00Z",
+                "date_end": "2020-01-03T00:00:00Z",
                 "title": "",
                 "text": "",
-                "date_start": "2019-12-30T00:00:00Z",
-                "date_end": "2020-01-03T00:00:00Z",
+                "action_label": "",
+                "url": "",
                 "priority": 5,
                 "security_advisory": False,
             },
+            results[0],
         )

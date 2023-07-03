@@ -36,7 +36,7 @@ class BannerListView(ListAPIView):
         qst = (
             Banner.objects.all()
             .filter(enabled=True, date_start__lte=now, date_end__gte=now)
-            .prefetch_related("texts", "titles")
+            .prefetch_related("locales")
             .order_by("date_start", "date_end", "-priority")
         )
 

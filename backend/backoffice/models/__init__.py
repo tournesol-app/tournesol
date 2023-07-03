@@ -1,2 +1,2 @@
-from .banner import Banner, BannerActionLabel, BannerActionLink, BannerText, BannerTitle
+from .banner import Banner, BannerLocale
 from .talk import TalkEntry

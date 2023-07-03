@@ -21,15 +21,19 @@ class TalkEntrySerializer(serializers.ModelSerializer):
 class BannerSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="get_title_prefetch")
     text = serializers.CharField(source="get_paragraph_prefetch")
+    action_label = serializers.CharField(source="get_action_label_prefetch")
+    url = serializers.CharField(source="get_url_prefetch")
 
     class Meta:
         model = Banner
         fields = [
             "name",
-            "title",
-            "text",
             "date_start",
             "date_end",
+            "title",
+            "text",
+            "action_label",
+            "url",
             "priority",
             "security_advisory",
         ]
