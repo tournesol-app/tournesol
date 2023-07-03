@@ -35,8 +35,6 @@ class LocalizedFieldsMixin:
         if lang is None:
             lang = translation.get_language()
 
-        is_faq = related in ("questions", "answers")
-
         try:
             locale = [loc for loc in getattr(self, related).all() if loc.language == lang][0]
 
