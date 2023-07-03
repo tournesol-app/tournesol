@@ -1,8 +1,20 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Grid, Paper, Typography, Link, Button } from '@mui/material';
-import { PersonAddAlt1, PlayArrow } from '@mui/icons-material';
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Link,
+  Button,
+  Chip,
+} from '@mui/material';
+import {
+  FiberManualRecord,
+  PersonAddAlt1,
+  PlayArrow,
+} from '@mui/icons-material';
 
 import { TalkEntry } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
@@ -19,7 +31,21 @@ function isPast(talk: TalkEntry) {
   return new Date(talk.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
 }
 
+function isLive(talk: TalkEntry) {
+  if (!talk.date) {
+    return false;
+  }
+
+  const now = new Date();
+  return (
+    !isPast(talk) &&
+    new Date(talk.date) < new Date(now.getTime() + TOLERANCE_PERIOD)
+  );
+}
+
 const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
+  const { t } = useTranslation();
+
   let headingLink;
   if (isPast(talk) && talk.youtube_link) {
     headingLink = talk.youtube_link;
@@ -82,7 +108,16 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
         </Grid>
         {displayedDatetime && (
           <Grid item>
-            <Typography variant="body1">{displayedDatetime}</Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              {isLive(talk) && (
+                <Chip
+                  label={t('talksPage.live')}
+                  color="primary"
+                  icon={<FiberManualRecord fontSize="small" color="error" />}
+                />
+              )}
+              <Typography variant="body1">{displayedDatetime}</Typography>
+            </Box>
           </Grid>
         )}
       </Grid>

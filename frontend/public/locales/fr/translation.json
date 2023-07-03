@@ -836,6 +836,7 @@
     "upcomingEvents": "Évènement(s) à venir",
     "noTalksInTheNearFuture": "Aucun entretien n'est prévu dans un avenir proche.",
     "pastEvents": "Passés",
+    "live": "En direct",
     "by": "Par\u00a0{{speaker}}",
     "replay": "Revoir",
     "join": "Rejoindre"

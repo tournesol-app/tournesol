@@ -827,6 +827,7 @@
     "upcomingEvents": "Upcoming event(s)",
     "noTalksInTheNearFuture": "No Talks are planned in the near future.",
     "pastEvents": "Past events",
+    "live": "Live",
     "by": "By\u00a0{{speaker}}",
     "replay": "Replay",
     "join": "Join"
