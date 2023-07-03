@@ -29,10 +29,49 @@ class AccountRegisterMixin:
         )
 
 
-class AccountsRegisterUserSettingsTestCase(AccountRegisterMixin, TestCase):
+class AccountRegisterUser(AccountRegisterMixin, TestCase):
     """
     TestCase of the /accounts/register/ API related to the user settings.
     """
+    def test_register_account(self):
+        new_username = self._non_existing_username
+        new_email = self._non_existing_email
+
+        response = self.client.post(
+            "/accounts/register/",
+            data={
+                "username": new_username,
+                "email": new_email,
+                "password": "very_uncommon_pwd",
+                "password_confirm": "very_uncommon_pwd",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response_data = response.json()
+        self.assertEqual(response_data["username"], new_username)
+        new_user = User.objects.get(username=new_username)
+        self.assertEqual(new_user.email, new_email)
+
+    def test_register_account_trust_score_read_only(self):
+        new_username = self._non_existing_username
+        new_email = self._non_existing_email
+        response = self.client.post(
+            "/accounts/register/",
+            data={
+                "username": new_username,
+                "email": new_email,
+                "password": "very_uncommon_pwd",
+                "password_confirm": "very_uncommon_pwd",
+                "trust_score": 0.99,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response_data = response.json()
+        self.assertEqual(response_data["trust_score"], None)
+        new_user = User.objects.get(username=new_username)
+        self.assertEqual(new_user.trust_score, None)
 
     def test_register_account_with_settings(self) -> None:
         """
