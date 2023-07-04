@@ -106,6 +106,10 @@ const TournesolUserSettingsForm = () => {
       return;
     }
 
+    if (generalSettings?.notifications__lang != undefined) {
+      setNotificationsLang(generalSettings.notifications__lang);
+    }
+
     if (generalSettings?.notifications_email__research != undefined) {
       setNotificationsEmailResearch(
         generalSettings.notifications_email__research
