@@ -11,6 +11,14 @@ class GeneralUserSettingsSerializer(serializers.Serializer):
     The general user settings that are not related to Tournesol polls.
     """
 
+    NOTIFICATIONS_LANG = [
+        ("ENGLISH", "en"),
+        ("FRENCH", "fr"),
+    ]
+
+    notifications__lang = serializers.ChoiceField(
+        choices=NOTIFICATIONS_LANG, required=False
+    )
     notifications_email__research = serializers.BooleanField(required=False)
     notifications_email__new_features = serializers.BooleanField(required=False)
 
