@@ -758,7 +758,7 @@ paths:
       responses:
         '200':
           content:
-            application/json:
+            image/*:
               schema:
                 type: string
                 format: binary
@@ -786,7 +786,7 @@ paths:
       responses:
         '200':
           content:
-            application/json:
+            image/*:
               schema:
                 type: string
                 format: binary
@@ -809,7 +809,48 @@ paths:
       responses:
         '200':
           content:
-            application/json:
+            image/*:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /preview/faq/:
+    get:
+      operationId: preview_faq_retrieve
+      description: FAQ preview
+      parameters:
+      - in: query
+        name: scrollTo
+        schema:
+          type: string
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /preview/recommendations/:
+    get:
+      operationId: preview_recommendations_retrieve
+      description: |-
+        Preview of a Recommendations page.
+        Returns HTTP redirection to transform the query parameters into the format used by the backend.
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            image/jpeg:
               schema:
                 type: string
                 format: binary
@@ -3060,6 +3101,8 @@ components:
       type: object
       description: The general user settings that are not related to Tournesol polls.
       properties:
+        notifications__lang:
+          $ref: '#/components/schemas/Notifications_langEnum'
         notifications_email__research:
           type: boolean
         notifications_email__new_features:
@@ -3068,6 +3111,8 @@ components:
       type: object
       description: The general user settings that are not related to Tournesol polls.
       properties:
+        notifications__lang:
+          $ref: '#/components/schemas/Notifications_langEnum'
         notifications_email__research:
           type: boolean
         notifications_email__new_features:
@@ -3124,6 +3169,14 @@ components:
       - count
       - results
       - stats
+    Notifications_langEnum:
+      enum:
+      - ENGLISH
+      - FRENCH
+      type: string
+      description: |-
+        * `ENGLISH` - en
+        * `FRENCH` - fr
     PaginatedBannerList:
       type: object
       properties:
@@ -3378,7 +3431,7 @@ components:
     PatchedTournesolUserSettingsRequest:
       type: object
       description: |-
-        A representation of all settings of the Tournesol project.
+        A representation of all user settings of the Tournesol project.
 
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
@@ -3416,18 +3469,6 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        trust_score:
-          type: number
-          format: double
-          nullable: true
-          description: The trust score assigned to the user based on trusted domains
-            and the vouching mechanism.
-        settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
-        is_trusted:
-          type: boolean
     Poll:
       type: object
       properties:
@@ -3635,6 +3676,7 @@ components:
         trust_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
@@ -3646,6 +3688,7 @@ components:
       - email
       - id
       - password
+      - trust_score
       - username
     RegisterUserRequest:
       type: object
@@ -3683,12 +3726,6 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        trust_score:
-          type: number
-          format: double
-          nullable: true
-          description: The trust score assigned to the user based on trusted domains
-            and the vouching mechanism.
         settings:
           type: object
           additionalProperties: {}
@@ -3884,7 +3921,7 @@ components:
           type: string
           description: Used as an URL slug. Leave it blank to automatically build
             it from the title.
-          maxLength: 50
+          maxLength: 255
           pattern: ^[-a-zA-Z0-9_]+$
         title:
           type: string
@@ -3894,7 +3931,7 @@ components:
           type: string
           format: date-time
           nullable: true
-          description: Date and time of the Talk (please mind the server time zone).
+          description: Date and time of the Talk according to the server time.
         date_as_tz_europe_paris:
           type: string
           nullable: true
@@ -3912,7 +3949,7 @@ components:
           type: string
           format: uri
           nullable: true
-          description: Allow the users to join the Talk.
+          description: Allows the users to join the Talk.
           maxLength: 200
         youtube_link:
           type: string
@@ -3926,7 +3963,7 @@ components:
     TournesolUserSettings:
       type: object
       description: |-
-        A representation of all settings of the Tournesol project.
+        A representation of all user settings of the Tournesol project.
 
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
@@ -3938,7 +3975,7 @@ components:
     TournesolUserSettingsRequest:
       type: object
       description: |-
-        A representation of all settings of the Tournesol project.
+        A representation of all user settings of the Tournesol project.
 
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
@@ -3994,19 +4031,24 @@ components:
         trust_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
         settings:
           type: object
           additionalProperties: {}
+          readOnly: true
           description: The user' preferences.
         is_trusted:
           type: boolean
+          readOnly: true
       required:
       - email
       - id
       - is_trusted
+      - settings
+      - trust_score
       - username
     UserProfileRequest:
       type: object
@@ -4037,20 +4079,7 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        trust_score:
-          type: number
-          format: double
-          nullable: true
-          description: The trust score assigned to the user based on trusted domains
-            and the vouching mechanism.
-        settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
-        is_trusted:
-          type: boolean
       required:
-      - is_trusted
       - username
     VerifyEmail:
       type: object

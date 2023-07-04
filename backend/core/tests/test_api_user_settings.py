@@ -41,6 +41,7 @@ class UserSettingsDetailTestCase(TestCase):
         # When the user have settings, the API should return them.
         new_settings = {
             "general": {
+                "notifications__lang": "en",
                 "notifications_email__research": True,
                 "notifications_email__new_features": False,
             },
