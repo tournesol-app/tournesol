@@ -3033,6 +3033,8 @@ components:
       type: object
       description: The general user settings that are not related to Tournesol polls.
       properties:
+        notifications__lang:
+          $ref: '#/components/schemas/Notifications_langEnum'
         notifications_email__research:
           type: boolean
         notifications_email__new_features:
@@ -3041,6 +3043,8 @@ components:
       type: object
       description: The general user settings that are not related to Tournesol polls.
       properties:
+        notifications__lang:
+          $ref: '#/components/schemas/Notifications_langEnum'
         notifications_email__research:
           type: boolean
         notifications_email__new_features:
@@ -3097,6 +3101,14 @@ components:
       - count
       - results
       - stats
+    Notifications_langEnum:
+      enum:
+      - ENGLISH
+      - FRENCH
+      type: string
+      description: |-
+        * `ENGLISH` - en
+        * `FRENCH` - fr
     PaginatedComparisonList:
       type: object
       properties:
