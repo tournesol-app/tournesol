@@ -13,6 +13,11 @@ const sortBannersByPriority = (a: Banner, b: Banner) => {
   return 0;
 };
 
+/**
+ * Display the banners returned by the API.
+ *
+ * Today, only the banner with the highest priority is displayed.
+ */
 const WebsiteBanners = () => {
   const { i18n } = useTranslation();
 
