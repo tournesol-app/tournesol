@@ -16,16 +16,16 @@ import { Campaign } from '@mui/icons-material';
 import { Banner } from 'src/services/openapi';
 
 interface WebsiteBannerSingleProps {
-  banners: Array<Banner>;
+  banner: Banner;
 }
 
-const WebsiteBannerSingle = ({ banners }: WebsiteBannerSingleProps) => {
+const WebsiteBannerSingle = ({ banner }: WebsiteBannerSingleProps) => {
   const theme = useTheme();
   const mediaBelowXl = useMediaQuery(theme.breakpoints.down('xl'));
 
   return (
     <>
-      {banners[0] !== undefined && (
+      {banner !== undefined && (
         <Box py={3} bgcolor="#1282B2">
           <Grid
             container
@@ -47,7 +47,7 @@ const WebsiteBannerSingle = ({ banners }: WebsiteBannerSingleProps) => {
                     <Stack direction="row" spacing={2} alignItems="center">
                       <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
                       <Typography paragraph>
-                        <strong>{banners[0]?.title}</strong>
+                        <strong>{banner?.title}</strong>
                       </Typography>
                     </Stack>
                     <Stack
@@ -56,17 +56,17 @@ const WebsiteBannerSingle = ({ banners }: WebsiteBannerSingleProps) => {
                       alignItems="center"
                     >
                       <Typography paragraph mb={0}>
-                        {banners[0].text}
+                        {banner.text}
                       </Typography>
                       <Box display="flex" justifyContent="flex-end">
-                        {banners[0]?.action_link && (
+                        {banner?.action_link && (
                           <Button
                             variant="contained"
                             color="primary"
                             component={Link}
-                            href={banners[0].action_link}
+                            href={banner.action_link}
                           >
-                            {banners[0].action_label}
+                            {banner.action_label}
                           </Button>
                         )}
                       </Box>

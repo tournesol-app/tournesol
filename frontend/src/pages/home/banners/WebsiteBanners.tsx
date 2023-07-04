@@ -37,7 +37,7 @@ const WebsiteBanners = () => {
 
   return (
     <>
-      <WebsiteBannerSingle banners={banners} />
+      <WebsiteBannerSingle banner={banners[0]} />
     </>
   );
 };
