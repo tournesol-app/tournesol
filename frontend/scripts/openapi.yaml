@@ -300,6 +300,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/VerifyRegistration'
           description: ''
+  /backoffice/banners/:
+    get:
+      operationId: backoffice_banners_list
+      description: List all active banners.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - backoffice
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBannerList'
+          description: ''
   /backoffice/talks/:
     get:
       operationId: backoffice_talks_list
@@ -2368,6 +2397,45 @@ components:
       - joined_last_30_days
       - joined_last_month
       - total
+    Banner:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The banner's name.
+          maxLength: 255
+        date_start:
+          type: string
+          format: date-time
+          description: Date on which the banner should be returned by the API.
+        date_end:
+          type: string
+          format: date-time
+          description: After this date the banner should not be returned by the API.
+        title:
+          type: string
+        text:
+          type: string
+        action_label:
+          type: string
+        action_link:
+          type: string
+        priority:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Allows to order the banners.
+        security_advisory:
+          type: boolean
+          description: If True the banner is a security announcement.
+      required:
+      - action_label
+      - action_link
+      - date_end
+      - date_start
+      - name
+      - text
+      - title
     BlankEnum:
       enum:
       - ''
@@ -3109,6 +3177,26 @@ components:
       description: |-
         * `ENGLISH` - en
         * `FRENCH` - fr
+    PaginatedBannerList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Banner'
     PaginatedComparisonList:
       type: object
       properties:
