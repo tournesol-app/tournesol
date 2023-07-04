@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Grid,
+  Link,
   Paper,
   Stack,
   Typography,
@@ -15,7 +16,6 @@ import { Campaign } from '@mui/icons-material';
 import { useNotifications } from 'src/hooks';
 
 import { BackofficeService, Banner } from 'src/services/openapi';
-import { Link } from 'react-router-dom';
 
 const WebsiteBanners = () => {
   const { contactAdministrator } = useNotifications();
@@ -79,10 +79,10 @@ const WebsiteBanners = () => {
                   <Box display="flex" justifyContent="flex-end">
                     {banners[0]?.action_link && (
                       <Button
-                        to={banners[0].action_link}
-                        color="primary"
                         variant="contained"
+                        color="primary"
                         component={Link}
+                        href={banners[0].action_link}
                       >
                         {banners[0].action_label}
                       </Button>
