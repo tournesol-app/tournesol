@@ -3,7 +3,7 @@
 
 # Full stack Web Framework used for Tournesol's backend
 # https://docs.djangoproject.com
-Django==4.1.9
+Django==4.1.10
 # Used for fields computed on save for Django models
 # See https://github.com/brechin/django-computed-property/
 django-computed-property==0.3.0
@@ -62,3 +62,4 @@ requests==2.31.0
 tweepy==4.14.0
 # dotenv for .env file
 python-dotenv==1.0.0
+
