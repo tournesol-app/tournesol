@@ -1,12 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, AlertTitle, Box, Grid, Typography } from '@mui/material';
+import { Alert, AlertTitle, Grid, Typography } from '@mui/material';
+
+import { Notifications_langEnum } from 'src/services/openapi';
 
 import NotificationsEmailResearch from './fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeatures';
+import NotificationsLang from './fields/NotificationsLang';
 
 interface GeneralSettingsFormProps {
+  notificationsLang: Notifications_langEnum;
+  setNotificationsLang: (lang: Notifications_langEnum) => void;
   notificationsEmailResearch: boolean;
   setNotificationsEmailResearch: (target: boolean) => void;
   notificationsEmailNewFeatures: boolean;
@@ -18,6 +23,8 @@ interface GeneralSettingsFormProps {
  * preferences.
  */
 const GeneralUserSettingsForm = ({
+  notificationsLang,
+  setNotificationsLang,
   notificationsEmailResearch,
   setNotificationsEmailResearch,
   notificationsEmailNewFeatures,
@@ -26,25 +33,29 @@ const GeneralUserSettingsForm = ({
   const { t } = useTranslation();
 
   return (
-    <Grid container spacing={2} direction="column" alignItems="stretch">
+    <Grid container spacing={4} direction="column" alignItems="stretch">
       <Grid item>
         <Typography id="notifications" variant="h6">
           {t('generalUserSettingsForm.emailNotifications')}
         </Typography>
       </Grid>
+      <Grid item>
+        <Alert severity="info">
+          <AlertTitle>
+            <strong>
+              {t('generalUserSettingsForm.joinTheResearchStudies')}
+            </strong>
+          </AlertTitle>
+          {t('generalUserSettingsForm.joinTheResearchStudiesDesc')}
+        </Alert>
+      </Grid>
+      <Grid item>
+        <NotificationsLang
+          value={notificationsLang}
+          onChange={setNotificationsLang}
+        />
+      </Grid>
       <Grid item container spacing={1} direction="column" alignItems="stretch">
-        <Grid item>
-          <Box my={1}>
-            <Alert severity="info">
-              <AlertTitle>
-                <strong>
-                  {t('generalUserSettingsForm.joinTheResearchStudies')}
-                </strong>
-              </AlertTitle>
-              {t('generalUserSettingsForm.joinTheResearchStudiesDesc')}
-            </Alert>
-          </Box>
-        </Grid>
         <Grid item>
           <NotificationsEmailResearch
             value={notificationsEmailResearch}

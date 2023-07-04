@@ -20,6 +20,7 @@ import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  Notifications_langEnum,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
   UsersService,
@@ -53,6 +54,11 @@ const TournesolUserSettingsForm = () => {
   /**
    * General user settings
    */
+
+  // We think that the majority of the community speaks french.
+  const [notificationsLang, setNotificationsLang] = useState(
+    generalSettings?.notifications__lang ?? Notifications_langEnum.FRENCH
+  );
 
   // Notifications (must be false by default according to the ToS)
   const [notificationsEmailResearch, setNotificationsEmailResearch] = useState(
@@ -145,6 +151,7 @@ const TournesolUserSettingsForm = () => {
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
           general: {
+            notifications__lang: notificationsLang,
             notifications_email__research: notificationsEmailResearch,
             notifications_email__new_features: notificationsEmailNewFeatures,
           },
@@ -189,6 +196,8 @@ const TournesolUserSettingsForm = () => {
           {...subSectionBreakpoints}
         >
           <GeneralUserSettingsForm
+            notificationsLang={notificationsLang}
+            setNotificationsLang={setNotificationsLang}
             notificationsEmailResearch={notificationsEmailResearch}
             setNotificationsEmailResearch={setNotificationsEmailResearch}
             notificationsEmailNewFeatures={notificationsEmailNewFeatures}
