@@ -70,24 +70,35 @@ const WebsiteBanners = () => {
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
-                    <Typography paragraph mb={0}>
-                      {banners[0].text}
-                    </Typography>
+                  <Stack direction="column" spacing={2}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
+                      <Typography paragraph>
+                        <strong>{banners[0]?.title}</strong>
+                      </Typography>
+                    </Stack>
+                    <Stack
+                      direction={{ sm: 'column', md: 'row' }}
+                      spacing={2}
+                      alignItems="center"
+                    >
+                      <Typography paragraph mb={0}>
+                        {banners[0].text}
+                      </Typography>
+                      <Box display="flex" justifyContent="flex-end">
+                        {banners[0]?.action_link && (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            component={Link}
+                            href={banners[0].action_link}
+                          >
+                            {banners[0].action_label}
+                          </Button>
+                        )}
+                      </Box>
+                    </Stack>
                   </Stack>
-                  <Box display="flex" justifyContent="flex-end">
-                    {banners[0]?.action_link && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        component={Link}
-                        href={banners[0].action_link}
-                      >
-                        {banners[0].action_label}
-                      </Button>
-                    )}
-                  </Box>
                 </Stack>
               </Paper>
             </Grid>
