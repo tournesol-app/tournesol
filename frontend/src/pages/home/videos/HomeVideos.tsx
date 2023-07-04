@@ -30,7 +30,7 @@ const HomeVideosPage = () => {
 
   return (
     <>
-      <TempStudyBanner/>
+      <TempStudyBanner />
       <WebsiteBanners />
       <Box padding={4} color="white" bgcolor="background.emphatic">
         <TitleSection title={t('home.collaborativeContentRecommendations')}>

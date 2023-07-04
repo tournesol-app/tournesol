@@ -84,12 +84,15 @@ const WebsiteBanners = () => {
                   spacing={{ xs: 2, sm: 2 }}
                   direction={{ sm: 'column', md: 'row' }}
                   alignItems="center"
+                  justifyContent="space-between"
                 >
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
                     <Typography paragraph mb={0}>
                       {banner.text}
                     </Typography>
+                  </Stack>
+                  <Box display="flex" justifyContent="flex-end">
                     {banner?.action_link && (
                       <Button
                         to={banner.action_link}
@@ -100,7 +103,7 @@ const WebsiteBanners = () => {
                         {banner.action_label}
                       </Button>
                     )}
-                  </Stack>
+                  </Box>
                 </Stack>
               </Paper>
             </Grid>
