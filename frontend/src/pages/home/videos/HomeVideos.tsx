@@ -14,6 +14,7 @@ import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
 import WebsiteBanners from '../banners/WebsiteBanners';
+import TempStudyBanner from '../banners/TempStudyBanner';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ const HomeVideosPage = () => {
 
   return (
     <>
+      <TempStudyBanner/>
       <WebsiteBanners />
       <Box padding={4} color="white" bgcolor="background.emphatic">
         <TitleSection title={t('home.collaborativeContentRecommendations')}>

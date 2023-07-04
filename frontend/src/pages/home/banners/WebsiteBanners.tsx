@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import {
   Box,
+  Button,
   Grid,
   Paper,
   Stack,
@@ -14,6 +15,7 @@ import { Campaign } from '@mui/icons-material';
 import { useNotifications } from 'src/hooks';
 
 import { BackofficeService, Banner } from 'src/services/openapi';
+import { Link } from 'react-router-dom';
 
 const WebsiteBanners = () => {
   const { contactAdministrator } = useNotifications();
@@ -88,6 +90,16 @@ const WebsiteBanners = () => {
                     <Typography paragraph mb={0}>
                       {banner.text}
                     </Typography>
+                    {banner?.action_link && (
+                      <Button
+                        to={banner.action_link}
+                        color="primary"
+                        variant="contained"
+                        component={Link}
+                      >
+                        {banner.action_label}
+                      </Button>
+                    )}
                   </Stack>
                 </Stack>
               </Paper>
