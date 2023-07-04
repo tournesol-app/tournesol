@@ -19,7 +19,7 @@ import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
 
 const STUDY_DATE_START = new Date('2023-04-01T00:00:00Z');
-const STUDY_DATE_END = new Date('2023-10-20T00:00:00Z');
+const STUDY_DATE_END = new Date('2023-05-20T00:00:00Z');
 
 const PROOF_ID = 'browser_extension_study_2023';
 
