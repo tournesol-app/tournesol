@@ -25,32 +25,12 @@ const WebsiteBanners = () => {
 
   const [banners, setBanners] = useState<Array<Banner>>([]);
 
-  // const sortDate = (dateA: string, dateB: string) => {
-  //   return  new Date (dateA).getTime() - new Date(dateB).getTime();
-  // }
-
   const sortBanners = (a: Banner, b: Banner) => {
-    // if (a.security_advisory && !b.security_advisory) {
-    //   return -1;
-    // } else if (!a.security_advisory && b.security_advisory) {
-    //   return 1;
-    // }
-
-    if (a.priority === undefined && b.priority === undefined) {
-      return 0;
-    } else if (a.priority === undefined) {
-      return 1;
-    } else if (b.priority === undefined) {
-      return -1;
-    }
-
-    if (b.priority !== a.priority) {
+    if (a.priority !== undefined && b.priority !== undefined) {
       return b.priority - a.priority;
     }
 
-    return 0; // remove when uncommenting the other lines
-
-    // return sortDate(b.date_start, a.date_start);
+    return 0;
   };
 
   useEffect(() => {
@@ -61,7 +41,6 @@ const WebsiteBanners = () => {
         contactAdministrator('error');
       });
 
-      // TODO : order banners as wished : security -> -priority -> -date_start -> -date_end
       if (bannersList?.results !== undefined) {
         bannersList.results.sort(sortBanners);
         setBanners(bannersList.results);
@@ -72,11 +51,16 @@ const WebsiteBanners = () => {
   }, [contactAdministrator]);
 
   return (
-    <Box py={3} bgcolor="#1282B2">
-      <Grid container width="100%" flexDirection="column" alignItems="center">
-        <Grid container item xl={9} width="100%" spacing={2} direction="column">
-          {banners.map((banner, idx) => (
-            <Grid key={idx} item>
+    <>
+      {banners[0] !== undefined && (
+        <Box py={3} bgcolor="#1282B2">
+          <Grid
+            container
+            width="100%"
+            flexDirection="column"
+            alignItems="center"
+          >
+            <Grid item xl={9} width="100%" spacing={2} direction="column">
               <Paper sx={{ p: 2 }} square={mediaBelowXl}>
                 <Stack
                   // Using != direction per breakpoint requires to define != spacing
@@ -89,28 +73,28 @@ const WebsiteBanners = () => {
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
                     <Typography paragraph mb={0}>
-                      {banner.text}
+                      {banners[0].text}
                     </Typography>
                   </Stack>
                   <Box display="flex" justifyContent="flex-end">
-                    {banner?.action_link && (
+                    {banners[0]?.action_link && (
                       <Button
-                        to={banner.action_link}
+                        to={banners[0].action_link}
                         color="primary"
                         variant="contained"
                         component={Link}
                       >
-                        {banner.action_label}
+                        {banners[0].action_label}
                       </Button>
                     )}
                   </Box>
                 </Stack>
               </Paper>
             </Grid>
-          ))}
-        </Grid>
-      </Grid>
-    </Box>
+          </Grid>
+        </Box>
+      )}
+    </>
   );
 };
 
