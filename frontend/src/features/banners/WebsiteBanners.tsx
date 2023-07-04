@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useNotifications } from 'src/hooks';
 
 import { BackofficeService, Banner } from 'src/services/openapi';
-import WebsiteBannerSingle from './WebsiteBannerSingle';
+
+import WebsiteBanner from './WebsiteBanner';
 
 const WebsiteBanners = () => {
   const { contactAdministrator } = useNotifications();
@@ -37,7 +38,7 @@ const WebsiteBanners = () => {
 
   return (
     <>
-      <WebsiteBannerSingle banner={banners[0]} />
+      <WebsiteBanner banner={banners[0]} />
     </>
   );
 };

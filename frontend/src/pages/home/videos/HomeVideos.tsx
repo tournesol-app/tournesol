@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
+import WebsiteBanners from 'src/features/banners/WebsiteBanners';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import TitleSection from 'src/pages/home/TitleSection';
@@ -13,7 +14,6 @@ import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection'
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
-import WebsiteBanners from '../banners/WebsiteBanners';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();

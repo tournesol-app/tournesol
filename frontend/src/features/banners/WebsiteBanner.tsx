@@ -19,7 +19,7 @@ interface WebsiteBannerSingleProps {
   banner: Banner;
 }
 
-const WebsiteBannerSingle = ({ banner }: WebsiteBannerSingleProps) => {
+const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
   const theme = useTheme();
   const mediaBelowXl = useMediaQuery(theme.breakpoints.down('xl'));
 
@@ -82,4 +82,4 @@ const WebsiteBannerSingle = ({ banner }: WebsiteBannerSingleProps) => {
   );
 };
 
-export default WebsiteBannerSingle;
+export default WebsiteBanner;
