@@ -29,9 +29,7 @@ const HomeVideosPage = () => {
 
   return (
     <>
-      <Box pt={3} bgcolor="background.emphatic">
-        <WebsiteBanners />
-      </Box>
+      <WebsiteBanners />
       <Box padding={4} color="white" bgcolor="background.emphatic">
         <TitleSection title={t('home.collaborativeContentRecommendations')}>
           <Typography paragraph fontSize="1.1em">

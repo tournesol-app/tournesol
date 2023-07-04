@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { Box, useTheme } from '@mui/material';
 
 import { BackofficeService, Banner } from 'src/services/openapi';
 
 import WebsiteBanner from './WebsiteBanner';
-import { useTranslation } from 'react-i18next';
 
 const sortBannersByPriority = (a: Banner, b: Banner) => {
   if (a.priority !== undefined && b.priority !== undefined) {
@@ -19,6 +21,7 @@ const sortBannersByPriority = (a: Banner, b: Banner) => {
  * Today, only the banner with the highest priority is displayed.
  */
 const WebsiteBanners = () => {
+  const theme = useTheme();
   const { i18n } = useTranslation();
 
   const [banners, setBanners] = useState<Array<Banner>>([]);
@@ -40,11 +43,19 @@ const WebsiteBanners = () => {
     getBanners();
   }, [i18n.resolvedLanguage]);
 
-  if (banners.length <= 0) {
+  if (
+    banners.length <= 0 ||
+    banners[0].title === '' ||
+    banners[0].text === ''
+  ) {
     return <></>;
   }
 
-  return <WebsiteBanner banner={banners[0]} />;
+  return (
+    <Box pt={3} bgcolor={theme.palette.background.emphatic}>
+      <WebsiteBanner banner={banners[0]} />
+    </Box>
+  );
 };
 
 export default WebsiteBanners;
