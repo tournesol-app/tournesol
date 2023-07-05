@@ -8,9 +8,14 @@ import { Notifications_langEnum } from 'src/services/openapi';
 interface NotificationsLangProps {
   value: Notifications_langEnum;
   onChange: (lang: Notifications_langEnum) => void;
+  label?: string;
 }
 
-const NotificationsLang = ({ value, onChange }: NotificationsLangProps) => {
+const NotificationsLang = ({
+  label,
+  value,
+  onChange,
+}: NotificationsLangProps) => {
   const { t } = useTranslation();
 
   const settingChoices = [
@@ -27,7 +32,7 @@ const NotificationsLang = ({ value, onChange }: NotificationsLangProps) => {
   return (
     <FormControl fullWidth>
       <InputLabel id="label__notifications__lang" color="secondary">
-        {t('pollUserSettingsForm.preferredLanguage')}
+        {label || t('pollUserSettingsForm.preferredLanguage')}
       </InputLabel>
       <Select
         size="small"
@@ -35,7 +40,7 @@ const NotificationsLang = ({ value, onChange }: NotificationsLangProps) => {
         id="notifications__lang"
         labelId="label_notifications__lang"
         value={value}
-        label={t('pollUserSettingsForm.preferredLanguage')}
+        label={label || t('pollUserSettingsForm.preferredLanguage')}
         onChange={(event) =>
           onChange(event.target.value as Notifications_langEnum)
         }

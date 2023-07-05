@@ -865,7 +865,8 @@
     "successMessage": "A verification link has been sent to <1>{{email}}</1> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
+    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>.",
+    "preferredLanguageForTheNotifications": "Preferred language for the notifications"
   },
   "emailAddress": "Email address",
   "confirmYourPassword": "Confirm your password",

@@ -22,9 +22,11 @@ import {
 } from 'src/components';
 import NotificationsEmailResearch from 'src/features/settings/preferences/fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fields/NotificationsEmailNewFeatures';
+import NotificationsLang from 'src/features/settings/preferences/fields/NotificationsLang';
 import { useNotifications } from 'src/hooks';
 import { AccountsService, ApiError } from 'src/services/openapi';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
+import { defaultNotificationsLanguage } from 'src/utils/userSettings';
 
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
@@ -52,6 +54,9 @@ const Signup = () => {
   const [acceptPolicy, setAcceptPolicy] = useState(false);
 
   // Legally, the notification settings must be false by default.
+  const [notififLang, setNotififLang] = useState(
+    defaultNotificationsLanguage()
+  );
   const [notififResearch, setNotififResearch] = useState(false);
   const [notifNewFeatures, setNnotifNewFeatures] = useState(false);
 
@@ -71,6 +76,7 @@ const Signup = () => {
           password_confirm: (formData.get('password_confirm') as string) ?? '',
           settings: {
             general: {
+              notifications__lang: notififLang,
               notifications_email__research: notififResearch,
               notifications_email__new_features: notifNewFeatures,
             },
@@ -178,6 +184,13 @@ const Signup = () => {
                     </Box>
                   </Divider>
                 </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <NotificationsLang
+                  label={t('signup.preferredLanguageForTheNotifications')}
+                  value={notififLang}
+                  onChange={(value) => setNotififLang(value)}
+                />
               </Grid>
               <Grid item xs={12}>
                 <NotificationsEmailResearch

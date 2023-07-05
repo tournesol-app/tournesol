@@ -1,11 +1,14 @@
 import {
   BlankEnum,
+  Notifications_langEnum,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
   VideosPollUserSettings,
 } from 'src/services/openapi';
-import { SelectablePoll, PollUserSettingsKeys } from './types';
+
 import { YOUTUBE_POLL_NAME } from './constants';
+import { isNavigatorLang } from './lang';
+import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
  * Cast the value of the setting recommendations__default_unsafe to a value
@@ -70,4 +73,12 @@ export const getDefaultRecommendationsSearchParams = (
 
   const strSearchParams = searchParams.toString();
   return searchParams ? '?' + strSearchParams : '';
+};
+
+export const defaultNotificationsLanguage = () => {
+  if (isNavigatorLang('fr')) {
+    return Notifications_langEnum.FRENCH;
+  }
+
+  return Notifications_langEnum.ENGLISH;
 };
