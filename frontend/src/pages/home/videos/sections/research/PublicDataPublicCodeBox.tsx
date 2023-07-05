@@ -5,6 +5,7 @@ import { Box, Link, Typography, Button, SxProps } from '@mui/material';
 import { Download, GitHub } from '@mui/icons-material';
 
 import TitledPaper from 'src/components/TitledPaper';
+import TalksBox from './TalksBox';
 
 const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -68,6 +69,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
           </Box>
         </>
       </TitledPaper>
+      <TalksBox />
     </Box>
   );
 };
