@@ -680,6 +680,10 @@
     },
     "video": {
       "description": "Description (from YouTube)"
+    },
+    "twitter": {
+      "intro": "I have just watched this video on @TournesolApp.",
+      "conclusion": "I think you should check it out and compare it with other ones!"
     }
   },
   "entityNotFound": {

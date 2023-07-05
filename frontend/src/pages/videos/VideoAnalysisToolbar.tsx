@@ -10,6 +10,7 @@ import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { SNACKBAR_DYNAMIC_FEEDBACK_MS } from 'src/utils/notifications';
 import { useSnackbar } from 'notistack';
+import { openTwitterPopup } from 'src/utils/ui';
 
 const VideoAnalysisToolbar = ({
   video,
@@ -42,10 +43,18 @@ const VideoAnalysisToolbar = ({
     }
   };
 
+  const getTweet = () => {
+    return (
+      `${t('entityAnalysisPage.twitter.intro')}\n\n` +
+      `${t('entityAnalysisPage.twitter.conclusion')} 🌻\n` +
+      `\n${window.location.toString()}`
+    );
+  };
+
   return (
     <Grid container item display="flex" justifyContent="flex-end" gap={2}>
       <ButtonGroup variant="outlined" color="secondary">
-        <Button>
+        <Button onClick={() => openTwitterPopup(getTweet())}>
           <Twitter />
         </Button>
         <Button onClick={copyUriToClipboard}>
