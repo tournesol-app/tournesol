@@ -177,7 +177,7 @@ const Signup = () => {
                 </span>
               </Grid>
               <Grid item xs={12}>
-                <Box py={1}>
+                <Box py={2}>
                   <Divider>
                     <Box display="flex" alignItems="center">
                       <EmailIcon color="secondary" />
