@@ -8,6 +8,8 @@ import { Compare, ContentCopy, Twitter, Add } from '@mui/icons-material';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
+import { SNACKBAR_DYNAMIC_FEEDBACK_MS } from 'src/utils/notifications';
+import { useSnackbar } from 'notistack';
 
 const VideoAnalysisToolbar = ({
   video,
@@ -18,9 +20,18 @@ const VideoAnalysisToolbar = ({
   const { baseUrl } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
+  const { enqueueSnackbar } = useSnackbar();
   const { name: pollName } = useCurrentPoll();
 
   const uid = `yt:${video.video_id}`;
+
+  const copyUriToClipboard = () => {
+    navigator.clipboard.writeText(window.location.toString());
+    enqueueSnackbar(t('copyUriToClipboard.copied'), {
+      variant: 'success',
+      autoHideDuration: SNACKBAR_DYNAMIC_FEEDBACK_MS,
+    });
+  };
 
   const handleCreation = async () => {
     try {
@@ -37,7 +48,7 @@ const VideoAnalysisToolbar = ({
         <Button>
           <Twitter />
         </Button>
-        <Button>
+        <Button onClick={copyUriToClipboard}>
           <ContentCopy />
         </Button>
       </ButtonGroup>
