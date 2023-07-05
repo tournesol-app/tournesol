@@ -870,7 +870,7 @@
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "profile": "Profil",
   "signup": {
-    "welcome": "Bienveue !",
+    "welcome": "Bienvenue !",
     "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
