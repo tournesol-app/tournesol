@@ -7,7 +7,6 @@ import SectionTitle from '../SectionTitle';
 import PublicDataPublicCodeBox from './PublicDataPublicCodeBox';
 import ScientificLiteratureBox from './ScientificLiteratureBox';
 import VisualizeDataBox from './VisualizeDataBox';
-import TalksBox from './TalksBox';
 
 const ResearchSection = () => {
   const { t } = useTranslation();
@@ -28,7 +27,6 @@ const ResearchSection = () => {
       <Grid container spacing={4} justifyContent="center">
         <Grid item lg={4} xl={4}>
           <PublicDataPublicCodeBox />
-          <TalksBox />
         </Grid>
         <Grid item lg={8} xl={5}>
           <VisualizeDataBox />
