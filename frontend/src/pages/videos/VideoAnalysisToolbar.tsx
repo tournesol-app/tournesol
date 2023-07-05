@@ -76,7 +76,7 @@ const VideoAnalysisToolbar = ({
       <Button
         color="secondary"
         variant="contained"
-        endIcon={<Compare />}
+        startIcon={<Compare />}
         component={RouterLink}
         to={`${baseUrl}/comparison?uidA=${uid}`}
       >
