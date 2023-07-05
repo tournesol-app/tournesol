@@ -250,7 +250,11 @@ html[dark] #tournesol_campaign_button {
 
 .video_card {
   position: relative;
-  width: calc(100% / 4 - var(--ytd-rich-grid-item-margin) - 0.01px);
+
+  width: calc(
+    100% / var(--ytd-rich-grid-items-per-row) - var(--ytd-rich-grid-item-margin) -
+      0.01px
+  );
 }
 
 .video_thumb {
@@ -321,16 +325,18 @@ html[dark] #tournesol_campaign_button {
 
 .time_span {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  color: white;
-  background-color: var(--yt-spec-static-overlay-background-heavy);
+  bottom: 6px;
+  right: 6px;
+
   margin: 4px;
   padding: 3px 4px;
+
   height: 12px;
   border-radius: 2px;
-  flex-direction: row;
-  align-items: center;
+
+  color: white;
+  background-color: var(--yt-spec-static-overlay-background-heavy);
+
   cursor: pointer;
   font-size: var(--yt-badge-font-size, 1.2rem);
   font-weight: 500;
@@ -367,7 +373,7 @@ html[dark] #tournesol_campaign_button {
 }
 
 #tournesol_container.search .thumb_div,
-#tournesol_container.search .thumb_div img { 
+#tournesol_container.search .thumb_div img {
   width: 100%;
   min-width: 240px;
   max-width: 360px;
