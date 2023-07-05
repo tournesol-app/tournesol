@@ -2,17 +2,26 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
-import { Box, Button, Collapse, Grid, Paper, Typography } from '@mui/material';
-import { Compare } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Collapse,
+  Grid,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { Compare, ContentCopy, Twitter, Add } from '@mui/icons-material';
 
 import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
-import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import VideoCard from 'src/features/videos/VideoCard';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
@@ -20,6 +29,7 @@ import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
+import { addToRateLaterList } from 'src/utils/api/rateLaters';
 
 export const VideoAnalysis = ({
   video,
@@ -28,6 +38,9 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
+  const { isLoggedIn } = useLoginState();
+  const { showSuccessAlert, showInfoAlert } = useNotifications();
+  const { name: pollName } = useCurrentPoll();
   const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
 
   const uid = `yt:${video.video_id}`;
@@ -38,6 +51,15 @@ export const VideoAnalysis = ({
 
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
   const linkifiedDescription = linkifyStr(video.description || '', linkifyOpts);
+
+  const handleCreation = async () => {
+    try {
+      await addToRateLaterList(pollName, uid);
+      showSuccessAlert(t('actions.videoAddedToRateLaterList'));
+    } catch (error) {
+      showInfoAlert(t('actions.videoAlreadyInRateLaterList'));
+    }
+  };
 
   return (
     <Box
@@ -50,18 +72,6 @@ export const VideoAnalysis = ({
     >
       <Box flex={2} minWidth={{ xs: '100%', md: null }}>
         {/* Top level section, containing links and maybe more in the future. */}
-        <Box mb={2} display="flex" justifyContent="flex-end" gap={2}>
-          <ShareMenuButton />
-          <Button
-            color="secondary"
-            variant="contained"
-            endIcon={<Compare />}
-            component={RouterLink}
-            to={`${baseUrl}/comparison?uidA=${uid}`}
-          >
-            {t('entityAnalysisPage.generic.compare')}
-          </Button>
-        </Box>
 
         {/* Entity section, with its player, title, scores and actions. */}
         <Grid container spacing={2} justifyContent="center">
@@ -71,6 +81,37 @@ export const VideoAnalysis = ({
               duration={video.duration}
               controls
             />
+          </Grid>
+          <Grid container item display="flex" justifyContent="flex-end" gap={2}>
+            <ButtonGroup variant="outlined" color="secondary">
+              <Button>
+                <Twitter />
+              </Button>
+              <Button>
+                <ContentCopy />
+              </Button>
+            </ButtonGroup>
+            {isLoggedIn && (
+              <Tooltip title={`${t('actions.rateLater')}`} placement="left">
+                <Button
+                  size="medium"
+                  color="secondary"
+                  onClick={handleCreation}
+                  variant="outlined"
+                >
+                  <Add />
+                </Button>
+              </Tooltip>
+            )}
+            <Button
+              color="secondary"
+              variant="contained"
+              endIcon={<Compare />}
+              component={RouterLink}
+              to={`${baseUrl}/comparison?uidA=${uid}`}
+            >
+              {t('entityAnalysisPage.generic.compare')}
+            </Button>
           </Grid>
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
