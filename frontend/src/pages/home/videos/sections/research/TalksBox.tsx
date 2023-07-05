@@ -25,7 +25,7 @@ const TalksBox = () => {
             color="primary"
             component={Link}
             to={'/talks'}
-            endIcon={<Lightbulb />}
+            startIcon={<Lightbulb />}
           >
             {t('publicDataPublicCodeBox.accessTalksPage')}
           </Button>

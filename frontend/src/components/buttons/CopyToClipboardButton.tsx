@@ -38,7 +38,7 @@ const CopyToClipboardButton = () => {
     <Button
       color="secondary"
       variant="outlined"
-      endIcon={feedback ? <Check /> : <ContentCopy />}
+      startIcon={feedback ? <Check /> : <ContentCopy />}
       onClick={copyUriToClipboard}
     >
       {text}

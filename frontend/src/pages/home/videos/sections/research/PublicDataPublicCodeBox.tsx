@@ -38,7 +38,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               variant="contained"
               component={Link}
               href={`${apiUrl}/exports/all/`}
-              endIcon={<Download />}
+              startIcon={<Download />}
             >
               {t('publicDataPublicCodeBox.downloadTheDatabase')}
             </Button>
@@ -62,7 +62,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               target="_blank"
               rel="noopener"
               href="https://github.com/tournesol-app/tournesol"
-              endIcon={<GitHub />}
+              startIcon={<GitHub />}
             >
               {t('publicDataPublicCodeBox.accessTheCodeOnGitHub')}
             </Button>
