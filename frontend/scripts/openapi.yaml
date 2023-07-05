@@ -300,6 +300,64 @@ paths:
               schema:
                 $ref: '#/components/schemas/VerifyRegistration'
           description: ''
+  /backoffice/banners/:
+    get:
+      operationId: backoffice_banners_list
+      description: List all active banners.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - backoffice
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBannerList'
+          description: ''
+  /backoffice/talks/:
+    get:
+      operationId: backoffice_talks_list
+      description: List all scheduled public Talks.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - backoffice
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTalkEntryList'
+          description: ''
   /domains/:
     get:
       operationId: domains_list
@@ -700,7 +758,7 @@ paths:
       responses:
         '200':
           content:
-            application/json:
+            image/*:
               schema:
                 type: string
                 format: binary
@@ -728,7 +786,7 @@ paths:
       responses:
         '200':
           content:
-            application/json:
+            image/*:
               schema:
                 type: string
                 format: binary
@@ -751,7 +809,48 @@ paths:
       responses:
         '200':
           content:
-            application/json:
+            image/*:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /preview/faq/:
+    get:
+      operationId: preview_faq_retrieve
+      description: FAQ preview
+      parameters:
+      - in: query
+        name: scrollTo
+        schema:
+          type: string
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /preview/recommendations/:
+    get:
+      operationId: preview_recommendations_retrieve
+      description: |-
+        Preview of a Recommendations page.
+        Returns HTTP redirection to transform the query parameters into the format used by the backend.
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            image/jpeg:
               schema:
                 type: string
                 format: binary
@@ -2298,6 +2397,45 @@ components:
       - joined_last_30_days
       - joined_last_month
       - total
+    Banner:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The banner's name.
+          maxLength: 255
+        date_start:
+          type: string
+          format: date-time
+          description: Date on which the banner should be returned by the API.
+        date_end:
+          type: string
+          format: date-time
+          description: After this date the banner should not be returned by the API.
+        title:
+          type: string
+        text:
+          type: string
+        action_label:
+          type: string
+        action_link:
+          type: string
+        priority:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Allows to order the banners.
+        security_advisory:
+          type: boolean
+          description: If True the banner is a security announcement.
+      required:
+      - action_label
+      - action_link
+      - date_end
+      - date_start
+      - name
+      - text
+      - title
     BlankEnum:
       enum:
       - ''
@@ -2963,6 +3101,8 @@ components:
       type: object
       description: The general user settings that are not related to Tournesol polls.
       properties:
+        notifications__lang:
+          $ref: '#/components/schemas/Notifications_langEnum'
         notifications_email__research:
           type: boolean
         notifications_email__new_features:
@@ -2971,6 +3111,8 @@ components:
       type: object
       description: The general user settings that are not related to Tournesol polls.
       properties:
+        notifications__lang:
+          $ref: '#/components/schemas/Notifications_langEnum'
         notifications_email__research:
           type: boolean
         notifications_email__new_features:
@@ -3027,6 +3169,34 @@ components:
       - count
       - results
       - stats
+    Notifications_langEnum:
+      enum:
+      - ENGLISH
+      - FRENCH
+      type: string
+      description: |-
+        * `ENGLISH` - en
+        * `FRENCH` - fr
+    PaginatedBannerList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Banner'
     PaginatedComparisonList:
       type: object
       properties:
@@ -3207,6 +3377,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Recommendation'
+    PaginatedTalkEntryList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TalkEntry'
     PaginatedVideoSerializerWithCriteriaList:
       type: object
       properties:
@@ -3241,7 +3431,7 @@ components:
     PatchedTournesolUserSettingsRequest:
       type: object
       description: |-
-        A representation of all settings of the Tournesol project.
+        A representation of all user settings of the Tournesol project.
 
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
@@ -3279,18 +3469,6 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        trust_score:
-          type: number
-          format: double
-          nullable: true
-          description: The trust score assigned to the user based on trusted domains
-            and the vouching mechanism.
-        settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
-        is_trusted:
-          type: boolean
     Poll:
       type: object
       properties:
@@ -3498,6 +3676,7 @@ components:
         trust_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
@@ -3507,6 +3686,7 @@ components:
       - email
       - id
       - password
+      - trust_score
       - username
     RegisterUserRequest:
       type: object
@@ -3544,12 +3724,6 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        trust_score:
-          type: number
-          format: double
-          nullable: true
-          description: The trust score assigned to the user based on trusted domains
-            and the vouching mechanism.
         settings:
           $ref: '#/components/schemas/TournesolUserSettingsRequest'
         password_confirm:
@@ -3736,10 +3910,56 @@ components:
         * `RJ` - Rejected
         * `ACK` - Accepted
         * `PD` - Pending
+    TalkEntry:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Used as an URL slug. Leave it blank to automatically build
+            it from the title.
+          maxLength: 255
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          description: The title of the Talk.
+          maxLength: 255
+        date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time of the Talk according to the server time.
+        date_as_tz_europe_paris:
+          type: string
+          nullable: true
+          readOnly: true
+        speakers:
+          type: string
+          nullable: true
+          description: A list of speakers and their titles (researcher, PhD student,
+            etc.).
+        abstract:
+          type: string
+          nullable: true
+          description: Description of the Talk.
+        invitation_link:
+          type: string
+          format: uri
+          nullable: true
+          description: Allows the users to join the Talk.
+          maxLength: 200
+        youtube_link:
+          type: string
+          format: uri
+          nullable: true
+          description: The Talk's YouTube link.
+          maxLength: 200
+      required:
+      - date_as_tz_europe_paris
+      - title
     TournesolUserSettings:
       type: object
       description: |-
-        A representation of all settings of the Tournesol project.
+        A representation of all user settings of the Tournesol project.
 
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
@@ -3751,7 +3971,7 @@ components:
     TournesolUserSettingsRequest:
       type: object
       description: |-
-        A representation of all settings of the Tournesol project.
+        A representation of all user settings of the Tournesol project.
 
         This representation includes poll-agnostic settings in addition to the
         specific settings of each poll.
@@ -3807,19 +4027,24 @@ components:
         trust_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
         settings:
           type: object
           additionalProperties: {}
+          readOnly: true
           description: The user' preferences.
         is_trusted:
           type: boolean
+          readOnly: true
       required:
       - email
       - id
       - is_trusted
+      - settings
+      - trust_score
       - username
     UserProfileRequest:
       type: object
@@ -3850,20 +4075,7 @@ components:
           nullable: true
           description: Last name
           maxLength: 100
-        trust_score:
-          type: number
-          format: double
-          nullable: true
-          description: The trust score assigned to the user based on trusted domains
-            and the vouching mechanism.
-        settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
-        is_trusted:
-          type: boolean
       required:
-      - is_trusted
       - username
     VerifyEmail:
       type: object

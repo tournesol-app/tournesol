@@ -1,8 +1,9 @@
 from zoneinfo import ZoneInfo
 
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
-from backoffice.models import TalkEntry
+from backoffice.models import Banner, BannerLocale, TalkEntry
 
 
 @admin.register(TalkEntry)
@@ -35,3 +36,33 @@ class TalkEntryAdmin(admin.ModelAdmin):
     @admin.display(description="YouTube link")
     def get_youtube_link(self, obj):
         return obj.html_youtube_link()
+
+
+class BannerLocaleInline(admin.StackedInline):
+    min_num = 1
+    model = BannerLocale
+    extra = 0
+
+
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    actions = ["enable_banners", "disable_banners"]
+    search_field = ("name",)
+    list_display = (
+        "name",
+        "date_start",
+        "date_end",
+        "priority",
+        "security_advisory",
+        "enabled",
+    )
+    list_filter = ("enabled", "security_advisory")
+    inlines = (BannerLocaleInline,)
+
+    @admin.action(description=_("Enable the selected banners."))
+    def enable_banners(self, request, queryset):
+        queryset.update(enabled=True)
+
+    @admin.action(description=_("Disable the selected banners."))
+    def disable_banners(self, request, queryset):
+        queryset.update(enabled=False)

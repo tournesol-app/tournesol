@@ -22,7 +22,7 @@ class FAQEntryLocalizedListView(ListAPIView):
     To list all questions / answers in all available languages, use a
     different view.
 
-    See `FAQEntry.get_text()`.
+    See `FAQEntry.get_localized_text()`.
     """
 
     permission_classes = []

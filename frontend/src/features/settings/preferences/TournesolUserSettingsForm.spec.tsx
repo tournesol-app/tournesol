@@ -17,6 +17,7 @@ import { LoginState } from 'src/features/login/LoginState.model';
 import { initialState } from 'src/features/login/loginSlice';
 import {
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  Notifications_langEnum,
   OpenAPI,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
@@ -156,6 +157,7 @@ describe('GenericPollUserSettingsForm', () => {
     const notificationsEmailNewFeatures = screen.getByTestId(
       'notifications_email__new_features'
     );
+    const notificationsLang = screen.getByTestId('notifications__lang');
 
     const compUiWeeklyColGoalDisplay = screen.getByTestId(
       'videos_weekly_collective_goal_display'
@@ -176,6 +178,7 @@ describe('GenericPollUserSettingsForm', () => {
       compUiWeeklyColGoalDisplay,
       notificationsEmailResearch,
       notificationsEmailNewFeatures,
+      notificationsLang,
       rateLaterAutoRemove,
       recommendationsDefaultDate,
       recommendationsDefaultUnsafe,
@@ -204,6 +207,7 @@ describe('GenericPollUserSettingsForm', () => {
         compUiWeeklyColGoalDisplay,
         notificationsEmailResearch,
         notificationsEmailNewFeatures,
+        notificationsLang,
         rateLaterAutoRemove,
         recommendationsDefaultDate,
         recommendationsDefaultUnsafe,
@@ -215,6 +219,7 @@ describe('GenericPollUserSettingsForm', () => {
       // Here we check the default values used when the settings are not yet
       // defined by the user. The email notifications should always be false
       // by default.
+      expect(notificationsLang).toHaveValue(Notifications_langEnum.FRENCH);
       expect(notificationsEmailResearch).toHaveProperty('checked', false);
       expect(notificationsEmailNewFeatures).toHaveProperty('checked', false);
 
