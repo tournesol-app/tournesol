@@ -62,7 +62,7 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
                       component="a"
                       href={webExtensionUrl}
                       target="_blank"
-                      endIcon={<Extension />}
+                      startIcon={<Extension />}
                     >
                       {t('home.getTheExtensionButton')}
                     </Button>

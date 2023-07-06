@@ -3171,12 +3171,12 @@ components:
       - stats
     Notifications_langEnum:
       enum:
-      - ENGLISH
-      - FRENCH
+      - en
+      - fr
       type: string
       description: |-
-        * `ENGLISH` - en
-        * `FRENCH` - fr
+        * `en` - en
+        * `fr` - fr
     PaginatedBannerList:
       type: object
       properties:

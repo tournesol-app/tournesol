@@ -124,7 +124,7 @@ const FundingSection = ({
               size="large"
               component={Link}
               to="/about/donate"
-              endIcon={<VolunteerActivism />}
+              startIcon={<VolunteerActivism />}
             >
               {t('fundingSection.iSupport')}
             </Button>

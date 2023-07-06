@@ -5,6 +5,7 @@ import { Box, Link, Typography, Button, SxProps } from '@mui/material';
 import { Download, GitHub } from '@mui/icons-material';
 
 import TitledPaper from 'src/components/TitledPaper';
+import TalksBox from './TalksBox';
 
 const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -37,7 +38,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               variant="contained"
               component={Link}
               href={`${apiUrl}/exports/all/`}
-              endIcon={<Download />}
+              startIcon={<Download />}
             >
               {t('publicDataPublicCodeBox.downloadTheDatabase')}
             </Button>
@@ -61,13 +62,14 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               target="_blank"
               rel="noopener"
               href="https://github.com/tournesol-app/tournesol"
-              endIcon={<GitHub />}
+              startIcon={<GitHub />}
             >
               {t('publicDataPublicCodeBox.accessTheCodeOnGitHub')}
             </Button>
           </Box>
         </>
       </TitledPaper>
+      <TalksBox />
     </Box>
   );
 };

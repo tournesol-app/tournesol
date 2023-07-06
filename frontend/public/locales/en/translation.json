@@ -56,6 +56,11 @@
   "stackedCard": {
     "showAll": "Show all"
   },
+  "tempStudyBanner": {
+    "join": "Join",
+    "loginToParticipate": "Log in to participate",
+    "isTheTournesolProjectReallyEffective": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!"
+  },
   "criteriaScoresDistribution": {
     "lessThan": "< {{score}}",
     "fromTo": "{{from}} to {{to}}",
@@ -702,11 +707,6 @@
   "faqEntryList": {
     "questionURLCopied": "Question's URL copied."
   },
-  "tempStudyBanner": {
-    "join": "Join",
-    "loginToParticipate": "Log in to participate",
-    "isTheTournesolProjectReallyEffective": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!"
-  },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol is used to compare multiple types of alternatives. See the list below and choose the Tournesol that is best for you:",
@@ -762,7 +762,10 @@
     "downloadTheDatabase": "Download the database",
     "ourAlgorithmsAreFree": "Our algorithms are Free/Libre",
     "ourAlgorithmsAndAllOurCodeAreFreeSoftware": "In a perspective of transparency and knowledge sharing, the algorithms and all source code we created are Free Software.",
-    "accessTheCodeOnGitHub": "Access the code on GitHub"
+    "accessTheCodeOnGitHub": "Access the code on GitHub",
+    "discoverTheTalks": "Discover the Tournesol Talks",
+    "weOrganizePublicEvents": "We organize public online events with experts to talk about their works related to ethics, algorithms, information and more.",
+    "accessTalksPage": "See the Tournesol Talks"
   },
   "researchSection": {
     "research": "Research",

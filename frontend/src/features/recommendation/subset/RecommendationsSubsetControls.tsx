@@ -53,7 +53,7 @@ const RecommendationsSubsetControls = ({
                 : controlsColor,
             '&:hover': { color: theme.palette.primary.main },
           }}
-          endIcon={
+          startIcon={
             selectedDate === control.value ? (
               <CheckCircleOutline />
             ) : (

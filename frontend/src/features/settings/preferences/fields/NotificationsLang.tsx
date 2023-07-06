@@ -21,11 +21,11 @@ const NotificationsLang = ({
   const settingChoices = [
     {
       label: t('language.en'),
-      value: Notifications_langEnum.ENGLISH,
+      value: Notifications_langEnum.EN,
     },
     {
       label: t('language.fr'),
-      value: Notifications_langEnum.FRENCH,
+      value: Notifications_langEnum.FR,
     },
   ];
 
