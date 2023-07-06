@@ -83,12 +83,12 @@ export const resolvedLangToNotificationsLang = (lang: string | undefined) => {
     return Notifications_langEnum.EN;
   }
 
-  const upperCaseLang = lang.toUpperCase();
-
-  if (upperCaseLang in Notifications_langEnum) {
-    return Notifications_langEnum[
-      upperCaseLang as keyof typeof Notifications_langEnum
-    ];
+  if (
+    Object.values(Notifications_langEnum).includes(
+      lang as Notifications_langEnum
+    )
+  ) {
+    return lang;
   }
 
   return Notifications_langEnum.EN;

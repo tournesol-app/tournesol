@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -23,7 +23,11 @@ import {
 import NotificationsEmailResearch from 'src/features/settings/preferences/fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fields/NotificationsEmailNewFeatures';
 import { useNotifications } from 'src/hooks';
-import { AccountsService, ApiError } from 'src/services/openapi';
+import {
+  AccountsService,
+  ApiError,
+  Notifications_langEnum,
+} from 'src/services/openapi';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 import { resolvedLangToNotificationsLang } from 'src/utils/userSettings';
 
@@ -53,16 +57,8 @@ const Signup = () => {
   const [acceptPolicy, setAcceptPolicy] = useState(false);
 
   // Legally, the notification settings must be false by default.
-  const [notififLang, setNotififLang] = useState(
-    resolvedLangToNotificationsLang(i18n.resolvedLanguage)
-  );
-
   const [notififResearch, setNotififResearch] = useState(false);
   const [notifNewFeatures, setNnotifNewFeatures] = useState(false);
-
-  useEffect(() => {
-    setNotififLang(resolvedLangToNotificationsLang(i18n.resolvedLanguage));
-  }, [i18n.resolvedLanguage]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -80,7 +76,9 @@ const Signup = () => {
           password_confirm: (formData.get('password_confirm') as string) ?? '',
           settings: {
             general: {
-              notifications__lang: notififLang,
+              notifications__lang: resolvedLangToNotificationsLang(
+                i18n.resolvedLanguage
+              ) as Notifications_langEnum,
               notifications_email__research: notififResearch,
               notifications_email__new_features: notifNewFeatures,
             },
