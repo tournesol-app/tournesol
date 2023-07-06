@@ -11,6 +11,7 @@ class GeneralUserSettingsSerializer(serializers.Serializer):
     The general user settings that are not related to Tournesol polls.
     """
 
+    # The first element of the tuple should be an ISO 639-1 code.
     NOTIFICATIONS_LANG = [
         ("en", "en"),
         ("fr", "fr"),
