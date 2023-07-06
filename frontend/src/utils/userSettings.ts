@@ -77,8 +77,8 @@ export const getDefaultRecommendationsSearchParams = (
 
 export const defaultNotificationsLanguage = () => {
   if (isNavigatorLang('fr')) {
-    return Notifications_langEnum.FRENCH;
+    return Notifications_langEnum.FR;
   }
 
-  return Notifications_langEnum.ENGLISH;
+  return Notifications_langEnum.EN;
 };
