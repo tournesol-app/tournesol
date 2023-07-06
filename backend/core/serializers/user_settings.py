@@ -12,8 +12,8 @@ class GeneralUserSettingsSerializer(serializers.Serializer):
     """
 
     NOTIFICATIONS_LANG = [
-        ("ENGLISH", "en"),
-        ("FRENCH", "fr"),
+        ("en", "en"),
+        ("fr", "fr"),
     ]
 
     notifications__lang = serializers.ChoiceField(
