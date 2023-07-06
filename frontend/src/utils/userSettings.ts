@@ -1,11 +1,13 @@
 import {
   BlankEnum,
+  Notifications_langEnum,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
   VideosPollUserSettings,
 } from 'src/services/openapi';
-import { SelectablePoll, PollUserSettingsKeys } from './types';
+
 import { YOUTUBE_POLL_NAME } from './constants';
+import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
  * Cast the value of the setting recommendations__default_unsafe to a value
@@ -70,4 +72,26 @@ export const getDefaultRecommendationsSearchParams = (
 
   const strSearchParams = searchParams.toString();
   return searchParams ? '?' + strSearchParams : '';
+};
+
+/**
+ * Cast `lang` to a value of `Notifications_langEnum` if possible, else
+ * return Notifications_langEnum.EN.
+ */
+export const resolvedLangToNotificationsLang = (
+  lang: string | undefined
+): Notifications_langEnum => {
+  if (!lang) {
+    return Notifications_langEnum.EN;
+  }
+
+  if (
+    Object.values(Notifications_langEnum)
+      .map((x) => String(x))
+      .includes(lang)
+  ) {
+    return lang as Notifications_langEnum;
+  }
+
+  return Notifications_langEnum.EN;
 };

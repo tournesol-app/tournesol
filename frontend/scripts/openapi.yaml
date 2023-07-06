@@ -3681,9 +3681,7 @@ components:
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
         settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
+          $ref: '#/components/schemas/TournesolUserSettings'
       required:
       - email
       - id
@@ -3727,9 +3725,7 @@ components:
           description: Last name
           maxLength: 100
         settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
+          $ref: '#/components/schemas/TournesolUserSettingsRequest'
         password_confirm:
           type: string
           writeOnly: true
