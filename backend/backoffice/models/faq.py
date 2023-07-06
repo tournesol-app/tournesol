@@ -1,6 +1,3 @@
-"""
-Models of the `faq` app.
-"""
 # pylint: disable=duplicate-code
 
 from django.conf import settings
