@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -22,11 +22,10 @@ import {
 } from 'src/components';
 import NotificationsEmailResearch from 'src/features/settings/preferences/fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fields/NotificationsEmailNewFeatures';
-import NotificationsLang from 'src/features/settings/preferences/fields/NotificationsLang';
 import { useNotifications } from 'src/hooks';
 import { AccountsService, ApiError } from 'src/services/openapi';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
-import { defaultNotificationsLanguage } from 'src/utils/userSettings';
+import { resolvedLangToNotificationsLang } from 'src/utils/userSettings';
 
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
@@ -41,7 +40,7 @@ const SignupSuccess = ({ email }: { email: string }) => {
 };
 
 const Signup = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { displayErrorsFrom } = useNotifications();
 
   const [apiError, setApiError] = useState<ApiError | null>(null);
@@ -55,10 +54,15 @@ const Signup = () => {
 
   // Legally, the notification settings must be false by default.
   const [notififLang, setNotififLang] = useState(
-    defaultNotificationsLanguage()
+    resolvedLangToNotificationsLang(i18n.resolvedLanguage)
   );
+
   const [notififResearch, setNotififResearch] = useState(false);
   const [notifNewFeatures, setNnotifNewFeatures] = useState(false);
+
+  useEffect(() => {
+    setNotififLang(resolvedLangToNotificationsLang(i18n.resolvedLanguage));
+  }, [i18n.resolvedLanguage]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -184,13 +188,6 @@ const Signup = () => {
                     </Box>
                   </Divider>
                 </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <NotificationsLang
-                  label={t('signup.preferredLanguageForTheNotifications')}
-                  value={notififLang}
-                  onChange={(value) => setNotififLang(value)}
-                />
               </Grid>
               <Grid item xs={12}>
                 <NotificationsEmailResearch

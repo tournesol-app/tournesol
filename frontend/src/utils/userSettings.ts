@@ -7,7 +7,6 @@ import {
 } from 'src/services/openapi';
 
 import { YOUTUBE_POLL_NAME } from './constants';
-import { isNavigatorLang } from './lang';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
@@ -75,9 +74,21 @@ export const getDefaultRecommendationsSearchParams = (
   return searchParams ? '?' + strSearchParams : '';
 };
 
-export const defaultNotificationsLanguage = () => {
-  if (isNavigatorLang('fr')) {
-    return Notifications_langEnum.FR;
+/**
+ * Cast `lang` to a value of `Notifications_langEnum` if possible, else
+ * return Notifications_langEnum.EN.
+ */
+export const resolvedLangToNotificationsLang = (lang: string | undefined) => {
+  if (!lang) {
+    return Notifications_langEnum.EN;
+  }
+
+  const upperCaseLang = lang.toUpperCase();
+
+  if (upperCaseLang in Notifications_langEnum) {
+    return Notifications_langEnum[
+      upperCaseLang as keyof typeof Notifications_langEnum
+    ];
   }
 
   return Notifications_langEnum.EN;
