@@ -32,7 +32,7 @@ VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 SCORE_SHIFT_W = 1.
-SCORE_SHIFT_QUANTILE = 0.10  # TODO maybe use 5% ?
+SCORE_SHIFT_QUANTILE = 0.15  # TODO maybe use 5% ?
 
 individual_scores_algo = ContinuousBradleyTerry(r_max=COMPARISON_MAX)
 
