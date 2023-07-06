@@ -219,7 +219,7 @@ describe('GenericPollUserSettingsForm', () => {
       // Here we check the default values used when the settings are not yet
       // defined by the user. The email notifications should always be false
       // by default.
-      expect(notificationsLang).toHaveValue(Notifications_langEnum.FRENCH);
+      expect(notificationsLang).toHaveValue(Notifications_langEnum.FR);
       expect(notificationsEmailResearch).toHaveProperty('checked', false);
       expect(notificationsEmailNewFeatures).toHaveProperty('checked', false);
 
