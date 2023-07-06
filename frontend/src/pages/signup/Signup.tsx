@@ -23,11 +23,7 @@ import {
 import NotificationsEmailResearch from 'src/features/settings/preferences/fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fields/NotificationsEmailNewFeatures';
 import { useNotifications } from 'src/hooks';
-import {
-  AccountsService,
-  ApiError,
-  Notifications_langEnum,
-} from 'src/services/openapi';
+import { AccountsService, ApiError } from 'src/services/openapi';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 import { resolvedLangToNotificationsLang } from 'src/utils/userSettings';
 
@@ -78,7 +74,7 @@ const Signup = () => {
             general: {
               notifications__lang: resolvedLangToNotificationsLang(
                 i18n.resolvedLanguage
-              ) as Notifications_langEnum,
+              ),
               notifications_email__research: notififResearch,
               notifications_email__new_features: notifNewFeatures,
             },

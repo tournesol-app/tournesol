@@ -78,17 +78,19 @@ export const getDefaultRecommendationsSearchParams = (
  * Cast `lang` to a value of `Notifications_langEnum` if possible, else
  * return Notifications_langEnum.EN.
  */
-export const resolvedLangToNotificationsLang = (lang: string | undefined) => {
+export const resolvedLangToNotificationsLang = (
+  lang: string | undefined
+): Notifications_langEnum => {
   if (!lang) {
     return Notifications_langEnum.EN;
   }
 
   if (
-    Object.values(Notifications_langEnum).includes(
-      lang as Notifications_langEnum
-    )
+    Object.values(Notifications_langEnum)
+      .map((x) => String(x))
+      .includes(lang)
   ) {
-    return lang;
+    return lang as Notifications_langEnum;
   }
 
   return Notifications_langEnum.EN;
