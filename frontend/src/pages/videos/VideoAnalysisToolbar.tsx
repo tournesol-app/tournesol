@@ -3,14 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Button, ButtonGroup, Grid, Tooltip } from '@mui/material';
-import { Compare, ContentCopy, Twitter, Add } from '@mui/icons-material';
+import { Compare, Add } from '@mui/icons-material';
 
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
-import { SNACKBAR_DYNAMIC_FEEDBACK_MS } from 'src/utils/notifications';
-import { useSnackbar } from 'notistack';
-import { openTwitterPopup } from 'src/utils/ui';
+import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 
 const VideoAnalysisToolbar = ({
   video,
@@ -21,18 +19,9 @@ const VideoAnalysisToolbar = ({
   const { baseUrl } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
-  const { enqueueSnackbar } = useSnackbar();
   const { name: pollName } = useCurrentPoll();
 
   const uid = `yt:${video.video_id}`;
-
-  const copyUriToClipboard = () => {
-    navigator.clipboard.writeText(window.location.toString());
-    enqueueSnackbar(t('copyUriToClipboard.copied'), {
-      variant: 'success',
-      autoHideDuration: SNACKBAR_DYNAMIC_FEEDBACK_MS,
-    });
-  };
 
   const handleCreation = async () => {
     try {
@@ -43,23 +32,20 @@ const VideoAnalysisToolbar = ({
     }
   };
 
-  const getTweet = () => {
-    return (
-      `${t('entityAnalysisPage.twitter.intro')}\n\n` +
-      `${t('entityAnalysisPage.twitter.conclusion')} 🌻\n` +
-      `\n${window.location.toString()}`
-    );
-  };
+  const tweet =
+    `${t('entityAnalysisPage.twitter.intro')}\n\n` +
+    `${t('entityAnalysisPage.twitter.conclusion')} 🌻\n` +
+    `\n${window.location.toString()}`;
+
+  const shareMessage =
+    `${t('entityAnalysisPage.video.shareMessageIntro')}\n\n` +
+    `${t('entityAnalysisPage.video.shareMessageConclusion')} 🌻\n` +
+    `\n${window.location.toString()}`;
 
   return (
     <Grid container item display="flex" justifyContent="flex-end" gap={2}>
       <ButtonGroup variant="outlined" color="secondary">
-        <Button onClick={() => openTwitterPopup(getTweet())}>
-          <Twitter />
-        </Button>
-        <Button onClick={copyUriToClipboard}>
-          <ContentCopy />
-        </Button>
+        <ShareMenuButton twitterMessage={tweet} shareMessage={shareMessage} />
       </ButtonGroup>
       {isLoggedIn && (
         <Tooltip title={`${t('actions.rateLater')}`} placement="left">

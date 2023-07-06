@@ -299,7 +299,9 @@
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
   "shareMenu": {
-    "copyAddress": "Copy the page address"
+    "copyAddress": "Copy the page address",
+    "copyShareMessage": "Copy share message",
+    "shareOnTwitter": "Share on Twitter"
   },
   "ratelater": {
     "videoIdOrURL": "Video ID or URL",
@@ -679,7 +681,9 @@
       "compare": "Compare"
     },
     "video": {
-      "description": "Description (from YouTube)"
+      "description": "Description (from YouTube)",
+      "shareMessageIntro": "I have just watched this video on Tournesol.",
+      "shareMessageConclusion": "I think you should check it out and compare it with other ones!"
     },
     "twitter": {
       "intro": "I have just watched this video on @TournesolApp.",

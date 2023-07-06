@@ -8,7 +8,13 @@ import ShareMenu from 'src/features/menus/ShareMenu';
 /**
  * An `IconButton` displaying the `ShareMenu` when clicked.
  */
-const ShareMenuButton = () => {
+const ShareMenuButton = ({
+  twitterMessage,
+  shareMessage,
+}: {
+  twitterMessage?: string;
+  shareMessage?: string;
+}) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -30,6 +36,8 @@ const ShareMenuButton = () => {
         <Share />
       </IconButton>
       <ShareMenu
+        twitterMessage={twitterMessage}
+        shareMessage={shareMessage}
         menuAnchor={menuAnchor}
         open={isMenuOpen}
         onClose={handleMenuClose}
