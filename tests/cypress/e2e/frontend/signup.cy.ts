@@ -67,7 +67,5 @@ describe('Signup', () => {
     // [THEN] only the selected notifications are checked
     cy.get('[data-testid=notifications_email__research]').should('be.checked');
     cy.get('[data-testid=notifications_email__new_features]').should('not.be.checked');
-
-    // trigger CI
   });
 });
