@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Share } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 
 import ShareMenu from 'src/features/menus/ShareMenu';
 
@@ -11,9 +11,11 @@ import ShareMenu from 'src/features/menus/ShareMenu';
 const ShareMenuButton = ({
   twitterMessage,
   shareMessage,
+  isIcon,
 }: {
   twitterMessage?: string;
   shareMessage?: string;
+  isIcon?: boolean;
 }) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,9 +34,15 @@ const ShareMenuButton = ({
 
   return (
     <>
-      <IconButton aria-label="Share button" onClick={handleShareMenuClick}>
-        <Share />
-      </IconButton>
+      {isIcon ? (
+        <IconButton aria-label="Share button" onClick={handleShareMenuClick}>
+          <Share />
+        </IconButton>
+      ) : (
+        <Button aria-label="Share button" onClick={handleShareMenuClick}>
+          <Share />
+        </Button>
+      )}
       <ShareMenu
         twitterMessage={twitterMessage}
         shareMessage={shareMessage}

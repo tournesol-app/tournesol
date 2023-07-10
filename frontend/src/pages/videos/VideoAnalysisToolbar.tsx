@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Button, ButtonGroup, Grid, Tooltip } from '@mui/material';
-import { Compare, Add } from '@mui/icons-material';
+import { Compare, Add, Twitter } from '@mui/icons-material';
 
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
+import { openTwitterPopup } from 'src/utils/ui';
 
 const VideoAnalysisToolbar = ({
   video,
@@ -32,10 +33,13 @@ const VideoAnalysisToolbar = ({
     }
   };
 
-  const tweet =
-    `${t('entityAnalysisPage.twitter.intro')}\n\n` +
-    `${t('entityAnalysisPage.twitter.conclusion')} 🌻\n` +
-    `\n${window.location.toString()}`;
+  const getTweet = () => {
+    return (
+      `${t('entityAnalysisPage.twitter.intro')}\n\n` +
+      `${t('entityAnalysisPage.twitter.conclusion')} 🌻\n` +
+      `\n${window.location.toString()}`
+    );
+  };
 
   const shareMessage =
     `${t('entityAnalysisPage.video.shareMessageIntro')}\n\n` +
@@ -45,7 +49,10 @@ const VideoAnalysisToolbar = ({
   return (
     <Grid container item display="flex" justifyContent="flex-end" gap={2}>
       <ButtonGroup variant="outlined" color="secondary">
-        <ShareMenuButton twitterMessage={tweet} shareMessage={shareMessage} />
+        <Button onClick={() => openTwitterPopup(getTweet())}>
+          <Twitter />
+        </Button>
+        <ShareMenuButton shareMessage={shareMessage} />
       </ButtonGroup>
       {isLoggedIn && (
         <Tooltip title={`${t('actions.rateLater')}`} placement="left">
