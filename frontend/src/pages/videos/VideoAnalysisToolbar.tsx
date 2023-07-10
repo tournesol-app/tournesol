@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Button, ButtonGroup, Grid, Tooltip } from '@mui/material';
+import { Box, Button, ButtonGroup, Tooltip } from '@mui/material';
 import { Compare, Add, Twitter } from '@mui/icons-material';
 
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
@@ -63,7 +63,7 @@ const VideoAnalysisToolbar = ({
     `\n${window.location.toString()}`;
 
   return (
-    <Grid container item display="flex" justifyContent="flex-end" gap={2}>
+    <Box display="flex" justifyContent="flex-end" gap={2}>
       <ButtonGroup variant="outlined" color="secondary">
         <Button onClick={() => openTwitterPopup(getTweet())}>
           <Twitter />
@@ -92,7 +92,7 @@ const VideoAnalysisToolbar = ({
       >
         {t('entityAnalysisPage.generic.compare')}
       </Button>
-    </Grid>
+    </Box>
   );
 };
 

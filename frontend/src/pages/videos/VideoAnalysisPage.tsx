@@ -56,8 +56,9 @@ export const VideoAnalysis = ({
               controls
             />
           </Grid>
-          {/* Toolbar section, containing links, copare button, social media */}
-          <VideoAnalysisToolbar video={video} />
+          <Grid item xs={12}>
+            <VideoAnalysisToolbar video={video} />
+          </Grid>
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
