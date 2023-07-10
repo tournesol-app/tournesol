@@ -22,6 +22,7 @@ interface WebsiteBannerSingleProps {
 const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
   const theme = useTheme();
   const mediaBelowXl = useMediaQuery(theme.breakpoints.down('xl'));
+  const security = banner.security_advisory;
 
   if (banner.title === '' || banner.text === '') {
     return <></>;
@@ -30,12 +31,15 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
   return (
     <Grid container width="100%" flexDirection="column" alignItems="center">
       <Grid item width="100%" xl={9}>
-        <Paper sx={{ p: 2 }} square={mediaBelowXl}>
+        <Paper
+          sx={security ? { p: 2, backgroundColor: 'primary.main' } : { p: 2 }}
+          square={mediaBelowXl}
+        >
           <Stack direction="column" spacing={1}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Campaign
                 fontSize="large"
-                sx={{ color: theme.palette.secondary.main }}
+                color={security ? 'error' : 'secondary'}
               />
               <Typography paragraph>
                 <strong>{banner.title}</strong>
@@ -54,8 +58,8 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
               {banner.action_link && banner.action_label && (
                 <Box>
                   <Button
-                    variant="outlined"
-                    color="secondary"
+                    variant={security ? 'contained' : 'outlined'}
+                    color={security ? 'error' : 'secondary'}
                     component={Link}
                     href={banner.action_link}
                   >
