@@ -73,10 +73,9 @@ const VideoAnalysisToolbar = ({
       {isLoggedIn && (
         <Tooltip title={`${t('actions.rateLater')}`} placement="bottom">
           <Button
-            size="medium"
             color="secondary"
-            onClick={onRateLaterClick}
             variant="outlined"
+            onClick={onRateLaterClick}
             disabled={rateLaterInProgress}
           >
             <Add />

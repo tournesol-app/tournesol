@@ -6,16 +6,16 @@ import { Button, IconButton } from '@mui/material';
 import ShareMenu from 'src/features/menus/ShareMenu';
 
 /**
- * An `IconButton` displaying the `ShareMenu` when clicked.
+ * An `Button` displaying the `ShareMenu` when clicked.
  */
 const ShareMenuButton = ({
-  twitterMessage,
-  shareMessage,
   isIcon,
+  shareMessage,
+  twitterMessage,
 }: {
-  twitterMessage?: string;
-  shareMessage?: string;
   isIcon?: boolean;
+  shareMessage?: string;
+  twitterMessage?: string;
 }) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

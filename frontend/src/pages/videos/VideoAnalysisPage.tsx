@@ -18,6 +18,7 @@ import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
+
 import VideoAnalysisToolbar from './VideoAnalysisToolbar';
 
 export const VideoAnalysis = ({
