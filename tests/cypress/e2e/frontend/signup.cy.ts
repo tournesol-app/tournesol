@@ -53,6 +53,7 @@ describe('Signup', () => {
     cy.get('[data-testid=notifications_email__research]').check();
 
     cy.contains('Sign up').click();
+    cy.contains('verification link').should('be.visible');
     cy.getEmailLink().then(verificationLink => cy.visit(verificationLink));
 
     // [WHEN] the user goes to its preference page
@@ -65,6 +66,6 @@ describe('Signup', () => {
 
     // [THEN] only the selected notifications are checked
     cy.get('[data-testid=notifications_email__research]').should('be.checked');
-    cy.get('input[name=notifications_email__new_features]').should('not.be.checked');
+    cy.get('[data-testid=notifications_email__new_features]').should('not.be.checked');
   });
 });
