@@ -57,7 +57,7 @@ const TournesolUserSettingsForm = () => {
 
   // We think that the majority of the community speaks french.
   const [notificationsLang, setNotificationsLang] = useState(
-    generalSettings?.notifications__lang ?? Notifications_langEnum.FRENCH
+    generalSettings?.notifications__lang ?? Notifications_langEnum.FR
   );
 
   // Notifications (must be false by default according to the ToS)

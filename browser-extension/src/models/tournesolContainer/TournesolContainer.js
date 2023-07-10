@@ -74,7 +74,7 @@ export class TournesolContainer {
         'tournesol_mui_like_button view_more_link small';
       view_more_link.target = '_blank';
       view_more_link.rel = 'noopener';
-      view_more_link.href = `https://tournesol.app/recommendations/?search=${
+      view_more_link.href = `https://tournesol.app/recommendations?search=${
         this.recommendations.searchQuery
       }&language=${this.recommendations.recommandationsLanguages.replaceAll(
         ',',

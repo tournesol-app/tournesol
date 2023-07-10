@@ -470,8 +470,8 @@
     "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
   },
   "generalUserSettingsForm": {
-    "notificationsEmailNewFeatures": "Être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
-    "notificationsEmailResearch": "Recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
+    "notificationsEmailNewFeatures": "Je veux être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
+    "notificationsEmailResearch": "Je veux recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
     "emailNotifications": "Notifications par e-mail",
     "joinTheResearchStudies": "Participez aux études de recherche !",
     "joinTheResearchStudiesDesc": "Plusieurs projets de recherches ont choisi Tournesol ou sa communauté comme sujet d'étude. Si vous souhaitez faire avancer la science nous vous invitons à accepter de recevoir des invitations par e-mail. Vous serez notifié·e lorsque d'éventuelles études démarreront."
@@ -873,10 +873,12 @@
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "profile": "Profil",
   "signup": {
-    "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
+    "welcome": "Bienvenue !",
+    "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
+    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>.",
+    "preferredLanguageForTheNotifications": "Langue préférée pour les notifications"
   },
   "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",
