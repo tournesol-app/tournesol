@@ -32,4 +32,6 @@ class Command(BaseCommand):
                 raise NotImplementedError("Licchavi is no longer supported")
             else:
                 raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")
+            self.stdout.write(f"Starting bulk update of sum_trust_score for poll {poll.name}")
             EntityPollRating.bulk_update_sum_trust_scores(poll)
+            self.stdout.write(f"Finished bulk update of sum_trust_score for poll {poll.name}")
