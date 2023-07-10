@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -11,6 +11,9 @@ import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { openTwitterPopup } from 'src/utils/ui';
 
+// in milliseconds
+const DISPLAY_DELAY = 1200;
+
 const VideoAnalysisToolbar = ({
   video,
 }: {
@@ -21,14 +24,28 @@ const VideoAnalysisToolbar = ({
   const { baseUrl, name: pollName } = useCurrentPoll();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
 
+  const [rateLaterInProgress, setRateLaterInProgress] = useState(false);
+
   const uid = `yt:${video.video_id}`;
 
-  const handleCreation = async () => {
+  const onRateLaterClick = async () => {
+    // Do not trigger any additionnal rendering when the user clicks
+    // repeatedly on the button.
+    if (rateLaterInProgress) {
+      return;
+    }
+
+    setRateLaterInProgress(true);
+
     try {
       await addToRateLaterList(pollName, uid);
       showSuccessAlert(t('actions.videoAddedToRateLaterList'));
     } catch (error) {
       showInfoAlert(t('actions.videoAlreadyInRateLaterList'));
+    } finally {
+      setTimeout(() => {
+        setRateLaterInProgress(false);
+      }, DISPLAY_DELAY);
     }
   };
 
@@ -54,12 +71,13 @@ const VideoAnalysisToolbar = ({
         <ShareMenuButton shareMessage={shareMessage} />
       </ButtonGroup>
       {isLoggedIn && (
-        <Tooltip title={`${t('actions.rateLater')}`} placement="left">
+        <Tooltip title={`${t('actions.rateLater')}`} placement="bottom">
           <Button
             size="medium"
             color="secondary"
-            onClick={handleCreation}
+            onClick={onRateLaterClick}
             variant="outlined"
+            disabled={rateLaterInProgress}
           >
             <Add />
           </Button>
