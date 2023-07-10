@@ -1,6 +1,7 @@
 """
 All test cases of the `EntityPollRating` model.
 """
+import random
 
 from django.test import TestCase
 
@@ -8,6 +9,10 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import Comparison, EntityPollRating
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+)
 
 
 class EntityPollRatingTestCase(TestCase):
@@ -92,3 +97,94 @@ class EntityPollRatingTestCase(TestCase):
         self.assertEqual(updated_rating_1.n_contributors, 2)
         self.assertEqual(updated_rating_2.n_comparisons, 1)
         self.assertEqual(updated_rating_2.n_contributors, 1)
+
+class EntityPollRatingBulkTrustScoreUpdate(TestCase):
+    """
+    TestCase of the `EntityPollRatingTestCase` model.
+    """
+
+    def setUp(self):
+        self.poll = PollFactory()
+        self.user_a = UserFactory(trust_score=0.01)
+        self.user_b = UserFactory(trust_score=0.9)
+        self.user_c = UserFactory(trust_score=0.5)
+        self.video_1 = VideoFactory()
+        self.video_2 = VideoFactory()
+        self.video_3 = VideoFactory()
+        rating_a_1 = ContributorRatingFactory(poll=self.poll, user=self.user_a, entity=self.video_1)
+        ContributorRatingCriteriaScoreFactory(contributor_rating=rating_a_1)
+        rating_a_2 = ContributorRatingFactory(poll=self.poll, user=self.user_a, entity=self.video_2)
+        ContributorRatingCriteriaScoreFactory(contributor_rating=rating_a_2)
+        rating_b_1 = ContributorRatingFactory(poll=self.poll, user=self.user_b, entity=self.video_1)
+        ContributorRatingCriteriaScoreFactory(contributor_rating=rating_b_1)
+        rating_c_1 = ContributorRatingFactory(poll=self.poll, user=self.user_c, entity=self.video_1)
+
+        self.entity_poll_rating_1 = EntityPollRating.objects.create(
+            entity=self.video_1, poll=self.poll
+        )
+        self.entity_poll_rating_2 = EntityPollRating.objects.create(
+            entity=self.video_2, poll=self.poll
+        )
+        self.entity_poll_rating_3 = EntityPollRating.objects.create(
+            entity=self.video_3, poll=self.poll
+        )
+
+    def check_sum_trust_scores_are_correctly_updated(self):
+        self.entity_poll_rating_1.refresh_from_db()
+        self.assertAlmostEqual(self.entity_poll_rating_1.sum_trust_scores, 0.91)
+        self.entity_poll_rating_2.refresh_from_db()
+        self.assertAlmostEqual(self.entity_poll_rating_2.sum_trust_scores, 0.01)
+        self.entity_poll_rating_3.refresh_from_db()
+        self.assertAlmostEqual(self.entity_poll_rating_3.sum_trust_scores, 0.)
+
+    def test_update_sum_trust_without_batch(self):
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll, batch_size=None)
+        self.check_sum_trust_scores_are_correctly_updated()
+
+    def test_update_sum_trust_with_batch_equal_one(self):
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll, batch_size=1)
+        self.check_sum_trust_scores_are_correctly_updated()
+
+    def test_update_sum_trust_with_default_batch(self):
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll)
+        self.check_sum_trust_scores_are_correctly_updated()
+
+
+class EntityPollRatingBulkTrustScoreUpdateOnRandomData(TestCase):
+    """
+    TestCase of the `EntityPollRatingTestCase` model.
+    """
+
+    def setUp(self):
+        self.poll = PollFactory()
+        N_USERS = 100
+        N_VIDEOS = 10
+        RATING_PROBABILITY = 0.5  # probability that a user u rated a video v
+        SCORE_PROBABILITY = 0.9  # probability that a score exists for a given rating
+        self.users = [UserFactory(trust_score=random.random()) for _ in range(N_USERS)]
+        self.videos = [VideoFactory() for _ in range(N_VIDEOS)]
+        self.ratings = [
+            ContributorRatingFactory(poll=self.poll, user=u, entity=v)
+            for u in self.users
+            for v in self.videos
+            if random.random() < RATING_PROBABILITY
+        ]
+        self.scores = [
+            ContributorRatingCriteriaScoreFactory(contributor_rating=r)
+            for r in self.ratings
+            if random.random() < SCORE_PROBABILITY
+        ]
+        self.entity_poll_ratings = [
+            EntityPollRating.objects.create(entity=v, poll=self.poll)
+            for v in self.videos
+        ]
+
+    def test_same_trust_scores_with_or_not_batches(self):
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll, batch_size=None)
+        for epr in self.entity_poll_ratings: epr.refresh_from_db()
+        sum_trust_scores_no_batch = [epr.sum_trust_scores for epr in self.entity_poll_ratings]
+        EntityPollRating.bulk_update_sum_trust_scores(self.poll, batch_size=100)
+        for epr in self.entity_poll_ratings: epr.refresh_from_db()
+        sum_trust_scores_batch = [epr.sum_trust_scores for epr in self.entity_poll_ratings]
+        for a,b in zip(sum_trust_scores_no_batch, sum_trust_scores_batch):
+            self.assertAlmostEqual(a, b)

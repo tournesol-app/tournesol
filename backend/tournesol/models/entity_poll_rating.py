@@ -1,13 +1,16 @@
 """
 Entity score and ratings per poll.
 """
+from typing import Optional
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q, Subquery, Sum
+from django.db.models.functions import Coalesce
 
 from tournesol.models.comparisons import Comparison
 from tournesol.models.entity import Entity
 from tournesol.models.poll import Poll
+from tournesol.models.ratings import ContributorRating, ContributorRatingCriteriaScore
 
 
 class EntityPollRating(models.Model):
@@ -51,6 +54,12 @@ class EntityPollRating(models.Model):
         help_text="Total number of certified contributors who rated the entity",
     )
 
+    sum_trust_scores = models.FloatField(
+        null=False,
+        default=0.,
+        help_text="Sum of trust scores of the contributors who rated the entity",
+    )
+
     def update_n_ratings(self):
         """
         Refresh the number of comparisons and contributors.
@@ -67,4 +76,53 @@ class EntityPollRating(models.Model):
             .distinct("user")
             .count()
         )
+
         self.save(update_fields=["n_comparisons", "n_contributors"])
+
+    @staticmethod
+    def bulk_update_sum_trust_scores(poll: Poll, batch_size: Optional[int] = 4000):
+        if batch_size is None:
+            EntityPollRating._bulk_update_sum_trust_score(poll)
+        else:
+            EntityPollRating._bulk_update_sum_trust_score_by_batch(poll, batch_size)
+
+    @staticmethod
+    def _bulk_update_sum_trust_score(poll):
+        EntityPollRating.objects.filter(poll=poll).update(
+            sum_trust_scores=Coalesce(
+                Subquery(
+                    ContributorRating.objects.filter(
+                        entity_id=OuterRef("entity_id"),
+                        poll=OuterRef("poll"),
+                    )
+                    .filter(
+                        Exists(
+                            ContributorRatingCriteriaScore.objects.filter(
+                                contributor_rating=OuterRef("id")
+                            )
+                        )
+                    )
+                    .values("entity")
+                    .annotate(s_t_s=Sum("user__trust_score"))
+                    .values("s_t_s")[:1]
+                ),
+                0.0,
+            )
+        )
+
+    @staticmethod
+    def _bulk_update_sum_trust_score_by_batch(poll, batch_size: int):
+        ep_ratings = list(EntityPollRating.objects.filter(poll=poll).filter(
+            Exists(ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating=OuterRef('entity__contributorvideoratings')
+            )),
+        ).annotate(
+            annotated_sum_trust_scores=Sum("entity__contributorvideoratings__user__trust_score")
+        ).only("sum_trust_scores"))
+        for ep_rating in ep_ratings:
+            ep_rating.sum_trust_scores = ep_rating.annotated_sum_trust_scores or 0.
+        EntityPollRating.objects.bulk_update(
+            ep_ratings,
+            fields=["sum_trust_scores"],
+            batch_size=batch_size
+        )
