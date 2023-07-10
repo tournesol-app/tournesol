@@ -47,7 +47,7 @@ describe('Signup', () => {
     cy.get('input[name=username]').type('test-register');
     cy.get('input[name=password]').type('tourne50l');
     cy.get('input[name=password_confirm]').type('tourne50l');
-    cy.get('form input[name=accept_terms]').check();
+    cy.get('input[name=accept_terms]').check();
 
     // [GIVEN] the notification "research" is selected
     cy.get('[data-testid=notifications_email__research]').check();
