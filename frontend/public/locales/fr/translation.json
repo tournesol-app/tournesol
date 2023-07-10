@@ -60,6 +60,11 @@
   "stackedCard": {
     "showAll": "Tout montrer"
   },
+  "tempStudyBanner": {
+    "join": "Participer",
+    "loginToParticipate": "Connectez-vous pour participer",
+    "isTheTournesolProjectReallyEffective": "Le projet Tournesol est-il vraiment efficace? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !"
+  },
   "criteriaScoresDistribution": {
     "lessThan": "< {{score}}",
     "fromTo": "{{from}} à {{to}}",
@@ -467,8 +472,8 @@
     "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
   },
   "generalUserSettingsForm": {
-    "notificationsEmailNewFeatures": "Être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
-    "notificationsEmailResearch": "Recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
+    "notificationsEmailNewFeatures": "Je veux être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
+    "notificationsEmailResearch": "Je veux recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
     "emailNotifications": "Notifications par e-mail",
     "joinTheResearchStudies": "Participez aux études de recherche !",
     "joinTheResearchStudiesDesc": "Plusieurs projets de recherches ont choisi Tournesol ou sa communauté comme sujet d'étude. Si vous souhaitez faire avancer la science nous vous invitons à accepter de recevoir des invitations par e-mail. Vous serez notifié·e lorsque d'éventuelles études démarreront."
@@ -718,11 +723,6 @@
   "faqEntryList": {
     "questionURLCopied": "URL de la question copiée."
   },
-  "tempStudyBanner": {
-    "join": "Participer",
-    "loginToParticipate": "Connectez-vous pour participer",
-    "isTheTournesolProjectReallyEffective": "Le projet Tournesol est-il vraiment efficace? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !"
-  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
@@ -778,7 +778,10 @@
     "downloadTheDatabase": "Télécharger la base de données",
     "ourAlgorithmsAreFree": "Nos algorithmes sont Libres",
     "ourAlgorithmsAndAllOurCodeAreFreeSoftware": "Dans une optique de transparence et de partage des connaissances, nos algorithmes et tous les codes sources que nous avons créés sont des Logiciels Libres.",
-    "accessTheCodeOnGitHub": "Accédez au code sur GitHub"
+    "accessTheCodeOnGitHub": "Accéder au code sur GitHub",
+    "discoverTheTalks": "Découvrir les Tournesol Talks",
+    "weOrganizePublicEvents": "Nous organisons des événements publics en ligne avec des experts pour parler de leurs travaux liés à l'éthique, aux algorithmes, à l'information et plus encore",
+    "accessTalksPage": "Voir les Tournesol Talks"
   },
   "researchSection": {
     "research": "Recherche",
@@ -878,10 +881,12 @@
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "profile": "Profil",
   "signup": {
-    "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
+    "welcome": "Bienvenue !",
+    "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
+    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>.",
+    "preferredLanguageForTheNotifications": "Langue préférée pour les notifications"
   },
   "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",

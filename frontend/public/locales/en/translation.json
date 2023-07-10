@@ -56,6 +56,11 @@
   "stackedCard": {
     "showAll": "Show all"
   },
+  "tempStudyBanner": {
+    "join": "Join",
+    "loginToParticipate": "Log in to participate",
+    "isTheTournesolProjectReallyEffective": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!"
+  },
   "criteriaScoresDistribution": {
     "lessThan": "< {{score}}",
     "fromTo": "{{from}} to {{to}}",
@@ -459,8 +464,8 @@
     "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>."
   },
   "generalUserSettingsForm": {
-    "notificationsEmailNewFeatures": "Be informed of new features (~ 1 per month).",
-    "notificationsEmailResearch": "Receive invitations to research studies and surveys about the project (~ 6 per year).",
+    "notificationsEmailNewFeatures": "I want to be informed of new features (~ 1 per month).",
+    "notificationsEmailResearch": "I want to receive invitations to research studies and surveys about the project (~ 6 per year).",
     "emailNotifications": "Email notifications",
     "joinTheResearchStudies": "Join the research studies!",
     "joinTheResearchStudiesDesc": "Several research projects have chosen Tournesol or its community as the subject their study. If you would like to help advance science, we invite you to accept email invitations. You will be notified when any studies begin."
@@ -710,11 +715,6 @@
   "faqEntryList": {
     "questionURLCopied": "Question's URL copied."
   },
-  "tempStudyBanner": {
-    "join": "Join",
-    "loginToParticipate": "Log in to participate",
-    "isTheTournesolProjectReallyEffective": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!"
-  },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol is used to compare multiple types of alternatives. See the list below and choose the Tournesol that is best for you:",
@@ -770,7 +770,10 @@
     "downloadTheDatabase": "Download the database",
     "ourAlgorithmsAreFree": "Our algorithms are Free/Libre",
     "ourAlgorithmsAndAllOurCodeAreFreeSoftware": "In a perspective of transparency and knowledge sharing, the algorithms and all source code we created are Free Software.",
-    "accessTheCodeOnGitHub": "Access the code on GitHub"
+    "accessTheCodeOnGitHub": "Access the code on GitHub",
+    "discoverTheTalks": "Discover the Tournesol Talks",
+    "weOrganizePublicEvents": "We organize public online events with experts to talk about their works related to ethics, algorithms, information and more.",
+    "accessTalksPage": "See the Tournesol Talks"
   },
   "researchSection": {
     "research": "Research",
@@ -869,10 +872,12 @@
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
   "profile": "Profile",
   "signup": {
-    "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
+    "welcome": "Welcome!",
+    "successMessage": "A verification link has been sent to <1>{{email}}</1> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
+    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>.",
+    "preferredLanguageForTheNotifications": "Preferred language for the notifications"
   },
   "emailAddress": "Email address",
   "confirmYourPassword": "Confirm your password",
