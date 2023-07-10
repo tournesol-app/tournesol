@@ -51,7 +51,7 @@ describe('Signup', () => {
     cy.visit('/settings/preferences');
 
     // [THEN] only the selected notifications are checked
-    cy.get('input[name=notifications_email__research]').should('be.checked');
+    cy.get('[data-testid=notifications_email__research]').should('be.checked');
     cy.get('input[name=notifications_email__new_features]').should('not.be.checked');
   });
 });
