@@ -17,10 +17,9 @@ const VideoAnalysisToolbar = ({
   video: VideoSerializerWithCriteria;
 }) => {
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
+  const { baseUrl, name: pollName } = useCurrentPoll();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
-  const { name: pollName } = useCurrentPoll();
 
   const uid = `yt:${video.video_id}`;
 
