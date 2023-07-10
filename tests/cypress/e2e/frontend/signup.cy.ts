@@ -38,7 +38,7 @@ describe('Signup', () => {
     cy.get('form input[name=accept_terms]').check();
 
     // [GIVEN] the notification "research" is selected
-    cy.get('input[name=notifications_email__research]').check();
+    cy.get('[data-testid=notifications_email__research]').check();
 
     cy.contains('Sign up').click();
     cy.getEmailLink().then(verificationLink => cy.visit(verificationLink));
