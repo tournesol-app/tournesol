@@ -47,9 +47,10 @@ describe('Signup', () => {
     cy.contains('Log in').click();
     cy.focused().type('test-register');
     cy.get('input[name="password"]').click().type('tourne50l').type('{enter}');
-    cy.visit('/settings/preferences');
 
     cy.wait(2000);
+    cy.visit('/settings/preferences');
+
     // [THEN] only the selected notifications are checked
     cy.get('[data-testid=notifications_email__research]').should('be.checked');
     cy.get('input[name=notifications_email__new_features]').should('not.be.checked');
