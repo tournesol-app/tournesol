@@ -19,7 +19,7 @@ import linkifyStr from 'linkify-string';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 
-import VideoAnalysisToolbar from './VideoAnalysisToolbar';
+import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 
 export const VideoAnalysis = ({
   video,
@@ -58,7 +58,7 @@ export const VideoAnalysis = ({
             />
           </Grid>
           <Grid item xs={12}>
-            <VideoAnalysisToolbar video={video} />
+            <VideoAnalysisActionBar video={video} />
           </Grid>
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />

@@ -12,10 +12,12 @@ const ShareMenuButton = ({
   isIcon,
   shareMessage,
   twitterMessage,
+  feedbackDelay = 1200,
 }: {
   isIcon?: boolean;
   shareMessage?: string;
   twitterMessage?: string;
+  feedbackDelay?: number;
 }) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,8 +37,13 @@ const ShareMenuButton = ({
     setIsMenuOpen(true);
   };
 
-  const handleMenuClose = () => {
-    setFeedback(true);
+  const handleMenuClose = (
+    event: React.MouseEvent<HTMLElement>,
+    reason?: string
+  ) => {
+    if (!['backdropClick', 'escapeKeyDown'].includes(reason ?? '')) {
+      setFeedback(true);
+    }
 
     setIsMenuOpen(false);
 
@@ -44,9 +51,11 @@ const ShareMenuButton = ({
       clearTimeout(feedbackTimeoutId.current);
     }
 
-    feedbackTimeoutId.current = setTimeout(() => {
-      setFeedback(false);
-    }, 1200);
+    if (!['backdropClick', 'escapeKeyDown'].includes(reason ?? '')) {
+      feedbackTimeoutId.current = setTimeout(() => {
+        setFeedback(false);
+      }, feedbackDelay);
+    }
   };
 
   return (

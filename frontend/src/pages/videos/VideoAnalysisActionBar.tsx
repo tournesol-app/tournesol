@@ -14,7 +14,7 @@ import { openTwitterPopup } from 'src/utils/ui';
 // in milliseconds
 const FEEDBACK_DURATION = 1200;
 
-const VideoAnalysisToolbar = ({
+const VideoAnalysisActionBar = ({
   video,
 }: {
   video: VideoSerializerWithCriteria;
@@ -93,4 +93,4 @@ const VideoAnalysisToolbar = ({
   );
 };
 
-export default VideoAnalysisToolbar;
+export default VideoAnalysisActionBar;

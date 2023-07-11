@@ -15,7 +15,7 @@ interface ShareMenuProps {
   open: boolean;
   shareMessage?: string;
   twitterMessage?: string;
-  onClose: (event: React.MouseEvent<HTMLElement>) => void;
+  onClose: (event: React.MouseEvent<HTMLElement>, reason?: string) => void;
 }
 
 /**
