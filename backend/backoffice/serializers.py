@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backoffice.models import Banner, TalkEntry
+from backoffice.models import Banner, FAQEntry, TalkEntry
 
 
 class TalkEntrySerializer(serializers.ModelSerializer):
@@ -37,3 +37,16 @@ class BannerSerializer(serializers.ModelSerializer):
             "priority",
             "security_advisory",
         ]
+
+
+class FAQEntrySerializer(serializers.ModelSerializer):
+    """
+    A translated question with its translated answer.
+    """
+
+    question = serializers.CharField(source="get_question_text_prefetch")
+    answer = serializers.CharField(source="get_answer_text_prefetch")
+
+    class Meta:
+        model = FAQEntry
+        fields = ["name", "question", "answer"]

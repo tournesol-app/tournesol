@@ -6,8 +6,8 @@ from requests import Response
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from backoffice.models import FAQEntry
 from core.tests.factories.user import UserFactory
-from faq.models import FAQEntry
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
 

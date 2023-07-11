@@ -1,9 +1,10 @@
+from django.db.models import Count
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListAPIView
 
-from backoffice.models import Banner, TalkEntry
-from backoffice.serializers import BannerSerializer, TalkEntrySerializer
+from backoffice.models import Banner, FAQEntry, TalkEntry
+from backoffice.serializers import BannerSerializer, FAQEntrySerializer, TalkEntrySerializer
 
 
 @extend_schema_view(
@@ -41,3 +42,34 @@ class BannerListView(ListAPIView):
         )
 
         return qst
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description="List all questions and their answers, translated in a specific language.",
+    ),
+)
+class FAQEntryLocalizedListView(ListAPIView):
+    """
+    List all questions and their answers, translated in a specific language.
+
+    To list all questions / answers in all available languages, use a
+    different view.
+
+    See `FAQEntry.get_localized_text()`.
+    """
+
+    permission_classes = []
+    queryset = FAQEntry.objects.none()
+    serializer_class = FAQEntrySerializer
+
+    def get_queryset(self):
+        # Questions without answer are excluded.
+        queryset = (
+            FAQEntry.objects.filter(enabled=True)
+            .annotate(_n_answers=Count("answers"))
+            .filter(_n_answers__gt=0)
+            .prefetch_related("questions", "answers")
+            .order_by("rank")
+        )
+        return queryset
