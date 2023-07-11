@@ -687,12 +687,12 @@
     },
     "video": {
       "description": "Description (from YouTube)",
-      "shareMessageIntro": "I have just watched this video on Tournesol.",
-      "shareMessageConclusion": "I think you should check it out and compare it with other ones!"
+      "shareMessageIntro": "I saw this video on Tournesol.",
+      "shareMessageConclusion": "I invite you to watch it and to compare it with other videos 🌻"
     },
     "twitter": {
-      "intro": "I have just watched this video on @TournesolApp.",
-      "conclusion": "I think you should check it out and compare it with other ones!"
+      "intro": "I saw this video on @TournesolApp",
+      "conclusion": "I invite you to watch it and to compare it with other videos 🌻"
     }
   },
   "entityNotFound": {

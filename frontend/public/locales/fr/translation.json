@@ -695,12 +695,12 @@
     },
     "video": {
       "description": "Description (provenant de YouTube)",
-      "shareMessageIntro": "Je viens de regarder cette vidéo sur Tournesol.",
-      "shareMessageConclusion": "Je pense que vous devriez la regarder et pourquoi pas la comparer avec d'autres !"
+      "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
+      "shareMessageConclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
     },
     "twitter": {
-      "intro": "Je viens de regarder cette vidéo sur @TournesolApp.",
-      "conclusion": "Je pense que vous devriez la regarder et pourquoi pas la comparer avec d'autres !"
+      "intro": "J'ai vu cette vidéo sur @TournesolApp",
+      "conclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
     }
   },
   "entityNotFound": {

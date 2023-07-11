@@ -52,15 +52,15 @@ const VideoAnalysisToolbar = ({
   const getTweet = () => {
     return (
       `${t('entityAnalysisPage.twitter.intro')}\n\n` +
-      `${t('entityAnalysisPage.twitter.conclusion')} 🌻\n` +
+      `${t('entityAnalysisPage.twitter.conclusion')}\n\n` +
       `\n${window.location.toString()}`
     );
   };
 
   const shareMessage =
     `${t('entityAnalysisPage.video.shareMessageIntro')}\n\n` +
-    `${t('entityAnalysisPage.video.shareMessageConclusion')} 🌻\n` +
-    `\n${window.location.toString()}`;
+    `${t('entityAnalysisPage.video.shareMessageConclusion')}\n\n` +
+    `${window.location.toString()}`;
 
   return (
     <Box display="flex" justifyContent="flex-end" gap={2}>
