@@ -35,9 +35,9 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
     return <></>;
   }
 
-  let bannerSx: SxProps = {p: 2};
+  let bannerSx: SxProps = { p: 2 };
   if (security) {
-    bannerSx = {...bannerSx, ...securityAdvisorySx};
+    bannerSx = { ...bannerSx, ...securityAdvisorySx };
   }
 
   return (
