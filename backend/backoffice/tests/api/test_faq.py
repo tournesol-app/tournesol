@@ -6,7 +6,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from faq.models import FAQAnswerLocale, FAQEntry, FAQuestionLocale
+from backoffice.models import FAQAnswerLocale, FAQEntry, FAQuestionLocale
 
 
 def create_entry(name, rank, enabled):
@@ -83,9 +83,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         When the requested translation is not available in the database, the
         `en` translation must be returned.
         """
-        response = self.client.get(
-            self.faq_base_url, HTTP_ACCEPT_LANGUAGE=self.unavailable_lang
-        )
+        response = self.client.get(self.faq_base_url, HTTP_ACCEPT_LANGUAGE=self.unavailable_lang)
         results = response.data["results"]
 
         self.assertDictEqual(
@@ -102,9 +100,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         When a known language is requested, the matching translation must be
         returned.
         """
-        response = self.client.get(
-            self.faq_base_url, HTTP_ACCEPT_LANGUAGE=self.available_lang
-        )
+        response = self.client.get(self.faq_base_url, HTTP_ACCEPT_LANGUAGE=self.available_lang)
         results = response.data["results"]
 
         self.assertDictEqual(

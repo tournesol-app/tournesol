@@ -25,6 +25,7 @@ class FAQEntry(LocalizedFieldsMixin, models.Model):
     )
 
     class Meta:
+        managed = False
         db_table = "backoffice_faqentry"
         ordering = ["rank"]
         verbose_name = "FAQ Entry"
@@ -56,6 +57,7 @@ class FAQuestionLocale(models.Model):
     text = models.CharField(max_length=255)
 
     class Meta:
+        managed = False
         db_table = "backoffice_faquestionlocale"
         unique_together = ["question", "language"]
         verbose_name = "FAQ Question Locale"
@@ -74,6 +76,7 @@ class FAQAnswerLocale(models.Model):
     text = models.TextField()
 
     class Meta:
+        managed = False
         db_table = "backoffice_faqanswerlocale"
         unique_together = ["question", "language"]
         verbose_name = "FAQ Answer Locale"

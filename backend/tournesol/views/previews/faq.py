@@ -10,7 +10,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from PIL import Image, ImageDraw
 
-from faq.models import FAQEntry
+from backoffice.models import FAQEntry
 from tournesol.utils.cache import cache_page_no_i18n
 
 from .default import (
