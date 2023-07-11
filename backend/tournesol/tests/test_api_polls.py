@@ -128,10 +128,9 @@ class PollsRecommendationsTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 3)
-        # TODO why does this fail?
-        # self.assertEqual(results[0]["tournesol_score"], 4.4)
-        # self.assertEqual(results[1]["tournesol_score"], 3.3)
-        # self.assertEqual(results[2]["tournesol_score"], 2.2)
+        self.assertEqual(results[0]["tournesol_score"], 4.4)
+        self.assertEqual(results[1]["tournesol_score"], 3.3)
+        self.assertEqual(results[2]["tournesol_score"], 2.2)
 
         self.assertEqual(results[0]["type"], "video")
 
