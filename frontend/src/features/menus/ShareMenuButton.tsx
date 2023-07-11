@@ -12,12 +12,12 @@ const ShareMenuButton = ({
   isIcon,
   shareMessage,
   twitterMessage,
-  feedbackDelay = 1200,
+  feedbackDuration = 1200,
 }: {
   isIcon?: boolean;
   shareMessage?: string;
   twitterMessage?: string;
-  feedbackDelay?: number;
+  feedbackDuration?: number;
 }) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,7 +54,7 @@ const ShareMenuButton = ({
     if (!['backdropClick', 'escapeKeyDown'].includes(reason ?? '')) {
       feedbackTimeoutId.current = setTimeout(() => {
         setFeedback(false);
-      }, feedbackDelay);
+      }, feedbackDuration);
     }
   };
 
