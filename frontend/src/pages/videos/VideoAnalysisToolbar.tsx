@@ -12,7 +12,7 @@ import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { openTwitterPopup } from 'src/utils/ui';
 
 // in milliseconds
-const DISPLAY_DELAY = 1200;
+const FEEDBACK_DURATION = 1200;
 
 const VideoAnalysisToolbar = ({
   video,
@@ -26,8 +26,6 @@ const VideoAnalysisToolbar = ({
 
   const [rateLaterInProgress, setRateLaterInProgress] = useState(false);
 
-  const uid = `yt:${video.video_id}`;
-
   const onRateLaterClick = async () => {
     // Do not trigger any additionnal rendering when the user clicks
     // repeatedly on the button.
@@ -38,14 +36,14 @@ const VideoAnalysisToolbar = ({
     setRateLaterInProgress(true);
 
     try {
-      await addToRateLaterList(pollName, uid);
+      await addToRateLaterList(pollName, video.uid);
       showSuccessAlert(t('actions.videoAddedToRateLaterList'));
     } catch (error) {
       showInfoAlert(t('actions.videoAlreadyInRateLaterList'));
     } finally {
       setTimeout(() => {
         setRateLaterInProgress(false);
-      }, DISPLAY_DELAY);
+      }, FEEDBACK_DURATION);
     }
   };
 
@@ -53,7 +51,7 @@ const VideoAnalysisToolbar = ({
     return (
       `${t('entityAnalysisPage.twitter.intro')}\n\n` +
       `${t('entityAnalysisPage.twitter.conclusion')}\n\n` +
-      `\n${window.location.toString()}`
+      `${window.location.toString()}`
     );
   };
 
@@ -87,7 +85,7 @@ const VideoAnalysisToolbar = ({
         variant="contained"
         startIcon={<Compare />}
         component={RouterLink}
-        to={`${baseUrl}/comparison?uidA=${uid}`}
+        to={`${baseUrl}/comparison?uidA=${video.uid}`}
       >
         {t('entityAnalysisPage.generic.compare')}
       </Button>
