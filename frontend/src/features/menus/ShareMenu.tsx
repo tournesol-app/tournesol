@@ -10,11 +10,11 @@ import {
 import { ContentCopy, Link, Twitter } from '@mui/icons-material';
 import { openTwitterPopup } from 'src/utils/ui';
 
-interface ContextualMenuProps {
+interface ShareMenuProps {
   menuAnchor: null | HTMLElement;
   open: boolean;
-  twitterMessage?: string;
   shareMessage?: string;
+  twitterMessage?: string;
   onClose: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
@@ -24,10 +24,10 @@ interface ContextualMenuProps {
 const ShareMenu = ({
   menuAnchor,
   open,
-  twitterMessage,
   shareMessage,
+  twitterMessage,
   onClose,
-}: ContextualMenuProps) => {
+}: ShareMenuProps) => {
   const { t } = useTranslation();
 
   const copyUriToClipboard = (event: React.MouseEvent<HTMLElement>) => {
@@ -65,7 +65,6 @@ const ShareMenu = ({
             <ListItemText>{t('shareMenu.copyShareMessage')}</ListItemText>
           </MenuItem>
         )}
-
         {twitterMessage && (
           <MenuItem onClick={() => openTwitterPopup(twitterMessage)}>
             <ListItemIcon>

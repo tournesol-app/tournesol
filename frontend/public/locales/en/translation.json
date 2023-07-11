@@ -305,7 +305,7 @@
   "password": "Password",
   "shareMenu": {
     "copyAddress": "Copy the page address",
-    "copyShareMessage": "Copy share message",
+    "copyShareMessage": "Copy the share message",
     "shareOnTwitter": "Share on Twitter"
   },
   "ratelater": {

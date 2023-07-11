@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { Share } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
+import { Done, Share } from '@mui/icons-material';
 
 import ShareMenu from 'src/features/menus/ShareMenu';
 
@@ -20,6 +20,13 @@ const ShareMenuButton = ({
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const [feedback, setFeedback] = useState(false);
+  const feedbackTimeoutId = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(feedbackTimeoutId.current);
+  }, []);
+
   const handleShareMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     // Define the anchor the first time the user click on the button.
     if (menuAnchor === null) {
@@ -29,23 +36,33 @@ const ShareMenuButton = ({
   };
 
   const handleMenuClose = () => {
+    setFeedback(true);
+
     setIsMenuOpen(false);
+
+    if (feedbackTimeoutId.current) {
+      clearTimeout(feedbackTimeoutId.current);
+    }
+
+    feedbackTimeoutId.current = setTimeout(() => {
+      setFeedback(false);
+    }, 1200);
   };
 
   return (
     <>
       {isIcon ? (
         <IconButton aria-label="Share button" onClick={handleShareMenuClick}>
-          <Share />
+          {feedback ? <Done /> : <Share />}
         </IconButton>
       ) : (
         <Button aria-label="Share button" onClick={handleShareMenuClick}>
-          <Share />
+          {feedback ? <Done /> : <Share />}
         </Button>
       )}
       <ShareMenu
-        twitterMessage={twitterMessage}
         shareMessage={shareMessage}
+        twitterMessage={twitterMessage}
         menuAnchor={menuAnchor}
         open={isMenuOpen}
         onClose={handleMenuClose}

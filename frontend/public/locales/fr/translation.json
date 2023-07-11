@@ -311,7 +311,7 @@
   "password": "Mot de passe",
   "shareMenu": {
     "copyAddress": "Copier l'adresse de la page",
-    "copyShareMessage": "Copier un message de partage",
+    "copyShareMessage": "Copier le message de partage",
     "shareOnTwitter": "Partager sur Twitter"
   },
   "ratelater": {
