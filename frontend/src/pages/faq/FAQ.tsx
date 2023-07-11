@@ -6,7 +6,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import FAQTableOfContent from 'src/pages/faq/FAQTableOfContent';
 import FAQEntryList from 'src/pages/faq/FAQEntryList';
-import { FAQEntry, FaqService } from 'src/services/openapi';
+import { BackofficeService, FAQEntry } from 'src/services/openapi';
 
 /**
  * The FAQ page.
@@ -98,7 +98,7 @@ const FAQ = () => {
   useEffect(() => {
     async function getFaqEntries() {
       try {
-        const faq = await FaqService.faqList({});
+        const faq = await BackofficeService.backofficeFaqList({});
         if (faq.results) {
           setEntries(faq.results);
         }
