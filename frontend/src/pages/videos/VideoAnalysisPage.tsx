@@ -1,18 +1,16 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, Link as RouterLink } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import { Box, Button, Collapse, Grid, Paper, Typography } from '@mui/material';
-import { Compare } from '@mui/icons-material';
+import { Box, Collapse, Grid, Paper, Typography } from '@mui/material';
 
 import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
-import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import VideoCard from 'src/features/videos/VideoCard';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { useLoginState } from 'src/hooks';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
@@ -21,13 +19,14 @@ import linkifyStr from 'linkify-string';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 
+import VideoAnalysisActionBar from './VideoAnalysisActionBar';
+
 export const VideoAnalysis = ({
   video,
 }: {
   video: VideoSerializerWithCriteria;
 }) => {
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
   const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
 
   const uid = `yt:${video.video_id}`;
@@ -49,20 +48,6 @@ export const VideoAnalysis = ({
       justifyContent="space-between"
     >
       <Box flex={2} minWidth={{ xs: '100%', md: null }}>
-        {/* Top level section, containing links and maybe more in the future. */}
-        <Box mb={2} display="flex" justifyContent="flex-end" gap={2}>
-          <ShareMenuButton />
-          <Button
-            color="secondary"
-            variant="contained"
-            endIcon={<Compare />}
-            component={RouterLink}
-            to={`${baseUrl}/comparison?uidA=${uid}`}
-          >
-            {t('entityAnalysisPage.generic.compare')}
-          </Button>
-        </Box>
-
         {/* Entity section, with its player, title, scores and actions. */}
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
@@ -71,6 +56,9 @@ export const VideoAnalysis = ({
               duration={video.duration}
               controls
             />
+          </Grid>
+          <Grid item xs={12}>
+            <VideoAnalysisActionBar video={video} />
           </Grid>
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />

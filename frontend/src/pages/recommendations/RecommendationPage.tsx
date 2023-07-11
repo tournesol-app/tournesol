@@ -168,7 +168,7 @@ function RecommendationsPage() {
                 justifyContent="flex-start"
                 gap={1}
               >
-                <ShareMenuButton />
+                <ShareMenuButton isIcon={true} />
                 <PreferencesIconButtonLink hash="#recommendations_page" />
               </Box>
             </Grid>

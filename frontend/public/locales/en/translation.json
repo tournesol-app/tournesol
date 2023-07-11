@@ -304,7 +304,9 @@
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
   "shareMenu": {
-    "copyAddress": "Copy the page address"
+    "copyAddress": "Copy the page address",
+    "copyShareMessage": "Copy the share message",
+    "shareOnTwitter": "Share on Twitter"
   },
   "ratelater": {
     "videoIdOrURL": "Video ID or URL",
@@ -684,7 +686,13 @@
       "compare": "Compare"
     },
     "video": {
-      "description": "Description (from YouTube)"
+      "description": "Description (from YouTube)",
+      "shareMessageIntro": "I saw this video on Tournesol.",
+      "shareMessageConclusion": "I invite you to watch it and to compare it with other videos 🌻"
+    },
+    "twitter": {
+      "intro": "I saw this video on @TournesolApp",
+      "conclusion": "I invite you to watch it and to compare it with other videos 🌻"
     }
   },
   "entityNotFound": {

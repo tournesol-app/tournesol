@@ -1,16 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { Share } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
+import { Done, Share } from '@mui/icons-material';
 
 import ShareMenu from 'src/features/menus/ShareMenu';
 
 /**
- * An `IconButton` displaying the `ShareMenu` when clicked.
+ * An `Button` displaying the `ShareMenu` when clicked.
  */
-const ShareMenuButton = () => {
+const ShareMenuButton = ({
+  isIcon,
+  shareMessage,
+  twitterMessage,
+  feedbackDuration = 1200,
+}: {
+  isIcon?: boolean;
+  shareMessage?: string;
+  twitterMessage?: string;
+  feedbackDuration?: number;
+}) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const [feedback, setFeedback] = useState(false);
+  const feedbackTimeoutId = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(feedbackTimeoutId.current);
+  }, []);
 
   const handleShareMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     // Define the anchor the first time the user click on the button.
@@ -20,16 +37,41 @@ const ShareMenuButton = () => {
     setIsMenuOpen(true);
   };
 
-  const handleMenuClose = () => {
+  const handleMenuClose = (
+    event: React.MouseEvent<HTMLElement>,
+    reason?: string
+  ) => {
+    if (!['backdropClick', 'escapeKeyDown'].includes(reason ?? '')) {
+      setFeedback(true);
+    }
+
     setIsMenuOpen(false);
+
+    if (feedbackTimeoutId.current) {
+      clearTimeout(feedbackTimeoutId.current);
+    }
+
+    if (!['backdropClick', 'escapeKeyDown'].includes(reason ?? '')) {
+      feedbackTimeoutId.current = setTimeout(() => {
+        setFeedback(false);
+      }, feedbackDuration);
+    }
   };
 
   return (
     <>
-      <IconButton aria-label="Share button" onClick={handleShareMenuClick}>
-        <Share />
-      </IconButton>
+      {isIcon ? (
+        <IconButton aria-label="Share button" onClick={handleShareMenuClick}>
+          {feedback ? <Done /> : <Share />}
+        </IconButton>
+      ) : (
+        <Button aria-label="Share button" onClick={handleShareMenuClick}>
+          {feedback ? <Done /> : <Share />}
+        </Button>
+      )}
       <ShareMenu
+        shareMessage={shareMessage}
+        twitterMessage={twitterMessage}
         menuAnchor={menuAnchor}
         open={isMenuOpen}
         onClose={handleMenuClose}
