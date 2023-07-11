@@ -35,10 +35,15 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
     return <></>;
   }
 
+  let bannerSx: SxProps = { p: 2 };
+  if (security) {
+    bannerSx = { ...bannerSx, ...securityAdvisorySx };
+  }
+
   return (
     <Grid container width="100%" flexDirection="column" alignItems="center">
       <Grid item width="100%" xl={9}>
-        <Paper sx={{ p: 2, ...securityAdvisorySx }} square={mediaBelowXl}>
+        <Paper sx={bannerSx} square={mediaBelowXl}>
           <Stack direction="column" spacing={1}>
             <Stack
               direction="row"
