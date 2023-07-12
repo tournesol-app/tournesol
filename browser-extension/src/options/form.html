@@ -18,7 +18,44 @@
         font-style: italic;
       }
 
+      /**
+       * Material UI
+       */
+
+      button.mui {
+        padding: 6px 16px;
+
+        border: none;
+        border-radius: 4px;
+
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
+          rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
+          rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 24.5px;
+      }
+
+      button.secondary {
+        color: white;
+        background-color: rgb(80, 106, 212);
+      }
+
+      button.secondary:hover {
+        text-decoration: none;
+        background-color: rgb(56, 74, 148);
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
+          rgba(0, 0, 0, 0.14) 0px 4px 5px 0px,
+          rgba(0, 0, 0, 0.12) 0px 1px 10px 0px;
+      }
+
+      /**
+       * Page style
+       */
+
       .page-header {
+        padding: 1px;
         color: white;
       }
 
@@ -26,12 +63,8 @@
         text-align: center;
       }
 
-      .page-section {
+      .settings-section {
         margin-top: 16px;
-      }
-
-      .box {
-        padding: 16px;
       }
 
       .list-of-fields {
@@ -42,6 +75,16 @@
 
       .submit {
         margin-top: 16px;
+      }
+
+      .submit button {
+        padding: 6px 16px;
+
+        border: none;
+        border-radius: 4px;
+
+        font-size: 14px;
+        line-height: 24.5px;
       }
     </style>
   </head>
@@ -54,25 +97,22 @@
     <p class="centered hint">
       You are not logged in Tournesol, your preferences will be saved locally.
     </p>
-
-    <section class="page-section">
-      <form>
-        <fieldset class="box">
-          <legend>Recommendations</legend>
-          <div class="list-of-fields">
-            <div>
-              <label for="color">Language</label>
-              <select
-              id="recommendations__default_language"
-              name="recommendations__default_language"
-              >
+    <form>
+      <section class="settings-section">
+        <h2>Recommendations</h2>
+        <div class="list-of-fields">
+          <div>
+            <label for="color">Language</label>
+            <select
+            id="recommendations__default_language"
+            name="recommendations__default_language"
+            >
               <option value="en">English</option>
               <option value="fr">French</option>
             </select>
-
           </div>
           <div>
-            <label for="color">Propotion of recent videos</label>
+            <label for="color">Proportion of recent videos</label>
             <select
             id="ext_recommendations__recent_videos"
             name="ext_recommendations__recent_videos"
@@ -84,14 +124,11 @@
               <option value="0">No recent videos</option>
             </select>
           </div>
-        </fieldset>
-
-        <div class="submit">
-          <button type="submit">Save</button>
         </div>
-      </form>
-    </section>
-    <!-- todo: create this file -->
-    <script src="options.js"></script>
+        <div class="submit">
+          <button class="mui secondary" type="submit">Save</button>
+        </div>
+      </section>
+    </form>
   </body>
 </html>
