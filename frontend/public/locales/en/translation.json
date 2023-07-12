@@ -980,6 +980,8 @@
   "videos": {
     "dialogs": {
       "tutorial": {
+        "showTips": "Show the tips",
+        "hideTips": "Hide the tips",
         "title1": "Welcome to Tournesol 🌻",
         "message1": {
           "p10": "This tutorial will guide you, step by step, through a series of four comparisons to help you contribute to the Tournesol project.",

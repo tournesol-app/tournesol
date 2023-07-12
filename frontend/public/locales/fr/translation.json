@@ -989,6 +989,8 @@
   "videos": {
     "dialogs": {
       "tutorial": {
+        "showTips": "Montrer les astuces",
+        "hideTips": "Cacher les astuces",
         "title1": "Bienvenue sur Tournesol 🌻",
         "message1": {
           "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons, afin de vous aider à contribuer au projet Tournesol.",

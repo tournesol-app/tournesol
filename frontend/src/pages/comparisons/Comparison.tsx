@@ -169,7 +169,9 @@ const ComparisonPage = () => {
                       color: showTips ? 'red' : '',
                     }}
                   >
-                    {showTips ? 'hide tips' : 'show tips'}
+                    {showTips
+                      ? t('videos.dialogs.tutorial.hideTips')
+                      : t('videos.dialogs.tutorial.showTips')}
                   </Button>
                 </Grid>
               </Grid>
