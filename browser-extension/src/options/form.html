@@ -1,0 +1,97 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- todo: create a CSS file instead -->
+    <style>
+      .blue-bg {
+        background-color: rgb(18, 130, 178);
+      }
+
+      .centered {
+        text-align: center;
+      }
+
+      .hint {
+        font-style: italic;
+      }
+
+      .page-header {
+        color: white;
+      }
+
+      .page-header h1 {
+        text-align: center;
+      }
+
+      .page-section {
+        margin-top: 16px;
+      }
+
+      .box {
+        padding: 16px;
+      }
+
+      .list-of-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .submit {
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="page-header blue-bg">
+      <h1>Manage your preferences</h1>
+    </header>
+
+    <p class="centered hint">
+      You are not logged in Tournesol, your preferences will be saved locally.
+    </p>
+
+    <section class="page-section">
+      <form>
+        <fieldset class="box">
+          <legend>Recommendations</legend>
+          <div class="list-of-fields">
+            <div>
+              <label for="color">Language</label>
+              <select
+              id="recommendations__default_language"
+              name="recommendations__default_language"
+              >
+              <option value="en">English</option>
+              <option value="fr">French</option>
+            </select>
+
+          </div>
+          <div>
+            <label for="color">Propotion of recent videos</label>
+            <select
+            id="ext_recommendations__recent_videos"
+            name="ext_recommendations__recent_videos"
+            >
+              <option value="100">Only recent videos</option>
+              <option value="75">75 %</option>
+              <option value="50">50 %</option>
+              <option value="25">25 %</option>
+              <option value="0">No recent videos</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <div class="submit">
+          <button type="submit">Save</button>
+        </div>
+      </form>
+    </section>
+    <!-- todo: create this file -->
+    <script src="options.js"></script>
+  </body>
+</html>
