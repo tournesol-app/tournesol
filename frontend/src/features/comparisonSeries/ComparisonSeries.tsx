@@ -49,6 +49,7 @@ interface Props {
   skipKey?: string;
   // Only used if `skipKey` is defined.
   skipButtonLabel?: string;
+  tutoStep?: number;
 }
 
 const generateSteps = (length: number) => {
@@ -74,6 +75,7 @@ const ComparisonSeries = ({
   resumable,
   skipKey,
   skipButtonLabel,
+  tutoStep,
 }: Props) => {
   const location = useLocation();
 
@@ -92,7 +94,7 @@ const ComparisonSeries = ({
   // initialize the component
   const [isLoading, setIsLoading] = React.useState(true);
   // the current position in the series
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(tutoStep ?? 0);
   // open/close state of the `Dialog` component
   const [dialogOpen, setDialogOpen] = useState(true);
   // tell the `Comparison` to refresh the left entity, or the right one

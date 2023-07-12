@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import {
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  UsersService,
 } from 'src/services/openapi';
 import { PollUserSettingsKeys } from 'src/utils/types';
 
@@ -54,9 +55,10 @@ const displayWeeklyCollectiveGoal = (
 const ComparisonPage = () => {
   const { t } = useTranslation();
 
+  const [comparisonCount, setComparisonCount] = useState(0);
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const series: string = searchParams.get('series') || 'false';
   const isEmbedded = Boolean(searchParams.get('embed'));
 
   const {
@@ -82,6 +84,20 @@ const ComparisonPage = () => {
       ?.comparison_ui__weekly_collective_goal_display ??
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 
+  useEffect(() => {
+    const process = async () => {
+      const comparisonsRequest = await UsersService.usersMeComparisonsList({
+        pollName,
+        limit: tutorialLength,
+        offset: 0,
+      });
+      setComparisonCount(comparisonsRequest.count || 0);
+    };
+    process();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
+
   return (
     <>
       <ContentHeader title={t('comparison.submitAComparison')} />
@@ -104,7 +120,7 @@ const ComparisonPage = () => {
             </Box>
           )}
 
-          {series === 'true' && tutorialLength > 0 ? (
+          {comparisonCount <= tutorialLength ? (
             <ComparisonSeries
               isTutorial={true}
               dialogs={dialogs}
@@ -116,6 +132,7 @@ const ComparisonPage = () => {
               resumable={true}
               skipKey={`tutorialSkipped_${pollName}`}
               skipButtonLabel={t('tutorial.skipTheTutorial')}
+              tutoStep={comparisonCount}
             />
           ) : (
             <>
