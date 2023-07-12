@@ -130,8 +130,6 @@ const ComparisonPage = () => {
               redirectTo={`${baseUrl}${redirectTo}`}
               keepUIDsAfterRedirect={keepUIDsAfterRedirect}
               resumable={true}
-              skipKey={`tutorialSkipped_${pollName}`}
-              skipButtonLabel={t('tutorial.skipTheTutorial')}
               tutoStep={comparisonCount}
             />
           ) : (
