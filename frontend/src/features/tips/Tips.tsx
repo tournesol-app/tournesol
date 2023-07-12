@@ -25,11 +25,11 @@ const Tips = ({ step }: TipsProps) => {
   }, [step]);
 
   const handlePreviousTip = () => {
-    if (tipStep > 0) setTipStep(tipStep - 1);
+    setTipStep(tipStep - 1);
   };
 
   const handleNextTip = () => {
-    if (tipStep < step && tipStep < tipList.length - 1) setTipStep(tipStep + 1);
+    setTipStep(tipStep + 1);
   };
 
   return (
@@ -41,7 +41,7 @@ const Tips = ({ step }: TipsProps) => {
       alignItems="center"
     >
       <Grid item>
-        <IconButton onClick={handlePreviousTip}>
+        <IconButton onClick={handlePreviousTip} disabled={!(tipStep > 0)}>
           <KeyboardArrowLeft />
         </IconButton>
       </Grid>
@@ -49,7 +49,10 @@ const Tips = ({ step }: TipsProps) => {
         <Tip tip={tipList[tipStep]} />
       </Grid>
       <Grid item>
-        <IconButton onClick={handleNextTip}>
+        <IconButton
+          onClick={handleNextTip}
+          disabled={!(tipStep < step && tipStep < tipList.length - 1)}
+        >
           <KeyboardArrowRight />
         </IconButton>
       </Grid>
