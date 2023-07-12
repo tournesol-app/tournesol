@@ -76,6 +76,10 @@ const ComparisonPage = () => {
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
+  const splitTutorialDialogs = dialogs
+    ? { [tutorialLength - 1]: dialogs[tutorialLength - 1] }
+    : undefined;
+
   // User's settings.
   const userSettings = useSelector(selectSettings).settings;
   // By default always display the weekly collective goal.
@@ -123,7 +127,7 @@ const ComparisonPage = () => {
           {comparisonCount <= tutorialLength ? (
             <ComparisonSeries
               isTutorial={true}
-              dialogs={dialogs}
+              dialogs={splitTutorialDialogs}
               generateInitial={true}
               getAlternatives={tutorialAlternatives}
               length={tutorialLength}
