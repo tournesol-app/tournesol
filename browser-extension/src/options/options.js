@@ -11,7 +11,9 @@ const loadPreferences = () => {
 };
 
 const savePreferences = () => {
-  const recoDefaultLanguages = document.getElementById('recommendations__default_languages').value;
+  const recoDefaultLanguages = document.getElementById(
+    'recommendations__default_languages'
+  ).value;
 
   browser.storage.local.set(
     { recommendations__default_languages: recoDefaultLanguages },
@@ -22,4 +24,6 @@ const savePreferences = () => {
 };
 
 document.addEventListener('DOMContentLoaded', loadPreferences);
-document.getElementById('save-preferences').addEventListener('click', savePreferences);
+document
+  .getElementById('save-preferences')
+  .addEventListener('click', savePreferences);
