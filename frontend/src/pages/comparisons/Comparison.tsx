@@ -133,7 +133,11 @@ const ComparisonPage = () => {
 
           {comparisonCount < tutorialLength ? (
             <>
-              <Tips step={comparisonCount} />
+              <Tips
+                step={comparisonCount}
+                dialogs={dialogs}
+                tutorialLength={tutorialLength}
+              />
               <ComparisonSeries
                 isTutorial={true}
                 dialogs={splitTutorialDialogs}
@@ -170,7 +174,11 @@ const ComparisonPage = () => {
                 </Grid>
               </Grid>
               <Collapse in={showTips} timeout="auto" sx={{ maxWidth: '880px' }}>
-                <Tips step={tutorialLength - 1} />
+                <Tips
+                  step={tutorialLength - 1}
+                  dialogs={dialogs}
+                  tutorialLength={tutorialLength}
+                />
               </Collapse>
               <Comparison />
             </>

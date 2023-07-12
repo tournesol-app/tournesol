@@ -3,19 +3,15 @@ import React, { useEffect, useState } from 'react';
 import Tip from './Tip';
 import { Grid, IconButton } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+import { OrderedDialogs } from 'src/utils/types';
 
 interface TipsProps {
   step: number;
+  dialogs: OrderedDialogs | undefined;
+  tutorialLength: number;
 }
 
-const Tips = ({ step }: TipsProps) => {
-  const tipList = [
-    { title: 'Important tip1 title !', message: 'tip1 text' },
-    { title: 'Important tip2 title !', message: 'tip2 text' },
-    { title: 'Important tip3 title !', message: 'tip3 text' },
-    { title: 'Important tip4 title !', message: 'tip4 text' },
-  ];
-
+const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
   const [tipStep, setTipStep] = useState(step);
   useEffect(() => {
     const retrieveStep = () => {
@@ -47,12 +43,12 @@ const Tips = ({ step }: TipsProps) => {
         </IconButton>
       </Grid>
       <Grid item xs={10}>
-        <Tip tip={tipList[tipStep]} />
+        {dialogs && <Tip tip={dialogs[tipStep]} />}
       </Grid>
       <Grid item>
         <IconButton
           onClick={handleNextTip}
-          disabled={!(tipStep < step && tipStep < tipList.length - 1)}
+          disabled={!(tipStep < step && tipStep < tutorialLength - 1)}
         >
           <KeyboardArrowRight />
         </IconButton>

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert, AlertTitle, Typography } from '@mui/material';
 
 interface TipSingleProps {
-  tip: { title: string; message: string };
+  tip: { title: string; messages: string[] };
 }
 
 const Tip = ({ tip }: TipSingleProps) => {
@@ -12,7 +12,13 @@ const Tip = ({ tip }: TipSingleProps) => {
       <AlertTitle>
         <strong>{tip.title}</strong>
       </AlertTitle>
-      {tip.message.repeat(20)}
+      {tip.messages.map((message, index) => {
+        return (
+          <Typography key={index} paragraph>
+            {message}
+          </Typography>
+        );
+      })}
     </Alert>
   );
 };
