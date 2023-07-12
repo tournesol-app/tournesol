@@ -88,6 +88,10 @@ body {
   gap: 16px;
 }
 
+div.field label {
+  margin-right: 8px;
+}
+
 div.submit {
   margin-top: 16px;
 
