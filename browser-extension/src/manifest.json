@@ -61,7 +61,7 @@
     }
   ],
   "options_ui": {
-    "page": "options/form.html"
+    "page": "options/options.html"
   },
   "default_locale": "en",
   "web_accessible_resources": ["Logo128.png", "html/*", "images/*", "utils.js", "models/*" ]

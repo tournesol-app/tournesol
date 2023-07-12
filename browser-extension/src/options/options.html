@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Tournesol Extension - Options</title>
+    <link href="options.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="page-header blue-bg">
+      <h1>Manage your preferences</h1>
+    </header>
+    <p class="centered hint">
+      You are not logged in Tournesol, your preferences will be saved locally.
+    </p>
+    <form>
+      <section class="settings-section">
+        <h2>Recommendations</h2>
+        <div class="list-of-fields">
+          <div>
+            <label for="recommendations__default_languages">Language</label>
+            <select
+              class="mui"
+              id="recommendations__default_languages"
+              name="recommendations__default_languages"
+            >
+              <option value="en">English</option>
+              <option value="fr">French</option>
+            </select>
+          </div>
+        </div>
+        <div class="submit">
+          <button
+            class="mui secondary"
+            id="save-preferences"
+            type="submit"
+          >Save</button>
+        </div>
+      </section>
+    </form>
+
+    <script src="options.js"></script>
+  </body>
+</html>
