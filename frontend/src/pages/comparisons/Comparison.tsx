@@ -127,7 +127,7 @@ const ComparisonPage = () => {
 
           {comparisonCount <= tutorialLength ? (
             <>
-              <Tips />
+              <Tips step={comparisonCount} />
               <ComparisonSeries
                 isTutorial={true}
                 dialogs={splitTutorialDialogs}

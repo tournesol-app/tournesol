@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Tip from './Tip';
 import { Grid, IconButton } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 
-const Tips = () => {
+interface TipsProps {
+  step: number;
+}
+
+const Tips = ({ step }: TipsProps) => {
   const tipList = [
     { title: 'Important tip1 title !', message: 'tip1 text' },
     { title: 'Important tip2 title !', message: 'tip2 text' },
@@ -12,14 +16,20 @@ const Tips = () => {
     { title: 'Important tip4 title !', message: 'tip4 text' },
   ];
 
-  const [tipStep, setTipStep] = useState(0);
+  const [tipStep, setTipStep] = useState(step);
+  useEffect(() => {
+    const retrieveStep = () => {
+      setTipStep(step);
+    };
+    retrieveStep();
+  }, [step]);
 
   const handlePreviousTip = () => {
     if (tipStep > 0) setTipStep(tipStep - 1);
   };
 
   const handleNextTip = () => {
-    if (tipStep < tipList.length - 1) setTipStep(tipStep + 1);
+    if (tipStep < step) setTipStep(tipStep + 1);
   };
 
   return (
