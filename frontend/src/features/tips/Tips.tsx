@@ -29,7 +29,7 @@ const Tips = ({ step }: TipsProps) => {
   };
 
   const handleNextTip = () => {
-    if (tipStep < step) setTipStep(tipStep + 1);
+    if (tipStep < step && tipStep < tipList.length - 1) setTipStep(tipStep + 1);
   };
 
   return (

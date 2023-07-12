@@ -125,7 +125,7 @@ const ComparisonPage = () => {
             </Box>
           )}
 
-          {comparisonCount <= tutorialLength ? (
+          {comparisonCount < tutorialLength ? (
             <>
               <Tips step={comparisonCount} />
               <ComparisonSeries
