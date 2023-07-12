@@ -11,6 +11,9 @@ const loadPreferences = () => {
 };
 
 const savePreferences = () => {
+  const submit = document.getElementById('save-preferences');
+  submit.setAttribute('disabled', '');
+
   const recoDefaultLanguages = document.getElementById(
     'recommendations__default_languages'
   ).value;
@@ -21,9 +24,20 @@ const savePreferences = () => {
       // todo: add a visual feedback here
     }
   );
+
+  setTimeout(() => {
+    submit.removeAttribute('disabled');
+  }, 600);
 };
 
 document.addEventListener('DOMContentLoaded', loadPreferences);
+
 document
   .getElementById('save-preferences')
   .addEventListener('click', savePreferences);
+
+document
+  .getElementById('preferences-form')
+  .addEventListener('submit', (event) => {
+    event.preventDefault();
+  });
