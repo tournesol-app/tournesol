@@ -121,11 +121,11 @@
         <h2>Recommendations</h2>
         <div class="list-of-fields">
           <div>
-            <label for="recommendations__default_language">Language</label>
+            <label for="recommendations__default_languages">Language</label>
             <select
               class="mui"
-              id="recommendations__default_language"
-              name="recommendations__default_language"
+              id="recommendations__default_languages"
+              name="recommendations__default_languages"
             >
               <option value="en">English</option>
               <option value="fr">French</option>
@@ -133,9 +133,15 @@
           </div>
         </div>
         <div class="submit">
-          <button class="mui secondary" type="submit">Save</button>
+          <button
+            class="mui secondary"
+            id="save-preferences"
+            type="submit"
+          >Save</button>
         </div>
       </section>
     </form>
+
+    <script src="options.js"></script>
   </body>
 </html>
