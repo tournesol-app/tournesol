@@ -383,15 +383,17 @@ const ComparisonSeries = ({
                 }
               />
             )}
-          <Container maxWidth="md" sx={{ my: 2 }}>
-            <Stepper
-              activeStep={step}
-              alternativeLabel
-              sx={{ marginBottom: 4 }}
-            >
-              {generateSteps(length)}
-            </Stepper>
-          </Container>
+          {!isTutorial && (
+            <Container maxWidth="md" sx={{ my: 2 }}>
+              <Stepper
+                activeStep={step}
+                alternativeLabel
+                sx={{ marginBottom: 4 }}
+              >
+                {generateSteps(length)}
+              </Stepper>
+            </Container>
+          )}
           <Comparison afterSubmitCallback={afterSubmitCallback} />
         </LoaderWrapper>
       ) : (

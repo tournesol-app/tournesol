@@ -39,6 +39,7 @@ const Tips = ({ step }: TipsProps) => {
       direction="row"
       justifyContent="center"
       alignItems="center"
+      mb={2}
     >
       <Grid item>
         <IconButton onClick={handlePreviousTip} disabled={!(tipStep > 0)}>
