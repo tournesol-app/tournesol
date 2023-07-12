@@ -1,5 +1,30 @@
 const DEFAULT_RECO_LANG = 'en';
 
+// This delay is designed to be few miliseconds slower than our CSS fadeOut
+// animation to let the success message disappear before re-enabling the
+// submit button. Don't make it faster than the fadeOut animation.
+const FEEDBACK_DELAY = 1804;
+
+const removeAttribute = (element, attribute, delay) => {
+  setTimeout(() => {
+    element.removeAttribute(attribute);
+  }, delay);
+}
+
+const displayFeedback = (type) => {
+
+  if (type === "success") {
+    const success = document.querySelector('.feedback-success');
+    success.classList.add('displayed');
+
+    setTimeout(() => {
+      success.classList.remove('displayed');
+    }, FEEDBACK_DELAY);
+
+    return;
+  }
+};
+
 const loadPreferences = () => {
   chrome.storage.local.get(
     { recommendations__default_languages: DEFAULT_RECO_LANG },
@@ -19,15 +44,13 @@ const savePreferences = () => {
   ).value;
 
   browser.storage.local.set(
-    { recommendations__default_languages: recoDefaultLanguages },
-    () => {
-      // todo: add a visual feedback here
-    }
-  );
-
-  setTimeout(() => {
-    submit.removeAttribute('disabled');
-  }, 600);
+    { recommendations__default_languages: recoDefaultLanguages }
+  ).then(() => {
+    displayFeedback("success");
+    removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
+  }).catch((reason) => {
+    removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
+  });
 };
 
 document.addEventListener('DOMContentLoaded', loadPreferences);

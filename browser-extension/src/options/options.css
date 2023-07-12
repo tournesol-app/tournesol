@@ -96,15 +96,35 @@ div.submit {
   margin-top: 16px;
 
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 8px;
 }
 
-div.submit button {
-  padding: 6px 16px;
+.feedback-success {
+  display: none;
+  opacity: 0;
 
-  border: none;
+  padding: 6px 16px;
   border-radius: 4px;
+
+  color: white;
+  background-color: #43a047;
 
   font-size: 14px;
   line-height: 24.5px;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.feedback-success.displayed {
+  display: initial;
+  opacity: 1;
+
+  /* do not make it slower than the FEEDBACK_DELAY configured in options.js */
+  animation: fadeOut 1.8s ease-out;
 }
