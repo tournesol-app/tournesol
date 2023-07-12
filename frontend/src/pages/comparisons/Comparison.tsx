@@ -16,7 +16,7 @@ import {
   UsersService,
 } from 'src/services/openapi';
 import { PollUserSettingsKeys } from 'src/utils/types';
-import Tip from 'src/features/tips/Tip';
+import Tips from 'src/features/tips/Tips';
 
 const displayWeeklyCollectiveGoal = (
   userPreference: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum,
@@ -127,7 +127,7 @@ const ComparisonPage = () => {
 
           {comparisonCount <= tutorialLength ? (
             <>
-              <Tip tip="tip text " />
+              <Tips />
               <ComparisonSeries
                 isTutorial={true}
                 dialogs={splitTutorialDialogs}
