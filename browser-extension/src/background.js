@@ -96,88 +96,17 @@ function getDateThreeWeeksAgo() {
   return threeWeeksAgo.toISOString();
 }
 
-const availableRecommendationsLanguages = [
-  // See recommendationsLanguages in frontend/src/utils/constants.ts
-  'af',
-  'ar',
-  'bg',
-  'bn',
-  'ca',
-  'cs',
-  'cy',
-  'da',
-  'de',
-  'el',
-  'en',
-  'es',
-  'et',
-  'fa',
-  'fi',
-  'fr',
-  'gu',
-  'he',
-  'hi',
-  'hr',
-  'hu',
-  'id',
-  'it',
-  'ja',
-  'kn',
-  'ko',
-  'lt',
-  'lv',
-  'mk',
-  'ml',
-  'mr',
-  'ne',
-  'nl',
-  'no',
-  'pa',
-  'pl',
-  'pt',
-  'ro',
-  'ru',
-  'sk',
-  'sl',
-  'so',
-  'sq',
-  'sv',
-  'sw',
-  'ta',
-  'te',
-  'th',
-  'tl',
-  'tr',
-  'uk',
-  'ur',
-  'vi',
-];
-
-async function recommendationsLanguages() {
-  const storedRecommendationsLanguages = () =>
-    new Promise((resolve) =>
-      chrome.storage.local.get(
-        'recommendationsLanguages',
-        ({ recommendationsLanguages }) => resolve(recommendationsLanguages)
-      )
-    );
-
-  const uniq = (array) => Array.from(new Set(array));
-  const recommendationsLanguagesFromNavigator = () =>
-    uniq(
-      navigator.languages
-        .map((languageTag) => languageTag.split('-', 1)[0])
-        .filter((language) =>
-          availableRecommendationsLanguages.includes(language)
-        )
-    ).join(',');
-
-  return (
-    (await storedRecommendationsLanguages()) ||
-    recommendationsLanguagesFromNavigator() ||
-    'en'
-  );
-}
+const getObjectFromLocalStorage = async (key, default_) => {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.storage.local.get(key, (value) => {
+        resolve(value[key] ?? default_);
+      });
+    } catch (ex) {
+      reject(ex);
+    }
+  });
+};
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Return the current access token in the chrome.storage.local.
@@ -278,7 +207,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
 
-        const languagesString = await recommendationsLanguages();
+        // todo: move the default lang construction in a function
+        const navLang = navigator.language.split('-')[0].toLowerCase();
+        // enforcing 'en' or 'fr' ensure the users will get recommendations if
+        // they haven't opened the preferences page yet
+        const defaultLang = ['en', 'fr'].includes(navLang) ? navLang : 'en';
+
+        const languagesString = await getObjectFromLocalStorage(
+          'recommendations__default_languages',
+          defaultLang
+        );
 
         // Only one request for both videos and additional videos
         const recentParams = new URLSearchParams([
@@ -368,7 +306,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
         const videosNumber = request.videosNumber;
-        const languagesString = await recommendationsLanguages();
+
+        // todo: move the default lang construction in a function
+        const navLang = navigator.language.split('-')[0].toLowerCase();
+        // enforcing 'en' or 'fr' ensure the users will get recommendations if
+        // they haven't opened the preferences page yet
+        const defaultLang = ['en', 'fr'].includes(navLang) ? navLang : 'en';
+
+        const languagesString = await getObjectFromLocalStorage(
+          'recommendations__default_languages',
+          defaultLang
+        );
 
         // Only one request for both videos and additional videos
         const params = new URLSearchParams([
