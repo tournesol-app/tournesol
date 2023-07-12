@@ -2,7 +2,8 @@
 
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <title>Tournesol Extension - Options</title>
 
     <!-- todo: create a CSS file instead -->
     <style>
@@ -50,9 +51,24 @@
           rgba(0, 0, 0, 0.12) 0px 1px 10px 0px;
       }
 
+      select.mui {
+        padding: 8.5px 14px;
+
+        background-color: white;
+
+        border: 1px solid rgba(0, 0, 0, 0.32);
+        border-radius: 4px;
+
+        cursor: pointer;
+      }
+
       /**
        * Page style
        */
+
+      body {
+        padding-bottom: 8px;
+      }
 
       .page-header {
         padding: 1px;
@@ -73,11 +89,14 @@
         gap: 16px;
       }
 
-      .submit {
+      div.submit {
         margin-top: 16px;
+
+        display: flex;
+        justify-content: flex-end;
       }
 
-      .submit button {
+      div.submit button {
         padding: 6px 16px;
 
         border: none;
@@ -102,26 +121,14 @@
         <h2>Recommendations</h2>
         <div class="list-of-fields">
           <div>
-            <label for="color">Language</label>
+            <label for="recommendations__default_language">Language</label>
             <select
-            id="recommendations__default_language"
-            name="recommendations__default_language"
+              class="mui"
+              id="recommendations__default_language"
+              name="recommendations__default_language"
             >
               <option value="en">English</option>
               <option value="fr">French</option>
-            </select>
-          </div>
-          <div>
-            <label for="color">Proportion of recent videos</label>
-            <select
-            id="ext_recommendations__recent_videos"
-            name="ext_recommendations__recent_videos"
-            >
-              <option value="100">Only recent videos</option>
-              <option value="75">75 %</option>
-              <option value="50">50 %</option>
-              <option value="25">25 %</option>
-              <option value="0">No recent videos</option>
             </select>
           </div>
         </div>
