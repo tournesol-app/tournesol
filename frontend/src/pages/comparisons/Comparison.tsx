@@ -169,7 +169,7 @@ const ComparisonPage = () => {
                   </Button>
                 </Grid>
               </Grid>
-              <Collapse in={showTips} timeout="auto" sx={{ width: '880px' }}>
+              <Collapse in={showTips} timeout="auto" sx={{ maxWidth: '880px' }}>
                 <Tips step={tutorialLength - 1} />
               </Collapse>
               <Comparison />
