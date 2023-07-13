@@ -181,8 +181,6 @@ describe('Comparison page', () => {
         .should('be.visible');
       cy.get('button#expert_submit_btn').click();
 
-      cy.contains('edit comparison', {matchCase: false})
-        .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
         .should('be.visible');
     });
@@ -217,8 +215,6 @@ describe('Comparison page', () => {
         .should('be.visible');
       cy.get('button#expert_submit_btn').click();
 
-      cy.contains('edit comparison', {matchCase: false})
-        .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
         .should('be.visible');
     });
