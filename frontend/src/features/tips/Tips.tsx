@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import Tip from './Tip';
-import { Grid, IconButton } from '@mui/material';
+import { Box, Grid, IconButton } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { OrderedDialogs } from 'src/utils/types';
 
@@ -37,21 +37,25 @@ const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
       alignItems="flex-start"
       mb={2}
     >
-      <Grid item>
-        <IconButton onClick={handlePreviousTip} disabled={!(tipStep > 0)}>
-          <KeyboardArrowLeft />
-        </IconButton>
+      <Grid item xs={1}>
+        <Box display="flex" justifyContent="center">
+          <IconButton onClick={handlePreviousTip} disabled={!(tipStep > 0)}>
+            <KeyboardArrowLeft />
+          </IconButton>
+        </Box>
       </Grid>
       <Grid item xs={10}>
         {dialogs && <Tip tip={dialogs[tipStep]} />}
       </Grid>
-      <Grid item>
-        <IconButton
-          onClick={handleNextTip}
-          disabled={!(tipStep < step && tipStep < tutorialLength - 1)}
-        >
-          <KeyboardArrowRight />
-        </IconButton>
+      <Grid item xs={1}>
+        <Box display="flex" justifyContent="center">
+          <IconButton
+            onClick={handleNextTip}
+            disabled={!(tipStep < step && tipStep < tutorialLength - 1)}
+          >
+            <KeyboardArrowRight />
+          </IconButton>
+        </Box>
       </Grid>
     </Grid>
   );
