@@ -45,7 +45,7 @@ describe('Home', () => {
           // uidA and uidB will be auto filled so we only look at the 'series' parameter
           const params = new URLSearchParams(search)
           const series = params.get('series')
-          expect(series).to.equal(null)
+          expect(series).to.equal("true")
         })
       });
 
