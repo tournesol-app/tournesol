@@ -65,14 +65,20 @@ body {
   font-weight: 500;
 }
 
+.preferences-section h5.field-name {
+  font-size: unset;
+}
+
+.languages-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
 .list-of-fields {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-div.field label {
-  margin-right: 8px;
 }
 
 div.submit {

@@ -1,4 +1,4 @@
-const DEFAULT_RECO_LANG = 'en';
+const DEFAULT_RECO_LANG = ['en'];
 
 // This delay is designed to be few miliseconds slower than our CSS fadeOut
 // animation to let the success message disappear before re-enabling the
@@ -28,8 +28,17 @@ const loadLocalPreferences = () => {
   chrome.storage.local.get(
     { recommendations__default_languages: DEFAULT_RECO_LANG },
     (settings) => {
-      document.getElementById('recommendations__default_languages').value =
-        settings.recommendations__default_languages;
+      document
+        .querySelectorAll(
+          'input[data-setting="recommendations__default_langagues"]'
+        )
+        .forEach((field) => {
+          const name = field.getAttribute('name');
+
+          if (settings.recommendations__default_languages.includes(name)) {
+            field.checked = true;
+          }
+        });
     }
   );
 };
@@ -38,9 +47,16 @@ const saveLocalPreferences = () => {
   const submit = document.getElementById('save-preferences');
   submit.setAttribute('disabled', '');
 
-  const recoDefaultLanguages = document.getElementById(
-    'recommendations__default_languages'
-  ).value;
+  const recoDefaultLanguages = [];
+  document
+    .querySelectorAll(
+      'input[data-setting="recommendations__default_langagues"]'
+    )
+    .forEach((field) => {
+      if (field.checked) {
+        recoDefaultLanguages.push(field.getAttribute('name'));
+      }
+    });
 
   browser.storage.local
     .set({ recommendations__default_languages: recoDefaultLanguages })

@@ -211,9 +211,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const navLang = navigator.language.split('-')[0].toLowerCase();
         // enforcing 'en' or 'fr' ensure the users will get recommendations if
         // they haven't opened the preferences page yet
-        const defaultLang = ['en', 'fr'].includes(navLang) ? navLang : 'en';
+        const defaultLang = ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
 
-        const languagesString = await getObjectFromLocalStorage(
+        const recommendationsLangs = await getObjectFromLocalStorage(
           'recommendations__default_languages',
           defaultLang
         );
@@ -222,13 +222,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const recentParams = new URLSearchParams([
           ['date_gte', threeWeeksAgo],
           ['limit', recentVideoToLoad + recentAdditionalVideoToLoad],
-          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
+          ...recommendationsLangs.map((l) => ['metadata[language]', l]),
         ]);
 
         const oldParams = new URLSearchParams([
           ['date_lte', threeWeeksAgo],
           ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
-          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
+          ...recommendationsLangs.map((l) => ['metadata[language]', l]),
         ]);
 
         const [recent, old] = await Promise.all([
@@ -296,7 +296,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: [...videos, ...additionalVideos],
-          recommandationsLanguages: languagesString,
+          recommandationsLanguages: recommendationsLangs,
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };
@@ -311,9 +311,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const navLang = navigator.language.split('-')[0].toLowerCase();
         // enforcing 'en' or 'fr' ensure the users will get recommendations if
         // they haven't opened the preferences page yet
-        const defaultLang = ['en', 'fr'].includes(navLang) ? navLang : 'en';
+        const defaultLang = ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
 
-        const languagesString = await getObjectFromLocalStorage(
+        const recommendationsLangs = await getObjectFromLocalStorage(
           'recommendations__default_languages',
           defaultLang
         );
@@ -324,7 +324,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           ['search', request.search],
           ['unsafe', false],
           ['score_mode', 'default'],
-          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
+          ...recommendationsLangs.split(',').map((l) => ['metadata[language]', l]),
         ]);
 
         const [videosList] = await Promise.all([
@@ -333,7 +333,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: videosList.splice(0, videosNumber),
-          recommandationsLanguages: languagesString,
+          recommandationsLanguages: recommendationsLangs,
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };
