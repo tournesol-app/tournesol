@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,6 @@ import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import {
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
-  UsersService,
 } from 'src/services/openapi';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import Tips from 'src/features/tips/Tips';
@@ -56,7 +55,7 @@ const displayWeeklyCollectiveGoal = (
 const ComparisonPage = () => {
   const { t } = useTranslation();
 
-  const [comparisonCount, setComparisonCount] = useState(4);
+  const [comparisonCount, setComparisonCount] = useState(0);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -79,6 +78,7 @@ const ComparisonPage = () => {
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
   const tipsDialogs = tutorialTips ? tutorialTips(t) : undefined;
 
+  // Only display the DialogBox for the last comparison
   const splitTutorialDialogs = dialogs
     ? { [tutorialLength - 1]: dialogs[tutorialLength - 1] }
     : undefined;
@@ -90,20 +90,6 @@ const ComparisonPage = () => {
     userSettings?.[pollName as PollUserSettingsKeys]
       ?.comparison_ui__weekly_collective_goal_display ??
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
-
-  useEffect(() => {
-    const process = async () => {
-      const comparisonsRequest = await UsersService.usersMeComparisonsList({
-        pollName,
-        limit: tutorialLength,
-        offset: 0,
-      });
-      setComparisonCount(comparisonsRequest.count || 0);
-    };
-    process();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search]);
 
   return (
     <>
@@ -136,6 +122,7 @@ const ComparisonPage = () => {
               />
               <ComparisonSeries
                 isTutorial={true}
+                onStepUp={setComparisonCount}
                 dialogs={splitTutorialDialogs}
                 generateInitial={true}
                 getAlternatives={tutorialAlternatives}
@@ -143,7 +130,6 @@ const ComparisonPage = () => {
                 redirectTo={`${baseUrl}${redirectTo}`}
                 keepUIDsAfterRedirect={keepUIDsAfterRedirect}
                 resumable={true}
-                tutoStep={comparisonCount}
               />
             </>
           ) : (
@@ -152,11 +138,7 @@ const ComparisonPage = () => {
                 weeklyCollectiveGoalDisplay,
                 isEmbedded
               ) && <CollectiveGoalWeeklyProgress />}
-              <Tips
-                step={tutorialLength - 1}
-                dialogs={tipsDialogs}
-                tutorialLength={tutorialLength}
-              />
+              <Tips dialogs={tipsDialogs} tutorialLength={tutorialLength} />
               <Comparison />
             </>
           )}

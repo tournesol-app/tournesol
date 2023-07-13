@@ -6,18 +6,20 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { OrderedDialogs } from 'src/utils/types';
 
 interface TipsProps {
-  step: number;
+  step?: number;
   dialogs: OrderedDialogs | undefined;
   tutorialLength: number;
 }
 
 const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
-  const [tipStep, setTipStep] = useState(step);
+  const [tipStep, setTipStep] = useState(step ? step : tutorialLength - 1);
   useEffect(() => {
     const retrieveStep = () => {
-      setTipStep(step);
+      setTipStep(step ? step : tutorialLength - 1);
     };
     retrieveStep();
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   const handlePreviousTip = () => {
@@ -51,7 +53,12 @@ const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
         <Box display="flex" justifyContent="center">
           <IconButton
             onClick={handleNextTip}
-            disabled={!(tipStep < step && tipStep < tutorialLength - 1)}
+            disabled={
+              !(
+                tipStep < (step ? step : tutorialLength - 1) &&
+                tipStep < tutorialLength - 1
+              )
+            }
           >
             <KeyboardArrowRight />
           </IconButton>

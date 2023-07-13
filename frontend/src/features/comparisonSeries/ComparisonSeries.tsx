@@ -38,6 +38,7 @@ interface Props {
   // A magic flag that will enable additional behaviours specific to
   // tutorials, like  the anonymous tracking by our web analytics.
   isTutorial?: boolean;
+  onStepUp?: (target: number) => void;
   // Redirect to this URL when the series is over.
   redirectTo?: string;
   keepUIDsAfterRedirect?: boolean;
@@ -49,7 +50,6 @@ interface Props {
   skipKey?: string;
   // Only used if `skipKey` is defined.
   skipButtonLabel?: string;
-  tutoStep?: number;
 }
 
 const generateSteps = (length: number) => {
@@ -66,6 +66,7 @@ const generateSteps = (length: number) => {
 
 const ComparisonSeries = ({
   dialogs,
+  onStepUp,
   generateInitial,
   getAlternatives,
   length,
@@ -75,7 +76,6 @@ const ComparisonSeries = ({
   resumable,
   skipKey,
   skipButtonLabel,
-  tutoStep,
 }: Props) => {
   const location = useLocation();
 
@@ -94,7 +94,7 @@ const ComparisonSeries = ({
   // initialize the component
   const [isLoading, setIsLoading] = React.useState(true);
   // the current position in the series
-  const [step, setStep] = useState(tutoStep ?? 0);
+  const [step, setStep] = useState(0);
   // open/close state of the `Dialog` component
   const [dialogOpen, setDialogOpen] = useState(true);
   // tell the `Comparison` to refresh the left entity, or the right one
@@ -163,6 +163,7 @@ const ComparisonSeries = ({
         .then(([comparisons, entities]) => {
           if (resumable && comparisons.length > 0) {
             setStep(comparisons.length);
+            if (onStepUp) onStepUp(comparisons.length);
           }
 
           if (entities && initialize.current && (uidA === '' || uidB === '')) {
@@ -200,6 +201,7 @@ const ComparisonSeries = ({
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
       setStep(newStep);
+      if (onStepUp) onStepUp(newStep);
     }
 
     // Anonymously track the users' progression through the tutorial, to
@@ -283,8 +285,6 @@ const ComparisonSeries = ({
     }
 
     const newSearchParams = new URLSearchParams();
-    newSearchParams.append('series', 'true');
-
     let newUidA: string;
     let newUidB: string;
 
