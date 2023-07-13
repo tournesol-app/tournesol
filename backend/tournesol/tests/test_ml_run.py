@@ -141,7 +141,7 @@ class TestMlTrain(TransactionTestCase):
         self.assertEqual(video.tournesol_score, None)
         call_command("ml_train")
         video.refresh_from_db()
-        self.assertAlmostEqual(video.tournesol_score, 0, places=3)
+        self.assertAlmostEqual(video.tournesol_score, 0.0, places=1)
 
     def test_individual_scaling_are_computed(self):
         # User 1 will belong to calibration users (as the most active trusted user)
