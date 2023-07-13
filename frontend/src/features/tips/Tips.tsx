@@ -34,7 +34,7 @@ const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
       sx={{ maxWidth: '880px' }}
       direction="row"
       justifyContent="center"
-      alignItems="center"
+      alignItems="flex-start"
       mb={2}
     >
       <Grid item>
