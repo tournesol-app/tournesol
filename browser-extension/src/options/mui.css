@@ -17,17 +17,17 @@
   line-height: 24.5px;
 }
 
-button.primary {
+button.mui.primary {
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(255, 200, 0);
 }
 
-button.secondary {
+button.mui.secondary {
   color: white;
   background-color: rgb(80, 106, 212);
 }
 
-button.secondary:hover {
+button.mui.secondary:hover {
   text-decoration: none;
   background-color: rgb(56, 74, 148);
   box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
@@ -41,6 +41,10 @@ button.mui:disabled {
   background-color: rgba(0, 0, 0, 0.12);
   pointer-events: none;
   cursor: default;
+}
+
+button.mui[type="submit"] {
+  text-transform: uppercase;
 }
 
 select.mui {
