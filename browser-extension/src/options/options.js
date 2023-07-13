@@ -24,23 +24,37 @@ const displayFeedback = (type) => {
   }
 };
 
-const loadLocalPreferences = () => {
-  chrome.storage.local.get(
-    { recommendations__default_languages: DEFAULT_RECO_LANG },
-    (settings) => {
-      document
-        .querySelectorAll(
-          'input[data-setting="recommendations__default_langagues"]'
-        )
-        .forEach((field) => {
-          const name = field.getAttribute('name');
-
-          if (settings.recommendations__default_languages.includes(name)) {
-            field.checked = true;
-          }
-        });
-    }
+const loadLegacyRecommendationsLanguages = () => {
+  return new Promise((resolve) =>
+    chrome.storage.local.get(
+      'recommendationsLanguages',
+      ({ recommendationsLanguages }) => resolve(recommendationsLanguages)
+    )
   );
+};
+
+const loadLocalPreferences = async () => {
+  // todo: handle promise rejection?
+  const legacy = await loadLegacyRecommendationsLanguages();
+
+  chrome.storage.local.get('recommendations__default_languages', (settings) => {
+    const languages =
+      settings?.recommendations__default_languages ??
+      legacy?.split(',') ??
+      DEFAULT_RECO_LANG;
+
+    document
+      .querySelectorAll(
+        'input[data-setting="recommendations__default_langagues"]'
+      )
+      .forEach((field) => {
+        const name = field.getAttribute('name');
+
+        if (languages.includes(name)) {
+          field.checked = true;
+        }
+      });
+  });
 };
 
 const saveLocalPreferences = () => {
