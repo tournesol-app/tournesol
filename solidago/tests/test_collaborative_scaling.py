@@ -5,8 +5,8 @@ from solidago.collaborative_scaling import estimate_positive_score_shift
 
 def test_score_shift_when_all_scores_are_equal():
     scaled_individual_scores = pd.DataFrame(dict(
-        user_id=["user_{i}" for i in range(1000)],
-        entity_id=["entity_{i}" for i in range(1000)],
+        user_id=[f"user_{i}" for i in range(1000)],
+        entity_id=[f"entity_{i}" for i in range(1000)],
         score=12.12,
         uncertainty=1e-12,
     ))
