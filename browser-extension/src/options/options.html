@@ -3,47 +3,78 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Tournesol Extension - Options</title>
+    <title>Tournesol Extension - Preferences</title>
+    <link href="mui.css" rel="stylesheet">
     <link href="options.css" rel="stylesheet">
   </head>
   <body>
     <header class="page-header blue-bg">
       <h1>Manage your preferences</h1>
     </header>
-    <p class="centered hint">
-      You are not logged in Tournesol, your preferences will be saved locally.
-    </p>
-    <form id="preferences-form">
-      <section class="preferences-section">
-        <h2>Recommendations</h2>
-        <div class="list-of-fields">
-          <div class="field">
-            <label for="recommendations__default_languages">Language</label>
-            <select
-              class="mui"
-              id="recommendations__default_languages"
-              name="recommendations__default_languages"
+
+    <nav class="page-navigation">
+      <button
+        class="mui active"
+        data-tab="local"
+      >
+        Local
+      </button>
+
+      <button 
+        class="mui"
+        data-tab="tournesol-account"
+      >
+        Tournesol Account
+      </button>
+    </nav>
+
+    <div class="page-tab active" data-tab="local">
+      <p class="centered hint">
+        These parameters are used when you don't have a Tournesol account, or when you are not logged in.
+      </p>
+  
+    
+      <form id="preferences-form">
+        <section class="preferences-section">
+          <h2>Recommendations</h2>
+          <div class="list-of-fields">
+            <div class="field">
+              <label for="recommendations__default_languages">Language</label>
+              <select
+                class="mui"
+                id="recommendations__default_languages"
+                name="recommendations__default_languages"
+              >
+                <option value="en">English</option>
+                <option value="fr">French</option>
+              </select>
+            </div>
+          </div>
+          <div class="submit">
+            <div class="feedback-success mui_button">
+              <span>Success!</span>
+            </div>
+            <button
+              class="mui secondary"
+              id="save-preferences"
+              type="submit"
             >
-              <option value="en">English</option>
-              <option value="fr">French</option>
-            </select>
+              Save
+            </button>
           </div>
-        </div>
-        <div class="submit">
-          <div class="feedback-success mui_button">
-            <span>Success!</span>
-          </div>
-          <button
-            class="mui secondary"
-            id="save-preferences"
-            type="submit"
-          >
-            Save
-          </button>
-        </div>
-      </section>
-    </form>
+        </section>
+      </form>
+    </div>
+
+    <div class="page-tab" data-tab="tournesol-account">
+      <iframe
+      id="iframe-tournesol-preferences"
+      src="https://tournesol.app/settings/preferences?embed=1"
+    ></iframe>
+    </div>
+
 
     <script src="options.js"></script>
+
   </body>
 </html>

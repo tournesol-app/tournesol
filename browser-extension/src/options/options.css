@@ -11,62 +11,12 @@
 }
 
 /**
- * Material UI
- */
-
-button.mui {
-  padding: 6px 16px;
-
-  border: none;
-  border-radius: 4px;
-
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
-    rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
-    rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
-
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 24.5px;
-}
-
-button.secondary {
-  color: white;
-  background-color: rgb(80, 106, 212);
-}
-
-button.secondary:hover {
-  text-decoration: none;
-  background-color: rgb(56, 74, 148);
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
-    rgba(0, 0, 0, 0.14) 0px 4px 5px 0px,
-    rgba(0, 0, 0, 0.12) 0px 1px 10px 0px;
-}
-
-button.mui:disabled {
-  color: rgba(0, 0, 0, 0.26);
-  box-shadow: none;
-  background-color: rgba(0, 0, 0, 0.12);
-  pointer-events: none;
-  cursor: default;
-}
-
-select.mui {
-  padding: 8.5px 14px;
-
-  background-color: white;
-
-  border: 1px solid rgba(0, 0, 0, 0.32);
-  border-radius: 4px;
-
-  cursor: pointer;
-}
-
-/**
  * Page style
  */
 
 body {
-  padding-bottom: 8px;
+  margin: 0;
+  padding: 16px;
 }
 
 .page-header {
@@ -76,6 +26,36 @@ body {
 
 .page-header h1 {
   text-align: center;
+}
+
+.page-navigation {
+  display: flex;
+  gap: 8px;
+
+  margin: 16px 0;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.page-navigation button.active {
+  background-color: rgb(255, 200, 0);
+}
+
+.page-navigation button.active:hover {
+  text-decoration: none;
+  background-color: rgb(178, 140, 0);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
+    rgba(0, 0, 0, 0.14) 0px 4px 5px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 10px 0px;
+}
+
+.page-tab {
+  visibility: hidden;
+  height: 0;
+}
+
+.page-tab.active {
+  visibility: visible;
+  height: auto;
 }
 
 .preferences-section {
@@ -127,4 +107,10 @@ div.submit {
 
   /* do not make it slower than the FEEDBACK_DELAY configured in options.js */
   animation: fadeOut 1.8s ease-out;
+}
+
+
+#iframe-tournesol-preferences {
+  width: 100%;
+  height: 78vh;
 }

@@ -9,11 +9,10 @@ const removeAttribute = (element, attribute, delay) => {
   setTimeout(() => {
     element.removeAttribute(attribute);
   }, delay);
-}
+};
 
 const displayFeedback = (type) => {
-
-  if (type === "success") {
+  if (type === 'success') {
     const success = document.querySelector('.feedback-success');
     success.classList.add('displayed');
 
@@ -25,7 +24,7 @@ const displayFeedback = (type) => {
   }
 };
 
-const loadPreferences = () => {
+const loadLocalPreferences = () => {
   chrome.storage.local.get(
     { recommendations__default_languages: DEFAULT_RECO_LANG },
     (settings) => {
@@ -35,7 +34,7 @@ const loadPreferences = () => {
   );
 };
 
-const savePreferences = () => {
+const saveLocalPreferences = () => {
   const submit = document.getElementById('save-preferences');
   submit.setAttribute('disabled', '');
 
@@ -43,21 +42,44 @@ const savePreferences = () => {
     'recommendations__default_languages'
   ).value;
 
-  browser.storage.local.set(
-    { recommendations__default_languages: recoDefaultLanguages }
-  ).then(() => {
-    displayFeedback("success");
-    removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
-  }).catch((reason) => {
-    removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
+  browser.storage.local
+    .set({ recommendations__default_languages: recoDefaultLanguages })
+    .then(() => {
+      displayFeedback('success');
+      removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
+    })
+    .catch(() => {
+      removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
+    });
+};
+
+const onpenTab = (event_) => {
+  const targetTab = event_.target.dataset.tab;
+  document.querySelectorAll('.page-tab').forEach((tab) => {
+    tab.classList.remove('active');
+  });
+
+  document.querySelectorAll('.page-navigation button').forEach((btn) => {
+    btn.classList.remove('active');
+  });
+
+  document.querySelectorAll(`[data-tab=${targetTab}]`).forEach((element) => {
+    element.classList.add('active');
   });
 };
 
-document.addEventListener('DOMContentLoaded', loadPreferences);
+const initNavigation = () => {
+  document.querySelectorAll('.page-navigation button').forEach((btn) => {
+    btn.addEventListener('click', onpenTab);
+  });
+};
+
+document.addEventListener('DOMContentLoaded', initNavigation);
+document.addEventListener('DOMContentLoaded', loadLocalPreferences);
 
 document
   .getElementById('save-preferences')
-  .addEventListener('click', savePreferences);
+  .addEventListener('click', saveLocalPreferences);
 
 document
   .getElementById('preferences-form')

@@ -61,7 +61,8 @@
     }
   ],
   "options_ui": {
-    "page": "options/options.html"
+    "page": "options/options.html",
+    "open_in_tab": true
   },
   "default_locale": "en",
   "web_accessible_resources": ["Logo128.png", "html/*", "images/*", "utils.js", "models/*" ]
