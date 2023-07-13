@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Collapse, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -17,7 +17,6 @@ import {
 } from 'src/services/openapi';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import Tips from 'src/features/tips/Tips';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 const displayWeeklyCollectiveGoal = (
   userPreference: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum,
@@ -58,7 +57,6 @@ const ComparisonPage = () => {
   const { t } = useTranslation();
 
   const [comparisonCount, setComparisonCount] = useState(4);
-  const [showTips, setShowTips] = useState(false);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -84,10 +82,6 @@ const ComparisonPage = () => {
   const splitTutorialDialogs = dialogs
     ? { [tutorialLength - 1]: dialogs[tutorialLength - 1] }
     : undefined;
-
-  const handleShowTips = () => {
-    setShowTips(!showTips);
-  };
 
   // User's settings.
   const userSettings = useSelector(selectSettings).settings;
@@ -158,32 +152,6 @@ const ComparisonPage = () => {
                 weeklyCollectiveGoalDisplay,
                 isEmbedded
               ) && <CollectiveGoalWeeklyProgress />}
-              <Grid container justifyContent="center">
-                <Grid item sx={{ width: '880px' }}>
-                  <Button
-                    fullWidth
-                    onClick={handleShowTips}
-                    startIcon={showTips ? <ExpandLess /> : <ExpandMore />}
-                    size="medium"
-                    color="secondary"
-                    sx={{
-                      marginBottom: '8px',
-                      color: showTips ? 'red' : '',
-                    }}
-                  >
-                    {showTips
-                      ? t('videos.dialogs.tutorial.hideTips')
-                      : t('videos.dialogs.tutorial.showTips')}
-                  </Button>
-                </Grid>
-              </Grid>
-              <Collapse in={showTips} timeout="auto" sx={{ maxWidth: '880px' }}>
-                <Tips
-                  step={tutorialLength - 1}
-                  dialogs={tipsDialogs}
-                  tutorialLength={tutorialLength}
-                />
-              </Collapse>
               <Comparison />
             </>
           )}
