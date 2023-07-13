@@ -150,3 +150,44 @@ export const isNavigatorLang = (lang) => {
 
   return false;
 };
+
+const getObjectFromLocalStorage = async (key, default_) => {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.storage.local.get(key, (value) => {
+        resolve(value[key] ?? default_);
+      });
+    } catch (ex) {
+      reject(ex);
+    }
+  });
+};
+
+/**
+ * Return a list of ISO 639-1 language codes that can be used to fetch the
+ * recommendations from the Tournesol API.
+ *
+ * The languages are retrieved following this priority order:
+ *
+ * 1. user's settings
+ * 2. else, the lagacy extension storage key
+ * 3. else, the navigator.language
+ * 4. else, the English language code is returned
+ */
+export const getRecommendationsLanguages = async () => {
+  const navLang = navigator.language.split('-')[0].toLowerCase();
+  const defaultLang = ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
+
+  // Fall back to the legacy storage key `recommendationsLanguages` if the
+  // user hasn't defined any preferred language in his/her settings yet.
+  const legacyRecommendationsLanguages = await getObjectFromLocalStorage(
+    'recommendationsLanguages'
+  );
+
+  const recommendationsLanguages = await getObjectFromLocalStorage(
+    'recommendations__default_languages',
+    legacyRecommendationsLanguages?.split(',') ?? defaultLang
+  );
+
+  return recommendationsLanguages;
+};

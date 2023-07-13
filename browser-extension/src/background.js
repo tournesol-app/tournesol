@@ -6,6 +6,7 @@ import {
   getAccessToken,
   getRandomSubarray,
   getUserProof,
+  getRecommendationsLanguages,
 } from './utils.js';
 
 const oversamplingRatioForRecentVideos = 3;
@@ -95,18 +96,6 @@ function getDateThreeWeeksAgo() {
   threeWeeksAgo.setMinutes(0, 0, 0);
   return threeWeeksAgo.toISOString();
 }
-
-const getObjectFromLocalStorage = async (key, default_) => {
-  return new Promise((resolve, reject) => {
-    try {
-      chrome.storage.local.get(key, (value) => {
-        resolve(value[key] ?? default_);
-      });
-    } catch (ex) {
-      reject(ex);
-    }
-  });
-};
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Return the current access token in the chrome.storage.local.
@@ -206,17 +195,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
-
-        // todo: move the default lang construction in a function
-        const navLang = navigator.language.split('-')[0].toLowerCase();
-        // enforcing 'en' or 'fr' ensure the users will get recommendations if
-        // they haven't opened the preferences page yet
-        const defaultLang = ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
-
-        const recommendationsLangs = await getObjectFromLocalStorage(
-          'recommendations__default_languages',
-          defaultLang
-        );
+        const recommendationsLangs = await getRecommendationsLanguages();
+        //console.log(recommendationsLangs);
 
         // Only one request for both videos and additional videos
         const recentParams = new URLSearchParams([
@@ -306,17 +286,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
         const videosNumber = request.videosNumber;
-
-        // todo: move the default lang construction in a function
-        const navLang = navigator.language.split('-')[0].toLowerCase();
-        // enforcing 'en' or 'fr' ensure the users will get recommendations if
-        // they haven't opened the preferences page yet
-        const defaultLang = ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
-
-        const recommendationsLangs = await getObjectFromLocalStorage(
-          'recommendations__default_languages',
-          defaultLang
-        );
+        const recommendationsLangs = await getRecommendationsLanguages();
 
         // Only one request for both videos and additional videos
         const params = new URLSearchParams([
