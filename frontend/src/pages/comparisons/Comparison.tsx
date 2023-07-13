@@ -75,9 +75,11 @@ const ComparisonPage = () => {
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
+  const tutorialTips = options?.tutorialTips ?? undefined;
   const redirectTo = options?.tutorialRedirectTo ?? '/comparisons';
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
+  const tipsDialogs = tutorialTips ? tutorialTips(t) : undefined;
 
   const splitTutorialDialogs = dialogs
     ? { [tutorialLength - 1]: dialogs[tutorialLength - 1] }
@@ -135,7 +137,7 @@ const ComparisonPage = () => {
             <>
               <Tips
                 step={comparisonCount}
-                dialogs={dialogs}
+                dialogs={tipsDialogs}
                 tutorialLength={tutorialLength}
               />
               <ComparisonSeries
@@ -178,7 +180,7 @@ const ComparisonPage = () => {
               <Collapse in={showTips} timeout="auto" sx={{ maxWidth: '880px' }}>
                 <Tips
                   step={tutorialLength - 1}
-                  dialogs={dialogs}
+                  dialogs={tipsDialogs}
                   tutorialLength={tutorialLength}
                 />
               </Collapse>

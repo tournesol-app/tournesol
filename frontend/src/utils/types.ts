@@ -103,6 +103,7 @@ export type SelectablePoll = {
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
+  tutorialTips?: (t: TFunction) => OrderedDialogs;
   // redirect to this page after the last comparison is submitted
   tutorialRedirectTo?: string;
   // if true, the two UIDs present in the URL will be kept after the redirection
