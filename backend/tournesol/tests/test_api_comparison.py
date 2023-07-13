@@ -1,5 +1,6 @@
 import datetime
 from copy import deepcopy
+from unittest import skip
 from unittest.mock import patch
 
 from django.core.management import call_command
@@ -1070,6 +1071,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
+    @skip("Update scores on comparison is not currently implemented")
     @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     def test_update_individual_scores_after_new_comparison(self):
         call_command("ml_train")

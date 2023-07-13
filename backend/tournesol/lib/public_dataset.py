@@ -13,11 +13,10 @@ from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from ml.mehestan.global_scores import SCALING_WEIGHT_CALIBRATION, W
 from ml.mehestan.run import (
     VOTE_WEIGHT_PRIVATE_RATINGS,
     VOTE_WEIGHT_PUBLIC_RATINGS,
-    individual_scores_algo,
+    MehestanParameters,
 )
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
@@ -249,6 +248,7 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
     Write the metadata as JSON in `write_target`, an
     object supporting the Python file API.
     """
+    default_parameters = MehestanParameters()
 
     metadata_dict = {
         "data_included_until": data_until.isoformat(),
@@ -261,10 +261,9 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
                 "TRUSTED_EMAIL_PRETRUST": TRUSTED_EMAIL_PRETRUST,
                 "VOUCH_DECAY": VOUCH_DECAY,
             },
-            "individual_scores": individual_scores_algo.get_metadata(),
+            "individual_scores": default_parameters.indiv_algo.get_metadata(),
             "mehestan": {
-                "W": W,
-                "SCALING_WEIGHT_CALIBRATION": SCALING_WEIGHT_CALIBRATION,
+                "W": default_parameters.W,
                 "VOTE_WEIGHT_PUBLIC_RATINGS": VOTE_WEIGHT_PUBLIC_RATINGS,
                 "VOTE_WEIGHT_PRIVATE_RATINGS": VOTE_WEIGHT_PRIVATE_RATINGS,
                 "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
