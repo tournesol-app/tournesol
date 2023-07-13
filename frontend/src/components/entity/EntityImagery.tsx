@@ -116,6 +116,7 @@ const EntityImagery = ({
           className="full-width entity-thumbnail"
           src={`https://i.ytimg.com/vi/${idFromUid(entity.uid)}/mqdefault.jpg`}
           alt={entity.metadata.name}
+          style={{ aspectRatio: '16/9' }}
         />
       </DurationWrapper>
     );

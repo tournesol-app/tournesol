@@ -25,6 +25,7 @@ import EntityCardScores from './EntityCardScores';
 import EntityImagery from './EntityImagery';
 import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import { entityCardMainSx } from './style';
+import UnavailableOverlay from './UnavailableOverlay';
 
 const EntityCard = ({
   entity,
@@ -53,8 +54,8 @@ const EntityCard = ({
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
   useEffect(() => {
-    setContentDisplayed(isAvailable);
-  }, [isAvailable]);
+    setContentDisplayed(isAvailable || compact);
+  }, [isAvailable, compact]);
 
   const displayEntityCardScores = () => {
     if ('tournesol_score' in entity && !compact) {
@@ -75,7 +76,7 @@ const EntityCard = ({
 
   return (
     <Grid container sx={entityCardMainSx}>
-      {!isAvailable && (
+      {!isAvailable && !compact && (
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item pl={1} py={2}>
             <Typography>
@@ -104,6 +105,7 @@ const EntityCard = ({
             sx={{
               display: 'flex',
               justifyContent: 'center',
+              position: 'relative',
               ...(compact
                 ? {}
                 : { minWidth: '240px', maxWidth: { sm: '240px' } }),
@@ -114,6 +116,15 @@ const EntityCard = ({
               compact={compact}
               config={entityTypeConfig}
             />
+            {!isAvailable && compact && (
+              <UnavailableOverlay
+                msg={
+                  entity.type == TypeEnum.VIDEO
+                    ? t('video.notAvailableAnymore')
+                    : t('entityCard.thisElementIsNotAvailable')
+                }
+              />
+            )}
           </Grid>
           <Grid
             item

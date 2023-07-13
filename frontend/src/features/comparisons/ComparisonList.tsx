@@ -5,6 +5,7 @@ import { Grid, Container, Tooltip, Fab, Box, useTheme } from '@mui/material';
 import { Compare as CompareIcon } from '@mui/icons-material';
 
 import type { Comparison } from 'src/services/openapi';
+import AvailableEntity from 'src/components/entity/AvailableEntity';
 import EntityCard from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
@@ -24,11 +25,13 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         gap: '16px',
       }}
     >
-      <EntityCard
-        compact
-        entity={entity_a}
-        entityTypeConfig={{ video: { displayPlayer: false } }}
-      />
+      <AvailableEntity uid={entity_a.uid}>
+        <EntityCard
+          compact
+          entity={entity_a}
+          entityTypeConfig={{ video: { displayPlayer: false } }}
+        />
+      </AvailableEntity>
       <Box
         sx={{
           position: 'relative',
@@ -56,11 +59,13 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           </Fab>
         </Tooltip>
       </Box>
-      <EntityCard
-        compact
-        entity={entity_b}
-        entityTypeConfig={{ video: { displayPlayer: false } }}
-      />
+      <AvailableEntity uid={entity_b.uid}>
+        <EntityCard
+          compact
+          entity={entity_b}
+          entityTypeConfig={{ video: { displayPlayer: false } }}
+        />
+      </AvailableEntity>
     </Box>
   );
 };
