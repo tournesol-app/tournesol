@@ -8,14 +8,14 @@ from solidago.resilient_primitives import BrMean, QrDev, QrMed, QrUnc
 
 from ml.inputs import MlInput
 
-# `W` is the Byzantine resilience parameter,
-# i.e the number of voting rights needed to modify a global score by 1 unit.
-# A user would approximately pull up to a score of 100 / W
-W = 5
-SCALING_WEIGHT_CALIBRATION = W
+# # `W` is the Byzantine resilience parameter,
+# # i.e the number of voting rights needed to modify a global score by 1 unit.
+# # A user would approximately pull up to a score of 100 / W
+# W = 5
+# SCALING_WEIGHT_CALIBRATION = W
 
 
-def get_user_scaling_weights(ml_input: MlInput):
+def get_user_scaling_weights(ml_input: MlInput, W: float):
     ratings_properties = ml_input.ratings_properties[
         ["user_id", "trust_score", "is_scaling_calibration_user"]
     ].copy()
@@ -23,7 +23,7 @@ def get_user_scaling_weights(ml_input: MlInput):
     df["scaling_weight"] = df["trust_score"]
     df["scaling_weight"].mask(
         df.is_scaling_calibration_user,
-        SCALING_WEIGHT_CALIBRATION,
+        W,
         inplace=True,
     )
     return df["scaling_weight"].to_dict()
@@ -77,11 +77,12 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
 def compute_scaling(
     df: pd.DataFrame,
     ml_input: MlInput,
+    W: float,
     users_to_compute=None,
     reference_users=None,
     calibration=False,
 ):
-    scaling_weights = get_user_scaling_weights(ml_input)
+    scaling_weights = get_user_scaling_weights(ml_input, W=W)
     df = df.rename({"entity_id": "uid"}, axis=1)
 
     if users_to_compute is None:
@@ -218,18 +219,20 @@ def compute_scaling(
     )
 
 
-def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame):
+def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame, W: float):
     rp = ml_input.ratings_properties
     rp = rp.set_index(["user_id", "entity_id"])
     rp = rp[rp.is_scaling_calibration_user]
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
     df["score"] = df["raw_score"]
     df["uncertainty"] = df["raw_uncertainty"]
-    return compute_scaling(df, ml_input=ml_input, calibration=True)
+    return compute_scaling(df, ml_input=ml_input, calibration=True, W=W)
 
 
 def compute_scaled_scores(
-    ml_input: MlInput, individual_scores: pd.DataFrame
+    ml_input: MlInput,
+    individual_scores: pd.DataFrame,
+    W: float,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Returns:
@@ -264,7 +267,7 @@ def compute_scaled_scores(
         )
         scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
         return scores, scalings
-    calibration_scaling = get_scaling_for_calibration(ml_input, individual_scores)
+    calibration_scaling = get_scaling_for_calibration(ml_input, individual_scores, W=W)
     rp = ml_input.ratings_properties
 
     non_calibration_users = rp["user_id"][~rp.is_scaling_calibration_user].unique()
@@ -298,6 +301,7 @@ def compute_scaled_scores(
         users_to_compute=non_calibration_users,
         reference_users=calibration_users,
         calibration=False,
+        W=W,
     )
 
     df = df.join(non_calibration_scaling, on="user_id")
@@ -320,7 +324,7 @@ def compute_scaled_scores(
     return df, all_scalings
 
 
-def get_global_scores(scaled_scores: pd.DataFrame):
+def get_global_scores(scaled_scores: pd.DataFrame, W: float):
     if len(scaled_scores) == 0:
         return pd.DataFrame(
             columns=["entity_id", "score", "uncertainty", "deviation", "n_contributors"]

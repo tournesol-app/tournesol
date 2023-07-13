@@ -294,7 +294,6 @@ class ExportTest(TestCase):
                     set(metadata["algorithms_parameters"]["mehestan"].keys()),
                     {
                         "W",
-                        "SCALING_WEIGHT_CALIBRATION",
                         "OVER_TRUST_BIAS",
                         "OVER_TRUST_SCALE",
                         "VOTE_WEIGHT_PUBLIC_RATINGS",
