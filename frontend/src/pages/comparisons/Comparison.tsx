@@ -152,6 +152,11 @@ const ComparisonPage = () => {
                 weeklyCollectiveGoalDisplay,
                 isEmbedded
               ) && <CollectiveGoalWeeklyProgress />}
+              <Tips
+                step={tutorialLength - 1}
+                dialogs={tipsDialogs}
+                tutorialLength={tutorialLength}
+              />
               <Comparison />
             </>
           )}
