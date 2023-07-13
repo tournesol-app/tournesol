@@ -18,7 +18,7 @@ const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
       setTipStep(step ? step : tutorialLength - 1);
     };
     retrieveStep();
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
