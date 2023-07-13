@@ -7,7 +7,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django import db
-from solidago.collaborative_scaling import estimate_positive_score_shift, weighted_score_std
+from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_deviation
 from solidago.comparisons_to_scores import ContinuousBradleyTerry
 
 from core.models import User
@@ -32,6 +32,8 @@ VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 SCORE_SHIFT_W = 1.
 SCORE_SHIFT_QUANTILE = 0.15  # TODO maybe use 5% ?
+SCORE_DEVIATION_QUANTILE = 0.9
+
 
 individual_scores_algo = ContinuousBradleyTerry(r_max=COMPARISON_MAX)
 
@@ -149,11 +151,13 @@ def run_mehestan_for_criterion(
     if len(scaled_scores) > 0:
         score_shift = estimate_positive_score_shift(
             scaled_scores,
-            SCORE_SHIFT_W,
-            SCORE_SHIFT_QUANTILE,
+            W=SCORE_SHIFT_W,
+            quantile=SCORE_SHIFT_QUANTILE,
         )
-        score_std = weighted_score_std(
+        score_std = estimate_score_deviation(
             scaled_scores,
+            W=SCORE_SHIFT_W,
+            quantile=SCORE_DEVIATION_QUANTILE
         )
         true_score_std = np.std(scaled_scores.score)
 
