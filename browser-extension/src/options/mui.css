@@ -53,3 +53,11 @@ select.mui {
 
   cursor: pointer;
 }
+
+p.info {
+  padding: 14px 16px;
+  border-radius: 4px;
+
+  color: rgb(1, 67, 97);
+  background-color: rgb(229, 246, 253);
+}
