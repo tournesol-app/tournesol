@@ -13,6 +13,8 @@
 body {
   margin: 0;
   padding: 16px;
+
+  font-family: sans-serif;
 }
 
 .page-header {
@@ -56,6 +58,11 @@ body {
 
 .preferences-section {
   margin-top: 16px;
+}
+
+.preferences-section h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
 }
 
 .list-of-fields {
