@@ -1,14 +1,13 @@
 import logging
 import os
 from functools import partial
-from math import tau as TAU
 from multiprocessing import Pool
 from typing import Optional
 
 import numpy as np
 import pandas as pd
 from django import db
-from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_std
+from solidago.collaborative_scaling import estimate_positive_score_shift, weighted_score_std
 from solidago.comparisons_to_scores import ContinuousBradleyTerry
 
 from core.models import User
@@ -21,7 +20,7 @@ from ml.outputs import (
 )
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
-from tournesol.utils.constants import COMPARISON_MAX, MEHESTAN_MAX_SCALED_SCORE
+from tournesol.utils.constants import COMPARISON_MAX
 from vouch.voting_rights import compute_voting_rights
 
 from .global_scores import compute_scaled_scores, get_global_scores
@@ -144,33 +143,34 @@ def run_mehestan_for_criterion(
 
     indiv_scores = get_individual_scores(ml_input, criteria=criteria)
 
-    logger.debug("Individual scores computed for crit '%s'", criteria)
+    logger.info("Individual scores computed for crit '%s'", criteria)
     scaled_scores, scalings = compute_scaled_scores(ml_input, individual_scores=indiv_scores)
-    score_shift = estimate_positive_score_shift(
-        scaled_scores,
-        SCORE_SHIFT_W,
-        SCORE_SHIFT_QUANTILE,
-    )
-    score_std = estimate_score_std(
-        scaled_scores,
-        SCORE_SHIFT_W,
-    )
-    score_std_np = np.std(scaled_scores.score)
 
-    print("-- scaled_scores --\n", scaled_scores.score.describe())
-    print("tail:\n", scaled_scores.tail(20))
+    if len(scaled_scores) > 0:
+        score_shift = estimate_positive_score_shift(
+            scaled_scores,
+            SCORE_SHIFT_W,
+            SCORE_SHIFT_QUANTILE,
+        )
+        score_std = weighted_score_std(
+            scaled_scores,
+        )
+        true_score_std = np.std(scaled_scores.score)
 
-    scaled_scores.score -= score_shift
-    scaled_scores.score /= score_std_np
-    scaled_scores.uncertainty /= score_std_np
+        print("-- scaled_scores --\n", scaled_scores.score.describe())
+        print("tail:\n", scaled_scores.tail(20))
 
-    print("STD", score_std)
-    print("SHIFT", score_shift)
-    print("NEW STD", np.std(scaled_scores.score))
+        scaled_scores.score -= score_shift
+        scaled_scores.score /= score_std
+        scaled_scores.uncertainty /= score_std
 
-    print("-- scaled_scores after shift --\n", scaled_scores.score.describe())
-    print("tail:\n", scaled_scores.tail(20))
+        print("STD", score_std)
+        print("TRUE STD", true_score_std)
+        print("SHIFT", score_shift)
+        print("NEW STD", np.std(scaled_scores.score))
 
+        print("-- scaled_scores after shift --\n", scaled_scores.score.describe())
+        print("tail:\n", scaled_scores.tail(20))
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)

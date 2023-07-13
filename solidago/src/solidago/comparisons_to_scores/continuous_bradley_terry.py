@@ -13,7 +13,7 @@ from solidago.comparisons_to_scores.base import ComparisonsToScoresAlgorithm
 from solidago.solvers.optimize import brentq
 
 
-DEFAULT_ALPHA = 0.2  # Signal-to-noise hyperparameter
+DEFAULT_ALPHA = 0.20  # Signal-to-noise hyperparameter
 EPSILON = 1e-5
 
 
