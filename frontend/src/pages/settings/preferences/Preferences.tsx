@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import { Grid } from '@mui/material';
 
@@ -19,6 +20,10 @@ const PreferencePage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { contactAdministrator } = useNotifications();
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isEmbedded = Boolean(searchParams.get('embed'));
 
   const [loading, setLoading] = useState(true);
 
@@ -55,10 +60,16 @@ const PreferencePage = () => {
         title={`${t('settings.title')} > ${t('preferences.preferences')}`}
       />
       <ContentBox maxWidth="xl">
-        <Grid container spacing={4}>
-          <Grid item {...settingsMenuBreakpoints}>
-            <SettingsMenu />
-          </Grid>
+        <Grid
+          container
+          spacing={4}
+          justifyContent={isEmbedded ? 'center' : 'normal'}
+        >
+          {!isEmbedded && (
+            <Grid item {...settingsMenuBreakpoints}>
+              <SettingsMenu />
+            </Grid>
+          )}
           <Grid item {...mainSectionBreakpoints}>
             <LoaderWrapper isLoading={loading}>
               <TournesolUserSettingsForm />
