@@ -296,7 +296,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: [...videos, ...additionalVideos],
-          recommandationsLanguages: recommendationsLangs,
+          recommandationsLanguages: recommendationsLangs.join(','),
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };
@@ -324,7 +324,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           ['search', request.search],
           ['unsafe', false],
           ['score_mode', 'default'],
-          ...recommendationsLangs.split(',').map((l) => ['metadata[language]', l]),
+          ...recommendationsLangs.map((l) => ['metadata[language]', l]),
         ]);
 
         const [videosList] = await Promise.all([
@@ -333,7 +333,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: videosList.splice(0, videosNumber),
-          recommandationsLanguages: recommendationsLangs,
+          recommandationsLanguages: recommendationsLangs.join(','),
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };
