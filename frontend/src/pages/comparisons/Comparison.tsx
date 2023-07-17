@@ -85,7 +85,7 @@ const ComparisonPage = () => {
       setIsLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pollName, comparisonsCount]);
+  }, [pollName]);
 
   // Tutorial parameters.
   const tutorialLength = options?.tutorialLength ?? 0;
