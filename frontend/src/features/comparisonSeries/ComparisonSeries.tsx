@@ -38,6 +38,7 @@ interface Props {
   // A magic flag that will enable additional behaviours specific to
   // tutorials, like  the anonymous tracking by our web analytics.
   isTutorial?: boolean;
+  step: number;
   onStepUp?: (target: number) => void;
   // Redirect to this URL when the series is over.
   redirectTo?: string;
@@ -50,6 +51,7 @@ interface Props {
   skipKey?: string;
   // Only used if `skipKey` is defined.
   skipButtonLabel?: string;
+  displayStepper?: boolean;
 }
 
 const generateSteps = (length: number) => {
@@ -66,6 +68,7 @@ const generateSteps = (length: number) => {
 
 const ComparisonSeries = ({
   dialogs,
+  step,
   onStepUp,
   generateInitial,
   getAlternatives,
@@ -76,6 +79,7 @@ const ComparisonSeries = ({
   resumable,
   skipKey,
   skipButtonLabel,
+  displayStepper = false,
 }: Props) => {
   const location = useLocation();
 
@@ -93,8 +97,6 @@ const ComparisonSeries = ({
   // display a circular progress placeholder while async requests are made to
   // initialize the component
   const [isLoading, setIsLoading] = React.useState(true);
-  // the current position in the series
-  const [step, setStep] = useState(0);
   // open/close state of the `Dialog` component
   const [dialogOpen, setDialogOpen] = useState(true);
   // tell the `Comparison` to refresh the left entity, or the right one
@@ -162,7 +164,6 @@ const ComparisonSeries = ({
       Promise.all([comparisonsPromise, alternativesPromise])
         .then(([comparisons, entities]) => {
           if (resumable && comparisons.length > 0) {
-            setStep(comparisons.length);
             if (onStepUp) onStepUp(comparisons.length);
           }
 
@@ -200,13 +201,12 @@ const ComparisonSeries = ({
 
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
-      setStep(newStep);
       if (onStepUp) onStepUp(newStep);
     }
 
     // Anonymously track the users' progression through the tutorial, to
     // evaluate the tutorial's quality. DO NOT SEND ANY PERSONAL DATA.
-    if (comparisonIsNew && isTutorial === true) {
+    if (comparisonIsNew && isTutorial) {
       trackEvent(TRACKED_EVENTS.tutorial, { props: { step: step + 1 } });
     }
 
@@ -260,7 +260,7 @@ const ComparisonSeries = ({
 
       // Only track skip events if the series is the tutorial. Skipping a
       // generic comparison series is not useful for now.
-      if (isTutorial === true) {
+      if (isTutorial) {
         trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
       }
     }
@@ -383,7 +383,7 @@ const ComparisonSeries = ({
                 }
               />
             )}
-          {!isTutorial && (
+          {displayStepper && (
             <Container maxWidth="md" sx={{ my: 2 }}>
               <Stepper
                 activeStep={step}

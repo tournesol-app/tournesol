@@ -122,6 +122,7 @@ const ComparisonPage = () => {
               />
               <ComparisonSeries
                 isTutorial={true}
+                step={comparisonsCount}
                 onStepUp={setComparisonsCount}
                 dialogs={splitTutorialDialogs}
                 generateInitial={true}
