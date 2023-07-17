@@ -14,11 +14,10 @@ import {
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { useLoginState } from 'src/hooks';
 import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
-import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
 
@@ -37,6 +36,7 @@ interface Props {
   // component should increment the `step`.
   onStepUp: (target: number) => void;
   length: number;
+  formattedComparisons: string[];
   generateInitial?: boolean;
   dialogs?: OrderedDialogs;
   getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
@@ -77,6 +77,7 @@ const ComparisonSeries = ({
   generateInitial,
   getAlternatives,
   length,
+  formattedComparisons,
   isTutorial = false,
   redirectTo,
   keepUIDsAfterRedirect,
@@ -89,7 +90,6 @@ const ComparisonSeries = ({
 
   const { t } = useTranslation();
   const { loginState } = useLoginState();
-  const { name: pollName } = useCurrentPoll();
 
   const username = loginState.username;
 
@@ -111,7 +111,7 @@ const ComparisonSeries = ({
   >([]);
   // an array of already made comparisons, allowing to not suggest two times the
   // same comparison to a user, formatted like this ['uidA/uidB', 'uidA/uidC']
-  const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
+  const [comparisonsMade, setComparisonsMade] = useState(formattedComparisons);
   // a string representing the URL parameters of the first comparison that may be suggested
   const [firstComparisonParams, setFirstComparisonParams] = useState('');
   // has the series been skipped by the user?
@@ -149,23 +149,12 @@ const ComparisonSeries = ({
       return [];
     }
 
-    async function getUserComparisonsAsync(pName: string) {
-      const comparisons = await getUserComparisons(pName, 100);
-      const formattedComparisons = comparisons.map(
-        (c) => c.entity_a.uid + '/' + c.entity_b.uid
-      );
-
-      setComparisonsMade(formattedComparisons);
-      return formattedComparisons;
-    }
-
     if (length >= MIN_LENGTH) {
-      const comparisonsPromise = getUserComparisonsAsync(pollName);
       const alternativesPromise = getAlternatives
         ? getAlternativesAsync(getAlternatives)
         : Promise.resolve();
 
-      Promise.all([comparisonsPromise, alternativesPromise])
+      Promise.all([formattedComparisons, alternativesPromise])
         .then(([comparisons, entities]) => {
           if (resumable && comparisons.length > 0) {
             onStepUp(comparisons.length);

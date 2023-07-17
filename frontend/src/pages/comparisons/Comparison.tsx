@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import { ContentBox, ContentHeader } from 'src/components';
+import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
@@ -16,6 +16,7 @@ import {
 } from 'src/services/openapi';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import Tips from 'src/features/tips/Tips';
+import { getUserComparisons } from 'src/utils/api/comparisons';
 
 const displayWeeklyCollectiveGoal = (
   userPreference: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum,
@@ -55,18 +56,36 @@ const displayWeeklyCollectiveGoal = (
 const ComparisonPage = () => {
   const { t } = useTranslation();
 
-  const [comparisonsCount, setComparisonsCount] = useState(0);
-
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const isEmbedded = Boolean(searchParams.get('embed'));
-
   const {
     options,
     baseUrl,
     active: pollActive,
     name: pollName,
   } = useCurrentPoll();
+
+  const [comparisonsCount, setComparisonsCount] = useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isEmbedded = Boolean(searchParams.get('embed'));
+  let formattedComparisons: string[] = [];
+
+  async function getUserComparisonsAsync(pName: string) {
+    const comparisons = await getUserComparisons(pName, 20);
+    formattedComparisons = comparisons.map(
+      (c) => c.entity_a.uid + '/' + c.entity_b.uid
+    );
+    return formattedComparisons;
+  }
+
+  useEffect(() => {
+    getUserComparisonsAsync(pollName).then((comparisons) => {
+      setComparisonsCount(comparisons.length);
+      setIsLoading(false);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pollName, comparisonsCount]);
 
   // Tutorial parameters.
   const tutorialLength = options?.tutorialLength ?? 0;
@@ -93,7 +112,7 @@ const ComparisonPage = () => {
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 
   return (
-    <>
+    <LoaderWrapper isLoading={isLoading}>
       <ContentHeader title={t('comparison.submitAComparison')} />
       <ContentBox>
         <Box
@@ -125,6 +144,7 @@ const ComparisonPage = () => {
                 step={comparisonsCount}
                 onStepUp={setComparisonsCount}
                 length={tutorialLength}
+                formattedComparisons={formattedComparisons}
                 isTutorial={true}
                 generateInitial={true}
                 dialogs={splitTutorialDialogs}
@@ -136,11 +156,6 @@ const ComparisonPage = () => {
             </>
           ) : (
             <>
-              <Tips
-                content={tipsTutorialContent}
-                step={comparisonsCount}
-                stopAutoDisplay={tutorialLength}
-              />
               {displayWeeklyCollectiveGoal(
                 weeklyCollectiveGoalDisplay,
                 isEmbedded
@@ -150,7 +165,7 @@ const ComparisonPage = () => {
           )}
         </Box>
       </ContentBox>
-    </>
+    </LoaderWrapper>
   );
 };
 
