@@ -6,28 +6,24 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { OrderedDialogs } from 'src/utils/types';
 
 interface TipsProps {
-  step?: number;
+  comparisonsCount: number;
   dialogs: OrderedDialogs | undefined;
-  tutorialLength: number;
+  maxIndex: number;
 }
 
-const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
-  const [tipStep, setTipStep] = useState(step ? step : tutorialLength - 1);
-  useEffect(() => {
-    const retrieveStep = () => {
-      setTipStep(step ? step : tutorialLength - 1);
-    };
-    retrieveStep();
+const Tips = ({ comparisonsCount, dialogs, maxIndex }: TipsProps) => {
+  const [index, setIndex] = useState(Math.min(maxIndex - 1, comparisonsCount));
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  useEffect(() => {
+    setIndex(Math.min(maxIndex - 1, comparisonsCount));
+  }, [comparisonsCount, maxIndex]);
 
   const handlePreviousTip = () => {
-    setTipStep(tipStep - 1);
+    setIndex(index - 1);
   };
 
   const handleNextTip = () => {
-    setTipStep(tipStep + 1);
+    setIndex(index + 1);
   };
 
   return (
@@ -41,24 +37,19 @@ const Tips = ({ step, dialogs, tutorialLength }: TipsProps) => {
     >
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
-          <IconButton onClick={handlePreviousTip} disabled={!(tipStep > 0)}>
+          <IconButton onClick={handlePreviousTip} disabled={!(index > 0)}>
             <KeyboardArrowLeft />
           </IconButton>
         </Box>
       </Grid>
       <Grid item xs={10}>
-        {dialogs && <Tip tip={dialogs[tipStep]} />}
+        {dialogs && <Tip tip={dialogs[index]} />}
       </Grid>
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
           <IconButton
             onClick={handleNextTip}
-            disabled={
-              !(
-                tipStep < (step ? step : tutorialLength - 1) &&
-                tipStep < tutorialLength - 1
-              )
-            }
+            disabled={!(index < comparisonsCount && index < maxIndex - 1)}
           >
             <KeyboardArrowRight />
           </IconButton>

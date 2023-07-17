@@ -55,7 +55,7 @@ const displayWeeklyCollectiveGoal = (
 const ComparisonPage = () => {
   const { t } = useTranslation();
 
-  const [comparisonCount, setComparisonCount] = useState(0);
+  const [comparisonsCount, setComparisonsCount] = useState(0);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -113,16 +113,16 @@ const ComparisonPage = () => {
             </Box>
           )}
 
-          {comparisonCount < tutorialLength ? (
+          {comparisonsCount < tutorialLength ? (
             <>
               <Tips
-                step={comparisonCount}
+                comparisonsCount={comparisonsCount}
                 dialogs={tipsDialogs}
-                tutorialLength={tutorialLength}
+                maxIndex={tutorialLength}
               />
               <ComparisonSeries
                 isTutorial={true}
-                onStepUp={setComparisonCount}
+                onStepUp={setComparisonsCount}
                 dialogs={splitTutorialDialogs}
                 generateInitial={true}
                 getAlternatives={tutorialAlternatives}
@@ -134,11 +134,15 @@ const ComparisonPage = () => {
             </>
           ) : (
             <>
+              <Tips
+                comparisonsCount={comparisonsCount}
+                dialogs={tipsDialogs}
+                maxIndex={tutorialLength}
+              />
               {displayWeeklyCollectiveGoal(
                 weeklyCollectiveGoalDisplay,
                 isEmbedded
               ) && <CollectiveGoalWeeklyProgress />}
-              <Tips dialogs={tipsDialogs} tutorialLength={tutorialLength} />
               <Comparison />
             </>
           )}
