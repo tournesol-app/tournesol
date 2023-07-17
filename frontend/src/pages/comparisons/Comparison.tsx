@@ -76,7 +76,8 @@ const ComparisonPage = () => {
   const redirectTo = options?.tutorialRedirectTo ?? '/comparisons';
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
-  const tipsDialogs = tutorialTips ? tutorialTips(t) : undefined;
+
+  const tipsTutorialContent = tutorialTips ? tutorialTips(t) : undefined;
 
   // Only display the DialogBox for the last comparison
   const splitTutorialDialogs = dialogs
@@ -116,9 +117,9 @@ const ComparisonPage = () => {
           {comparisonsCount < tutorialLength ? (
             <>
               <Tips
-                comparisonsCount={comparisonsCount}
-                dialogs={tipsDialogs}
-                maxIndex={tutorialLength}
+                content={tipsTutorialContent}
+                step={comparisonsCount}
+                stopAutoDisplay={tutorialLength}
               />
               <ComparisonSeries
                 step={comparisonsCount}
@@ -136,9 +137,9 @@ const ComparisonPage = () => {
           ) : (
             <>
               <Tips
-                comparisonsCount={comparisonsCount}
-                dialogs={tipsDialogs}
-                maxIndex={tutorialLength}
+                content={tipsTutorialContent}
+                step={comparisonsCount}
+                stopAutoDisplay={tutorialLength}
               />
               {displayWeeklyCollectiveGoal(
                 weeklyCollectiveGoalDisplay,

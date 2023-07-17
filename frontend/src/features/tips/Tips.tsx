@@ -1,55 +1,64 @@
 import React, { useEffect, useState } from 'react';
 
-import Tip from './Tip';
 import { Box, Grid, IconButton } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+
 import { OrderedDialogs } from 'src/utils/types';
 
+import Tip from './Tip';
+
 interface TipsProps {
-  comparisonsCount: number;
-  dialogs: OrderedDialogs | undefined;
-  maxIndex: number;
+  // Display the tip located at `dialogs[step]`.
+  step: number;
+  // Stop displaying automatically `dialogs[step]` when
+  // `step` >= `stopAutoDisplay`. The user can still browse the previous tips.
+  stopAutoDisplay: number;
+  content?: OrderedDialogs;
 }
 
-const Tips = ({ comparisonsCount, dialogs, maxIndex }: TipsProps) => {
-  const [index, setIndex] = useState(Math.min(maxIndex - 1, comparisonsCount));
+const Tips = ({ step, content, stopAutoDisplay }: TipsProps) => {
+  const [index, setIndex] = useState(Math.min(stopAutoDisplay - 1, step));
 
   useEffect(() => {
-    setIndex(Math.min(maxIndex - 1, comparisonsCount));
-  }, [comparisonsCount, maxIndex]);
+    setIndex(Math.min(stopAutoDisplay - 1, step));
+  }, [step, stopAutoDisplay]);
 
-  const handlePreviousTip = () => {
+  const previousTip = () => {
     setIndex(index - 1);
   };
 
-  const handleNextTip = () => {
+  const nextTip = () => {
     setIndex(index + 1);
   };
+
+  if (!content) {
+    return <></>;
+  }
 
   return (
     <Grid
       container
-      sx={{ maxWidth: '880px' }}
       direction="row"
       justifyContent="center"
       alignItems="flex-start"
+      sx={{ maxWidth: '880px' }}
       mb={2}
     >
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
-          <IconButton onClick={handlePreviousTip} disabled={!(index > 0)}>
+          <IconButton onClick={previousTip} disabled={index <= 0}>
             <KeyboardArrowLeft />
           </IconButton>
         </Box>
       </Grid>
       <Grid item xs={10}>
-        {dialogs && <Tip tip={dialogs[index]} />}
+        {content && <Tip tip={content[index]} />}
       </Grid>
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
           <IconButton
-            onClick={handleNextTip}
-            disabled={!(index < comparisonsCount && index < maxIndex - 1)}
+            onClick={nextTip}
+            disabled={index >= step || index >= stopAutoDisplay - 1}
           >
             <KeyboardArrowRight />
           </IconButton>
