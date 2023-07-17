@@ -31,15 +31,20 @@ const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
 const MIN_LENGTH = 2;
 
 interface Props {
-  dialogs?: OrderedDialogs;
-  generateInitial?: boolean;
-  getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
+  // The current step of the series.
+  step: number;
+  // Called when a comparison is made. This function given by the parent
+  // component should increment the `step`.
+  onStepUp: (target: number) => void;
   length: number;
+  generateInitial?: boolean;
+  dialogs?: OrderedDialogs;
+  getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   // A magic flag that will enable additional behaviours specific to
   // tutorials, like  the anonymous tracking by our web analytics.
   isTutorial?: boolean;
-  step: number;
-  onStepUp?: (target: number) => void;
+  // Display the user's progression through the series.
+  displayStepper?: boolean;
   // Redirect to this URL when the series is over.
   redirectTo?: string;
   keepUIDsAfterRedirect?: boolean;
@@ -51,7 +56,6 @@ interface Props {
   skipKey?: string;
   // Only used if `skipKey` is defined.
   skipButtonLabel?: string;
-  displayStepper?: boolean;
 }
 
 const generateSteps = (length: number) => {
@@ -164,7 +168,7 @@ const ComparisonSeries = ({
       Promise.all([comparisonsPromise, alternativesPromise])
         .then(([comparisons, entities]) => {
           if (resumable && comparisons.length > 0) {
-            if (onStepUp) onStepUp(comparisons.length);
+            onStepUp(comparisons.length);
           }
 
           if (entities && initialize.current && (uidA === '' || uidB === '')) {
@@ -201,7 +205,7 @@ const ComparisonSeries = ({
 
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
-      if (onStepUp) onStepUp(newStep);
+      onStepUp(newStep);
     }
 
     // Anonymously track the users' progression through the tutorial, to

@@ -121,13 +121,13 @@ const ComparisonPage = () => {
                 maxIndex={tutorialLength}
               />
               <ComparisonSeries
-                isTutorial={true}
                 step={comparisonsCount}
                 onStepUp={setComparisonsCount}
-                dialogs={splitTutorialDialogs}
-                generateInitial={true}
-                getAlternatives={tutorialAlternatives}
                 length={tutorialLength}
+                isTutorial={true}
+                generateInitial={true}
+                dialogs={splitTutorialDialogs}
+                getAlternatives={tutorialAlternatives}
                 redirectTo={`${baseUrl}${redirectTo}`}
                 keepUIDsAfterRedirect={keepUIDsAfterRedirect}
                 resumable={true}
