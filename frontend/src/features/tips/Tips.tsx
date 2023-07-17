@@ -41,17 +41,17 @@ const Tips = ({ step, content, stopAutoDisplay }: TipsProps) => {
       direction="row"
       justifyContent="center"
       alignItems="flex-start"
-      sx={{ maxWidth: '880px' }}
+      flexWrap="nowrap"
       mb={2}
     >
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
           <IconButton onClick={previousTip} disabled={index <= 0}>
-            <KeyboardArrowLeft />
+            <KeyboardArrowLeft fontSize="large" />
           </IconButton>
         </Box>
       </Grid>
-      <Grid item xs={10}>
+      <Grid item maxWidth="880px">
         {content && <Tip tip={content[index]} />}
       </Grid>
       <Grid item xs={1}>
@@ -60,7 +60,7 @@ const Tips = ({ step, content, stopAutoDisplay }: TipsProps) => {
             onClick={nextTip}
             disabled={index >= step || index >= stopAutoDisplay - 1}
           >
-            <KeyboardArrowRight />
+            <KeyboardArrowRight fontSize="large" />
           </IconButton>
         </Box>
       </Grid>

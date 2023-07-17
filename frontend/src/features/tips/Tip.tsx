@@ -14,10 +14,10 @@ interface TipSingleProps {
 }
 
 const Tip = ({ tip }: TipSingleProps) => {
-  const [showTips, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleCollapse = () => {
-    setCollapsed(!showTips);
+    setCollapsed(!collapsed);
   };
 
   return (
@@ -25,15 +25,13 @@ const Tip = ({ tip }: TipSingleProps) => {
       severity="info"
       icon={false}
       action={
-        <IconButton
-          onClick={handleCollapse}
-          size="medium"
-          color="secondary"
-          sx={{ marginBottom: '8px' }}
-        >
-          {showTips ? <ExpandLess /> : <ExpandMore />}
+        <IconButton onClick={handleCollapse} size="medium" color="secondary">
+          {collapsed ? <ExpandLess /> : <ExpandMore />}
         </IconButton>
       }
+      sx={{
+        minHeight: '111.6px',
+      }}
     >
       <AlertTitle>
         <strong>{tip.title}</strong>
@@ -41,10 +39,10 @@ const Tip = ({ tip }: TipSingleProps) => {
       <Typography paragraph mb={1}>
         {tip.messages[0]}
       </Typography>
-      <Collapse in={showTips} timeout="auto" sx={{ maxWidth: '880px' }}>
+      <Collapse in={collapsed} timeout="auto" sx={{ maxWidth: '880px' }}>
         {tip.messages.slice(1).map((message, index) => {
           return (
-            <Typography key={index} paragraph mb={1}>
+            <Typography key={`tip_${index}`} paragraph mb={1}>
               {message}
             </Typography>
           );
