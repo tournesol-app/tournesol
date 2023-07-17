@@ -36,7 +36,7 @@ interface Props {
   // component should increment the `step`.
   onStepUp: (target: number) => void;
   length: number;
-  formattedComparisons: string[];
+  initComparisonsMade: string[];
   generateInitial?: boolean;
   dialogs?: OrderedDialogs;
   getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
@@ -77,7 +77,7 @@ const ComparisonSeries = ({
   generateInitial,
   getAlternatives,
   length,
-  formattedComparisons,
+  initComparisonsMade,
   isTutorial = false,
   redirectTo,
   keepUIDsAfterRedirect,
@@ -111,7 +111,7 @@ const ComparisonSeries = ({
   >([]);
   // an array of already made comparisons, allowing to not suggest two times the
   // same comparison to a user, formatted like this ['uidA/uidB', 'uidA/uidC']
-  const [comparisonsMade, setComparisonsMade] = useState(formattedComparisons);
+  const [comparisonsMade, setComparisonsMade] = useState(initComparisonsMade);
   // a string representing the URL parameters of the first comparison that may be suggested
   const [firstComparisonParams, setFirstComparisonParams] = useState('');
   // has the series been skipped by the user?
@@ -154,15 +154,15 @@ const ComparisonSeries = ({
         ? getAlternativesAsync(getAlternatives)
         : Promise.resolve();
 
-      Promise.all([formattedComparisons, alternativesPromise])
-        .then(([comparisons, entities]) => {
-          if (resumable && comparisons.length > 0) {
-            onStepUp(comparisons.length);
+      Promise.all([alternativesPromise])
+        .then(([entities]) => {
+          if (resumable && comparisonsMade.length > 0) {
+            onStepUp(comparisonsMade.length);
           }
 
           if (entities && initialize.current && (uidA === '' || uidB === '')) {
             setFirstComparisonParams(
-              genInitialComparisonParams(entities, comparisons, uidA, uidB)
+              genInitialComparisonParams(entities, comparisonsMade, uidA, uidB)
             );
           }
         })
