@@ -51,7 +51,7 @@ const Tips = ({ step, content, stopAutoDisplay }: TipsProps) => {
           </IconButton>
         </Box>
       </Grid>
-      <Grid item maxWidth="880px">
+      <Grid item width="880px">
         {content && <Tip tip={content[index]} />}
       </Grid>
       <Grid item xs={1}>

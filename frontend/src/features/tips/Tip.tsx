@@ -29,9 +29,15 @@ const Tip = ({ tip }: TipSingleProps) => {
           {collapsed ? <ExpandLess /> : <ExpandMore />}
         </IconButton>
       }
-      sx={{
-        minHeight: '111.6px',
-      }}
+      sx={
+        collapsed
+          ? {
+              minHeight: '167.6px',
+            }
+          : {
+              minHeight: '111.6px',
+            }
+      }
     >
       <AlertTitle>
         <strong>{tip.title}</strong>

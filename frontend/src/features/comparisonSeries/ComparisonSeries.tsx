@@ -20,6 +20,7 @@ import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 import { OrderedDialogs } from 'src/utils/types';
 import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
+import { scrollToTop } from 'src/utils/ui';
 
 const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
 
@@ -195,6 +196,7 @@ const ComparisonSeries = ({
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
       onStepUp(newStep);
+      scrollToTop();
     }
 
     // Anonymously track the users' progression through the tutorial, to

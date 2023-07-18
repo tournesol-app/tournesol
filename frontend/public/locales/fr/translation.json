@@ -998,6 +998,7 @@
           "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
           "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
         },
+        "tiptitle1": "Comparer deux vidéos 🌻",
         "tipmessage1":{
           "p10": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
           "p20": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité."
@@ -1010,10 +1011,10 @@
           "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
           "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
         },
+        "tiptitle2": "Comparaisons plus détaillées 🤔",
         "tipmessage2":{
-          "p10": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
-          "p20": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
-          "p30": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+          "p10": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
+          "p20": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
         },
         "title3": "Comment fonctionne Tournesol ? 🤖",
         "message3": {
@@ -1021,6 +1022,7 @@
           "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
           "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
         },
+        "tiptitle3": "Comment fonctionne les critères ? 🤖",
         "tipmessage3":{
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
           "p20": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
@@ -1031,9 +1033,10 @@
           "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
           "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
         },
+        "tiptitle4": "Que comparer ? ▶️",
         "tipmessage4": {
-          "p10": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
-          "p20": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
+          "p10": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
+          "p20": "Vous pouvez aussi utiliser le bouton auto pour avoir une vidéo recommandée"
         }
       }
     }
