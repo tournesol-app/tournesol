@@ -1,5 +1,5 @@
-export const scrollToTop = () => {
-  document.querySelector('main')?.scrollTo?.({ top: 0 });
+export const scrollToTop = (behavior: ScrollBehavior | undefined = 'auto') => {
+  document.querySelector('main')?.scrollTo?.({ top: 0, behavior: behavior });
 };
 
 export const openTwitterPopup = (text: string) => {

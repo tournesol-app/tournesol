@@ -37,6 +37,8 @@ interface Props {
   // component should increment the `step`.
   onStepUp: (target: number) => void;
   length: number;
+  // The parent can provide the list of user's comparisons, to avoid suggesting
+  // comparisons the user already made.
   initComparisonsMade: string[];
   generateInitial?: boolean;
   dialogs?: OrderedDialogs;
@@ -72,20 +74,20 @@ const generateSteps = (length: number) => {
 };
 
 const ComparisonSeries = ({
-  dialogs,
   step,
   onStepUp,
-  generateInitial,
-  getAlternatives,
   length,
   initComparisonsMade,
+  generateInitial,
+  dialogs,
+  getAlternatives,
   isTutorial = false,
+  displayStepper = false,
   redirectTo,
   keepUIDsAfterRedirect,
   resumable,
   skipKey,
   skipButtonLabel,
-  displayStepper = false,
 }: Props) => {
   const location = useLocation();
 
@@ -125,10 +127,7 @@ const ComparisonSeries = ({
   const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
 
   /**
-   * Retrieve the user's comparisons to avoid suggesting couples of entities
-   * that have already been compared.
-   *
-   * Also build the list of `alternatives`. After each comparison, an entity
+   * Build the list of `alternatives`. After each comparison, an entity
    * from this list can be selected to replace one of the two compared
    * entities.
    *
@@ -155,8 +154,8 @@ const ComparisonSeries = ({
         ? getAlternativesAsync(getAlternatives)
         : Promise.resolve();
 
-      Promise.all([alternativesPromise])
-        .then(([entities]) => {
+      alternativesPromise
+        .then((entities) => {
           if (resumable && comparisonsMade.length > 0) {
             onStepUp(comparisonsMade.length);
           }
@@ -167,9 +166,7 @@ const ComparisonSeries = ({
             );
           }
         })
-        .then(() => {
-          setIsLoading(false);
-        });
+        .then(() => setIsLoading(false));
     } else {
       // stop loading if no series is going to be rendered
       setIsLoading(false);
@@ -196,7 +193,7 @@ const ComparisonSeries = ({
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
       onStepUp(newStep);
-      scrollToTop();
+      scrollToTop('smooth');
     }
 
     // Anonymously track the users' progression through the tutorial, to
