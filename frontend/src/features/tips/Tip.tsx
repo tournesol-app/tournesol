@@ -3,18 +3,21 @@ import React, { useState } from 'react';
 import {
   Alert,
   AlertTitle,
+  Box,
   Collapse,
-  IconButton,
+  Link,
   Typography,
 } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 interface TipSingleProps {
   tip: { title: string; messages: string[] };
 }
 
 const Tip = ({ tip }: TipSingleProps) => {
-  const [collapsed, setCollapsed] = useState(true);
+  const { t } = useTranslation();
+
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleCollapse = () => {
     setCollapsed(!collapsed);
@@ -24,20 +27,10 @@ const Tip = ({ tip }: TipSingleProps) => {
     <Alert
       severity="info"
       icon={false}
-      action={
-        <IconButton onClick={handleCollapse} size="medium" color="secondary">
-          {collapsed ? <ExpandLess /> : <ExpandMore />}
-        </IconButton>
-      }
-      sx={
-        collapsed
-          ? {
-              minHeight: '167.6px',
-            }
-          : {
-              minHeight: '111.6px',
-            }
-      }
+      action={<></>}
+      sx={{
+        minHeight: '131.617px',
+      }}
     >
       <AlertTitle>
         <strong>{tip.title}</strong>
@@ -54,6 +47,13 @@ const Tip = ({ tip }: TipSingleProps) => {
           );
         })}
       </Collapse>
+      <Box display="flex" justifyContent="flex-end">
+        <Link component="button" color="secondary" onClick={handleCollapse}>
+          {collapsed
+            ? t('videos.dialogs.tutorial.hideTips')
+            : t('videos.dialogs.tutorial.showTips')}
+        </Link>
+      </Box>
     </Alert>
   );
 };
