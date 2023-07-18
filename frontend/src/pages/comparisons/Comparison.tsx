@@ -49,9 +49,6 @@ const displayWeeklyCollectiveGoal = (
 
 /**
  * Display the standard comparison UI or the poll tutorial.
- *
- * The tutorial is displayed if the `series` URL parameter is present and the
- * poll's tutorial options are configured.
  */
 const ComparisonPage = () => {
   const { t } = useTranslation();
@@ -96,9 +93,7 @@ const ComparisonPage = () => {
       .catch(() => {
         setIsLoading(false);
       });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pollName]);
 
   // Tutorial parameters.
   const tutorialLength = options?.tutorialLength ?? 0;
@@ -107,14 +102,9 @@ const ComparisonPage = () => {
   const tutorialTips = options?.tutorialTips ?? undefined;
   const redirectTo = options?.tutorialRedirectTo ?? '/comparisons';
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
+
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
-
   const tipsTutorialContent = tutorialTips ? tutorialTips(t) : undefined;
-
-  // Only display the DialogBox for the last comparison
-  const splitTutorialDialogs = dialogs
-    ? { [tutorialLength - 1]: dialogs[tutorialLength - 1] }
-    : undefined;
 
   // User's settings.
   const userSettings = useSelector(selectSettings).settings;
@@ -147,7 +137,8 @@ const ComparisonPage = () => {
           )}
 
           {/* We don't use a LoaderWrapper here, as we want to initialize
-            ComparisonSeries only when userComparisons has been computed */}
+            ComparisonSeries only when userComparisons has been computed, and
+            not before. */}
           {!isLoading &&
             (comparisonsCount < tutorialLength ? (
               <>
@@ -163,7 +154,7 @@ const ComparisonPage = () => {
                   initComparisonsMade={userComparisons ?? []}
                   isTutorial={true}
                   generateInitial={true}
-                  dialogs={splitTutorialDialogs}
+                  dialogs={dialogs}
                   getAlternatives={tutorialAlternatives}
                   redirectTo={`${baseUrl}${redirectTo}`}
                   keepUIDsAfterRedirect={keepUIDsAfterRedirect}
