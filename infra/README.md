@@ -42,7 +42,7 @@ If for any reason you're not able to set up a virtual machine on your computer -
 - Connect to the SSH port 22
 - As root, run `visudo` to edit `/etc/sudoers` and change the line `%sudo ALL=(ALL:ALL) ALL` into `%sudo ALL=(ALL:ALL) NOPASSWD:ALL` to allow members of the `sudo` group to execute commands as root without entering their password
 - Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure (if you don't have the necessary setup, don't set `letsencrypt_email` variable)
-- One way to use the `ansible_host`, `domain_name`, `api_domain_name`, `mediawiki_domain_name` and `grafana_domain_name` variables is to let them as is (`tournesol-vm`, `tournesol-api`, `tournesol-wiki` and `tournesol-grafana`) and to put a `<VM_IP> tournesol-vm tournesol-api tournesol-wiki tournesol-grafana` line in your `/etc/hosts` file
+- One way to use the `ansible_host`, `domain_name`, `api_domain_name`, and `grafana_domain_name` variables is to let them as is (`tournesol-vm`, `tournesol-api`, and `tournesol-grafana`) and to put a `<VM_IP> tournesol-vm tournesol-api tournesol-grafana` line in your `/etc/hosts` file
 - Check the administrators list in `ansible/group_vars/tournesol.yml`
 - Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them either in `ansible/group_vars/tournesol.yml` or in `ansible/roles/users/files/admin-users/<username>/.ssh/authorized_keys`
 - Run `source ./ansible/scripts/generate-secrets.sh` to generate secrets
