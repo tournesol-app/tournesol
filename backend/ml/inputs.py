@@ -75,13 +75,17 @@ class MlInputFromPublicDataset(MlInput):
 
         with zipfile.ZipFile(dataset_zip) as zip_file:
             with (zipfile.Path(zip_file) / "comparisons.csv").open(mode="rb") as comparison_file:
-                self.comparisons = pd.read_csv(comparison_file)
+                # keep_default_na=False is required otherwise some public usernames
+                # such as "NA" are converted to float NaN.
+                self.comparisons = pd.read_csv(comparison_file, keep_default_na=False)
                 self.comparisons.rename(
                     {"video_a": "entity_a", "video_b": "entity_b"}, axis=1, inplace=True
                 )
 
             with (zipfile.Path(zip_file) / "users.csv").open(mode="rb") as users_file:
-                self.users = pd.read_csv(users_file)
+                # keep_default_na=False is required otherwise some public usernames
+                # such as "NA" are converted to float NaN.
+                self.users = pd.read_csv(users_file, keep_default_na=False)
                 self.users.index.name = "user_id"
 
             username_to_user_id = pd.Series(
