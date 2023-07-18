@@ -118,4 +118,10 @@ docker build db --build-arg DUMP_FILE=YOUR_DUMP_FILE_NAME --tag ghcr.io/tourneso
 docker push ghcr.io/tournesol-app/postgres-dev-env:YOUR_NEW_TAG
 ```
 
+⚠️ On MacOS M1, you should specify the correct build platform using:
+
+```bash
+docker buildx build --platform linux/amd64 db --build-arg DUMP_FILE=YOUR_DUMP_FILE_NAME --tag ghcr.io/tournesol-app/postgres-dev-env:YOUR_NEW_TAG
+```
+
 [docker-docs-linuxpostinstall]: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
