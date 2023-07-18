@@ -1,6 +1,60 @@
 describe('Settings - preferences page', () => {
+  const username = "test-preferences-page";
+  const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
+  const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
+
+  // create 4 comparisons to avoid being in the tutorial context
+  const createComparisons = () => { 
+    for (var i = 0; i < 2; i++) {
+      for (var j = 0; j < 2; j++) {
+        cy.sql(`
+INSERT INTO tournesol_comparison(
+entity_1_2_ids_sorted, user_id, entity_1_id, entity_2_id, poll_id) 
+VALUES(${2*i+j}, (SELECT id FROM core_user WHERE username = '${username}'),
+(SELECT id FROM tournesol_entity WHERE uid = '${ids1[i]}'),
+(SELECT id FROM tournesol_entity WHERE uid = '${ids2[j]}'), 1);`);
+      }
+    }
+  };
+
+  const deleteComparison = (idA, idB) => {
+    cy.sql(`
+        DELETE FROM tournesol_comparisoncriteriascore
+        WHERE comparison_id = (
+            SELECT id
+            FROM tournesol_comparison
+            WHERE entity_1_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
+            ) AND entity_2_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+            ) AND user_id = (
+                SELECT id FROM core_user WHERE username = '${username}'
+            )
+        );
+      `);
+
+    cy.sql(`
+        DELETE FROM tournesol_comparison
+            WHERE entity_1_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
+            ) AND entity_2_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+            ) AND user_id = (
+                SELECT id FROM core_user WHERE username = '${username}'
+            );
+      `);
+  };
+
+  after(() => {
+    deleteComparison("hdAEGAwlK0M", "sGLiSLAlwrY"); // videos corresponding
+    deleteComparison("hdAEGAwlK0M", "or5WdufFrmI"); // to the ids provided
+    deleteComparison("lYXQvHhfKuM", "sGLiSLAlwrY");
+    deleteComparison("lYXQvHhfKuM", "or5WdufFrmI");
+  })
+
   beforeEach(() => {
-    cy.recreateUser("test-preferences-page", "test-preferences-page@example.com", "tournesol");
+    cy.recreateUser(username, "test-preferences-page@example.com", "tournesol");
+    createComparisons();
   });
 
   const login = () => {
@@ -20,7 +74,7 @@ describe('Settings - preferences page', () => {
     });
   });
 
-  describe.skip('Setting - display weekly collective goal', () => {
+  describe('Setting - display weekly collective goal', () => {
     const fieldSelector = '#videos_comparison_ui__weekly_collective_goal_display';
 
     it('handles the value ALWAYS', () => {

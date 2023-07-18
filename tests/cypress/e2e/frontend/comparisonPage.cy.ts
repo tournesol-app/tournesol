@@ -1,6 +1,22 @@
 describe('Comparison page', () => {
+  const username = "user1";
+  const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
+  const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
 
-  const deleteComparison = (username, idA, idB) => {
+  before(() => { // create 4 comparisons to avoid being in the tutorial context
+    for (var i = 0; i < 2; i++) {
+      for (var j = 0; j < 2; j++) {
+        cy.sql(`
+INSERT INTO tournesol_comparison(
+entity_1_2_ids_sorted, user_id, entity_1_id, entity_2_id, poll_id) 
+VALUES(${2*i+j}, (SELECT id FROM core_user WHERE username = '${username}'),
+(SELECT id FROM tournesol_entity WHERE uid = '${ids1[i]}'),
+(SELECT id FROM tournesol_entity WHERE uid = '${ids2[j]}'), 1);`);
+      }
+    }
+  });
+
+  const deleteComparison = (idA, idB) => {
     cy.sql(`
         DELETE FROM tournesol_comparisoncriteriascore
         WHERE comparison_id = (
@@ -28,6 +44,13 @@ describe('Comparison page', () => {
       `);
   };
 
+  after(() => {
+    deleteComparison(ids1[0], ids2[0]);
+    deleteComparison(ids1[0], ids2[1]);
+    deleteComparison(ids1[1], ids2[0]);
+    deleteComparison(ids1[1], ids2[1]);
+  })
+
   const waitForAutoFill = () => {
     cy.get('div[data-testid=video-card-info]')
       .should('have.length', 2);
@@ -43,7 +66,7 @@ describe('Comparison page', () => {
     it('is accessible by authenticated users', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
       cy.location('pathname').should('equal', '/comparison');
@@ -56,7 +79,7 @@ describe('Comparison page', () => {
 
   it("doesn't break the browser's back button", () => {
     cy.visit('/comparison');
-    cy.focused().type('user1');
+    cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
     cy.get('input[placeholder="Paste URL or Video ID"]').should('have.length', 2);
 
@@ -74,7 +97,7 @@ describe('Comparison page', () => {
     it('support pasting YouTube URLs', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
@@ -90,7 +113,7 @@ describe('Comparison page', () => {
     it('support pasting YouTube video ID', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
@@ -119,7 +142,6 @@ describe('Comparison page', () => {
   });
 
   describe('submit a comparison', () => {
-    const username = 'user1';
     const videoAId = 'u83A7DUNMHs';
     const videoBId = '6jK9bFWE--g';
 
@@ -136,11 +158,11 @@ describe('Comparison page', () => {
     ];
 
     beforeEach(() => {
-      deleteComparison(username, videoAId, videoBId);
+      deleteComparison(videoAId, videoBId);
     })
 
     after(() => {
-      deleteComparison(username, videoAId, videoBId);
+      deleteComparison(videoAId, videoBId);
     })
 
     /**
@@ -180,7 +202,8 @@ describe('Comparison page', () => {
       cy.contains('submit', {matchCase: false})
         .should('be.visible');
       cy.get('button#expert_submit_btn').click();
-
+      cy.contains('edit comparison', {matchCase: false})
+        .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
         .should('be.visible');
     });
@@ -214,7 +237,8 @@ describe('Comparison page', () => {
       cy.contains('submit', {matchCase: false})
         .should('be.visible');
       cy.get('button#expert_submit_btn').click();
-
+      cy.contains('edit comparison', {matchCase: false})
+        .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
         .should('be.visible');
     });
@@ -250,7 +274,7 @@ describe('Comparison page', () => {
       const videoBId = '6jK9bFWE--g';
 
       cy.visit(`/comparison?videoA=${videoAId}&videoB=${videoBId}`);
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
       cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
@@ -267,7 +291,7 @@ describe('Comparison page', () => {
       const videoBId = '6jK9bFWE--g';
 
       cy.visit(`/comparison?videoA=${videoAId}&uidB=yt:${videoBId}`);
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
       cy.wait(1000);
