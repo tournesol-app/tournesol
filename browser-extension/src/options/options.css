@@ -99,6 +99,7 @@ div.sticky-submit .flex-container {
   gap: 8px;
 }
 
+.feedback-error,
 .feedback-success {
   display: none;
   opacity: 0;
@@ -107,10 +108,16 @@ div.sticky-submit .flex-container {
   border-radius: 4px;
 
   color: white;
-  background-color: #43a047;
-
   font-size: 14px;
   line-height: 24.5px;
+}
+
+.feedback-error {
+  background-color: #d32f2f;
+}
+
+.feedback-success {
+  background-color: #43a047;
 }
 
 @keyframes fadeOut {
@@ -119,6 +126,7 @@ div.sticky-submit .flex-container {
   100% { opacity: 0; }
 }
 
+.feedback-error.displayed,
 .feedback-success.displayed {
   display: initial;
   opacity: 1;

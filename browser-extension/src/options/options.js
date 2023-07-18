@@ -19,32 +19,37 @@ const removeAttribute = (element, attribute, delay) => {
   }, delay);
 };
 
+const _displayFeedbackElement = (selector) => {
+  const element = document.querySelector(selector);
+  element.classList.add('displayed');
+
+  setTimeout(() => {
+    element.classList.remove('displayed');
+  }, FEEDBACK_DELAY);
+};
+
 const displayFeedback = (type) => {
-  if (type === 'success') {
-    const success = document.querySelector('.feedback-success');
-    success.classList.add('displayed');
-
-    setTimeout(() => {
-      success.classList.remove('displayed');
-    }, FEEDBACK_DELAY);
-
-    return;
+  switch (type) {
+    case 'error':
+      _displayFeedbackElement('.feedback-error');
+      break;
+    case 'success':
+      _displayFeedbackElement('.feedback-success');
+      break;
   }
 };
 
 const loadLegacyRecommendationsLanguages = () => {
   return new Promise((resolve) => {
-
     try {
       chrome.storage.local.get(
         'recommendationsLanguages',
         ({ recommendationsLanguages }) => resolve(recommendationsLanguages)
       );
-    } catch(reason) {
+    } catch (reason) {
       console.error(reason);
       resolve();
     }
-
   });
 };
 
@@ -54,27 +59,30 @@ const loadLocalPreferences = async () => {
   const legacy = await loadLegacyRecommendationsLanguages();
 
   try {
-    chrome.storage.local.get('recommendations__default_languages', (settings) => {
-      const languages =
-        settings?.recommendations__default_languages ??
-        legacy?.split(',') ??
-        DEFAULT_RECO_LANG;
+    chrome.storage.local.get(
+      'recommendations__default_languages',
+      (settings) => {
+        const languages =
+          settings?.recommendations__default_languages ??
+          legacy?.split(',') ??
+          DEFAULT_RECO_LANG;
 
-      document
-        .querySelectorAll(
-          'input[data-setting="recommendations__default_langagues"]'
-        )
-        .forEach((field) => {
-          const name = field.getAttribute('name');
+        document
+          .querySelectorAll(
+            'input[data-setting="recommendations__default_langagues"]'
+          )
+          .forEach((field) => {
+            const name = field.getAttribute('name');
 
-          if (languages.includes(name)) {
-            field.checked = true;
-          }
-        });
-    });
-  } catch(reason) {
-    console.error(reason);
+            if (languages.includes(name)) {
+              field.checked = true;
+            }
+          });
+      }
+    );
+  } catch (reason) {
     error = true;
+    console.error(reason);
   }
 
   if (error) {
@@ -82,7 +90,9 @@ const loadLocalPreferences = async () => {
   }
 };
 
-const saveLocalPreferences = () => {
+const saveLocalPreferences = async () => {
+  let error = false;
+
   const submit = document.getElementById('save-preferences');
   submit.setAttribute('disabled', '');
 
@@ -97,15 +107,22 @@ const saveLocalPreferences = () => {
       }
     });
 
-  browser.storage.local
-    .set({ recommendations__default_languages: recoDefaultLanguages })
-    .then(() => {
-      displayFeedback('success');
-      removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
-    })
-    .catch(() => {
-      removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
+  try {
+    await browser.storage.local.set({
+      recommendations__default_languages: recoDefaultLanguages,
     });
+  } catch (reason) {
+    error = true;
+    console.log(error);
+  }
+
+  if (error) {
+    displayFeedback('error');
+  } else {
+    displayFeedback('success');
+  }
+
+  removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
 };
 
 const onpenTab = (event_) => {
