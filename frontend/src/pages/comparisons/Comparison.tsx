@@ -18,6 +18,14 @@ import {
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { PollUserSettingsKeys } from 'src/utils/types';
 
+const displayTutorial = (
+  tutorialLength: number,
+  comparisonsNbr: number,
+  comparisonsRetrieved: boolean
+) => {
+  return comparisonsRetrieved && comparisonsNbr < tutorialLength;
+};
+
 const displayWeeklyCollectiveGoal = (
   userPreference: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum,
   isEmbedded: boolean
@@ -68,6 +76,9 @@ const ComparisonPage = () => {
   const [comparisonsCount, setComparisonsCount] = useState(0);
   const [userComparisons, setUserComparisons] = useState<string[]>();
 
+  const [userComparisonsRetrieved, setUserComparisonsRetrieved] =
+    useState(false);
+
   useEffect(() => {
     async function getUserComparisonsAsync(
       pName: string
@@ -86,9 +97,10 @@ const ComparisonPage = () => {
 
     getUserComparisonsAsync(pollName)
       .then((results) => {
+        setIsLoading(false);
         setComparisonsCount(results[0]);
         setUserComparisons(results[1]);
-        setIsLoading(false);
+        setUserComparisonsRetrieved(true);
       })
       .catch(() => {
         setIsLoading(false);
@@ -140,7 +152,11 @@ const ComparisonPage = () => {
             ComparisonSeries only when userComparisons has been computed, and
             not before. */}
           {!isLoading &&
-            (comparisonsCount < tutorialLength ? (
+            (displayTutorial(
+              tutorialLength,
+              comparisonsCount,
+              userComparisonsRetrieved
+            ) ? (
               <>
                 <Tips
                   content={tipsTutorialContent}
