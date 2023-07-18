@@ -31,7 +31,7 @@ const Tip = ({ tip }: TipSingleProps) => {
       <Typography paragraph mb={1}>
         {tip.messages[0]}
       </Typography>
-      <Collapse in={collapsed} timeout="auto" sx={{ maxWidth: '880px' }}>
+      <Collapse in={collapsed} timeout="auto">
         {tip.messages.slice(1).map((message, index) => {
           return (
             <Typography key={`tip_${index}`} paragraph mb={1}>

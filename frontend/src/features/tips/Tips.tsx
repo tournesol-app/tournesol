@@ -8,28 +8,30 @@ import { OrderedDialogs } from 'src/utils/types';
 import Tip from './Tip';
 
 interface TipsProps {
-  // Display the tip located at `dialogs[step]`.
+  // Display the tip located at `content[step]`.
   step: number;
-  // Stop displaying automatically `dialogs[step]` when
+  // Stop displaying automatically `content[step]` when
   // `step` >= `stopAutoDisplay`. The user can still browse the previous tips.
   stopAutoDisplay: number;
   content?: OrderedDialogs;
+  tipWidth?: number;
 }
 
-const Tips = ({ step, content, stopAutoDisplay }: TipsProps) => {
+const Tips = ({
+  step,
+  stopAutoDisplay,
+  content,
+  tipWidth = 880,
+}: TipsProps) => {
   const [index, setIndex] = useState(Math.min(stopAutoDisplay - 1, step));
 
   useEffect(() => {
     setIndex(Math.min(stopAutoDisplay - 1, step));
   }, [step, stopAutoDisplay]);
 
-  const previousTip = () => {
-    setIndex(index - 1);
-  };
+  const previousTip = () => setIndex(index - 1);
 
-  const nextTip = () => {
-    setIndex(index + 1);
-  };
+  const nextTip = () => setIndex(index + 1);
 
   if (!content) {
     return <></>;
@@ -51,7 +53,7 @@ const Tips = ({ step, content, stopAutoDisplay }: TipsProps) => {
           </IconButton>
         </Box>
       </Grid>
-      <Grid item width="880px">
+      <Grid item width={`${tipWidth}px`}>
         {content && <Tip tip={content[index]} />}
       </Grid>
       <Grid item xs={1}>
