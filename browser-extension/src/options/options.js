@@ -39,6 +39,12 @@ const displayFeedback = (type) => {
   }
 };
 
+/**
+ *
+ * Loading and saving the user's local preferences.
+ *
+ */
+
 const loadLegacyRecommendationsLanguages = () => {
   return new Promise((resolve) => {
     try {
@@ -53,6 +59,10 @@ const loadLegacyRecommendationsLanguages = () => {
   });
 };
 
+/**
+ * Load the user's local preferences from the extension storage.local area. In
+ * case of error, display an alert in the UI.
+ */
 const loadLocalPreferences = async () => {
   let error = false;
 
@@ -90,6 +100,10 @@ const loadLocalPreferences = async () => {
   }
 };
 
+/**
+ * Save the user's local preferences in the extension storage.local area. In
+ * case of error, display an alert in the UI.
+ */
 const saveLocalPreferences = async () => {
   let error = false;
 
@@ -124,6 +138,12 @@ const saveLocalPreferences = async () => {
 
   removeAttribute(submit, 'disabled', FEEDBACK_DELAY);
 };
+
+/**
+ *
+ * Page navigation.
+ *
+ */
 
 const onpenTab = (event_) => {
   const targetTab = event_.target.dataset.tab;
