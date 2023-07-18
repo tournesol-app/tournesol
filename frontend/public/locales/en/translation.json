@@ -988,24 +988,28 @@
           "p10": "One last comparison and you will be able to browse Tournesol by yourself, making new comparisons or by consulting recommended videos.",
           "p20": "We sincerely hope you enjoyed this tutorial, feel free to talk about Tournesol around you.",
           "p30": "If you want to help, you can compare new videos from time to time. Also, feel free to talk about Tournesol around you. Thanks a lot."
-        },
-        "tiptitle1": "Comparing two videos 🌻",
-        "tipmessage1": {
+        }
+      }
+    },
+    "tips": {
+      "tutorial": {
+        "title1": "Comparing two videos 🌻",
+        "message1": {
           "p10": "To compare two videos you watched, move the main handle and save when your choice is made.",
           "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity."
         },
-        "tiptitle2": "More detailed comparisons 🤔",
-        "tipmessage2": {
+        "title2": "More detailed comparisons 🤔",
+        "message2": {
           "p10": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
           "p20": "Good to know, you will be able to edit all your comparisons later if you are not confident."
         },
-        "tiptitle3": "How do criteria work? 🤖",
-        "tipmessage3": {
+        "title3": "How do criteria work? 🤖",
+        "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to find its detailed description."
         },
-        "tiptitle4": "What to compare ▶️",
-        "tipmessage4": {
+        "title4": "What to compare ▶️",
+        "message4": {
           "p10": "Note that you can choose yourself the videos to compare by pasting their YouTube URL in the fields above the thumbnails.",
           "p20": "You can also use the auto button to get a recommended video."
         }

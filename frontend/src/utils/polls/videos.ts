@@ -72,31 +72,31 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
 export const getTutorialTips = (t: TFunction): OrderedDialogs => {
   return {
     '0': {
-      title: t('videos.dialogs.tutorial.tiptitle1'),
+      title: t('videos.tips.tutorial.title1'),
       messages: [
-        t('videos.dialogs.tutorial.tipmessage1.p10'),
-        t('videos.dialogs.tutorial.tipmessage1.p20'),
+        t('videos.tips.tutorial.message1.p10'),
+        t('videos.tips.tutorial.message1.p20'),
       ],
     },
     '1': {
-      title: t('videos.dialogs.tutorial.tiptitle2'),
+      title: t('videos.tips.tutorial.title2'),
       messages: [
-        t('videos.dialogs.tutorial.tipmessage2.p10'),
-        t('videos.dialogs.tutorial.tipmessage2.p20'),
+        t('videos.tips.tutorial.message2.p10'),
+        t('videos.tips.tutorial.message2.p20'),
       ],
     },
     '2': {
-      title: t('videos.dialogs.tutorial.tiptitle3'),
+      title: t('videos.tips.tutorial.title3'),
       messages: [
-        t('videos.dialogs.tutorial.tipmessage3.p10'),
-        t('videos.dialogs.tutorial.tipmessage3.p20'),
+        t('videos.tips.tutorial.message3.p10'),
+        t('videos.tips.tutorial.message3.p20'),
       ],
     },
     '3': {
-      title: t('videos.dialogs.tutorial.tiptitle4'),
+      title: t('videos.tips.tutorial.title4'),
       messages: [
-        t('videos.dialogs.tutorial.tipmessage4.p10'),
-        t('videos.dialogs.tutorial.tipmessage4.p20'),
+        t('videos.tips.tutorial.message4.p10'),
+        t('videos.tips.tutorial.message4.p20'),
       ],
     },
   };

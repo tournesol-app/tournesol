@@ -997,24 +997,28 @@
           "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e.",
           "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
           "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
-        },
-        "tiptitle1": "Comparer deux vidéos 🌻",
-        "tipmessage1": {
+        }
+      }
+    },
+    "tips": {
+      "tutorial": {
+        "title1": "Comparer deux vidéos 🌻",
+        "message1": {
           "p10": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
           "p20": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité."
         },
-        "tiptitle2": "Comparaisons plus détaillées 🤔",
-        "tipmessage2": {
+        "title2": "Comparaisons plus détaillées 🤔",
+        "message2": {
           "p10": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
           "p20": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
         },
-        "tiptitle3": "Comment fonctionnent les critères ? 🤖",
-        "tipmessage3": {
+        "title3": "Comment fonctionnent les critères ? 🤖",
+        "message3": {
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
           "p20": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
         },
-        "tiptitle4": "Que comparer ? ▶️",
-        "tipmessage4": {
+        "title4": "Que comparer ? ▶️",
+        "message4": {
           "p10": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
           "p20": "Vous pouvez aussi utiliser le bouton auto pour obtenir une vidéo recommandée."
         }
