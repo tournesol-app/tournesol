@@ -1022,7 +1022,7 @@
           "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
           "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
         },
-        "tiptitle3": "Comment fonctionne les critères ? 🤖",
+        "tiptitle3": "Comment fonctionnent les critères ? 🤖",
         "tipmessage3":{
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
           "p20": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
@@ -1036,7 +1036,7 @@
         "tiptitle4": "Que comparer ? ▶️",
         "tipmessage4": {
           "p10": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
-          "p20": "Vous pouvez aussi utiliser le bouton auto pour avoir une vidéo recommandée"
+          "p20": "Vous pouvez aussi utiliser le bouton auto pour obtenir une vidéo recommandée."
         }
       }
     }
