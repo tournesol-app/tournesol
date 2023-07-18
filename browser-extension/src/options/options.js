@@ -1,5 +1,13 @@
-const DEFAULT_RECO_LANG = ['en'];
+/**
+ * This script manages the user's preferences.
+ *
+ * It sets up the UI, allowing the users to navigate between the local
+ * preferences form and the account preferences form.
+ *
+ * It also manage the loading and saving the local preferences.
+ */
 
+const DEFAULT_RECO_LANG = ['en'];
 // This delay is designed to be few miliseconds slower than our CSS fadeOut
 // animation to let the success message disappear before re-enabling the
 // submit button. Don't make it faster than the fadeOut animation.
@@ -25,36 +33,53 @@ const displayFeedback = (type) => {
 };
 
 const loadLegacyRecommendationsLanguages = () => {
-  return new Promise((resolve) =>
-    chrome.storage.local.get(
-      'recommendationsLanguages',
-      ({ recommendationsLanguages }) => resolve(recommendationsLanguages)
-    )
-  );
+  return new Promise((resolve) => {
+
+    try {
+      chrome.storage.local.get(
+        'recommendationsLanguages',
+        ({ recommendationsLanguages }) => resolve(recommendationsLanguages)
+      );
+    } catch(reason) {
+      console.error(reason);
+      resolve();
+    }
+
+  });
 };
 
 const loadLocalPreferences = async () => {
-  // todo: handle promise rejection?
+  let error = false;
+
   const legacy = await loadLegacyRecommendationsLanguages();
 
-  chrome.storage.local.get('recommendations__default_languages', (settings) => {
-    const languages =
-      settings?.recommendations__default_languages ??
-      legacy?.split(',') ??
-      DEFAULT_RECO_LANG;
+  try {
+    chrome.storage.local.get('recommendations__default_languages', (settings) => {
+      const languages =
+        settings?.recommendations__default_languages ??
+        legacy?.split(',') ??
+        DEFAULT_RECO_LANG;
 
-    document
-      .querySelectorAll(
-        'input[data-setting="recommendations__default_langagues"]'
-      )
-      .forEach((field) => {
-        const name = field.getAttribute('name');
+      document
+        .querySelectorAll(
+          'input[data-setting="recommendations__default_langagues"]'
+        )
+        .forEach((field) => {
+          const name = field.getAttribute('name');
 
-        if (languages.includes(name)) {
-          field.checked = true;
-        }
-      });
-  });
+          if (languages.includes(name)) {
+            field.checked = true;
+          }
+        });
+    });
+  } catch(reason) {
+    console.error(reason);
+    error = true;
+  }
+
+  if (error) {
+    document.getElementById('page-error').classList.remove('hidden');
+  }
 };
 
 const saveLocalPreferences = () => {

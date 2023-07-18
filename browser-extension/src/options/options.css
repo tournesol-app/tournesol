@@ -6,6 +6,10 @@
   text-align: center;
 }
 
+.hidden {
+  display: none;
+}
+
 /**
  * Page style
  */

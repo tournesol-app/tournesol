@@ -58,10 +58,18 @@ select.mui {
   cursor: pointer;
 }
 
-p.info {
+p.info,
+p.error {
   padding: 14px 16px;
   border-radius: 4px;
+}
 
+p.info {
   color: rgb(1, 67, 97);
   background-color: rgb(229, 246, 253);
+}
+
+p.error {
+  color: rgb(95, 33, 32);
+  background-color: rgb(253, 237, 237);
 }
