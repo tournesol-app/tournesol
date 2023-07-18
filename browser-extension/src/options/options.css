@@ -94,13 +94,18 @@ div.sticky-submit {
 
 div.sticky-submit .flex-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 8px;
 }
 
 .feedback-error,
 .feedback-success {
+  position: absolute;
+  /* The height of the feedback element (line height + padding) and a visual
+     gap of 8 pixels. */
+  top: -44.5px;
+
   display: none;
   opacity: 0;
 
