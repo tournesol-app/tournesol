@@ -14,7 +14,7 @@ interface TipSingleProps {
 }
 
 const Tip = ({ tip }: TipSingleProps) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const handleCollapse = () => {
     setCollapsed(!collapsed);
