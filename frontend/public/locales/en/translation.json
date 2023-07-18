@@ -554,6 +554,10 @@
     "activatedAccounts": "Activated accounts",
     "comparisons": "Comparisons"
   },
+  "tip": {
+    "less": "Less",
+    "showMore": "Show more ..."
+  },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",
     "tryAgainLaterOrContactAdministrator": "Please, try again later, or contact an administrator if the issue persists.",
@@ -679,17 +683,17 @@
         "title": "Scores per criterion"
       }
     },
-    "generic": {
-      "compare": "Compare"
-    },
-    "video": {
-      "description": "Description (from YouTube)",
-      "shareMessageIntro": "I saw this video on Tournesol.",
-      "shareMessageConclusion": "I invite you to watch it and to compare it with other videos 🌻"
-    },
     "twitter": {
       "intro": "I saw this video on @TournesolApp",
       "conclusion": "I invite you to watch it and to compare it with other videos 🌻"
+    },
+    "video": {
+      "shareMessageIntro": "I saw this video on Tournesol.",
+      "shareMessageConclusion": "I invite you to watch it and to compare it with other videos 🌻",
+      "description": "Description (from YouTube)"
+    },
+    "generic": {
+      "compare": "Compare"
     }
   },
   "entityNotFound": {
@@ -873,8 +877,7 @@
     "successMessage": "A verification link has been sent to <1>{{email}}</1> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>.",
-    "preferredLanguageForTheNotifications": "Preferred language for the notifications"
+    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
   },
   "emailAddress": "Email address",
   "confirmYourPassword": "Confirm your password",
@@ -898,17 +901,17 @@
     "replay": "Replay",
     "join": "Join"
   },
-  "myRatedVideosPage": {
-    "title": "My rated videos"
-  },
   "actions": {
-    "compareNow": "Compare now",
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",
     "videoAlreadyInRateLaterList": "The video is already in your rate later list.",
     "rateLater": "Rate later",
+    "compareNow": "Compare now",
     "remove": "Remove",
     "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list.",
     "analysis": "Detailed analysis"
+  },
+  "myRatedVideosPage": {
+    "title": "My rated videos"
   },
   "criteriaTooltips": {
     "energy_environment": "Topic related to climate change, energy transition, biodiversity and protection of the environment",
@@ -980,19 +983,12 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "showTips": "Show more",
-        "hideTips": "Show less",
         "title1": "Welcome to Tournesol 🌻",
         "message1": {
           "p10": "This tutorial will guide you, step by step, through a series of four comparisons to help you contribute to the Tournesol project.",
           "p20": "To compare two videos you watched, move the main handle and save when your choice is made.",
           "p30": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity.",
           "p40": "If you find the videos similar, the handle should remain close to the center."
-        },
-        "tiptitle1": "Comparing two videos 🌻",
-        "tipmessage1": {
-          "p10": "To compare two videos you watched, move the main handle and save when your choice is made.",
-          "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity."
         },
         "title2": "Bravo ! 🥳",
         "message2": {
@@ -1002,27 +998,32 @@
           "p40": "You can also choose to not vote on the optional criteria by unchecking it.",
           "p50": "Good to know, you will be able to edit all your comparisons later if you are not confident."
         },
-        "tiptitle2": "More detailed comparisons 🤔",
-        "tipmessage2": {
-          "p10": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
-          "p20": "Good to know, you will be able to edit all your comparisons later if you are not confident."
-        },
         "title3": "How does Tournesol work? 🤖",
         "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
           "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to find its detailed description."
         },
-        "tiptitle3": "How do criteria work? 🤖",
-        "tipmessage3": {
-          "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
-          "p20": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to find its detailed description."
-        },
         "title4": "Thanks a lot for following this tutorial ❤️",
         "message4": {
           "p10": "One last comparison and you will be able to browse Tournesol by yourself, making new comparisons or by consulting recommended videos.",
           "p20": "We sincerely hope you enjoyed this tutorial, feel free to talk about Tournesol around you.",
           "p30": "If you want to help, you can compare new videos from time to time. Also, feel free to talk about Tournesol around you. Thanks a lot."
+        },
+        "tiptitle1": "Comparing two videos 🌻",
+        "tipmessage1": {
+          "p10": "To compare two videos you watched, move the main handle and save when your choice is made.",
+          "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity."
+        },
+        "tiptitle2": "More detailed comparisons 🤔",
+        "tipmessage2": {
+          "p10": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
+          "p20": "Good to know, you will be able to edit all your comparisons later if you are not confident."
+        },
+        "tiptitle3": "How do criteria work? 🤖",
+        "tipmessage3": {
+          "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
+          "p20": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to find its detailed description."
         },
         "tiptitle4": "What to compare ▶️",
         "tipmessage4": {

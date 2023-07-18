@@ -562,6 +562,10 @@
     "activatedAccounts": "Comptes activés",
     "comparisons": "Comparaisons"
   },
+  "tip": {
+    "less": "Moins",
+    "showMore": "Voir plus ..."
+  },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",
     "tryAgainLaterOrContactAdministrator": "Veuillez réessayer plus tard, ou contacter un administrateur si le problème persiste.",
@@ -687,17 +691,17 @@
         "title": "Scores par critère"
       }
     },
-    "generic": {
-      "compare": "Comparer"
-    },
-    "video": {
-      "description": "Description (provenant de YouTube)",
-      "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
-      "shareMessageConclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
-    },
     "twitter": {
       "intro": "J'ai vu cette vidéo sur @TournesolApp",
       "conclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
+    },
+    "video": {
+      "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
+      "shareMessageConclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻",
+      "description": "Description (provenant de YouTube)"
+    },
+    "generic": {
+      "compare": "Comparer"
     }
   },
   "entityNotFound": {
@@ -882,8 +886,7 @@
     "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>.",
-    "preferredLanguageForTheNotifications": "Langue préférée pour les notifications"
+    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
   },
   "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",
@@ -907,17 +910,17 @@
     "replay": "Revoir",
     "join": "Rejoindre"
   },
-  "myRatedVideosPage": {
-    "title": "Mes vidéos comparées"
-  },
   "actions": {
-    "compareNow": "Comparer !",
     "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
+    "compareNow": "Comparer !",
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
     "analysis": "Analyse détaillée"
+  },
+  "myRatedVideosPage": {
+    "title": "Mes vidéos comparées"
   },
   "criteriaTooltips": {
     "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",
@@ -989,19 +992,12 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "showTips": "Montrer plus",
-        "hideTips": "Montrer moins",
         "title1": "Bienvenue sur Tournesol 🌻",
         "message1": {
           "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons, afin de vous aider à contribuer au projet Tournesol.",
           "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
           "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
           "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
-        },
-        "tiptitle1": "Comparer deux vidéos 🌻",
-        "tipmessage1":{
-          "p10": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
-          "p20": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité."
         },
         "title2": "Bravo ! 🥳",
         "message2": {
@@ -1011,27 +1007,32 @@
           "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
           "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
         },
-        "tiptitle2": "Comparaisons plus détaillées 🤔",
-        "tipmessage2":{
-          "p10": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
-          "p20": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
-        },
         "title3": "Comment fonctionne Tournesol ? 🤖",
         "message3": {
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
           "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
           "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
         },
-        "tiptitle3": "Comment fonctionnent les critères ? 🤖",
-        "tipmessage3":{
-          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
-          "p20": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
-        },
         "title4": "Merci beaucoup d'avoir suivi ce tutoriel ❤️",
         "message4": {
           "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e.",
           "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
           "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
+        },
+        "tiptitle1": "Comparer deux vidéos 🌻",
+        "tipmessage1": {
+          "p10": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
+          "p20": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité."
+        },
+        "tiptitle2": "Comparaisons plus détaillées 🤔",
+        "tipmessage2": {
+          "p10": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
+          "p20": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+        },
+        "tiptitle3": "Comment fonctionnent les critères ? 🤖",
+        "tipmessage3": {
+          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
+          "p20": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
         },
         "tiptitle4": "Que comparer ? ▶️",
         "tipmessage4": {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Alert,
@@ -8,7 +9,6 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 
 interface TipSingleProps {
   tip: { title: string; messages: string[] };
@@ -24,14 +24,7 @@ const Tip = ({ tip }: TipSingleProps) => {
   };
 
   return (
-    <Alert
-      severity="info"
-      icon={false}
-      action={<></>}
-      sx={{
-        minHeight: '131.617px',
-      }}
-    >
+    <Alert severity="info" icon={false} sx={{ minHeight: '131.617px' }}>
       <AlertTitle>
         <strong>{tip.title}</strong>
       </AlertTitle>
@@ -48,10 +41,13 @@ const Tip = ({ tip }: TipSingleProps) => {
         })}
       </Collapse>
       <Box display="flex" justifyContent="flex-end">
-        <Link component="button" color="secondary" onClick={handleCollapse}>
-          {collapsed
-            ? t('videos.dialogs.tutorial.hideTips')
-            : t('videos.dialogs.tutorial.showTips')}
+        <Link
+          component="button"
+          color="secondary"
+          onClick={handleCollapse}
+          sx={{ textDecoration: 'none' }}
+        >
+          {collapsed ? t('tip.less') : t('tip.showMore')}
         </Link>
       </Box>
     </Alert>
