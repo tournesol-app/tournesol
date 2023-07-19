@@ -29,6 +29,7 @@ import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
+import { initRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
@@ -94,7 +95,7 @@ const TournesolUserSettingsForm = () => {
 
   const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
     Array<string>
-  >([]);
+  >(initRecommendationsLanguages().split(','));
 
   // Recommendations (page)
   const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
