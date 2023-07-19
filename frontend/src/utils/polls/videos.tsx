@@ -1,8 +1,11 @@
+import React from 'react';
 import { TFunction } from 'react-i18next';
 import { SUPPORTED_LANGUAGES } from 'src/i18n';
 import { PollsService, Recommendation } from 'src/services/openapi';
 import { OrderedDialogs } from 'src/utils/types';
 import { recommendationsLanguagesFromNavigator } from 'src/utils/recommendationsLanguages';
+import { getWebExtensionUrl } from '../extension';
+import { Button } from '@mui/material';
 
 let VIDEOS: Promise<Recommendation[]> | null = null;
 
@@ -100,6 +103,22 @@ export const getTutorialTips = (t: TFunction): OrderedDialogs => {
         t('videos.tips.tutorial.message4.p10'),
         t('videos.tips.tutorial.message4.p20'),
       ],
+    },
+  };
+};
+
+export const getInstallExtensionButton = (t: TFunction) => {
+  return {
+    '3': {
+      action: (
+        <Button
+          color="secondary"
+          variant="outlined"
+          href={getWebExtensionUrl()}
+        >
+          {t('videos.dialogs.tutorial.installExtension')}
+        </Button>
+      ),
     },
   };
 };

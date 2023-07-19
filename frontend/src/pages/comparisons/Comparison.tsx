@@ -17,6 +17,7 @@ import {
 } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { PollUserSettingsKeys } from 'src/utils/types';
+import { getInstallExtensionButton } from 'src/utils/polls/videos';
 
 const displayTutorial = (
   tutorialLength: number,
@@ -171,6 +172,7 @@ const ComparisonPage = () => {
                   isTutorial={true}
                   generateInitial={true}
                   dialogs={dialogs}
+                  dialogAdditionalAction={getInstallExtensionButton(t)}
                   getAlternatives={tutorialAlternatives}
                   redirectTo={`${baseUrl}${redirectTo}`}
                   keepUIDsAfterRedirect={keepUIDsAfterRedirect}

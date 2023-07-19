@@ -42,6 +42,7 @@ interface Props {
   initComparisonsMade: string[];
   generateInitial?: boolean;
   dialogs?: OrderedDialogs;
+  dialogAdditionalAction?: { [key: string]: { action: React.ReactNode } };
   getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   // A magic flag that will enable additional behaviours specific to
   // tutorials, like  the anonymous tracking by our web analytics.
@@ -80,6 +81,7 @@ const ComparisonSeries = ({
   initComparisonsMade,
   generateInitial,
   dialogs,
+  dialogAdditionalAction,
   getAlternatives,
   isTutorial = false,
   displayStepper = false,
@@ -371,7 +373,11 @@ const ComparisonSeries = ({
                         ? skipButtonLabel
                         : t('comparisonSeries.skipTheSeries')}
                     </Button>
-                  ) : null
+                  ) : (
+                    dialogAdditionalAction &&
+                    step in dialogAdditionalAction &&
+                    dialogAdditionalAction[step].action
+                  )
                 }
               />
             )}
