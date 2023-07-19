@@ -40,16 +40,18 @@ const Tip = ({ tip }: TipSingleProps) => {
           );
         })}
       </Collapse>
-      <Box display="flex" justifyContent="flex-end">
-        <Link
-          component="button"
-          color="secondary"
-          onClick={handleCollapse}
-          sx={{ textDecoration: 'none' }}
-        >
-          {collapsed ? t('tip.less') : t('tip.showMore')}
-        </Link>
-      </Box>
+      {tip.messages.length > 1 && (
+        <Box display="flex" justifyContent="flex-end">
+          <Link
+            component="button"
+            color="secondary"
+            onClick={handleCollapse}
+            sx={{ textDecoration: 'none' }}
+          >
+            {collapsed ? t('tip.less') : t('tip.showMore')}
+          </Link>
+        </Box>
+      )}
     </Alert>
   );
 };
