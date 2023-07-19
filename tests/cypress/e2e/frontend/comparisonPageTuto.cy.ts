@@ -2,16 +2,16 @@ describe('Comparison page tutorial', () => {
   const username = "test-comparison-tutorial";
 
   before(() => {
-    cy.recreateUser(username, "test-comparison-tutorial@example.com", "tournesol");
+    cy.recreateUser(username, 'test-comparison-tutorial@example.com', 'tournesol');
   });
 
-  describe('collective goal', () => {
-    it('is not displayed during tutorial', () => {
+  describe('initial state', () => {
+    it('collective goal is not displayed', () => {
       cy.visit('/comparison');
       cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
       cy.contains('Weekly collective goal').should('not.exist');
-    })
+    });
   });
 
   describe('tutorial behavior', () => {
@@ -20,33 +20,50 @@ describe('Comparison page tutorial', () => {
       cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
-      cy.get('[data-testid=tip_prev]').should('have.attr', 'tabindex', '-1');
-      cy.get('[data-testid=tip_next]').should('have.attr', 'tabindex', '-1');
+      cy.get('[data-testid=tip-id-0]').should('be.visible');
+      // The navigation between tips is not possible yet.
+      cy.get('[data-testid=tips-prev]').should('have.attr', 'disabled');
+      cy.get('[data-testid=tips-next]').should('have.attr', 'disabled');
+
+
       cy.get('button#expert_submit_btn').click();
 
-      cy.get('[data-testid=tip_prev]').should('have.attr', 'tabindex', '0');
-      cy.get('[data-testid=tip_next]').should('have.attr', 'tabindex', '-1');
+      cy.get('[data-testid=tip-id-1]').should('be.visible');
+      // After one comparison it's possible to display the previous tips.
+      cy.get('[data-testid=tips-prev]').should('not.have.attr', 'disabled');
+      cy.get('[data-testid=tips-next]').should('have.attr', 'disabled');
+
+
       cy.get('button#expert_submit_btn').click();
 
-      cy.get('[data-testid=tip_prev]').should('have.attr', 'tabindex', '0');
-      cy.get('[data-testid=tip_next]').should('have.attr', 'tabindex', '-1');
+      cy.get('[data-testid=tip-id-2]').should('be.visible');
+      cy.get('[data-testid=tips-prev]').should('not.have.attr', 'disabled');
+      cy.get('[data-testid=tips-next]').should('have.attr', 'disabled');
+
       cy.get('button#expert_submit_btn').click();
 
+      // After 3 comparisons, the user is invited to install the extension.
       cy.contains("Install the extension");
       cy.contains("button", "continue").click();
-      for (var tutorialLength=0; tutorialLength<3; tutorialLength++){
-        cy.get('[data-testid=tip_prev]').should('have.attr', 'tabindex', '0').click();
+
+      cy.get('[data-testid=tip-id-3]').should('be.visible');
+
+      for (var tutorialLength = 0; tutorialLength < 3; tutorialLength++) {
+        cy.get('[data-testid=tips-prev]').should('not.have.attr', 'disabled');
+        cy.get('[data-testid=tips-prev]').click();
       }
-      cy.get('[data-testid=tip_prev]').should('have.attr', 'tabindex', '-1');
-      for (var tutorialLength=0; tutorialLength<3; tutorialLength++){
-        cy.get('[data-testid=tip_next]').should('have.attr', 'tabindex', '0').click();
+
+      cy.get('[data-testid=tips-prev]').should('have.attr', 'disabled');
+
+      for (var tutorialLength = 0; tutorialLength < 3; tutorialLength++){
+        cy.get('[data-testid=tips-next]').should('not.have.attr', 'disabled');
+        cy.get('[data-testid=tips-next]').click();
       }
-      cy.get('[data-testid=tip_next]').should('have.attr', 'tabindex', '-1');
+
+      cy.get('[data-testid=tips-next]').should('have.attr', 'disabled');
+
       cy.get('button#expert_submit_btn').click();
-
       cy.contains('Weekly collective goal').should('be.visible');
-    })
+    });
   });
-
 });
-  

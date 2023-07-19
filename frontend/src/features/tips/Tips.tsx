@@ -52,14 +52,14 @@ const Tips = ({
             color="secondary"
             onClick={previousTip}
             disabled={index <= 0}
-            data-testid={'tip_prev'}
+            data-testid="tips-prev"
           >
             <KeyboardArrowLeft fontSize="large" />
           </IconButton>
         </Box>
       </Grid>
       <Grid item width={`${tipWidth}px`}>
-        {content && <Tip tip={content[index]} />}
+        {content && <Tip tip={content[index]} tipId={step.toString()} />}
       </Grid>
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
@@ -67,7 +67,7 @@ const Tips = ({
             color="secondary"
             onClick={nextTip}
             disabled={index >= step || index >= stopAutoDisplay - 1}
-            data-testid={'tip_next'}
+            data-testid="tips-next"
           >
             <KeyboardArrowRight fontSize="large" />
           </IconButton>

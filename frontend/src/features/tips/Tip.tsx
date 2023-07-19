@@ -10,11 +10,13 @@ import {
   Typography,
 } from '@mui/material';
 
-interface TipSingleProps {
+interface TipProps {
   tip: { title: string; messages: string[] };
+  // Allows to identify a unique tip in the DOM.
+  tipId: string;
 }
 
-const Tip = ({ tip }: TipSingleProps) => {
+const Tip = ({ tip, tipId }: TipProps) => {
   const { t } = useTranslation();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -24,7 +26,12 @@ const Tip = ({ tip }: TipSingleProps) => {
   };
 
   return (
-    <Alert severity="info" icon={false} sx={{ minHeight: '131.617px' }}>
+    <Alert
+      severity="info"
+      icon={false}
+      sx={{ minHeight: '131.617px' }}
+      data-testid={`tip-id-${tipId}`}
+    >
       <AlertTitle>
         <strong>{tip.title}</strong>
       </AlertTitle>
