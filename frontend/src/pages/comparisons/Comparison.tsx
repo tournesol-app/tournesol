@@ -17,7 +17,6 @@ import {
 } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { PollUserSettingsKeys } from 'src/utils/types';
-import { getInstallExtensionButton } from 'src/utils/polls/videos';
 
 const displayTutorial = (
   tutorialLength: number,
@@ -112,11 +111,15 @@ const ComparisonPage = () => {
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
+  const tutorialDialogActions = options?.tutorialDialogActions ?? undefined;
   const tutorialTips = options?.tutorialTips ?? undefined;
   const redirectTo = options?.tutorialRedirectTo ?? '/comparisons';
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
 
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
+  const dialogActions = tutorialDialogActions
+    ? tutorialDialogActions(t)
+    : undefined;
   const tipsTutorialContent = tutorialTips ? tutorialTips(t) : undefined;
 
   // User's settings.
@@ -172,7 +175,7 @@ const ComparisonPage = () => {
                   isTutorial={true}
                   generateInitial={true}
                   dialogs={dialogs}
-                  dialogAdditionalAction={getInstallExtensionButton(t)}
+                  dialogAdditionalActions={dialogActions}
                   getAlternatives={tutorialAlternatives}
                   redirectTo={`${baseUrl}${redirectTo}`}
                   keepUIDsAfterRedirect={keepUIDsAfterRedirect}

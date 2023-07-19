@@ -986,10 +986,10 @@
         "title4": "Thank you for these first contributions ❤️",
         "message4": {
           "p10": "It's thanks to you that participatory research projects like Tournesol are able to move forward.",
-          "p20": "So far we've suggested videos, but after the next comparison it's up to you to compare the videos you've watched, especially those you consider to be of general interest.",
-          "p30": "To help you, there's a browser extension that lets you add videos directly from YouTube to your rate-later list."
+          "p20": "So far we've suggested videos, but after the next comparison you will be free to compare the videos you've watched, especially those you consider to be of general interest.",
+          "p30": "To help you, the Tournesol browser extension allows you to add videos directly from YouTube to your rate-later list."
         },
-        "installExtension": "Install the extension"
+        "installTheExtension": "Install the extension"
       }
     },
     "tips": {

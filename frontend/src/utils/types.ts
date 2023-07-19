@@ -103,6 +103,11 @@ export type SelectablePoll = {
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
+  // a set of actions that will be displayed within the configured
+  // `tutorialDialogs`, at the configured indexes, next to the main button
+  tutorialDialogActions?: (t: TFunction) => {
+    [key: string]: { action: React.ReactNode };
+  };
   tutorialTips?: (t: TFunction) => OrderedDialogs;
   // redirect to this page after the last comparison is submitted
   tutorialRedirectTo?: string;

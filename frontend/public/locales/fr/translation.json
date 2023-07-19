@@ -995,10 +995,10 @@
         "title4": "Merci pour ces premières contributions ❤️",
         "message4": {
           "p10": "C'est grace à vous que des projets de recherche participatifs comme Tournesol peuvent avancer.",
-          "p20": "Jusqu'à présent nous vous avons suggéré des vidéos, mais après la prochaine comparaison ce sera à vous de comparer les vidéos que vous avez regardées. Surtout celles que vous jugez d'intérêt général !",
-          "p30": "Pour vous aider, il existe une extension de navigateur qui vous permet d'ajouter des vidéos directement depuis YouTube à votre liste pour les comparer plus tard."
+          "p20": "Jusqu'à présent nous vous avons suggéré des vidéos, mais après la prochaine comparaison vous serez libre de comparer les vidéos que vous avez regardées. Surtout celles que vous jugez d'intérêt général !",
+          "p30": "Pour vous aider, l'extension de navigateur Tournesol vous permet d'ajouter des vidéos directement depuis YouTube à votre liste pour les comparer plus tard. Pratique."
         },
-        "installExtension": "Installer l'extension"
+        "installTheExtension": "Installer l'extension"
       }
     },
     "tips": {

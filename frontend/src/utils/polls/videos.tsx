@@ -59,6 +59,24 @@ export function getTutorialVideos(): Promise<Recommendation[]> {
   return VIDEOS;
 }
 
+export const getTutorialDialogActions = (
+  t: TFunction
+): { [key: string]: { action: React.ReactNode } } => {
+  return {
+    '3': {
+      action: (
+        <Button
+          color="secondary"
+          variant="outlined"
+          href={getWebExtensionUrl()}
+        >
+          {t('videos.dialogs.tutorial.installTheExtension')}
+        </Button>
+      ),
+    },
+  };
+};
+
 export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
   return {
     '3': {
@@ -103,22 +121,6 @@ export const getTutorialTips = (t: TFunction): OrderedDialogs => {
         t('videos.tips.tutorial.message4.p10'),
         t('videos.tips.tutorial.message4.p20'),
       ],
-    },
-  };
-};
-
-export const getInstallExtensionButton = (t: TFunction) => {
-  return {
-    '3': {
-      action: (
-        <Button
-          color="secondary"
-          variant="outlined"
-          href={getWebExtensionUrl()}
-        >
-          {t('videos.dialogs.tutorial.installExtension')}
-        </Button>
-      ),
     },
   };
 };

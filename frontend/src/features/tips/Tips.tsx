@@ -48,7 +48,11 @@ const Tips = ({
     >
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
-          <IconButton onClick={previousTip} disabled={index <= 0}>
+          <IconButton
+            color="secondary"
+            onClick={previousTip}
+            disabled={index <= 0}
+          >
             <KeyboardArrowLeft fontSize="large" />
           </IconButton>
         </Box>
@@ -59,6 +63,7 @@ const Tips = ({
       <Grid item xs={1}>
         <Box display="flex" justifyContent="center">
           <IconButton
+            color="secondary"
             onClick={nextTip}
             disabled={index >= step || index >= stopAutoDisplay - 1}
           >
