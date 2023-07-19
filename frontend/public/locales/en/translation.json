@@ -983,11 +983,11 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "title4": "Thanks a lot for following this tutorial ❤️",
+        "title4": "Thank you for these first contributions ❤️",
         "message4": {
-          "p10": "One last comparison and you will be able to browse Tournesol by yourself, making new comparisons or by consulting recommended videos.",
-          "p20": "We sincerely hope you enjoyed this tutorial, feel free to talk about Tournesol around you.",
-          "p30": "If you want to help, you can compare new videos from time to time. Also, feel free to talk about Tournesol around you. Thanks a lot."
+          "p10": "It's thanks to you that participatory research projects like Tournesol are able to move forward.",
+          "p20": "So far we've suggested videos, but after the next comparison it's up to you to compare the videos you've watched, especially those you consider to be of general interest.",
+          "p30": "To help you, there's a browser extension that lets you add videos directly from YouTube to your rate-later list."
         }
       }
     },
@@ -1010,10 +1010,10 @@
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
           "p30": "The higher the score is, the more the community thinks the video should be largely recommended."
         },
-        "title4": "What to compare ▶️",
+        "title4": "What's next? 🔭",
         "message4": {
-          "p10": "Note that you can choose yourself the videos to compare by pasting their YouTube URL in the fields above the thumbnails.",
-          "p20": "You can also use the auto button to get a recommended video."
+          "p10": "Tournesol is a long-term project, and we aim to collect as many comparisons as possible. Your contributions are very valuable to us, and we hope to see you again from time to time.",
+          "p20": "🌻 🌻 🌻 🌻 🌻 🌻 🐌"
         }
       }
     }
