@@ -205,7 +205,7 @@ const HomeComparison = () => {
                 component={Link}
                 to={
                   tutoRedirect
-                    ? `/comparison?series=true&uidA=${uidA}&uidB=${uidB}`
+                    ? `/comparison?uidA=${uidA}&uidB=${uidB}`
                     : `/comparison?uidA=${uidA}&uidB=${uidB}`
                 }
               >
