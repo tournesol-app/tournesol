@@ -33,24 +33,24 @@ describe('Settings - preferences page', () => {
     });
   };
 
-  const deleteComparison = () => {
+  const deleteComparisons = () => {
     cy.sql(`
-        DELETE FROM tournesol_comparisoncriteriascore
-        WHERE comparison_id IN (
-            SELECT id
-            FROM tournesol_comparison
-            WHERE user_id = (
-                SELECT id FROM core_user WHERE username = '${username}'
-            )
-        );
-      `);
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id IN (
+        SELECT id
+        FROM tournesol_comparison
+        WHERE user_id = (
+          SELECT id FROM core_user WHERE username = '${username}'
+        )
+      );
+    `);
 
     cy.sql(`
-        DELETE FROM tournesol_comparison
-            WHERE user_id = (
-                SELECT id FROM core_user WHERE username = '${username}'
-            );
-      `);
+      DELETE FROM tournesol_comparison
+          WHERE user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          );
+    `);
   };
 
   beforeEach(() => {
@@ -60,7 +60,7 @@ describe('Settings - preferences page', () => {
 
 
   afterEach(() => {
-    deleteComparison();
+    deleteComparisons();
   })
 
   const login = () => {

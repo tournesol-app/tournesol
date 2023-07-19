@@ -1,36 +1,53 @@
 describe('Comparison page', () => {
-  const username = "user1";
+  const username = "test-comparison-page";
   const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
   const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
 
-  before(() => { // create 4 comparisons to avoid being in the tutorial context
-    for (var i = 0; i < 2; i++) {
-      for (var j = 0; j < 2; j++) {
+  /**
+   * Create as much comparisons as required to not trigger the tutorial.
+   */
+  const createComparisons = () => {
+    ids1.forEach(uid1 => {
+      ids2.forEach(uid2 => {
+
         cy.sql(`
-INSERT INTO tournesol_comparison(
-entity_1_2_ids_sorted, user_id, entity_1_id, entity_2_id, poll_id) 
-VALUES(${2*i+j}, (SELECT id FROM core_user WHERE username = '${username}'),
-(SELECT id FROM tournesol_entity WHERE uid = '${ids1[i]}'),
-(SELECT id FROM tournesol_entity WHERE uid = '${ids2[j]}'), 1);`);
-      }
-    }
-  });
+          WITH ent AS (
+            SELECT
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid1}') AS uid1,
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid2}') AS uid2
+          )
+          INSERT INTO tournesol_comparison (
+            user_id,
+            entity_1_id,
+            entity_2_id,
+            entity_1_2_ids_sorted,
+            poll_id
+          ) VALUES (
+            (SELECT id FROM core_user WHERE username = '${username}'),
+            (SELECT uid1 FROM ent),
+            (SELECT uid2 FROM ent),
+            (SELECT uid1 FROM ent) || '__' || (SELECT uid2 FROM ent),
+          1);
+        `);
+      });
+    });
+  };
 
   const deleteComparison = (idA, idB) => {
     cy.sql(`
-        DELETE FROM tournesol_comparisoncriteriascore
-        WHERE comparison_id = (
-            SELECT id
-            FROM tournesol_comparison
-            WHERE entity_1_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
-            ) AND entity_2_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
-            ) AND user_id = (
-                SELECT id FROM core_user WHERE username = '${username}'
-            )
-        );
-      `);
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id = (
+        SELECT id
+        FROM tournesol_comparison
+        WHERE entity_1_id = (
+          SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
+        ) AND entity_2_id = (
+          SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+        ) AND user_id = (
+          SELECT id FROM core_user WHERE username = '${username}'
+        )
+      );
+    `);
 
     cy.sql(`
         DELETE FROM tournesol_comparison
@@ -44,11 +61,33 @@ VALUES(${2*i+j}, (SELECT id FROM core_user WHERE username = '${username}'),
       `);
   };
 
+  const deleteComparisons = () => {
+    cy.sql(`
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id IN (
+          SELECT id
+          FROM tournesol_comparison
+          WHERE user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          )
+      );
+    `);
+
+    cy.sql(`
+      DELETE FROM tournesol_comparison
+          WHERE user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          );
+    `);
+  };
+
+  before(() => { // create 4 comparisons to avoid being in the tutorial context
+    cy.recreateUser(username, "test-comparison-page@example.com", "tournesol");
+    createComparisons();
+  });
+
   after(() => {
-    deleteComparison(ids1[0], ids2[0]);
-    deleteComparison(ids1[0], ids2[1]);
-    deleteComparison(ids1[1], ids2[0]);
-    deleteComparison(ids1[1], ids2[1]);
+    deleteComparisons();
   })
 
   const waitForAutoFill = () => {
