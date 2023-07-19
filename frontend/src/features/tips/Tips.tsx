@@ -52,6 +52,7 @@ const Tips = ({
             color="secondary"
             onClick={previousTip}
             disabled={index <= 0}
+            data-testid={'tip_prev'}
           >
             <KeyboardArrowLeft fontSize="large" />
           </IconButton>
@@ -66,6 +67,7 @@ const Tips = ({
             color="secondary"
             onClick={nextTip}
             disabled={index >= step || index >= stopAutoDisplay - 1}
+            data-testid={'tip_next'}
           >
             <KeyboardArrowRight fontSize="large" />
           </IconButton>
