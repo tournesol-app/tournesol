@@ -83,6 +83,7 @@ export const getTutorialTips = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.tips.tutorial.message2.p10'),
         t('videos.tips.tutorial.message2.p20'),
+        t('videos.tips.tutorial.message2.p30'),
       ],
     },
     '2': {
@@ -90,6 +91,7 @@ export const getTutorialTips = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.tips.tutorial.message3.p10'),
         t('videos.tips.tutorial.message3.p20'),
+        t('videos.tips.tutorial.message3.p30'),
       ],
     },
     '3': {

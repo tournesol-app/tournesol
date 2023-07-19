@@ -995,18 +995,20 @@
       "tutorial": {
         "title1": "Comparing two videos 🌻",
         "message1": {
-          "p10": "To compare two videos you watched, move the main handle and save when your choice is made.",
+          "p10": "After watching the videos, move the main handle to the video that should be largely recommended according to you. Save once you've made your choice.",
           "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity."
         },
-        "title2": "More detailed comparisons 🤔",
+        "title2": "Making comparisons helps science 🔬",
         "message2": {
-          "p10": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
-          "p20": "Good to know, you will be able to edit all your comparisons later if you are not confident."
+          "p10": "Each comparison helps Tournesol improve its recommendations and its open database. Try to unfold and use the optional criteria now.",
+          "p20": "You can always choose to not vote on an optional criterion by unchecking it.",
+          "p30": "Good to know, you will be able to edit all your comparisons later if you are not confident."
         },
-        "title3": "How do criteria work? 🤖",
+        "title3": "How does Tournesol work? 🤖",
         "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
-          "p20": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to find its detailed description."
+          "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
+          "p30": "The higher the score is, the more the community thinks the video should be largely recommended."
         },
         "title4": "What to compare ▶️",
         "message4": {
