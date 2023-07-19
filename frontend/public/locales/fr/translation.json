@@ -468,6 +468,7 @@
     "updatePreferences": "Mettre à jour les préférences",
     "comparisonPage": "Comparaison (page)",
     "rateLater": "Liste à comparer plus tard",
+    "recommendations": "Recommandations (flux)",
     "recommendationsPage": "Recommandations (page)",
     "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
   },
@@ -536,6 +537,8 @@
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
+      "defaultLanguages": "Langues des vidéos",
+      "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)",
       "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
     }
   },
@@ -690,17 +693,17 @@
         "title": "Scores par critère"
       }
     },
-    "generic": {
-      "compare": "Comparer"
-    },
-    "video": {
-      "description": "Description (provenant de YouTube)",
-      "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
-      "shareMessageConclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
-    },
     "twitter": {
       "intro": "J'ai vu cette vidéo sur @TournesolApp",
       "conclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
+    },
+    "video": {
+      "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
+      "shareMessageConclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻",
+      "description": "Description (provenant de YouTube)"
+    },
+    "generic": {
+      "compare": "Comparer"
     }
   },
   "entityNotFound": {
@@ -885,8 +888,7 @@
     "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>.",
-    "preferredLanguageForTheNotifications": "Langue préférée pour les notifications"
+    "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
   },
   "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",
@@ -910,17 +912,17 @@
     "replay": "Revoir",
     "join": "Rejoindre"
   },
-  "myRatedVideosPage": {
-    "title": "Mes vidéos comparées"
-  },
   "actions": {
-    "compareNow": "Comparer !",
     "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
+    "compareNow": "Comparer !",
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
     "analysis": "Analyse détaillée"
+  },
+  "myRatedVideosPage": {
+    "title": "Mes vidéos comparées"
   },
   "criteriaTooltips": {
     "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",

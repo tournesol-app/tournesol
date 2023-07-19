@@ -460,6 +460,7 @@
     "updatePreferences": "Update preferences",
     "comparisonPage": "Comparison page",
     "rateLater": "Rate-later list",
+    "recommendations": "Recommendations stream",
     "recommendationsPage": "Recommendations page",
     "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>."
   },
@@ -528,6 +529,8 @@
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Default value of the uploaded date filter",
+      "defaultLanguages": "Videos languages",
+      "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)",
       "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
     }
   },
@@ -682,17 +685,17 @@
         "title": "Scores per criterion"
       }
     },
-    "generic": {
-      "compare": "Compare"
-    },
-    "video": {
-      "description": "Description (from YouTube)",
-      "shareMessageIntro": "I saw this video on Tournesol.",
-      "shareMessageConclusion": "I invite you to watch it and to compare it with other videos 🌻"
-    },
     "twitter": {
       "intro": "I saw this video on @TournesolApp",
       "conclusion": "I invite you to watch it and to compare it with other videos 🌻"
+    },
+    "video": {
+      "shareMessageIntro": "I saw this video on Tournesol.",
+      "shareMessageConclusion": "I invite you to watch it and to compare it with other videos 🌻",
+      "description": "Description (from YouTube)"
+    },
+    "generic": {
+      "compare": "Compare"
     }
   },
   "entityNotFound": {
@@ -876,8 +879,7 @@
     "successMessage": "A verification link has been sent to <1>{{email}}</1> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>.",
-    "preferredLanguageForTheNotifications": "Preferred language for the notifications"
+    "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
   },
   "emailAddress": "Email address",
   "confirmYourPassword": "Confirm your password",
@@ -901,17 +903,17 @@
     "replay": "Replay",
     "join": "Join"
   },
-  "myRatedVideosPage": {
-    "title": "My rated videos"
-  },
   "actions": {
-    "compareNow": "Compare now",
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",
     "videoAlreadyInRateLaterList": "The video is already in your rate later list.",
     "rateLater": "Rate later",
+    "compareNow": "Compare now",
     "remove": "Remove",
     "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list.",
     "analysis": "Detailed analysis"
+  },
+  "myRatedVideosPage": {
+    "title": "My rated videos"
   },
   "criteriaTooltips": {
     "energy_environment": "Topic related to climate change, energy transition, biodiversity and protection of the environment",
