@@ -992,11 +992,11 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "title4": "Merci beaucoup d'avoir suivi ce tutoriel ❤️",
+        "title4": "Merci pour ces premières contributions ❤️",
         "message4": {
-          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e.",
-          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
-          "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
+          "p10": "C'est grace à vous que des projets de recherche participatifs comme Tournesol peuvent avancer.",
+          "p20": "Jusqu'à présent nous vous avons suggéré des vidéos, mais après la prochaine comparaison ce sera à vous de comparer les vidéos que vous avez regardées. Surtout celles que vous jugez d'intérêt général !",
+          "p30": "Pour vous aider, il existe une extension de navigateur qui vous permet d'ajouter des vidéos directement depuis YouTube à votre liste pour les comparer plus tard."
         }
       }
     },
@@ -1019,10 +1019,10 @@
           "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
           "p30": "Plus ce score est élevé, plus la communaute pense que la vidéo devrait être largement recommandée."
         },
-        "title4": "Que comparer ? ▶️",
+        "title4": "Et maintenant ? 🔭",
         "message4": {
-          "p10": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
-          "p20": "Vous pouvez aussi utiliser le bouton auto pour obtenir une vidéo recommandée."
+          "p10": "Tournesol est un projet à long terme, notre objectif est de recueillir autant de comparaisons que possible. Vos contributions nous sont très importantes et nous espérons vous revoir de temps en temps.",
+          "p20": "🌻 🌻 🌻 🌻 🌻 🌻 🐌"
         }
       }
     }
