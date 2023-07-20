@@ -2872,6 +2872,10 @@ components:
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          nullable: true
         is_public:
           type: boolean
           readOnly: true
@@ -3626,6 +3630,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityCriteriaScore'
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          nullable: true
       required:
       - criteria_scores
       - metadata
@@ -4018,6 +4026,18 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    UnsafeStatus:
+      type: object
+      properties:
+        status:
+          type: boolean
+        reasons:
+          type: array
+          items:
+            type: string
+      required:
+      - reasons
+      - status
     UserProfile:
       type: object
       description: |-

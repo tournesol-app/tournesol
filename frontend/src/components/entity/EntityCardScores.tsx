@@ -59,15 +59,18 @@ const EntityCardScores = ({
   let max_criteria = '';
   let min_criteria = '';
 
-  let unsafeCause = '';
-  if ('tournesol_score' in entity) {
-    if (nbContributors != null && nbContributors <= 1) {
-      unsafeCause = t('video.unsafeNotEnoughContributor');
-    } else if (entity.tournesol_score && entity.tournesol_score < 0) {
-      unsafeCause = t('video.unsafeNegativeRating');
-    }
-  }
-  const isUnsafe = unsafeCause !== '';
+  const isUnsafe = entity.unsafe?.status === true;
+  const unsafeReasons = (entity.unsafe?.reasons ?? [])
+    .map((reason) => {
+      if (reason === 'insufficient_tournesol_score') {
+        return t('video.insufficientScore');
+      }
+      if (reason === 'insufficient_trust') {
+        return t('video.unsafeNotEnoughContributor');
+      }
+      return '';
+    })
+    .filter((str) => str !== '');
 
   if ('criteria_scores' in entity) {
     entity.criteria_scores?.forEach((criteria) => {
@@ -90,14 +93,22 @@ const EntityCardScores = ({
     });
   }
 
-  const tournesolScoreTitle = isUnsafe ? (
-    <Stack direction="row" alignItems="center" gap={1}>
-      <WarningIcon />
-      <span>{unsafeCause}</span>
-    </Stack>
-  ) : (
-    ''
-  );
+  const tournesolScoreTitle =
+    isUnsafe && unsafeReasons.length > 0 ? (
+      <Stack direction="row" alignItems="center" gap={1}>
+        <WarningIcon />
+        <div>
+          {unsafeReasons.map((reason) => (
+            <span key={reason}>
+              {reason}
+              <br />
+            </span>
+          ))}
+        </div>
+      </Stack>
+    ) : (
+      ''
+    );
 
   return (
     <>
