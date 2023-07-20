@@ -33,6 +33,14 @@ const Tips = ({
 
   const nextTip = () => setIndex(index + 1);
 
+  const disablePrev = () => {
+    return index <= 0;
+  };
+
+  const disableNext = () => {
+    return index >= step || index >= stopAutoDisplay - 1;
+  };
+
   if (!content) {
     return <></>;
   }
@@ -47,11 +55,15 @@ const Tips = ({
       mb={2}
     >
       <Grid item xs={1}>
-        <Box display="flex" justifyContent="center">
+        <Box
+          display="flex"
+          justifyContent="center"
+          visibility={disablePrev() ? 'hidden' : 'visible'}
+        >
           <IconButton
             color="secondary"
             onClick={previousTip}
-            disabled={index <= 0}
+            disabled={disablePrev()}
             data-testid="tips-prev"
           >
             <KeyboardArrowLeft fontSize="large" />
@@ -62,11 +74,15 @@ const Tips = ({
         {content && <Tip tip={content[index]} tipId={step.toString()} />}
       </Grid>
       <Grid item xs={1}>
-        <Box display="flex" justifyContent="center">
+        <Box
+          display="flex"
+          justifyContent="center"
+          visibility={disableNext() ? 'hidden' : 'visible'}
+        >
           <IconButton
             color="secondary"
             onClick={nextTip}
-            disabled={index >= step || index >= stopAutoDisplay - 1}
+            disabled={disableNext()}
             data-testid="tips-next"
           >
             <KeyboardArrowRight fontSize="large" />
