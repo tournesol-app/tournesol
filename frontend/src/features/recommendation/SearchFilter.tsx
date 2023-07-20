@@ -26,7 +26,11 @@ import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages
  * When adding a new filter, it needs to be defined in constants 'recommendationFilters'
  * and 'defaultRecommendationsFilters'.
  */
-function SearchFilter() {
+function SearchFilter({
+  showAdvancedFilter = true,
+}: {
+  showAdvancedFilter?: boolean;
+}) {
   const [expanded, setExpanded] = useState(false);
   const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
 
@@ -87,12 +91,14 @@ function SearchFilter() {
                     setFilter(recommendationFilters.date, value)
                   }
                 />
-                <Box mt={2}>
-                  <AdvancedFilter
-                    value={filterParams.get('unsafe') ?? ''}
-                    onChange={(value) => setFilter('unsafe', value)}
-                  />
-                </Box>
+                {showAdvancedFilter && (
+                  <Box mt={2}>
+                    <AdvancedFilter
+                      value={filterParams.get('unsafe') ?? ''}
+                      onChange={(value) => setFilter('unsafe', value)}
+                    />
+                  </Box>
+                )}
               </Grid>
               <Grid
                 item
