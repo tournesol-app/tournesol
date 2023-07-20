@@ -46,21 +46,6 @@ export FRONTEND_OAUTH_CLIENT_SECRET
 GRAFANA_ADMIN_PASSWORD="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/grafana_admin_password)"
 export GRAFANA_ADMIN_PASSWORD
 
-MEDIAWIKI_DATABASE_PASSWORD="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_database_password)"
-export MEDIAWIKI_DATABASE_PASSWORD
-
-MEDIAWIKI_ADMIN_PASSWORD="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_admin_password)"
-export MEDIAWIKI_ADMIN_PASSWORD
-
-MEDIAWIKI_SECRET_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_secret_key)"
-export MEDIAWIKI_SECRET_KEY
-
-MEDIAWIKI_OIDC_CLIENT_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_oidc_client_id)"
-export MEDIAWIKI_OIDC_CLIENT_ID
-
-MEDIAWIKI_OIDC_CLIENT_SECRET="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_oidc_client_secret)"
-export MEDIAWIKI_OIDC_CLIENT_SECRET
-
 SWAGGER_UI_OAUTH2_CLIENT_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/swagger_ui_oauth2_client_id)"
 export SWAGGER_UI_OAUTH2_CLIENT_ID
 
