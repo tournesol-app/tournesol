@@ -76,8 +76,8 @@ class TestMlTrain(TransactionTestCase):
         user1 = UserFactory(email="user1@verified.test")
         user2 = UserFactory(email="user2@verified.test")
 
-        video1 = VideoFactory()
-        video2 = VideoFactory()
+        video1 = VideoFactory(make_safe_for_poll=False)
+        video2 = VideoFactory(make_safe_for_poll=False)
         rating_a = EntityPollRating.objects.create(entity=video1, poll=default_poll)
         rating_b = EntityPollRating.objects.create(entity=video2, poll=default_poll)
 

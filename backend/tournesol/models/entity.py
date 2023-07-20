@@ -205,11 +205,13 @@ class Entity(models.Model):
         self.rating_n_ratings = Comparison.objects.filter(
             Q(entity_1=self) | Q(entity_2=self)
         ).count()
+
         self.rating_n_contributors = (
             Comparison.objects.filter(Q(entity_1=self) | Q(entity_2=self))
             .distinct("user")
             .count()
         )
+
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
 
     def update_entity_poll_rating(self, poll, ratings: tuple = None):
