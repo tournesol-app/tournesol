@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from functools import partial, cached_property
+from functools import cached_property, partial
 from multiprocessing import Pool
 from typing import Optional
 
@@ -34,7 +34,7 @@ VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 @dataclass
 class MehestanParameters:
-    alpha: float = 0.2
+    alpha: float = 0.02
     W: float = 5.0
     score_shift_W: float = 1.
     score_shift_quantile: float = 0.15
@@ -46,7 +46,8 @@ class MehestanParameters:
 
 
 def get_individual_scores(
-    ml_input: MlInput, criteria: str,
+    ml_input: MlInput,
+    criteria: str,
     parameters: MehestanParameters,
     single_user_id: Optional[int] = None,
 ) -> pd.DataFrame:

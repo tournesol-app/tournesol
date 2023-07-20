@@ -94,7 +94,7 @@ class TextSearchTestCase(TestCase):
                 metadata__tags=field3,
                 metadata__description=field4,
                 metadata__language=language,
-                tournesol_score=10.0,
+                tournesol_score=30.0,
                 make_safe_for_poll=None if unsafe else poll,
             )
         elif poll.entity_type == TYPE_CANDIDATE:
@@ -107,7 +107,7 @@ class TextSearchTestCase(TestCase):
             entity = EntityFactory(
                 type=TYPE_CANDIDATE,
                 metadata=metadata,
-                tournesol_score=10.0,
+                tournesol_score=30.0,
                 make_safe_for_poll=None if unsafe else poll,
             )
         else:

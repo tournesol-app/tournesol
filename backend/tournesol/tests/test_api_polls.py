@@ -63,7 +63,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__uploader="_test_uploader_2",
             metadata__language="fr",
             metadata__duration=10,
-            tournesol_score=2.2,
+            tournesol_score=22,
             make_safe_for_poll=False,
         )
         self.video_3 = VideoFactory(
@@ -71,7 +71,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__uploader="_test_uploader_2",
             metadata__language="pt",
             metadata__duration=120,
-            tournesol_score=3.3,
+            tournesol_score=33,
             make_safe_for_poll=False,
         )
         self.video_4 = VideoFactory(
@@ -79,7 +79,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__uploader="_test_uploader_3",
             metadata__language="it",
             metadata__duration=240,
-            tournesol_score=4.4,
+            tournesol_score=44,
             make_safe_for_poll=False,
         )
 
@@ -128,9 +128,9 @@ class PollsRecommendationsTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 3)
-        self.assertEqual(results[0]["tournesol_score"], 4.4)
-        self.assertEqual(results[1]["tournesol_score"], 3.3)
-        self.assertEqual(results[2]["tournesol_score"], 2.2)
+        self.assertEqual(results[0]["tournesol_score"], 44.0)
+        self.assertEqual(results[1]["tournesol_score"], 33.0)
+        self.assertEqual(results[2]["tournesol_score"], 22.0)
 
         self.assertEqual(results[0]["type"], "video")
 
@@ -406,7 +406,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.videos = [
-            VideoFactory(tournesol_score=2.2, rating_n_contributors=3) for _ in range(4)
+            VideoFactory(tournesol_score=92, rating_n_contributors=3) for _ in range(4)
         ]
         self.video_1, self.video_2, self.video_3, self.video_4 = self.videos
         self.criteria_scores = [

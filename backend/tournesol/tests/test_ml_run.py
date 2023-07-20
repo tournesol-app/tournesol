@@ -237,52 +237,6 @@ class TestMlTrain(TransactionTestCase):
             places=3,
         )
 
-    @pytest.mark.skip("May not apply for CBT. This is a rather brittle test")
-    def test_tournesol_scores_different_uncertainty(self):
-        user1 = UserFactory()
-        user2 = UserFactory()
-
-        video1 = VideoFactory()
-        video2 = VideoFactory()
-
-        # User1 prefers video1
-        ComparisonCriteriaScoreFactory(
-            comparison__user=user1,
-            comparison__entity_1=video1,
-            comparison__entity_2=video2,
-            score=-10,
-            criteria="largely_recommended",
-        )
-
-        # User2 prefers video2
-        ComparisonCriteriaScoreFactory(
-            comparison__user=user2,
-            comparison__entity_1=video1,
-            comparison__entity_2=video2,
-            score=10,
-            criteria="largely_recommended",
-        )
-
-        # Reduce uncertainty on user1 scores by creating additional comparisons
-        additional_videos = VideoFactory.create_batch(6)
-        for (vid_a, vid_b) in zip(additional_videos, additional_videos[1:]):
-            ComparisonCriteriaScoreFactory(
-                comparison__entity_1=vid_a,
-                comparison__entity_2=vid_b,
-                comparison__user=user1,
-                score=1,
-                criteria="largely_recommended",
-            )
-
-        self.assertEqual(video1.tournesol_score, None)
-        self.assertEqual(video2.tournesol_score, None)
-        call_command("ml_train")
-        video1.refresh_from_db()
-        video2.refresh_from_db()
-
-        self.assertAlmostEqual(video1.tournesol_score, 8.8, places=1)
-        self.assertAlmostEqual(video2.tournesol_score, -8.8, places=1)
-
     def test_tournesol_scores_different_privacy_status(self):
         user1 = UserFactory()
         user2 = UserFactory()
