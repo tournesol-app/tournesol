@@ -1006,7 +1006,7 @@
         "title1": "Comparer deux vidéos 🌻",
         "message1": {
           "p10": "Après avoir regardé les vidéos, déplacez le curseur principal vers la vidéo qui, selon vous, devrait être largement recommandée. Enregistrez quand votre choix est fait.",
-          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité."
+          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
         },
         "title2": "Faire des comparaisons aide la science 🔬",
         "message2": {

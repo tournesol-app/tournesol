@@ -997,7 +997,7 @@
         "title1": "Comparing two videos 🌻",
         "message1": {
           "p10": "After watching the videos, move the main handle to the video that should be largely recommended according to you. Save once you've made your choice.",
-          "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity."
+          "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity. If you find the videos similar, the handle should remain close to the center."
         },
         "title2": "Making comparisons helps science 🔬",
         "message2": {
