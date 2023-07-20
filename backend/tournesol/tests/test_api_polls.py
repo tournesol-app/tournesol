@@ -151,6 +151,18 @@ class PollsRecommendationsTestCase(TestCase):
         response = self.client.get("/polls/videos/recommendations/?unsafe=true")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 4)
+        self.assertEqual(
+            response.data["results"][0]["unsafe"], {
+                "status": False,
+                "reasons": [],
+            }
+        )
+        self.assertEqual(
+            response.data["results"][3]["unsafe"], {
+                "status": True,
+                "reasons": ["insufficient_tournesol_score"],
+            }
+        )
 
     def test_anonymous_can_list_with_offset(self):
         """
@@ -478,8 +490,13 @@ class PollsEntityTestCase(TestCase):
             tournesol_score=-2,
             rating_n_contributors=4,
             rating_n_ratings=8,
+            make_safe_for_poll=False
         )
-
+        EntityPollRatingFactory(
+            entity=self.video_1,
+            poll=Poll.default_poll(),
+            sum_trust_scores=4,
+        )
         self.user = UserFactory(username=self._user)
 
     def test_auth_can_read(self):
@@ -491,6 +508,10 @@ class PollsEntityTestCase(TestCase):
         self.assertEqual(data["tournesol_score"], -2)
         self.assertEqual(data["n_comparisons"], 8)
         self.assertEqual(data["n_contributors"], 4)
+        self.assertEqual(data["unsafe"], {
+            "status": True,
+            "reasons": ["insufficient_tournesol_score"],
+        })
         self.assertIn("total_score", data)
         self.assertIn("criteria_scores", data)
 
@@ -502,6 +523,10 @@ class PollsEntityTestCase(TestCase):
         self.assertEqual(data["tournesol_score"], -2)
         self.assertEqual(data["n_comparisons"], 8)
         self.assertEqual(data["n_contributors"], 4)
+        self.assertEqual(data["unsafe"], {
+            "status": True,
+            "reasons": ["insufficient_tournesol_score"],
+        })
         self.assertIn("total_score", data)
         self.assertIn("criteria_scores", data)
 
@@ -715,3 +740,7 @@ class PollRecommendationsWithLowSumTrustScoresTestCase(TestCase):
         results = response.data["results"]
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["uid"], self.video_2.uid)
+        self.assertEqual(results[0]["unsafe"], {
+            "status": False,
+            "reasons": []
+        })
