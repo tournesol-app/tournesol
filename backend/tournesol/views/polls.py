@@ -163,7 +163,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         return queryset.filter(
             all_poll_ratings__poll=self.poll_from_url,
             all_poll_ratings__sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
-            tournesol_score__gt=0,
+            tournesol_score__gt=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE,
         )
 
     def sort_results(self, queryset, filters):
@@ -307,9 +307,10 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
                 F("all_criteria_scores__score") * criteria_weight,
             )
         )
-
-        return queryset.filter(total_score__isnull=False).with_prefetched_scores(
-            poll_name=poll.name, mode=score_mode
+        return (
+            queryset.filter(total_score__isnull=False)
+            .with_prefetched_scores(poll_name=poll.name, mode=score_mode)
+            .with_prefetched_poll_ratings(poll_name=poll.name)
         )
 
     def get_queryset(self):
@@ -328,15 +329,17 @@ class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
     """
 
     poll_parameter = "name"
+    lookup_field = "uid"
 
     permission_classes = []
-    queryset = Entity.objects.none()
     serializer_class = RecommendationSerializer
 
+    def get_queryset(self):
+        poll = self.poll_from_url
+        return Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
+
     def get_object(self):
-        """Get the entity based on the requested uid."""
-        entity_uid = self.kwargs.get("uid")
-        entity = get_object_or_404(Entity, uid=entity_uid)
+        entity = super().get_object()
 
         # The `total_score` is not a natural attribute of an entity. It is
         # used by the recommendations API and computed during the queryset

@@ -20,6 +20,7 @@ from rest_framework.views import APIView
 
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
+from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.renderers import ImageRenderer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.utils.constants import REQUEST_TIMEOUT
@@ -73,7 +74,9 @@ class BasePreviewAPIView(APIView):
 
     def get_entity(self, uid: str) -> Entity:
         try:
-            entity = Entity.objects.get(uid=uid)
+            entity = Entity.objects.with_prefetched_poll_ratings(poll_name=DEFAULT_POLL_NAME).get(
+                uid=uid
+            )
         except Entity.DoesNotExist as exc:
             logger.error("Preview impossible for entity with UID %s.", uid)
             logger.error("Exception caught: %s", exc)
