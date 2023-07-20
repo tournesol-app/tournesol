@@ -35,7 +35,7 @@ VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 @dataclass
 class MehestanParameters:
     alpha: float = 0.02
-    W: float = 5.0
+    W: float = 10.0
     score_shift_W: float = 1.
     score_shift_quantile: float = 0.15
     score_deviation_quantile: float = 0.9
