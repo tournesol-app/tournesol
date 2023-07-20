@@ -193,7 +193,7 @@ const ComparisonPage = () => {
                   weeklyCollectiveGoalDisplay,
                   isEmbedded
                 ) && <CollectiveGoalWeeklyProgress />}
-                <Comparison />
+                <Comparison autoFillSelectorA={true} autoFillSelectorB={true} />
               </>
             ))}
         </Box>
