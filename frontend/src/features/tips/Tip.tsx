@@ -29,7 +29,13 @@ const Tip = ({ tip, tipId }: TipProps) => {
     <Alert
       severity="info"
       icon={false}
-      sx={{ minHeight: '131.617px' }}
+      sx={{
+        minHeight: '131.617px',
+        width: '100%',
+        '.MuiAlert-message': {
+          width: '100%',
+        },
+      }}
       data-testid={`tip-id-${tipId}`}
     >
       <AlertTitle>
