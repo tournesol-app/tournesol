@@ -12,7 +12,7 @@ from solidago.collaborative_scaling import estimate_positive_score_shift, estima
 from solidago.comparisons_to_scores import ContinuousBradleyTerry
 
 from core.models import User
-from ml.inputs import MlInput
+from ml.inputs import MlInput, MlInputFromDb
 from ml.outputs import (
     save_contributor_scalings,
     save_contributor_scores,
@@ -87,19 +87,24 @@ def get_individual_scores(
 
 
 def update_user_scores(poll: Poll, user: User):
-    raise NotImplementedError
-    # ml_input = MlInputFromDb(poll_name=poll.name)
-    # for criteria in poll.criterias_list:
-    #     scores = get_individual_scores(ml_input, criteria, single_user_id=user.pk)
-    #     scores["criteria"] = criteria
-    #     scores.rename(
-    #         columns={
-    #             "score": "raw_score",
-    #             "uncertainty": "raw_uncertainty",
-    #         },
-    #         inplace=True,
-    #     )
-    #     save_contributor_scores(poll, scores, single_criteria=criteria, single_user_id=user.pk)
+    params = MehestanParameters()
+    ml_input = MlInputFromDb(poll_name=poll.name)
+    for criteria in poll.criterias_list:
+        scores = get_individual_scores(
+            ml_input,
+            criteria,
+            parameters=params,
+            single_user_id=user.pk,
+        )
+        scores["criteria"] = criteria
+        scores.rename(
+            columns={
+                "score": "raw_score",
+                "uncertainty": "raw_uncertainty",
+            },
+            inplace=True,
+        )
+        save_contributor_scores(poll, scores, single_criteria=criteria, single_user_id=user.pk)
 
 
 def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.DEFAULT):

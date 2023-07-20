@@ -8,12 +8,6 @@ from solidago.resilient_primitives import BrMean, QrDev, QrMed, QrUnc
 
 from ml.inputs import MlInput
 
-# # `W` is the Byzantine resilience parameter,
-# # i.e the number of voting rights needed to modify a global score by 1 unit.
-# # A user would approximately pull up to a score of 100 / W
-# W = 5
-# SCALING_WEIGHT_CALIBRATION = W
-
 
 def get_user_scaling_weights(ml_input: MlInput, W: float):
     ratings_properties = ml_input.ratings_properties[
