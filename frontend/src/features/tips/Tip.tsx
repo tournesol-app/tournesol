@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   AlertTitle,
-  Box,
   Collapse,
+  Grid,
   Link,
+  MobileStepper,
   Typography,
 } from '@mui/material';
 
@@ -14,9 +15,11 @@ interface TipProps {
   tip: { title: string; messages: string[] };
   // Allows to identify a unique tip in the DOM.
   tipId: string;
+  stepPos?: number;
+  stepMax?: number;
 }
 
-const Tip = ({ tip, tipId }: TipProps) => {
+const Tip = ({ tip, tipId, stepPos, stepMax }: TipProps) => {
   const { t } = useTranslation();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -53,18 +56,34 @@ const Tip = ({ tip, tipId }: TipProps) => {
           );
         })}
       </Collapse>
-      {tip.messages.length > 1 && (
-        <Box display="flex" justifyContent="flex-end">
-          <Link
-            component="button"
-            color="secondary"
-            onClick={handleCollapse}
-            sx={{ textDecoration: 'none' }}
-          >
-            {collapsed ? t('tip.less') : t('tip.showMore')}
-          </Link>
-        </Box>
-      )}
+      <Grid container display="flex" justifyContent="space-between">
+        <Grid item xs={4}></Grid>
+        <Grid item xs={4}>
+          {stepMax !== undefined && stepPos === undefined && (
+            <MobileStepper
+              variant="dots"
+              steps={stepMax}
+              position="static"
+              sx={{ background: 'none' }}
+              activeStep={stepPos}
+              backButton={undefined}
+              nextButton={undefined}
+            />
+          )}
+        </Grid>
+        <Grid item justifyItems="flex-end">
+          {tip.messages.length > 1 && (
+            <Link
+              component="button"
+              color="secondary"
+              onClick={handleCollapse}
+              sx={{ textDecoration: 'none' }}
+            >
+              {collapsed ? t('tip.less') : t('tip.showMore')}
+            </Link>
+          )}
+        </Grid>
+      </Grid>
     </Alert>
   );
 };

@@ -71,7 +71,14 @@ const Tips = ({
         </Box>
       </Grid>
       <Grid item width={`${tipWidth}px`}>
-        {content && <Tip tip={content[index]} tipId={step.toString()} />}
+        {content && (
+          <Tip
+            tip={content[index]}
+            tipId={step.toString()}
+            stepPos={index}
+            stepMax={stopAutoDisplay}
+          />
+        )}
       </Grid>
       <Grid item xs={1}>
         <Box
