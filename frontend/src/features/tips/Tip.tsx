@@ -59,7 +59,7 @@ const Tip = ({ tip, tipId, stepPos, stepMax }: TipProps) => {
       <Grid container display="flex" justifyContent="space-between">
         <Grid item xs={4}></Grid>
         <Grid item xs={4}>
-          {stepMax !== undefined && stepPos === undefined && (
+          {stepMax !== undefined && stepPos !== undefined && (
             <MobileStepper
               variant="dots"
               steps={stepMax}
