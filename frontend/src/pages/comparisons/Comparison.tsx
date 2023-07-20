@@ -97,10 +97,15 @@ const ComparisonPage = () => {
 
     getUserComparisonsAsync(pollName)
       .then((results) => {
-        setIsLoading(false);
         setComparisonsCount(results[0]);
         setUserComparisons(results[1]);
         setUserComparisonsRetrieved(true);
+      })
+      .then(() => {
+        // The isLoading state should be updated after the comparisonRetrieved
+        // state, to prevent React to quickly mount/unmount the <Comparison>
+        // component, which produces errors in the console.
+        setIsLoading(false);
       })
       .catch(() => {
         setIsLoading(false);
