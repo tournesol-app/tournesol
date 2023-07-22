@@ -179,22 +179,9 @@ def run_mehestan_for_criterion(
             W=parameters.score_shift_W,
             quantile=parameters.score_deviation_quantile,
         )
-        true_score_std = np.std(scaled_scores.score)
-
-        print("-- scaled_scores --\n", scaled_scores.score.describe())
-        print("tail:\n", scaled_scores.tail(20))
-
         scaled_scores.score -= score_shift
         scaled_scores.score /= score_std
         scaled_scores.uncertainty /= score_std
-
-        print("STD", score_std)
-        print("TRUE STD", true_score_std)
-        print("SHIFT", score_shift)
-        print("NEW STD", np.std(scaled_scores.score))
-
-        print("-- scaled_scores after shift --\n", scaled_scores.score.describe())
-        print("tail:\n", scaled_scores.tail(20))
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
