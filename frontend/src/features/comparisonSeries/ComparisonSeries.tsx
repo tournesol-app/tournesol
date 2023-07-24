@@ -14,13 +14,14 @@ import {
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { useLoginState } from 'src/hooks';
 import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
-import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
+import { isMobileDevice } from 'src/utils/extension';
+import { scrollToTop } from 'src/utils/ui';
 
 const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
 
@@ -31,13 +32,24 @@ const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
 const MIN_LENGTH = 2;
 
 interface Props {
-  dialogs?: OrderedDialogs;
-  generateInitial?: boolean;
-  getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
+  // The current step of the series.
+  step: number;
+  // Called when a comparison is made. This function given by the parent
+  // component should increment the `step`.
+  onStepUp: (target: number) => void;
   length: number;
+  // The parent can provide the list of user's comparisons, to avoid suggesting
+  // comparisons the user already made.
+  initComparisonsMade: string[];
+  generateInitial?: boolean;
+  dialogs?: OrderedDialogs;
+  dialogAdditionalActions?: { [key: string]: { action: React.ReactNode } };
+  getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   // A magic flag that will enable additional behaviours specific to
   // tutorials, like  the anonymous tracking by our web analytics.
   isTutorial?: boolean;
+  // Display the user's progression through the series.
+  displayStepper?: boolean;
   // Redirect to this URL when the series is over.
   redirectTo?: string;
   keepUIDsAfterRedirect?: boolean;
@@ -64,11 +76,16 @@ const generateSteps = (length: number) => {
 };
 
 const ComparisonSeries = ({
-  dialogs,
-  generateInitial,
-  getAlternatives,
+  step,
+  onStepUp,
   length,
+  initComparisonsMade,
+  generateInitial,
+  dialogs,
+  dialogAdditionalActions,
+  getAlternatives,
   isTutorial = false,
+  displayStepper = false,
   redirectTo,
   keepUIDsAfterRedirect,
   resumable,
@@ -79,7 +96,6 @@ const ComparisonSeries = ({
 
   const { t } = useTranslation();
   const { loginState } = useLoginState();
-  const { name: pollName } = useCurrentPoll();
 
   const username = loginState.username;
 
@@ -91,8 +107,6 @@ const ComparisonSeries = ({
   // display a circular progress placeholder while async requests are made to
   // initialize the component
   const [isLoading, setIsLoading] = React.useState(true);
-  // the current position in the series
-  const [step, setStep] = useState(0);
   // open/close state of the `Dialog` component
   const [dialogOpen, setDialogOpen] = useState(true);
   // tell the `Comparison` to refresh the left entity, or the right one
@@ -103,7 +117,7 @@ const ComparisonSeries = ({
   >([]);
   // an array of already made comparisons, allowing to not suggest two times the
   // same comparison to a user, formatted like this ['uidA/uidB', 'uidA/uidC']
-  const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
+  const [comparisonsMade, setComparisonsMade] = useState(initComparisonsMade);
   // a string representing the URL parameters of the first comparison that may be suggested
   const [firstComparisonParams, setFirstComparisonParams] = useState('');
   // has the series been skipped by the user?
@@ -116,10 +130,7 @@ const ComparisonSeries = ({
   const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
 
   /**
-   * Retrieve the user's comparisons to avoid suggesting couples of entities
-   * that have already been compared.
-   *
-   * Also build the list of `alternatives`. After each comparison, an entity
+   * Build the list of `alternatives`. After each comparison, an entity
    * from this list can be selected to replace one of the two compared
    * entities.
    *
@@ -141,37 +152,24 @@ const ComparisonSeries = ({
       return [];
     }
 
-    async function getUserComparisonsAsync(pName: string) {
-      const comparisons = await getUserComparisons(pName, 100);
-      const formattedComparisons = comparisons.map(
-        (c) => c.entity_a.uid + '/' + c.entity_b.uid
-      );
-
-      setComparisonsMade(formattedComparisons);
-      return formattedComparisons;
-    }
-
     if (length >= MIN_LENGTH) {
-      const comparisonsPromise = getUserComparisonsAsync(pollName);
       const alternativesPromise = getAlternatives
         ? getAlternativesAsync(getAlternatives)
         : Promise.resolve();
 
-      Promise.all([comparisonsPromise, alternativesPromise])
-        .then(([comparisons, entities]) => {
-          if (resumable && comparisons.length > 0) {
-            setStep(comparisons.length);
+      alternativesPromise
+        .then((entities) => {
+          if (resumable && comparisonsMade.length > 0) {
+            onStepUp(comparisonsMade.length);
           }
 
           if (entities && initialize.current && (uidA === '' || uidB === '')) {
             setFirstComparisonParams(
-              genInitialComparisonParams(entities, comparisons, uidA, uidB)
+              genInitialComparisonParams(entities, comparisonsMade, uidA, uidB)
             );
           }
         })
-        .then(() => {
-          setIsLoading(false);
-        });
+        .then(() => setIsLoading(false));
     } else {
       // stop loading if no series is going to be rendered
       setIsLoading(false);
@@ -197,12 +195,13 @@ const ComparisonSeries = ({
 
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
-      setStep(newStep);
+      onStepUp(newStep);
+      scrollToTop('smooth');
     }
 
     // Anonymously track the users' progression through the tutorial, to
     // evaluate the tutorial's quality. DO NOT SEND ANY PERSONAL DATA.
-    if (comparisonIsNew && isTutorial === true) {
+    if (comparisonIsNew && isTutorial) {
       trackEvent(TRACKED_EVENTS.tutorial, { props: { step: step + 1 } });
     }
 
@@ -237,7 +236,9 @@ const ComparisonSeries = ({
     setRefreshLeft(!refreshLeft);
 
     if (dialogs && newStep != step && newStep in dialogs) {
-      setDialogOpen(true);
+      if (!isMobileDevice() || dialogs[newStep].mobile) {
+        setDialogOpen(true);
+      }
     }
 
     return nextSuggestion;
@@ -256,7 +257,7 @@ const ComparisonSeries = ({
 
       // Only track skip events if the series is the tutorial. Skipping a
       // generic comparison series is not useful for now.
-      if (isTutorial === true) {
+      if (isTutorial) {
         trackEvent(TRACKED_EVENTS.tutorialSkipped, { props: { step: step } });
       }
     }
@@ -281,8 +282,6 @@ const ComparisonSeries = ({
     }
 
     const newSearchParams = new URLSearchParams();
-    newSearchParams.append('series', 'true');
-
     let newUidA: string;
     let newUidB: string;
 
@@ -354,6 +353,7 @@ const ComparisonSeries = ({
           {!isLoading &&
             dialogs &&
             step in dialogs &&
+            (!isMobileDevice() || dialogs[step].mobile) &&
             (!getAlternatives || alternatives.length > 0) && (
               <DialogBox
                 title={dialogs[step].title}
@@ -377,19 +377,25 @@ const ComparisonSeries = ({
                         ? skipButtonLabel
                         : t('comparisonSeries.skipTheSeries')}
                     </Button>
-                  ) : null
+                  ) : (
+                    dialogAdditionalActions &&
+                    step in dialogAdditionalActions &&
+                    dialogAdditionalActions[step].action
+                  )
                 }
               />
             )}
-          <Container maxWidth="md" sx={{ my: 2 }}>
-            <Stepper
-              activeStep={step}
-              alternativeLabel
-              sx={{ marginBottom: 4 }}
-            >
-              {generateSteps(length)}
-            </Stepper>
-          </Container>
+          {displayStepper && (
+            <Container maxWidth="md" sx={{ my: 2 }}>
+              <Stepper
+                activeStep={step}
+                alternativeLabel
+                sx={{ marginBottom: 4 }}
+              >
+                {generateSteps(length)}
+              </Stepper>
+            </Container>
+          )}
           <Comparison afterSubmitCallback={afterSubmitCallback} />
         </LoaderWrapper>
       ) : (

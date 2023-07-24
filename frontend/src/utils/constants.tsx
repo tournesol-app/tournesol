@@ -8,7 +8,9 @@ import {
 } from './polls/presidentielle2022';
 import {
   getTutorialVideos,
+  getTutorialTips as getVideosTutorialTips,
   getTutorialDialogs as getVideosTutorialDialogs,
+  getTutorialDialogActions as getVideosTutorialDialogActions,
 } from './polls/videos';
 import { SelectablePoll, RouteID } from './types';
 
@@ -211,6 +213,8 @@ export const polls: Array<SelectablePoll> = [
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,
     tutorialDialogs: getVideosTutorialDialogs,
+    tutorialDialogActions: getVideosTutorialDialogActions,
+    tutorialTips: getVideosTutorialTips,
     tutorialRedirectTo: '/comparison',
     tutorialKeepUIDsAfterRedirect: true,
   },

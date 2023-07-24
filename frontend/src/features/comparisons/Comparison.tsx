@@ -55,6 +55,8 @@ interface Props {
     uidA: string,
     uidB: string
   ) => { uid: string; refreshLeft: boolean };
+  autoFillSelectorA?: boolean;
+  autoFillSelectorB?: boolean;
 }
 
 /**
@@ -65,7 +67,11 @@ interface Props {
  * a entity uid is changed. Adding this component into a page will also add
  * these uids in the URL parameters.
  */
-const Comparison = ({ afterSubmitCallback }: Props) => {
+const Comparison = ({
+  afterSubmitCallback,
+  autoFillSelectorA = false,
+  autoFillSelectorB = false,
+}: Props) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -207,7 +213,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          autoFill
+          autoFill={autoFillSelectorA}
         />
       </Grid>
       <Grid
@@ -223,7 +229,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          autoFill
+          autoFill={autoFillSelectorB}
         />
       </Grid>
       <Grid
