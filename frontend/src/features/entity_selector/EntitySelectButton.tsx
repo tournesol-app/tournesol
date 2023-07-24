@@ -27,7 +27,7 @@ interface Props {
   otherUid: string | null;
 }
 
-const VideoInput = ({ onChange, otherUid }: Props) => {
+const VideoInput = ({ value, onChange, otherUid }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
@@ -145,6 +145,8 @@ const VideoInput = ({ onChange, otherUid }: Props) => {
           onClose={() => setSuggestionsOpen(false)}
         >
           <SelectorListBox
+            value={value}
+            onChange={onChange}
             tabs={tabs}
             onSelectEntity={handleOptionClick}
             elevation={10}

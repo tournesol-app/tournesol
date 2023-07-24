@@ -295,7 +295,7 @@ const EntitySelectorInnerAuth = ({
                     otherUid={otherUid}
                     onClick={() => {
                       setLoading(true);
-                      // setInputValue('');
+                      setInputValue('');
                     }}
                     onResponse={(uid) => {
                       uid ? onChange({ uid, rating: null }) : setLoading(false);
@@ -327,7 +327,7 @@ const EntitySelectorInnerAuth = ({
                   otherUid={otherUid}
                   onClick={() => {
                     setLoading(true);
-                    // setInputValue('');
+                    setInputValue('');
                   }}
                   onResponse={(uid) => {
                     uid ? onChange({ uid, rating: null }) : setLoading(false);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Tab, Paper, Typography } from '@mui/material';
+import { Tabs, Tab, Paper, Typography, TextField, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
@@ -7,6 +7,8 @@ import LoaderWrapper from 'src/components/LoaderWrapper';
 
 interface Props {
   tabs: EntitiesTab[];
+  value?: string;
+  onChange?: (value: string) => void;
   onSelectEntity?: (entityUid: string) => void;
   width?: string | number;
   elevation?: number;
@@ -35,6 +37,8 @@ const TabError = ({ message }: { message: string }) => (
 
 const EntityTabsBox = ({
   tabs,
+  value,
+  onChange,
   onSelectEntity,
   width = 'min(700px, 100vw)',
   elevation = 1,
@@ -105,6 +109,29 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
+      {value !== undefined && onChange !== undefined && (
+        <Box
+          sx={{
+            bgcolor: 'grey.100',
+          }}
+          paddingLeft={1}
+          paddingRight={1}
+        >
+          <TextField
+            color="secondary"
+            fullWidth
+            value={value}
+            placeholder={t('entitySelector.pasteUrlOrVideoId')}
+            onChange={(e) => {
+              onChange(e.target.value);
+            }}
+            variant="standard"
+            onFocus={(e) => {
+              e.target.select();
+            }}
+          />
+        </Box>
+      )}
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"
