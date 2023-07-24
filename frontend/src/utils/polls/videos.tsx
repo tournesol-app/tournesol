@@ -1,8 +1,14 @@
+import React from 'react';
 import { TFunction } from 'react-i18next';
+
+import { Button } from '@mui/material';
+
 import { SUPPORTED_LANGUAGES } from 'src/i18n';
 import { PollsService, Recommendation } from 'src/services/openapi';
-import { OrderedDialogs } from 'src/utils/types';
 import { recommendationsLanguagesFromNavigator } from 'src/utils/recommendationsLanguages';
+import { OrderedDialogs, OrderedTips } from 'src/utils/types';
+
+import { getWebExtensionUrl } from '../extension';
 
 let VIDEOS: Promise<Recommendation[]> | null = null;
 
@@ -56,41 +62,66 @@ export function getTutorialVideos(): Promise<Recommendation[]> {
   return VIDEOS;
 }
 
+export const getTutorialDialogActions = (
+  t: TFunction
+): { [key: string]: { action: React.ReactNode } } => {
+  return {
+    '3': {
+      action: (
+        <Button
+          color="secondary"
+          variant="outlined"
+          href={getWebExtensionUrl()}
+        >
+          {t('videos.dialogs.tutorial.installTheExtension')}
+        </Button>
+      ),
+    },
+  };
+};
+
 export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
   return {
-    '0': {
-      title: t('videos.dialogs.tutorial.title1'),
-      messages: [
-        t('videos.dialogs.tutorial.message1.p10'),
-        t('videos.dialogs.tutorial.message1.p20'),
-        t('videos.dialogs.tutorial.message1.p30'),
-        t('videos.dialogs.tutorial.message1.p40'),
-      ],
-    },
-    '1': {
-      title: t('videos.dialogs.tutorial.title2'),
-      messages: [
-        t('videos.dialogs.tutorial.message2.p10'),
-        t('videos.dialogs.tutorial.message2.p20'),
-        t('videos.dialogs.tutorial.message2.p30'),
-        t('videos.dialogs.tutorial.message2.p40'),
-        t('videos.dialogs.tutorial.message2.p50'),
-      ],
-    },
-    '2': {
-      title: t('videos.dialogs.tutorial.title3'),
-      messages: [
-        t('videos.dialogs.tutorial.message3.p10'),
-        t('videos.dialogs.tutorial.message3.p20'),
-        t('videos.dialogs.tutorial.message3.p30'),
-      ],
-    },
     '3': {
       title: t('videos.dialogs.tutorial.title4'),
       messages: [
         t('videos.dialogs.tutorial.message4.p10'),
         t('videos.dialogs.tutorial.message4.p20'),
-        t('videos.dialogs.tutorial.message4.p30'),
+      ],
+      mobile: false,
+    },
+  };
+};
+
+export const getTutorialTips = (t: TFunction): OrderedTips => {
+  return {
+    '0': {
+      title: t('videos.tips.tutorial.title1'),
+      messages: [
+        t('videos.tips.tutorial.message1.p10'),
+        t('videos.tips.tutorial.message1.p20'),
+      ],
+    },
+    '1': {
+      title: t('videos.tips.tutorial.title2'),
+      messages: [
+        t('videos.tips.tutorial.message2.p10'),
+        t('videos.tips.tutorial.message2.p20'),
+      ],
+    },
+    '2': {
+      title: t('videos.tips.tutorial.title3'),
+      messages: [
+        t('videos.tips.tutorial.message3.p10'),
+        t('videos.tips.tutorial.message3.p20'),
+      ],
+    },
+    '3': {
+      title: t('videos.tips.tutorial.title4'),
+      messages: [
+        t('videos.tips.tutorial.message4.p10'),
+        t('videos.tips.tutorial.message4.p20'),
+        t('videos.tips.tutorial.message4.p30'),
       ],
     },
   };

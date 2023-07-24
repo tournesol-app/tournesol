@@ -60,7 +60,7 @@ const HomePresidentielle2022Page = () => {
                 color="primary"
                 variant="contained"
                 component={Link}
-                to={`${baseUrl}/comparison?series=true`}
+                to={`${baseUrl}/comparison`}
                 sx={{
                   px: 4,
                   fontSize: '120%',

@@ -39,7 +39,6 @@ const HomeComparison = () => {
   const tutorialLength = options?.tutorialLength ?? 4;
 
   const { isLoggedIn } = useLoginState();
-  const [tutoRedirect, setTutoRedirect] = useState(true);
 
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState(false);
@@ -94,13 +93,6 @@ const HomeComparison = () => {
 
     Promise.all([comparisonsPromise, alternativesPromise])
       .then(([comparisons, entities]) => {
-        // Deterine if the user should be redirected to the tutorial.
-        let shouldBeRedirected = true;
-        if (isLoggedIn && comparisons[0] >= tutorialLength) {
-          shouldBeRedirected = false;
-        }
-        setTutoRedirect(shouldBeRedirected);
-
         // Build the comparison.
         if (entities.length > 0) {
           const entityA = selectRandomEntity(entities, []);
@@ -203,11 +195,7 @@ const HomeComparison = () => {
                 color="primary"
                 size="large"
                 component={Link}
-                to={
-                  tutoRedirect
-                    ? `/comparison?series=true&uidA=${uidA}&uidB=${uidB}`
-                    : `/comparison?uidA=${uidA}&uidB=${uidB}`
-                }
+                to={`/comparison?uidA=${uidA}&uidB=${uidB}`}
               >
                 {t('homeComparison.compareTheVideos')}
               </Button>
