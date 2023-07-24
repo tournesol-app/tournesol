@@ -107,7 +107,8 @@
     "unconnected": "To connect",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
-    "backButton": "Back"
+    "backButton": "Back",
+    "select": "Select"
   },
   "tabsBox": {
     "errorOnLoading": "An error occurred while loading the results.",

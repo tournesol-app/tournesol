@@ -111,7 +111,8 @@
     "unconnected": "À relier",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
-    "backButton": "Retour"
+    "backButton": "Retour",
+    "select": "Selectionner"
   },
   "tabsBox": {
     "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
