@@ -15,7 +15,7 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
-import { getEntityName, UID_YT_NAMESPACE } from 'src/utils/constants';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonHelper from './ComparisonHelper';
 
@@ -186,8 +186,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
-  const entityName = getEntityName(t, pollName);
-
   return (
     <Grid
       container
@@ -205,7 +203,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         }}
       >
         <EntitySelector
-          title={`${entityName} 1`}
+          title={`A`}
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
@@ -221,7 +219,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         }}
       >
         <EntitySelector
-          title={`${entityName} 2`}
+          title={`B`}
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
