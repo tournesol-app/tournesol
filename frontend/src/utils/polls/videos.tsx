@@ -1,11 +1,14 @@
 import React from 'react';
 import { TFunction } from 'react-i18next';
+
+import { Button } from '@mui/material';
+
 import { SUPPORTED_LANGUAGES } from 'src/i18n';
 import { PollsService, Recommendation } from 'src/services/openapi';
-import { OrderedDialogs } from 'src/utils/types';
 import { recommendationsLanguagesFromNavigator } from 'src/utils/recommendationsLanguages';
+import { OrderedDialogs, OrderedTips } from 'src/utils/types';
+
 import { getWebExtensionUrl } from '../extension';
-import { Button } from '@mui/material';
 
 let VIDEOS: Promise<Recommendation[]> | null = null;
 
@@ -85,11 +88,12 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
         t('videos.dialogs.tutorial.message4.p10'),
         t('videos.dialogs.tutorial.message4.p20'),
       ],
+      mobile: false,
     },
   };
 };
 
-export const getTutorialTips = (t: TFunction): OrderedDialogs => {
+export const getTutorialTips = (t: TFunction): OrderedTips => {
   return {
     '0': {
       title: t('videos.tips.tutorial.title1'),

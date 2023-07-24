@@ -60,6 +60,15 @@ export enum RouteID {
 }
 
 export type OrderedDialogs = {
+  [key: string]: {
+    title: string;
+    messages: Array<string>;
+    // If false, the dialog should not be displayed on mobile devices.
+    mobile?: boolean;
+  };
+};
+
+export type OrderedTips = {
   [key: string]: { title: string; messages: Array<string> };
 };
 
@@ -108,7 +117,7 @@ export type SelectablePoll = {
   tutorialDialogActions?: (t: TFunction) => {
     [key: string]: { action: React.ReactNode };
   };
-  tutorialTips?: (t: TFunction) => OrderedDialogs;
+  tutorialTips?: (t: TFunction) => OrderedTips;
   // redirect to this page after the last comparison is submitted
   tutorialRedirectTo?: string;
   // if true, the two UIDs present in the URL will be kept after the redirection

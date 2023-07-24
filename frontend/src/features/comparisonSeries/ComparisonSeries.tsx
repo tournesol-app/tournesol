@@ -20,6 +20,7 @@ import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
 import { OrderedDialogs } from 'src/utils/types';
 import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
+import { isMobileDevice } from 'src/utils/extension';
 import { scrollToTop } from 'src/utils/ui';
 
 const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
@@ -235,7 +236,9 @@ const ComparisonSeries = ({
     setRefreshLeft(!refreshLeft);
 
     if (dialogs && newStep != step && newStep in dialogs) {
-      setDialogOpen(true);
+      if (!isMobileDevice() || dialogs[newStep].mobile) {
+        setDialogOpen(true);
+      }
     }
 
     return nextSuggestion;
@@ -350,6 +353,7 @@ const ComparisonSeries = ({
           {!isLoading &&
             dialogs &&
             step in dialogs &&
+            (!isMobileDevice() || dialogs[step].mobile) &&
             (!getAlternatives || alternatives.length > 0) && (
               <DialogBox
                 title={dialogs[step].title}
