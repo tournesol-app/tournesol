@@ -1,7 +1,7 @@
 import React from 'react';
 import { TFunction } from 'react-i18next';
 
-import { Button } from '@mui/material';
+import { Button, Link } from '@mui/material';
 
 import { SUPPORTED_LANGUAGES } from 'src/i18n';
 import { PollsService, Recommendation } from 'src/services/openapi';
@@ -71,7 +71,9 @@ export const getTutorialDialogActions = (
         <Button
           color="secondary"
           variant="outlined"
+          component={Link}
           href={getWebExtensionUrl()}
+          target="_blank"
         >
           {t('videos.dialogs.tutorial.installTheExtension')}
         </Button>
