@@ -279,27 +279,56 @@ const EntitySelectorInnerAuth = ({
             flexDirection="row"
             alignItems="center"
           >
-            <Typography
-              variant="h6"
-              color="secondary"
-              flexGrow={1}
-              sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-            >
-              {title}
-            </Typography>
-            <AutoEntityButton
-              disabled={loading}
-              currentUid={uid}
-              otherUid={otherUid}
-              onClick={() => {
-                setLoading(true);
-                // setInputValue('');
-              }}
-              onResponse={(uid) => {
-                uid ? onChange({ uid, rating: null }) : setLoading(false);
-              }}
-              autoFill={autoFill}
-            />
+            {title === 'A' ? (
+              <>
+                <Box flexGrow={1}>
+                  <AutoEntityButton
+                    disabled={loading}
+                    currentUid={uid}
+                    otherUid={otherUid}
+                    onClick={() => {
+                      setLoading(true);
+                      // setInputValue('');
+                    }}
+                    onResponse={(uid) => {
+                      uid ? onChange({ uid, rating: null }) : setLoading(false);
+                    }}
+                    autoFill={autoFill}
+                  />
+                </Box>
+                <Typography
+                  variant="h6"
+                  color="secondary"
+                  sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+                >
+                  {title}
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Typography
+                  variant="h6"
+                  color="secondary"
+                  flexGrow={1}
+                  sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+                >
+                  {title}
+                </Typography>
+                <AutoEntityButton
+                  disabled={loading}
+                  currentUid={uid}
+                  otherUid={otherUid}
+                  onClick={() => {
+                    setLoading(true);
+                    // setInputValue('');
+                  }}
+                  onResponse={(uid) => {
+                    uid ? onChange({ uid, rating: null }) : setLoading(false);
+                  }}
+                  autoFill={autoFill}
+                />
+              </>
+            )}
           </Box>
 
           {/* <Box mx={1} marginBottom={1}>
