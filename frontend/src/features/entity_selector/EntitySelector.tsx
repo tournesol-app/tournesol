@@ -12,17 +12,15 @@ import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 
 import { ActionList } from 'src/utils/types';
-import { extractVideoId } from 'src/utils/video';
 import {
   UsersService,
   ContributorRating,
   PollsService,
   Recommendation,
 } from 'src/services/openapi';
-import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
-import EntityInput from './EntityInput';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -139,7 +137,7 @@ const EntitySelectorInnerAuth = ({
   const { uid, rating, ratingIsExpired } = value;
 
   const [loading, setLoading] = useState(false);
-  const [inputValue, setInputValue] = useState(value.uid);
+  // const [inputValue, setInputValue] = useState(value.uid);
 
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
@@ -214,36 +212,36 @@ const EntitySelectorInnerAuth = ({
   /**
    * Update input value when "uid" has been changed by the parent component.
    */
-  useEffect(() => {
-    setInputValue((previousValue) => {
-      if (previousValue !== uid) {
-        return uid;
-      }
-      return previousValue;
-    });
-  }, [uid]);
+  // useEffect(() => {
+  //   setInputValue((previousValue) => {
+  //     if (previousValue !== uid) {
+  //       return uid;
+  //     }
+  //     return previousValue;
+  //   });
+  // }, [uid]);
 
-  const handleChange = (value: string) => {
-    if (value === '') {
-      setInputValue('');
-      onChange({
-        uid: '',
-        rating: null,
-      });
-      return;
-    }
+  // const handleChange = (value: string) => {
+  //   if (value === '') {
+  //     setInputValue('');
+  //     onChange({
+  //       uid: '',
+  //       rating: null,
+  //     });
+  //     return;
+  //   }
 
-    const videoIdFromValue =
-      pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
-    const newUid = videoIdFromValue
-      ? UID_YT_NAMESPACE + videoIdFromValue
-      : value.trim();
-    setInputValue(newUid);
-    onChange({
-      uid: newUid,
-      rating: null,
-    });
-  };
+  //   const videoIdFromValue =
+  //     pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
+  //   const newUid = videoIdFromValue
+  //     ? UID_YT_NAMESPACE + videoIdFromValue
+  //     : value.trim();
+  //   setInputValue(newUid);
+  //   onChange({
+  //     uid: newUid,
+  //     rating: null,
+  //   });
+  // };
 
   const handleRatingUpdate = useCallback(
     (newValue: ContributorRating) => {
@@ -275,6 +273,7 @@ const EntitySelectorInnerAuth = ({
         <>
           <Box
             mx={1}
+            mb={1}
             marginTop="4px"
             display="flex"
             flexDirection="row"
@@ -294,7 +293,7 @@ const EntitySelectorInnerAuth = ({
               otherUid={otherUid}
               onClick={() => {
                 setLoading(true);
-                setInputValue('');
+                // setInputValue('');
               }}
               onResponse={(uid) => {
                 uid ? onChange({ uid, rating: null }) : setLoading(false);
@@ -303,13 +302,13 @@ const EntitySelectorInnerAuth = ({
             />
           </Box>
 
-          <Box mx={1} marginBottom={1}>
+          {/* <Box mx={1} marginBottom={1}>
             <EntityInput
               value={inputValue || uid || ''}
               onChange={handleChange}
               otherUid={otherUid}
             />
-          </Box>
+          </Box> */}
         </>
       )}
       <Box position="relative">
