@@ -992,11 +992,10 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "title4": "Merci pour ces premières contributions ❤️",
+        "title4": "Comparez facilement avec l'extension",
         "message4": {
-          "p10": "C'est grace à vous que des projets de recherche participatifs comme Tournesol peuvent avancer.",
-          "p20": "Jusqu'à présent nous vous avons suggéré des vidéos, mais après la prochaine comparaison vous serez libre de comparer les vidéos que vous avez regardées. Surtout celles que vous jugez d'intérêt général !",
-          "p30": "Pour vous aider, l'extension de navigateur Tournesol vous permet d'ajouter des vidéos directement depuis YouTube à votre liste pour les comparer plus tard. Pratique."
+          "p10": "L'extension de navigateur Tournesol vous permet d'ajouter les vidéos que vous regardez sur YouTube à votre lister à comparer plus tard.",
+          "p20": "Vous pouvez aussi faire des comparaisons directement depuis YouTube ! Pratique."
         },
         "installTheExtension": "Installer l'extension"
       }
@@ -1006,24 +1005,23 @@
         "title1": "Comparer deux vidéos 🌻",
         "message1": {
           "p10": "Après avoir regardé les vidéos, déplacez le curseur principal vers la vidéo qui, selon vous, devrait être largement recommandée. Enregistrez quand votre choix est fait.",
-          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
+          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait se rapprocher du centre."
         },
         "title2": "Faire des comparaisons aide la science 🔬",
         "message2": {
           "p10": "Chaque comparaison aide Tournesol à améliorer ses recommandations et sa base de données publique. Essayez maintenant de dérouler et d'utiliser les critères optionnels.",
-          "p20": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
-          "p30": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+          "p20": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant. Il vous sera possible de modifier ultérieurement vos comparaisons depuis votre page Mes comparaisons."
         },
         "title3": "Comment fonctionne Tournesol ? 🤖",
         "message3": {
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
-          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
-          "p30": "Plus ce score est élevé, plus la communaute pense que la vidéo devrait être largement recommandée."
+          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes. Plus ce score est élevé, plus la communauté pense que la vidéo devrait être largement recommandée."
         },
-        "title4": "Et maintenant ? 🔭",
+        "title4": "Merci pour ces premières contributions ❤️",
         "message4": {
-          "p10": "Tournesol est un projet à long terme, notre objectif est de recueillir autant de comparaisons que possible. Vos contributions nous sont très importantes et nous espérons vous revoir de temps en temps.",
-          "p20": "🌻 🌻 🌻 🌻 🌻 🌻 🐌"
+          "p10": "Tournesol est un projet à long terme, notre objectif est de recueillir autant de comparaisons que possible. Vos contributions aide grandement la recherche et nous espérons vous revoir de temps en temps.",
+          "p20": "A l'avenir, pour faire des comparaisons plus facilement et plus rapidement, nous vous invitons à suivre cette recette : (1) ajouter des vidéos depuis YouTube grace à l'extension ; (2) utiliser le sélecteur de vidéo au dessous des boutons AUTO pour sélectionner et comparer les vidéos ainsi ajoutées.",
+          "p30": "🌻 🌻 🌻 🌻 🌻 🌻 🐌"
         }
       }
     }

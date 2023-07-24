@@ -84,7 +84,6 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.dialogs.tutorial.message4.p10'),
         t('videos.dialogs.tutorial.message4.p20'),
-        t('videos.dialogs.tutorial.message4.p30'),
       ],
     },
   };
@@ -104,7 +103,6 @@ export const getTutorialTips = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.tips.tutorial.message2.p10'),
         t('videos.tips.tutorial.message2.p20'),
-        t('videos.tips.tutorial.message2.p30'),
       ],
     },
     '2': {
@@ -112,7 +110,6 @@ export const getTutorialTips = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.tips.tutorial.message3.p10'),
         t('videos.tips.tutorial.message3.p20'),
-        t('videos.tips.tutorial.message3.p30'),
       ],
     },
     '3': {
@@ -120,6 +117,7 @@ export const getTutorialTips = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.tips.tutorial.message4.p10'),
         t('videos.tips.tutorial.message4.p20'),
+        t('videos.tips.tutorial.message4.p30'),
       ],
     },
   };
