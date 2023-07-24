@@ -1,5 +1,9 @@
 export const scrollToTop = (behavior: ScrollBehavior | undefined = 'auto') => {
-  document.querySelector('main')?.scrollTo?.({ top: 0, behavior: behavior });
+  // Adding a small delay avoids to scroll when the document is still
+  // rendering.
+  setTimeout(function () {
+    document.querySelector('main')?.scrollTo?.({ top: 0, behavior: behavior });
+  }, 80);
 };
 
 export const openTwitterPopup = (text: string) => {
