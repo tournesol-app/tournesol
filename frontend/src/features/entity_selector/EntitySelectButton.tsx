@@ -21,6 +21,9 @@ import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { useLoginState } from 'src/hooks';
 
+// in milliseconds
+const TYPING_DELAY = 300;
+
 interface Props {
   value: string;
   onChange: (value: string) => void;
@@ -33,6 +36,8 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [fieldValue, setFieldValue] = useState(value);
+
   const { isLoggedIn } = useLoginState();
   const fullScreenModal = useMediaQuery(
     (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
@@ -50,6 +55,15 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
       setMenuAnchor(event.currentTarget);
     }
   };
+
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      setSuggestionsOpen(false);
+    }, TYPING_DELAY);
+
+    return () => clearTimeout(timeOutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fieldValue]);
 
   const tabs: EntitiesTab[] = useMemo(
     () => [
@@ -149,7 +163,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
             value={value}
             onChange={(e) => {
               onChange(e);
-              setSuggestionsOpen(false);
+              setFieldValue(e);
             }}
             tabs={tabs}
             onSelectEntity={handleOptionClick}
