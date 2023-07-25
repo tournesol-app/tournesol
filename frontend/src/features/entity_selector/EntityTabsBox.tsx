@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Tab, Paper, Typography, TextField, Box } from '@mui/material';
+import {
+  Tabs,
+  Tab,
+  Paper,
+  Typography,
+  TextField,
+  Box,
+  InputAdornment,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
+import { Search } from '@mui/icons-material';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -114,20 +123,27 @@ const EntityTabsBox = ({
           sx={{
             bgcolor: 'grey.100',
           }}
-          paddingLeft={1}
-          paddingRight={1}
+          padding={1}
+          paddingBottom={0}
         >
           <TextField
+            label={t('entitySelector.pasteUrlOrVideoId')}
             color="secondary"
             fullWidth
+            size="small"
             value={value}
-            placeholder={t('entitySelector.pasteUrlOrVideoId')}
             onChange={(e) => {
               onChange(e.target.value);
             }}
-            variant="standard"
             onFocus={(e) => {
               e.target.select();
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Search />
+                </InputAdornment>
+              ),
             }}
           />
         </Box>
