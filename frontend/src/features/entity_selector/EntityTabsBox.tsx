@@ -148,6 +148,7 @@ const EntityTabsBox = ({
             sx={{
               bgcolor: 'white',
             }}
+            data-testid="paste-video-url"
           />
         </Box>
       )}

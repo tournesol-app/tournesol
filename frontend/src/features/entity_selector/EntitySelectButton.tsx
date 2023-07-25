@@ -135,6 +135,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
           color="secondary"
           sx={{ minWidth: '110px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
           disableElevation
+          data-testid="entity-select-button"
         >
           {t('entitySelector.select')}
         </Button>
