@@ -22,7 +22,7 @@ import SelectorPopper from './SelectorPopper';
 import { useLoginState } from 'src/hooks';
 
 // in milliseconds
-const TYPING_DELAY = 300;
+const TYPING_DELAY = 500;
 
 interface Props {
   value: string;
