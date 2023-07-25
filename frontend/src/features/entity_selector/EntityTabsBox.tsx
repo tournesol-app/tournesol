@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import { Search } from '@mui/icons-material';
+import { Link } from '@mui/icons-material';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -141,9 +141,12 @@ const EntityTabsBox = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Search />
+                  <Link />
                 </InputAdornment>
               ),
+            }}
+            sx={{
+              bgcolor: 'white',
             }}
           />
         </Box>
