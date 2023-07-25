@@ -46,6 +46,7 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
+  alignment: 'left' | 'right';
   variant?: 'regular' | 'noControl';
   autoFill?: boolean;
 }
@@ -66,6 +67,7 @@ const EntitySelector = ({
   otherUid,
   variant = 'regular',
   autoFill = false,
+  alignment,
 }: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
@@ -78,6 +80,7 @@ const EntitySelector = ({
           value={value}
           onChange={onChange}
           otherUid={otherUid}
+          alignment={alignment}
           variant={variant}
           autoFill={autoFill}
         />
@@ -129,6 +132,7 @@ const EntitySelectorInnerAuth = ({
   value,
   onChange,
   otherUid,
+  alignment,
   variant,
   autoFill,
 }: Props) => {
@@ -274,91 +278,48 @@ const EntitySelectorInnerAuth = ({
       {showEntityInput && (
         <>
           <Box
-            mx={1}
-            mb={1}
-            marginTop="4px"
+            m={1}
             display="flex"
-            flexDirection="row"
+            flexDirection={alignment === 'left' ? 'row' : 'row-reverse'}
             alignItems="center"
           >
-            {title === 'A' ? (
-              <>
-                <Grid container spacing={1} flexGrow={1} display="flex">
-                  <Grid item>
-                    <EntitySelectButton
-                      value={inputValue || uid || ''}
-                      onChange={handleChange}
-                      otherUid={otherUid}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <AutoEntityButton
-                      disabled={loading}
-                      currentUid={uid}
-                      otherUid={otherUid}
-                      onClick={() => {
-                        setLoading(true);
-                        setInputValue('');
-                      }}
-                      onResponse={(uid) => {
-                        uid
-                          ? onChange({ uid, rating: null })
-                          : setLoading(false);
-                      }}
-                      autoFill={autoFill}
-                    />
-                  </Grid>
-                </Grid>
-                <Typography
-                  variant="h6"
-                  color="secondary"
-                  sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-                >
-                  {title}
-                </Typography>
-              </>
-            ) : (
-              <>
-                <Typography
-                  variant="h6"
-                  color="secondary"
-                  sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-                >
-                  {title}
-                </Typography>
-                <Grid
-                  container
-                  spacing={1}
-                  display="flex"
-                  justifyContent="flex-end"
-                >
-                  <Grid item>
-                    <AutoEntityButton
-                      disabled={loading}
-                      currentUid={uid}
-                      otherUid={otherUid}
-                      onClick={() => {
-                        setLoading(true);
-                        setInputValue('');
-                      }}
-                      onResponse={(uid) => {
-                        uid
-                          ? onChange({ uid, rating: null })
-                          : setLoading(false);
-                      }}
-                      autoFill={autoFill}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <EntitySelectButton
-                      value={inputValue || uid || ''}
-                      onChange={handleChange}
-                      otherUid={otherUid}
-                    />
-                  </Grid>
-                </Grid>
-              </>
-            )}
+            <Grid
+              container
+              spacing={1}
+              flexGrow={1}
+              display="flex"
+              direction={alignment === 'left' ? 'row' : 'row-reverse'}
+            >
+              <Grid item>
+                <EntitySelectButton
+                  value={inputValue || uid || ''}
+                  onChange={handleChange}
+                  otherUid={otherUid}
+                />
+              </Grid>
+              <Grid item>
+                <AutoEntityButton
+                  disabled={loading}
+                  currentUid={uid}
+                  otherUid={otherUid}
+                  onClick={() => {
+                    setLoading(true);
+                    setInputValue('');
+                  }}
+                  onResponse={(uid) => {
+                    uid ? onChange({ uid, rating: null }) : setLoading(false);
+                  }}
+                  autoFill={autoFill}
+                />
+              </Grid>
+            </Grid>
+            <Typography
+              variant="h6"
+              color="secondary"
+              sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+            >
+              {title}
+            </Typography>
           </Box>
         </>
       )}

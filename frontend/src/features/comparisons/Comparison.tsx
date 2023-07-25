@@ -213,6 +213,7 @@ const Comparison = ({
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
+          alignment="left"
           autoFill={autoFillSelectorA}
         />
       </Grid>
@@ -229,6 +230,7 @@ const Comparison = ({
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
+          alignment="right"
           autoFill={autoFillSelectorB}
         />
       </Grid>
