@@ -40,14 +40,6 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
             ),
         ).filter(total_score__isnull=False)
 
-    def filter_unsafe(self, queryset, filters):
-        if filters["unsafe"]:
-            return queryset
-
-        # Ignore RECOMMENDATIONS_MIN_CONTRIBUTORS, only filter on the
-        # total score
-        return queryset.filter(tournesol_score__gt=0)
-
 
 class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
     """
@@ -64,11 +56,10 @@ class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
         queryset = Entity.objects.filter(
             contributorvideoratings__poll=poll,
             contributorvideoratings__user=user
-        )
+        ).with_prefetched_poll_ratings(poll_name=poll.name)
 
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
-        queryset = self.filter_unsafe(queryset, filters)
         queryset = self.sort_results(queryset, filters)
         return queryset
 
@@ -89,10 +80,9 @@ class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
             contributorvideoratings__poll=poll,
             contributorvideoratings__user=user,
             contributorvideoratings__is_public=True,
-        )
+        ).with_prefetched_poll_ratings(poll_name=poll.name)
 
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
-        queryset = self.filter_unsafe(queryset, filters)
         queryset = self.sort_results(queryset, filters)
         return queryset

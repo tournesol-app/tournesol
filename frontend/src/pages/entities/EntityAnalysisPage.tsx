@@ -12,8 +12,6 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 
-import { videoWithScoresFromRecommendation } from 'src/utils/entity';
-
 const CandidateAnalysisPage = React.lazy(
   () => import('src/pages/entities/CandidateAnalysisPage')
 );
@@ -101,9 +99,7 @@ const EntityAnalysisPage = () => {
           {pollName === PRESIDENTIELLE_2022_POLL_NAME && (
             <CandidateAnalysisPage entity={entity} />
           )}
-          {pollName === YOUTUBE_POLL_NAME && (
-            <VideoAnalysis video={videoWithScoresFromRecommendation(entity)} />
-          )}
+          {pollName === YOUTUBE_POLL_NAME && <VideoAnalysis video={entity} />}
         </>
       ) : (
         <Container>

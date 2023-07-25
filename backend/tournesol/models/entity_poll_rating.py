@@ -3,14 +3,23 @@ Entity score and ratings per poll.
 """
 from typing import Optional
 
+from django.conf import settings
 from django.db import models
 from django.db.models import Exists, OuterRef, Q, Subquery, Sum
 from django.db.models.functions import Coalesce
+from django.utils.functional import cached_property
 
 from tournesol.models.comparisons import Comparison
 from tournesol.models.entity import Entity
 from tournesol.models.poll import Poll
 from tournesol.models.ratings import ContributorRating, ContributorRatingCriteriaScore
+
+UNSAFE_REASON_INSUFFICIENT_SCORE = "insufficient_tournesol_score"
+UNSAFE_REASON_INSUFFICIENT_TRUST = "insufficient_trust"
+UNSAFE_REASONS = [
+    UNSAFE_REASON_INSUFFICIENT_TRUST,
+    UNSAFE_REASON_INSUFFICIENT_SCORE,
+]
 
 
 class EntityPollRating(models.Model):
@@ -126,3 +135,22 @@ class EntityPollRating(models.Model):
             fields=["sum_trust_scores"],
             batch_size=batch_size
         )
+
+    @property
+    def is_recommendation_unsafe(self):
+        return len(self.unsafe_recommendation_reasons) > 0
+
+    @cached_property
+    def unsafe_recommendation_reasons(self):
+        reasons = []
+        if (
+            self.tournesol_score is None
+            or self.tournesol_score <= settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE
+        ):
+            reasons.append(UNSAFE_REASON_INSUFFICIENT_SCORE)
+        if (
+            self.tournesol_score is not None
+            and self.sum_trust_scores < settings.RECOMMENDATIONS_MIN_TRUST_SCORES
+        ):
+            reasons.append(UNSAFE_REASON_INSUFFICIENT_TRUST)
+        return reasons

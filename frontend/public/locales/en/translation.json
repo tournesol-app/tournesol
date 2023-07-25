@@ -19,8 +19,8 @@
   "video": {
     "notAvailableAnymore": "This video is not available on YouTube anymore.",
     "labelShowSettings": "Show settings related to this video",
+    "insufficientScore": "The score of this video is below the recommendability threshold defined by Tournesol.",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
-    "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparison by",
     "nbComparisonsBy_other": "{{count}} comparisons by",
     "nbContributors_one": "{{count}} contributor",
