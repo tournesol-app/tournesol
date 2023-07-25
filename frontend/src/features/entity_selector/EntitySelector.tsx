@@ -342,14 +342,6 @@ const EntitySelectorInnerAuth = ({
               </>
             )}
           </Box>
-
-          {/* <Box mx={1} marginBottom={1}>
-            <EntityInput
-              value={inputValue || uid || ''}
-              onChange={handleChange}
-              otherUid={otherUid}
-            />
-          </Box> */}
         </>
       )}
       <Box position="relative">
