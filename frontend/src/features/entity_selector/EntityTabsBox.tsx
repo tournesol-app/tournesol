@@ -123,8 +123,8 @@ const EntityTabsBox = ({
           sx={{
             bgcolor: 'grey.100',
           }}
-          padding={1}
-          paddingBottom={0}
+          p={1}
+          pt={2}
         >
           <TextField
             label={t('entitySelector.pasteUrlOrVideoId')}

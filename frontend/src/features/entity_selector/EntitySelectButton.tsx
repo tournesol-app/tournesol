@@ -147,7 +147,10 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
         >
           <SelectorListBox
             value={value}
-            onChange={onChange}
+            onChange={(e) => {
+              onChange(e);
+              setSuggestionsOpen(false);
+            }}
             tabs={tabs}
             onSelectEntity={handleOptionClick}
             elevation={10}
