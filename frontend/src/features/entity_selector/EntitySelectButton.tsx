@@ -22,7 +22,7 @@ import SelectorPopper from './SelectorPopper';
 import { useLoginState } from 'src/hooks';
 
 // in milliseconds
-const TYPING_DELAY = 500;
+const TYPING_DELAY = 50;
 
 interface Props {
   value: string;
@@ -36,7 +36,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
-  const [fieldValue, setFieldValue] = useState(value);
+  const [triggerTimeout, setTriggerTimeout] = useState(value);
 
   const { isLoggedIn } = useLoginState();
   const fullScreenModal = useMediaQuery(
@@ -63,7 +63,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
     return () => clearTimeout(timeOutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fieldValue]);
+  }, [triggerTimeout]);
 
   const tabs: EntitiesTab[] = useMemo(
     () => [
@@ -163,7 +163,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
             value={value}
             onChange={(e) => {
               onChange(e);
-              setFieldValue(e);
+              setTriggerTimeout(e);
             }}
             tabs={tabs}
             onSelectEntity={handleOptionClick}
