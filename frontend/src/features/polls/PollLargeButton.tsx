@@ -16,7 +16,7 @@ const PollLargeButton = ({ poll }: Props) => {
     <Button
       component={RouterLink}
       to={poll.path}
-      onClick={scrollToTop}
+      onClick={() => scrollToTop()}
       variant="contained"
       color="inherit"
       sx={{

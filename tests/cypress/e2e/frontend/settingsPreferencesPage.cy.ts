@@ -1,7 +1,67 @@
 describe('Settings - preferences page', () => {
+  const username = "test-preferences-page";
+  const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
+  const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
+
+  /**
+   * Create as much comparisons as required to not trigger the tutorial.
+   */
+  const createComparisons = () => {
+    ids1.forEach(uid1 => {
+      ids2.forEach(uid2 => {
+
+        cy.sql(`
+          WITH ent AS (
+            SELECT
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid1}') AS uid1,
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid2}') AS uid2
+          )
+          INSERT INTO tournesol_comparison (
+            user_id,
+            entity_1_id,
+            entity_2_id,
+            entity_1_2_ids_sorted,
+            poll_id
+          ) VALUES (
+            (SELECT id FROM core_user WHERE username = '${username}'),
+            (SELECT uid1 FROM ent),
+            (SELECT uid2 FROM ent),
+            (SELECT uid1 FROM ent) || '__' || (SELECT uid2 FROM ent),
+          1);
+        `);
+      });
+    });
+  };
+
+  const deleteComparisons = () => {
+    cy.sql(`
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id IN (
+        SELECT id
+        FROM tournesol_comparison
+        WHERE user_id = (
+          SELECT id FROM core_user WHERE username = '${username}'
+        )
+      );
+    `);
+
+    cy.sql(`
+      DELETE FROM tournesol_comparison
+          WHERE user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          );
+    `);
+  };
+
   beforeEach(() => {
-    cy.recreateUser("test-preferences-page", "test-preferences-page@example.com", "tournesol");
+    cy.recreateUser(username, "test-preferences-page@example.com", "tournesol");
+    createComparisons();
   });
+
+
+  afterEach(() => {
+    deleteComparisons();
+  })
 
   const login = () => {
     cy.focused().type('test-preferences-page');

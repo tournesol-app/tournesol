@@ -1,20 +1,53 @@
 describe('Comparison page', () => {
+  const username = "test-comparison-page";
+  const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
+  const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
 
-  const deleteComparison = (username, idA, idB) => {
+  /**
+   * Create as much comparisons as required to not trigger the tutorial.
+   */
+  const createComparisons = () => {
+    ids1.forEach(uid1 => {
+      ids2.forEach(uid2 => {
+
+        cy.sql(`
+          WITH ent AS (
+            SELECT
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid1}') AS uid1,
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid2}') AS uid2
+          )
+          INSERT INTO tournesol_comparison (
+            user_id,
+            entity_1_id,
+            entity_2_id,
+            entity_1_2_ids_sorted,
+            poll_id
+          ) VALUES (
+            (SELECT id FROM core_user WHERE username = '${username}'),
+            (SELECT uid1 FROM ent),
+            (SELECT uid2 FROM ent),
+            (SELECT uid1 FROM ent) || '__' || (SELECT uid2 FROM ent),
+          1);
+        `);
+      });
+    });
+  };
+
+  const deleteComparison = (idA, idB) => {
     cy.sql(`
-        DELETE FROM tournesol_comparisoncriteriascore
-        WHERE comparison_id = (
-            SELECT id
-            FROM tournesol_comparison
-            WHERE entity_1_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
-            ) AND entity_2_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
-            ) AND user_id = (
-                SELECT id FROM core_user WHERE username = '${username}'
-            )
-        );
-      `);
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id = (
+        SELECT id
+        FROM tournesol_comparison
+        WHERE entity_1_id = (
+          SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
+        ) AND entity_2_id = (
+          SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+        ) AND user_id = (
+          SELECT id FROM core_user WHERE username = '${username}'
+        )
+      );
+    `);
 
     cy.sql(`
         DELETE FROM tournesol_comparison
@@ -27,6 +60,35 @@ describe('Comparison page', () => {
             );
       `);
   };
+
+  const deleteComparisons = () => {
+    cy.sql(`
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id IN (
+          SELECT id
+          FROM tournesol_comparison
+          WHERE user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          )
+      );
+    `);
+
+    cy.sql(`
+      DELETE FROM tournesol_comparison
+          WHERE user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          );
+    `);
+  };
+
+  before(() => { // create 4 comparisons to avoid being in the tutorial context
+    cy.recreateUser(username, "test-comparison-page@example.com", "tournesol");
+    createComparisons();
+  });
+
+  after(() => {
+    deleteComparisons();
+  })
 
   const waitForAutoFill = () => {
     cy.get('div[data-testid=video-card-info]')
@@ -43,7 +105,7 @@ describe('Comparison page', () => {
     it('is accessible by authenticated users', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
       cy.location('pathname').should('equal', '/comparison');
@@ -56,7 +118,7 @@ describe('Comparison page', () => {
 
   it("doesn't break the browser's back button", () => {
     cy.visit('/comparison');
-    cy.focused().type('user1');
+    cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
     cy.get('input[placeholder="Paste URL or Video ID"]').should('have.length', 2);
 
@@ -74,7 +136,7 @@ describe('Comparison page', () => {
     it('support pasting YouTube URLs', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
@@ -90,7 +152,7 @@ describe('Comparison page', () => {
     it('support pasting YouTube video ID', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
@@ -119,7 +181,6 @@ describe('Comparison page', () => {
   });
 
   describe('submit a comparison', () => {
-    const username = 'user1';
     const videoAId = 'u83A7DUNMHs';
     const videoBId = '6jK9bFWE--g';
 
@@ -136,11 +197,11 @@ describe('Comparison page', () => {
     ];
 
     beforeEach(() => {
-      deleteComparison(username, videoAId, videoBId);
+      deleteComparison(videoAId, videoBId);
     })
 
     after(() => {
-      deleteComparison(username, videoAId, videoBId);
+      deleteComparison(videoAId, videoBId);
     })
 
     /**
@@ -180,7 +241,6 @@ describe('Comparison page', () => {
       cy.contains('submit', {matchCase: false})
         .should('be.visible');
       cy.get('button#expert_submit_btn').click();
-
       cy.contains('edit comparison', {matchCase: false})
         .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
@@ -216,7 +276,6 @@ describe('Comparison page', () => {
       cy.contains('submit', {matchCase: false})
         .should('be.visible');
       cy.get('button#expert_submit_btn').click();
-
       cy.contains('edit comparison', {matchCase: false})
         .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
@@ -254,7 +313,7 @@ describe('Comparison page', () => {
       const videoBId = '6jK9bFWE--g';
 
       cy.visit(`/comparison?videoA=${videoAId}&videoB=${videoBId}`);
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
       cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
@@ -271,7 +330,7 @@ describe('Comparison page', () => {
       const videoBId = '6jK9bFWE--g';
 
       cy.visit(`/comparison?videoA=${videoAId}&uidB=yt:${videoBId}`);
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
       cy.wait(1000);

@@ -59,7 +59,7 @@ function ComparisonsPage() {
       <Box display="flex" justifyContent="center">
         <Button
           component={Link}
-          to={`${baseUrl}/comparison?series=true`}
+          to={`${baseUrl}/comparison`}
           variant="contained"
           color="primary"
         >

@@ -1,3 +1,8 @@
+export const isMobileDevice = () => {
+  if (navigator.userAgent.includes('Mobile')) return true;
+  return false;
+};
+
 export const getWebBrowser = () => {
   if (navigator.userAgent.includes('Chrome/')) return 'chrome';
   if (navigator.userAgent.includes('Chromium/')) return 'chromium';

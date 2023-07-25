@@ -37,11 +37,6 @@ all:
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
           frontend_presidentielle_2022_enabled: true
 
-          mediawiki_domain_name: tournesol-wiki
-          mediawiki_scheme: http
-          mediawiki_database_name: mediawiki
-          mediawiki_database_user: mediawiki
-
           monitored_urls:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
@@ -63,8 +58,6 @@ all:
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
           tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
-
-          mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
 
           postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
 
@@ -106,11 +99,6 @@ all:
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
 
-          mediawiki_domain_name: "wiki.{{domain_name}}"
-          mediawiki_scheme: https
-          mediawiki_database_name: mediawiki
-          mediawiki_database_user: mediawiki
-
           monitored_urls:
             - https://tournesol.app/
             - https://api.tournesol.app/admin
@@ -132,8 +120,6 @@ all:
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
           tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
-
-          mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
 
           postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
 
@@ -179,11 +165,6 @@ all:
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
 
-          mediawiki_domain_name: "wiki.{{domain_name}}"
-          mediawiki_scheme: https
-          mediawiki_database_name: mediawiki
-          mediawiki_database_user: mediawiki
-
           monitored_urls:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
@@ -213,8 +194,6 @@ all:
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
           tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
 
-          mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
-
           postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
 
           export_backups_schedule: "*-*-* 0,6,12,18:30:00" # every 6 hours
@@ -224,14 +203,3 @@ all:
       vars:
         ansible_python_interpreter: /usr/bin/python3
         ansible_ssh_pipelining: true
-        mediawiki_extensions:
-          # These commits refer to the branch "REL1_36" on each repository, as observed on 2021-10-19.
-          - name: Math
-            url: https://github.com/wikimedia/mediawiki-extensions-Math/archive/93b1252386dcd8658a285571a76cea0c6852bb0e.zip
-            output_dir: mediawiki-extensions-Math-93b1252386dcd8658a285571a76cea0c6852bb0e
-          - name: PluggableAuth
-            url: https://github.com/wikimedia/mediawiki-extensions-PluggableAuth/archive/087cb4c82e57971c8e65e40ad40e83e971377ee9.zip
-            output_dir: mediawiki-extensions-PluggableAuth-087cb4c82e57971c8e65e40ad40e83e971377ee9
-          - name: OpenIDConnect
-            url: https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect/archive/da7914745ae62816cb7c37578a4aa8a0894b8a87.zip
-            output_dir: mediawiki-extensions-OpenIDConnect-da7914745ae62816cb7c37578a4aa8a0894b8a87

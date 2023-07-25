@@ -93,7 +93,7 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
           <Box display="flex" justifyContent="center">
             <Button
               component={RouterLink}
-              to={`${baseUrl}/comparison?series=true`}
+              to={`${baseUrl}/comparison`}
               variant="contained"
               color="primary"
             >

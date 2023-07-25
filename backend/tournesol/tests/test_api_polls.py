@@ -11,6 +11,7 @@ from tournesol.tests.factories.entity import (
     VideoCriteriaScoreFactory,
     VideoFactory,
 )
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
@@ -55,7 +56,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__uploader="_test_uploader_1",
             metadata__language="es",
             tournesol_score=-1,
-            rating_n_contributors=2,
+            make_safe_for_poll=False,
         )
         self.video_2 = VideoFactory(
             metadata__publication_date="2021-01-02",
@@ -63,7 +64,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__language="fr",
             metadata__duration=10,
             tournesol_score=2.2,
-            rating_n_contributors=3,
+            make_safe_for_poll=False,
         )
         self.video_3 = VideoFactory(
             metadata__publication_date="2021-01-03",
@@ -71,7 +72,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__language="pt",
             metadata__duration=120,
             tournesol_score=3.3,
-            rating_n_contributors=4,
+            make_safe_for_poll=False,
         )
         self.video_4 = VideoFactory(
             metadata__publication_date="2021-01-04",
@@ -79,7 +80,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__language="it",
             metadata__duration=240,
             tournesol_score=4.4,
-            rating_n_contributors=5,
+            make_safe_for_poll=False,
         )
 
         VideoCriteriaScoreFactory(
@@ -115,6 +116,11 @@ class PollsRecommendationsTestCase(TestCase):
             score=0.4,
             score_mode="all_equal",
         )
+
+        EntityPollRatingFactory(entity=self.video_1, sum_trust_scores=2)
+        EntityPollRatingFactory(entity=self.video_2, sum_trust_scores=3)
+        EntityPollRatingFactory(entity=self.video_3, sum_trust_scores=4)
+        EntityPollRatingFactory(entity=self.video_4, sum_trust_scores=5)
 
     def test_anonymous_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
@@ -686,3 +692,26 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         self.assertEqual(
             max(response.data["criteria_scores_distributions"][0]["bins"]), 100
         )
+
+class PollRecommendationsWithLowSumTrustScoresTestCase(TestCase):
+    """
+    TestCase of the PollsRecommendationsView API related to the exclusion of
+    entities with not enough sum of trust scores.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.video_1 = VideoFactory(tournesol_score=42, make_safe_for_poll=False)
+        self.video_2 = VideoFactory(tournesol_score=42, make_safe_for_poll=False)
+        VideoCriteriaScoreFactory(entity=self.video_1, score=42)
+        VideoCriteriaScoreFactory(entity=self.video_2, score=42)
+        EntityPollRatingFactory(entity=self.video_1, sum_trust_scores=1)
+        EntityPollRatingFactory(entity=self.video_2, sum_trust_scores=3)
+
+    def test_low_sum_trust_scores_excluded_from_recommendations(self):
+        response = self.client.get("/polls/videos/recommendations/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["uid"], self.video_2.uid)

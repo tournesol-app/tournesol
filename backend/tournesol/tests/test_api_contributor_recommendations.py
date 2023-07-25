@@ -6,6 +6,7 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
@@ -227,7 +228,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         Anonymous and authenticated users can filter recommendations with the
         `unsafe` URL parameter.
         """
-        user = UserFactory()
+        user = UserFactory(trust_score=1)
         entity = EntityFactory(tournesol_score=-1)
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
@@ -294,6 +295,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             response.data["results"][0]["criteria_scores"][0]["score"],
             criteria_score,
         )
+        
         self.assertEqual(
             response.data["results"][0]["total_score"], criteria_score * weight
         )

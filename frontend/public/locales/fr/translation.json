@@ -565,6 +565,10 @@
     "activatedAccounts": "Comptes activés",
     "comparisons": "Comparaisons"
   },
+  "tip": {
+    "less": "Moins",
+    "showMore": "Voir plus ..."
+  },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",
     "tryAgainLaterOrContactAdministrator": "Veuillez réessayer plus tard, ou contacter un administrateur si le problème persiste.",
@@ -662,9 +666,6 @@
     "whatRightsContributorsHaveOverTheirDataParagraph": "En accédant à la page de leur compte, les contributeurs peuvent télécharger les données transmises à la plateforme. Ils ont également la possibilité de demander la suppression de toutes les données personnelles les concernant que Tournesol conserve. Cela n'inclut pas les données que Tournesol a l'obligation de conserver pour des raisons administratives, légales ou à des fins de sécurité."
   },
   "clickToDownload": "Télécharger",
-  "tutorial": {
-    "skipTheTutorial": "Passer le tutoriel"
-  },
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
     "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
@@ -994,32 +995,36 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "title1": "Bienvenue sur Tournesol 🌻",
-        "message1": {
-          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons, afin de vous aider à contribuer au projet Tournesol.",
-          "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
-          "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
-          "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
+        "title4": "Comparez facilement avec l'extension",
+        "message4": {
+          "p10": "L'extension de navigateur Tournesol vous permet d'ajouter les vidéos que vous regardez sur YouTube à votre lister à comparer plus tard.",
+          "p20": "Vous pouvez aussi faire des comparaisons directement depuis YouTube ! Pratique."
         },
-        "title2": "Bravo ! 🥳",
+        "installTheExtension": "Installer l'extension"
+      }
+    },
+    "tips": {
+      "tutorial": {
+        "title1": "Comparer deux vidéos 🌻",
+        "message1": {
+          "p10": "Après avoir regardé les vidéos, déplacez le curseur principal vers la vidéo qui, selon vous, devrait être largement recommandée. Enregistrez quand votre choix est fait.",
+          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait se rapprocher du centre."
+        },
+        "title2": "Faire des comparaisons aide la science 🔬",
         "message2": {
-          "p10": "Vous avez effectué votre première comparaison. Chaque comparaison aide Tournesol à améliorer ses recommandations de vidéo.",
-          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
-          "p30": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
-          "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
-          "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+          "p10": "Chaque comparaison aide Tournesol à améliorer ses recommandations et sa base de données publique. Essayez maintenant de dérouler et d'utiliser les critères optionnels.",
+          "p20": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant. Il vous sera possible de modifier ultérieurement vos comparaisons depuis votre page Mes comparaisons."
         },
         "title3": "Comment fonctionne Tournesol ? 🤖",
         "message3": {
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
-          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
-          "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
+          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes. Plus ce score est élevé, plus la communauté pense que la vidéo devrait être largement recommandée."
         },
-        "title4": "Merci beaucoup d'avoir suivi ce tutoriel ❤️",
+        "title4": "Merci pour ces premières contributions ❤️",
         "message4": {
-          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e.",
-          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
-          "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
+          "p10": "Tournesol est un projet à long terme, notre objectif est de recueillir autant de comparaisons que possible. Vos contributions aide grandement la recherche et nous espérons vous revoir de temps en temps.",
+          "p20": "A l'avenir, pour faire des comparaisons plus facilement et plus rapidement, nous vous invitons à suivre cette recette : (1) ajouter des vidéos depuis YouTube grace à l'extension de navigateur ; (2) utiliser le sélecteur de vidéo au dessous des boutons AUTO pour sélectionner et comparer les vidéos ainsi ajoutées.",
+          "p30": "🌻 🌻 🌻 🌻 🌻 🌻 🐌"
         }
       }
     }

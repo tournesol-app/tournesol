@@ -8,6 +8,7 @@ from rest_framework.test import APIClient
 from core.models import User
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.tests.factories.entity import VideoCriteriaScoreFactory, VideoFactory
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.utils.video_language import compute_video_language
 
 from ..models import Entity
@@ -29,25 +30,21 @@ class VideoApi(TestCase):
             metadata__publication_date="2021-01-01T19:44:24.686532",
             metadata__uploader="uploader1",
             tournesol_score=1.1,
-            rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
             metadata__publication_date="2021-01-02T19:44:24.686532",
             metadata__uploader="uploader2",
             tournesol_score=2.2,
-            rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
             metadata__publication_date="2021-01-03T19:44:24.686532",
             metadata__uploader="uploader2",
             tournesol_score=3.3,
-            rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
             metadata__publication_date="2021-01-04T19:44:24.686532",
             metadata__uploader="uploader3",
             tournesol_score=4.4,
-            rating_n_contributors=5,
         )
         self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
         VideoCriteriaScoreFactory(
