@@ -97,14 +97,11 @@ const EntityCardScores = ({
     isUnsafe && unsafeReasons.length > 0 ? (
       <Stack direction="row" alignItems="center" gap={1}>
         <WarningIcon />
-        <div>
+        <Box display="flex" flexDirection="column" gap={1}>
           {unsafeReasons.map((reason) => (
-            <span key={reason}>
-              {reason}
-              <br />
-            </span>
+            <span key={reason}>{reason}</span>
           ))}
-        </div>
+        </Box>
       </Stack>
     ) : (
       ''
