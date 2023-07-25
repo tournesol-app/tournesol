@@ -5,7 +5,6 @@ from functools import cached_property, partial
 from multiprocessing import Pool
 from typing import Optional
 
-import numpy as np
 import pandas as pd
 from django import db
 from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_deviation

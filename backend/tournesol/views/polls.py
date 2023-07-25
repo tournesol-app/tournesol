@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 from django.db.models import Case, F, Sum, When
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -159,12 +158,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         if filters["unsafe"]:
             return queryset
-
-        return queryset.filter(
-            all_poll_ratings__poll=self.poll_from_url,
-            all_poll_ratings__sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
-            tournesol_score__gt=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE,
-        )
+        return queryset.filter_safe_for_poll(self.poll_from_url)
 
     def sort_results(self, queryset, filters):
         """

@@ -120,7 +120,7 @@ class TestTournesolBot(TestCase):
         Entity.objects.filter(pk=self.videos[8].pk).update(add_time=time_ago(days=76))
 
         # Define reliability score for videos 0 to 7
-        for i, reliability_score in enumerate([29, 32, 76, 55, 22, -10, 25, 25]):
+        for i, reliability_score in enumerate([29, 32, 76, 55, 26, -10, 26, 26]):
             VideoCriteriaScoreFactory(
                 entity=self.videos[i],
                 criteria="reliability",
