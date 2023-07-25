@@ -14,6 +14,13 @@ from tournesol.models.entity import Entity
 from tournesol.models.poll import Poll
 from tournesol.models.ratings import ContributorRating, ContributorRatingCriteriaScore
 
+UNSAFE_REASON_INSUFFICIENT_SCORE = "insufficient_tournesol_score"
+UNSAFE_REASON_INSUFFICIENT_TRUST = "insufficient_trust"
+UNSAFE_REASONS = [
+    UNSAFE_REASON_INSUFFICIENT_TRUST,
+    UNSAFE_REASON_INSUFFICIENT_SCORE,
+]
+
 
 class EntityPollRating(models.Model):
     """
@@ -140,10 +147,10 @@ class EntityPollRating(models.Model):
             self.tournesol_score is None
             or self.tournesol_score <= settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE
         ):
-            reasons.append("insufficient_tournesol_score")
+            reasons.append(UNSAFE_REASON_INSUFFICIENT_SCORE)
         if (
             self.tournesol_score is not None
             and self.sum_trust_scores < settings.RECOMMENDATIONS_MIN_TRUST_SCORES
         ):
-            reasons.append("insufficient_trust")
+            reasons.append(UNSAFE_REASON_INSUFFICIENT_TRUST)
         return reasons

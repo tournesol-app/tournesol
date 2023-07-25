@@ -3599,6 +3599,14 @@ components:
       required:
       - by
       - to
+    ReasonsEnum:
+      enum:
+      - insufficient_trust
+      - insufficient_tournesol_score
+      type: string
+      description: |-
+        * `insufficient_trust` - insufficient_trust
+        * `insufficient_tournesol_score` - insufficient_tournesol_score
     Recommendation:
       type: object
       properties:
@@ -4034,7 +4042,7 @@ components:
         reasons:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ReasonsEnum'
       required:
       - reasons
       - status

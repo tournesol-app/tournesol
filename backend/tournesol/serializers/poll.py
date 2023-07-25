@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from tournesol.models import CriteriaRank, Entity, EntityPollRating, Poll
+from tournesol.models.entity_poll_rating import UNSAFE_REASONS
 from tournesol.serializers.entity import EntityCriteriaScoreSerializer
 
 
@@ -26,7 +27,8 @@ class PollSerializer(ModelSerializer):
 class UnsafeStatusSerializer(ModelSerializer):
     status = serializers.BooleanField(source="is_recommendation_unsafe")
     reasons = serializers.ListField(
-        child=serializers.CharField(), source="unsafe_recommendation_reasons"
+        child=serializers.ChoiceField(choices=UNSAFE_REASONS),
+        source="unsafe_recommendation_reasons",
     )
 
     class Meta:
