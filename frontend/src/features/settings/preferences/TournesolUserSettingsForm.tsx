@@ -29,7 +29,10 @@ import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { initRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
+import {
+  initRecommendationsLanguages,
+  saveRecommendationsLanguages,
+} from 'src/utils/recommendationsLanguages';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
@@ -91,8 +94,7 @@ const TournesolUserSettingsForm = () => {
     pollSettings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
-  // Recommendations
-
+  // Recommendations (stream)
   const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
     Array<string>
   >(initRecommendationsLanguages().split(','));
@@ -161,6 +163,8 @@ const TournesolUserSettingsForm = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setDisabled(true);
+
+    saveRecommendationsLanguages(recoDefaultLanguages.join(','));
 
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
