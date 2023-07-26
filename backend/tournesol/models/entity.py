@@ -5,7 +5,7 @@ Entity and closely related models.
 import logging
 from collections import defaultdict
 from functools import cached_property
-from typing import List
+from typing import TYPE_CHECKING, List, Optional
 from urllib.parse import urljoin
 
 import numpy as np
@@ -33,6 +33,9 @@ from tournesol.utils.video_language import (
     SEARCH_CONFIG_CHOICES,
     language_to_postgres_config,
 )
+
+if TYPE_CHECKING:
+    from tournesol.models.entity_poll_rating import EntityPollRating
 
 LANGUAGES = settings.LANGUAGES
 
@@ -450,6 +453,18 @@ class Entity(models.Model):
         if hasattr(self, "_prefetched_criteria_scores"):
             return list(self._prefetched_criteria_scores)
         return list(self.all_criteria_scores.filter(score_mode=ScoreMode.DEFAULT))
+
+    @property
+    def single_poll_rating(self) -> Optional["EntityPollRating"]:
+        try:
+            if len(self.single_poll_ratings) == 1:
+                return self.single_poll_ratings[0]
+            return None
+        except AttributeError as exc:
+            raise RuntimeError(
+                "Accessing 'single_poll_rating' requires to initialize a "
+                "queryset with `with_prefetched_poll_ratings()`"
+            ) from exc
 
 
 class CriteriaDistributionScore:

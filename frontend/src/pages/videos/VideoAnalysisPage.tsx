@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 
 import { Box, Collapse, Grid, Paper, Typography } from '@mui/material';
 
@@ -8,10 +8,9 @@ import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
-import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import VideoCard from 'src/features/videos/VideoCard';
 import { useLoginState } from 'src/hooks';
-import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import { Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
@@ -21,22 +20,20 @@ import ContextualRecommendations from 'src/features/recommendation/ContextualRec
 
 import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 
-export const VideoAnalysis = ({
-  video,
-}: {
-  video: VideoSerializerWithCriteria;
-}) => {
+export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
   const { t } = useTranslation();
   const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
 
-  const uid = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
 
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
-  const linkifiedDescription = linkifyStr(video.description || '', linkifyOpts);
+  const linkifiedDescription = linkifyStr(
+    video.metadata.description || '',
+    linkifyOpts
+  );
 
   return (
     <Box
@@ -52,8 +49,8 @@ export const VideoAnalysis = ({
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
             <VideoPlayer
-              videoId={video.video_id}
-              duration={video.duration}
+              videoId={video.metadata.video_id}
+              duration={video.metadata.duration}
               controls
             />
           </Grid>
@@ -91,7 +88,7 @@ export const VideoAnalysis = ({
           {/* Data visualization. */}
           {shouldDisplayCharts && (
             <SelectedCriterionProvider>
-              <PersonalCriteriaScoresContextProvider uid={uid}>
+              <PersonalCriteriaScoresContextProvider uid={video.uid}>
                 <Grid item xs={12} sm={12} md={6}>
                   <Paper>
                     <Box
@@ -108,7 +105,7 @@ export const VideoAnalysis = ({
                       <PersonalScoreCheckbox />
                     </Box>
                     <Box p={1}>
-                      <CriteriaBarChart video={video} />
+                      <CriteriaBarChart entity={video} />
                     </Box>
                   </Paper>
                 </Grid>
@@ -125,7 +122,7 @@ export const VideoAnalysis = ({
                       </Typography>
                     </Box>
                     <Box p={1}>
-                      <CriteriaScoresDistribution video={video} />
+                      <CriteriaScoresDistribution entity={video} />
                     </Box>
                   </Paper>
                 </Grid>
@@ -136,8 +133,8 @@ export const VideoAnalysis = ({
       </Box>
       <Box flex={1}>
         <ContextualRecommendations
-          contextUid={uid}
-          uploader={video.uploader || undefined}
+          contextUid={video.uid}
+          uploader={video.metadata.uploader || undefined}
         />
       </Box>
     </Box>
@@ -146,9 +143,7 @@ export const VideoAnalysis = ({
 
 const VideoAnalysisPage = () => {
   const { video_id } = useParams<{ video_id: string }>();
-  const video = useVideoMetadata(video_id);
-
-  return <VideoAnalysis video={video} />;
+  return <Redirect to={`/entities/yt:${video_id}`} />;
 };
 
 export default VideoAnalysisPage;

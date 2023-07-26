@@ -1,10 +1,5 @@
 import { RelatedEntityObject } from './types';
-import {
-  Entity,
-  Recommendation,
-  Video,
-  VideoSerializerWithCriteria,
-} from 'src/services/openapi';
+import { Entity, Recommendation, Video } from 'src/services/openapi';
 
 export const videoFromRelatedEntity = (entity: RelatedEntityObject): Video => {
   return {
@@ -19,20 +14,6 @@ export const videoFromRelatedEntity = (entity: RelatedEntityObject): Video => {
     rating_n_contributors: 0,
     duration: entity.metadata.duration,
     video_id: entity.metadata.video_id,
-  };
-};
-
-export const videoWithScoresFromRecommendation = (
-  entity: Recommendation
-): VideoSerializerWithCriteria => {
-  const video = videoFromRelatedEntity(entity);
-
-  return {
-    ...video,
-    criteria_scores: entity.criteria_scores,
-    tournesol_score: entity.tournesol_score ?? null,
-    rating_n_ratings: entity.n_comparisons,
-    rating_n_contributors: entity.n_contributors,
   };
 };
 
