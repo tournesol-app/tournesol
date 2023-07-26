@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Tabs,
-  Tab,
-  Paper,
-  Typography,
-  TextField,
-  Box,
-  InputAdornment,
-} from '@mui/material';
+import { Tabs, Tab, Paper, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import { Link } from '@mui/icons-material';
+import EntityTextInput from './EntityTextInput';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -116,40 +108,7 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
-      {entityTextInput && (
-        <Box
-          sx={{
-            bgcolor: 'grey.100',
-          }}
-          p={1}
-          pt={2}
-        >
-          <TextField
-            label={t('entitySelector.pasteUrlOrVideoId')}
-            color="secondary"
-            fullWidth
-            size="small"
-            value={entityTextInput.value}
-            onChange={(e) => {
-              entityTextInput.onChange(e.target.value);
-            }}
-            onFocus={(e) => {
-              e.target.select();
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Link />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              bgcolor: 'white',
-            }}
-            data-testid="paste-video-url"
-          />
-        </Box>
-      )}
+      {entityTextInput && <EntityTextInput entityTextInput={entityTextInput} />}
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"
