@@ -170,7 +170,10 @@ function RecommendationsPage() {
           <Grid container>
             {/* Filters section. */}
             <Grid item xs={12} sm={12} md={11}>
-              <SearchFilter />
+              {/* Unsafe filter is not available when fetching personal recommendations */}
+              <SearchFilter
+                showAdvancedFilter={!displayPersonalRecommendations}
+              />
             </Grid>
             {/* Contextual page menu. */}
             <Grid item xs={12} sm={12} md={1}>

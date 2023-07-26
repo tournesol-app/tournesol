@@ -2872,6 +2872,10 @@ components:
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          nullable: true
         is_public:
           type: boolean
           readOnly: true
@@ -3595,6 +3599,14 @@ components:
       required:
       - by
       - to
+    ReasonsEnum:
+      enum:
+      - insufficient_trust
+      - insufficient_tournesol_score
+      type: string
+      description: |-
+        * `insufficient_trust` - insufficient_trust
+        * `insufficient_tournesol_score` - insufficient_tournesol_score
     Recommendation:
       type: object
       properties:
@@ -3626,6 +3638,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityCriteriaScore'
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          nullable: true
       required:
       - criteria_scores
       - metadata
@@ -4018,6 +4034,18 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    UnsafeStatus:
+      type: object
+      properties:
+        status:
+          type: boolean
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonsEnum'
+      required:
+      - reasons
+      - status
     UserProfile:
       type: object
       description: |-

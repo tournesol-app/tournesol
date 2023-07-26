@@ -6,7 +6,7 @@ import { Box, Button, ButtonGroup, Tooltip } from '@mui/material';
 import { Compare, Add, Twitter } from '@mui/icons-material';
 
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
-import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import { Recommendation } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { openTwitterPopup } from 'src/utils/ui';
@@ -14,11 +14,7 @@ import { openTwitterPopup } from 'src/utils/ui';
 // in milliseconds
 const FEEDBACK_DURATION = 1200;
 
-const VideoAnalysisActionBar = ({
-  video,
-}: {
-  video: VideoSerializerWithCriteria;
-}) => {
+const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
   const { baseUrl, name: pollName } = useCurrentPoll();

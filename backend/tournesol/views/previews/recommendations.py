@@ -4,7 +4,6 @@ API returning preview images of the recommendations.
 import datetime
 
 import numpy
-from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.urls import reverse
 from django.utils import timezone
@@ -221,18 +220,16 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         ts_logo_size = (12 * upscale_ratio, 12 * upscale_ratio)
         ts_logo = self.get_ts_logo(ts_logo_size)
-        ts_score = recommendation.tournesol_score
-        is_safe = (
-            ts_score > 0
-            and recommendation.rating_n_contributors >= settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-        )
 
+        poll_rating = recommendation.single_poll_rating
         ts_score_box.alpha_composite(
-            ts_logo if is_safe else ts_logo.convert("LA").convert("RGBA"),
+            # Use grayscale logo if recommendation is unsafe
+            ts_logo.convert("LA").convert("RGBA")
+            if poll_rating.is_recommendation_unsafe
+            else ts_logo,
             dest=(0, 0),
         )
-
-        score = str(round(ts_score))
+        score = str(round(poll_rating.tournesol_score))
 
         comparisons = f"{recommendation.rating_n_ratings} comparisons by "
         comparisons_width = ts_score_box_draw.textlength(

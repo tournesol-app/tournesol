@@ -6,7 +6,6 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
-from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
@@ -222,49 +221,6 @@ class ContributorRecommendationsApiTestCase(TestCase):
             f"/users/{self.user1.username}/recommendations/non-existing", format="json"
         )
         self.assertEqual(response.status_code, 404)
-
-    def test_users_can_list_with_param_unsafe(self):
-        """
-        Anonymous and authenticated users can filter recommendations with the
-        `unsafe` URL parameter.
-        """
-        user = UserFactory(trust_score=1)
-        entity = EntityFactory(tournesol_score=-1)
-        rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
-        ContributorRatingCriteriaScoreFactory(
-            contributor_rating=rating,
-            criteria=self.criteria,
-            score=-1,
-        )
-
-        # anonymous checks
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 0)
-
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}?unsafe=true",
-            format="json",
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 1)
-
-        # authenticated checks
-        self.client.force_authenticate(self.user1)
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 0)
-
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}?unsafe=true",
-            format="json",
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 1)
 
     def test_recommendations_score_results(self):
         user = UserFactory()
