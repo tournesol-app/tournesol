@@ -48,7 +48,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
     setSuggestionsOpen(false);
   };
 
-  const toggleSuggestions = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const toggleSuggestions = () => {
     setSuggestionsOpen((open) => !open);
   };
 
@@ -143,7 +143,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
           size="small"
           variant="contained"
           color="secondary"
-          sx={{ minWidth: '110px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+          sx={{ minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
           disableElevation
           data-testid="entity-select-button"
         >
