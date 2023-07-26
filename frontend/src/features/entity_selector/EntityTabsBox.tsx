@@ -87,10 +87,6 @@ const EntityTabsBox = ({
   const [toggleDescription, setToggleDescription] =
     useState(displayDescription);
 
-  const closeDescription = () => {
-    setToggleDescription(false);
-  };
-
   useEffect(() => {
     const tab = tabs.find((t) => t.name === tabValue);
     if (!tab) {
@@ -160,7 +156,10 @@ const EntityTabsBox = ({
         textColor="secondary"
         indicatorColor="secondary"
         value={tabValue}
-        onChange={(e, value) => setTabValue(value)}
+        onChange={(e, value) => {
+          setToggleDescription(true);
+          setTabValue(value);
+        }}
         variant="scrollable"
         scrollButtons="auto"
         sx={{
@@ -180,7 +179,12 @@ const EntityTabsBox = ({
         sx={{ overflowY: 'scroll' }}
       >
         {toggleDescription && (
-          <TabError messageKey={tabValue} handleClose={closeDescription} />
+          <TabError
+            messageKey={tabValue}
+            handleClose={() => {
+              setToggleDescription(false);
+            }}
+          />
         )}
         {status === TabStatus.Error ? (
           <TabError messageKey={'error'} />
