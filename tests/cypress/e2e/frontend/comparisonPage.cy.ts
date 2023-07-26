@@ -88,7 +88,7 @@ describe('Comparison page', () => {
 
   after(() => {
     deleteComparisons();
-  })
+  });
 
   const waitForAutoFill = () => {
     cy.get('div[data-testid=video-card-info]')
@@ -100,7 +100,7 @@ describe('Comparison page', () => {
       cy.visit('/comparison');
       cy.location('pathname').should('equal', '/login');
       cy.contains('log in to tournesol', {matchCase: false}).should('be.visible');
-    })
+    });
 
     it('is accessible by authenticated users', () => {
       cy.visit('/comparison');
@@ -113,16 +113,16 @@ describe('Comparison page', () => {
 
       cy.contains('A', {matchCase: true});
       cy.contains('B', {matchCase: true});
-    })
+    });
   });
 
   it("doesn't break the browser's back button", () => {
     cy.visit('/comparison');
     cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+
     cy.get("[data-testid=entity-select-button]").should('have.length', 2);
     cy.get("[data-testid=entity-select-button]").first().click();
-    cy.get("[data-testid=paste-video-url]");
 
     cy.visit('/');
     cy.location('pathname').should('equal', '/');
@@ -179,7 +179,10 @@ describe('Comparison page', () => {
         cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
         cy.contains('views', {matchCase: false}).should('be.visible');
       });
-    })
+
+      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.contains(`yt:${videoAUrl.split('?v=')[1]}`);
+    });
   });
 
   describe('submit a comparison', () => {
@@ -200,11 +203,11 @@ describe('Comparison page', () => {
 
     beforeEach(() => {
       deleteComparison(videoAId, videoBId);
-    })
+    });
 
     after(() => {
       deleteComparison(videoAId, videoBId);
-    })
+    });
 
     /**
      * A user can submit a comparison with only the main criteria.
@@ -227,9 +230,10 @@ describe('Comparison page', () => {
       cy.get("[data-testid=entity-select-button]").first().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoAId, {delay: 0});
-        cy.get("[data-testid=entity-select-button]").last().click();
-        cy.get("[data-testid=paste-video-url]")
-          .type(videoBId, {delay: 0});
+
+      cy.get("[data-testid=entity-select-button]").last().click();
+      cy.get("[data-testid=paste-video-url]")
+        .type(videoBId, {delay: 0});
 
       // only one criteria must be visible by default
       cy.contains('add optional criteria', {matchCase: false})
@@ -240,7 +244,7 @@ describe('Comparison page', () => {
 
       cy.get('#slider_expert_largely_recommended').within(() => {
         cy.get('span[data-index=12]').click();
-      })
+      });
 
       cy.contains('submit', {matchCase: false})
         .should('be.visible');
@@ -267,11 +271,11 @@ describe('Comparison page', () => {
       cy.get("[data-testid=paste-video-url]")
         .type(videoBId, {delay: 0});
 
-      cy.contains('add optional criteria', {matchCase: false}).click()
+      cy.contains('add optional criteria', {matchCase: false}).click();
 
       cy.get('#slider_expert_largely_recommended').within(() => {
         cy.get('span[data-index=12]').click();
-      })
+      });
 
       optionalCriteriaSliders.forEach((slider) => {
         cy.get('#' + slider).within(() => {
@@ -355,5 +359,5 @@ describe('Comparison page', () => {
       cy.get("[data-testid=paste-video-url]").find("[type=text]")
         .should('have.value', `yt:${videoBId}`);
     });
-  })
+  });
 });
