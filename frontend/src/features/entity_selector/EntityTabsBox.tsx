@@ -108,7 +108,12 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
-      {entityTextInput && <EntityTextInput entityTextInput={entityTextInput} />}
+      {entityTextInput && (
+        <EntityTextInput
+          value={entityTextInput.value}
+          onChange={entityTextInput.onChange}
+        />
+      )}
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"

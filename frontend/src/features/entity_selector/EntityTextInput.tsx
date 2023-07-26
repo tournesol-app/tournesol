@@ -4,10 +4,11 @@ import { Box, InputAdornment, Link, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
-  entityTextInput: { value: string; onChange: (value: string) => void };
+  value: string;
+  onChange: (value: string) => void;
 }
 
-const EntityTextInput = ({ entityTextInput }: Props) => {
+const EntityTextInput = ({ value, onChange }: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -23,9 +24,9 @@ const EntityTextInput = ({ entityTextInput }: Props) => {
         color="secondary"
         fullWidth
         size="small"
-        value={entityTextInput.value}
+        value={value}
         onChange={(e) => {
-          entityTextInput.onChange(e.target.value);
+          onChange(e.target.value);
         }}
         onFocus={(e) => {
           e.target.select();
