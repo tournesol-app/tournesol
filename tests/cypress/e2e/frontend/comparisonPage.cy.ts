@@ -142,14 +142,29 @@ describe('Comparison page', () => {
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
-      // TODO: a little help is required to write the tests
+      waitForAutoFill();
 
-      // I didn't find a proper way to paste the URL into the `VideoCard` input field,
-      // and to trigger its `onChange` method to extract the video ID from the URL.
-      // .type() didn't work
-      // .invoke('val', url) didn't work neither
-      // .invoke('val', url).trigger('change') / trigger('input') neither
-    })
+      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=paste-video-url]")
+        .type(videoAUrl, {delay: 0});
+
+      // wait for the auto filled video to be replaced
+      cy.contains('5 IA surpuissantes');
+
+      // the video title, upload date, and the number of views must be displayed
+      cy.get('div[data-testid=video-card-info]').first().within(() => {
+        cy.contains(
+          '5 IA surpuissantes',
+          {matchCase: false}
+        ).should('be.visible');
+        cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
+        cy.contains('views', {matchCase: false}).should('be.visible');
+      });
+
+      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=paste-video-url] input[type=text]")
+        .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
+    });
 
     it('support pasting YouTube video ID', () => {
       cy.visit('/comparison');
@@ -181,7 +196,8 @@ describe('Comparison page', () => {
       });
 
       cy.get("[data-testid=entity-select-button]").first().click();
-      cy.contains(`yt:${videoAUrl.split('?v=')[1]}`);
+      cy.get("[data-testid=paste-video-url] input[type=text]")
+        .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
     });
   });
 
