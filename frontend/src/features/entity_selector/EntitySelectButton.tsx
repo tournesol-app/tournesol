@@ -36,7 +36,6 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
-  const [triggerTimeout, setTriggerTimeout] = useState(value);
 
   const { isLoggedIn } = useLoginState();
   const fullScreenModal = useMediaQuery(
@@ -63,7 +62,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
     return () => clearTimeout(timeOutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [triggerTimeout]);
+  }, [value]);
 
   const tabs: EntitiesTab[] = useMemo(
     () => [
@@ -165,10 +164,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
             elevation={10}
             entityTextInput={{
               value: value,
-              onChange: (e) => {
-                onChange(e);
-                setTriggerTimeout(e);
-              },
+              onChange: onChange,
             }}
           />
         </SelectorPopper>
