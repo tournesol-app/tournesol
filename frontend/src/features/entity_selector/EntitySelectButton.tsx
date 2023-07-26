@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Autocomplete,
   Box,
@@ -34,7 +34,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const selectorAnchor = useRef<HTMLDivElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
 
   const { isLoggedIn } = useLoginState();
@@ -50,9 +50,6 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   const toggleSuggestions = (event: React.MouseEvent<HTMLButtonElement>) => {
     setSuggestionsOpen((open) => !open);
-    if (menuAnchor === null) {
-      setMenuAnchor(event.currentTarget);
-    }
   };
 
   useEffect(() => {
@@ -140,7 +137,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   return (
     <ClickAwayListener onClickAway={() => setSuggestionsOpen(false)}>
-      <Box>
+      <Box ref={selectorAnchor}>
         <Button
           onClick={toggleSuggestions}
           size="small"
@@ -155,7 +152,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
         <SelectorPopper
           modal={fullScreenModal}
           open={suggestionsOpen}
-          anchorEl={menuAnchor}
+          anchorEl={selectorAnchor.current}
           onClose={() => setSuggestionsOpen(false)}
         >
           <SelectorListBox
