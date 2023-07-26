@@ -1,15 +1,13 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Autocomplete,
   Box,
   TextField,
   ClickAwayListener,
-  InputAdornment,
-  IconButton,
   useMediaQuery,
   Theme,
+  Button,
 } from '@mui/material';
-import { ArrowDropDown } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
@@ -23,6 +21,9 @@ import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { useLoginState } from 'src/hooks';
 
+// in milliseconds
+const TYPING_DELAY = 50;
+
 interface Props {
   value: string;
   onChange: (value: string) => void;
@@ -33,8 +34,9 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
+  const selectorAnchor = useRef<HTMLDivElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
-  const inputRef = useRef<HTMLDivElement>(null);
+
   const { isLoggedIn } = useLoginState();
   const fullScreenModal = useMediaQuery(
     (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
@@ -46,7 +48,18 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
     setSuggestionsOpen(false);
   };
 
-  const toggleSuggestions = () => setSuggestionsOpen((open) => !open);
+  const toggleSuggestions = () => {
+    setSuggestionsOpen((open) => !open);
+  };
+
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      setSuggestionsOpen(false);
+    }, TYPING_DELAY);
+
+    return () => clearTimeout(timeOutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const tabs: EntitiesTab[] = useMemo(
     () => [
@@ -124,59 +137,32 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   return (
     <ClickAwayListener onClickAway={() => setSuggestionsOpen(false)}>
-      <Box>
-        <TextField
+      <Box ref={selectorAnchor}>
+        <Button
+          onClick={toggleSuggestions}
+          size="small"
+          variant="contained"
           color="secondary"
-          fullWidth
-          ref={inputRef}
-          value={value}
-          placeholder={t('entitySelector.pasteUrlOrVideoId')}
-          onChange={(e) => {
-            setSuggestionsOpen(false);
-            onChange(e.target.value);
-          }}
-          variant="standard"
-          onFocus={(e) => {
-            e.target.select();
-          }}
-          onClick={() => {
-            if (!fullScreenModal && !suggestionsOpen) {
-              setSuggestionsOpen(true);
-            }
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={toggleSuggestions}
-                  size="small"
-                  sx={{
-                    ...(suggestionsOpen && {
-                      transform: 'rotate(180deg)',
-                    }),
-                  }}
-                >
-                  <ArrowDropDown />
-                </IconButton>
-              </InputAdornment>
-            ),
-            sx: (theme) => ({
-              [theme.breakpoints.down('sm')]: {
-                fontSize: '0.7rem',
-              },
-            }),
-          }}
-        />
+          sx={{ minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+          disableElevation
+          data-testid="entity-select-button"
+        >
+          {t('entitySelector.select')}
+        </Button>
         <SelectorPopper
           modal={fullScreenModal}
           open={suggestionsOpen}
-          anchorEl={inputRef.current}
+          anchorEl={selectorAnchor.current}
           onClose={() => setSuggestionsOpen(false)}
         >
           <SelectorListBox
             tabs={tabs}
             onSelectEntity={handleOptionClick}
             elevation={10}
+            entityTextInput={{
+              value: value,
+              onChange: onChange,
+            }}
           />
         </SelectorPopper>
       </Box>
@@ -216,7 +202,7 @@ const CandidateInput = ({ onChange, value }: Props) => {
   );
 };
 
-const EntityInput = (props: Props) => {
+const EntitySelectButton = (props: Props) => {
   const { name: pollName } = useCurrentPoll();
   if (pollName === YOUTUBE_POLL_NAME) {
     return <VideoInput {...props} />;
@@ -227,4 +213,4 @@ const EntityInput = (props: Props) => {
   return null;
 };
 
-export default EntityInput;
+export default EntitySelectButton;

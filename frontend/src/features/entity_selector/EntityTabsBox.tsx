@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
+import EntityTextInput from './EntityTextInput';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -12,6 +13,7 @@ interface Props {
   elevation?: number;
   maxHeight?: string | number;
   withLink?: boolean;
+  entityTextInput?: { value: string; onChange: (value: string) => void };
 }
 
 export interface EntitiesTab {
@@ -40,6 +42,7 @@ const EntityTabsBox = ({
   elevation = 1,
   maxHeight = '40vh',
   withLink = false,
+  entityTextInput,
 }: Props) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
@@ -105,6 +108,12 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
+      {entityTextInput && (
+        <EntityTextInput
+          value={entityTextInput.value}
+          onChange={entityTextInput.onChange}
+        />
+      )}
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"

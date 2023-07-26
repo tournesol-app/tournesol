@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Theme, useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import { Box, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
 import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
@@ -12,7 +12,6 @@ import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 
 import { ActionList } from 'src/utils/types';
-import { extractVideoId } from 'src/utils/video';
 import {
   UsersService,
   ContributorRating,
@@ -22,7 +21,8 @@ import {
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
-import EntityInput from './EntityInput';
+import EntitySelectButton from './EntitySelectButton';
+import { extractVideoId } from 'src/utils/video';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   title: string;
+  alignment?: 'left' | 'right';
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
@@ -61,6 +62,7 @@ const isUidValid = (uid: string | null) =>
 
 const EntitySelector = ({
   title,
+  alignment = 'left',
   value,
   onChange,
   otherUid,
@@ -78,6 +80,7 @@ const EntitySelector = ({
           value={value}
           onChange={onChange}
           otherUid={otherUid}
+          alignment={alignment}
           variant={variant}
           autoFill={autoFill}
         />
@@ -129,6 +132,7 @@ const EntitySelectorInnerAuth = ({
   value,
   onChange,
   otherUid,
+  alignment,
   variant,
   autoFill,
 }: Props) => {
@@ -274,41 +278,48 @@ const EntitySelectorInnerAuth = ({
       {showEntityInput && (
         <>
           <Box
-            mx={1}
-            marginTop="4px"
+            m={1}
             display="flex"
-            flexDirection="row"
+            flexDirection={alignment === 'left' ? 'row' : 'row-reverse'}
             alignItems="center"
+            justifyContent="space-between"
           >
+            <Grid
+              container
+              spacing={1}
+              display="flex"
+              direction={alignment === 'left' ? 'row' : 'row-reverse'}
+            >
+              <Grid item>
+                <EntitySelectButton
+                  value={inputValue || uid || ''}
+                  onChange={handleChange}
+                  otherUid={otherUid}
+                />
+              </Grid>
+              <Grid item>
+                <AutoEntityButton
+                  disabled={loading}
+                  currentUid={uid}
+                  otherUid={otherUid}
+                  onClick={() => {
+                    setLoading(true);
+                    setInputValue('');
+                  }}
+                  onResponse={(uid) => {
+                    uid ? onChange({ uid, rating: null }) : setLoading(false);
+                  }}
+                  autoFill={autoFill}
+                />
+              </Grid>
+            </Grid>
             <Typography
               variant="h6"
               color="secondary"
-              flexGrow={1}
               sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
             >
               {title}
             </Typography>
-            <AutoEntityButton
-              disabled={loading}
-              currentUid={uid}
-              otherUid={otherUid}
-              onClick={() => {
-                setLoading(true);
-                setInputValue('');
-              }}
-              onResponse={(uid) => {
-                uid ? onChange({ uid, rating: null }) : setLoading(false);
-              }}
-              autoFill={autoFill}
-            />
-          </Box>
-
-          <Box mx={1} marginBottom={1}>
-            <EntityInput
-              value={inputValue || uid || ''}
-              onChange={handleChange}
-              otherUid={otherUid}
-            />
           </Box>
         </>
       )}
