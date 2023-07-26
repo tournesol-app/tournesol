@@ -16,13 +16,12 @@ import { Link } from '@mui/icons-material';
 
 interface Props {
   tabs: EntitiesTab[];
-  value?: string;
-  onChange?: (value: string) => void;
   onSelectEntity?: (entityUid: string) => void;
   width?: string | number;
   elevation?: number;
   maxHeight?: string | number;
   withLink?: boolean;
+  entityTextInput?: { value: string; onChange: (value: string) => void };
 }
 
 export interface EntitiesTab {
@@ -46,13 +45,12 @@ const TabError = ({ message }: { message: string }) => (
 
 const EntityTabsBox = ({
   tabs,
-  value,
-  onChange,
   onSelectEntity,
   width = 'min(700px, 100vw)',
   elevation = 1,
   maxHeight = '40vh',
   withLink = false,
+  entityTextInput,
 }: Props) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
@@ -118,7 +116,7 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
-      {value !== undefined && onChange !== undefined && (
+      {entityTextInput && (
         <Box
           sx={{
             bgcolor: 'grey.100',
@@ -131,9 +129,9 @@ const EntityTabsBox = ({
             color="secondary"
             fullWidth
             size="small"
-            value={value}
+            value={entityTextInput.value}
             onChange={(e) => {
-              onChange(e.target.value);
+              entityTextInput.onChange(e.target.value);
             }}
             onFocus={(e) => {
               e.target.select();

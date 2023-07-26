@@ -160,14 +160,16 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
           onClose={() => setSuggestionsOpen(false)}
         >
           <SelectorListBox
-            value={value}
-            onChange={(e) => {
-              onChange(e);
-              setTriggerTimeout(e);
-            }}
             tabs={tabs}
             onSelectEntity={handleOptionClick}
             elevation={10}
+            entityTextInput={{
+              value: value,
+              onChange: (e) => {
+                onChange(e);
+                setTriggerTimeout(e);
+              },
+            }}
           />
         </SelectorPopper>
       </Box>
