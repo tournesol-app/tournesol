@@ -209,11 +209,11 @@ const Comparison = ({
         }}
       >
         <EntitySelector
-          title={`A`}
+          title="A"
+          alignment="left"
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          alignment="left"
           autoFill={autoFillSelectorA}
         />
       </Grid>
@@ -226,11 +226,11 @@ const Comparison = ({
         }}
       >
         <EntitySelector
-          title={`B`}
+          title="B"
+          alignment="right"
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          alignment="right"
           autoFill={autoFillSelectorB}
         />
       </Grid>

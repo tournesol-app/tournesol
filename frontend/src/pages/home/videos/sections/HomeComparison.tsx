@@ -151,7 +151,6 @@ const HomeComparison = () => {
           value={selectorA}
           onChange={setSelectorA}
           otherUid={uidB}
-          alignment="left"
         />
       </Grid>
       <Grid
@@ -168,7 +167,6 @@ const HomeComparison = () => {
           value={selectorB}
           onChange={setSelectorB}
           otherUid={uidA}
-          alignment="right"
         />
       </Grid>
       <Grid item xs={12} mt={1} component={Card} elevation={2}>

@@ -43,10 +43,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   title: string;
+  alignment?: 'left' | 'right';
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
-  alignment: 'left' | 'right';
   variant?: 'regular' | 'noControl';
   autoFill?: boolean;
 }
@@ -62,12 +62,12 @@ const isUidValid = (uid: string | null) =>
 
 const EntitySelector = ({
   title,
+  alignment = 'left',
   value,
   onChange,
   otherUid,
   variant = 'regular',
   autoFill = false,
-  alignment,
 }: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
@@ -282,11 +282,11 @@ const EntitySelectorInnerAuth = ({
             display="flex"
             flexDirection={alignment === 'left' ? 'row' : 'row-reverse'}
             alignItems="center"
+            justifyContent="space-between"
           >
             <Grid
               container
               spacing={1}
-              flexGrow={1}
               display="flex"
               direction={alignment === 'left' ? 'row' : 'row-reverse'}
             >
