@@ -195,21 +195,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
-        const recommendationsLangs = await getRecommendationsLanguages();
-        //console.log(recommendationsLangs);
+
+        let recommendationsLangs = await getRecommendationsLanguages(
+          'authenticated'
+        );
 
         // Only one request for both videos and additional videos
         const recentParams = new URLSearchParams([
           ['date_gte', threeWeeksAgo],
           ['limit', recentVideoToLoad + recentAdditionalVideoToLoad],
-          ...recommendationsLangs.map((l) => ['metadata[language]', l]),
         ]);
 
         const oldParams = new URLSearchParams([
           ['date_lte', threeWeeksAgo],
           ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
-          ...recommendationsLangs.map((l) => ['metadata[language]', l]),
         ]);
+
+        recommendationsLangs.forEach((lang) => {
+          if (lang !== '') {
+            oldParams.append('metadata[language]', lang);
+            recentParams.append('metadata[language]', lang);
+          }
+        });
 
         const [recent, old] = await Promise.all([
           request_recommendations(recentParams),

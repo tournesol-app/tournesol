@@ -103,6 +103,25 @@ export const getUserProof = async (keyword) => {
   return { success: false };
 };
 
+export const getUserSettings = async () => {
+  const userSettingsResponse = await fetchTournesolApi(
+    'users/me/settings/',
+    'GET'
+  );
+
+  if ([200, 401].includes(userSettingsResponse.status)) {
+    const responseJson = await userSettingsResponse.json();
+
+    return {
+      success: userSettingsResponse.ok,
+      status: userSettingsResponse.status,
+      body: responseJson,
+    };
+  }
+
+  return { success: false };
+};
+
 /*
  ** Useful method to extract a subset from an array
  ** Copied from https://stackoverflow.com/questions/11935175/sampling-a-random-subset-from-an-array
@@ -151,7 +170,7 @@ export const isNavigatorLang = (lang) => {
   return false;
 };
 
-const getObjectFromLocalStorage = async (key, default_) => {
+const getObjectFromLocalStorage = async (key, default_ = null) => {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.local.get(key, (value) => {
@@ -163,31 +182,86 @@ const getObjectFromLocalStorage = async (key, default_) => {
   });
 };
 
+const getRecomendationsFallbackLanguages = () => {
+  const navLang = navigator.language.split('-')[0].toLowerCase();
+  return ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
+};
+
+const getRecommendationsLanguagesFromStorage = async (default_) => {
+  return await getObjectFromLocalStorage(
+    'recommendations__default_languages',
+    default_
+  );
+};
+
+const getRecommendationsLanguagesFromLegacyStorage = async () => {
+  return await getObjectFromLocalStorage('recommendationsLanguages');
+};
+
 /**
- * Return a list of ISO 639-1 language codes that can be used to fetch the
- * recommendations from the Tournesol API.
- *
  * The languages are retrieved following this priority order:
  *
- * 1. user's settings
- * 2. else, the lagacy extension storage key
- * 3. else, the navigator.language
- * 4. else, the English language code is returned
+ *  1. user's local settings
+ *  2. else, the lagacy extension storage key
+ *  3. else, the navigator.language
+ *  4. else, the English language code is returned
  */
-export const getRecommendationsLanguages = async () => {
-  const navLang = navigator.language.split('-')[0].toLowerCase();
-  const defaultLang = ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
+const getRecommendationsLanguagesAnonymous = async () => {
+  const fallbackLangs = getRecomendationsFallbackLanguages();
 
-  // Fall back to the legacy storage key `recommendationsLanguages` if the
-  // user hasn't defined any preferred language in his/her settings yet.
-  const legacyRecommendationsLanguages = await getObjectFromLocalStorage(
-    'recommendationsLanguages'
+  const legacyLangs = await getRecommendationsLanguagesFromLegacyStorage();
+
+  const languages = await getRecommendationsLanguagesFromStorage(
+    legacyLangs?.split(',') ?? fallbackLangs
   );
 
-  const recommendationsLanguages = await getObjectFromLocalStorage(
-    'recommendations__default_languages',
-    legacyRecommendationsLanguages?.split(',') ?? defaultLang
-  );
+  return languages;
+};
 
-  return recommendationsLanguages;
+/**
+ * The languages are retrieved following this priority order:
+ *
+ *  1. user's settings from the Tournesol API
+ *  2. else, the lagacy extension storage key
+ *  3. else, the navigator.language
+ *  4. else, the English language code is returned
+ */
+const getRecommendationsLanguagesAuthenticated = async () => {
+  let languages;
+  const settings = await getUserSettings();
+
+  // Fallback to the storage settings in case of error.
+  if (!settings || !settings.success) {
+    return await getRecommendationsLanguages('anonymous');
+  }
+
+  languages = settings.body?.videos?.recommendations__default_languages ?? null;
+
+  if (languages == null) {
+    languages = await getRecommendationsLanguagesFromLegacyStorage();
+  }
+
+  if (languages == null) {
+    languages = getRecomendationsFallbackLanguages();
+  }
+
+  return languages;
+};
+
+/**
+ * Try to get the user's preferred recommendations languages from the
+ * Tournesol API.
+ *
+ * Fallback to the extension local settings if the user is not authenticated,
+ * or if an error occured during the request.
+ *
+ * Return a list of ISO 639-1 language codes that can be used to fetch the
+ * recommendations from the Tournesol API.
+ */
+export const getRecommendationsLanguages = async (user) => {
+  if (user === 'authenticated') {
+    return await getRecommendationsLanguagesAuthenticated();
+  }
+
+  return await getRecommendationsLanguagesAnonymous();
 };
