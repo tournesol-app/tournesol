@@ -111,6 +111,7 @@ def compute_scaling(
             ABn_all = get_significantly_different_pairs(user_n_scores)
 
         if len(ABn_all) > 0:
+            ABn_all_index_set = set(ABn_all.index)
             for user_m in reference_users - {user_n}:
                 try:
                     ABm = ref_user_scores_pairs[user_m]
@@ -118,7 +119,8 @@ def compute_scaling(
                     # the reference user may not have contributed on the current criterion
                     continue
 
-                if ABn_all.index.intersection(ABm.index).size == 0:
+                if all((idx not in ABn_all_index_set) for idx in ABm.index):
+                    # Quick path: the intersection is empty, no need to call expensive inner join.
                     continue
 
                 ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
