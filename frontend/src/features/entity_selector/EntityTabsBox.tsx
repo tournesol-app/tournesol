@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Tab, Paper, Alert, Button, Link, Box } from '@mui/material';
+import {
+  Tabs,
+  Tab,
+  Paper,
+  Alert,
+  Button,
+  Link,
+  Box,
+  Typography,
+  IconButton,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import EntityTextInput from './EntityTextInput';
 import { getWebExtensionUrl } from 'src/utils/extension';
+import { InfoOutlined } from '@mui/icons-material';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -31,7 +42,13 @@ export enum TabStatus {
   Error = 'error',
 }
 
-const TabError = ({
+const TabError = ({ message }: { message: string }) => (
+  <Typography variant="subtitle1" paragraph m={2} mt={0} color="neutral.main">
+    {message}
+  </Typography>
+);
+
+const TabInfo = ({
   messageKey,
   handleClose,
 }: {
@@ -41,7 +58,6 @@ const TabError = ({
   const { t } = useTranslation();
 
   const emptyListMessages: { [key: string]: string } = {
-    error: 'tabsBox.errorOnLoading',
     'rate-later': 'tabsBox.rateLater',
     'recently-compared': 'tabsBox.compared',
     recommendations: 'tabsBox.recommendations',
@@ -49,8 +65,8 @@ const TabError = ({
   };
 
   return (
-    <Box p={2}>
-      <Alert severity="info" onClose={handleClose}>
+    <Box pb={2}>
+      <Alert severity="info" onClose={handleClose} icon={false}>
         {t(emptyListMessages[messageKey])}
         {messageKey === 'rate-later' ? (
           <Box display="flex" justifyContent="flex-end">
@@ -81,11 +97,17 @@ const EntityTabsBox = ({
   entityTextInput,
   displayDescription = false,
 }: Props) => {
+  const { t } = useTranslation();
+
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
   const [options, setOptions] = useState<RelatedEntityObject[]>([]);
   const [toggleDescription, setToggleDescription] =
     useState(displayDescription);
+
+  const handleToggleDescription = () => {
+    setToggleDescription(!toggleDescription);
+  };
 
   useEffect(() => {
     const tab = tabs.find((t) => t.name === tabValue);
@@ -157,7 +179,7 @@ const EntityTabsBox = ({
         indicatorColor="secondary"
         value={tabValue}
         onChange={(e, value) => {
-          setToggleDescription(true);
+          handleToggleDescription;
           setTabValue(value);
         }}
         variant="scrollable"
@@ -178,29 +200,35 @@ const EntityTabsBox = ({
         isLoading={status === TabStatus.Loading}
         sx={{ overflowY: 'scroll' }}
       >
-        {toggleDescription && (
-          <TabError
+        {toggleDescription ? (
+          <TabInfo
             messageKey={tabValue}
             handleClose={() => {
               setToggleDescription(false);
             }}
           />
+        ) : (
+          <Box display="flex" justifyContent="flex-end">
+            <IconButton onClick={handleToggleDescription} color="info">
+              <InfoOutlined />
+            </IconButton>
+          </Box>
         )}
         {status === TabStatus.Error ? (
-          <TabError messageKey={'error'} />
+          <TabError message={t('tabsBox.errorOnLoading')} />
+        ) : options.length > 0 ? (
+          <ul>
+            {options.map((entity) => (
+              <li
+                key={entity.uid}
+                onClick={onSelectEntity && (() => onSelectEntity(entity.uid))}
+              >
+                <RowEntityCard entity={entity} withLink={withLink} />
+              </li>
+            ))}
+          </ul>
         ) : (
-          options.length > 0 && (
-            <ul>
-              {options.map((entity) => (
-                <li
-                  key={entity.uid}
-                  onClick={onSelectEntity && (() => onSelectEntity(entity.uid))}
-                >
-                  <RowEntityCard entity={entity} withLink={withLink} />
-                </li>
-              ))}
-            </ul>
-          )
+          <TabError message={t('tabsBox.emptyList')} />
         )}
       </LoaderWrapper>
     </Paper>
