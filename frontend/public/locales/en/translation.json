@@ -105,10 +105,10 @@
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
     "unconnected": "To connect",
-    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "select": "Select",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
-    "backButton": "Back",
-    "select": "Select"
+    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "backButton": "Back"
   },
   "tabsBox": {
     "errorOnLoading": "An error occurred while loading the results.",
@@ -447,6 +447,7 @@
     "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",
     "alwaysDisplayedCriteria": "Always displayed criteria",
     "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
+    "letTournesolLoadVideos": "Let Tournesol load videos by default on the comparison page.",
     "preferredLanguage": "Preferred language",
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
@@ -984,12 +985,12 @@
   "videos": {
     "dialogs": {
       "tutorial": {
+        "installTheExtension": "Install the extension",
         "title4": "Compare easily with the extension",
         "message4": {
           "p10": "The Tournesol browser extension lets you add the videos you watch on YouTube to your rate-later list.",
           "p20": "You can also make comparisons directly from YouTube!"
-        },
-        "installTheExtension": "Install the extension"
+        }
       }
     },
     "tips": {

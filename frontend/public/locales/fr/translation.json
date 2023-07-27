@@ -109,10 +109,10 @@
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
     "unconnected": "À relier",
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "select": "Selectionner",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
-    "backButton": "Retour",
-    "select": "Selectionner"
+    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "backButton": "Retour"
   },
   "tabsBox": {
     "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
@@ -454,6 +454,7 @@
     "optionalCriteriaEmptyText": "Tous les critères optionnels seront affichés par défaut.",
     "alwaysDisplayedCriteria": "Critères toujours affichés",
     "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
+    "letTournesolLoadVideos": "Laisser Tournesol afficher des vidéos par défaut sur la page de comparaison.",
     "preferredLanguage": "Langue préférée",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
@@ -993,12 +994,12 @@
   "videos": {
     "dialogs": {
       "tutorial": {
+        "installTheExtension": "Installer l'extension",
         "title4": "Comparez facilement avec l'extension",
         "message4": {
           "p10": "L'extension de navigateur Tournesol vous permet d'ajouter les vidéos que vous regardez sur YouTube à votre lister à comparer plus tard.",
           "p20": "Vous pouvez aussi faire des comparaisons directement depuis YouTube ! Pratique."
-        },
-        "installTheExtension": "Installer l'extension"
+        }
       }
     },
     "tips": {

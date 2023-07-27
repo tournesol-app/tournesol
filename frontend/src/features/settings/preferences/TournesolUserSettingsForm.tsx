@@ -84,6 +84,9 @@ const TournesolUserSettingsForm = () => {
     pollSettings?.comparison_ui__weekly_collective_goal_display ??
       ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
   );
+  const [fillEntitySelectorAuto, setFillEntitySelectorAuto] = useState(
+    pollSettings?.comparison__entity_selector_auto ?? true
+  );
 
   // Rate-later settings
   const [rateLaterAutoRemoval, setRateLaterAutoRemoval] = useState(
@@ -130,6 +133,10 @@ const TournesolUserSettingsForm = () => {
       );
     }
 
+    if (pollSettings?.comparison__entity_selector_auto != undefined) {
+      setFillEntitySelectorAuto(pollSettings?.comparison__entity_selector_auto);
+    }
+
     if (pollSettings?.comparison__criteria_order != undefined) {
       setDisplayedCriteria(pollSettings.comparison__criteria_order);
     }
@@ -161,6 +168,7 @@ const TournesolUserSettingsForm = () => {
           },
           [YOUTUBE_POLL_NAME]: {
             comparison__criteria_order: displayedCriteria,
+            comparison__entity_selector_auto: fillEntitySelectorAuto,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
@@ -215,6 +223,8 @@ const TournesolUserSettingsForm = () => {
           <VideosPollUserSettingsForm
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
             setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+            fillEntitySelectorAuto={fillEntitySelectorAuto}
+            setFillEntitySelectorAuto={setFillEntitySelectorAuto}
             displayedCriteria={displayedCriteria}
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}
