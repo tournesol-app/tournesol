@@ -163,7 +163,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
               value: value,
               onChange: onChange,
             }}
-            displayDescription={true}
+            displayDescription={false}
           />
         </SelectorPopper>
       </Box>

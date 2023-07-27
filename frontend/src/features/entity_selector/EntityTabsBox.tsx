@@ -95,7 +95,7 @@ const EntityTabsBox = ({
   maxHeight = '40vh',
   withLink = false,
   entityTextInput,
-  displayDescription = false,
+  displayDescription,
 }: Props) => {
   const { t } = useTranslation();
 
