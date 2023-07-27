@@ -50,9 +50,11 @@ const TabError = ({ message }: { message: string }) => (
 
 const TabInfo = ({
   messageKey,
+  canClose = true,
   handleClose,
 }: {
   messageKey: string;
+  canClose?: boolean;
   handleClose?: () => void;
 }) => {
   const { t } = useTranslation();
@@ -66,7 +68,11 @@ const TabInfo = ({
 
   return (
     <Box pb={2}>
-      <Alert severity="info" onClose={handleClose} icon={false}>
+      <Alert
+        severity="info"
+        onClose={canClose ? handleClose : undefined}
+        icon={false}
+      >
         {t(emptyListMessages[messageKey])}
         {messageKey === 'rate-later' ? (
           <Box display="flex" justifyContent="flex-end">
@@ -95,7 +101,7 @@ const EntityTabsBox = ({
   maxHeight = '40vh',
   withLink = false,
   entityTextInput,
-  displayDescription,
+  displayDescription = false,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -104,6 +110,8 @@ const EntityTabsBox = ({
   const [options, setOptions] = useState<RelatedEntityObject[]>([]);
   const [toggleDescription, setToggleDescription] =
     useState(displayDescription);
+
+  const canCloseDescription = !displayDescription;
 
   const handleToggleDescription = () => {
     setToggleDescription(!toggleDescription);
@@ -206,6 +214,7 @@ const EntityTabsBox = ({
             handleClose={() => {
               setToggleDescription(false);
             }}
+            canClose={canCloseDescription}
           />
         ) : (
           <Box display="flex" justifyContent="flex-end">
