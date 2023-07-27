@@ -84,8 +84,8 @@ const TournesolUserSettingsForm = () => {
     pollSettings?.comparison_ui__weekly_collective_goal_display ??
       ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
   );
-  const [fillEntitySelectorAuto, setFillEntitySelectorAuto] = useState(
-    pollSettings?.comparison__entity_selector_auto ?? true
+  const [fillEntitySelector, setFillEntitySelector] = useState(
+    pollSettings?.comparison__fill_entity_selector ?? true
   );
 
   // Rate-later settings
@@ -133,8 +133,8 @@ const TournesolUserSettingsForm = () => {
       );
     }
 
-    if (pollSettings?.comparison__entity_selector_auto != undefined) {
-      setFillEntitySelectorAuto(pollSettings?.comparison__entity_selector_auto);
+    if (pollSettings?.comparison__fill_entity_selector != undefined) {
+      setFillEntitySelector(pollSettings?.comparison__fill_entity_selector);
     }
 
     if (pollSettings?.comparison__criteria_order != undefined) {
@@ -168,7 +168,7 @@ const TournesolUserSettingsForm = () => {
           },
           [YOUTUBE_POLL_NAME]: {
             comparison__criteria_order: displayedCriteria,
-            comparison__entity_selector_auto: fillEntitySelectorAuto,
+            comparison__fill_entity_selector: fillEntitySelector,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
@@ -223,8 +223,8 @@ const TournesolUserSettingsForm = () => {
           <VideosPollUserSettingsForm
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
             setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-            fillEntitySelectorAuto={fillEntitySelectorAuto}
-            setFillEntitySelectorAuto={setFillEntitySelectorAuto}
+            fillEntitySelector={fillEntitySelector}
+            setFillEntitySelector={setFillEntitySelector}
             displayedCriteria={displayedCriteria}
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}

@@ -16,7 +16,7 @@ import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
-import FillEntitySelectorAuto from './fields/EntitySelectorAuto';
+import FillEntitySelector from './fields/FillEntitySelector';
 
 interface VideosPollUserSettingsFormProps {
   compUiWeeklyColGoalDisplay:
@@ -25,8 +25,8 @@ interface VideosPollUserSettingsFormProps {
   setCompUiWeeklyColGoalDisplay: (
     target: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum
   ) => void;
-  fillEntitySelectorAuto: boolean;
-  setFillEntitySelectorAuto: (target: boolean) => void;
+  fillEntitySelector: boolean;
+  setFillEntitySelector: (target: boolean) => void;
   displayedCriteria: string[];
   setDisplayedCriteria: (target: string[]) => void;
   rateLaterAutoRemoval: number;
@@ -46,8 +46,8 @@ interface VideosPollUserSettingsFormProps {
 const VideosPollUserSettingsForm = ({
   compUiWeeklyColGoalDisplay,
   setCompUiWeeklyColGoalDisplay,
-  fillEntitySelectorAuto,
-  setFillEntitySelectorAuto,
+  fillEntitySelector,
+  setFillEntitySelector,
   displayedCriteria,
   setDisplayedCriteria,
   rateLaterAutoRemoval,
@@ -77,9 +77,9 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
-        <FillEntitySelectorAuto
-          value={fillEntitySelectorAuto}
-          onChange={setFillEntitySelectorAuto}
+        <FillEntitySelector
+          value={fillEntitySelector}
+          onChange={setFillEntitySelector}
           pollName={pollName}
         />
       </Grid>
