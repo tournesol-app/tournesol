@@ -215,8 +215,7 @@ def compute_scaling(
 
 def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame, W: float):
     rp = ml_input.ratings_properties
-    rp = rp.set_index(["user_id", "entity_id"])
-    rp = rp[rp.is_scaling_calibration_user]
+    rp = rp[rp.is_scaling_calibration_user].set_index(["user_id", "entity_id"])
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
     df["score"] = df["raw_score"]
     df["uncertainty"] = df["raw_uncertainty"]
