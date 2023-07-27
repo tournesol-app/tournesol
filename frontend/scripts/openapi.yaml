@@ -4362,7 +4362,7 @@ components:
           type: array
           items:
             type: string
-        comparison__entity_selector_auto:
+        comparison__fill_entity_selector:
           type: boolean
         comparison_ui__weekly_collective_goal_display:
           oneOf:
@@ -4392,7 +4392,7 @@ components:
           items:
             type: string
             minLength: 1
-        comparison__entity_selector_auto:
+        comparison__fill_entity_selector:
           type: boolean
         comparison_ui__weekly_collective_goal_display:
           oneOf:
