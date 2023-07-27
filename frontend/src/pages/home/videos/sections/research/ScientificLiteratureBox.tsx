@@ -20,6 +20,7 @@ import {
   MenuBook,
   VerifiedUser,
   School,
+  QueryStats,
 } from '@mui/icons-material';
 import TitledPaper from 'src/components/TitledPaper';
 
@@ -84,6 +85,13 @@ const ScientificLiteratureBox = () => {
         'Youssef Allouah, Rachid Guerraoui, Lê-Nguyên Hoang, Oscar Villemaud (2022). ArXiV.',
       url: 'https://arxiv.org/abs/2202.08656',
       icon: HowToVote,
+    },
+    {
+      name: 'On the Strategyproofness of the Geometric Median',
+      authors:
+        'El-Mahdi El-Mhamdi, Sadegh Farhadkhani, Rachid Guerraoui, Lê-Nguyên Hoang (2023). AISTATS 2023',
+      url: 'https://proceedings.mlr.press/v206/el-mhamdi23a.html',
+      icon: QueryStats,
     },
     {
       name: 'Recommendation Algorithms, a Neglected Opportunity for Public Health.',
