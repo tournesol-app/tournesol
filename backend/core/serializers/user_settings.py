@@ -39,6 +39,9 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     comparison__criteria_order = serializers.ListField(
         child=serializers.CharField(), required=False
     )
+
+    comparison__entity_selector_auto = serializers.BooleanField(required=False)
+
     comparison_ui__weekly_collective_goal_display = serializers.ChoiceField(
         choices=COMPONENT_DISPLAY_STATE, allow_blank=True, required=False
     )
