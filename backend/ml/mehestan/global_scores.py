@@ -44,18 +44,18 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     that are significantly different, according to the contributor scores.
     (Used for collaborative preference scaling)
     """
-    scores = scores[["uid", "score", "uncertainty"]]
+    scores = scores[["entity_id", "score", "uncertainty"]]
     indices = get_significantly_different_pairs_indices(
         scores["score"].to_numpy(), scores["uncertainty"].to_numpy()
     )
     scores_a = scores.iloc[indices[:, 0]]
     scores_b = scores.iloc[indices[:, 1]]
-    uids_index = pd.MultiIndex.from_arrays(
+    entity_ids_index = pd.MultiIndex.from_arrays(
         [
-            scores_a["uid"].to_numpy(),
-            scores_b["uid"].to_numpy(),
+            scores_a["entity_id"].to_numpy(),
+            scores_b["entity_id"].to_numpy(),
         ],
-        names=["uid_a", "uid_b"],
+        names=["entity_id_a", "entity_id_b"],
     )
     return pd.DataFrame(
         {
@@ -64,7 +64,7 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
             "uncertainty_a": scores_a["uncertainty"].to_numpy(),
             "uncertainty_b": scores_b["uncertainty"].to_numpy(),
         },
-        index=uids_index,
+        index=entity_ids_index,
     )
 
 
@@ -77,7 +77,6 @@ def compute_scaling(
     calibration=False,
 ):
     scaling_weights = get_user_scaling_weights(ml_input, W=W)
-    df = df.rename({"entity_id": "uid"}, axis=1)
 
     if users_to_compute is None:
         users_to_compute = set(df.user_id.unique())
@@ -93,12 +92,12 @@ def compute_scaling(
     delta_s_dict = {}
 
     ref_user_scores_pairs = {}
-    ref_user_scores_by_uid = {}
+    ref_user_scores_by_entity_id = {}
     for (ref_user_id, ref_user_scores) in df[df["user_id"].isin(reference_users)].groupby(
         "user_id"
     ):
         ref_user_scores_pairs[ref_user_id] = get_significantly_different_pairs(ref_user_scores)
-        ref_user_scores_by_uid[ref_user_id] = ref_user_scores.set_index("uid")
+        ref_user_scores_by_entity_id[ref_user_id] = ref_user_scores.set_index("entity_id")
 
     for (user_n, user_n_scores) in df[df["user_id"].isin(users_to_compute)].groupby("user_id"):
         s_nqm = []
@@ -166,21 +165,21 @@ def compute_scaling(
         tau_nqm = []
         delta_tau_nqm = []
         s_weights = []
-        user_n_scores = user_n_scores.set_index("uid")
-        user_n_scores_uids = set(user_n_scores.index)
+        user_n_scores = user_n_scores.set_index("entity_id")
+        user_n_scores_entity_ids = set(user_n_scores.index)
 
         for user_m in reference_users - {user_n}:
             try:
-                user_m_scores = ref_user_scores_by_uid[user_m]
+                user_m_scores = ref_user_scores_by_entity_id[user_m]
             except KeyError:
                 # the reference user may not have contributed on the current criterion
                 continue
-            common_uids = list(user_n_scores_uids.intersection(user_m_scores.index))
-            if len(common_uids) == 0:
+            common_entity_ids = list(user_n_scores_entity_ids.intersection(user_m_scores.index))
+            if len(common_entity_ids) == 0:
                 continue
 
-            m_scores = user_m_scores.loc[common_uids]
-            n_scores = user_n_scores.loc[common_uids]
+            m_scores = user_m_scores.loc[common_entity_ids]
+            n_scores = user_n_scores.loc[common_entity_ids]
 
             s_m = s_dict.get(user_m, 1)
             s_n = s_dict[user_n]
