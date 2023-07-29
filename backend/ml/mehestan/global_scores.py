@@ -8,6 +8,11 @@ from solidago.resilient_primitives import BrMean, QrDev, QrMed, QrUnc
 
 from ml.inputs import MlInput
 
+# This limit allows to index pairs of entity_id into a usual Index with dtype 'uint64'.
+# We originally used a MultiIndex that consumed significantly more memory, due to how
+# pandas may cache MultiIndex values as an array of Python tuples.
+ENTITY_ID_MAX = 2**32 - 1
+
 
 def get_user_scaling_weights(ml_input: MlInput, W: float):
     ratings_properties = ml_input.ratings_properties[
@@ -50,12 +55,11 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     )
     scores_a = scores.iloc[indices[:, 0]]
     scores_b = scores.iloc[indices[:, 1]]
-    entity_ids_index = pd.MultiIndex.from_arrays(
-        [
-            scores_a["entity_id"].to_numpy(),
-            scores_b["entity_id"].to_numpy(),
-        ],
-        names=["entity_id_a", "entity_id_b"],
+
+    entity_pairs_index = pd.Index(
+        # As a memory optimization, a pair of entity_id is represented as a single uint64
+        scores_a["entity_id"].to_numpy() * (ENTITY_ID_MAX + 1) + scores_b["entity_id"].to_numpy(),
+        dtype="uint64",
     )
     return pd.DataFrame(
         {
@@ -64,7 +68,7 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
             "uncertainty_a": scores_a["uncertainty"].to_numpy(),
             "uncertainty_b": scores_b["uncertainty"].to_numpy(),
         },
-        index=entity_ids_index,
+        index=entity_pairs_index,
     )
 
 
@@ -90,6 +94,9 @@ def compute_scaling(
 
     s_dict = {}
     delta_s_dict = {}
+
+    if len(df) > 0:
+        assert df["entity_id"].max() <= ENTITY_ID_MAX, "Values of entity_id are too large."
 
     ref_user_scores_pairs = {}
     ref_user_scores_by_entity_id = {}
