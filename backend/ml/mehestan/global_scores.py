@@ -95,8 +95,8 @@ def compute_scaling(
     s_dict = {}
     delta_s_dict = {}
 
-    if len(df) > 0:
-        assert df["entity_id"].max() <= ENTITY_ID_MAX, "Values of entity_id are too large."
+    if len(df) > 0 and df["entity_id"].max() > ENTITY_ID_MAX:
+        raise AssertionError("Values of entity_id are too large.")
 
     ref_user_scores_pairs = {}
     ref_user_scores_by_entity_id = {}
