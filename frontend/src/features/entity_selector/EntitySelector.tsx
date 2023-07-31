@@ -280,39 +280,49 @@ const EntitySelectorInnerAuth = ({
           <Box
             m={1}
             display="flex"
-            flexDirection={alignment === 'left' ? 'row' : 'row-reverse'}
+            flexDirection={
+              autoFill
+                ? alignment === 'left'
+                  ? 'row'
+                  : 'row-reverse'
+                : alignment !== 'left'
+                ? 'row'
+                : 'row-reverse'
+            }
             alignItems="center"
             justifyContent="space-between"
           >
-            <Grid
-              container
-              spacing={1}
-              display="flex"
-              direction={alignment === 'left' ? 'row' : 'row-reverse'}
-            >
-              <Grid item>
-                <EntitySelectButton
-                  value={inputValue || uid || ''}
-                  onChange={handleChange}
-                  otherUid={otherUid}
-                />
+            {autoFill && (
+              <Grid
+                container
+                spacing={1}
+                display="flex"
+                direction={alignment === 'left' ? 'row' : 'row-reverse'}
+              >
+                <Grid item>
+                  <EntitySelectButton
+                    value={inputValue || uid || ''}
+                    onChange={handleChange}
+                    otherUid={otherUid}
+                  />
+                </Grid>
+                <Grid item>
+                  <AutoEntityButton
+                    disabled={loading}
+                    currentUid={uid}
+                    otherUid={otherUid}
+                    onClick={() => {
+                      setLoading(true);
+                      setInputValue('');
+                    }}
+                    onResponse={(uid) => {
+                      uid ? onChange({ uid, rating: null }) : setLoading(false);
+                    }}
+                    autoFill={autoFill}
+                  />
+                </Grid>
               </Grid>
-              <Grid item>
-                <AutoEntityButton
-                  disabled={loading}
-                  currentUid={uid}
-                  otherUid={otherUid}
-                  onClick={() => {
-                    setLoading(true);
-                    setInputValue('');
-                  }}
-                  onResponse={(uid) => {
-                    uid ? onChange({ uid, rating: null }) : setLoading(false);
-                  }}
-                  autoFill={autoFill}
-                />
-              </Grid>
-            </Grid>
+            )}
             <Typography
               variant="h6"
               color="secondary"
