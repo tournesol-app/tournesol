@@ -4,13 +4,12 @@ import {
   Tab,
   Paper,
   Alert,
-  Button,
   Link,
   Box,
   Typography,
   IconButton,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
@@ -60,7 +59,6 @@ const TabInfo = ({
   const { t } = useTranslation();
 
   const emptyListMessages: { [key: string]: string } = {
-    'rate-later': 'tabsBox.rateLater',
     'recently-compared': 'tabsBox.compared',
     recommendations: 'tabsBox.recommendations',
     unconnected: 'tabsBox.toConnect',
@@ -76,16 +74,25 @@ const TabInfo = ({
         {t(emptyListMessages[messageKey])}
         {messageKey === 'rate-later' ? (
           <Box display="flex" justifyContent="flex-end">
-            <Button
-              color="info"
-              size="small"
-              variant="outlined"
-              component={Link}
-              href={getWebExtensionUrl()}
-              target="_blank"
-            >
-              {t('videos.dialogs.tutorial.installTheExtension')}
-            </Button>
+            <Typography fontSize="100%">
+              <Trans t={t} i18nKey="tabsBox.rateLater">
+                Your rate-later videos appear here. You can add some to your
+                list by clicking on the &apos;+&apos; sign on the video cards.
+                You can also add them directly from{' '}
+                <Link
+                  href={getWebExtensionUrl()}
+                  target="_blank"
+                  rel="noopener"
+                  sx={{
+                    color: 'revert',
+                    textDecoration: 'revert',
+                  }}
+                >
+                  the extension
+                </Link>
+                .
+              </Trans>
+            </Typography>
           </Box>
         ) : undefined}
       </Alert>
