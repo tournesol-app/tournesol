@@ -19,13 +19,7 @@ const useStyles = makeStyles({
   },
 });
 
-const EmptyEntityCard = ({
-  compact,
-  loading = false,
-}: {
-  compact?: boolean;
-  loading?: boolean;
-}) => {
+const EmptyEntityCard = ({ compact }: { compact?: boolean }) => {
   const classes = useStyles();
 
   return (
@@ -45,7 +39,7 @@ const EmptyEntityCard = ({
         <img
           src="/svg/LogoSmall.svg"
           alt="logo"
-          className={loading ? classes.loadingEffect : undefined}
+          className={classes.loadingEffect}
           style={{ opacity: '0.3' }}
         />
       </Grid>

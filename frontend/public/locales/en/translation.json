@@ -100,12 +100,14 @@
   "entitySelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
+    "autoEntityButtonLong": "Let Tournesol select a video",
     "suggestions": "Suggestions",
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
     "unconnected": "To connect",
     "select": "Select",
+    "selectLong": "Select a video",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
     "backButton": "Back"

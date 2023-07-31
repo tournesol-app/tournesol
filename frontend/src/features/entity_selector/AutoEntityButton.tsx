@@ -13,6 +13,7 @@ interface Props {
   onClick: () => void;
   disabled?: boolean;
   autoFill?: boolean;
+  inSelector?: boolean;
 }
 
 const AutoEntityButton = ({
@@ -22,6 +23,7 @@ const AutoEntityButton = ({
   onClick,
   disabled = false,
   autoFill = false,
+  inSelector = false,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -93,10 +95,16 @@ const AutoEntityButton = ({
           variant="outlined"
           size="small"
           onClick={askNewVideo}
-          startIcon={<Autorenew />}
-          sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+          startIcon={inSelector ? undefined : <Autorenew />}
+          sx={
+            inSelector
+              ? { minWidth: '180px', minHeight: '100px', fontSize: '100%' }
+              : { fontSize: { xs: '0.7rem', sm: '0.8rem' } }
+          }
         >
-          {t('entitySelector.autoEntityButton')}
+          {inSelector
+            ? t('entitySelector.autoEntityButtonLong')
+            : t('entitySelector.autoEntityButton')}
         </Button>
       </span>
     </Tooltip>
