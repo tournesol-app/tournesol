@@ -101,6 +101,7 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
 
   const { uid } = value;
   const [entityFallback, setEntityFallback] = useState<Recommendation>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function getEntity() {
@@ -113,6 +114,7 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
     // Wait for a not null / not empty UID before making an HTTP request.
     if (uid) {
       getEntity().then((entity) => {
+        setLoading(false);
         setEntityFallback(entity);
       });
     }
@@ -121,7 +123,7 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
   return entityFallback ? (
     <EntityCard compact entity={entityFallback} settings={undefined} />
   ) : (
-    <EmptyEntityCard compact />
+    <EmptyEntityCard compact loading={loading} />
   );
 };
 
