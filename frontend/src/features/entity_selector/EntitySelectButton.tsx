@@ -155,7 +155,11 @@ const VideoInput = ({
               : { minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }
           }
           disableElevation
-          data-testid="entity-select-button"
+          data-testid={
+            inSelector
+              ? 'entity-select-button-inSelector'
+              : 'entity-select-button'
+          }
         >
           {inSelector
             ? t('entitySelector.selectLong')

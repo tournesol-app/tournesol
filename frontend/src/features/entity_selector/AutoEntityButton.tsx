@@ -101,6 +101,9 @@ const AutoEntityButton = ({
               ? { minWidth: '180px', minHeight: '100px', fontSize: '100%' }
               : { fontSize: { xs: '0.7rem', sm: '0.8rem' } }
           }
+          data-testid={
+            inSelector ? 'auto-entity-button-inSelector' : 'auto-entity-button'
+          }
         >
           {inSelector
             ? t('entitySelector.autoEntityButtonLong')
