@@ -79,6 +79,8 @@ def get_preview_recommendations_redirect_params(request):
                 now = timezone.now()
                 date_gte = now - datetime.timedelta(seconds=seconds_max_age)
                 query["date_gte"] = date_gte.isoformat(timespec="seconds")
+        elif key == "advanced":
+            query["unsafe"] = "unsafe" in value.split(",")
         else:
             query[key] = params[key]
 
