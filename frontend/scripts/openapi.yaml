@@ -713,6 +713,13 @@ paths:
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
       - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
+      - in: query
         name: weights
         schema:
           type: object
@@ -1098,6 +1105,13 @@ paths:
           default: false
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
+      - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
       - in: query
         name: weights
         schema:
@@ -1993,6 +2007,13 @@ paths:
           default: false
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
+      - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
       - in: query
         name: weights
         schema:
