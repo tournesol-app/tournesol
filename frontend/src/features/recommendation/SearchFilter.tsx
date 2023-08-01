@@ -94,8 +94,8 @@ function SearchFilter({
                 {showAdvancedFilter && (
                   <Box mt={2}>
                     <AdvancedFilter
-                      value={filterParams.get('unsafe') ?? ''}
-                      onChange={(value) => setFilter('unsafe', value)}
+                      value={filterParams.get('advanced') ?? ''}
+                      onChange={(value) => setFilter('advanced', value)}
                     />
                   </Box>
                 )}

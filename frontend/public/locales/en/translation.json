@@ -331,6 +331,8 @@
   "filter": {
     "filterByVisibility": "Filter by visibility",
     "includeAllVideos": "Include all videos",
+    "excludeComparedVideos": "Exclude compared videos",
+    "excludeComparedTooltip": "Remove from the list of recommendations the videos that you have already compared.",
     "advanced": "Advanced",
     "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
     "ignore": "Ignore",

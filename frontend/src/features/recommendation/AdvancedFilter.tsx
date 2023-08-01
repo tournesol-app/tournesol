@@ -10,16 +10,22 @@ interface Props {
 function AdvancedFilter(props: Props) {
   const { t } = useTranslation();
 
-  const safeChoice = {
-    true: t('filter.includeAllVideos'),
+  const choices = {
+    unsafe: t('filter.includeAllVideos'),
+    exclude_compared: t('filter.excludeComparedVideos'),
+  };
+
+  const tooltips = {
+    unsafe: t('filter.unsafeTooltip'),
+    exclude_compared: t('filter.excludeComparedTooltip'),
   };
 
   return (
     <ChoicesFilterSection
       title={t('filter.advanced')}
       multipleChoice
-      choices={safeChoice}
-      tooltip={t('filter.unsafeTooltip')}
+      choices={choices}
+      tooltips={tooltips}
       {...props}
     ></ChoicesFilterSection>
   );
