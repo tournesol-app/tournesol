@@ -450,6 +450,50 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         results = response.data["results"]
         self.assertSetEqual(set(e["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
 
+    def test_response_is_not_cached_when_exclude_is_true(self):
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
+        self.client.force_authenticate(user=self.user_with_ratings)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="abc")
+        results = response.data["results"]
+        self.assertSetEqual(set(e["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
+
+    def test_response_is_not_cached_when_exclude_is_true_for_two_users(self):
+        self.client.force_authenticate(user=self.user_with_ratings)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="abc")
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="def")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
+    def test_response_is_cached_when_exclude_is_false(self):
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="abc")
+        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        VideoCriteriaScoreFactory(entity=new_video, score=2)
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
+    def test_response_anonymous_writes_to_cache_when_exclude_is_false(self):
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
+        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        VideoCriteriaScoreFactory(entity=new_video, score=2)
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
+    def test_response_anonymous_reads_from_cache_when_exclude_is_false(self):
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
+        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        VideoCriteriaScoreFactory(entity=new_video, score=2)
+        self.client.force_authenticate(user=None)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
     def test_user_rated_everything_sees_empty_results(self):
         self.client.force_authenticate(user=self.user_with_ratings)
         ComparisonFactory(user=self.user_with_ratings, entity_1=self.video_2, entity_2=self.video_4)

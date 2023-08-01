@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.db.models import Case, F, Sum, When
 from django.shortcuts import get_object_or_404
+from django.utils.cache import patch_vary_headers
 from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -282,8 +283,11 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     serializer_class = RecommendationSerializer
 
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
-    def list(self, *args, **kwargs):
-        return super().list(self, *args, **kwargs)
+    def list(self, request, *args, **kwargs):
+        response = super().list(self, request, *args, **kwargs)
+        if request.query_params.get("exclude_compared_entities") == "true":
+            patch_vary_headers(response, ['Authorization'])
+        return response
 
     def annotate_and_prefetch_scores(self, queryset, request, poll: Poll):
         raw_score_mode = request.query_params.get("score_mode", ScoreMode.DEFAULT)

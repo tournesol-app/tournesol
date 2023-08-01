@@ -1,4 +1,3 @@
-from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
@@ -67,10 +66,6 @@ class RecommendationSerializer(ModelSerializer):
         ]
 
 
-@extend_schema_serializer(
-    # TODO: include this parameter in schema + docs, after the cache behavior is fixed.
-    exclude_fields=["exclude_compared_entities"],
-)
 class RecommendationsFilterSerializer(serializers.Serializer):
     date_lte = serializers.DateTimeField(default=None)
     date_gte = serializers.DateTimeField(default=None)
