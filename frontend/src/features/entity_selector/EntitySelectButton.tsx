@@ -14,15 +14,16 @@ import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { Entity, UsersService } from 'src/services/openapi';
+import {
+  Entity,
+  PaginatedRecommendationList,
+  UsersService,
+} from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { useLoginState } from 'src/hooks';
-
-// in milliseconds
-const TYPING_DELAY = 50;
 
 interface Props {
   value: string;
@@ -42,6 +43,7 @@ const VideoInput = ({
 
   const selectorAnchor = useRef<HTMLDivElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [search, setSearch] = useState<PaginatedRecommendationList>();
 
   const { isLoggedIn } = useLoginState();
   const fullScreenModal = useMediaQuery(
@@ -58,12 +60,23 @@ const VideoInput = ({
     setSuggestionsOpen((open) => !open);
   };
 
-  useEffect(() => {
-    const timeOutId = setTimeout(() => {
-      setSuggestionsOpen(false);
-    }, TYPING_DELAY);
+  const getSearch = async () => {
+    const response = await getRecommendations(
+      'videos',
+      5,
+      `?search=${value}`,
+      []
+    );
+    return response;
+  };
 
-    return () => clearTimeout(timeOutId);
+  useEffect(() => {
+    const fetchResults = async () => {
+      const searchResults = await getSearch();
+      setSearch(searchResults);
+    };
+
+    fetchResults();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
@@ -139,7 +152,13 @@ const VideoInput = ({
       },
     ],
     [t, isLoggedIn, otherUid, pollName]
-  );
+  ).concat({
+    name: 'search',
+    label: t('entitySelector.search'),
+    fetch: async () => {
+      return search?.results ?? [];
+    },
+  });
 
   return (
     <ClickAwayListener onClickAway={() => setSuggestionsOpen(false)}>
