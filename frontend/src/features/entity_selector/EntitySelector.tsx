@@ -245,10 +245,12 @@ const EntitySelectorInnerAuth = ({
       ? UID_YT_NAMESPACE + videoIdFromValue
       : value.trim();
     setInputValue(newUid);
-    onChange({
-      uid: newUid,
-      rating: null,
-    });
+    if (videoIdFromValue) {
+      onChange({
+        uid: newUid,
+        rating: null,
+      });
+    }
   };
 
   const handleRatingUpdate = useCallback(
