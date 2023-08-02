@@ -114,7 +114,7 @@
     "select": "Sélectionner",
     "selectLong": "Sélectionner une vidéo",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "pasteUrlOrVideoId": "Coller une URL, un ID de vidéo ou rechercher",
     "backButton": "Retour"
   },
   "tabsBox": {

@@ -110,7 +110,7 @@
     "select": "Select",
     "selectLong": "Select a video",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
-    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "pasteUrlOrVideoId": "Paste URL, Video ID or Search",
     "backButton": "Back"
   },
   "tabsBox": {
