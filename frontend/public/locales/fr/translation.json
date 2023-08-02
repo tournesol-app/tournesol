@@ -792,7 +792,9 @@
   "scientificLiteratureBox": {
     "ourPublications": "Nos publications",
     "papers": "Articles",
-    "studenWorks": "Travaux étudiants"
+    "studenWorks": "Travaux étudiants",
+    "theyCiteUs": "Ils nous citent",
+    "inTheMedia": "Dans les médias"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",

@@ -784,7 +784,9 @@
   "scientificLiteratureBox": {
     "ourPublications": "Our publications",
     "papers": "Papers",
-    "studenWorks": "Student works"
+    "studenWorks": "Student works",
+    "theyCiteUs": "They cite us",
+    "inTheMedia": "In the media"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
