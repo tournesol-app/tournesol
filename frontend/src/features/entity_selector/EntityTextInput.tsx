@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Box, InputAdornment, Link, TextField } from '@mui/material';
+import { Box, InputAdornment, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Search } from '@mui/icons-material';
 
 interface Props {
   value: string;
@@ -34,7 +35,7 @@ const EntityTextInput = ({ value, onChange }: Props) => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <Link />
+              <Search />
             </InputAdornment>
           ),
         }}
