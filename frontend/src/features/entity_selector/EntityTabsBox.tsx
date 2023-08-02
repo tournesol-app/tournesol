@@ -48,6 +48,7 @@ const EntityTabsBox = ({
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
   const [options, setOptions] = useState<RelatedEntityObject[]>([]);
+  const [firstRender, setFirstRender] = useState(true);
 
   useEffect(() => {
     const tab = tabs.find((t) => t.name === tabValue);
@@ -76,6 +77,15 @@ const EntityTabsBox = ({
       aborted = true;
     };
   }, [tabs, tabValue]);
+
+  useEffect(() => {
+    if (!firstRender) {
+      setTabValue('search');
+    } else {
+      setFirstRender(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityTextInput]);
 
   return (
     <Paper
