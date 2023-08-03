@@ -115,13 +115,13 @@ const EntityTabsBox = ({
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
   const [options, setOptions] = useState<RelatedEntityObject[]>([]);
-  const [toggleDescription, setToggleDescription] =
+  const [isDescriptionVisible, setIsDescriptionVisible] =
     useState(displayDescription);
 
   const canCloseDescription = !displayDescription;
 
   const handleToggleDescription = () => {
-    setToggleDescription(!toggleDescription);
+    setIsDescriptionVisible(!isDescriptionVisible);
   };
 
   useEffect(() => {
@@ -215,11 +215,11 @@ const EntityTabsBox = ({
         isLoading={status === TabStatus.Loading}
         sx={{ overflowY: 'scroll' }}
       >
-        {toggleDescription ? (
+        {isDescriptionVisible ? (
           <TabInfo
             messageKey={tabValue}
             handleClose={() => {
-              setToggleDescription(false);
+              setIsDescriptionVisible(false);
             }}
             canClose={canCloseDescription}
           />
