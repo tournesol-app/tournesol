@@ -42,7 +42,7 @@ export enum TabStatus {
 }
 
 const TabError = ({ message }: { message: string }) => (
-  <Typography variant="subtitle1" paragraph m={2} mt={0} color="neutral.main">
+  <Typography variant="subtitle1" paragraph m={2} color="neutral.main">
     {message}
   </Typography>
 );
@@ -65,38 +65,36 @@ const TabInfo = ({
   };
 
   return (
-    <Box pb={2}>
-      <Alert
-        severity="info"
-        onClose={canClose ? handleClose : undefined}
-        icon={false}
-      >
-        {t(emptyListMessages[messageKey])}
-        {messageKey === 'rate-later' ? (
-          <Box display="flex" justifyContent="flex-end">
-            <Typography fontSize="100%">
-              <Trans t={t} i18nKey="tabsBox.rateLater">
-                Your rate-later videos appear here. You can add some to your
-                list by clicking on the &apos;+&apos; sign on the video cards.
-                You can also add them directly from{' '}
-                <Link
-                  href={getWebExtensionUrl()}
-                  target="_blank"
-                  rel="noopener"
-                  sx={{
-                    color: 'revert',
-                    textDecoration: 'revert',
-                  }}
-                >
-                  the extension
-                </Link>
-                .
-              </Trans>
-            </Typography>
-          </Box>
-        ) : undefined}
-      </Alert>
-    </Box>
+    <Alert
+      severity="info"
+      onClose={canClose ? handleClose : undefined}
+      icon={false}
+    >
+      {t(emptyListMessages[messageKey])}
+      {messageKey === 'rate-later' ? (
+        <Box display="flex" justifyContent="flex-end">
+          <Typography fontSize="100%">
+            <Trans t={t} i18nKey="tabsBox.rateLater">
+              Your rate-later videos appear here. You can add some to your list
+              by clicking on the &apos;+&apos; sign on the video cards. You can
+              also add them directly from{' '}
+              <Link
+                href={getWebExtensionUrl()}
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: 'revert',
+                  textDecoration: 'revert',
+                }}
+              >
+                the extension
+              </Link>
+              .
+            </Trans>
+          </Typography>
+        </Box>
+      ) : undefined}
+    </Alert>
   );
 };
 
@@ -172,9 +170,6 @@ const EntityTabsBox = ({
           cursor: onSelectEntity && 'pointer',
           '&:hover': {
             bgcolor: 'grey.100',
-          },
-          '&:first-of-type': {
-            marginTop: 1,
           },
         },
         width: width,
