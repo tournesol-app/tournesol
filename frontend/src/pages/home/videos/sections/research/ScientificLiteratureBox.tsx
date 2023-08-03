@@ -249,6 +249,7 @@ const ScientificLiteratureBox = () => {
             indicatorColor="secondary"
             variant="scrollable"
             scrollButtons="auto"
+            allowScrollButtonsMobile
           >
             <Tab
               label={t('scientificLiteratureBox.ourPapers')}
