@@ -786,9 +786,11 @@
     "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
   },
   "scientificLiteratureBox": {
-    "ourPublications": "Our publications",
-    "papers": "Papers",
-    "studenWorks": "Student works"
+    "publications": "Publications",
+    "ourPapers": "Our papers",
+    "studenWorks": "Student works",
+    "theyCiteUs": "They cite us",
+    "inTheMedia": "In the media"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
