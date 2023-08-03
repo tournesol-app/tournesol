@@ -105,10 +105,10 @@
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
     "unconnected": "To connect",
-    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "select": "Select",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
-    "backButton": "Back",
-    "select": "Select"
+    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "backButton": "Back"
   },
   "tabsBox": {
     "errorOnLoading": "An error occurred while loading the results.",
@@ -782,9 +782,11 @@
     "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
   },
   "scientificLiteratureBox": {
-    "ourPublications": "Our publications",
-    "papers": "Papers",
-    "studenWorks": "Student works"
+    "publications": "Publications",
+    "ourPapers": "Our papers",
+    "studenWorks": "Student works",
+    "theyCiteUs": "They cite us",
+    "inTheMedia": "In the media"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
@@ -984,12 +986,12 @@
   "videos": {
     "dialogs": {
       "tutorial": {
+        "installTheExtension": "Install the extension",
         "title4": "Compare easily with the extension",
         "message4": {
           "p10": "The Tournesol browser extension lets you add the videos you watch on YouTube to your rate-later list.",
           "p20": "You can also make comparisons directly from YouTube!"
-        },
-        "installTheExtension": "Install the extension"
+        }
       }
     },
     "tips": {
