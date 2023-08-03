@@ -49,51 +49,45 @@ const TabError = ({ message }: { message: string }) => (
 
 const TabInfo = ({
   messageKey,
-  canClose = true,
   handleClose,
 }: {
   messageKey: string;
-  canClose?: boolean;
   handleClose?: () => void;
 }) => {
   const { t } = useTranslation();
 
-  const emptyListMessages: { [key: string]: string } = {
-    'recently-compared': 'tabsBox.compared',
-    recommendations: 'tabsBox.recommendations',
-    unconnected: 'tabsBox.toConnect',
+  const descriptionMessages: { [key: string]: React.ReactNode } = {
+    'recently-compared': t('tabsBox.compared'),
+    recommendations: t('tabsBox.recommendations'),
+    unconnected: t('tabsBox.toConnect'),
+    'rate-later': (
+      <Trans t={t} i18nKey="tabsBox.rateLater">
+        Your rate-later videos appear here. You can add some to your list by
+        clicking on the &apos;+&apos; sign on the video cards. You can also add
+        them directly from{' '}
+        <Link
+          href={getWebExtensionUrl()}
+          target="_blank"
+          rel="noopener"
+          sx={{
+            color: 'revert',
+            textDecoration: 'revert',
+          }}
+        >
+          the extension
+        </Link>
+        .
+      </Trans>
+    ),
   };
 
+  if (!(messageKey in descriptionMessages)) {
+    return null;
+  }
+
   return (
-    <Alert
-      severity="info"
-      onClose={canClose ? handleClose : undefined}
-      icon={false}
-    >
-      {t(emptyListMessages[messageKey])}
-      {messageKey === 'rate-later' ? (
-        <Box display="flex" justifyContent="flex-end">
-          <Typography fontSize="100%">
-            <Trans t={t} i18nKey="tabsBox.rateLater">
-              Your rate-later videos appear here. You can add some to your list
-              by clicking on the &apos;+&apos; sign on the video cards. You can
-              also add them directly from{' '}
-              <Link
-                href={getWebExtensionUrl()}
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
-                the extension
-              </Link>
-              .
-            </Trans>
-          </Typography>
-        </Box>
-      ) : undefined}
+    <Alert severity="info" onClose={handleClose} icon={false}>
+      {descriptionMessages[messageKey]}
     </Alert>
   );
 };
@@ -106,7 +100,7 @@ const EntityTabsBox = ({
   maxHeight = '40vh',
   withLink = false,
   entityTextInput,
-  displayDescription = false,
+  displayDescription = true,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -213,10 +207,13 @@ const EntityTabsBox = ({
         {isDescriptionVisible ? (
           <TabInfo
             messageKey={tabValue}
-            handleClose={() => {
-              setIsDescriptionVisible(false);
-            }}
-            canClose={canCloseDescription}
+            handleClose={
+              canCloseDescription
+                ? () => {
+                    setIsDescriptionVisible(false);
+                  }
+                : undefined
+            }
           />
         ) : (
           <Box display="flex" justifyContent="flex-end">
