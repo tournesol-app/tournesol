@@ -241,7 +241,7 @@ const EntitySelectorInnerAuth = ({
 
     const videoIdFromValue =
       pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
-    const newUid = videoIdFromValue ? videoIdFromValue : value.trim();
+    const newUid = videoIdFromValue ? videoIdFromValue : value;
     setInputValue(newUid);
     if (videoIdFromValue) {
       onChange({

@@ -15,7 +15,7 @@ export function extractVideoId(idOrUrl: string) {
         '\\/entities\\/yt:|yt:)([A-Za-z0-9-_]+)'
     )
   );
-  const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
+  const id = matchUrl ? matchUrl[1] : idOrUrl;
 
   if (matchUrl && isVideoIdValid(id)) {
     return UID_YT_NAMESPACE + id;
