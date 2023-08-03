@@ -1,11 +1,13 @@
 import { UsersService, TypeEnum, PollsService } from 'src/services/openapi';
-import { YOUTUBE_POLL_NAME } from './constants';
+import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from './constants';
 import { RelatedEntityObject, VideoObject } from './types';
 
 export function extractVideoId(idOrUrl: string) {
   const host = process.env.PUBLIC_URL || location.host;
   const escapedCurrentHost = host.replace(/[.\\]/g, '\\$&');
 
+  const matchID = idOrUrl.match(new RegExp('yt:[A-Za-z0-9-_]{11}'));
+  if (matchID) return idOrUrl;
   const matchUrl = idOrUrl.match(
     new RegExp(
       '(?:https?:\\/\\/)?(?:www\\.)?(?:youtube\\.com\\/watch\\?v=|youtu\\.be\\/|' +
@@ -14,8 +16,9 @@ export function extractVideoId(idOrUrl: string) {
     )
   );
   const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
-  if (isVideoIdValid(id)) {
-    return id;
+
+  if (matchUrl && isVideoIdValid(id)) {
+    return UID_YT_NAMESPACE + id;
   }
   return null;
 }

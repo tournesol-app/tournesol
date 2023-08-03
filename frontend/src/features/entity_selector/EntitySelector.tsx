@@ -18,7 +18,7 @@ import {
   PollsService,
   Recommendation,
 } from 'src/services/openapi';
-import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
@@ -241,9 +241,7 @@ const EntitySelectorInnerAuth = ({
 
     const videoIdFromValue =
       pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
-    const newUid = videoIdFromValue
-      ? UID_YT_NAMESPACE + videoIdFromValue
-      : value.trim();
+    const newUid = videoIdFromValue ? videoIdFromValue : value.trim();
     setInputValue(newUid);
     if (videoIdFromValue) {
       onChange({
