@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Tab, Paper, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import {
+  Tabs,
+  Tab,
+  Paper,
+  Alert,
+  Link,
+  Box,
+  Typography,
+  IconButton,
+} from '@mui/material';
+import { Trans, useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import EntityTextInput from './EntityTextInput';
+import { getWebExtensionUrl } from 'src/utils/extension';
+import { InfoOutlined } from '@mui/icons-material';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -14,6 +25,7 @@ interface Props {
   maxHeight?: string | number;
   withLink?: boolean;
   entityTextInput?: { value: string; onChange: (value: string) => void };
+  displayDescription?: boolean;
 }
 
 export interface EntitiesTab {
@@ -35,6 +47,57 @@ const TabError = ({ message }: { message: string }) => (
   </Typography>
 );
 
+const TabInfo = ({
+  messageKey,
+  canClose = true,
+  handleClose,
+}: {
+  messageKey: string;
+  canClose?: boolean;
+  handleClose?: () => void;
+}) => {
+  const { t } = useTranslation();
+
+  const emptyListMessages: { [key: string]: string } = {
+    'recently-compared': 'tabsBox.compared',
+    recommendations: 'tabsBox.recommendations',
+    unconnected: 'tabsBox.toConnect',
+  };
+
+  return (
+    <Alert
+      severity="info"
+      onClose={canClose ? handleClose : undefined}
+      icon={false}
+    >
+      {t(emptyListMessages[messageKey])}
+      {messageKey === 'rate-later' ? (
+        <Box display="flex" justifyContent="flex-end">
+          <Typography fontSize="100%">
+            <Trans t={t} i18nKey="tabsBox.rateLater">
+              Your rate-later videos appear here. You can add some to your list
+              by clicking on the &apos;+&apos; sign on the video cards. You can
+              also add them directly from{' '}
+              <Link
+                href={getWebExtensionUrl()}
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: 'revert',
+                  textDecoration: 'revert',
+                }}
+              >
+                the extension
+              </Link>
+              .
+            </Trans>
+          </Typography>
+        </Box>
+      ) : undefined}
+    </Alert>
+  );
+};
+
 const EntityTabsBox = ({
   tabs,
   onSelectEntity,
@@ -43,11 +106,21 @@ const EntityTabsBox = ({
   maxHeight = '40vh',
   withLink = false,
   entityTextInput,
+  displayDescription = false,
 }: Props) => {
   const { t } = useTranslation();
+
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
   const [options, setOptions] = useState<RelatedEntityObject[]>([]);
+  const [isDescriptionVisible, setIsDescriptionVisible] =
+    useState(displayDescription);
+
+  const canCloseDescription = !displayDescription;
+
+  const handleToggleDescription = () => {
+    setIsDescriptionVisible(!isDescriptionVisible);
+  };
 
   useEffect(() => {
     const tab = tabs.find((t) => t.name === tabValue);
@@ -98,9 +171,6 @@ const EntityTabsBox = ({
           '&:hover': {
             bgcolor: 'grey.100',
           },
-          '&:first-of-type': {
-            marginTop: 1,
-          },
         },
         width: width,
         bgcolor: 'white',
@@ -118,7 +188,10 @@ const EntityTabsBox = ({
         textColor="secondary"
         indicatorColor="secondary"
         value={tabValue}
-        onChange={(e, value) => setTabValue(value)}
+        onChange={(e, value) => {
+          handleToggleDescription;
+          setTabValue(value);
+        }}
         variant="scrollable"
         scrollButtons="auto"
         sx={{
@@ -137,6 +210,21 @@ const EntityTabsBox = ({
         isLoading={status === TabStatus.Loading}
         sx={{ overflowY: 'scroll' }}
       >
+        {isDescriptionVisible ? (
+          <TabInfo
+            messageKey={tabValue}
+            handleClose={() => {
+              setIsDescriptionVisible(false);
+            }}
+            canClose={canCloseDescription}
+          />
+        ) : (
+          <Box display="flex" justifyContent="flex-end">
+            <IconButton onClick={handleToggleDescription} color="info">
+              <InfoOutlined />
+            </IconButton>
+          </Box>
+        )}
         {status === TabStatus.Error ? (
           <TabError message={t('tabsBox.errorOnLoading')} />
         ) : options.length > 0 ? (

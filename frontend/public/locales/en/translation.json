@@ -112,6 +112,10 @@
   },
   "tabsBox": {
     "errorOnLoading": "An error occurred while loading the results.",
+    "rateLater": "Your rate-later videos appear here. You can add some to your list by clicking on the '+' sign on the video cards. You can also add them directly from <2>the extension</2>.",
+    "compared": "Compared videos appear here.",
+    "recommendations": "Videos recommended by the community appear here.",
+    "toConnect": "Videos isolated from your other comparisons appear here. Compare them to improve the recommendations.",
     "emptyList": "This list is empty."
   },
   "stackedCandidatesPaper": {

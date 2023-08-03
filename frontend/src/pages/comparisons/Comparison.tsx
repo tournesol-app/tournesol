@@ -55,6 +55,12 @@ const displayWeeklyCollectiveGoal = (
   return false;
 };
 
+interface ComparisonsCountContextValue {
+  comparisonsCount: number;
+}
+export const ComparisonsCountContext =
+  React.createContext<ComparisonsCountContextValue>({ comparisonsCount: 0 });
+
 /**
  * Display the standard comparison UI or the poll tutorial.
  */
@@ -193,7 +199,14 @@ const ComparisonPage = () => {
                   weeklyCollectiveGoalDisplay,
                   isEmbedded
                 ) && <CollectiveGoalWeeklyProgress />}
-                <Comparison autoFillSelectorA={true} autoFillSelectorB={true} />
+                <ComparisonsCountContext.Provider
+                  value={{ comparisonsCount: comparisonsCount }}
+                >
+                  <Comparison
+                    autoFillSelectorA={true}
+                    autoFillSelectorB={true}
+                  />
+                </ComparisonsCountContext.Provider>
               </>
             ))}
         </Box>
