@@ -247,6 +247,9 @@ const ScientificLiteratureBox = () => {
             aria-label="Publication types"
             textColor="secondary"
             indicatorColor="secondary"
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
           >
             <Tab
               label={t('scientificLiteratureBox.ourPapers')}
