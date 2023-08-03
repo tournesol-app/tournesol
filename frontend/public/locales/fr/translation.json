@@ -109,10 +109,10 @@
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
     "unconnected": "À relier",
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "select": "Selectionner",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
-    "backButton": "Retour",
-    "select": "Selectionner"
+    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "backButton": "Retour"
   },
   "tabsBox": {
     "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
@@ -790,8 +790,8 @@
     "weSeekToSupportResearch": "« Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains. »"
   },
   "scientificLiteratureBox": {
-    "ourPublications": "Nos publications",
-    "papers": "Articles",
+    "publications": "Publications",
+    "ourPapers": "Nos articles",
     "studenWorks": "Travaux étudiants",
     "theyCiteUs": "Ils nous citent",
     "inTheMedia": "Dans les médias"
@@ -995,12 +995,12 @@
   "videos": {
     "dialogs": {
       "tutorial": {
+        "installTheExtension": "Installer l'extension",
         "title4": "Comparez facilement avec l'extension",
         "message4": {
           "p10": "L'extension de navigateur Tournesol vous permet d'ajouter les vidéos que vous regardez sur YouTube à votre lister à comparer plus tard.",
           "p20": "Vous pouvez aussi faire des comparaisons directement depuis YouTube ! Pratique."
-        },
-        "installTheExtension": "Installer l'extension"
+        }
       }
     },
     "tips": {

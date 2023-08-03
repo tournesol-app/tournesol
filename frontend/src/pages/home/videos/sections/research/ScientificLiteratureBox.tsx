@@ -236,7 +236,7 @@ const ScientificLiteratureBox = () => {
 
   return (
     <TitledPaper
-      title={t('scientificLiteratureBox.ourPublications')}
+      title={t('scientificLiteratureBox.publications')}
       contentBoxPadding={0}
     >
       <>
@@ -249,7 +249,7 @@ const ScientificLiteratureBox = () => {
             indicatorColor="secondary"
           >
             <Tab
-              label={t('scientificLiteratureBox.papers')}
+              label={t('scientificLiteratureBox.ourPapers')}
               {...a11yProps(0)}
             />
             <Tab
