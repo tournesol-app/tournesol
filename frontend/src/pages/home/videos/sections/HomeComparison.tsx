@@ -151,6 +151,7 @@ const HomeComparison = () => {
           value={selectorA}
           onChange={setSelectorA}
           otherUid={uidB}
+          autoFill={true}
         />
       </Grid>
       <Grid
@@ -167,6 +168,7 @@ const HomeComparison = () => {
           value={selectorB}
           onChange={setSelectorB}
           otherUid={uidA}
+          autoFill={true}
         />
       </Grid>
       <Grid item xs={12} mt={1} component={Card} elevation={2}>
