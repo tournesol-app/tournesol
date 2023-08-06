@@ -27,7 +27,7 @@ const getParamValueAsNumber = (
 /**
  * Replace the key `date` of `params` by a new one compatible with the API.
  */
-const buildDateURLParameter = (
+const overwriteDateURLParameter = (
   pollName: string,
   params: URLSearchParams
 ): void => {
@@ -123,7 +123,7 @@ export const getRecommendations = async (
 ): Promise<PaginatedRecommendationList> => {
   const params = new URLSearchParams(searchString);
 
-  buildDateURLParameter(pollName, params);
+  overwriteDateURLParameter(pollName, params);
 
   let criteriaWeights = Object.fromEntries(
     criterias.map((c) => [c.name, getParamValueAsNumber(params, c.name)])
@@ -148,6 +148,9 @@ export const getRecommendations = async (
     };
   }
 
+  const advanced = params.get('advanced') || '';
+  const advanced_options = advanced.split(',');
+
   try {
     return await PollsService.pollsRecommendationsList({
       name: pollName,
@@ -155,9 +158,8 @@ export const getRecommendations = async (
       offset: getParamValueAsNumber(params, 'offset'),
       search: params.get('search') ?? undefined,
       dateGte: params.get('date_gte') ?? undefined,
-      unsafe: params.has('unsafe')
-        ? params.get('unsafe') === 'true'
-        : pollOptions?.unsafeDefault,
+      unsafe: advanced_options.includes('unsafe') || pollOptions?.unsafeDefault,
+      excludeComparedEntities: advanced_options.includes('exclude_compared'),
       metadata: getMetadataFilter(pollName, params),
       scoreMode: (params.get('score_mode') as ScoreModeEnum) ?? undefined,
       weights: criteriaWeights,
@@ -184,7 +186,7 @@ export const getPublicPersonalRecommendations = async (
 ): Promise<PaginatedContributorRecommendationsList> => {
   const params = new URLSearchParams(searchString);
 
-  buildDateURLParameter(pollName, params);
+  overwriteDateURLParameter(pollName, params);
 
   const criteriaWeights = Object.fromEntries(
     criterias.map((c) => [c.name, getParamValueAsNumber(params, c.name)])

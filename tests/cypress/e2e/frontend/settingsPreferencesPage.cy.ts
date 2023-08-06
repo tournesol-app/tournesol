@@ -225,7 +225,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Today&unsafe='
+        'have.attr', 'href', '/recommendations?date=Today'
       );
     });
 
@@ -238,7 +238,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Week&unsafe='
+        'have.attr', 'href', '/recommendations?date=Week'
       );
     });
 
@@ -251,7 +251,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Year&unsafe='
+        'have.attr', 'href', '/recommendations?date=Year'
       );
     });
 
@@ -264,7 +264,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=&unsafe='
+        'have.attr', 'href', '/recommendations?date='
       );
     });
   });
@@ -278,7 +278,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&unsafe='
+        'have.attr', 'href', '/recommendations?date=Month'
       );
     });
 
@@ -290,7 +290,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&unsafe=true'
+        'have.attr', 'href', '/recommendations?date=Month&advanced=unsafe'
       );
     });
   });
