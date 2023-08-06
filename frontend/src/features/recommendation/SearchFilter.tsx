@@ -83,7 +83,7 @@ function SearchFilter({
                 xs={6}
                 md={3}
                 lg={3}
-                data-testid="search-date-safe-filter"
+                data-testid="search-date-and-advanced-filter"
               >
                 <DateFilter
                   value={filterParams.get(recommendationFilters.date) ?? ''}

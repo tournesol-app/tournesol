@@ -87,10 +87,12 @@ describe('Filters feature', () => {
 
   function verifyFiltersPresence() {
     // Check date and safe filters presence
-    const dateFilter = document.querySelector(
-      '[data-testid=search-date-safe-filter]'
+    const dateAndAdvancedFilter = document.querySelector(
+      '[data-testid=search-date-and-advanced-filter]'
     );
-    expect(queryAllByTestId(dateFilter, /checkbox-choice/i)).toHaveLength(6);
+    expect(
+      queryAllByTestId(dateAndAdvancedFilter, /checkbox-choice/i)
+    ).toHaveLength(7);
 
     // Check language filters presence
     const languageFilter = document.querySelector(
