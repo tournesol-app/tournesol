@@ -22,12 +22,15 @@ import { createMemoryHistory } from 'history';
 import { loadRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import { PollsService } from 'src/services/openapi';
+import { combineReducers, createStore } from 'redux';
+import loginReducer, { initialState } from '../login/loginSlice';
+import { Provider } from 'react-redux';
 
 import SearchFilter from './SearchFilter';
 
 describe('Filters feature', () => {
   let pushSpy = null;
-  beforeEach(async () => {
+  async function renderSearchFilters(loggedIn: boolean) {
     // Used to spy on URL parameters updates
     const history = createMemoryHistory();
     pushSpy = jest.spyOn(history, 'push');
@@ -54,19 +57,33 @@ describe('Filters feature', () => {
 
     // Some context is needed by the component SearchFilter
     await act(async () => {
+      const anHourInMS = 1000 * 60 * 60;
+      const now = new Date();
+      const anHourLater = new Date(now.getTime() + anHourInMS);
+      const login = { ...initialState };
+      if (loggedIn) {
+        login.access_token = 'dummy_token';
+        login.access_token_expiration_date = anHourLater.toString();
+      }
+      const mockStore = createStore(combineReducers({ token: loginReducer }), {
+        token: login,
+      });
+
       render(
-        <Router history={history}>
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
-              <PollProvider>
-                <SearchFilter />
-              </PollProvider>
-            </ThemeProvider>
-          </StyledEngineProvider>
-        </Router>
+        <Provider store={mockStore}>
+          <Router history={history}>
+            <StyledEngineProvider injectFirst>
+              <ThemeProvider theme={theme}>
+                <PollProvider>
+                  <SearchFilter />
+                </PollProvider>
+              </ThemeProvider>
+            </StyledEngineProvider>
+          </Router>
+        </Provider>
       );
     });
-  });
+  }
 
   function clickOnShowMore(wasClosed = true) {
     const checkboxDisplayFilters = screen.queryByLabelText('show more');
@@ -85,14 +102,14 @@ describe('Filters feature', () => {
     );
   }
 
-  function verifyFiltersPresence() {
+  function verifyFiltersPresence(isLoggedIn: boolean) {
     // Check date and safe filters presence
     const dateAndAdvancedFilter = document.querySelector(
       '[data-testid=search-date-and-advanced-filter]'
     );
     expect(
       queryAllByTestId(dateAndAdvancedFilter, /checkbox-choice/i)
-    ).toHaveLength(7);
+    ).toHaveLength(isLoggedIn ? 7 : 6);
 
     // Check language filters presence
     const languageFilter = document.querySelector(
@@ -166,7 +183,8 @@ describe('Filters feature', () => {
     expect(loadRecommendationsLanguages()).toEqual(expectInUrl);
   }
 
-  it('Can open and close the filters menu', () => {
+  it('Can open and close the filters menu', async () => {
+    await renderSearchFilters(true);
     // Click to open the filters menu. The checks are made inside clickOnShowMore.
     clickOnShowMore();
 
@@ -174,15 +192,24 @@ describe('Filters feature', () => {
     clickOnShowMore(false);
   });
 
-  it('Check that all the filter checkboxes and sliders are present', () => {
+  it('Check that all the filter checkboxes and sliders are present for anonymous', async () => {
+    await renderSearchFilters(false);
     // Click to open the filters menu
     clickOnShowMore();
-
     // Check the presence of all the filters checkboxes
-    verifyFiltersPresence();
+    verifyFiltersPresence(false);
   });
 
-  it('Can only check one date filter at once', () => {
+  it('Check that all the filter checkboxes and sliders are present for a logged in user', async () => {
+    await renderSearchFilters(true);
+    // Click to open the filters menu
+    clickOnShowMore();
+    // Check the presence of all the filters checkboxes
+    verifyFiltersPresence(true);
+  });
+
+  it('Can only check one date filter at once', async () => {
+    await renderSearchFilters(true);
     clickOnShowMore();
 
     // click on the checkbox "This week", and check that the URL now contains "date=Week"
@@ -203,7 +230,8 @@ describe('Filters feature', () => {
     clickOnDateCheckbox({ checkbox: '', expectInUrl: '' });
   });
 
-  it('Can check multiple language filters at once', () => {
+  it('Can check multiple language filters at once', async () => {
+    await renderSearchFilters(true);
     clickOnShowMore();
 
     // select the language English and check that the URL contains "language=en"
@@ -234,6 +262,7 @@ describe('Filters feature', () => {
   });
 
   it('Can select a maximum duration', async () => {
+    await renderSearchFilters(true);
     clickOnShowMore();
 
     const filter = screen
@@ -252,6 +281,7 @@ describe('Filters feature', () => {
   });
 
   it('Can select a minimum duration', async () => {
+    await renderSearchFilters(true);
     clickOnShowMore();
 
     const filter = screen
@@ -269,7 +299,8 @@ describe('Filters feature', () => {
     });
   });
 
-  it('Can fold and unfold the multiple criteria', () => {
+  it('Can fold and unfold the multiple criteria', async () => {
+    await renderSearchFilters(true);
     clickOnShowMore();
 
     // By default the criteria sliders must be hidden.
