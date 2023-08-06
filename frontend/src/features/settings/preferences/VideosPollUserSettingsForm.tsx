@@ -15,6 +15,7 @@ import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCrit
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
+import RecommendationsDefaultExcludeCompared from './fields/RecommendationsDefaultExcludeCompared';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 
 interface VideosPollUserSettingsFormProps {
@@ -30,6 +31,8 @@ interface VideosPollUserSettingsFormProps {
   setRateLaterAutoRemoval: (number: number) => void;
   recoDefaultUnsafe: boolean;
   setRecoDefaultUnsafe: (target: boolean) => void;
+  recoDefaultExcludeCompared: boolean;
+  setRecoDefaultExcludeCompared: (target: boolean) => void;
   recoDefaultUploadDate: Recommendations_defaultDateEnum | BlankEnum;
   setRecoDefaultUploadDate: (
     target: Recommendations_defaultDateEnum | BlankEnum
@@ -49,6 +52,8 @@ const VideosPollUserSettingsForm = ({
   setRateLaterAutoRemoval,
   recoDefaultUnsafe,
   setRecoDefaultUnsafe,
+  recoDefaultExcludeCompared,
+  setRecoDefaultExcludeCompared,
   recoDefaultUploadDate,
   setRecoDefaultUploadDate,
   apiErrors,
@@ -127,6 +132,13 @@ const VideosPollUserSettingsForm = ({
         <RecommendationsDefaultUnsafe
           value={recoDefaultUnsafe}
           onChange={setRecoDefaultUnsafe}
+          pollName={pollName}
+        />
+      </Grid>
+      <Grid item>
+        <RecommendationsDefaultExcludeCompared
+          value={recoDefaultExcludeCompared}
+          onChange={setRecoDefaultExcludeCompared}
           pollName={pollName}
         />
       </Grid>
