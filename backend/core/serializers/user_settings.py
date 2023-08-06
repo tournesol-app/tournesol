@@ -94,6 +94,7 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         child=serializers.CharField(), allow_empty=True, required=False
     )
     recommendations__default_unsafe = serializers.BooleanField(required=False)
+    recommendations__default_exclude_compared_entities = serializers.BooleanField(required=False)
 
     def validate_recommendations__default_languages(self, default_languages):
         for lang in default_languages:
