@@ -4379,12 +4379,12 @@ components:
 
         Also inherit the settings common to each poll.
       properties:
+        comparison__auto_select_entities:
+          type: boolean
         comparison__criteria_order:
           type: array
           items:
             type: string
-        comparison__fill_entity_selector:
-          type: boolean
         comparison_ui__weekly_collective_goal_display:
           oneOf:
           - $ref: '#/components/schemas/ComparisonUi_weeklyCollectiveGoalDisplayEnum'
@@ -4408,13 +4408,13 @@ components:
 
         Also inherit the settings common to each poll.
       properties:
+        comparison__auto_select_entities:
+          type: boolean
         comparison__criteria_order:
           type: array
           items:
             type: string
             minLength: 1
-        comparison__fill_entity_selector:
-          type: boolean
         comparison_ui__weekly_collective_goal_display:
           oneOf:
           - $ref: '#/components/schemas/ComparisonUi_weeklyCollectiveGoalDisplayEnum'

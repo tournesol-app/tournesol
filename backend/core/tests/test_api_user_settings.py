@@ -46,6 +46,7 @@ class UserSettingsDetailTestCase(TestCase):
                 "notifications_email__new_features": False,
             },
             "videos": {
+                "comparison__auto_select_entities": True,
                 "comparison__criteria_order": ["reliability"],
                 "rate_later__auto_remove": 99,
                 "recommendations__default_languages": ["en"],

@@ -148,7 +148,7 @@ describe('Settings - preferences page', () => {
       cy.visit('/settings/preferences');
       login();
 
-      cy.get('[data-testid="videos_comparison__fill_entity_selector"]').click();
+      cy.get('[data-testid="videos_comparison__auto_select_entities"]').click();
       cy.contains('Update preferences').click();
 
       cy.visit('/comparison');

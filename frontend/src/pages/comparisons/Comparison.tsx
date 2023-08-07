@@ -143,7 +143,7 @@ const ComparisonPage = () => {
 
   const autoFillSelectors =
     userSettings?.[pollName as PollUserSettingsKeys]
-      ?.comparison__fill_entity_selector ??
+      ?.comparison__auto_select_entities ??
     options?.autoFillEmptySelectors ??
     false;
 

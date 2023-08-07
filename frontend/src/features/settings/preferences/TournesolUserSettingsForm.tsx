@@ -73,6 +73,10 @@ const TournesolUserSettingsForm = () => {
    */
 
   // Comparison
+  const [autoSelectEntities, setAutoSelectEntities] = useState(
+    pollSettings?.comparison__auto_select_entities ?? true
+  );
+
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
     pollSettings?.comparison__criteria_order ?? []
   );
@@ -83,9 +87,6 @@ const TournesolUserSettingsForm = () => {
   >(
     pollSettings?.comparison_ui__weekly_collective_goal_display ??
       ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
-  );
-  const [fillEntitySelector, setFillEntitySelector] = useState(
-    pollSettings?.comparison__fill_entity_selector ?? true
   );
 
   // Rate-later settings
@@ -133,8 +134,8 @@ const TournesolUserSettingsForm = () => {
       );
     }
 
-    if (pollSettings?.comparison__fill_entity_selector != undefined) {
-      setFillEntitySelector(pollSettings?.comparison__fill_entity_selector);
+    if (pollSettings?.comparison__auto_select_entities != undefined) {
+      setAutoSelectEntities(pollSettings?.comparison__auto_select_entities);
     }
 
     if (pollSettings?.comparison__criteria_order != undefined) {
@@ -168,7 +169,7 @@ const TournesolUserSettingsForm = () => {
           },
           [YOUTUBE_POLL_NAME]: {
             comparison__criteria_order: displayedCriteria,
-            comparison__fill_entity_selector: fillEntitySelector,
+            comparison__auto_select_entities: autoSelectEntities,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
@@ -221,10 +222,10 @@ const TournesolUserSettingsForm = () => {
           {...subSectionBreakpoints}
         >
           <VideosPollUserSettingsForm
+            compAutoSelectEntities={autoSelectEntities}
+            setCompAutoSelectEntities={setAutoSelectEntities}
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
             setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
-            fillEntitySelector={fillEntitySelector}
-            setFillEntitySelector={setFillEntitySelector}
             displayedCriteria={displayedCriteria}
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}
