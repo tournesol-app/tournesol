@@ -344,7 +344,7 @@ const EntitySelectorInnerAuth = ({
             entity={rating.entity}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
-        ) : !showInitialUi ? (
+        ) : !showInitialUi || !showEntityInput ? (
           <EmptyEntityCard compact loading={loading} />
         ) : (
           <Grid container sx={entityCardMainSx}>
