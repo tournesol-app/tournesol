@@ -354,16 +354,10 @@ const EntitySelectorInnerAuth = ({
               container
               spacing={1}
               alignItems="center"
-              justifyContent="space-evenly"
+              justifyContent="space-around"
+              wrap="wrap"
             >
-              <Grid
-                container
-                item
-                xs={6}
-                md={5}
-                justifyContent="center"
-                sx={{ ml: '1px' }}
-              >
+              <Grid container item xs={12} sm={5} justifyContent="center">
                 <EntitySelectButton
                   value={inputValue || uid || ''}
                   onChange={handleChange}
@@ -371,14 +365,7 @@ const EntitySelectorInnerAuth = ({
                   variant="full"
                 />
               </Grid>
-              <Grid
-                container
-                item
-                xs={6}
-                md={5}
-                justifyContent="center"
-                sx={{ mr: '1px' }}
-              >
+              <Grid container item xs={12} sm={5} justifyContent="center">
                 <AutoEntityButton
                   disabled={loading}
                   currentUid={uid}

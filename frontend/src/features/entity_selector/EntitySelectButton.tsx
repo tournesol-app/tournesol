@@ -143,15 +143,21 @@ const VideoInput = ({
 
   return (
     <ClickAwayListener onClickAway={() => setSuggestionsOpen(false)}>
-      <Box ref={selectorAnchor}>
+      <Box
+        ref={selectorAnchor}
+        sx={{
+          width: variant === 'full' ? '100%' : 'auto',
+        }}
+      >
         <Button
+          fullWidth={variant === 'full' ? true : false}
           onClick={toggleSuggestions}
           size="small"
           variant="contained"
           color="secondary"
           sx={
             variant === 'full'
-              ? { width: '180px', minHeight: '100px', fontSize: '1rem' }
+              ? { minHeight: '100px', fontSize: '1rem' }
               : { minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }
           }
           disableElevation

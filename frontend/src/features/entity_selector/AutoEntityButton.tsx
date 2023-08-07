@@ -87,27 +87,25 @@ const AutoEntityButton = ({
 
   return (
     <Tooltip title={`${t('entitySelector.newVideo')}`} aria-label="new_video">
-      {/* A <span> element is required to allow wrapping a disabled button.  */}
-      <span>
-        <Button
-          disabled={disabled}
-          color="secondary"
-          variant="outlined"
-          size="small"
-          onClick={askNewVideo}
-          startIcon={variant === 'full' ? undefined : <Autorenew />}
-          sx={
-            variant === 'full'
-              ? { minWidth: '180px', minHeight: '100px', fontSize: '1rem' }
-              : { fontSize: { xs: '0.7rem', sm: '0.8rem' } }
-          }
-          data-testid={`auto-entity-button-${variant}`}
-        >
-          {variant === 'full'
-            ? t('entitySelector.letTournesolSelectAVideo')
-            : t('entitySelector.auto')}
-        </Button>
-      </span>
+      <Button
+        fullWidth={variant === 'full' ? true : false}
+        disabled={disabled}
+        color="secondary"
+        variant="outlined"
+        size="small"
+        onClick={askNewVideo}
+        startIcon={variant === 'full' ? undefined : <Autorenew />}
+        sx={
+          variant === 'full'
+            ? { minHeight: '100px', fontSize: '1rem' }
+            : { fontSize: { xs: '0.7rem', sm: '0.8rem' } }
+        }
+        data-testid={`auto-entity-button-${variant}`}
+      >
+        {variant === 'full'
+          ? t('entitySelector.letTournesolSelectAVideo')
+          : t('entitySelector.auto')}
+      </Button>
     </Tooltip>
   );
 };
