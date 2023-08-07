@@ -135,9 +135,11 @@ const ComparisonPage = () => {
       ?.comparison_ui__weekly_collective_goal_display ??
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 
-  const fillEntitySelector =
+  const autoFillSelectors =
     userSettings?.[pollName as PollUserSettingsKeys]
-      ?.comparison__fill_entity_selector ?? true;
+      ?.comparison__fill_entity_selector ??
+    options?.autoFillEmptySelectors ??
+    false;
 
   return (
     <>
@@ -198,8 +200,8 @@ const ComparisonPage = () => {
                   isEmbedded
                 ) && <CollectiveGoalWeeklyProgress />}
                 <Comparison
-                  autoFillSelectorA={fillEntitySelector}
-                  autoFillSelectorB={fillEntitySelector}
+                  autoFillSelectorA={autoFillSelectors}
+                  autoFillSelectorB={autoFillSelectors}
                 />
               </>
             ))}
