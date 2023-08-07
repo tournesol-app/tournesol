@@ -319,7 +319,7 @@ const EntitySelectorInnerAuth = ({
                   onResponse={(uid) => {
                     uid ? onChange({ uid, rating: null }) : setLoading(false);
                   }}
-                  autoFill={filled}
+                  autoFill={autoFill}
                 />
               </Grid>
             </Grid>
@@ -390,7 +390,7 @@ const EntitySelectorInnerAuth = ({
                   onResponse={(uid) => {
                     uid ? onChange({ uid, rating: null }) : setLoading(false);
                   }}
-                  autoFill={filled}
+                  autoFill={autoFill}
                   variant="full"
                 />
               </Grid>
