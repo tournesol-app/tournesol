@@ -60,7 +60,7 @@ describe('Recommendations page', () => {
         });
 
         it('allows to filter: a year ago', () => {
-          cy.visit('/recommendations?unsafe=true');
+          cy.visit('/recommendations?advanced=unsafe');
           cy.contains('Filters', {matchCase: false}).click();
 
           cy.contains('A year ago', {matchCase: false}).should('be.visible');
@@ -73,7 +73,7 @@ describe('Recommendations page', () => {
         });
 
         it('shows no videos for 1 day ago', () => {
-          cy.visit('/recommendations?unsafe=true');
+          cy.visit('/recommendations?advanced=unsafe');
           cy.contains('Filters', {matchCase: false}).click();
           cy.contains('A day ago', {matchCase: false}).should('be.visible');
           cy.get('input[type=checkbox][name="Today"]').check();
@@ -82,7 +82,7 @@ describe('Recommendations page', () => {
         });
 
         it('allows to filter: all time', () => {
-          cy.visit('/recommendations?unsafe=true');
+          cy.visit('/recommendations?advanced=unsafe');
           cy.contains('Filters', {matchCase: false}).click();
 
           cy.contains('A year ago', {matchCase: false}).should('be.visible');
@@ -95,7 +95,7 @@ describe('Recommendations page', () => {
     });
     describe('List of recommendations', () => {
       it('entities\'s thumbnails are clickable', () => {
-        cy.visit('/recommendations?unsafe=true&date=');
+        cy.visit('/recommendations?advanced=unsafe&date=');
 
         const thumbnail = cy.get('img.entity-thumbnail').first();
         thumbnail.click();
@@ -103,7 +103,7 @@ describe('Recommendations page', () => {
       });
 
       it('entities\'s titles are clickable', () => {
-        cy.visit('/recommendations?unsafe=true&date=');
+        cy.visit('/recommendations?advanced=unsafe&date=');
 
         const videoCard = cy.get('div[data-testid=video-card-info]').first();
         videoCard.find('h6').click();

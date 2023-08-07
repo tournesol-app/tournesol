@@ -23,7 +23,7 @@ interface Props {
   choices: Record<string, React.ReactNode>;
   multipleChoice?: boolean;
   radio?: boolean;
-  tooltip?: string;
+  tooltips?: Record<string, React.ReactNode>;
   onChange: (value: string) => void;
 }
 
@@ -33,7 +33,7 @@ const ChoicesFilterSection = ({
   choices,
   multipleChoice = false,
   radio = false,
-  tooltip = '',
+  tooltips,
   onChange,
 }: Props) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +108,10 @@ const ChoicesFilterSection = ({
                     },
                   }}
                 >
-                  <Tooltip title={tooltip} placement="bottom">
+                  <Tooltip
+                    title={tooltips?.[choiceValue] || ''}
+                    placement="right"
+                  >
                     <span>{choiceLabel}</span>
                   </Tooltip>
                 </Typography>

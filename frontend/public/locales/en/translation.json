@@ -106,6 +106,7 @@
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
     "unconnected": "To connect",
+    "pasteUrlOrVideoId": "Paste URL or Video ID",
     "select": "Select",
     "selectAVideo": "Select a video",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
@@ -114,6 +115,10 @@
   },
   "tabsBox": {
     "errorOnLoading": "An error occurred while loading the results.",
+    "rateLater": "Your rate-later videos appear here. You can add some to your list by clicking on the '+' sign on the video cards. You can also add them directly from <2>the extension</2>.",
+    "compared": "Compared videos appear here.",
+    "recommendations": "Videos recommended by the community appear here.",
+    "toConnect": "Videos isolated from your other comparisons appear here. Compare them to improve the recommendations.",
     "emptyList": "This list is empty."
   },
   "stackedCandidatesPaper": {
@@ -333,6 +338,8 @@
   "filter": {
     "filterByVisibility": "Filter by visibility",
     "includeAllVideos": "Include all videos",
+    "excludeComparedVideos": "Exclude compared videos",
+    "excludeComparedTooltip": "Remove from the list of recommendations the videos that you have already compared.",
     "advanced": "Advanced",
     "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
     "ignore": "Ignore",
@@ -785,9 +792,11 @@
     "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
   },
   "scientificLiteratureBox": {
-    "ourPublications": "Our publications",
-    "papers": "Papers",
-    "studenWorks": "Student works"
+    "publications": "Publications",
+    "ourPapers": "Our papers",
+    "studenWorks": "Student works",
+    "theyCiteUs": "They cite us",
+    "inTheMedia": "In the media"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",

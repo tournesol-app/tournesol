@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Autocomplete,
   Box,
@@ -20,6 +20,7 @@ import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { useLoginState } from 'src/hooks';
+import { ComparisonsCountContext } from 'src/pages/comparisons/Comparison';
 
 // in milliseconds
 const TYPING_DELAY = 50;
@@ -50,6 +51,8 @@ const VideoInput = ({
     (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
     { noSsr: true }
   );
+
+  const comparisonsCount = useContext(ComparisonsCountContext).comparisonsCount;
 
   const handleOptionClick = (uid: string) => {
     onChange(uid);
@@ -184,6 +187,7 @@ const VideoInput = ({
               value: value,
               onChange: onChange,
             }}
+            displayDescription={comparisonsCount < 8}
           />
         </SelectorPopper>
       </Box>
