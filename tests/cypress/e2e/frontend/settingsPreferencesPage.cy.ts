@@ -142,9 +142,16 @@ describe('Settings - preferences page', () => {
     });
   });
 
-  describe('Setting - automatically select entity', () => {
+  describe('Setting - automatically select entities', () => {
+    it("by default, videos are automatically suggested", () => {
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('have.length', 2);
+      cy.get('button[data-testid="entity-select-button-compact"]').should('have.length', 2);
 
-    it("when false, selectors are not automatically pre-filled", () => {
+      cy.get('button[data-testid="auto-entity-button-full"]').should('not.exist');
+      cy.get('button[data-testid="entity-select-button-full"]').should('not.exist');
+    });
+
+    it("when false, videos are not automatically suggested", () => {
       cy.visit('/settings/preferences');
       login();
 
