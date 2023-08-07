@@ -278,62 +278,60 @@ const EntitySelectorInnerAuth = ({
   return (
     <>
       {showEntityInput && (
-        <>
-          <Box
-            m={1}
-            display="flex"
-            flexDirection={
-              filled
-                ? alignment === 'left'
-                  ? 'row'
-                  : 'row-reverse'
-                : alignment !== 'left'
+        <Box
+          m={1}
+          display="flex"
+          flexDirection={
+            filled
+              ? alignment === 'left'
                 ? 'row'
                 : 'row-reverse'
-            }
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            {filled && (
-              <Grid
-                container
-                spacing={1}
-                display="flex"
-                direction={alignment === 'left' ? 'row' : 'row-reverse'}
-              >
-                <Grid item>
-                  <EntitySelectButton
-                    value={inputValue || uid || ''}
-                    onChange={handleChange}
-                    otherUid={otherUid}
-                  />
-                </Grid>
-                <Grid item>
-                  <AutoEntityButton
-                    disabled={loading}
-                    currentUid={uid}
-                    otherUid={otherUid}
-                    onClick={() => {
-                      setLoading(true);
-                      setInputValue('');
-                    }}
-                    onResponse={(uid) => {
-                      uid ? onChange({ uid, rating: null }) : setLoading(false);
-                    }}
-                    autoFill={filled}
-                  />
-                </Grid>
-              </Grid>
-            )}
-            <Typography
-              variant="h6"
-              color="secondary"
-              sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+              : alignment !== 'left'
+              ? 'row'
+              : 'row-reverse'
+          }
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          {filled && (
+            <Grid
+              container
+              spacing={1}
+              display="flex"
+              direction={alignment === 'left' ? 'row' : 'row-reverse'}
             >
-              {title}
-            </Typography>
-          </Box>
-        </>
+              <Grid item>
+                <EntitySelectButton
+                  value={inputValue || uid || ''}
+                  onChange={handleChange}
+                  otherUid={otherUid}
+                />
+              </Grid>
+              <Grid item>
+                <AutoEntityButton
+                  disabled={loading}
+                  currentUid={uid}
+                  otherUid={otherUid}
+                  onClick={() => {
+                    setLoading(true);
+                    setInputValue('');
+                  }}
+                  onResponse={(uid) => {
+                    uid ? onChange({ uid, rating: null }) : setLoading(false);
+                  }}
+                  autoFill={filled}
+                />
+              </Grid>
+            </Grid>
+          )}
+          <Typography
+            variant="h6"
+            color="secondary"
+            sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+          >
+            {title}
+          </Typography>
+        </Box>
       )}
       <Box position="relative">
         {rating ? (
@@ -342,68 +340,62 @@ const EntitySelectorInnerAuth = ({
             entity={rating.entity}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
+        ) : filled ? (
+          <EmptyEntityCard compact />
         ) : (
-          <>
-            {filled ? (
-              <EmptyEntityCard compact />
-            ) : (
-              <Grid container sx={entityCardMainSx}>
-                <Grid
-                  item
-                  xs={12}
-                  sx={{
-                    aspectRatio: '16 / 9',
-                    backgroundColor: '#fafafa',
-                  }}
-                  container
-                  spacing={1}
-                  alignItems="center"
-                  justifyContent="space-evenly"
-                >
-                  <Grid
-                    container
-                    item
-                    xs={6}
-                    md={5}
-                    justifyContent="center"
-                    sx={{ ml: '1px' }}
-                  >
-                    <EntitySelectButton
-                      value={inputValue || uid || ''}
-                      onChange={handleChange}
-                      otherUid={otherUid}
-                      variant="full"
-                    />
-                  </Grid>
-                  <Grid
-                    container
-                    item
-                    xs={6}
-                    md={5}
-                    justifyContent="center"
-                    sx={{ mr: '1px' }}
-                  >
-                    <AutoEntityButton
-                      disabled={loading}
-                      currentUid={uid}
-                      otherUid={otherUid}
-                      onClick={() => {
-                        setLoading(true);
-                        setInputValue('');
-                      }}
-                      onResponse={(uid) => {
-                        uid
-                          ? onChange({ uid, rating: null })
-                          : setLoading(false);
-                      }}
-                      autoFill={filled}
-                      variant="full"
-                    />
-                  </Grid>
-                </Grid>
+          <Grid container sx={entityCardMainSx}>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                aspectRatio: '16 / 9',
+                backgroundColor: '#fafafa',
+              }}
+              container
+              spacing={1}
+              alignItems="center"
+              justifyContent="space-evenly"
+            >
+              <Grid
+                container
+                item
+                xs={6}
+                md={5}
+                justifyContent="center"
+                sx={{ ml: '1px' }}
+              >
+                <EntitySelectButton
+                  value={inputValue || uid || ''}
+                  onChange={handleChange}
+                  otherUid={otherUid}
+                  variant="full"
+                />
               </Grid>
-            )}
-          </>
+              <Grid
+                container
+                item
+                xs={6}
+                md={5}
+                justifyContent="center"
+                sx={{ mr: '1px' }}
+              >
+                <AutoEntityButton
+                  disabled={loading}
+                  currentUid={uid}
+                  otherUid={otherUid}
+                  onClick={() => {
+                    setLoading(true);
+                    setInputValue('');
+                  }}
+                  onResponse={(uid) => {
+                    uid ? onChange({ uid, rating: null }) : setLoading(false);
+                  }}
+                  autoFill={filled}
+                  variant="full"
+                />
+              </Grid>
+            </Grid>
+          </Grid>
         )}
         {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !loading && (
           <Box
