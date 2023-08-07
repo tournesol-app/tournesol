@@ -141,7 +141,7 @@ const ComparisonPage = () => {
       ?.comparison_ui__weekly_collective_goal_display ??
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 
-  const autoFillSelectors =
+  const autoSelectEntities =
     userSettings?.[pollName as PollUserSettingsKeys]
       ?.comparison__auto_select_entities ??
     options?.autoFillEmptySelectors ??
@@ -209,8 +209,8 @@ const ComparisonPage = () => {
                   value={{ comparisonsCount: comparisonsCount }}
                 >
                   <Comparison
-                    autoFillSelectorA={autoFillSelectors}
-                    autoFillSelectorB={autoFillSelectors}
+                    autoFillSelectorA={autoSelectEntities}
+                    autoFillSelectorB={autoSelectEntities}
                   />
                 </ComparisonsCountContext.Provider>
               </>

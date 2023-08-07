@@ -162,6 +162,8 @@ export const getRecommendationPageName = (
 
 export const DEFAULT_RATE_LATER_AUTO_REMOVAL = 4;
 
+export const YT_DEFAULT_AUTO_SELECT_ENTITIES = true;
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.
@@ -209,7 +211,7 @@ export const polls: Array<SelectablePoll> = [
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
-    autoFillEmptySelectors: true,
+    autoFillEmptySelectors: YT_DEFAULT_AUTO_SELECT_ENTITIES,
     extraMetadataOrderBy: ['duration', 'publication_date'],
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,

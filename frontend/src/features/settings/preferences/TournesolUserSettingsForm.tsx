@@ -28,6 +28,7 @@ import {
 import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
+  YT_DEFAULT_AUTO_SELECT_ENTITIES,
 } from 'src/utils/constants';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
@@ -39,6 +40,7 @@ import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
  */
 const TournesolUserSettingsForm = () => {
   const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
 
@@ -74,7 +76,8 @@ const TournesolUserSettingsForm = () => {
 
   // Comparison
   const [autoSelectEntities, setAutoSelectEntities] = useState(
-    pollSettings?.comparison__auto_select_entities ?? true
+    pollSettings?.comparison__auto_select_entities ??
+      YT_DEFAULT_AUTO_SELECT_ENTITIES
   );
 
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
