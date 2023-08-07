@@ -106,8 +106,8 @@ const AutoEntityButton = ({
           }
         >
           {inSelector
-            ? t('entitySelector.autoEntityButtonLong')
-            : t('entitySelector.autoEntityButton')}
+            ? t('entitySelector.letTournesolSelectAVideo')
+            : t('entitySelector.auto')}
         </Button>
       </span>
     </Tooltip>

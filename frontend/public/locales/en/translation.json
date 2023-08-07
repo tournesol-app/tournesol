@@ -99,8 +99,8 @@
   },
   "entitySelector": {
     "newVideo": "Select a new video automatically",
-    "autoEntityButton": "Auto",
-    "autoEntityButtonLong": "Let Tournesol select a video",
+    "auto": "Auto",
+    "letTournesolSelectAVideo": "Let Tournesol select a video",
     "suggestions": "Suggestions",
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",

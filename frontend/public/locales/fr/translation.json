@@ -103,8 +103,8 @@
   },
   "entitySelector": {
     "newVideo": "Sélectionner une nouvelle vidéo automatiquement",
-    "autoEntityButton": "Auto",
-    "autoEntityButtonLong": "Laisser Tournesol choisir une vidéo",
+    "auto": "Auto",
+    "letTournesolSelectAVideo": "Laisser Tournesol choisir une vidéo",
     "suggestions": "Suggestions",
     "rateLater": "À comparer",
     "recentlyCompared": "Comparées",
