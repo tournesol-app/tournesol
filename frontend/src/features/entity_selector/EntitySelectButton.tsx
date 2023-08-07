@@ -28,14 +28,14 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   otherUid: string | null;
-  inSelector?: boolean;
+  variant?: 'compact' | 'full';
 }
 
 const VideoInput = ({
   value,
   onChange,
   otherUid,
-  inSelector = false,
+  variant = 'compact',
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -150,19 +150,15 @@ const VideoInput = ({
           variant="contained"
           color="secondary"
           sx={
-            inSelector
-              ? { minWidth: '180px', minHeight: '100px', fontSize: '100%' }
+            variant === 'full'
+              ? { width: '180px', minHeight: '100px', fontSize: '1rem' }
               : { minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }
           }
           disableElevation
-          data-testid={
-            inSelector
-              ? 'entity-select-button-inSelector'
-              : 'entity-select-button'
-          }
+          data-testid={`entity-select-button-${variant}`}
         >
-          {inSelector
-            ? t('entitySelector.selectLong')
+          {variant === 'full'
+            ? t('entitySelector.selectAVideo')
             : t('entitySelector.select')}
         </Button>
         <SelectorPopper

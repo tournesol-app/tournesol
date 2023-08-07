@@ -107,7 +107,7 @@
     "recommendations": "Top of the month",
     "unconnected": "To connect",
     "select": "Select",
-    "selectLong": "Select a video",
+    "selectAVideo": "Select a video",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
     "backButton": "Back"

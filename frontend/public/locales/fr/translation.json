@@ -111,7 +111,7 @@
     "recommendations": "Top du mois",
     "unconnected": "À relier",
     "select": "Sélectionner",
-    "selectLong": "Sélectionner une vidéo",
+    "selectAVideo": "Sélectionner une vidéo",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
     "backButton": "Retour"

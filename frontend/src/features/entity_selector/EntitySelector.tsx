@@ -372,7 +372,7 @@ const EntitySelectorInnerAuth = ({
                       value={inputValue || uid || ''}
                       onChange={handleChange}
                       otherUid={otherUid}
-                      inSelector={true}
+                      variant="full"
                     />
                   </Grid>
                   <Grid

@@ -152,10 +152,10 @@ describe('Settings - preferences page', () => {
 
       cy.visit('/comparison');
 
-      cy.get('button[data-testid="entity-select-button"]').should('not.exist');
-      cy.get('button[data-testid="entity-select-button-inSelector"]');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('not.exist');
+      cy.get('button[data-testid="entity-select-button-full"]');
       cy.get('button[data-testid="auto-entity-button-full"]').first().click();
-      cy.get('button[data-testid="entity-select-button"]');
+      cy.get('button[data-testid="entity-select-button-compact"]');
       cy.get('[class="react-player__preview"]');
     });
   });

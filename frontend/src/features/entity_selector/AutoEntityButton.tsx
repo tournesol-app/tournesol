@@ -98,7 +98,7 @@ const AutoEntityButton = ({
           startIcon={variant === 'full' ? undefined : <Autorenew />}
           sx={
             variant === 'full'
-              ? { minWidth: '180px', minHeight: '100px', fontSize: '100%' }
+              ? { minWidth: '180px', minHeight: '100px', fontSize: '1rem' }
               : { fontSize: { xs: '0.7rem', sm: '0.8rem' } }
           }
           data-testid={`auto-entity-button-${variant}`}
