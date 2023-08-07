@@ -13,7 +13,7 @@ interface Props {
   onClick: () => void;
   disabled?: boolean;
   autoFill?: boolean;
-  inSelector?: boolean;
+  variant?: 'compact' | 'full';
 }
 
 const AutoEntityButton = ({
@@ -23,7 +23,7 @@ const AutoEntityButton = ({
   onClick,
   disabled = false,
   autoFill = false,
-  inSelector = false,
+  variant = 'compact',
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -95,17 +95,15 @@ const AutoEntityButton = ({
           variant="outlined"
           size="small"
           onClick={askNewVideo}
-          startIcon={inSelector ? undefined : <Autorenew />}
+          startIcon={variant === 'full' ? undefined : <Autorenew />}
           sx={
-            inSelector
+            variant === 'full'
               ? { minWidth: '180px', minHeight: '100px', fontSize: '100%' }
               : { fontSize: { xs: '0.7rem', sm: '0.8rem' } }
           }
-          data-testid={
-            inSelector ? 'auto-entity-button-inSelector' : 'auto-entity-button'
-          }
+          data-testid={`auto-entity-button-${variant}`}
         >
-          {inSelector
+          {variant === 'full'
             ? t('entitySelector.letTournesolSelectAVideo')
             : t('entitySelector.auto')}
         </Button>

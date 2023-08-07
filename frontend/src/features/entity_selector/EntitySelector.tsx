@@ -397,7 +397,7 @@ const EntitySelectorInnerAuth = ({
                           : setLoading(false);
                       }}
                       autoFill={filled}
-                      inSelector={true}
+                      variant="full"
                     />
                   </Grid>
                 </Grid>

@@ -154,7 +154,7 @@ describe('Settings - preferences page', () => {
 
       cy.get('button[data-testid="entity-select-button"]').should('not.exist');
       cy.get('button[data-testid="entity-select-button-inSelector"]');
-      cy.get('button[data-testid="auto-entity-button-inSelector"]').first().click();
+      cy.get('button[data-testid="auto-entity-button-full"]').first().click();
       cy.get('button[data-testid="entity-select-button"]');
       cy.get('[class="react-player__preview"]');
     });
