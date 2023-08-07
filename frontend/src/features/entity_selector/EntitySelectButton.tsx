@@ -29,6 +29,7 @@ interface Props {
   onChange: (value: string) => void;
   otherUid: string | null;
   variant?: 'compact' | 'full';
+  disabled?: boolean;
 }
 
 const VideoInput = ({
@@ -36,6 +37,7 @@ const VideoInput = ({
   onChange,
   otherUid,
   variant = 'compact',
+  disabled = false,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -155,6 +157,7 @@ const VideoInput = ({
           size="small"
           variant="contained"
           color="secondary"
+          disabled={disabled}
           sx={
             variant === 'full'
               ? { minHeight: '100px', fontSize: '1rem' }

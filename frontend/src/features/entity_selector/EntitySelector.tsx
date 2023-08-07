@@ -145,7 +145,10 @@ const EntitySelectorInnerAuth = ({
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
 
-  const [bigSelectors, setBigSelectors] = useState(!autoFill);
+  // The initial UI should be displayed only if no entity has been selected by
+  // the user, or automatically selected .
+  const [showInitialUi, setShowInitialUi] = useState(!autoFill);
+  const [initialSelectDisabled, setInitialSelectDisabled] = useState(false);
 
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
@@ -197,7 +200,7 @@ const EntitySelectorInnerAuth = ({
       }
     }
     setLoading(false);
-    setBigSelectors(false);
+    setShowInitialUi(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
@@ -283,7 +286,7 @@ const EntitySelectorInnerAuth = ({
           m={1}
           display="flex"
           flexDirection={
-            bigSelectors
+            showInitialUi
               ? alignment === 'left'
                 ? 'row-reverse'
                 : 'row'
@@ -294,7 +297,7 @@ const EntitySelectorInnerAuth = ({
           alignItems="center"
           justifyContent="space-between"
         >
-          {!bigSelectors && (
+          {!showInitialUi && (
             <Grid
               container
               spacing={1}
@@ -341,7 +344,7 @@ const EntitySelectorInnerAuth = ({
             entity={rating.entity}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
-        ) : !bigSelectors ? (
+        ) : !showInitialUi ? (
           <EmptyEntityCard compact loading={loading} />
         ) : (
           <Grid container sx={entityCardMainSx}>
@@ -364,6 +367,7 @@ const EntitySelectorInnerAuth = ({
                   onChange={handleChange}
                   otherUid={otherUid}
                   variant="full"
+                  disabled={initialSelectDisabled}
                 />
               </Grid>
               <Grid container item xs={12} sm={5} justifyContent="center">
@@ -374,9 +378,15 @@ const EntitySelectorInnerAuth = ({
                   onClick={() => {
                     setLoading(true);
                     setInputValue('');
+                    setInitialSelectDisabled(true);
                   }}
                   onResponse={(uid) => {
-                    uid ? onChange({ uid, rating: null }) : setLoading(false);
+                    if (uid) {
+                      onChange({ uid, rating: null });
+                    } else {
+                      setLoading(false);
+                      setInitialSelectDisabled(false);
+                    }
                   }}
                   autoFill={autoFill}
                   variant="full"
