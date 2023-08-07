@@ -144,7 +144,8 @@ const EntitySelectorInnerAuth = ({
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
-  const [filled, setFilled] = useState(autoFill);
+
+  const [bigSelectors, setBigSelectors] = useState(!autoFill);
 
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
@@ -196,7 +197,7 @@ const EntitySelectorInnerAuth = ({
       }
     }
     setLoading(false);
-    setFilled(true);
+    setBigSelectors(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
@@ -282,18 +283,18 @@ const EntitySelectorInnerAuth = ({
           m={1}
           display="flex"
           flexDirection={
-            filled
+            bigSelectors
               ? alignment === 'left'
-                ? 'row'
-                : 'row-reverse'
-              : alignment !== 'left'
+                ? 'row-reverse'
+                : 'row'
+              : alignment === 'left'
               ? 'row'
               : 'row-reverse'
           }
           alignItems="center"
           justifyContent="space-between"
         >
-          {filled && (
+          {!bigSelectors && (
             <Grid
               container
               spacing={1}
@@ -340,7 +341,7 @@ const EntitySelectorInnerAuth = ({
             entity={rating.entity}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
-        ) : filled ? (
+        ) : !bigSelectors ? (
           <EmptyEntityCard compact loading={loading} />
         ) : (
           <Grid container sx={entityCardMainSx}>
