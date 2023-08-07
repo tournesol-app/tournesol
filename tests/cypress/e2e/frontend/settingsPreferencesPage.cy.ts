@@ -142,8 +142,9 @@ describe('Settings - preferences page', () => {
     });
   });
 
-  describe('Setting - fill entity selector', () => {
-    it("doesn't fill the selector if set to false", () => {
+  describe('Setting - automatically select entity', () => {
+
+    it("when false, selectors are not automatically pre-filled", () => {
       cy.visit('/settings/preferences');
       login();
 
@@ -152,10 +153,15 @@ describe('Settings - preferences page', () => {
 
       cy.visit('/comparison');
 
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('not.exist');
       cy.get('button[data-testid="entity-select-button-compact"]').should('not.exist');
-      cy.get('button[data-testid="entity-select-button-full"]');
+
+      cy.get('button[data-testid="auto-entity-button-full"]').should('have.length', 2);
+      cy.get('button[data-testid="entity-select-button-full"]').should('have.length', 2);
+
       cy.get('button[data-testid="auto-entity-button-full"]').first().click();
-      cy.get('button[data-testid="entity-select-button-compact"]');
+
+      cy.get('button[data-testid="entity-select-button-compact"]').should('have.length', 1);
       cy.get('[class="react-player__preview"]');
     });
   });
