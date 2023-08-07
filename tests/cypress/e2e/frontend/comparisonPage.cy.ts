@@ -121,8 +121,8 @@ describe('Comparison page', () => {
     cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
-    cy.get("[data-testid=entity-select-button]").should('have.length', 2);
-    cy.get("[data-testid=entity-select-button]").first().click();
+    cy.get("[data-testid=entity-select-button-compact]").should('have.length', 2);
+    cy.get("[data-testid=entity-select-button-compact]").first().click();
 
     cy.visit('/');
     cy.location('pathname').should('equal', '/');
@@ -144,7 +144,7 @@ describe('Comparison page', () => {
 
       waitForAutoFill();
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoAUrl, {delay: 0});
 
@@ -161,7 +161,7 @@ describe('Comparison page', () => {
         cy.contains('views', {matchCase: false}).should('be.visible');
       });
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url] input[type=text]")
         .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
     });
@@ -174,11 +174,11 @@ describe('Comparison page', () => {
         .type('tournesol').type('{enter}');
 
       // two cards must be displayed
-      cy.get("[data-testid=entity-select-button]").should('have.length', 2);
+      cy.get("[data-testid=entity-select-button-compact]").should('have.length', 2);
 
       waitForAutoFill();
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoAUrl.split('?v=')[1], {delay: 0});
 
@@ -195,7 +195,7 @@ describe('Comparison page', () => {
         cy.contains('views', {matchCase: false}).should('be.visible');
       });
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url] input[type=text]")
         .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
     });
@@ -243,11 +243,11 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       // add one video, and ask for a second one
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoAId, {delay: 0});
 
-      cy.get("[data-testid=entity-select-button]").last().click();
+      cy.get("[data-testid=entity-select-button-compact]").last().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoBId, {delay: 0});
 
@@ -280,10 +280,10 @@ describe('Comparison page', () => {
 
       waitForAutoFill();
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoAId, {delay: 0});
-      cy.get("[data-testid=entity-select-button]").last().click();
+      cy.get("[data-testid=entity-select-button-compact]").last().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoBId, {delay: 0});
 
@@ -317,10 +317,10 @@ describe('Comparison page', () => {
 
       waitForAutoFill();
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoAId, {delay: 0});
-      cy.get("[data-testid=entity-select-button]").last().click();
+      cy.get("[data-testid=entity-select-button-compact]").last().click();
       cy.get("[data-testid=paste-video-url]")
         .type(videoAId, {delay: 0});
 
@@ -347,10 +347,10 @@ describe('Comparison page', () => {
       cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
       cy.location('search').should('contain', `uidB=yt%3A${videoBId}`)
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]").find("[type=text]")
         .should('have.value', `yt:${videoAId}`);
-      cy.get("[data-testid=entity-select-button]").last().click();
+      cy.get("[data-testid=entity-select-button-compact]").last().click();
       cy.get("[data-testid=paste-video-url]").find("[type=text]")
         .should('have.value', `yt:${videoBId}`);
     });
@@ -368,10 +368,10 @@ describe('Comparison page', () => {
       cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
       cy.location('search').should('contain', `uidB=yt%3A${videoBId}`)
 
-      cy.get("[data-testid=entity-select-button]").first().click();
+      cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]").find("[type=text]")
         .should('have.value', `yt:${videoAId}`);
-      cy.get("[data-testid=entity-select-button]").last().click();
+      cy.get("[data-testid=entity-select-button-compact]").last().click();
       cy.get("[data-testid=paste-video-url]").find("[type=text]")
         .should('have.value', `yt:${videoBId}`);
     });

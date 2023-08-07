@@ -23,6 +23,7 @@ import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
+import { entityCardMainSx } from 'src/components/entity/style';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -100,7 +101,6 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
 
   const { uid } = value;
   const [entityFallback, setEntityFallback] = useState<Recommendation>();
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -144,6 +144,11 @@ const EntitySelectorInnerAuth = ({
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
+
+  // The initial UI should be displayed only if no entity has been selected by
+  // the user, or automatically selected .
+  const [showInitialUi, setShowInitialUi] = useState(!autoFill);
+  const [initialSelectDisabled, setInitialSelectDisabled] = useState(false);
 
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
@@ -195,6 +200,7 @@ const EntitySelectorInnerAuth = ({
       }
     }
     setLoading(false);
+    setShowInitialUi(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
@@ -276,14 +282,22 @@ const EntitySelectorInnerAuth = ({
   return (
     <>
       {showEntityInput && (
-        <>
-          <Box
-            m={1}
-            display="flex"
-            flexDirection={alignment === 'left' ? 'row' : 'row-reverse'}
-            alignItems="center"
-            justifyContent="space-between"
-          >
+        <Box
+          m={1}
+          display="flex"
+          flexDirection={
+            showInitialUi
+              ? alignment === 'left'
+                ? 'row-reverse'
+                : 'row'
+              : alignment === 'left'
+              ? 'row'
+              : 'row-reverse'
+          }
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          {!showInitialUi && (
             <Grid
               container
               spacing={1}
@@ -313,15 +327,15 @@ const EntitySelectorInnerAuth = ({
                 />
               </Grid>
             </Grid>
-            <Typography
-              variant="h6"
-              color="secondary"
-              sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-            >
-              {title}
-            </Typography>
-          </Box>
-        </>
+          )}
+          <Typography
+            variant="h6"
+            color="secondary"
+            sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+          >
+            {title}
+          </Typography>
+        </Box>
       )}
       <Box position="relative">
         {rating ? (
@@ -330,8 +344,56 @@ const EntitySelectorInnerAuth = ({
             entity={rating.entity}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
-        ) : (
+        ) : !showInitialUi ? (
           <EmptyEntityCard compact loading={loading} />
+        ) : (
+          <Grid container sx={entityCardMainSx}>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                aspectRatio: '16 / 9',
+                backgroundColor: '#fafafa',
+              }}
+              container
+              spacing={1}
+              alignItems="center"
+              justifyContent="space-around"
+              wrap="wrap"
+            >
+              <Grid container item xs={12} sm={5} justifyContent="center">
+                <EntitySelectButton
+                  value={inputValue || uid || ''}
+                  onChange={handleChange}
+                  otherUid={otherUid}
+                  variant="full"
+                  disabled={initialSelectDisabled}
+                />
+              </Grid>
+              <Grid container item xs={12} sm={5} justifyContent="center">
+                <AutoEntityButton
+                  disabled={loading}
+                  currentUid={uid}
+                  otherUid={otherUid}
+                  onClick={() => {
+                    setLoading(true);
+                    setInputValue('');
+                    setInitialSelectDisabled(true);
+                  }}
+                  onResponse={(uid) => {
+                    if (uid) {
+                      onChange({ uid, rating: null });
+                    } else {
+                      setLoading(false);
+                      setInitialSelectDisabled(false);
+                    }
+                  }}
+                  autoFill={autoFill}
+                  variant="full"
+                />
+              </Grid>
+            </Grid>
+          </Grid>
         )}
         {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !loading && (
           <Box

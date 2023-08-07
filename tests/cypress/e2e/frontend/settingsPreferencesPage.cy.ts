@@ -142,6 +142,30 @@ describe('Settings - preferences page', () => {
     });
   });
 
+  describe('Setting - automatically select entity', () => {
+
+    it("when false, selectors are not automatically pre-filled", () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid="videos_comparison__fill_entity_selector"]').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('not.exist');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('not.exist');
+
+      cy.get('button[data-testid="auto-entity-button-full"]').should('have.length', 2);
+      cy.get('button[data-testid="entity-select-button-full"]').should('have.length', 2);
+
+      cy.get('button[data-testid="auto-entity-button-full"]').first().click();
+
+      cy.get('button[data-testid="entity-select-button-compact"]').should('have.length', 1);
+      cy.get('[class="react-player__preview"]');
+    });
+  });
+
   describe('Setting - optional criteria display', () => {
     it('handles selecting and ordering criteria', () => {
       cy.visit('/comparison');

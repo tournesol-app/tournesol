@@ -99,13 +99,15 @@
   },
   "entitySelector": {
     "newVideo": "Select a new video automatically",
-    "autoEntityButton": "Auto",
+    "auto": "Auto",
+    "letTournesolSelectAVideo": "Let Tournesol select a video",
     "suggestions": "Suggestions",
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
     "unconnected": "To connect",
     "select": "Select",
+    "selectAVideo": "Select a video",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
     "backButton": "Back"

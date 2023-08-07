@@ -209,6 +209,7 @@ export const polls: Array<SelectablePoll> = [
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
+    autoFillEmptySelectors: true,
     extraMetadataOrderBy: ['duration', 'publication_date'],
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,

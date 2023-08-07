@@ -28,9 +28,17 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   otherUid: string | null;
+  variant?: 'compact' | 'full';
+  disabled?: boolean;
 }
 
-const VideoInput = ({ value, onChange, otherUid }: Props) => {
+const VideoInput = ({
+  value,
+  onChange,
+  otherUid,
+  variant = 'compact',
+  disabled = false,
+}: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
@@ -137,17 +145,30 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   return (
     <ClickAwayListener onClickAway={() => setSuggestionsOpen(false)}>
-      <Box ref={selectorAnchor}>
+      <Box
+        ref={selectorAnchor}
+        sx={{
+          width: variant === 'full' ? '100%' : 'auto',
+        }}
+      >
         <Button
+          fullWidth={variant === 'full' ? true : false}
           onClick={toggleSuggestions}
           size="small"
           variant="contained"
           color="secondary"
-          sx={{ minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+          disabled={disabled}
+          sx={
+            variant === 'full'
+              ? { minHeight: '100px', fontSize: '1rem' }
+              : { minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }
+          }
           disableElevation
-          data-testid="entity-select-button"
+          data-testid={`entity-select-button-${variant}`}
         >
-          {t('entitySelector.select')}
+          {variant === 'full'
+            ? t('entitySelector.selectAVideo')
+            : t('entitySelector.select')}
         </Button>
         <SelectorPopper
           modal={fullScreenModal}

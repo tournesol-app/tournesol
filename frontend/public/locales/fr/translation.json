@@ -43,7 +43,7 @@
     "thisElementIsNotAvailable": "Cet élément n'est plus disponible."
   },
   "score": {
-    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
+    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement sélectionnés"
   },
   "pagination": {
     "showingCounts_one": "Élément {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
@@ -76,7 +76,7 @@
   },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
-    "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",
+    "pleaseSelectTwoItems": "Sélectionnez 2 éléments pour les comparer.",
     "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
@@ -102,14 +102,16 @@
     "skipTheSeries": "Passer la série"
   },
   "entitySelector": {
-    "newVideo": "Selectionner une nouvelle vidéo automatiquement",
-    "autoEntityButton": "Auto",
+    "newVideo": "Sélectionner une nouvelle vidéo automatiquement",
+    "auto": "Auto",
+    "letTournesolSelectAVideo": "Laisser Tournesol choisir une vidéo",
     "suggestions": "Suggestions",
     "rateLater": "À comparer",
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
     "unconnected": "À relier",
-    "select": "Selectionner",
+    "select": "Sélectionner",
+    "selectAVideo": "Sélectionner une vidéo",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
     "backButton": "Retour"
