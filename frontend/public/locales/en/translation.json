@@ -455,7 +455,7 @@
     "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",
     "alwaysDisplayedCriteria": "Always displayed criteria",
     "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
-    "letTournesolLoadVideos": "Let Tournesol load videos by default on the comparison page.",
+    "letTournesolLoadVideos": "Let Tournesol suggest elements to compare when opening the comparison interface.",
     "preferredLanguage": "Preferred language",
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
