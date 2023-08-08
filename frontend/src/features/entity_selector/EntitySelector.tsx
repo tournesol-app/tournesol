@@ -145,8 +145,6 @@ const EntitySelectorInnerAuth = ({
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
 
-  const [initialSelectDisabled, setInitialSelectDisabled] = useState(false);
-
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
   );
@@ -341,6 +339,7 @@ const EntitySelectorInnerAuth = ({
         ) : (
           <>
             {(loading ||
+              !showEntityInput ||
               entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) && (
               <EmptyEntityCard compact loading={loading} />
             )}
@@ -375,6 +374,7 @@ const EntitySelectorInnerAuth = ({
                 ...entityCardMainSx,
                 display:
                   loading ||
+                  !showEntityInput ||
                   entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
                     ? 'none'
                     : 'flex',
@@ -399,7 +399,6 @@ const EntitySelectorInnerAuth = ({
                     onChange={handleChange}
                     otherUid={otherUid}
                     variant="full"
-                    disabled={initialSelectDisabled}
                   />
                 </Grid>
                 <Grid container item xs={12} sm={5} justifyContent="center">
@@ -410,17 +409,10 @@ const EntitySelectorInnerAuth = ({
                     onClick={() => {
                       setLoading(true);
                       setInputValue('');
-                      setInitialSelectDisabled(true);
                     }}
-                    onResponse={(uid) => {
-                      if (uid) {
-                        onChange({ uid, rating: null });
-                      } else {
-                        setLoading(false);
-                      }
-
-                      setInitialSelectDisabled(false);
-                    }}
+                    onResponse={(uid) =>
+                      uid ? onChange({ uid, rating: null }) : setLoading(false)
+                    }
                     autoFill={autoFill}
                     variant="full"
                   />
