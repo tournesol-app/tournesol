@@ -50,6 +50,7 @@ class UserSettingsDetailTestCase(TestCase):
                 "rate_later__auto_remove": 99,
                 "recommendations__default_languages": ["en"],
                 "recommendations__default_date": "WEEK",
+                "recommendations__default_exclude_compared_entities": False,
                 "recommendations__default_unsafe": False,
             },
         }
