@@ -414,7 +414,7 @@ const EntitySelectorInnerAuth = ({
                     onResponse={(uid) =>
                       uid ? onChange({ uid, rating: null }) : setLoading(false)
                     }
-                    autoFill={autoFill}
+                    autoFill={false}
                     variant="full"
                   />
                 </Grid>
