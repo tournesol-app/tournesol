@@ -24,6 +24,7 @@ import { ComparisonsCountContext } from 'src/pages/comparisons/Comparison';
 
 // in milliseconds
 const TYPING_DELAY = 50;
+const TAB_DESCRIPTION_EXTRA_TTL = 4;
 
 interface Props {
   value: string;
@@ -41,12 +42,14 @@ const VideoInput = ({
   disabled = false,
 }: Props) => {
   const { t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
+  const { isLoggedIn } = useLoginState();
+
+  const { name: pollName, options } = useCurrentPoll();
+  const tabDescTTL = (options?.tutorialLength ?? 0) + TAB_DESCRIPTION_EXTRA_TTL;
 
   const selectorAnchor = useRef<HTMLDivElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
 
-  const { isLoggedIn } = useLoginState();
   const fullScreenModal = useMediaQuery(
     (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
     { noSsr: true }
@@ -189,7 +192,7 @@ const VideoInput = ({
                   value: value,
                   onChange: onChange,
                 }}
-                displayDescription={comparisonsCount < 8}
+                displayDescription={comparisonsCount < tabDescTTL}
               />
             </SelectorPopper>
           )}
