@@ -48,8 +48,8 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
-  variant?: 'regular' | 'noControl';
   autoFill?: boolean;
+  variant?: 'regular' | 'noControl';
 }
 
 export interface SelectorValue {
@@ -145,9 +145,6 @@ const EntitySelectorInnerAuth = ({
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
 
-  // The initial UI should be displayed only if no entity has been selected by
-  // the user, or automatically selected .
-  const [showInitialUi, setShowInitialUi] = useState(!autoFill);
   const [initialSelectDisabled, setInitialSelectDisabled] = useState(false);
 
   const { availability: entityAvailability } = useEntityAvailable(
@@ -200,7 +197,6 @@ const EntitySelectorInnerAuth = ({
       }
     }
     setLoading(false);
-    setShowInitialUi(false);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
@@ -286,48 +282,46 @@ const EntitySelectorInnerAuth = ({
           m={1}
           display="flex"
           flexDirection={
-            showInitialUi
+            uid
               ? alignment === 'left'
-                ? 'row-reverse'
-                : 'row'
-              : alignment === 'left'
+                ? 'row'
+                : 'row-reverse'
+              : alignment !== 'left'
               ? 'row'
               : 'row-reverse'
           }
           alignItems="center"
           justifyContent="space-between"
         >
-          {!showInitialUi && (
-            <Grid
-              container
-              spacing={1}
-              display="flex"
-              direction={alignment === 'left' ? 'row' : 'row-reverse'}
-            >
-              <Grid item>
-                <EntitySelectButton
-                  value={inputValue || uid || ''}
-                  onChange={handleChange}
-                  otherUid={otherUid}
-                />
-              </Grid>
-              <Grid item>
-                <AutoEntityButton
-                  disabled={loading}
-                  currentUid={uid}
-                  otherUid={otherUid}
-                  onClick={() => {
-                    setLoading(true);
-                    setInputValue('');
-                  }}
-                  onResponse={(uid) => {
-                    uid ? onChange({ uid, rating: null }) : setLoading(false);
-                  }}
-                  autoFill={autoFill}
-                />
-              </Grid>
+          <Grid
+            container
+            spacing={1}
+            display={uid ? 'flex' : 'none'}
+            direction={alignment === 'left' ? 'row' : 'row-reverse'}
+          >
+            <Grid item>
+              <EntitySelectButton
+                value={inputValue || uid || ''}
+                onChange={handleChange}
+                otherUid={otherUid}
+              />
             </Grid>
-          )}
+            <Grid item>
+              <AutoEntityButton
+                disabled={loading}
+                currentUid={uid}
+                otherUid={otherUid}
+                onClick={() => {
+                  setLoading(true);
+                  setInputValue('');
+                }}
+                onResponse={(uid) => {
+                  uid ? onChange({ uid, rating: null }) : setLoading(false);
+                }}
+                autoFill={autoFill}
+              />
+            </Grid>
+          </Grid>
           <Typography
             variant="h6"
             color="secondary"
@@ -344,80 +338,96 @@ const EntitySelectorInnerAuth = ({
             entity={rating.entity}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
-        ) : !showInitialUi || !showEntityInput ? (
-          <EmptyEntityCard compact loading={loading} />
         ) : (
-          <Grid container sx={entityCardMainSx}>
+          <>
+            {(loading ||
+              entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) && (
+              <EmptyEntityCard compact loading={loading} />
+            )}
+            {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE &&
+              !loading && (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  position="absolute"
+                  top="0"
+                  color="white"
+                  bgcolor="rgba(0,0,0,.6)"
+                  width="100%"
+                  sx={{
+                    aspectRatio: '16/9',
+                    [theme.breakpoints.down('sm')]: {
+                      fontSize: '0.8rem',
+                    },
+                  }}
+                >
+                  <Typography textAlign="center" fontSize="inherit">
+                    {pollName === YOUTUBE_POLL_NAME
+                      ? t('entitySelector.youtubeVideoUnavailable')
+                      : t('entityCard.thisElementIsNotAvailable')}
+                  </Typography>
+                </Box>
+              )}
             <Grid
-              item
-              xs={12}
-              sx={{
-                aspectRatio: '16 / 9',
-                backgroundColor: '#fafafa',
-              }}
               container
-              spacing={1}
-              alignItems="center"
-              justifyContent="space-around"
-              wrap="wrap"
+              sx={{
+                ...entityCardMainSx,
+                display:
+                  loading ||
+                  entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
+                    ? 'none'
+                    : 'flex',
+              }}
             >
-              <Grid container item xs={12} sm={5} justifyContent="center">
-                <EntitySelectButton
-                  value={inputValue || uid || ''}
-                  onChange={handleChange}
-                  otherUid={otherUid}
-                  variant="full"
-                  disabled={initialSelectDisabled}
-                />
-              </Grid>
-              <Grid container item xs={12} sm={5} justifyContent="center">
-                <AutoEntityButton
-                  disabled={loading}
-                  currentUid={uid}
-                  otherUid={otherUid}
-                  onClick={() => {
-                    setLoading(true);
-                    setInputValue('');
-                    setInitialSelectDisabled(true);
-                  }}
-                  onResponse={(uid) => {
-                    if (uid) {
-                      onChange({ uid, rating: null });
-                    } else {
-                      setLoading(false);
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  aspectRatio: '16 / 9',
+                  backgroundColor: '#fafafa',
+                }}
+                container
+                spacing={1}
+                alignItems="center"
+                justifyContent="space-around"
+                wrap="wrap"
+              >
+                <Grid container item xs={12} sm={5} justifyContent="center">
+                  <EntitySelectButton
+                    value={inputValue || uid || ''}
+                    onChange={handleChange}
+                    otherUid={otherUid}
+                    variant="full"
+                    disabled={initialSelectDisabled}
+                  />
+                </Grid>
+                <Grid container item xs={12} sm={5} justifyContent="center">
+                  <AutoEntityButton
+                    disabled={loading}
+                    currentUid={uid}
+                    otherUid={otherUid}
+                    onClick={() => {
+                      setLoading(true);
+                      setInputValue('');
+                      setInitialSelectDisabled(true);
+                    }}
+                    onResponse={(uid) => {
+                      if (uid) {
+                        onChange({ uid, rating: null });
+                      } else {
+                        setLoading(false);
+                      }
+
                       setInitialSelectDisabled(false);
-                    }
-                  }}
-                  autoFill={autoFill}
-                  variant="full"
-                />
+                    }}
+                    autoFill={autoFill}
+                    variant="full"
+                  />
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        )}
-        {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !loading && (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            position="absolute"
-            top="0"
-            color="white"
-            bgcolor="rgba(0,0,0,.6)"
-            width="100%"
-            sx={{
-              aspectRatio: '16/9',
-              [theme.breakpoints.down('sm')]: {
-                fontSize: '0.8rem',
-              },
-            }}
-          >
-            <Typography textAlign="center" fontSize="inherit">
-              {pollName === YOUTUBE_POLL_NAME
-                ? t('entitySelector.youtubeVideoUnavailable')
-                : t('entityCard.thisElementIsNotAvailable')}
-            </Typography>
-          </Box>
+          </>
         )}
       </Box>
     </>
