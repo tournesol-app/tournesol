@@ -343,8 +343,8 @@ const EntitySelectorInnerAuth = ({
               entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) && (
               <EmptyEntityCard compact loading={loading} />
             )}
-            {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE &&
-              !loading && (
+            {!loading &&
+              entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && (
                 <Box
                   display="flex"
                   justifyContent="center"
@@ -373,6 +373,7 @@ const EntitySelectorInnerAuth = ({
               sx={{
                 ...entityCardMainSx,
                 display:
+                  uid ||
                   loading ||
                   !showEntityInput ||
                   entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
@@ -381,13 +382,13 @@ const EntitySelectorInnerAuth = ({
               }}
             >
               <Grid
+                container
                 item
                 xs={12}
                 sx={{
                   aspectRatio: '16 / 9',
                   backgroundColor: '#fafafa',
                 }}
-                container
                 spacing={1}
                 alignItems="center"
                 justifyContent="space-around"
