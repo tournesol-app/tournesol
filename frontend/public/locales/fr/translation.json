@@ -455,6 +455,7 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
+    "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
     "moveTheFollowingCriterionUp": "Déplacer le critère suivant vers le haut:",
     "moveTheFollowingCriterionDown": "Déplacer le critère suivant vers le bas:",
     "selectTheCriteriaYouWantToDisplay": "Sélectionnez les critères que vous souhaitez afficher par défaut",
@@ -462,7 +463,6 @@
     "optionalCriteriaEmptyText": "Tous les critères optionnels seront affichés par défaut.",
     "alwaysDisplayedCriteria": "Critères toujours affichés",
     "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
-    "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
     "preferredLanguage": "Langue préférée",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
