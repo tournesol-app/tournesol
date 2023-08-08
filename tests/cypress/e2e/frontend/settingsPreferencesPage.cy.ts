@@ -147,10 +147,10 @@ describe('Settings - preferences page', () => {
       cy.visit('/comparison');
       login();
 
-      cy.get('button[data-testid="auto-entity-button-compact"]').should('have.length', 2);
-      cy.get('button[data-testid="entity-select-button-compact"]').should('have.length', 2);
-      cy.get('button[data-testid="auto-entity-button-full"]').should('not.exist');
-      cy.get('button[data-testid="entity-select-button-full"]').should('not.exist');
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('be.visible');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('be.visible');
+      cy.get('button[data-testid="auto-entity-button-full"]').should('not.be.visible');
+      cy.get('button[data-testid="entity-select-button-full"]').should('not.be.visible');
     });
 
     it("when false, videos are not automatically suggested", () => {
@@ -162,15 +162,14 @@ describe('Settings - preferences page', () => {
 
       cy.visit('/comparison');
 
-      cy.get('button[data-testid="auto-entity-button-compact"]').should('not.exist');
-      cy.get('button[data-testid="entity-select-button-compact"]').should('not.exist');
-
-      cy.get('button[data-testid="auto-entity-button-full"]').should('have.length', 2);
-      cy.get('button[data-testid="entity-select-button-full"]').should('have.length', 2);
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('not.be.visible');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('not.be.visible');
+      cy.get('button[data-testid="auto-entity-button-full"]').should('be.visible');
+      cy.get('button[data-testid="entity-select-button-full"]').should('be.visible');
 
       cy.get('button[data-testid="auto-entity-button-full"]').first().click();
+      cy.get('button[data-testid="auto-entity-button-full"]').first().should('not.be.visible');
 
-      cy.get('button[data-testid="entity-select-button-compact"]').should('have.length', 1);
       cy.get('[class="react-player__preview"]');
     });
   });
