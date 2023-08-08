@@ -173,23 +173,26 @@ const VideoInput = ({
             ? t('entitySelector.selectAVideo')
             : t('entitySelector.select')}
         </Button>
-        <SelectorPopper
-          modal={fullScreenModal}
-          open={suggestionsOpen}
-          anchorEl={selectorAnchor.current}
-          onClose={() => setSuggestionsOpen(false)}
-        >
-          <SelectorListBox
-            tabs={tabs}
-            onSelectEntity={handleOptionClick}
-            elevation={10}
-            entityTextInput={{
-              value: value,
-              onChange: onChange,
-            }}
-            displayDescription={comparisonsCount < 8}
-          />
-        </SelectorPopper>
+        {selectorAnchor.current &&
+          selectorAnchor.current.offsetParent != null && (
+            <SelectorPopper
+              modal={fullScreenModal}
+              open={suggestionsOpen}
+              anchorEl={selectorAnchor.current}
+              onClose={() => setSuggestionsOpen(false)}
+            >
+              <SelectorListBox
+                tabs={tabs}
+                onSelectEntity={handleOptionClick}
+                elevation={10}
+                entityTextInput={{
+                  value: value,
+                  onChange: onChange,
+                }}
+                displayDescription={comparisonsCount < 8}
+              />
+            </SelectorPopper>
+          )}
       </Box>
     </ClickAwayListener>
   );
