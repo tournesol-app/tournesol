@@ -142,6 +142,38 @@ describe('Settings - preferences page', () => {
     });
   });
 
+  describe('Setting - automatically select entities', () => {
+    it("by default, videos are automatically suggested", () => {
+      cy.visit('/comparison');
+      login();
+
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('be.visible');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('be.visible');
+      cy.get('button[data-testid="auto-entity-button-full"]').should('not.be.visible');
+      cy.get('button[data-testid="entity-select-button-full"]').should('not.be.visible');
+    });
+
+    it("when false, videos are not automatically suggested", () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid="videos_comparison__auto_select_entities"]').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('not.be.visible');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('not.be.visible');
+      cy.get('button[data-testid="auto-entity-button-full"]').should('be.visible');
+      cy.get('button[data-testid="entity-select-button-full"]').should('be.visible');
+
+      cy.get('button[data-testid="auto-entity-button-full"]').first().click();
+      cy.get('button[data-testid="auto-entity-button-full"]').first().should('not.be.visible');
+
+      cy.get('[class="react-player__preview"]');
+    });
+  });
+
   describe('Setting - optional criteria display', () => {
     it('handles selecting and ordering criteria', () => {
       cy.visit('/comparison');

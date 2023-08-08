@@ -141,6 +141,12 @@ const ComparisonPage = () => {
       ?.comparison_ui__weekly_collective_goal_display ??
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 
+  const autoSelectEntities =
+    userSettings?.[pollName as PollUserSettingsKeys]
+      ?.comparison__auto_select_entities ??
+    options?.autoFillEmptySelectors ??
+    false;
+
   return (
     <>
       <ContentHeader title={t('comparison.submitAComparison')} />
@@ -203,8 +209,8 @@ const ComparisonPage = () => {
                   value={{ comparisonsCount: comparisonsCount }}
                 >
                   <Comparison
-                    autoFillSelectorA={true}
-                    autoFillSelectorB={true}
+                    autoFillSelectorA={autoSelectEntities}
+                    autoFillSelectorB={autoSelectEntities}
                   />
                 </ComparisonsCountContext.Provider>
               </>

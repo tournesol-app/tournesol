@@ -43,7 +43,7 @@
     "thisElementIsNotAvailable": "Cet élément n'est plus disponible."
   },
   "score": {
-    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
+    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement sélectionnés"
   },
   "pagination": {
     "showingCounts_one": "Élément {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
@@ -76,7 +76,7 @@
   },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
-    "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",
+    "pleaseSelectTwoItems": "Sélectionnez 2 éléments pour les comparer.",
     "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
@@ -102,24 +102,26 @@
     "skipTheSeries": "Passer la série"
   },
   "entitySelector": {
-    "newVideo": "Selectionner une nouvelle vidéo automatiquement",
-    "autoEntityButton": "Auto",
+    "newVideo": "Sélectionner une nouvelle vidéo automatiquement",
+    "letTournesolSelectAVideo": "Laisser Tournesol choisir une vidéo",
+    "auto": "Auto",
     "suggestions": "Suggestions",
     "rateLater": "À comparer",
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
     "unconnected": "À relier",
-    "select": "Selectionner",
+    "selectAVideo": "Sélectionner une vidéo",
+    "select": "Sélectionner",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
     "backButton": "Retour"
   },
   "tabsBox": {
-    "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
-    "rateLater": "Vos vidéos à comparer plus tard apparaissent ici. Vous pouvez en ajouter sur le site web via le bouton '+'. Vous pouvez aussi les ajouter directement depuis YouTube grâce à <2>l'extension</2>.",
     "compared": "Les vidéos que vous avez comparées apparaissent ici.",
     "recommendations": "Les vidéos recommandées par la communauté apparaissent ici.",
     "toConnect": "Les vidéos isolées du reste de vos comparaisons apparaissent ici. Comparez-les pour améliorer les recommandations.",
+    "rateLater": "Vos vidéos à comparer plus tard apparaissent ici. Vous pouvez en ajouter sur le site web via le bouton '+'. Vous pouvez aussi les ajouter directement depuis YouTube grâce à <2>l'extension</2>.",
+    "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
     "emptyList": "Cette liste est vide."
   },
   "stackedCandidatesPaper": {
@@ -343,9 +345,9 @@
     "filterByVisibility": "Filtrer par visibilité",
     "includeAllVideos": "Inclure toutes les vidéos",
     "excludeComparedVideos": "Exclure les vidéos comparées",
+    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
     "excludeComparedTooltip": "Enlever de la liste de recommandations les vidéos que vous avez déjà comparées",
     "advanced": "Avancés",
-    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
     "ignore": "Ignoré",
     "notImportant": "Pas important",
     "neutral": "Neutre",
@@ -460,6 +462,7 @@
     "optionalCriteriaEmptyText": "Tous les critères optionnels seront affichés par défaut.",
     "alwaysDisplayedCriteria": "Critères toujours affichés",
     "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
+    "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
     "preferredLanguage": "Langue préférée",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",

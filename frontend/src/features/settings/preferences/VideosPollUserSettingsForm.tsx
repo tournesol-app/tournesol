@@ -11,6 +11,7 @@ import {
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
+import AutoSelectoEntities from './fields/AutoSelectEntities';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
@@ -18,6 +19,8 @@ import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe'
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 
 interface VideosPollUserSettingsFormProps {
+  compAutoSelectEntities: boolean;
+  setCompAutoSelectEntities: (target: boolean) => void;
   compUiWeeklyColGoalDisplay:
     | ComparisonUi_weeklyCollectiveGoalDisplayEnum
     | BlankEnum;
@@ -41,6 +44,8 @@ interface VideosPollUserSettingsFormProps {
  * Display a set of fields representing the preferences of the poll `videos`.
  */
 const VideosPollUserSettingsForm = ({
+  compAutoSelectEntities,
+  setCompAutoSelectEntities,
   compUiWeeklyColGoalDisplay,
   setCompUiWeeklyColGoalDisplay,
   displayedCriteria,
@@ -68,6 +73,13 @@ const VideosPollUserSettingsForm = ({
         <WeeklyCollectiveGoalDisplayField
           value={compUiWeeklyColGoalDisplay}
           onChange={setCompUiWeeklyColGoalDisplay}
+          pollName={pollName}
+        />
+      </Grid>
+      <Grid item>
+        <AutoSelectoEntities
+          value={compAutoSelectEntities}
+          onChange={setCompAutoSelectEntities}
           pollName={pollName}
         />
       </Grid>
