@@ -128,19 +128,21 @@ const VideosPollUserSettingsForm = ({
           pollName={pollName}
         />
       </Grid>
-      <Grid item>
-        <RecommendationsDefaultUnsafe
-          value={recoDefaultUnsafe}
-          onChange={setRecoDefaultUnsafe}
-          pollName={pollName}
-        />
-      </Grid>
-      <Grid item>
-        <RecommendationsDefaultExcludeCompared
-          value={recoDefaultExcludeCompared}
-          onChange={setRecoDefaultExcludeCompared}
-          pollName={pollName}
-        />
+      <Grid item container spacing={1} direction="column" alignItems="stretch">
+        <Grid item>
+          <RecommendationsDefaultUnsafe
+            value={recoDefaultUnsafe}
+            onChange={setRecoDefaultUnsafe}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultExcludeCompared
+            value={recoDefaultExcludeCompared}
+            onChange={setRecoDefaultExcludeCompared}
+            pollName={pollName}
+          />
+        </Grid>
       </Grid>
     </Grid>
   );
