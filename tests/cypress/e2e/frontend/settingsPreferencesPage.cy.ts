@@ -294,4 +294,31 @@ describe('Settings - preferences page', () => {
       );
     });
   });
+
+  describe('Setting - exclude compared entities', () => {
+    it('handles the value false (exclude)', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid=videos_recommendations__default_exclude_compared_entities]');
+      cy.contains('Update preferences').click();
+
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Month'
+      );
+    });
+
+    it('handles the value true (include)', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid=videos_recommendations__default_exclude_compared_entities]')
+        .click();
+      cy.contains('Update preferences').click();
+
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Month&advanced=exclude_compared'
+      );
+    });
+  });
 });
