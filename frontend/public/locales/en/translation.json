@@ -448,6 +448,7 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
+    "letTournesolSuggestElements": "Let Tournesol suggest elements to compare when opening the comparison interface.",
     "moveTheFollowingCriterionUp": "Move the following criterion up:",
     "moveTheFollowingCriterionDown": "Move the following criterion down:",
     "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
@@ -455,7 +456,6 @@
     "optionalCriteriaEmptyText": "All optional criteria will be displayed by default.",
     "alwaysDisplayedCriteria": "Always displayed criteria",
     "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
-    "letTournesolLoadVideos": "Let Tournesol suggest elements to compare when opening the comparison interface.",
     "preferredLanguage": "Preferred language",
     "autoRemove": "Automatic removal",
     "autoRemoveHelpText_one": "Elements will be removed from your rate-later list after {{value}} comparison.",
