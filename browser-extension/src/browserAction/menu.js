@@ -116,7 +116,7 @@ function initSearchStateButtonStyle() {
     if (enabled === null || enabled === undefined) {
       chrome.storage.local.set({ searchEnabled: false });
     }
-    console.log(enabled);
+
     if (enabled) {
       searchButton.classList.add('enabled');
       searchButton.textContent = i18n.getMessage('menuSearchEnabled');
@@ -150,6 +150,10 @@ function toggleSearchStateAction(event) {
   });
 }
 
+function openOptionsPage() {
+  browser.runtime.openOptionsPage();
+}
+
 /**
  * Create the action menu.
  */
@@ -159,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const rateLaterButton = document.getElementById('rate_later');
   const analysisButton = document.getElementById('analysis');
   const enableSearchButton = document.getElementById('search_state');
+  const preferencesButton = document.getElementById('preferences');
 
   initSearchStateButtonStyle();
 
@@ -167,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
   rateLaterButton.addEventListener('click', addToRateLaterAction);
   analysisButton.addEventListener('click', openAnalysisPageAction);
   enableSearchButton.addEventListener('click', toggleSearchStateAction);
+  preferencesButton.addEventListener('click', openOptionsPage);
 
   rateNowButton.textContent = i18n.getMessage('menuRateNow');
   rateLaterButton.textContent = i18n.getMessage('menuRateLater');
