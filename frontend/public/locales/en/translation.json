@@ -99,18 +99,24 @@
   },
   "entitySelector": {
     "newVideo": "Select a new video automatically",
-    "autoEntityButton": "Auto",
+    "letTournesolSelectAVideo": "Let Tournesol select a video",
+    "auto": "Auto",
     "suggestions": "Suggestions",
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
     "unconnected": "To connect",
-    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "selectAVideo": "Select a video",
+    "select": "Select",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
-    "backButton": "Back",
-    "select": "Select"
+    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "backButton": "Back"
   },
   "tabsBox": {
+    "compared": "Compared videos appear here.",
+    "recommendations": "Videos recommended by the community appear here.",
+    "toConnect": "Videos isolated from your other comparisons appear here. Compare them to improve the recommendations.",
+    "rateLater": "Your rate-later videos appear here. You can add some to your list by clicking on the '+' sign on the video cards. You can also add them directly from <2>the extension</2>.",
     "errorOnLoading": "An error occurred while loading the results.",
     "emptyList": "This list is empty."
   },
@@ -331,8 +337,10 @@
   "filter": {
     "filterByVisibility": "Filter by visibility",
     "includeAllVideos": "Include all videos",
-    "advanced": "Advanced",
+    "excludeComparedVideos": "Exclude compared videos",
     "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
+    "excludeComparedTooltip": "Remove from the list of recommendations the videos that you have already compared.",
+    "advanced": "Advanced",
     "ignore": "Ignore",
     "notImportant": "Not important",
     "neutral": "Neutral",
@@ -440,6 +448,7 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
+    "letTournesolSuggestElements": "Let Tournesol suggest elements to compare when opening the comparison interface.",
     "moveTheFollowingCriterionUp": "Move the following criterion up:",
     "moveTheFollowingCriterionDown": "Move the following criterion down:",
     "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
@@ -530,6 +539,7 @@
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Default value of the uploaded date filter",
+      "defaultExcludeCompared": "Exclude by default the videos that you have already compared.",
       "defaultLanguages": "Videos languages",
       "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)",
       "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
@@ -785,9 +795,11 @@
     "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
   },
   "scientificLiteratureBox": {
-    "ourPublications": "Our publications",
-    "papers": "Papers",
-    "studenWorks": "Student works"
+    "publications": "Publications",
+    "ourPapers": "Our papers",
+    "studenWorks": "Student works",
+    "theyCiteUs": "They cite us",
+    "inTheMedia": "In the media"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
@@ -987,12 +999,12 @@
   "videos": {
     "dialogs": {
       "tutorial": {
+        "installTheExtension": "Install the extension",
         "title4": "Compare easily with the extension",
         "message4": {
           "p10": "The Tournesol browser extension lets you add the videos you watch on YouTube to your rate-later list.",
           "p20": "You can also make comparisons directly from YouTube!"
-        },
-        "installTheExtension": "Install the extension"
+        }
       }
     },
     "tips": {

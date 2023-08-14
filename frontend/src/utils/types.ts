@@ -107,6 +107,8 @@ export type SelectablePoll = {
   // comparisons as public, and contributor ratings must be created with
   // is_public = false
   comparisonsCanBePublic?: boolean;
+  // indicates if empty entity selectors should be filled by default
+  autoFillEmptySelectors?: boolean;
   tutorialLength?: number;
   // can be used by comparison series to limit the pool of entities
   // that are suggested after each comparison

@@ -11,14 +11,18 @@ import {
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
+import AutoSelectoEntities from './fields/AutoSelectEntities';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
+import RecommendationsDefaultExcludeCompared from './fields/RecommendationsDefaultExcludeCompared';
 
 interface VideosPollUserSettingsFormProps {
+  compAutoSelectEntities: boolean;
+  setCompAutoSelectEntities: (target: boolean) => void;
   compUiWeeklyColGoalDisplay:
     | ComparisonUi_weeklyCollectiveGoalDisplayEnum
     | BlankEnum;
@@ -33,6 +37,8 @@ interface VideosPollUserSettingsFormProps {
   setRecoDefaultLanguages: (target: string[]) => void;
   recoDefaultUnsafe: boolean;
   setRecoDefaultUnsafe: (target: boolean) => void;
+  recoDefaultExcludeCompared: boolean;
+  setRecoDefaultExcludeCompared: (target: boolean) => void;
   recoDefaultUploadDate: Recommendations_defaultDateEnum | BlankEnum;
   setRecoDefaultUploadDate: (
     target: Recommendations_defaultDateEnum | BlankEnum
@@ -44,6 +50,8 @@ interface VideosPollUserSettingsFormProps {
  * Display a set of fields representing the preferences of the poll `videos`.
  */
 const VideosPollUserSettingsForm = ({
+  compAutoSelectEntities,
+  setCompAutoSelectEntities,
   compUiWeeklyColGoalDisplay,
   setCompUiWeeklyColGoalDisplay,
   displayedCriteria,
@@ -54,6 +62,8 @@ const VideosPollUserSettingsForm = ({
   setRecoDefaultLanguages,
   recoDefaultUnsafe,
   setRecoDefaultUnsafe,
+  recoDefaultExcludeCompared,
+  setRecoDefaultExcludeCompared,
   recoDefaultUploadDate,
   setRecoDefaultUploadDate,
   apiErrors,
@@ -73,6 +83,13 @@ const VideosPollUserSettingsForm = ({
         <WeeklyCollectiveGoalDisplayField
           value={compUiWeeklyColGoalDisplay}
           onChange={setCompUiWeeklyColGoalDisplay}
+          pollName={pollName}
+        />
+      </Grid>
+      <Grid item>
+        <AutoSelectoEntities
+          value={compAutoSelectEntities}
+          onChange={setCompAutoSelectEntities}
           pollName={pollName}
         />
       </Grid>
@@ -139,12 +156,21 @@ const VideosPollUserSettingsForm = ({
           pollName={pollName}
         />
       </Grid>
-      <Grid item>
-        <RecommendationsDefaultUnsafe
-          value={recoDefaultUnsafe}
-          onChange={setRecoDefaultUnsafe}
-          pollName={pollName}
-        />
+      <Grid item container spacing={1} direction="column" alignItems="stretch">
+        <Grid item>
+          <RecommendationsDefaultUnsafe
+            value={recoDefaultUnsafe}
+            onChange={setRecoDefaultUnsafe}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultExcludeCompared
+            value={recoDefaultExcludeCompared}
+            onChange={setRecoDefaultExcludeCompared}
+            pollName={pollName}
+          />
+        </Grid>
       </Grid>
     </Grid>
   );

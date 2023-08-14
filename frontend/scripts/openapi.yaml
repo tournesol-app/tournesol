@@ -713,6 +713,13 @@ paths:
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
       - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
+      - in: query
         name: weights
         schema:
           type: object
@@ -1098,6 +1105,13 @@ paths:
           default: false
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
+      - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
       - in: query
         name: weights
         schema:
@@ -1993,6 +2007,13 @@ paths:
           default: false
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
+      - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
       - in: query
         name: weights
         schema:
@@ -4358,6 +4379,8 @@ components:
 
         Also inherit the settings common to each poll.
       properties:
+        comparison__auto_select_entities:
+          type: boolean
         comparison__criteria_order:
           type: array
           items:
@@ -4378,6 +4401,8 @@ components:
             type: string
         recommendations__default_unsafe:
           type: boolean
+        recommendations__default_exclude_compared_entities:
+          type: boolean
     VideosPollUserSettingsRequest:
       type: object
       description: |-
@@ -4385,6 +4410,8 @@ components:
 
         Also inherit the settings common to each poll.
       properties:
+        comparison__auto_select_entities:
+          type: boolean
         comparison__criteria_order:
           type: array
           items:
@@ -4406,6 +4433,8 @@ components:
             type: string
             minLength: 1
         recommendations__default_unsafe:
+          type: boolean
+        recommendations__default_exclude_compared_entities:
           type: boolean
   securitySchemes:
     cookieAuth:

@@ -28,6 +28,7 @@ import {
 import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
+  YT_DEFAULT_AUTO_SELECT_ENTITIES,
 } from 'src/utils/constants';
 import {
   initRecommendationsLanguages,
@@ -43,6 +44,7 @@ import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
  */
 const TournesolUserSettingsForm = () => {
   const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
 
@@ -77,6 +79,11 @@ const TournesolUserSettingsForm = () => {
    */
 
   // Comparison
+  const [autoSelectEntities, setAutoSelectEntities] = useState(
+    pollSettings?.comparison__auto_select_entities ??
+      YT_DEFAULT_AUTO_SELECT_ENTITIES
+  );
+
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
     pollSettings?.comparison__criteria_order ?? []
   );
@@ -102,6 +109,9 @@ const TournesolUserSettingsForm = () => {
   // Recommendations (page)
   const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
     pollSettings?.recommendations__default_unsafe ?? false
+  );
+  const [recoDefaultExcludeCompared, setRecoDefaultExcludeCompared] = useState(
+    pollSettings?.recommendations__default_exclude_compared_entities ?? false
   );
   const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
     Recommendations_defaultDateEnum | BlankEnum
@@ -139,6 +149,10 @@ const TournesolUserSettingsForm = () => {
       );
     }
 
+    if (pollSettings?.comparison__auto_select_entities != undefined) {
+      setAutoSelectEntities(pollSettings?.comparison__auto_select_entities);
+    }
+
     if (pollSettings?.comparison__criteria_order != undefined) {
       setDisplayedCriteria(pollSettings.comparison__criteria_order);
     }
@@ -153,6 +167,15 @@ const TournesolUserSettingsForm = () => {
 
     if (pollSettings?.recommendations__default_unsafe != undefined) {
       setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
+    }
+
+    if (
+      pollSettings?.recommendations__default_exclude_compared_entities !=
+      undefined
+    ) {
+      setRecoDefaultExcludeCompared(
+        pollSettings.recommendations__default_exclude_compared_entities
+      );
     }
 
     if (pollSettings?.recommendations__default_date != undefined) {
@@ -176,12 +199,15 @@ const TournesolUserSettingsForm = () => {
           },
           [YOUTUBE_POLL_NAME]: {
             comparison__criteria_order: displayedCriteria,
+            comparison__auto_select_entities: autoSelectEntities,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_languages: recoDefaultLanguages,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
+            recommendations__default_exclude_compared_entities:
+              recoDefaultExcludeCompared,
           },
         },
       }).catch((reason: ApiError) => {
@@ -229,6 +255,8 @@ const TournesolUserSettingsForm = () => {
           {...subSectionBreakpoints}
         >
           <VideosPollUserSettingsForm
+            compAutoSelectEntities={autoSelectEntities}
+            setCompAutoSelectEntities={setAutoSelectEntities}
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
             setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
             displayedCriteria={displayedCriteria}
@@ -239,6 +267,8 @@ const TournesolUserSettingsForm = () => {
             setRecoDefaultLanguages={setRecoDefaultLanguages}
             recoDefaultUnsafe={recoDefaultUnsafe}
             setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+            recoDefaultExcludeCompared={recoDefaultExcludeCompared}
+            setRecoDefaultExcludeCompared={setRecoDefaultExcludeCompared}
             recoDefaultUploadDate={recoDefaultUploadDate}
             setRecoDefaultUploadDate={setRecoDefaultUploadDate}
             apiErrors={apiErrors}

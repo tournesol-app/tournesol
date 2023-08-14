@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import SelectorListBox, {
+import EntityTabsBox, {
   EntitiesTab,
 } from 'src/features/entity_selector/EntityTabsBox';
 import { PollsService, UsersService } from 'src/services/openapi';
@@ -54,7 +54,7 @@ const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
     return tabs;
   }, [t, pollName, uploader, contextUid, isLoggedIn]);
 
-  return <SelectorListBox tabs={tabs} width="auto" maxHeight="none" withLink />;
+  return <EntityTabsBox tabs={tabs} width="auto" maxHeight="none" withLink />;
 };
 
 export default ContextualRecommendations;

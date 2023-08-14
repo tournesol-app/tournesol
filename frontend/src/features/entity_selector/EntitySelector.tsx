@@ -23,6 +23,7 @@ import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
+import { entityCardMainSx } from 'src/components/entity/style';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -47,8 +48,8 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
-  variant?: 'regular' | 'noControl';
   autoFill?: boolean;
+  variant?: 'regular' | 'noControl';
 }
 
 export interface SelectorValue {
@@ -100,7 +101,6 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
 
   const { uid } = value;
   const [entityFallback, setEntityFallback] = useState<Recommendation>();
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -276,52 +276,58 @@ const EntitySelectorInnerAuth = ({
   return (
     <>
       {showEntityInput && (
-        <>
-          <Box
-            m={1}
-            display="flex"
-            flexDirection={alignment === 'left' ? 'row' : 'row-reverse'}
-            alignItems="center"
-            justifyContent="space-between"
+        <Box
+          m={1}
+          display="flex"
+          flexDirection={
+            uid
+              ? alignment === 'left'
+                ? 'row'
+                : 'row-reverse'
+              : alignment !== 'left'
+              ? 'row'
+              : 'row-reverse'
+          }
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Grid
+            container
+            spacing={1}
+            display={uid ? 'flex' : 'none'}
+            direction={alignment === 'left' ? 'row' : 'row-reverse'}
           >
-            <Grid
-              container
-              spacing={1}
-              display="flex"
-              direction={alignment === 'left' ? 'row' : 'row-reverse'}
-            >
-              <Grid item>
-                <EntitySelectButton
-                  value={inputValue || uid || ''}
-                  onChange={handleChange}
-                  otherUid={otherUid}
-                />
-              </Grid>
-              <Grid item>
-                <AutoEntityButton
-                  disabled={loading}
-                  currentUid={uid}
-                  otherUid={otherUid}
-                  onClick={() => {
-                    setLoading(true);
-                    setInputValue('');
-                  }}
-                  onResponse={(uid) => {
-                    uid ? onChange({ uid, rating: null }) : setLoading(false);
-                  }}
-                  autoFill={autoFill}
-                />
-              </Grid>
+            <Grid item>
+              <EntitySelectButton
+                value={inputValue || uid || ''}
+                onChange={handleChange}
+                otherUid={otherUid}
+              />
             </Grid>
-            <Typography
-              variant="h6"
-              color="secondary"
-              sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-            >
-              {title}
-            </Typography>
-          </Box>
-        </>
+            <Grid item>
+              <AutoEntityButton
+                disabled={loading}
+                currentUid={uid}
+                otherUid={otherUid}
+                onClick={() => {
+                  setLoading(true);
+                  setInputValue('');
+                }}
+                onResponse={(uid) => {
+                  uid ? onChange({ uid, rating: null }) : setLoading(false);
+                }}
+                autoFill={autoFill}
+              />
+            </Grid>
+          </Grid>
+          <Typography
+            variant="h6"
+            color="secondary"
+            sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+          >
+            {title}
+          </Typography>
+        </Box>
       )}
       <Box position="relative">
         {rating ? (
@@ -331,31 +337,90 @@ const EntitySelectorInnerAuth = ({
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
         ) : (
-          <EmptyEntityCard compact loading={loading} />
-        )}
-        {entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && !loading && (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            position="absolute"
-            top="0"
-            color="white"
-            bgcolor="rgba(0,0,0,.6)"
-            width="100%"
-            sx={{
-              aspectRatio: '16/9',
-              [theme.breakpoints.down('sm')]: {
-                fontSize: '0.8rem',
-              },
-            }}
-          >
-            <Typography textAlign="center" fontSize="inherit">
-              {pollName === YOUTUBE_POLL_NAME
-                ? t('entitySelector.youtubeVideoUnavailable')
-                : t('entityCard.thisElementIsNotAvailable')}
-            </Typography>
-          </Box>
+          <>
+            {(loading ||
+              !showEntityInput ||
+              entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) && (
+              <EmptyEntityCard compact loading={loading} />
+            )}
+            {!loading &&
+              entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  position="absolute"
+                  top="0"
+                  color="white"
+                  bgcolor="rgba(0,0,0,.6)"
+                  width="100%"
+                  sx={{
+                    aspectRatio: '16/9',
+                    [theme.breakpoints.down('sm')]: {
+                      fontSize: '0.8rem',
+                    },
+                  }}
+                >
+                  <Typography textAlign="center" fontSize="inherit">
+                    {pollName === YOUTUBE_POLL_NAME
+                      ? t('entitySelector.youtubeVideoUnavailable')
+                      : t('entityCard.thisElementIsNotAvailable')}
+                  </Typography>
+                </Box>
+              )}
+            <Grid
+              container
+              sx={{
+                ...entityCardMainSx,
+                display:
+                  uid ||
+                  loading ||
+                  !showEntityInput ||
+                  entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
+                    ? 'none'
+                    : 'flex',
+              }}
+            >
+              <Grid
+                container
+                item
+                xs={12}
+                sx={{
+                  aspectRatio: '16 / 9',
+                  backgroundColor: '#fafafa',
+                }}
+                spacing={1}
+                alignItems="center"
+                justifyContent="space-around"
+                wrap="wrap"
+              >
+                <Grid container item xs={12} sm={5} justifyContent="center">
+                  <EntitySelectButton
+                    value={inputValue || uid || ''}
+                    onChange={handleChange}
+                    otherUid={otherUid}
+                    variant="full"
+                  />
+                </Grid>
+                <Grid container item xs={12} sm={5} justifyContent="center">
+                  <AutoEntityButton
+                    disabled={loading}
+                    currentUid={uid}
+                    otherUid={otherUid}
+                    onClick={() => {
+                      setLoading(true);
+                      setInputValue('');
+                    }}
+                    onResponse={(uid) =>
+                      uid ? onChange({ uid, rating: null }) : setLoading(false)
+                    }
+                    autoFill={false}
+                    variant="full"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
         )}
       </Box>
     </>

@@ -10,17 +10,6 @@ import { YOUTUBE_POLL_NAME } from './constants';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
- * Cast the value of the setting recommendations__default_unsafe to a value
- * expected by the recommendations' search filter 'safe/usafe'.
- */
-const recoDefaultUnsafeToSearchFilter = (setting: boolean): string => {
-  if (setting) {
-    return 'true';
-  }
-  return '';
-};
-
-/**
  * Cast the value of the setting recommendations__default_date to a value
  * expected by the recommendations' search filter 'date'.
  */
@@ -46,13 +35,15 @@ export const buildVideosDefaultRecoSearchParams = (
   searchParams: URLSearchParams,
   userSettings: VideosPollUserSettings | undefined
 ) => {
-  if (userSettings?.recommendations__default_unsafe != undefined) {
-    searchParams.set(
-      'unsafe',
-      recoDefaultUnsafeToSearchFilter(
-        userSettings.recommendations__default_unsafe
-      )
-    );
+  const advancedFilters: string[] = [];
+  if (userSettings?.recommendations__default_unsafe) {
+    advancedFilters.push('unsafe');
+  }
+  if (userSettings?.recommendations__default_exclude_compared_entities) {
+    advancedFilters.push('exclude_compared');
+  }
+  if (advancedFilters.length > 0) {
+    searchParams.set('advanced', advancedFilters.join(','));
   }
 
   if (userSettings?.recommendations__default_date != undefined) {
