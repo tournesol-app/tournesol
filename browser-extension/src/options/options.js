@@ -2,7 +2,7 @@
  * This script manages the user's preferences.
  *
  * It sets up the UI, allowing the users to navigate between the local
- * preferences form and the account preferences form.
+ * preferences form and the online account preferences form.
  *
  * It also manage the loading and saving the local preferences.
  */
@@ -145,6 +145,16 @@ const saveLocalPreferences = async () => {
  *
  */
 
+/**
+ * Trigger custom behaviours after a specific tab is displayed.
+ */
+const afterTabDisplay = (tabName) => {
+  if (tabName === 'tournesol-account') {
+    const iframe = document.getElementById('iframe-tournesol-preferences');
+    iframe.setAttribute('src', iframe.getAttribute('src'));
+  }
+};
+
 const onpenTab = (event_) => {
   const targetTab = event_.target.dataset.tab;
   document.querySelectorAll('.page-tab').forEach((tab) => {
@@ -157,6 +167,7 @@ const onpenTab = (event_) => {
 
   document.querySelectorAll(`[data-tab=${targetTab}]`).forEach((element) => {
     element.classList.add('active');
+    afterTabDisplay(targetTab);
   });
 };
 
