@@ -177,4 +177,5 @@ document.addEventListener('DOMContentLoaded', function () {
   rateNowButton.textContent = i18n.getMessage('menuRateNow');
   rateLaterButton.textContent = i18n.getMessage('menuRateLater');
   analysisButton.textContent = i18n.getMessage('menuAnalysis');
+  preferencesButton.textContent = i18n.getMessage('menuPreferences');
 });
