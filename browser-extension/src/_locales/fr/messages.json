@@ -19,6 +19,9 @@
     "message": "Recherche désactivée",
     "description": "Label du bouton de menu recherche affiché lorsque la recherche est désactivée."
   },
+  "menuPreferences": {
+    "message": "Préférences"
+  },
   "recommendedByTournesol": {
     "message": "Recommandées par Tournesol",
     "description": "Titre du conteneur principal affichant les recommandations."

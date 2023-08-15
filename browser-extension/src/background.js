@@ -131,6 +131,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
+  if (request.message === 'openOptionsPage') {
+    chrome.runtime.openOptionsPage();
+    return true;
+  }
+
   if (request.message == 'addRateLater') {
     addRateLater(request.video_id).then(sendResponse);
     return true;
