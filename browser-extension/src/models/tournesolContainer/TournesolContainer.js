@@ -151,7 +151,7 @@ export class TournesolContainer {
 
     preferencesButton.className = 'tournesol_simple_button';
     preferencesButton.onclick = () => {
-      chrome.runtime.sendMessage({message: 'openOptionsPage'});
+      chrome.runtime.sendMessage({ message: 'openOptionsPage' });
     };
     topActionBar.append(preferencesButton);
 
