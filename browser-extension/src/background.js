@@ -201,7 +201,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
 
-        let recommendationsLangs = await getRecommendationsLanguages(
+        const recommendationsLangs = await getRecommendationsLanguages(
           'authenticated'
         );
 
@@ -298,7 +298,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
         const videosNumber = request.videosNumber;
-        const recommendationsLangs = await getRecommendationsLanguages();
+
+        const recommendationsLangs = await getRecommendationsLanguages(
+          'authenticated'
+        );
 
         // Only one request for both videos and additional videos
         const params = new URLSearchParams([
@@ -306,8 +309,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           ['search', request.search],
           ['unsafe', false],
           ['score_mode', 'default'],
-          ...recommendationsLangs.map((l) => ['metadata[language]', l]),
         ]);
+
+        recommendationsLangs.forEach((lang) => {
+          if (lang !== '') {
+            params.append('metadata[language]', lang);
+          }
+        });
 
         const [videosList] = await Promise.all([
           request_recommendations(params),
