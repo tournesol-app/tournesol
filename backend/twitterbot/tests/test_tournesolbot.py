@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago
-from tournesol.models import Entity, Poll
+from tournesol.models import Entity, EntityPollRating, Poll
 from tournesol.models.comparisons import Comparison
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory, VideoCriteriaScoreFactory, VideoFactory
@@ -220,6 +220,15 @@ class TestTournesolBot(TestCase):
         assert get_video_recommendations("en")[0] == self.videos[4]
 
         assert not get_video_recommendations("de")
+
+    def test_get_video_recommendations_excludes_unsafe(self):
+        # Mark video 6 as unsafe, with too low trust scores
+        EntityPollRating.objects.filter(entity=self.videos[6]).update(sum_trust_scores=0)
+
+        # Only video 8 is now tweetable
+        tweetable_videos = get_video_recommendations("fr")
+        assert len(tweetable_videos) == 1
+        assert tweetable_videos == [self.videos[8]]
 
 
 class TestTournesolBotTopContributor(TestCase):

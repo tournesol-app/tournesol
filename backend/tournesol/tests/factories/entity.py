@@ -46,6 +46,8 @@ class EntityFactory(factory.django.DjangoModelFactory):
                     if entity.tournesol_score is None
                     else entity.tournesol_score
                 ),
+                n_comparisons=entity.rating_n_ratings,
+                n_contributors=entity.rating_n_contributors,
             )
         return entity
 
