@@ -222,7 +222,7 @@ class TestTournesolBot(TestCase):
         assert not get_video_recommendations("de")
 
     def test_get_video_recommendations_excludes_unsafe(self):
-        # Mark video 6 as unsafe, woth too low trust scores
+        # Mark video 6 as unsafe, with too low trust scores
         EntityPollRating.objects.filter(entity=self.videos[6]).update(sum_trust_scores=0)
 
         # Only video 8 is now tweetable
