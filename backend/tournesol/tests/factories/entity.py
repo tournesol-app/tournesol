@@ -4,9 +4,9 @@ import string
 from typing import Union
 
 import factory
+from django.conf import settings
 
 from core.tests.factories.user import UserFactory
-from settings.settings import RECOMMENDATIONS_MIN_TRUST_SCORES
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity, EntityCriteriaScore, Poll, RateLater
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
@@ -17,6 +17,12 @@ class EntityFactory(factory.django.DjangoModelFactory):
         model = Entity
 
     uid = factory.Sequence(lambda n: "uid_%s" % n)
+
+    @staticmethod
+    def get_safe_tournesol_score():
+        min_score = settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1
+        max_score = MEHESTAN_MAX_SCALED_SCORE
+        return random.uniform(min_score, max_score)
 
     @classmethod
     def create(cls, *args, make_safe_for_poll: Union[bool, Poll] = True, **kwargs):
@@ -30,11 +36,18 @@ class EntityFactory(factory.django.DjangoModelFactory):
             make_safe_for_poll = Poll.default_poll()
         if isinstance(make_safe_for_poll, Poll):
             from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
+
             EntityPollRatingFactory(
-                sum_trust_scores=RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
+                sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
                 entity=entity,
                 poll=make_safe_for_poll,
-                tournesol_score=1 + (MEHESTAN_MAX_SCALED_SCORE - 1) * random.random()
+                tournesol_score=(
+                    cls.get_safe_tournesol_score()
+                    if entity.tournesol_score is None
+                    else entity.tournesol_score
+                ),
+                n_comparisons=entity.rating_n_ratings,
+                n_contributors=entity.rating_n_contributors,
             )
         return entity
 

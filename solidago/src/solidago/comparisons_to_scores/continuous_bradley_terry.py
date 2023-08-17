@@ -13,7 +13,7 @@ from solidago.comparisons_to_scores.base import ComparisonsToScoresAlgorithm
 from solidago.solvers.optimize import brentq
 
 
-DEFAULT_ALPHA = 0.2  # Signal-to-noise hyperparameter
+DEFAULT_ALPHA = 0.20  # Signal-to-noise hyperparameter
 EPSILON = 1e-5
 
 
@@ -41,18 +41,8 @@ def Delta_theta(theta_ab):
 
 @njit
 def coordinate_optimize(r_ab, theta_b, precision, alpha):
-    theta_low = -5.0
-    while contributor_loss_partial_derivative(theta_low, theta_b, r_ab, alpha) > 0:
-        theta_low *= 2
-
-    theta_up = 5.0
-    while contributor_loss_partial_derivative(theta_up, theta_b, r_ab, alpha) < 0:
-        theta_up *= 2
-
     return brentq(
         contributor_loss_partial_derivative,
-        theta_low,
-        theta_up,
         args=(theta_b, r_ab, alpha),
         xtol=precision,
     )

@@ -7,8 +7,11 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 # pylint: skip-file
+from typing import Tuple
+
 import numpy as np
 from numba import njit
+
 
 _ECONVERGED = 0
 _ECONVERR = -1
@@ -19,7 +22,7 @@ _rtol = 4 * np.finfo(float).eps
 
 
 @njit
-def _bisect_interval(a, b, fa, fb):
+def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
     """Conditional checks for intervals in methods involving bisection"""
     if fa * fb > 0:
         raise ValueError("f(a) and f(b) must have different signs")
@@ -38,7 +41,7 @@ def _bisect_interval(a, b, fa, fb):
 
 
 @njit
-def brentq(f, a, b, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True):
+def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0) -> float:
     """
     Find a root of a function in a bracketing interval using Brent's method
     adapted from Scipy's brentq.
@@ -70,6 +73,11 @@ def brentq(f, a, b, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True):
     -------
     root : float
     """
+    while f(a, *args) > 0:
+        a = a - 2 * (b-a)
+    while f(b, *args) < 0:
+        b = b + 2 * (b-a)
+
     if xtol <= 0:
         raise ValueError("xtol is too small (<= 0)")
     if maxiter < 1:
@@ -150,4 +158,4 @@ def brentq(f, a, b, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True):
     if disp and status == _ECONVERR:
         raise RuntimeError("Failed to converge")
 
-    return root
+    return root  # type: ignore
