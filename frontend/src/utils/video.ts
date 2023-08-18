@@ -8,7 +8,8 @@ export function extractVideoId(idOrUrl: string) {
 
   const matchUrl = idOrUrl.match(
     new RegExp(
-      '(?:https?:\\/\\/)?(?:www\\.)?(?:youtube\\.com\\/watch\\?v=|youtu\\.be\\/|' +
+      '(?:https?:\\/\\/)?(?:www\\.)?' +
+        '(?:youtube\\.com\\/watch\\?v=|youtube\\.com\\/live\\/|youtu\\.be\\/|' +
         escapedCurrentHost +
         '\\/entities\\/yt:|yt:)([A-Za-z0-9-_]+)'
     )
