@@ -133,7 +133,8 @@ describe('Comparison page', () => {
   });
 
   describe('video selectors', () => {
-    const videoAUrl = 'https://www.youtube.com/watch?v=lYXQvHhfKuM';
+    const videoAUrl1 = 'https://www.youtube.com/watch?v=lYXQvHhfKuM';
+    const videoAUrl2 = 'https://www.youtube.com/live/lYXQvHhfKuM?feature=share';
 
     it('support pasting YouTube URLs', () => {
       cy.visit('/comparison');
@@ -144,26 +145,28 @@ describe('Comparison page', () => {
 
       waitForAutoFill();
 
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoAUrl, {delay: 0});
+      [videoAUrl1, videoAUrl2].forEach((videoAUrl) => {
+        cy.get("[data-testid=entity-select-button-compact]").first().click();
+        cy.get("[data-testid=paste-video-url]")
+          .type(videoAUrl, {delay: 0});
 
-      // wait for the auto filled video to be replaced
-      cy.contains('5 IA surpuissantes');
+        // wait for the auto filled video to be replaced
+        cy.contains('5 IA surpuissantes');
 
-      // the video title, upload date, and the number of views must be displayed
-      cy.get('div[data-testid=video-card-info]').first().within(() => {
-        cy.contains(
-          '5 IA surpuissantes',
-          {matchCase: false}
-        ).should('be.visible');
-        cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
-        cy.contains('views', {matchCase: false}).should('be.visible');
+        // the video title, upload date, and the number of views must be displayed
+        cy.get('div[data-testid=video-card-info]').first().within(() => {
+          cy.contains(
+            '5 IA surpuissantes',
+            {matchCase: false}
+          ).should('be.visible');
+          cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
+          cy.contains('views', {matchCase: false}).should('be.visible');
+        });
+
+        cy.get("[data-testid=entity-select-button-compact]").first().click();
+        cy.get("[data-testid=paste-video-url] input[type=text]")
+          .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
       });
-
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url] input[type=text]")
-        .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
     });
 
     it('support pasting YouTube video ID', () => {
@@ -180,7 +183,7 @@ describe('Comparison page', () => {
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url]")
-        .type(videoAUrl.split('?v=')[1], {delay: 0});
+        .type(videoAUrl1.split('?v=')[1], {delay: 0});
 
       // wait for the auto filled video to be replaced
       cy.contains('5 IA surpuissantes');
@@ -197,7 +200,7 @@ describe('Comparison page', () => {
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url] input[type=text]")
-        .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
+        .should('have.attr', 'value', `yt:${videoAUrl1.split('?v=')[1]}`);
     });
   });
 
