@@ -65,6 +65,13 @@ class EntityQueryset(models.QuerySet):
             )
         )
 
+    def filter_safe_for_poll(self, poll):
+        return self.filter(
+            all_poll_ratings__poll=poll,
+            all_poll_ratings__sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
+            all_poll_ratings__tournesol_score__gt=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE,
+        )
+
     def filter_with_text_query(self, query: str, languages=None):
         """
         This custom query enables to use the index on 'search_vector' independently of

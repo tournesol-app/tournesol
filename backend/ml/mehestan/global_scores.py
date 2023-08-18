@@ -8,13 +8,13 @@ from solidago.resilient_primitives import BrMean, QrDev, QrMed, QrUnc
 
 from ml.inputs import MlInput
 
-# `W` is the Byzantine resilience parameter,
-# i.e the number of voting rights needed to modify a global score by 1 unit.
-W = 20.0
-SCALING_WEIGHT_CALIBRATION = W
+# This limit allows to index pairs of entity_id into a usual Index with dtype 'uint64'.
+# We originally used a MultiIndex that consumed significantly more memory, due to how
+# pandas may cache MultiIndex values as an array of Python tuples.
+ENTITY_ID_MAX = 2**32 - 1
 
 
-def get_user_scaling_weights(ml_input: MlInput):
+def get_user_scaling_weights(ml_input: MlInput, W: float):
     ratings_properties = ml_input.ratings_properties[
         ["user_id", "trust_score", "is_scaling_calibration_user"]
     ].copy()
@@ -22,7 +22,7 @@ def get_user_scaling_weights(ml_input: MlInput):
     df["scaling_weight"] = df["trust_score"]
     df["scaling_weight"].mask(
         df.is_scaling_calibration_user,
-        SCALING_WEIGHT_CALIBRATION,
+        W,
         inplace=True,
     )
     return df["scaling_weight"].to_dict()
@@ -49,18 +49,17 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     that are significantly different, according to the contributor scores.
     (Used for collaborative preference scaling)
     """
-    scores = scores[["uid", "score", "uncertainty"]]
+    scores = scores[["entity_id", "score", "uncertainty"]]
     indices = get_significantly_different_pairs_indices(
         scores["score"].to_numpy(), scores["uncertainty"].to_numpy()
     )
     scores_a = scores.iloc[indices[:, 0]]
     scores_b = scores.iloc[indices[:, 1]]
-    uids_index = pd.MultiIndex.from_arrays(
-        [
-            scores_a["uid"].to_numpy(),
-            scores_b["uid"].to_numpy(),
-        ],
-        names=["uid_a", "uid_b"],
+
+    entity_pairs_index = pd.Index(
+        # As a memory optimization, a pair of entity_id is represented as a single uint64
+        scores_a["entity_id"].to_numpy() * (ENTITY_ID_MAX + 1) + scores_b["entity_id"].to_numpy(),
+        dtype="uint64",
     )
     return pd.DataFrame(
         {
@@ -69,19 +68,19 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
             "uncertainty_a": scores_a["uncertainty"].to_numpy(),
             "uncertainty_b": scores_b["uncertainty"].to_numpy(),
         },
-        index=uids_index,
+        index=entity_pairs_index,
     )
 
 
 def compute_scaling(
     df: pd.DataFrame,
     ml_input: MlInput,
+    W: float,
     users_to_compute=None,
     reference_users=None,
     calibration=False,
 ):
-    scaling_weights = get_user_scaling_weights(ml_input)
-    df = df.rename({"entity_id": "uid"}, axis=1)
+    scaling_weights = get_user_scaling_weights(ml_input, W=W)
 
     if users_to_compute is None:
         users_to_compute = set(df.user_id.unique())
@@ -96,13 +95,16 @@ def compute_scaling(
     s_dict = {}
     delta_s_dict = {}
 
+    if len(df) > 0 and df["entity_id"].max() > ENTITY_ID_MAX:
+        raise AssertionError("Values of entity_id are too large.")
+
     ref_user_scores_pairs = {}
-    ref_user_scores_by_uid = {}
+    ref_user_scores_by_entity_id = {}
     for (ref_user_id, ref_user_scores) in df[df["user_id"].isin(reference_users)].groupby(
         "user_id"
     ):
         ref_user_scores_pairs[ref_user_id] = get_significantly_different_pairs(ref_user_scores)
-        ref_user_scores_by_uid[ref_user_id] = ref_user_scores.set_index("uid")
+        ref_user_scores_by_entity_id[ref_user_id] = ref_user_scores.set_index("entity_id")
 
     for (user_n, user_n_scores) in df[df["user_id"].isin(users_to_compute)].groupby("user_id"):
         s_nqm = []
@@ -115,6 +117,7 @@ def compute_scaling(
             ABn_all = get_significantly_different_pairs(user_n_scores)
 
         if len(ABn_all) > 0:
+            ABn_all_index_set = set(ABn_all.index)
             for user_m in reference_users - {user_n}:
                 try:
                     ABm = ref_user_scores_pairs[user_m]
@@ -122,7 +125,8 @@ def compute_scaling(
                     # the reference user may not have contributed on the current criterion
                     continue
 
-                if ABn_all.index.intersection(ABm.index).size == 0:
+                if all((idx not in ABn_all_index_set) for idx in ABm.index):
+                    # Quick path: the intersection is empty, no need to call expensive inner join.
                     continue
 
                 ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
@@ -168,21 +172,21 @@ def compute_scaling(
         tau_nqm = []
         delta_tau_nqm = []
         s_weights = []
-        user_n_scores = user_n_scores.set_index("uid")
-        user_n_scores_uids = set(user_n_scores.index)
+        user_n_scores = user_n_scores.set_index("entity_id")
+        user_n_scores_entity_ids = set(user_n_scores.index)
 
         for user_m in reference_users - {user_n}:
             try:
-                user_m_scores = ref_user_scores_by_uid[user_m]
+                user_m_scores = ref_user_scores_by_entity_id[user_m]
             except KeyError:
                 # the reference user may not have contributed on the current criterion
                 continue
-            common_uids = list(user_n_scores_uids.intersection(user_m_scores.index))
-            if len(common_uids) == 0:
+            common_entity_ids = list(user_n_scores_entity_ids.intersection(user_m_scores.index))
+            if len(common_entity_ids) == 0:
                 continue
 
-            m_scores = user_m_scores.loc[common_uids]
-            n_scores = user_n_scores.loc[common_uids]
+            m_scores = user_m_scores.loc[common_entity_ids]
+            n_scores = user_n_scores.loc[common_entity_ids]
 
             s_m = s_dict.get(user_m, 1)
             s_n = s_dict[user_n]
@@ -217,18 +221,19 @@ def compute_scaling(
     )
 
 
-def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame):
+def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame, W: float):
     rp = ml_input.ratings_properties
-    rp = rp.set_index(["user_id", "entity_id"])
-    rp = rp[rp.is_scaling_calibration_user]
+    rp = rp[rp.is_scaling_calibration_user].set_index(["user_id", "entity_id"])
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
     df["score"] = df["raw_score"]
     df["uncertainty"] = df["raw_uncertainty"]
-    return compute_scaling(df, ml_input=ml_input, calibration=True)
+    return compute_scaling(df, ml_input=ml_input, calibration=True, W=W)
 
 
 def compute_scaled_scores(
-    ml_input: MlInput, individual_scores: pd.DataFrame
+    ml_input: MlInput,
+    individual_scores: pd.DataFrame,
+    W: float,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Returns:
@@ -241,7 +246,7 @@ def compute_scaled_scores(
             * `uncertainty`
             * `is_public`
             * `is_scaling_calibration_user`
-        - scalings: DataFrame with index `entity_id` and columns:
+        - scalings: DataFrame with index `user_id` and columns:
             * `s`: scaling factor
             * `tau`: translation value
             * `delta_s`: uncertainty on `s`
@@ -263,7 +268,7 @@ def compute_scaled_scores(
         )
         scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
         return scores, scalings
-    calibration_scaling = get_scaling_for_calibration(ml_input, individual_scores)
+    calibration_scaling = get_scaling_for_calibration(ml_input, individual_scores, W=W)
     rp = ml_input.ratings_properties
 
     non_calibration_users = rp["user_id"][~rp.is_scaling_calibration_user].unique()
@@ -297,6 +302,7 @@ def compute_scaled_scores(
         users_to_compute=non_calibration_users,
         reference_users=calibration_users,
         calibration=False,
+        W=W,
     )
 
     df = df.join(non_calibration_scaling, on="user_id")
@@ -319,7 +325,7 @@ def compute_scaled_scores(
     return df, all_scalings
 
 
-def get_global_scores(scaled_scores: pd.DataFrame):
+def get_global_scores(scaled_scores: pd.DataFrame, W: float):
     if len(scaled_scores) == 0:
         return pd.DataFrame(
             columns=["entity_id", "score", "uncertainty", "deviation", "n_contributors"]
@@ -330,8 +336,8 @@ def get_global_scores(scaled_scores: pd.DataFrame):
         w = scores.voting_right
         theta = scores.score
         delta = scores.uncertainty
-        rho = QrMed(2 * W, w, theta, delta)
-        rho_uncertainty = QrDev(2 * W, 1, w, theta, delta, qr_med=rho)
+        rho = QrMed(W, w, theta, delta)
+        rho_uncertainty = QrDev(W, 1, w, theta, delta, qr_med=rho)
         global_scores[entity_id] = {
             "score": rho,
             "uncertainty": rho_uncertainty,
