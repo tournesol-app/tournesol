@@ -6,7 +6,7 @@ import {
   getAccessToken,
   getRandomSubarray,
   getUserProof,
-  getRecommendationsLanguages,
+  getRecommendationsLanguagesAuthenticated,
 } from './utils.js';
 
 const oversamplingRatioForRecentVideos = 3;
@@ -200,10 +200,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
-
-        const recommendationsLangs = await getRecommendationsLanguages(
-          'authenticated'
-        );
+        const recommendationsLangs =
+          await getRecommendationsLanguagesAuthenticated();
 
         // Only one request for both videos and additional videos
         const recentParams = new URLSearchParams([
@@ -298,10 +296,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
         const videosNumber = request.videosNumber;
-
-        const recommendationsLangs = await getRecommendationsLanguages(
-          'authenticated'
-        );
+        const recommendationsLangs =
+          await getRecommendationsLanguagesAuthenticated();
 
         // Only one request for both videos and additional videos
         const params = new URLSearchParams([

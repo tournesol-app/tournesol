@@ -219,20 +219,22 @@ const getRecommendationsLanguagesAnonymous = async () => {
 };
 
 /**
- * The languages are retrieved following this priority order:
+ * Try to get the user's preferred recommendations languages from the
+ * Tournesol API.
  *
- *  1. user's settings from the Tournesol API
- *  2. else, the lagacy extension storage key
- *  3. else, the navigator.language
- *  4. else, the English language code is returned
+ * Fallback to the extension local settings if the user is not authenticated,
+ * or if an error occured during the request.
+ *
+ * Return a list of ISO 639-1 language codes that can be used to fetch the
+ * recommendations from the Tournesol API.
  */
-const getRecommendationsLanguagesAuthenticated = async () => {
+export const getRecommendationsLanguagesAuthenticated = async () => {
   let languages;
   const settings = await getUserSettings();
 
   // Fallback to the storage settings in case of error.
   if (!settings || !settings.success) {
-    return await getRecommendationsLanguages('anonymous');
+    return await getRecommendationsLanguagesAnonymous();
   }
 
   languages = settings.body?.videos?.recommendations__default_languages ?? null;
@@ -246,22 +248,4 @@ const getRecommendationsLanguagesAuthenticated = async () => {
   }
 
   return languages;
-};
-
-/**
- * Try to get the user's preferred recommendations languages from the
- * Tournesol API.
- *
- * Fallback to the extension local settings if the user is not authenticated,
- * or if an error occured during the request.
- *
- * Return a list of ISO 639-1 language codes that can be used to fetch the
- * recommendations from the Tournesol API.
- */
-export const getRecommendationsLanguages = async (user) => {
-  if (user === 'authenticated') {
-    return await getRecommendationsLanguagesAuthenticated();
-  }
-
-  return await getRecommendationsLanguagesAnonymous();
 };
