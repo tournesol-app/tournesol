@@ -145,18 +145,7 @@ const saveLocalPreferences = async () => {
  *
  */
 
-/**
- * Trigger custom behaviours after a specific tab is displayed.
- */
-const afterTabDisplay = (tabName) => {
-  if (tabName === 'tournesol-account') {
-    const iframe = document.getElementById('iframe-tournesol-preferences');
-    iframe.setAttribute('src', iframe.getAttribute('src'));
-  }
-};
-
-const onpenTab = (event_) => {
-  const targetTab = event_.target.dataset.tab;
+const hideAllTabs = () => {
   document.querySelectorAll('.page-tab').forEach((tab) => {
     tab.classList.remove('active');
   });
@@ -164,16 +153,32 @@ const onpenTab = (event_) => {
   document.querySelectorAll('.page-navigation button').forEach((btn) => {
     btn.classList.remove('active');
   });
+};
 
-  document.querySelectorAll(`[data-tab=${targetTab}]`).forEach((element) => {
+const displaySingleTab = (tabId) => {
+  document.querySelectorAll(`[data-tab=${tabId}]`).forEach((element) => {
     element.classList.add('active');
-    afterTabDisplay(targetTab);
   });
+};
+
+const onpenTab = (event_) => {
+  const tabId = event_.target.dataset.tab;
+
+  hideAllTabs();
+  displaySingleTab(tabId);
 };
 
 const initNavigation = () => {
   document.querySelectorAll('.page-navigation button').forEach((btn) => {
     btn.addEventListener('click', onpenTab);
+  });
+
+  // Make the tab Tournesol Account active by default for authenticated users.
+  chrome.storage.local.get(['access_token'], (items) => {
+    if (items.access_token) {
+      hideAllTabs();
+      displaySingleTab('tournesol-account');
+    }
   });
 };
 
