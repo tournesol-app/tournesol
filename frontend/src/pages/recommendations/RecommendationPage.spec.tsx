@@ -5,7 +5,14 @@
 // eslint-disable-next-line
 // @ts-nocheck
 import React from 'react';
+import * as reactRedux from 'react-redux';
 
+import configureStore, {
+  MockStoreCreator,
+  MockStoreEnhanced,
+} from 'redux-mock-store';
+import { AnyAction } from '@reduxjs/toolkit';
+import thunk, { ThunkDispatch } from 'redux-thunk';
 import { createMemoryHistory } from 'history';
 import { act } from 'react-dom/test-utils';
 import { Router } from 'react-router-dom';
@@ -13,15 +20,22 @@ import { Router } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 
+import { initialState } from 'src/features/login/loginSlice';
+import { LoginState } from 'src/features/login/LoginState.model';
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
-import { PollsService } from 'src/services/openapi';
+import { PollsService, TournesolUserSettings } from 'src/services/openapi';
 import { theme } from 'src/theme';
 import * as RecommendationApi from 'src/utils/api/recommendations';
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
 } from 'src/utils/recommendationsLanguages';
+
+interface MockState {
+  token: LoginState;
+  settings: TournesolUserSettings;
+}
 
 const EntityList = () => null;
 jest.mock('src/features/entities/EntityList', () => EntityList);
@@ -34,6 +48,11 @@ describe('RecommendationPage', () => {
   let historySpy: ReturnType<typeof jest.spyOn>;
   let navigatorLanguagesGetter: ReturnType<typeof jest.spyOn>;
   let getRecommendedVideosSpy: ReturnType<typeof jest.spyOn>;
+
+  const mockStore: MockStoreCreator<
+    MockState,
+    ThunkDispatch<LoginState, undefined, AnyAction>
+  > = configureStore([thunk]);
 
   beforeEach(() => {
     history = createMemoryHistory();
@@ -56,21 +75,39 @@ describe('RecommendationPage', () => {
     }));
   });
 
-  const component = () => {
-    render(
-      <Router history={history}>
-        <ThemeProvider theme={theme}>
-          <PollProvider>
-            <RecommendationPage />
-          </PollProvider>
-        </ThemeProvider>
-      </Router>
-    );
+  const component = async ({
+    store,
+  }: {
+    store: MockStoreEnhanced<MockState>;
+  }) => {
+    return await act(async () => {
+      Promise.resolve(
+        render(
+          <reactRedux.Provider store={store}>
+            <Router history={history}>
+              <ThemeProvider theme={theme}>
+                <PollProvider>
+                  <RecommendationPage />
+                </PollProvider>
+              </ThemeProvider>
+            </Router>
+          </reactRedux.Provider>
+        )
+      );
+    });
+  };
+
+  const setup = async () => {
+    const state = { token: initialState, settings: {} };
+    const store = mockStore(state);
+    const rendered = await component({ store: store });
+
+    return { rendered };
   };
 
   it('adds the navigator languages to the query string and stores them', async () => {
     navigatorLanguagesGetter.mockReturnValue(['fr', 'en-US']);
-    await act(async () => component());
+    await setup();
 
     expect(historySpy).toHaveBeenLastCalledWith({
       search: 'language=fr%2Cen',
@@ -89,7 +126,7 @@ describe('RecommendationPage', () => {
   it('adds the stored languages to the query string', async () => {
     navigatorLanguagesGetter.mockReturnValue(['fr', 'en-US']);
     saveRecommendationsLanguages('de');
-    await act(async () => component());
+    await setup();
 
     expect(historySpy).toHaveBeenLastCalledWith({
       search: 'language=de',
@@ -109,7 +146,7 @@ describe('RecommendationPage', () => {
     navigatorLanguagesGetter.mockReturnValue(['fr', 'en-US']);
     saveRecommendationsLanguages('de');
     history.push({ search: 'language=fr' });
-    await act(async () => component());
+    await setup();
 
     expect(historySpy).not.toHaveBeenCalled();
     expect(loadRecommendationsLanguages()).toEqual('de');
