@@ -1,7 +1,6 @@
 """
 API endpoint to interact with the contributor's ratings.
 """
-from django.db.models import Func, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -9,13 +8,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from tournesol.models import (
-    Comparison,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
-    EntityPollRating,
-    Poll,
-)
+from tournesol.models import ContributorRating, Poll
 from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
@@ -51,36 +44,11 @@ def get_annotated_ratings(poll: Poll):
     This queryset expects to be evaluated with a specific poll, user and
     entity.
     """
-    n_comparisons = (
-        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
-        .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-        .annotate(count=Func("id", function="Count"))
-        .values("count")
-    )
-
-    last_compared_at = (
-        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
-        .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-        .values("datetime_lastedit")
-        .order_by("-datetime_lastedit")
-    )[:1]
-
-    collective_score = (
-        EntityPollRating.objects.filter(poll=OuterRef("poll"), entity=OuterRef("entity"))
-        .values("tournesol_score")
-    )
-
-    individual_score = (
-        ContributorRatingCriteriaScore.objects
-        .filter(contributor_rating=OuterRef("pk"), criteria=poll.main_criteria)
-        .values("score")
-    )
-
-    return ContributorRating.objects.annotate(
-        n_comparisons=Subquery(n_comparisons),
-        last_compared_at=Subquery(last_compared_at),
-        collective_score=Subquery(collective_score),
-        individual_score=Subquery(individual_score)
+    return (
+        ContributorRating.objects.annotate_n_comparisons()
+        .annotate_last_compared_at()
+        .annotate_collective_score()
+        .annotate_individual_score(poll=poll)
     )
 
 
@@ -154,9 +122,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
             elif is_public == "false":
                 qst = qst.filter(is_public=False)
             else:
-                raise ValidationError(
-                    "The URL parameter 'is_public' must be 'true' or 'false'"
-                )
+                raise ValidationError("The URL parameter 'is_public' must be 'true' or 'false'")
 
         return qst
 
@@ -191,9 +157,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
     def get_queryset(self):
         ratings = (
             get_annotated_ratings(self.poll_from_url)
-            .filter(
-                poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0
-            )
+            .filter(poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0)
             .select_related("entity")
             .prefetch_related("criteria_scores")
         )
@@ -212,9 +176,7 @@ class ContributorRatingUpdateAll(PollScopedViewMixin, generics.GenericAPIView):
     serializer_class = ContributorRatingUpdateAllSerializer
 
     def get_queryset(self):
-        return ContributorRating.objects.filter(
-            poll=self.poll_from_url, user=self.request.user
-        )
+        return ContributorRating.objects.filter(poll=self.poll_from_url, user=self.request.user)
 
     def patch(self, request, *args, **kwargs):
         queryset = self.get_queryset()

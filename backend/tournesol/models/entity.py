@@ -36,6 +36,7 @@ from tournesol.utils.video_language import (
 
 if TYPE_CHECKING:
     from tournesol.models.entity_poll_rating import EntityPollRating
+    from tournesol.models.ratings import ContributorRating
 
 LANGUAGES = settings.LANGUAGES
 
@@ -49,6 +50,20 @@ class EntityQueryset(models.QuerySet):
                     poll__name=poll_name, score_mode=mode
                 ),
                 to_attr="_prefetched_criteria_scores",
+            )
+        )
+
+    def with_prefetched_contributor_ratings(self, poll, user):
+        # pylint: disable=import-outside-toplevel
+        from tournesol.models.ratings import ContributorRating
+        return self.prefetch_related(
+            Prefetch(
+                "contributorvideoratings",
+                queryset=ContributorRating.objects.filter(
+                    poll=poll,
+                    user=user,
+                ).annotate_n_comparisons(),
+                to_attr="_prefetched_contributor_ratings",
             )
         )
 
@@ -471,6 +486,18 @@ class Entity(models.Model):
             raise RuntimeError(
                 "Accessing 'single_poll_rating' requires to initialize a "
                 "queryset with `with_prefetched_poll_ratings()`"
+            ) from exc
+
+    @property
+    def single_contributor_rating(self) -> Optional["ContributorRating"]:
+        try:
+            if len(self._prefetched_contributor_ratings) == 1:
+                return self._prefetched_contributor_ratings[0]
+            return None
+        except AttributeError as exc:
+            raise RuntimeError(
+                "Accessing 'single_contributor_rating' requires to initialize a "
+                "queryset with `with_prefetched_contributor_ratings()"
             ) from exc
 
 

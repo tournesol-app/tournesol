@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import IntegerField, ModelSerializer
 
-from tournesol.models import CriteriaRank, Entity, EntityPollRating, Poll
+from tournesol.models import ContributorRating, CriteriaRank, Entity, EntityPollRating, Poll
 from tournesol.models.entity_poll_rating import UNSAFE_REASONS
 from tournesol.serializers.entity import EntityCriteriaScoreSerializer
 
@@ -35,6 +35,30 @@ class UnsafeStatusSerializer(ModelSerializer):
         fields = [
             "status",
             "reasons",
+        ]
+
+
+class CollectiveRatingSerializer(ModelSerializer):
+    unsafe = UnsafeStatusSerializer(source="*")
+
+    class Meta:
+        model = EntityPollRating
+        fields = [
+            "n_comparisons",
+            "n_contributors",
+            "tournesol_score",
+            "unsafe",
+        ]
+
+
+class IndividualRatingSerializer(ModelSerializer):
+    n_comparisons = IntegerField()
+
+    class Meta:
+        model = ContributorRating
+        fields = [
+            "is_public",
+            "n_comparisons",
         ]
 
 

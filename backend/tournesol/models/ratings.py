@@ -3,16 +3,54 @@ Models for Tournesol's main functions related to contributor's ratings
 """
 
 from django.db import models
+from django.db.models import Func, OuterRef, Q, Subquery
 
 from core.models import User
 
+from .comparisons import Comparison
 from .entity import Entity
 from .poll import Poll
 
 
+class ContributorRatingQueryset(models.QuerySet):
+    def annotate_n_comparisons(self):
+        n_comparisons = (
+            Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
+            .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
+            .annotate(count=Func("id", function="Count"))
+            .values("count")
+        )
+        return self.annotate(n_comparisons=Subquery(n_comparisons))
+
+    def annotate_last_compared_at(self):
+        last_compared_at = (
+            Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
+            .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
+            .values("datetime_lastedit")
+            .order_by("-datetime_lastedit")
+        )[:1]
+        return self.annotate(last_compared_at=Subquery(last_compared_at))
+
+    def annotate_collective_score(self):
+        # pylint: disable=import-outside-toplevel
+        from .entity_poll_rating import EntityPollRating
+        collective_score = (
+            EntityPollRating.objects.filter(poll=OuterRef("poll"), entity=OuterRef("entity"))
+            .values("tournesol_score")
+        )
+        return self.annotate(collective_score=Subquery(collective_score))
+
+    def annotate_individual_score(self, poll: Poll):
+        individual_score = (
+            ContributorRatingCriteriaScore.objects
+            .filter(contributor_rating=OuterRef("pk"), criteria=poll.main_criteria)
+            .values("score")
+        )
+        return self.annotate(individual_score=Subquery(individual_score))
+
+
 class ContributorRating(models.Model):
     """Predictions by individual contributor models."""
-
     entity = models.ForeignKey(
         Entity,
         on_delete=models.CASCADE,
@@ -34,6 +72,8 @@ class ContributorRating(models.Model):
 
     class Meta:
         unique_together = ["user", "entity", "poll"]
+
+    objects = ContributorRatingQueryset.as_manager()
 
     def __str__(self):
         return f"{self.user} on {self.entity}"
