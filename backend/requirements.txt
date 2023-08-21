@@ -30,11 +30,11 @@ drf-spectacular==0.26.4
 # Pillow is used to generate the Previews for links shared on social media
 Pillow==9.5.0
 # Needed for postgres database
-psycopg2-binary==2.9.5
+psycopg2-binary==2.9.7
 # PyYAML is used for reading the settings 
 PyYAML==6.0
 # tqdm is used to display a progressbar in some slow ML algorithms
-tqdm==4.65.0
+tqdm==4.66.1
 # langdetect is used to detect the language of video
 langdetect==1.0.9
 # Pandas is used extensively in the ML algorithms and for some data management
