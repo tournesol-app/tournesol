@@ -11,7 +11,7 @@ export function extractVideoId(idOrUrl: string) {
       '(?:https?:\\/\\/)?(?:www\\.)?' +
         '(?:youtube\\.com\\/watch\\?v=|youtube\\.com\\/live\\/|youtu\\.be\\/|' +
         escapedCurrentHost +
-        '\\/entities\\/yt:|yt:)([A-Za-z0-9-_]+)'
+        '\\/entities\\/yt:|yt:)([A-Za-z0-9-_]{11})'
     )
   );
   const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
