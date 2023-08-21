@@ -18,7 +18,7 @@ django-oauth-toolkit==1.7.1
 django-prometheus==2.2.0
 # Registration, profile, password and email management
 # https://github.com/apragacz/django-rest-registration
-django-rest-registration==0.7.3
+django-rest-registration==0.8.2
 # Useful helpers for queries such as SubqueryCount
 django-sql-utils==0.6.1
 # Django REST Framework is used for most of the API routes
