@@ -6,6 +6,7 @@ describe('video module', () => {
     const ytUrlPattern1 = 'https://www.youtube.com/watch?v=lYXQvHhfKuM';
     const ytUrlPattern2 =
       'https://www.youtube.com/live/lYXQvHhfKuM?feature=share';
+    const ytUrlPattern3 = 'https://youtu.be/lYXQvHhfKuM';
 
     it('handles video id', () => {
       const id = extractVideoId(videoId);
@@ -17,13 +18,18 @@ describe('video module', () => {
       expect(id).toEqual(videoId);
     });
 
+    it("handles the pattern 'live'", () => {
+      const id = extractVideoId(ytUrlPattern2);
+      expect(id).toEqual(videoId);
+    });
+
     it("handles the pattern 'watch'", () => {
       const id = extractVideoId(ytUrlPattern1);
       expect(id).toEqual(videoId);
     });
 
-    it("handles the pattern 'live'", () => {
-      const id = extractVideoId(ytUrlPattern2);
+    it("handles the pattern 'youtu.be'", () => {
+      const id = extractVideoId(ytUrlPattern3);
       expect(id).toEqual(videoId);
     });
 
