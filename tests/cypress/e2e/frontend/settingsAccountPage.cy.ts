@@ -48,7 +48,7 @@ describe('Settings - account page', () => {
     })
 
     it('can update password', () => {
-      const newPaswsword = 'new_password';
+      const newPassword = 'new_password';
 
       cy.visit('/settings/account');
       cy.focused().type(username);
@@ -57,8 +57,8 @@ describe('Settings - account page', () => {
 
       cy.contains('Change password').should('be.visible');
       cy.get('input[name=old_password]').type(oldPassword);
-      cy.get('input[name=password]').type(newPaswsword);
-      cy.get('input[name=password_confirm]').type(newPaswsword).type('{enter}');
+      cy.get('input[name=password]').type(newPassword);
+      cy.get('input[name=password_confirm]').type(newPassword).type('{enter}');
       cy.contains('Password changed successfully');
 
       cy.get('button#personal-menu-button').click();
@@ -72,7 +72,8 @@ describe('Settings - account page', () => {
       cy.contains('Invalid credentials given.');
 
       // only new password must work
-      cy.get('input[name="password"]').click().clear().type(newPaswsword).type('{enter}');
+      cy.get('input[name="password"]').click().clear();
+      cy.get('input[name="password"]').type(newPassword).type('{enter}');
       cy.location('pathname').should('equal', '/settings/account');
       cy.contains('Forgot password?').should('not.exist');
     })
