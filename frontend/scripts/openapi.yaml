@@ -34,7 +34,6 @@ paths:
   /accounts/profile/:
     get:
       operationId: accounts_profile_retrieve
-      description: Get or set user profile.
       tags:
       - accounts
       security:
@@ -49,7 +48,6 @@ paths:
           description: ''
     post:
       operationId: accounts_profile_create
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -76,7 +74,6 @@ paths:
           description: ''
     put:
       operationId: accounts_profile_update
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -103,7 +100,6 @@ paths:
           description: ''
     patch:
       operationId: accounts_profile_partial_update
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
