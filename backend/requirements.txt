@@ -26,7 +26,7 @@ django-sql-utils==0.6.1
 djangorestframework==3.14.0
 # Used to generate OpenAPI documentation exposed by Swagger UI
 # See https://github.com/tfranzel/drf-spectacular
-drf-spectacular==0.26.0
+drf-spectacular==0.26.4
 # Pillow is used to generate the Previews for links shared on social media
 Pillow==9.5.0
 # Needed for postgres database
