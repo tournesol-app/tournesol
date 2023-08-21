@@ -36,6 +36,7 @@ describe('VideoCard content', () => {
       tournesol_score: 0.0,
       total_score: 0.0,
       criteria_scores: [],
+      unsafe: null,
     };
     renderVideoCard(video);
 
@@ -77,6 +78,7 @@ describe('VideoCard content', () => {
           score: 0.4,
         },
       ],
+      unsafe: null,
     };
     renderVideoCard(video);
 
@@ -125,6 +127,7 @@ describe('VideoCard content', () => {
           score: 0.8,
         },
       ],
+      unsafe: null,
     };
     renderVideoCard(video);
 
@@ -156,41 +159,7 @@ describe('VideoCard content', () => {
       tournesol_score: null,
       total_score: 0,
       criteria_scores: [],
-    };
-    renderVideoCard(video);
-
-    expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      'Video title'
-    );
-    expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      '154,988 views'
-    );
-    expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
-      '9 comparisons by 4 contributors'
-    );
-    expect(
-      screen.queryByTestId('video-card-overall-score')
-    ).not.toBeInTheDocument();
-  });
-
-  it('shows video metadata without Tournesol score', () => {
-    const video: Recommendation = {
-      uid: 'yt:xSqqXN0D4fY',
-      type: TypeEnum.VIDEO,
-      metadata: {
-        name: 'Video title',
-        description: 'Video description',
-        views: 154988,
-        uploader: 'Channel name',
-        duration: 120,
-        publication_date: '2021-03-21',
-        language: 'fr',
-        video_id: 'xSqqXN0D4fY',
-      },
-      n_contributors: 4,
-      n_comparisons: 9,
-      total_score: 0,
-      criteria_scores: [],
+      unsafe: null,
     };
     renderVideoCard(video);
 
