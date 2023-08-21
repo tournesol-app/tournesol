@@ -39,7 +39,7 @@ class UnsafeStatusSerializer(ModelSerializer):
 
 
 class CollectiveRatingSerializer(ModelSerializer):
-    unsafe = UnsafeStatusSerializer(source="*")
+    unsafe = UnsafeStatusSerializer(source="*", read_only=True)
 
     class Meta:
         model = EntityPollRating
@@ -49,10 +49,11 @@ class CollectiveRatingSerializer(ModelSerializer):
             "tournesol_score",
             "unsafe",
         ]
+        read_only_fields = fields
 
 
 class IndividualRatingSerializer(ModelSerializer):
-    n_comparisons = IntegerField()
+    n_comparisons = IntegerField(read_only=True)
 
     class Meta:
         model = ContributorRating
@@ -60,18 +61,21 @@ class IndividualRatingSerializer(ModelSerializer):
             "is_public",
             "n_comparisons",
         ]
+        read_only_fields = fields
 
 
 class RecommendationSerializer(ModelSerializer):
+    # pylint: disable=duplicate-code
     n_comparisons = serializers.IntegerField(source="rating_n_ratings")
     n_contributors = serializers.IntegerField(source="rating_n_contributors")
     criteria_scores = EntityCriteriaScoreSerializer(many=True)
     # TODO: the field total_score is the only field in this serializer that
     # on the parameters of an api request. Should it be treated differently?
     total_score = serializers.FloatField()
-    unsafe = UnsafeStatusSerializer(source="single_poll_rating", allow_null=True, default=None)
+    unsafe = UnsafeStatusSerializer(
+        source="single_poll_rating", allow_null=True, default=None, read_only=True
+    )
 
-    # pylint: disable=duplicate-code
     class Meta:
         model = Entity
         fields = [
@@ -85,9 +89,7 @@ class RecommendationSerializer(ModelSerializer):
             "criteria_scores",
             "unsafe",
         ]
-        read_only_fields = [
-            "metadata",
-        ]
+        read_only_fields = fields
 
 
 class RecommendationsFilterSerializer(serializers.Serializer):

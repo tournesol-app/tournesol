@@ -19,10 +19,14 @@ class RateLaterSerializer(ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     entity = RelatedEntitySerializer()
     collective_rating = CollectiveRatingSerializer(
-        source="entity.single_poll_rating", read_only=True
+        source="entity.single_poll_rating",
+        read_only=True,
+        allow_null=True,
     )
     individual_rating = IndividualRatingSerializer(
-        source="entity.single_contributor_rating", read_only=True
+        source="entity.single_contributor_rating",
+        read_only=True,
+        allow_null=True,
     )
     rate_later_metadata = RateLaterMetadataSerializer(source="*", read_only=True)
 
