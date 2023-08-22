@@ -14,7 +14,7 @@ from core.utils.time import time_ago
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
 from tournesol.models.entity_score import ScoreMode
-from tournesol.models.poll import DEFAULT_POLL_NAME
+from tournesol.models.poll import DEFAULT_POLL_NAME, Poll
 from tournesol.utils.contributors import get_top_public_contributors_last_month
 from twitterbot import settings
 from twitterbot.models.tweeted import TweetInfo
@@ -107,15 +107,20 @@ def get_video_recommendations(language):
     )
 
     # Filter videos with some quality criteria
-    tweetable_videos = Entity.objects.filter(
-        add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
-        metadata__publication_date__gte=time_ago(days=settings.DAYS_TOO_OLD).isoformat(),
-        rating_n_contributors__gt=settings.MIN_NB_CONTRIBUTORS,
-        rating_n_ratings__gte=settings.MIN_NB_RATINGS,
-        metadata__language=language,
-        tournesol_score__gte=settings.MIN_TOURNESOL_SCORE,
-        pk__in=reliable_videos,
-        tweets=None,
+    tweetable_videos = (
+        Entity
+        .objects
+        .filter_safe_for_poll(Poll.default_poll())
+        .filter(
+            add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
+            metadata__publication_date__gte=time_ago(days=settings.DAYS_TOO_OLD).isoformat(),
+            metadata__language=language,
+            all_poll_ratings__n_contributors__gt=settings.MIN_NB_CONTRIBUTORS,
+            all_poll_ratings__n_comparisons__gte=settings.MIN_NB_RATINGS,
+            all_poll_ratings__tournesol_score__gte=settings.MIN_TOURNESOL_SCORE,
+            pk__in=reliable_videos,
+            tweets=None,
+        )
     )
 
     # Exclude video recently tweeted by the same uploader

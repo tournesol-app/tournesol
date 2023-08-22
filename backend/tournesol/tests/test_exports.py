@@ -294,15 +294,11 @@ class ExportTest(TestCase):
                     set(metadata["algorithms_parameters"]["mehestan"].keys()),
                     {
                         "W",
-                        "SCALING_WEIGHT_CALIBRATION",
                         "OVER_TRUST_BIAS",
                         "OVER_TRUST_SCALE",
                         "VOTE_WEIGHT_PUBLIC_RATINGS",
                         "VOTE_WEIGHT_PRIVATE_RATINGS",
                         "MAX_SCALED_SCORE",
-                        "POLL_SCALING_MIN_CONTRIBUTORS",
-                        "POLL_SCALING_QUANTILE",
-                        "POLL_SCALING_SCORE_AT_QUANTILE",
                     }
                 )
                 self.assertEqual(

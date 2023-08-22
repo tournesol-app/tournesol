@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand
 from googleapiclient.errors import HttpError
 
 from core.utils.time import time_ago
-from tournesol.models import Entity
+from tournesol.models import Entity, Poll
 from tournesol.models.entity import TYPE_VIDEO
 
 PLAYLISTS = [
@@ -26,14 +26,17 @@ class Command(BaseCommand):
         Get top recent video that should be present in the YouTube playlist
         for a certain language.
         """
-        return Entity.objects.filter(
-            type=TYPE_VIDEO,
-            add_time__lte=time_ago(days=3),
-            metadata__publication_date__gte=time_ago(days=60).isoformat(),
-            metadata__language=language,
-            tournesol_score__gt=20,
-            rating_n_contributors__gte=3,
-        ).order_by("tournesol_score")
+
+        return (
+            Entity.objects.filter(
+                type=TYPE_VIDEO,
+                add_time__lte=time_ago(days=3),
+                metadata__publication_date__gte=time_ago(days=60).isoformat(),
+                metadata__language=language,
+            )
+            .filter_safe_for_poll(Poll.default_poll())
+            .order_by("tournesol_score")
+        )
 
     def get_existing_items(self, yt_client, playlist_id):
         items_dict = {}

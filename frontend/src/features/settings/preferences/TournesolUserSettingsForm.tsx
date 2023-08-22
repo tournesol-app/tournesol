@@ -101,6 +101,9 @@ const TournesolUserSettingsForm = () => {
   const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
     pollSettings?.recommendations__default_unsafe ?? false
   );
+  const [recoDefaultExcludeCompared, setRecoDefaultExcludeCompared] = useState(
+    pollSettings?.recommendations__default_exclude_compared_entities ?? false
+  );
   const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
     Recommendations_defaultDateEnum | BlankEnum
   >(
@@ -153,6 +156,15 @@ const TournesolUserSettingsForm = () => {
       setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
     }
 
+    if (
+      pollSettings?.recommendations__default_exclude_compared_entities !=
+      undefined
+    ) {
+      setRecoDefaultExcludeCompared(
+        pollSettings.recommendations__default_exclude_compared_entities
+      );
+    }
+
     if (pollSettings?.recommendations__default_date != undefined) {
       setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
     }
@@ -178,6 +190,8 @@ const TournesolUserSettingsForm = () => {
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
+            recommendations__default_exclude_compared_entities:
+              recoDefaultExcludeCompared,
           },
         },
       }).catch((reason: ApiError) => {
@@ -235,6 +249,8 @@ const TournesolUserSettingsForm = () => {
             setRateLaterAutoRemoval={setRateLaterAutoRemoval}
             recoDefaultUnsafe={recoDefaultUnsafe}
             setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+            recoDefaultExcludeCompared={recoDefaultExcludeCompared}
+            setRecoDefaultExcludeCompared={setRecoDefaultExcludeCompared}
             recoDefaultUploadDate={recoDefaultUploadDate}
             setRecoDefaultUploadDate={setRecoDefaultUploadDate}
             apiErrors={apiErrors}

@@ -27,10 +27,15 @@ export const buildVideosDefaultRecoSearchParams = (
   searchParams: URLSearchParams,
   userSettings: VideosPollUserSettings | undefined
 ) => {
-  if (userSettings?.recommendations__default_unsafe != undefined) {
-    if (userSettings.recommendations__default_unsafe) {
-      searchParams.set('advanced', 'unsafe');
-    }
+  const advancedFilters: string[] = [];
+  if (userSettings?.recommendations__default_unsafe) {
+    advancedFilters.push('unsafe');
+  }
+  if (userSettings?.recommendations__default_exclude_compared_entities) {
+    advancedFilters.push('exclude_compared');
+  }
+  if (advancedFilters.length > 0) {
+    searchParams.set('advanced', advancedFilters.join(','));
   }
 
   if (userSettings?.recommendations__default_date != undefined) {

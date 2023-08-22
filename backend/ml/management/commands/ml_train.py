@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from ml.inputs import MlInputFromDb
-from ml.mehestan.run import run_mehestan
+from ml.mehestan.run import MehestanParameters, run_mehestan
 from tournesol.models import EntityPollRating, Poll
 from tournesol.models.poll import ALGORITHM_LICCHAVI, ALGORITHM_MEHESTAN
 from vouch.trust_algo import trust_algo
@@ -16,6 +16,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Disable trust scores computation and preserve existing trust_score values",
         )
+        parser.add_argument("--main-criterion-only", action="store_true")
+        parser.add_argument("--alpha", type=float, default=None)
+        parser.add_argument("-W", type=float, default=None)
+        parser.add_argument("--score-shift-quantile", type=float, default=None)
+        parser.add_argument("--score-deviation-quantile", type=float, default=None)
 
     def handle(self, *args, **options):
         if not options["no_trust_algo"]:
@@ -27,7 +32,18 @@ class Command(BaseCommand):
             ml_input = MlInputFromDb(poll_name=poll.name)
 
             if poll.algorithm == ALGORITHM_MEHESTAN:
-                run_mehestan(ml_input=ml_input, poll=poll)
+                kwargs = {
+                    param: options[param]
+                    for param in ["alpha", "W", "score_shift_quantile", "score_deviation_quantile"]
+                    if options[param] is not None
+                }
+                parameters = MehestanParameters(**kwargs)
+                run_mehestan(
+                    ml_input=ml_input,
+                    poll=poll,
+                    parameters=parameters,
+                    main_criterion_only=options["main_criterion_only"],
+                )
             elif poll.algorithm == ALGORITHM_LICCHAVI:
                 raise NotImplementedError("Licchavi is no longer supported")
             else:

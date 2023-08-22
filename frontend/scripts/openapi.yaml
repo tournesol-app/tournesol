@@ -34,7 +34,6 @@ paths:
   /accounts/profile/:
     get:
       operationId: accounts_profile_retrieve
-      description: Get or set user profile.
       tags:
       - accounts
       security:
@@ -49,7 +48,6 @@ paths:
           description: ''
     post:
       operationId: accounts_profile_create
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -76,7 +74,6 @@ paths:
           description: ''
     put:
       operationId: accounts_profile_update
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -103,7 +100,6 @@ paths:
           description: ''
     patch:
       operationId: accounts_profile_partial_update
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -4401,6 +4397,8 @@ components:
             type: string
         recommendations__default_unsafe:
           type: boolean
+        recommendations__default_exclude_compared_entities:
+          type: boolean
     VideosPollUserSettingsRequest:
       type: object
       description: |-
@@ -4431,6 +4429,8 @@ components:
             type: string
             minLength: 1
         recommendations__default_unsafe:
+          type: boolean
+        recommendations__default_exclude_compared_entities:
           type: boolean
   securitySchemes:
     cookieAuth:
