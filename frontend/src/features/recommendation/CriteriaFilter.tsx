@@ -217,8 +217,8 @@ function MultipleCriteriaFilter({ setFilter }: FilterProps) {
                     onChangeCommitted={(e, value) =>
                       setFilter(criteria.name, value.toString())
                     }
-                    components={{
-                      ValueLabel: ValueLabelComponent,
+                    slots={{
+                      valueLabel: ValueLabelComponent,
                     }}
                     marks={marks}
                   />
