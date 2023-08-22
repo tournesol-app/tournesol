@@ -68,8 +68,8 @@ const ScientificLiteratureBox = () => {
     {
       name: 'Tournesol: Permissionless Collaborative Algorithmic Governance with Security Guarantees.',
       authors:
-        'Romain Beylerian, Bérangère Colbois, Louis Faucon, Lê Nguyên Hoang, Aidan Jungo, ' +
-        "Alain Le Noac'h, Adrien Matissart (2022). ArXiV.",
+        'Lê Nguyên Hoang, Romain Beylerian, Bérangère Colbois, Julien Fageot, Louis Faucon, ' +
+        "Aidan Jungo, Alain Le Noac'h, Adrien Matissart, Oscar Villemaud (2022). ArXiV.",
       url: 'https://arxiv.org/abs/2211.01179',
       icon: VerifiedUser,
     },
