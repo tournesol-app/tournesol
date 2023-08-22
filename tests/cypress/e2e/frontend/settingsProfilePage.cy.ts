@@ -2,11 +2,11 @@ describe('Settings - profile page', () => {
   describe('Change username flow', () => {
     const user1username = 'nobody';
     const user1NewUsername = 'noone';
-    const user1email = 'mr@nobody.org';
-    const user1password = 'password'
+    const user1email = 'user1@nobody.test';
+    const user1password = 'user1password'
 
     const user2username = 'already';
-    const user2email = 'al@ready.org';
+    const user2email = 'user2@nobody.test';
     const user2password = 'user2password';
 
     beforeEach(() => {
@@ -22,7 +22,8 @@ describe('Settings - profile page', () => {
       cy.location('pathname').should('equal', '/settings/profile');
 
       cy.contains('Profile').should('be.visible');
-      cy.get('input[name=username]').clear().type(user1NewUsername).type('{enter}');
+      cy.get('input[name=username]').should("have.value", user1username).clear();
+      cy.get('input[name=username]').type(user1NewUsername).type('{enter}');
       cy.contains('Profile changed successfully');
 
       cy.get('button#personal-menu-button').click();
@@ -36,7 +37,9 @@ describe('Settings - profile page', () => {
       cy.contains('Invalid credentials given.');
 
       // only new username must work
-      cy.get('input[name="username"]').click().clear().type(user1NewUsername).type('{enter}');
+      cy.get('input[name="username"]').click().clear();
+      cy.get('input[name="username"]').type(user1NewUsername).type('{enter}');
+      cy.contains('Profile').should('be.visible');
       cy.location('pathname').should('equal', '/settings/profile');
       cy.contains('Forgot password?').should('not.exist');
       cy.get('input[name=username]').should('have.value', user1NewUsername);
@@ -49,7 +52,8 @@ describe('Settings - profile page', () => {
       cy.location('pathname').should('equal', '/settings/profile');
 
       cy.contains('Profile').should('be.visible');
-      cy.get('input[name=username]').clear().type(user2username).type('{enter}');
+      cy.get('input[name=username]').should("have.value", user1username).clear();
+      cy.get('input[name=username]').type(user2username).type('{enter}');
       cy.contains('A user with that username already exists.');
 
       cy.get('button#personal-menu-button').click();
