@@ -17,6 +17,12 @@
   line-height: 24.5px;
 }
 
+button.mui.small {
+  padding: 4px 10px;
+  font-size: 13px;
+  line-height: 22.75px
+}
+
 button.mui.primary {
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(255, 200, 0);

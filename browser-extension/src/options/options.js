@@ -182,7 +182,54 @@ const initNavigation = () => {
   });
 };
 
+/**
+ *
+ * Fields controls.
+ *
+ */
+
+const _selectAll = (_event) => {
+  const target = _event.target.dataset.actionTarget;
+
+  document
+    .querySelectorAll(`input[data-setting="${target}"]`)
+    .forEach((field) => (field.checked = true));
+};
+
+const _deselectAll = (_event) => {
+  const target = _event.target.dataset.actionTarget;
+
+  document
+    .querySelectorAll(`input[data-setting="${target}"]`)
+    .forEach((field) => (field.checked = false));
+};
+
+const initControlSelectAll = () => {
+  document
+    .querySelectorAll('button[data-action-type="select-all"]')
+    .forEach((field) => {
+      field.addEventListener('click', _selectAll);
+    });
+
+  document
+    .querySelectorAll('button[data-action-type="deselect-all"]')
+    .forEach((field) => {
+      field.addEventListener('click', _deselectAll);
+    });
+};
+
+const initFieldsControls = () => {
+  initControlSelectAll();
+};
+
+/**
+ *
+ * Initialization
+ *
+ */
+
 document.addEventListener('DOMContentLoaded', initNavigation);
+document.addEventListener('DOMContentLoaded', initFieldsControls);
 document.addEventListener('DOMContentLoaded', loadLocalPreferences);
 
 document

@@ -41,8 +41,25 @@
       <form id="preferences-form">
         <section class="preferences-section">
           <h2>Recommendations</h2>
-
           <h5 class="field-name">Languages</h5>
+
+          <div class="languages-controls">
+            <button
+              class="mui small"
+              data-action-type="select-all"
+              data-action-target="recommendations__default_langagues"
+            >
+              Select All
+            </button>
+            <button
+              class="mui small"
+              data-action-type="deselect-all"
+              data-action-target="recommendations__default_langagues"
+            >
+              Deselect All
+            </button>
+          </div>
+
           <div class="languages-columns">
             <div class="list-of-fields">
               <div class="field">
