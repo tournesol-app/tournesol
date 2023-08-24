@@ -68,8 +68,8 @@ const ScientificLiteratureBox = () => {
     {
       name: 'Tournesol: Permissionless Collaborative Algorithmic Governance with Security Guarantees.',
       authors:
-        'Romain Beylerian, Bérangère Colbois, Louis Faucon, Lê Nguyên Hoang, Aidan Jungo, ' +
-        "Alain Le Noac'h, Adrien Matissart (2022). ArXiV.",
+        'Lê Nguyên Hoang, Romain Beylerian, Bérangère Colbois, Julien Fageot, Louis Faucon, ' +
+        "Aidan Jungo, Alain Le Noac'h, Adrien Matissart, Oscar Villemaud (2022). ArXiV.",
       url: 'https://arxiv.org/abs/2211.01179',
       icon: VerifiedUser,
     },
@@ -92,7 +92,7 @@ const ScientificLiteratureBox = () => {
     {
       name: 'On the Strategyproofness of the Geometric Median',
       authors:
-        'El-Mahdi El-Mhamdi, Sadegh Farhadkhani, Rachid Guerraoui, Lê-Nguyên Hoang (2023). AISTATS 2023',
+        'El-Mahdi El-Mhamdi, Sadegh Farhadkhani, Rachid Guerraoui, Lê-Nguyên Hoang (2023). AISTATS 2023.',
       url: 'https://proceedings.mlr.press/v206/el-mhamdi23a.html',
       icon: QueryStats,
     },
@@ -174,7 +174,7 @@ const ScientificLiteratureBox = () => {
   const inTheMedia = [
     {
       name: 'Les grands modèles de langage : quels risques ? Échange avec Lê Nguyên Hoang.',
-      authors: 'Paroles de (2023). Conseil national du numérique',
+      authors: 'Paroles de (2023). Conseil national du numérique.',
       url: 'https://cnnumerique.fr/paroles-de/les-grands-modeles-de-langage-quels-risques-echange-avec-le-nguyen-hoang',
       icon: Newspaper,
     },
@@ -197,7 +197,7 @@ const ScientificLiteratureBox = () => {
       icon: Headphones,
     },
     {
-      name: 'L’intelligence artificielle : outil de domination ou d’émancipation ?',
+      name: "L'intelligence artificielle : outil de domination ou d'émancipation ?",
       authors: 'Julien Hernandez (2023). Polytechnique Insights.',
       url: 'https://www.polytechnique-insights.com/tribunes/digital/lintelligence-artificielle-outil-de-domination-ou-demancipation/',
       icon: Newspaper,
@@ -221,7 +221,7 @@ const ScientificLiteratureBox = () => {
       icon: Newspaper,
     },
     {
-      name: "«L’industrie de l'information est probablement la plus dangereuse pour la société»",
+      name: "« L'industrie de l'information est probablement la plus dangereuse pour la société »",
       authors: 'Grégoire Barbey (2022). Heidi.News.',
       url: 'https://www.heidi.news/cyber/l-industrie-de-l-information-est-probablement-la-plus-dangereuse-pour-la-societe',
       icon: Newspaper,
