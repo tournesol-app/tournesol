@@ -18,7 +18,6 @@ from django.db.models import Prefetch, Q
 from django.db.models.expressions import RawSQL
 from django.utils import timezone
 from django.utils.html import format_html
-from tqdm.auto import tqdm
 
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
@@ -371,43 +370,6 @@ class Entity(models.Model):
             criteria_distributions.append(CriteriaDistributionScore(
                 key, distribution, bins))
         return criteria_distributions
-
-    @staticmethod
-    def recompute_quantiles():
-        """
-        WARNING: This implementation is obsolete, and relies on non-existing
-        fields "{criteria}_quantile" for videos.
-        """
-        from .poll import Poll  # pylint: disable=import-outside-toplevel
-
-        criteria_list = Poll.default_poll().criterias_list()
-        quantiles_by_feature_by_id = {criteria: {} for criteria in criteria_list}
-
-        # go over all features
-        for criteria in tqdm(criteria_list):
-            # order by feature (descenting, because using the top quantile)
-            qs = Entity.objects.filter(**{criteria + "__isnull": False}).order_by("-" + criteria)
-            quantiles_slicing = np.linspace(0.0, 1.0, len(qs))
-            for current_slice, video in tqdm(enumerate(qs)):
-                quantiles_by_feature_by_id[criteria][video.id] = quantiles_slicing[current_slice]
-
-        logging.warning("Writing quantiles...")
-        video_objects = []
-        # TODO: use batched updates with bulk_update
-        for entity in tqdm(Entity.objects.all()):
-            for criteria in criteria_list:
-                setattr(
-                    entity,
-                    criteria + "_quantile",
-                    quantiles_by_feature_by_id[criteria].get(entity.id, None),
-                )
-            video_objects.append(entity)
-
-        Entity.objects.bulk_update(
-            video_objects,
-            batch_size=200,
-            fields=[criteria + "_quantile" for criteria in criteria_list],
-        )
 
     @classmethod
     def create_from_video_id(cls, video_id, fetch_metadata=True):

@@ -39,13 +39,6 @@ class Poll(models.Model):
         " and comparisons can't be created, updated or deleted by users.",
     )
 
-    sigmoid_scale = models.FloatField(
-        null=True,
-        default=None,
-        help_text="Scaling factor multiplied by score before the sigmoid function is applied."
-        " Updated automatically on each run. (Mehestan only)."
-    )
-
     def __str__(self) -> str:
         return f'Poll "{self.name}"'
 
@@ -86,7 +79,6 @@ class Poll(models.Model):
 
     @property
     def scale_function(self):
-        # TODO: deprecate sigmoid scale stuff
         return lambda x: MEHESTAN_MAX_SCALED_SCORE * x / np.sqrt(1 + x*x)
 
     def user_meets_proof_requirements(self, user_id: int, keyword: str) -> bool:

@@ -1,4 +1,3 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from .poll import Poll
@@ -54,18 +53,6 @@ class EntityCriteriaScore(models.Model):
         blank=True,
         help_text="A measure of deviation between the individual scores and the global 'score'. "
         "May also be understood as a measure of polarization",
-    )
-    # TODO: ensure that the following works:
-    # quantiles are computed in the Entity.recompute_quantiles(),
-    # called via the manage.py compute_quantile_pareto command
-    # should be computed after every ml_train command (see the devops script)
-    quantile = models.FloatField(
-        default=1.0,
-        null=False,
-        blank=False,
-        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
-        help_text="Top quantile for all rated videos for aggregated scores"
-        "for the given criteria. 0.0=best, 1.0=worst",
     )
 
     class Meta:
