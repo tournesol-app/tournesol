@@ -122,7 +122,7 @@ const saveLocalPreferences = async () => {
     });
 
   try {
-    await browser.storage.local.set({
+    await chrome.storage.local.set({
       recommendations__default_languages: recoDefaultLanguages,
     });
   } catch (reason) {

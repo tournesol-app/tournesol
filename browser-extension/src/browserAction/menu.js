@@ -151,7 +151,7 @@ function toggleSearchStateAction(event) {
 }
 
 function openOptionsPage() {
-  browser.runtime.openOptionsPage();
+  chrome.runtime.openOptionsPage();
 }
 
 /**
