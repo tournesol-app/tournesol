@@ -102,9 +102,10 @@ const TournesolUserSettingsForm = () => {
   );
 
   // Recommendations (stream)
+  const initialLanguages = initRecommendationsLanguages();
   const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
     Array<string>
-  >(initRecommendationsLanguages().split(','));
+  >(initialLanguages ? initialLanguages.split(',') : []);
 
   // Recommendations (page)
   const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
