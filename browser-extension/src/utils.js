@@ -195,7 +195,13 @@ const getRecommendationsLanguagesFromStorage = async (default_) => {
 };
 
 const getRecommendationsLanguagesFromLegacyStorage = async () => {
-  return await getObjectFromLocalStorage('recommendationsLanguages');
+  const langs = await getObjectFromLocalStorage('recommendationsLanguages');
+
+  if (langs == null) {
+    return null;
+  }
+
+  return langs.split(',');
 };
 
 /**
@@ -212,7 +218,7 @@ const getRecommendationsLanguagesAnonymous = async () => {
   const legacyLangs = await getRecommendationsLanguagesFromLegacyStorage();
 
   const languages = await getRecommendationsLanguagesFromStorage(
-    legacyLangs?.split(',') ?? fallbackLangs
+    legacyLangs ?? fallbackLangs
   );
 
   return languages;
