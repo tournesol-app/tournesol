@@ -86,6 +86,8 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         ("ALL_TIME", "all_time"),
     ]
 
+    extension__reco_search = serializers.BooleanField(required=False)
+
     recommendations__default_date = serializers.ChoiceField(
         choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
     )
