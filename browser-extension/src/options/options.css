@@ -152,10 +152,14 @@ div.sticky-submit .flex-container {
   width: 100%;
   height: 0;
   max-height: 0;
+
+  border: none;
 }
 
 .page-tab.active #iframe-tournesol-preferences {
   width: 100%;
   height: calc(100vh - 194px);
   max-height: unset;
+
+  border: 3px solid rgb(255, 200, 0);
 }
