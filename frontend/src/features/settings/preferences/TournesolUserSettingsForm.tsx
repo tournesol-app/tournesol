@@ -30,6 +30,10 @@ import {
   YOUTUBE_POLL_NAME,
   YT_DEFAULT_AUTO_SELECT_ENTITIES,
 } from 'src/utils/constants';
+import {
+  initRecommendationsLanguages,
+  saveRecommendationsLanguages,
+} from 'src/utils/recommendationsLanguages';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
@@ -97,6 +101,11 @@ const TournesolUserSettingsForm = () => {
     pollSettings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
+  // Recommendations (stream)
+  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
+    Array<string>
+  >(initRecommendationsLanguages().split(','));
+
   // Recommendations (page)
   const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
     pollSettings?.recommendations__default_unsafe ?? false
@@ -152,6 +161,10 @@ const TournesolUserSettingsForm = () => {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
 
+    if (pollSettings?.recommendations__default_languages != undefined) {
+      setRecoDefaultLanguages(pollSettings.recommendations__default_languages);
+    }
+
     if (pollSettings?.recommendations__default_unsafe != undefined) {
       setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
     }
@@ -174,6 +187,8 @@ const TournesolUserSettingsForm = () => {
     event.preventDefault();
     setDisabled(true);
 
+    saveRecommendationsLanguages(recoDefaultLanguages.join(','));
+
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
@@ -188,6 +203,7 @@ const TournesolUserSettingsForm = () => {
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
             rate_later__auto_remove: rateLaterAutoRemoval,
+            recommendations__default_languages: recoDefaultLanguages,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
             recommendations__default_exclude_compared_entities:
@@ -247,6 +263,8 @@ const TournesolUserSettingsForm = () => {
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}
             setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+            recoDefaultLanguages={recoDefaultLanguages}
+            setRecoDefaultLanguages={setRecoDefaultLanguages}
             recoDefaultUnsafe={recoDefaultUnsafe}
             setRecoDefaultUnsafe={setRecoDefaultUnsafe}
             recoDefaultExcludeCompared={recoDefaultExcludeCompared}

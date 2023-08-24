@@ -23,6 +23,14 @@ const recoDefaultDateToSearchFilter = (
   return setting.charAt(0) + setting.slice(1).toLowerCase();
 };
 
+/**
+ * Cast the value of the setting recommendations__default_languages to a value
+ * expected by the recommendations' search filter 'language'.
+ */
+const recoDefaultLanguagesToSearchFilter = (setting: string[]): string => {
+  return setting.join(',');
+};
+
 export const buildVideosDefaultRecoSearchParams = (
   searchParams: URLSearchParams,
   userSettings: VideosPollUserSettings | undefined
@@ -42,6 +50,15 @@ export const buildVideosDefaultRecoSearchParams = (
     searchParams.set(
       'date',
       recoDefaultDateToSearchFilter(userSettings.recommendations__default_date)
+    );
+  }
+
+  if (userSettings?.recommendations__default_languages != undefined) {
+    searchParams.set(
+      'language',
+      recoDefaultLanguagesToSearchFilter(
+        userSettings.recommendations__default_languages
+      )
     );
   }
 };

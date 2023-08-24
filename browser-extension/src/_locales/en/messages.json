@@ -19,6 +19,9 @@
     "message": "Search is off",
     "description": "Label of the search button when search is disabled."
   },
+  "menuPreferences": {
+    "message": "Preferences"
+  },
   "recommendedByTournesol": {
     "message": "Recommended by Tournesol",
     "description": "Title of the main Tournesol container."

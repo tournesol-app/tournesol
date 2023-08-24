@@ -142,6 +142,19 @@ export class TournesolContainer {
       topActionBar.append(campaignButton);
     }
 
+    const preferencesButton = document.createElement('button');
+    preferencesButton.id = 'tournesol_preferences_buton';
+    preferencesButton.title = chrome.i18n.getMessage('menuPreferences');
+    fetch(chrome.runtime.getURL('images/settings.svg'))
+      .then((r) => r.text())
+      .then((svg) => (preferencesButton.innerHTML = svg));
+
+    preferencesButton.className = 'tournesol_simple_button';
+    preferencesButton.onclick = () => {
+      chrome.runtime.sendMessage({ message: 'openOptionsPage' });
+    };
+    topActionBar.append(preferencesButton);
+
     // Refresh button
     const refreshButton = document.createElement('button');
     refreshButton.id = 'tournesol_refresh_button';

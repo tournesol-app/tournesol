@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from 'react';
+
 import { Collapse, Grid, Box } from '@mui/material';
 
 import { CollapseButton } from 'src/components';
 import { useCurrentPoll, useListFilter } from 'src/hooks';
 import DurationFilter from 'src/features/recommendation/DurationFilter';
+
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';

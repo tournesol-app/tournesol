@@ -257,7 +257,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Today'
+        'have.attr', 'href', '/recommendations?date=Today&language=en'
       );
     });
 
@@ -270,7 +270,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Week'
+        'have.attr', 'href', '/recommendations?date=Week&language=en'
       );
     });
 
@@ -283,7 +283,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Year'
+        'have.attr', 'href', '/recommendations?date=Year&language=en'
       );
     });
 
@@ -296,7 +296,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date='
+        'have.attr', 'href', '/recommendations?date=&language=en'
       );
     });
   });
@@ -310,7 +310,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month'
+        'have.attr', 'href', '/recommendations?date=Month&language=en'
       );
     });
 
@@ -322,7 +322,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&advanced=unsafe'
+        'have.attr', 'href', '/recommendations?date=Month&advanced=unsafe&language=en'
       );
     });
   });
@@ -336,7 +336,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month'
+        'have.attr', 'href', '/recommendations?date=Month&language=en'
       );
     });
 
@@ -349,7 +349,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&advanced=exclude_compared'
+        'have.attr', 'href', '/recommendations?date=Month&advanced=exclude_compared&language=en'
       );
     });
   });

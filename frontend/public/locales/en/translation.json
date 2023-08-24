@@ -470,6 +470,7 @@
     "updatePreferences": "Update preferences",
     "comparisonPage": "Comparison page",
     "rateLater": "Rate-later list",
+    "recommendations": "Recommendations (stream)",
     "recommendationsPage": "Recommendations page",
     "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>."
   },
@@ -538,8 +539,10 @@
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Default value of the uploaded date filter",
-      "defaultUnsafe": "Display by default the videos having a negative score and those with few contributors.",
-      "defaultExcludeCompared": "Exclude by default the videos that you have already compared."
+      "defaultExcludeCompared": "Exclude by default the videos that you have already compared.",
+      "defaultLanguages": "Videos languages",
+      "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)",
+      "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
     }
   },
   "preferences": {

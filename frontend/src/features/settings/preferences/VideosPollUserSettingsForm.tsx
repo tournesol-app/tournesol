@@ -15,9 +15,10 @@ import AutoSelectoEntities from './fields/AutoSelectEntities';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
+import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
+import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
 import RecommendationsDefaultExcludeCompared from './fields/RecommendationsDefaultExcludeCompared';
-import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
 
 interface VideosPollUserSettingsFormProps {
   compAutoSelectEntities: boolean;
@@ -32,6 +33,8 @@ interface VideosPollUserSettingsFormProps {
   setDisplayedCriteria: (target: string[]) => void;
   rateLaterAutoRemoval: number;
   setRateLaterAutoRemoval: (number: number) => void;
+  recoDefaultLanguages: string[];
+  setRecoDefaultLanguages: (target: string[]) => void;
   recoDefaultUnsafe: boolean;
   setRecoDefaultUnsafe: (target: boolean) => void;
   recoDefaultExcludeCompared: boolean;
@@ -55,6 +58,8 @@ const VideosPollUserSettingsForm = ({
   setDisplayedCriteria,
   rateLaterAutoRemoval,
   setRateLaterAutoRemoval,
+  recoDefaultLanguages,
+  setRecoDefaultLanguages,
   recoDefaultUnsafe,
   setRecoDefaultUnsafe,
   recoDefaultExcludeCompared,
@@ -113,6 +118,17 @@ const VideosPollUserSettingsForm = ({
           value={rateLaterAutoRemoval}
           onChange={setRateLaterAutoRemoval}
           pollName={pollName}
+        />
+      </Grid>
+      <Grid item>
+        <Typography id="recommendations" variant="h6">
+          {t('pollUserSettingsForm.recommendations')}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <RecommendationsDefaultLanguage
+          value={recoDefaultLanguages}
+          onChange={setRecoDefaultLanguages}
         />
       </Grid>
       <Grid item>
