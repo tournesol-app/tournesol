@@ -6,15 +6,39 @@ from rest_framework.serializers import ModelSerializer
 from tournesol.errors import ConflictError
 from tournesol.models import Entity, RateLater
 from tournesol.serializers.entity import RelatedEntitySerializer
+from tournesol.serializers.poll import CollectiveRatingSerializer, IndividualRatingSerializer
+
+
+class RateLaterMetadataSerializer(ModelSerializer):
+    class Meta:
+        model = RateLater
+        fields = ["created_at"]
 
 
 class RateLaterSerializer(ModelSerializer):
-    entity = RelatedEntitySerializer(True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    entity = RelatedEntitySerializer()
+    collective_rating = CollectiveRatingSerializer(
+        source="entity.single_poll_rating",
+        read_only=True,
+        allow_null=True,
+    )
+    individual_rating = IndividualRatingSerializer(
+        source="entity.single_contributor_rating",
+        read_only=True,
+        allow_null=True,
+    )
+    rate_later_metadata = RateLaterMetadataSerializer(source="*", read_only=True)
 
     class Meta:
         model = RateLater
-        fields = ["entity", "user", "created_at"]
+        fields = [
+            "user",
+            "entity",
+            "collective_rating",
+            "individual_rating",
+            "rate_later_metadata",
+        ]
 
     def create(self, validated_data):
         uid = validated_data.pop("entity").get("uid")

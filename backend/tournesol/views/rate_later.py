@@ -2,14 +2,37 @@
 API endpoint to manipulate contributor's rate later list
 """
 
-from django.shortcuts import get_object_or_404
+from django.db.models import Prefetch, prefetch_related_objects
 from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.models import RateLater
+from tournesol.models import Entity, RateLater
 from tournesol.serializers.rate_later import RateLaterSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
+
+
+class RateLaterQuerysetMixin(PollScopedViewMixin):
+    def get_prefetch_entity_config(self):
+        poll = self.poll_from_url
+        return Prefetch(
+            "entity",
+            queryset=(
+                Entity.objects.with_prefetched_poll_ratings(
+                    poll_name=poll.name
+                ).with_prefetched_contributor_ratings(poll=poll, user=self.request.user)
+            ),
+        )
+
+    def get_queryset(self):
+        poll = self.poll_from_url
+        return RateLater.objects.filter(poll=poll, user=self.request.user).prefetch_related(
+            self.get_prefetch_entity_config()
+        )
+
+    def prefetch_entity(self, rate_later: RateLater):
+        rate_later.refresh_from_db(fields=["entity"])
+        prefetch_related_objects([rate_later], self.get_prefetch_entity_config())
 
 
 @extend_schema_view(
@@ -27,7 +50,7 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
         },
     ),
 )
-class RateLaterList(PollScopedViewMixin, generics.ListCreateAPIView):
+class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
     """
     List all entities of a user's rate-later list in a specific poll, or add a
     new entity to the list.
@@ -37,21 +60,16 @@ class RateLaterList(PollScopedViewMixin, generics.ListCreateAPIView):
     queryset = RateLater.objects.none()
     serializer_class = RateLaterSerializer
 
-    def get_queryset(self):
-        return RateLater.objects.filter(
-            poll=self.poll_from_url, user=self.request.user
-        ).prefetch_related("entity")
+    def perform_create(self, serializer):
+        rate_later = serializer.save()
+        self.prefetch_entity(rate_later)
 
 
 @extend_schema_view(
-    get=extend_schema(
-        description="Get an entity from the logged user's rate-later list."
-    ),
-    delete=extend_schema(
-        description="Delete an entity from the logged user's rate-later list."
-    ),
+    get=extend_schema(description="Get an entity from the logged user's rate-later list."),
+    delete=extend_schema(description="Delete an entity from the logged user's rate-later list."),
 )
-class RateLaterDetail(PollScopedViewMixin, generics.RetrieveDestroyAPIView):
+class RateLaterDetail(RateLaterQuerysetMixin, generics.RetrieveDestroyAPIView):
     """
     Get, or delete an entity from a user's rate-later list in a specific poll.
     """
@@ -59,12 +77,5 @@ class RateLaterDetail(PollScopedViewMixin, generics.RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = RateLaterSerializer
 
-    def get_object(self):
-        rate_later = get_object_or_404(
-            RateLater,
-            poll=self.poll_from_url,
-            user=self.request.user,
-            entity__uid=self.kwargs.get("uid"),
-        )
-
-        return rate_later
+    lookup_field = "entity__uid"
+    lookup_url_kwarg = "uid"

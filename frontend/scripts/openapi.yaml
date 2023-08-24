@@ -2513,6 +2513,34 @@ components:
       - old_password
       - password
       - password_confirm
+    CollectiveRating:
+      type: object
+      properties:
+        n_comparisons:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this entityfrom certified
+            contributors
+        n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the entity
+        tournesol_score:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+          description: The aggregated score of the main criterion for all users, in
+            a specific poll.
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          readOnly: true
+      required:
+      - n_comparisons
+      - n_contributors
+      - tournesol_score
+      - unsafe
     ComparedEntitiesStatistics:
       type: object
       properties:
@@ -2781,9 +2809,10 @@ components:
           readOnly: true
         n_comparisons:
           type: integer
+          readOnly: true
+          default: 0
           description: Number of comparisons submitted by the current user about the
             current video
-          readOnly: true
         last_compared_at:
           type: string
           format: date-time
@@ -2810,9 +2839,10 @@ components:
           readOnly: true
         n_comparisons:
           type: integer
+          readOnly: true
+          default: 0
           description: Number of comparisons submitted by the current user about the
             current video
-          readOnly: true
         last_compared_at:
           type: string
           format: date-time
@@ -2862,11 +2892,13 @@ components:
       properties:
         uid:
           type: string
+          readOnly: true
           description: A unique identifier, build with a namespace and an external
             id.
-          maxLength: 144
         type:
-          $ref: '#/components/schemas/TypeEnum'
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
         n_comparisons:
           type: integer
         n_contributors:
@@ -2881,6 +2913,7 @@ components:
         tournesol_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
@@ -2892,6 +2925,7 @@ components:
         unsafe:
           allOf:
           - $ref: '#/components/schemas/UnsafeStatus'
+          readOnly: true
           nullable: true
         is_public:
           type: boolean
@@ -2903,8 +2937,10 @@ components:
       - n_comparisons
       - n_contributors
       - total_score
+      - tournesol_score
       - type
       - uid
+      - unsafe
     CriteriaDistributionScore:
       type: object
       properties:
@@ -3199,6 +3235,19 @@ components:
           minLength: 1
       required:
       - to
+    IndividualRating:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+          readOnly: true
+          description: Should the rating be public?
+        n_comparisons:
+          type: integer
+          readOnly: true
+      required:
+      - is_public
+      - n_comparisons
     Length3Cycles:
       type: object
       description: |-
@@ -3581,6 +3630,28 @@ components:
       properties:
         entity:
           $ref: '#/components/schemas/RelatedEntity'
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
+          readOnly: true
+          nullable: true
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/IndividualRating'
+          readOnly: true
+          nullable: true
+        rate_later_metadata:
+          allOf:
+          - $ref: '#/components/schemas/RateLaterMetadata'
+          readOnly: true
+      required:
+      - collective_rating
+      - entity
+      - individual_rating
+      - rate_later_metadata
+    RateLaterMetadata:
+      type: object
+      properties:
         created_at:
           type: string
           format: date-time
@@ -3588,7 +3659,6 @@ components:
           description: Time at which the video is saved.
       required:
       - created_at
-      - entity
     RateLaterRequest:
       type: object
       properties:
@@ -3629,11 +3699,13 @@ components:
       properties:
         uid:
           type: string
+          readOnly: true
           description: A unique identifier, build with a namespace and an external
             id.
-          maxLength: 144
         type:
-          $ref: '#/components/schemas/TypeEnum'
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
         n_comparisons:
           type: integer
         n_contributors:
@@ -3648,6 +3720,7 @@ components:
         tournesol_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
@@ -3658,6 +3731,7 @@ components:
         unsafe:
           allOf:
           - $ref: '#/components/schemas/UnsafeStatus'
+          readOnly: true
           nullable: true
       required:
       - criteria_scores
@@ -3665,8 +3739,10 @@ components:
       - n_comparisons
       - n_contributors
       - total_score
+      - tournesol_score
       - type
       - uid
+      - unsafe
     Recommendations_defaultDateEnum:
       enum:
       - TODAY
@@ -4052,6 +4128,18 @@ components:
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
     UnsafeStatus:
+      type: object
+      properties:
+        status:
+          type: boolean
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonsEnum'
+      required:
+      - reasons
+      - status
+    UnsafeStatusRequest:
       type: object
       properties:
         status:
