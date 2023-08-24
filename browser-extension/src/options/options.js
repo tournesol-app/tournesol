@@ -69,13 +69,10 @@ const loadLocalPreferences = async () => {
   const legacy = await loadLegacyRecommendationsLanguages();
 
   try {
-    chrome.storage.local.get(
-      'extension__search_reco',
-      (settings) => {
-
-        if (settings?.extension__search_reco) {
-          document.querySelector('input#extension__search_reco').checked = true;
-        }
+    chrome.storage.local.get('extension__search_reco', (settings) => {
+      if (settings?.extension__search_reco) {
+        document.querySelector('input#extension__search_reco').checked = true;
+      }
     });
 
     chrome.storage.local.get(
