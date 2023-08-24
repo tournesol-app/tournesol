@@ -38,6 +38,11 @@ import {
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
 
+const initialLanguages = () => {
+  const languages = initRecommendationsLanguages();
+  return languages ? languages.split(',') : [];
+};
+
 /**
  * Display a form allowing the logged users to update all their Tournesol
  * preferences.
@@ -102,10 +107,9 @@ const TournesolUserSettingsForm = () => {
   );
 
   // Recommendations (stream)
-  const initialLanguages = initRecommendationsLanguages();
   const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
     Array<string>
-  >(initialLanguages ? initialLanguages.split(',') : []);
+  >(initialLanguages());
 
   // Recommendations (page)
   const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
