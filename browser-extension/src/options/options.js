@@ -70,6 +70,15 @@ const loadLocalPreferences = async () => {
 
   try {
     chrome.storage.local.get(
+      'extension__search_reco',
+      (settings) => {
+
+        if (settings?.extension__search_reco) {
+          document.querySelector('input#extension__search_reco').checked = true;
+        }
+    });
+
+    chrome.storage.local.get(
       'recommendations__default_languages',
       (settings) => {
         const languages =
@@ -110,6 +119,8 @@ const saveLocalPreferences = async () => {
   const submit = document.getElementById('save-preferences');
   submit.setAttribute('disabled', '');
 
+  const extSearchReco = document.querySelector('input#extension__search_reco');
+
   const recoDefaultLanguages = [];
   document
     .querySelectorAll(
@@ -123,6 +134,7 @@ const saveLocalPreferences = async () => {
 
   try {
     await chrome.storage.local.set({
+      extension__search_reco: extSearchReco.checked,
       recommendations__default_languages: recoDefaultLanguages,
     });
   } catch (reason) {
