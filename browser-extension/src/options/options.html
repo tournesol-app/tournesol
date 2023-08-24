@@ -41,6 +41,22 @@
       <form id="preferences-form">
         <section class="preferences-section">
           <h2>Recommendations</h2>
+          <h5 class="field-name">YouTube Search</h5>
+
+          <div class="list-of-fields">
+            <div class="field">
+              <input
+                type="checkbox"
+                id="extension__search_reco"
+                name="extension__search_reco"
+                data-setting="extension__search_reco"
+              >
+              <label for="extension__search_reco">
+                Include Tournesol recommendations in the YouTube search results.
+              </label>
+            </div>
+          </div>
+
           <h5 class="field-name">Languages</h5>
 
           <div class="languages-controls">
@@ -291,21 +307,21 @@
               </div>
             </div>
           </div>
-
-          <div class="sticky-submit">
-            <div class="flex-container">
-              <div class="feedback-error mui_button">
-                <span>Error!</span>
-              </div>
-              <div class="feedback-success mui_button">
-                <span>Success!</span>
-              </div>
-              <button class="mui secondary" id="save-preferences" type="submit">
-                Update Preferences
-              </button>
-            </div>
-          </div>
         </section>
+
+        <div class="sticky-submit">
+          <div class="flex-container">
+            <div class="feedback-error mui_button">
+              <span>Error!</span>
+            </div>
+            <div class="feedback-success mui_button">
+              <span>Success!</span>
+            </div>
+            <button class="mui secondary" id="save-preferences" type="submit">
+              Update Preferences
+            </button>
+          </div>
+        </div>
       </form>
     </div>
 
