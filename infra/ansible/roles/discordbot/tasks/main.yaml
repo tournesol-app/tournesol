@@ -3,6 +3,7 @@
     name:
       - "discord.py==2.3.2"
       - "pip==23.2.1"
+      - "requests==2.31.0"
     virtualenv: /srv/tournesol-discordbot/venv
     virtualenv_python: python3.9
   become: yes
