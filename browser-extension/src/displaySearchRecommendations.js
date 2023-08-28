@@ -63,9 +63,13 @@
         (setting) => {
           if (setting?.value || forceSearch) {
             searchRecommendations.process();
+          } else {
+            searchRecommendations.clear();
           }
         }
       );
+    } else {
+      searchRecommendations.clear();
     }
   };
 

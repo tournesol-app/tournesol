@@ -11,6 +11,8 @@
     // Display the home page recommendations.
     if (location.pathname === '/') {
       homeRecommendations.process();
+    } else {
+      homeRecommendations.clear();
     }
   };
 

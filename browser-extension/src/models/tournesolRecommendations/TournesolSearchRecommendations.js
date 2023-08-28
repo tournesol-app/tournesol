@@ -32,9 +32,6 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
       this.handleResponse
     );
 
-    // set this value at the end of handleReponse
-    this.areRecommendationsLoading = false;
-
     return;
   }
 
