@@ -11,14 +11,6 @@
     "message": "Analysis",
     "description": "Label of the analysis menu button."
   },
-  "menuSearchEnabled": {
-    "message": "Search is on",
-    "description": "Label of the search button when search is enabled."
-  },
-  "menuSearchDisabled": {
-    "message": "Search is off",
-    "description": "Label of the search button when search is disabled."
-  },
   "menuPreferences": {
     "message": "Preferences"
   },
