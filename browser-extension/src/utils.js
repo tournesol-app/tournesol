@@ -182,6 +182,18 @@ const getObjectFromLocalStorage = async (key, default_ = null) => {
   });
 };
 
+/**
+ *
+ *
+ * User preferences.
+ *
+ *
+ */
+
+const LEGACY_SETTINGS_MAP = {
+  extension__search_reco: 'searchEnabled',
+};
+
 const getRecomendationsFallbackLanguages = () => {
   const navLang = navigator.language.split('-')[0].toLowerCase();
   return ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
@@ -275,7 +287,13 @@ export const isSearchRecoEnabled = async () => {
 };
 
 const getSingleSettingAnonymous = async (name) => {
-  return await getObjectFromLocalStorage(name);
+  let value = await getObjectFromLocalStorage(name);
+
+  if (value == null && name in LEGACY_SETTINGS_MAP) {
+    value = await getObjectFromLocalStorage(LEGACY_SETTINGS_MAP[name]);
+  }
+
+  return value;
 };
 
 /**
