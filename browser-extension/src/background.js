@@ -170,7 +170,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ value: value });
     });
     return true;
-
   } else if (
     request.message == 'getTournesolRecommendations' ||
     request.message == 'getTournesolSearchRecommendations'

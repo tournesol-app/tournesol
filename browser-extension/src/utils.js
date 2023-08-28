@@ -274,13 +274,13 @@ export const isSearchRecoEnabled = async () => {
   return enableTournesolSearchResults;
 };
 
-const getSingleSettingAnonymous = async () => {
-  return;
+const getSingleSettingAnonymous = async (name) => {
+  return await getObjectFromLocalStorage(name);
 };
 
 /**
- * Get a user setting from the Tournesol API. By default, return the local
- * setting for anonymous users or when an API error occured.
+ * Get a user setting from the Tournesol API. By default, fallback to the
+ * local settings for anonymous users or when an API error occured.
  *
  * @param {string} name Name of the setting.
  * @param {any} default_ The value returned if the setting is undefined.
@@ -300,7 +300,7 @@ export const getSingleSetting = async (
   // Fallback to the storage settings in case of error.
   if (!settings || !settings.success) {
     if (localFallback) {
-      const local = await getSingleSettingAnonymous();
+      const local = await getSingleSettingAnonymous(name);
       return local ?? default_;
     } else {
       return;
