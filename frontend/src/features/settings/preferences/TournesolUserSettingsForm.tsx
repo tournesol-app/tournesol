@@ -84,8 +84,8 @@ const TournesolUserSettingsForm = () => {
    */
 
   // Browser extension
-  const [extRecommendationSearch, setExtRecommendationSearch] = useState(
-    pollSettings?.extension__reco_search ?? false
+  const [extSearchRecommendation, setExtSearchRecommendation] = useState(
+    pollSettings?.extension__search_reco ?? false
   );
 
   // Comparison
@@ -167,6 +167,10 @@ const TournesolUserSettingsForm = () => {
       setDisplayedCriteria(pollSettings.comparison__criteria_order);
     }
 
+    if (pollSettings?.extension__search_reco != undefined) {
+      setExtSearchRecommendation(pollSettings.extension__search_reco);
+    }
+
     if (pollSettings?.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
@@ -212,7 +216,7 @@ const TournesolUserSettingsForm = () => {
             comparison__auto_select_entities: autoSelectEntities,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
-            extension__reco_search: extRecommendationSearch,
+            extension__search_reco: extSearchRecommendation,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_languages: recoDefaultLanguages,
             recommendations__default_date: recoDefaultUploadDate,
@@ -266,8 +270,8 @@ const TournesolUserSettingsForm = () => {
           {...subSectionBreakpoints}
         >
           <VideosPollUserSettingsForm
-            extRecommendationSearch={extRecommendationSearch}
-            setExtRecommendationSearch={setExtRecommendationSearch}
+            extSearchRecommendation={extSearchRecommendation}
+            setExtSearchRecommendation={setExtSearchRecommendation}
             compAutoSelectEntities={autoSelectEntities}
             setCompAutoSelectEntities={setAutoSelectEntities}
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}

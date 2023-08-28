@@ -4475,7 +4475,7 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         rate_later__auto_remove:
           type: integer
-        extension__reco_search:
+        extension__search_reco:
           type: boolean
         recommendations__default_date:
           oneOf:
@@ -4509,7 +4509,7 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         rate_later__auto_remove:
           type: integer
-        extension__reco_search:
+        extension__search_reco:
           type: boolean
         recommendations__default_date:
           oneOf:

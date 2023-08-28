@@ -13,7 +13,7 @@ import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoSelectoEntities from './fields/AutoSelectEntities';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
-import ExtRecommendationSearch from './fields/ExtRecommendationSearch';
+import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
@@ -22,8 +22,8 @@ import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe'
 import RecommendationsDefaultExcludeCompared from './fields/RecommendationsDefaultExcludeCompared';
 
 interface VideosPollUserSettingsFormProps {
-  extRecommendationSearch: boolean;
-  setExtRecommendationSearch: (target: boolean) => void;
+  extSearchRecommendation: boolean;
+  setExtSearchRecommendation: (target: boolean) => void;
   compAutoSelectEntities: boolean;
   setCompAutoSelectEntities: (target: boolean) => void;
   compUiWeeklyColGoalDisplay:
@@ -53,8 +53,8 @@ interface VideosPollUserSettingsFormProps {
  * Display a set of fields representing the preferences of the poll `videos`.
  */
 const VideosPollUserSettingsForm = ({
-  extRecommendationSearch,
-  setExtRecommendationSearch,
+  extSearchRecommendation,
+  setExtSearchRecommendation,
   compAutoSelectEntities,
   setCompAutoSelectEntities,
   compUiWeeklyColGoalDisplay,
@@ -118,9 +118,9 @@ const VideosPollUserSettingsForm = ({
         </Typography>
       </Grid>
       <Grid item>
-        <ExtRecommendationSearch
-          value={extRecommendationSearch}
-          onChange={setExtRecommendationSearch}
+        <ExtSearchRecommendation
+          value={extSearchRecommendation}
+          onChange={setExtSearchRecommendation}
           pollName={pollName}
         />
       </Grid>

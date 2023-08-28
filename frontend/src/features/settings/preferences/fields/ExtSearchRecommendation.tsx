@@ -9,7 +9,7 @@ interface ExtRecommendationSearchProps {
   pollName: string;
 }
 
-const ExtRecommendationSearch = ({
+const ExtSearchRecommendation = ({
   value,
   onChange,
   pollName,
@@ -20,14 +20,14 @@ const ExtRecommendationSearch = ({
     <FormControlLabel
       control={
         <Switch
-          name={`${pollName}_extension__reco_search`}
+          name={`${pollName}_extension__search_reco`}
           checked={value}
           onChange={() => onChange(!value)}
           size="medium"
           color="secondary"
           inputProps={
             {
-              'data-testid': `${pollName}_extension__reco_search`,
+              'data-testid': `${pollName}_extension__search_reco`,
             } as React.InputHTMLAttributes<HTMLInputElement>
           }
         />
@@ -37,4 +37,4 @@ const ExtRecommendationSearch = ({
   );
 };
 
-export default ExtRecommendationSearch;
+export default ExtSearchRecommendation;

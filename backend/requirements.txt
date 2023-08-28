@@ -33,8 +33,6 @@ Pillow==9.5.0
 psycopg2-binary==2.9.7
 # PyYAML is used for reading the settings 
 PyYAML==6.0
-# tqdm is used to display a progressbar in some slow ML algorithms
-tqdm==4.66.1
 # langdetect is used to detect the language of video
 langdetect==1.0.9
 # Pandas is used extensively in the ML algorithms and for some data management
