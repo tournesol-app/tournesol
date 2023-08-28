@@ -184,9 +184,7 @@ const getObjectFromLocalStorage = async (key, default_ = null) => {
 
 /**
  *
- *
  * User preferences.
- *
  *
  */
 
@@ -268,24 +266,6 @@ export const getRecommendationsLanguagesAuthenticated = async () => {
   return languages;
 };
 
-const isSearchRecoEnabledAnonymous = async () => {};
-
-export const isSearchRecoEnabled = async () => {
-  let enableTournesolSearchResults = false;
-
-  const settings = await getUserSettings();
-
-  // Fallback to the storage settings in case of error.
-  if (!settings || !settings.success) {
-    return await isSearchRecoEnabledAnonymous();
-  }
-
-  enableTournesolSearchResults =
-    settings.body?.videos?.recommendations__default_unsafe ?? false;
-
-  return enableTournesolSearchResults;
-};
-
 const getSingleSettingAnonymous = async (name) => {
   let value = await getObjectFromLocalStorage(name);
 
@@ -321,7 +301,7 @@ export const getSingleSetting = async (
       const local = await getSingleSettingAnonymous(name);
       return local ?? default_;
     } else {
-      return;
+      return default_;
     }
   }
 
