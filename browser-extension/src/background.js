@@ -7,6 +7,7 @@ import {
   getRandomSubarray,
   getUserProof,
   getRecommendationsLanguagesAuthenticated,
+  getSingleSetting,
 } from './utils.js';
 
 const oversamplingRatioForRecentVideos = 3;
@@ -155,6 +156,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message == 'getVideoStatistics') {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
+  }
+
+  if (request.message && request.message.startsWith('get:setting:')) {
+    let setting = request.message.split(':')[2];
+
+    if (!setting) {
+      sendResponse({ value: null });
+      return true;
+    }
+
+    getSingleSetting(setting, false).then((value) => {
+      sendResponse({ value: value });
+    });
+    return true;
+
   } else if (
     request.message == 'getTournesolRecommendations' ||
     request.message == 'getTournesolSearchRecommendations'

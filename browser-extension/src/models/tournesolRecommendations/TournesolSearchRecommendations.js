@@ -7,41 +7,33 @@ export class TournesolSearchRecommendations extends TournesolRecommendations {
     this.searchQuery = '';
   }
 
-  process(forceSearch = false) {
+  process() {
     this.isPageLoaded = true;
-    this.loadRecommandations(forceSearch);
+    this.loadRecommandations();
   }
 
   displayRecommendations(nthchild = 0) {
     super.displayRecommendations(nthchild);
   }
 
-  loadRecommandations(forceSearch) {
+  loadRecommandations() {
     if (this.areRecommendationsLoading) return;
 
     this.areRecommendationsLoading = true;
+    if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
 
-    chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-      if (forceSearch || searchEnabled) {
-        chrome.runtime.sendMessage(
-          {
-            message: 'getTournesolSearchRecommendations',
-            search: this.refreshSearchQuery(),
-            videosNumber: this.videosPerRow,
-            additionalVideosNumber:
-              this.videosPerRow * (this.rowsWhenExpanded - 1),
-          },
-          this.handleResponse
-        );
-      } else {
-        /**
-         * Remove the Tournesol container to not keep on the screen the
-         * results of the previous request.
-         */
-        if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
-        this.areRecommendationsLoading = false;
-      }
-    });
+    chrome.runtime.sendMessage(
+      {
+        message: 'getTournesolSearchRecommendations',
+        search: this.refreshSearchQuery(),
+        videosNumber: this.videosPerRow,
+        additionalVideosNumber: this.videosPerRow * (this.rowsWhenExpanded - 1),
+      },
+      this.handleResponse
+    );
+
+    // set this value at the end of handleReponse
+    this.areRecommendationsLoading = false;
 
     return;
   }

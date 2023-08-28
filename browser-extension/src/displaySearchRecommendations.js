@@ -58,7 +58,14 @@
    */
   const process = () => {
     if (location.pathname === '/results') {
-      searchRecommendations.process(forceSearch);
+      chrome.runtime.sendMessage(
+        { message: 'get:setting:extension__search_reco' },
+        (setting) => {
+          if (setting?.value || forceSearch) {
+            searchRecommendations.process();
+          }
+        }
+      );
     }
   };
 
