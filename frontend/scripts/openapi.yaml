@@ -554,36 +554,6 @@ paths:
                 type: string
                 format: binary
           description: ''
-  /faq/:
-    get:
-      operationId: faq_list
-      description: List all questions and their answers, translated in a specific
-        language.
-      parameters:
-      - name: limit
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
-        schema:
-          type: integer
-      tags:
-      - faq
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedFAQEntryList'
-          description: ''
   /polls/{name}/:
     get:
       operationId: polls_retrieve

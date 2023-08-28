@@ -31,7 +31,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.faq_base_url = "/faq/"
+        self.faq_base_url = "/backoffice/faq/"
 
         self.question1 = create_entry("i_dont_understand_why", 20, True)
 
