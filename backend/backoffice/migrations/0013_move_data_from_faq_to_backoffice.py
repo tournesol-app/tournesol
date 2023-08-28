@@ -4,6 +4,11 @@ from django.db import migrations
 
 
 def migrate_forward(apps, schema_editor):
+    """
+    This migration used to migrate the data from the legacy `faq` app to the
+    `backoffice`. The app `faq` doesn't exist anymore, and all references to
+    it have been deleted.
+    """
     pass
 
 
