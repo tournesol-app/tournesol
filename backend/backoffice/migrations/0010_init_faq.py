@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("backoffice", "0009_make_action_optional"),
-        ("faq", "0005_alter_models_tables_names"),
     ]
 
     operations = [

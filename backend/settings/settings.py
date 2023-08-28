@@ -84,7 +84,6 @@ INSTALLED_APPS = [
     "core",
     "backoffice",
     "tournesol",
-    "faq",
     "twitterbot",
     "ml",
     "oauth2_provider",
