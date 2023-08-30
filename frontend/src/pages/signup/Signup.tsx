@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import {
   Grid,
+  Link as MuiLink,
   Button,
   Typography,
   Checkbox,
@@ -31,12 +32,33 @@ import { resolvedLangToNotificationsLang } from 'src/utils/userSettings';
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
   return (
-    <Alert severity="success">
-      <AlertTitle>{t('signup.oneLastStep')}</AlertTitle>
-      <Trans t={t} i18nKey="signup.successMessage">
-        A verification link has been sent to <code>{{ email }}</code>
-      </Trans>
-    </Alert>
+    <>
+      <Alert severity="success" sx={{ mb: 8 }}>
+        <AlertTitle>
+          <strong>{t('signup.oneLastStep')}</strong>
+        </AlertTitle>
+        <Typography>
+          <Trans t={t} i18nKey="signup.successMessage">
+            A verification link has been sent to <code>{{ email }}</code>
+          </Trans>
+        </Typography>
+      </Alert>
+      <Typography paragraph px={1} textAlign="center">
+        <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">
+          If your email address is incorrect, simply{' '}
+          <MuiLink
+            href="/signup"
+            sx={{
+              color: 'revert',
+              textDecoration: 'revert',
+            }}
+          >
+            create a new account
+          </MuiLink>
+          .
+        </Trans>
+      </Typography>
+    </>
   );
 };
 

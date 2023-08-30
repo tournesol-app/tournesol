@@ -891,6 +891,7 @@
   "signup": {
     "oneLastStep": "One last step",
     "successMessage": "A verification link has been sent to <1>{{email}}</1>",
+    "ifYourEmailIsIncorrect": "If your email address is incorrect, simply <2>create a new account</2>.",
     "welcomeOnTournesol": "Welcome on Tournesol",
     "weVeBeenWaitingForYou": "We've been waiting for you 🖖",
     "title": "Account creation",

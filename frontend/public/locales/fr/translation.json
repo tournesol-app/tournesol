@@ -900,6 +900,7 @@
   "signup": {
     "oneLastStep": "Une toute dernière étape",
     "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1>",
+    "ifYourEmailIsIncorrect": "Si votre e-mail est incorrect, créez simplement <2>un nouveau compte</2>.",
     "welcomeOnTournesol": "Bienvenue sur Tournesol",
     "weVeBeenWaitingForYou": "Nous vous attendions 🖖",
     "title": "Inscription",
