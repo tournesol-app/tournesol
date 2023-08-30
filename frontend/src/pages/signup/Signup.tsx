@@ -11,6 +11,7 @@ import {
   AlertTitle,
   Divider,
   Box,
+  Paper,
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 
@@ -31,11 +32,35 @@ const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
   return (
     <Alert severity="success">
-      <AlertTitle>{t('signup.welcome')}</AlertTitle>
+      <AlertTitle>{t('signup.oneLastStep')}</AlertTitle>
       <Trans t={t} i18nKey="signup.successMessage">
-        A verification link has been sent to <code>{{ email }}</code> .
+        A verification link has been sent to <code>{{ email }}</code>
       </Trans>
     </Alert>
+  );
+};
+
+const WelcomePaper = () => {
+  const { t } = useTranslation();
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 2,
+        mb: 4,
+        color: '#fff',
+        backgroundColor: 'background.emphatic',
+      }}
+    >
+      <Box display="flex" flexDirection="column" gap={1}>
+        <Typography variant="h3" textAlign="center">
+          {t('signup.welcomeOnTournesol')}
+        </Typography>
+        <Typography textAlign="center">
+          {t('signup.weVeBeenWaitingForYou')}
+        </Typography>
+      </Box>
+    </Paper>
   );
 };
 
@@ -98,6 +123,7 @@ const Signup = () => {
     <>
       <ContentHeader title={t('signup.title')} />
       <ContentBox maxWidth="sm">
+        <WelcomePaper />
         {successEmailAddress !== null ? (
           <SignupSuccess email={successEmailAddress} />
         ) : (
@@ -120,6 +146,7 @@ const Signup = () => {
                   label={t('emailAddress')}
                   autoComplete="email"
                   formError={formError}
+                  helperText={t('signup.anActivationEmailWillBeSent')}
                 />
               </Grid>
               <Grid item xs={12}>

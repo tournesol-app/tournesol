@@ -889,10 +889,13 @@
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
   "profile": "Profile",
   "signup": {
-    "welcome": "Welcome!",
-    "successMessage": "A verification link has been sent to <1>{{email}}</1> .",
+    "oneLastStep": "One last step",
+    "successMessage": "A verification link has been sent to <1>{{email}}</1>",
+    "welcomeOnTournesol": "Welcome on Tournesol",
+    "weVeBeenWaitingForYou": "We've been waiting for you 🖖",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
+    "anActivationEmailWillBeSent": "An activation email will be sent.",
     "iAgreeWithTheTerms": "I'm at least 15 years old. I have read and I agree with the <2>Terms of Service</2> and the <6>Privacy Policy</6>."
   },
   "emailAddress": "Email address",
