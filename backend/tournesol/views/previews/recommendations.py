@@ -276,7 +276,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             fill=COLOR_BROWN_FONT,
         )
 
-    def get_limit_offset(self, request):
+    def get_offset_limit(self, request):
         try:
             offset = max(0, int(request.GET["offset"]))
         except (KeyError, ValueError):
@@ -299,7 +299,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         preview_image = Image.new("RGBA", (440 * upscale_ratio, 240 * upscale_ratio), "#FAFAFA")
 
-        offset, limit = self.get_limit_offset(request)
+        offset, limit = self.get_offset_limit(request)
         recommendations = super().get_queryset()[offset:offset+limit]
         recommendation_x_pos = 10 * upscale_ratio
 
