@@ -276,6 +276,22 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             fill=COLOR_BROWN_FONT,
         )
 
+    def get_offset_limit(self, request):
+        try:
+            offset = max(0, int(request.GET["offset"]))
+        except (KeyError, ValueError):
+            offset = 0
+
+        try:
+            limit = min(3, int(request.GET["limit"]))
+        except (KeyError, ValueError):
+            limit = 3
+
+        if limit <= 0:
+            limit = 3
+
+        return offset, limit
+
     @method_decorator(cache_page_no_i18n(CACHE_RECOMMENDATIONS_PREVIEW))
     @extend_schema(exclude=True)
     def get(self, request, *args, **kwargs):
@@ -283,7 +299,8 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         preview_image = Image.new("RGBA", (440 * upscale_ratio, 240 * upscale_ratio), "#FAFAFA")
 
-        recommendations = super().get_queryset()[:3]
+        offset, limit = self.get_offset_limit(request)
+        recommendations = super().get_queryset()[offset:offset+limit]
         recommendation_x_pos = 10 * upscale_ratio
 
         self.draw_header(preview_image, upscale_ratio)
