@@ -76,7 +76,7 @@ const WelcomePaper = () => {
     >
       <Box display="flex" flexDirection="column" gap={1}>
         <Typography variant="h3" textAlign="center">
-          {t('signup.welcomeOnTournesol')}
+          {t('signup.welcomeToTournesol')}
         </Typography>
         <Typography textAlign="center">
           {t('signup.weVeBeenWaitingForYou')}
