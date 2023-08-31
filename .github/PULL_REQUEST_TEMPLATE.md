@@ -6,7 +6,7 @@
 
 {describe your PR here}
 
-### checklist
+### Checklist
 
 - [ ] I added the related issue(s) id in the related issues section (if any)
   - if not, delete the related issues section
