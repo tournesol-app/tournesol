@@ -12,7 +12,7 @@
   - if not, delete the related issues section
 - [ ] I described my changes and my decisions in the PR description
 - [ ] I read the development guidelines of the [CONTRIBUTING.md][development-guidelines]
-- [ ] the tests pass and have been updated if relevant
+- [ ] The tests pass and have been updated if relevant
 - [ ] the code quality check pass
 
 ❤️ Thank you for your contribution!
