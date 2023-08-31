@@ -68,4 +68,28 @@ describe('Signup', () => {
     cy.get('[data-testid=notifications_email__research]').should('be.checked');
     cy.get('[data-testid=notifications_email__new_features]').should('not.be.checked');
   });
+
+  it('allows users to re-create an account if email is incorrect', () => {
+    cy.visit('/');
+    cy.contains('Join us').click();
+    cy.location('pathname').should('equal', '/signup');
+
+    cy.get('input[name=email]').type('user@example.com');
+    cy.get('input[name=username]').type('test-register');
+    cy.get('input[name=password]').type('tourne50l');
+    cy.get('input[name=password_confirm]').type('tourne50l');
+    cy.get('input[name=accept_terms]').check();
+
+    cy.contains('Sign up').click();
+    cy.contains('verification link').should('be.visible');
+    cy.contains('if your email address is incorrect, simply create a new account',
+      {matchCase: false});
+    cy.contains('create a new account').click();
+
+    cy.location('pathname').should('equal', '/signup');
+    cy.get('input[name=email]').should('be.visible');
+    cy.get('input[name=username]').should('be.visible');
+    cy.get('input[name=password]').should('be.visible');
+    cy.get('input[name=password_confirm]').should('be.visible');
+  });
 });

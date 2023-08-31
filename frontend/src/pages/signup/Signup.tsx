@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import {
   Grid,
+  Link as MuiLink,
   Button,
   Typography,
   Checkbox,
@@ -11,6 +12,7 @@ import {
   AlertTitle,
   Divider,
   Box,
+  Paper,
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 
@@ -30,12 +32,57 @@ import { resolvedLangToNotificationsLang } from 'src/utils/userSettings';
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
   return (
-    <Alert severity="success">
-      <AlertTitle>{t('signup.welcome')}</AlertTitle>
-      <Trans t={t} i18nKey="signup.successMessage">
-        A verification link has been sent to <code>{{ email }}</code> .
-      </Trans>
-    </Alert>
+    <>
+      <Alert severity="success" sx={{ mb: 8 }}>
+        <AlertTitle>
+          <strong>{t('signup.oneLastStep')}</strong>
+        </AlertTitle>
+        <Typography>
+          <Trans t={t} i18nKey="signup.successMessage">
+            A verification link has been sent to <code>{{ email }}</code>
+          </Trans>
+        </Typography>
+      </Alert>
+      <Typography paragraph px={1} textAlign="center">
+        <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">
+          If your email address is incorrect, simply{' '}
+          <MuiLink
+            href="/signup"
+            sx={{
+              color: 'revert',
+              textDecoration: 'revert',
+            }}
+          >
+            create a new account
+          </MuiLink>
+          .
+        </Trans>
+      </Typography>
+    </>
+  );
+};
+
+const WelcomePaper = () => {
+  const { t } = useTranslation();
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 2,
+        mb: 4,
+        color: '#fff',
+        backgroundColor: 'background.emphatic',
+      }}
+    >
+      <Box display="flex" flexDirection="column" gap={1}>
+        <Typography variant="h3" textAlign="center">
+          {t('signup.welcomeToTournesol')}
+        </Typography>
+        <Typography textAlign="center">
+          {t('signup.weVeBeenWaitingForYou')}
+        </Typography>
+      </Box>
+    </Paper>
   );
 };
 
@@ -98,6 +145,7 @@ const Signup = () => {
     <>
       <ContentHeader title={t('signup.title')} />
       <ContentBox maxWidth="sm">
+        <WelcomePaper />
         {successEmailAddress !== null ? (
           <SignupSuccess email={successEmailAddress} />
         ) : (
@@ -120,6 +168,7 @@ const Signup = () => {
                   label={t('emailAddress')}
                   autoComplete="email"
                   formError={formError}
+                  helperText={t('signup.anActivationEmailWillBeSent')}
                 />
               </Grid>
               <Grid item xs={12}>

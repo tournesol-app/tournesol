@@ -898,10 +898,14 @@
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "profile": "Profil",
   "signup": {
-    "welcome": "Bienvenue !",
-    "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1> .",
+    "oneLastStep": "Une toute dernière étape",
+    "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1>",
+    "ifYourEmailIsIncorrect": "Si votre e-mail est incorrect, créez simplement <2>un nouveau compte</2>.",
+    "welcomeToTournesol": "Bienvenue sur Tournesol",
+    "weVeBeenWaitingForYou": "Nous vous attendions 🖖",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
+    "anActivationEmailWillBeSent": "Un e-mail d'activation sera envoyé. Vous aurez besoin de confirmez votre adresse pour vous connecter.",
     "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
   },
   "emailAddress": "Adresse e-mail",
