@@ -65,7 +65,7 @@ server {
     #   see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
     #   see: https://hstspreload.org
     #
-    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload; always;";
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload;" always;
 
     # Content Security Policy
     #
@@ -148,7 +148,7 @@ server {
     #   see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
     #   see: https://hstspreload.org
     #
-    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload; always;";
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload;" always;
 {% else %}
     listen 80;
 {% endif %}
