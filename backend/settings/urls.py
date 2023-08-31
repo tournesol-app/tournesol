@@ -40,7 +40,6 @@ urlpatterns = [
     path("o/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     #  API
     path("", include("tournesol.urls")),
-    path("", include("faq.urls")),
     path("backoffice/", include("backoffice.urls")),
     #  SWAGGER
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
