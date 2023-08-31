@@ -13,7 +13,7 @@
 - [ ] I described my changes and my decisions in the PR description
 - [ ] I read the development guidelines of the [CONTRIBUTING.md][development-guidelines]
 - [ ] The tests pass and have been updated if relevant
-- [ ] the code quality check pass
+- [ ] The code quality check pass
 
 ❤️ Thank you for your contribution!
 
