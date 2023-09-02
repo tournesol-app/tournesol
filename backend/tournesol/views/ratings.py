@@ -67,7 +67,6 @@ class ContributorRatingQuerysetMixin(PollScopedViewMixin):
         prefetch_related_objects([contributor_rating], self.get_prefetch_entity_config())
 
 
-
 @extend_schema_view(
     get=extend_schema(
         description="Retrieve the logged-in user's ratings for a specific entity "

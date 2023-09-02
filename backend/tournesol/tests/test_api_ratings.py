@@ -1,5 +1,4 @@
 from datetime import timedelta
-from unittest.mock import ANY
 
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase

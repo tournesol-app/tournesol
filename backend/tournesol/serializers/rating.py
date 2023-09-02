@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import BooleanField, CharField, DateTimeField, IntegerField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Entity
+from tournesol.models import ContributorRating, ContributorRatingCriteriaScore
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer, RelatedEntitySerializer
 from tournesol.serializers.poll import CollectiveRatingSerializer, IndividualRatingSerializer
 

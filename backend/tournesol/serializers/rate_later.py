@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from tournesol.errors import ConflictError
-from tournesol.models import Entity, RateLater
+from tournesol.models import RateLater
 from tournesol.serializers.entity import RelatedEntitySerializer
 from tournesol.serializers.poll import CollectiveRatingSerializer, IndividualRatingSerializer
 

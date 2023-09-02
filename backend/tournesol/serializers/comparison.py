@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from tournesol.models import Comparison, ComparisonCriteriaScore, Entity
+from tournesol.models import Comparison, ComparisonCriteriaScore
 from tournesol.serializers.entity import RelatedEntitySerializer
 
 
@@ -77,18 +77,16 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        uid_1 = validated_data.pop("entity_1").get("uid")
-        uid_2 = validated_data.pop("entity_2").get("uid")
         # The validation performed by the `RelatedEntitySerializer` guarantees
         # that the submitted UIDs exist in the database.
-        entity_1 = Entity.objects.get(uid=uid_1)
-        entity_2 = Entity.objects.get(uid=uid_2)
+        entity_1_id = validated_data.pop("entity_1")["pk"]
+        entity_2_id = validated_data.pop("entity_2")["pk"]
         criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(
             poll=self.context.get("poll"),
-            entity_1=entity_1,
-            entity_2=entity_2,
+            entity_1_id=entity_1_id,
+            entity_2_id=entity_2_id,
             **validated_data,
         )
 
