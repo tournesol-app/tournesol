@@ -163,7 +163,6 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(response.data["entity"]["uid"], self.video3.uid)
-        self.assertEqual(response.data["n_comparisons"], 0)
         self.assertEqual(response.data["individual_rating"], {
             "n_comparisons": 0,
             "is_public": True,
@@ -243,7 +242,7 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["entity"]["uid"], video.uid)
         self.assertEqual(response.data["individual_rating"]["is_public"], False)
         self.assertEqual(
-            response.data["criteria_scores"],
+            response.data["individual_rating"]["criteria_scores"],
             [
                 {
                     "criteria": "test-criteria",
@@ -252,7 +251,7 @@ class RatingApi(TestCase):
                 }
             ],
         )
-        self.assertEqual(response.data["n_comparisons"], 0)
+        self.assertEqual(response.data["individual_rating"]["n_comparisons"], 0)
 
     def test_anonymous_cant_list(self):
         """
@@ -274,7 +273,6 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["count"], 2)
         rating = response.data["results"][0]
         self.assertEqual(rating["entity"]["uid"], self.video2.uid)
-        self.assertEqual(rating["n_comparisons"], 1)
         self.assertEqual(
             rating["individual_rating"],
             {
@@ -327,14 +325,16 @@ class RatingApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            [r["n_comparisons"] for r in response.data["results"]], [1, 2, 2, 3]
+            [r["individual_rating"]["n_comparisons"] for r in response.data["results"]],
+            [1, 2, 2, 3]
         )
 
         # The most compared first.
         response = self.client.get(self.ratings_base_url + "?order_by=-n_comparisons")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            [r["n_comparisons"] for r in response.data["results"]], [3, 2, 2, 1]
+            [r["individual_rating"]["n_comparisons"] for r in response.data["results"]],
+            [3, 2, 2, 1]
         )
 
     def test_authenticated_can_list_ordered_by_last_compared_at(self):
@@ -378,7 +378,7 @@ class RatingApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         sorted_array = sorted(
-            response.data["results"], key=lambda x: x["last_compared_at"]
+            response.data["results"], key=lambda x: x["individual_rating"]["last_compared_at"]
         )
         self.assertEqual(
             response.data["results"], sorted_array, response.data["results"]
@@ -389,7 +389,8 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         sorted_array = sorted(
-            response.data["results"], key=lambda x: x["last_compared_at"], reverse=True
+            response.data["results"], key=lambda x: x["individual_rating"]["last_compared_at"],
+            reverse=True
         )
         self.assertEqual(response.data["results"], sorted_array)
 
@@ -631,7 +632,7 @@ class RatingApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["individual_rating"]["is_public"], True)
         self.assertEqual(
-            response_data["criteria_scores"],
+            response_data["individual_rating"]["criteria_scores"],
             [
                 {
                     "criteria": "test-criteria",

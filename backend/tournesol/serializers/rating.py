@@ -1,6 +1,5 @@
-from drf_spectacular.utils import extend_schema_serializer
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import BooleanField, CharField, DateTimeField, IntegerField
+from rest_framework.fields import BooleanField, CharField, DateTimeField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore
@@ -24,9 +23,6 @@ class ExtendedInvididualRatingSerializer(IndividualRatingSerializer):
         read_only_fields = fields
 
 
-@extend_schema_serializer(
-    exclude_fields=["n_comparisons", "last_compared_at", "criteria_scores"]
-)
 class ContributorRatingSerializer(ModelSerializer):
     entity = EntityNoExtraFieldSerializer(read_only=True)
     individual_rating = ExtendedInvididualRatingSerializer(source="*", read_only=True)
@@ -35,13 +31,6 @@ class ContributorRatingSerializer(ModelSerializer):
         read_only=True,
         allow_null=True
     )
-    criteria_scores = ContributorCriteriaScore(many=True, read_only=True)
-    n_comparisons = IntegerField(
-        default=0,
-        read_only=True,
-        help_text="Number of comparisons submitted by the current user about the current video",
-    )
-    last_compared_at = DateTimeField(read_only=True, default=None, required=False)
 
     class Meta:
         model = ContributorRating
@@ -50,9 +39,6 @@ class ContributorRatingSerializer(ModelSerializer):
             "individual_rating",
             "collective_rating",
             "is_public",
-            "criteria_scores",
-            "n_comparisons",
-            "last_compared_at",
         ]
         extra_kwargs = {"is_public": {"write_only": True}}
 
@@ -74,9 +60,6 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
             "uid",
             "is_public",
             "entity",
-            "criteria_scores",
-            "n_comparisons",
-            "last_compared_at",
             "individual_rating",
             "collective_rating",
         ]
