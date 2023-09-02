@@ -25,7 +25,7 @@ class ExtendedInvididualRatingSerializer(IndividualRatingSerializer):
 
 
 @extend_schema_serializer(
-    deprecate_fields=["n_comparisons", "last_compared_at", "is_public", "criteria_scores"]
+    exclude_fields=["n_comparisons", "last_compared_at", "criteria_scores"]
 )
 class ContributorRatingSerializer(ModelSerializer):
     entity = EntityNoExtraFieldSerializer(read_only=True)
@@ -54,6 +54,7 @@ class ContributorRatingSerializer(ModelSerializer):
             "n_comparisons",
             "last_compared_at",
         ]
+        extra_kwargs = {"is_public": {"write_only": True}}
 
     def to_internal_value(self, data):
         """
@@ -79,6 +80,7 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
             "individual_rating",
             "collective_rating",
         ]
+        extra_kwargs = ContributorRatingSerializer.Meta.extra_kwargs
 
     def validate(self, attrs):
         uid = attrs.pop("uid")

@@ -260,13 +260,13 @@ const EntitySelectorInnerAuth = ({
   );
 
   const toggleAction: ActionList = useMemo(() => {
-    return rating?.is_public != null
+    return rating?.individual_rating.is_public != null
       ? [
           <UserRatingPublicToggle
             key="isPublicToggle"
             uid={rating.entity.uid}
-            nComparisons={rating.n_comparisons}
-            isPublic={rating.is_public}
+            nComparisons={rating.individual_rating.n_comparisons}
+            isPublic={rating.individual_rating.is_public}
             onChange={handleRatingUpdate}
           />,
         ]

@@ -163,7 +163,6 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(response.data["entity"]["uid"], self.video3.uid)
-        self.assertEqual(response.data["is_public"], True)
         self.assertEqual(response.data["n_comparisons"], 0)
         self.assertEqual(response.data["individual_rating"], {
             "n_comparisons": 0,
@@ -242,7 +241,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["entity"]["uid"], video.uid)
-        self.assertEqual(response.data["is_public"], False)
+        self.assertEqual(response.data["individual_rating"]["is_public"], False)
         self.assertEqual(
             response.data["criteria_scores"],
             [
@@ -275,7 +274,6 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["count"], 2)
         rating = response.data["results"][0]
         self.assertEqual(rating["entity"]["uid"], self.video2.uid)
-        self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
         self.assertEqual(
             rating["individual_rating"],
@@ -631,7 +629,7 @@ class RatingApi(TestCase):
         )
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["is_public"], True)
+        self.assertEqual(response_data["individual_rating"]["is_public"], True)
         self.assertEqual(
             response_data["criteria_scores"],
             [

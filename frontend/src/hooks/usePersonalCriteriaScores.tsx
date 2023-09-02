@@ -92,7 +92,8 @@ export const PersonalCriteriaScoresContextProvider = ({
         setCannotActivatePersonalScores(reason);
         return;
       }
-      const { criteria_scores: personalCriteriaScores } = contributorRating;
+      const personalCriteriaScores =
+        contributorRating.individual_rating.criteria_scores;
       if (personalCriteriaScores.length === 0) {
         setCannotActivatePersonalScores('noPersonalScore');
         return;

@@ -107,13 +107,13 @@ export const RatingsContext = React.createContext<RatingsContextValue>({});
 export const PublicStatusAction = ({ uid }: { uid: string }) => {
   const { getContributorRating, onChange } = useContext(RatingsContext);
   const contributorRating = getContributorRating?.(uid);
-  if (contributorRating == null || contributorRating.is_public == null) {
+  if (contributorRating == null) {
     return null;
   }
   return (
     <UserRatingPublicToggle
-      nComparisons={contributorRating.n_comparisons}
-      isPublic={contributorRating.is_public}
+      nComparisons={contributorRating.individual_rating.n_comparisons}
+      isPublic={contributorRating.individual_rating.is_public}
       uid={uid}
       onChange={onChange}
     />

@@ -2769,59 +2769,39 @@ components:
           allOf:
           - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
-        is_public:
-          type: boolean
-          description: Should the rating be public?
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/ExtendedInvididualRating'
           readOnly: true
-        n_comparisons:
-          type: integer
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
           readOnly: true
-          default: 0
-          description: Number of comparisons submitted by the current user about the
-            current video
-        last_compared_at:
-          type: string
-          format: date-time
-          readOnly: true
+          nullable: true
       required:
-      - criteria_scores
+      - collective_rating
       - entity
-      - last_compared_at
-      - n_comparisons
+      - individual_rating
     ContributorRatingCreate:
       type: object
       properties:
-        is_public:
-          type: boolean
-          description: Should the rating be public?
         entity:
           allOf:
           - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/ExtendedInvididualRating'
           readOnly: true
-        n_comparisons:
-          type: integer
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
           readOnly: true
-          default: 0
-          description: Number of comparisons submitted by the current user about the
-            current video
-        last_compared_at:
-          type: string
-          format: date-time
-          readOnly: true
+          nullable: true
       required:
-      - criteria_scores
+      - collective_rating
       - entity
-      - last_compared_at
-      - n_comparisons
+      - individual_rating
     ContributorRatingCreateRequest:
       type: object
       properties:
@@ -2832,6 +2812,7 @@ components:
           maxLength: 144
         is_public:
           type: boolean
+          writeOnly: true
           description: Should the rating be public?
       required:
       - uid
@@ -2840,6 +2821,7 @@ components:
       properties:
         is_public:
           type: boolean
+          writeOnly: true
           description: Should the rating be public?
     ContributorRatingUpdateAll:
       type: object
@@ -3137,6 +3119,32 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    ExtendedInvididualRating:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+          readOnly: true
+          description: Should the rating be public?
+        n_comparisons:
+          type: integer
+          readOnly: true
+          default: 0
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - criteria_scores
+      - is_public
+      - last_compared_at
+      - n_comparisons
     FAQEntry:
       type: object
       description: A translated question with its translated answer.
@@ -3215,6 +3223,7 @@ components:
         n_comparisons:
           type: integer
           readOnly: true
+          default: 0
       required:
       - is_public
       - n_comparisons
@@ -3492,6 +3501,7 @@ components:
       properties:
         is_public:
           type: boolean
+          writeOnly: true
           description: Should the rating be public?
     PatchedContributorRatingUpdateAllRequest:
       type: object
