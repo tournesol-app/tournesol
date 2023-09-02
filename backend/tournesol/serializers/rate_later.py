@@ -41,13 +41,11 @@ class RateLaterSerializer(ModelSerializer):
         ]
 
     def create(self, validated_data):
-        uid = validated_data.pop("entity").get("uid")
-        entity = Entity.objects.get(uid=uid)
-
+        entity_id = validated_data.pop("entity")["pk"]
         try:
             rate_later = RateLater.objects.create(
                 poll=self.context.get("poll"),
-                entity=entity,
+                entity_id=entity_id,
                 **validated_data,
             )
         except IntegrityError as error:

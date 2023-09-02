@@ -31,7 +31,6 @@ class RateLaterQuerysetMixin(PollScopedViewMixin):
         )
 
     def prefetch_entity(self, rate_later: RateLater):
-        rate_later.refresh_from_db(fields=["entity"])
         prefetch_related_objects([rate_later], self.get_prefetch_entity_config())
 
 

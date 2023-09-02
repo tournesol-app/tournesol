@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import ANY
 
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
@@ -146,6 +147,15 @@ class RatingApi(TestCase):
         """
         An authenticated user can create a public rating.
         """
+        EntityPollRatingFactory(
+            poll=self.poll_videos,
+            entity=self.video3,
+            tournesol_score=50,
+            n_contributors=20,
+            n_comparisons=30,
+            sum_trust_scores=10,
+        )
+
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
             self.ratings_base_url,
@@ -156,6 +166,21 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["entity"]["uid"], self.video3.uid)
         self.assertEqual(response.data["is_public"], True)
         self.assertEqual(response.data["n_comparisons"], 0)
+        self.assertEqual(response.data["individual_rating"], {
+            "n_comparisons": 0,
+            "is_public": True,
+            "criteria_scores": [],
+            "last_compared_at": None,
+        })
+        self.assertEqual(response.data["collective_rating"], {
+            "tournesol_score": 50,
+            "n_contributors": 20,
+            "n_comparisons": 30,
+            "unsafe": {
+                "status": False,
+                "reasons": [],
+            }
+        })
 
     def test_authenticated_cant_create_twice(self):
         """
@@ -253,6 +278,17 @@ class RatingApi(TestCase):
         self.assertEqual(rating["entity"]["uid"], self.video2.uid)
         self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
+        self.assertEqual(
+            rating["individual_rating"],
+            {
+                "n_comparisons": 1,
+                "is_public": False,
+                "criteria_scores": [],
+                "last_compared_at": (
+                    self.user1.comparisons.last().datetime_lastedit.isoformat().replace("+00:00", "Z")
+                ),
+            }
+        )
 
     def test_authenticated_can_list_ordered_by_n_comparisons(self):
         """
