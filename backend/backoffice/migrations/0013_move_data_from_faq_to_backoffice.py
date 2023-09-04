@@ -4,27 +4,12 @@ from django.db import migrations
 
 
 def migrate_forward(apps, schema_editor):
-    Faq_FAQEntry = apps.get_model("faq", "FAQEntry")
-    Backoffice_FAQEntry = apps.get_model("backoffice", "FAQEntry")
-
-    for old_entry in Faq_FAQEntry.objects.all().iterator():
-        new_entry = Backoffice_FAQEntry.objects.create(
-            name=old_entry.name,
-            rank=old_entry.rank,
-            enabled=old_entry.enabled
-        )
-
-        for old_question in old_entry.questions.all():
-            new_entry.questions.create(
-                language=old_question.language,
-                text=old_question.text
-            )
-
-        for old_answer in old_entry.answers.all():
-            new_entry.answers.create(
-                language=old_answer.language,
-                text=old_answer.text
-            )
+    """
+    This migration used to migrate the data from the legacy `faq` app to the
+    `backoffice`. The app `faq` doesn't exist anymore, and all references to
+    it have been deleted.
+    """
+    pass
 
 
 class Migration(migrations.Migration):

@@ -57,7 +57,15 @@ server {
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Content-Type-Options nosniff;
-    add_header Strict-Transport-Security "max-age=300; includeSubDomains; preload; always;";
+
+    # HSTS set to 180 days (15552000 seconds)
+    # For information, according to Mozilla 1 year is acceptable, and 2 year
+    # is recommended.
+    #
+    #   see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+    #   see: https://hstspreload.org
+    #
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload;" always;
 
     # Content Security Policy
     #
@@ -132,7 +140,15 @@ server {
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Content-Type-Options nosniff;
-    add_header Strict-Transport-Security "max-age=300; includeSubDomains; preload; always;";
+
+    # HSTS set to 180 days (15552000 seconds)
+    # For information, according to Mozilla 1 year is acceptable, and 2 year
+    # is recommended.
+    #
+    #   see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+    #   see: https://hstspreload.org
+    #
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload;" always;
 {% else %}
     listen 80;
 {% endif %}

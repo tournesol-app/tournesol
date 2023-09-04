@@ -7,7 +7,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("backoffice", "0010_init_faq"),
-        ("faq", "0006_reset_faq_table_name"),
     ]
 
     operations = [
