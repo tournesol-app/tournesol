@@ -138,8 +138,7 @@ const Comparison = ({
           setInitialComparison(comparison);
           setIsLoading(false);
         })
-        .catch((err) => {
-          console.error(err);
+        .catch(() => {
           setInitialComparison(null);
           setIsLoading(false);
         });
