@@ -273,7 +273,8 @@ const Comparison = ({
               uidA={uidA || ''}
               uidB={uidB || ''}
               isComparisonPublic={
-                selectorA.rating.is_public && selectorB.rating.is_public
+                selectorA.rating.individual_rating.is_public &&
+                selectorB.rating.individual_rating.is_public
               }
             />
           )

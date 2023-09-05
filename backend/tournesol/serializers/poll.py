@@ -53,7 +53,7 @@ class CollectiveRatingSerializer(ModelSerializer):
 
 
 class IndividualRatingSerializer(ModelSerializer):
-    n_comparisons = IntegerField(read_only=True)
+    n_comparisons = IntegerField(read_only=True, default=0)
 
     class Meta:
         model = ContributorRating

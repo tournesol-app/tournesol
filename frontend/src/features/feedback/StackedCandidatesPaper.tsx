@@ -42,7 +42,7 @@ const StackedCandidatesPaper = ({
 
   const nComparisons = Object.fromEntries(
     ratings.map((rating) => {
-      return [rating.entity.uid, rating.n_comparisons];
+      return [rating.entity.uid, rating.individual_rating.n_comparisons];
     })
   );
 
