@@ -1,6 +1,7 @@
 """
 API endpoint to interact with the contributor's ratings.
 """
+from django.db import IntegrityError
 from django.db.models import Prefetch, prefetch_related_objects
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -184,7 +185,20 @@ class ContributorRatingList(ContributorRatingQuerysetMixin, generics.ListCreateA
         return ratings
 
     def perform_create(self, serializer):
-        contributor_rating = serializer.save()
+        # In some cases, several concurrent requests might pass the
+        # serializer's validation and cause the view to fail here.
+        try:
+            contributor_rating = serializer.save()
+        except IntegrityError:
+            raise ValidationError(
+                {
+                    "non_field_errors": [
+                        "A ContributorRating already exists for this (user, entity, poll)",
+                    ]
+                },
+                code="unique",
+            )
+
         self.prefetch_entity(contributor_rating)
 
 
