@@ -189,7 +189,7 @@ class ContributorRatingList(ContributorRatingQuerysetMixin, generics.ListCreateA
         # serializer's validation and cause the view to fail here.
         try:
             contributor_rating = serializer.save()
-        except IntegrityError:
+        except IntegrityError as err:
             raise ValidationError(
                 {
                     "non_field_errors": [
@@ -197,7 +197,7 @@ class ContributorRatingList(ContributorRatingQuerysetMixin, generics.ListCreateA
                     ]
                 },
                 code="unique",
-            )
+            ) from err
 
         self.prefetch_entity(contributor_rating)
 
