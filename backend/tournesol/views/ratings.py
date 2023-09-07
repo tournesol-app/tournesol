@@ -1,6 +1,9 @@
 """
 API endpoint to interact with the contributor's ratings.
 """
+import logging
+
+from django.db import IntegrityError
 from django.db.models import Prefetch, prefetch_related_objects
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -15,6 +18,8 @@ from tournesol.serializers.rating import (
     ContributorRatingUpdateAllSerializer,
 )
 from tournesol.views.mixins.poll import PollScopedViewMixin
+
+logger = logging.getLogger(__name__)
 
 # The only values accepted by the URL parameter `order_by` in the list APIs.
 ALLOWED_GENERIC_ORDER_BY_VALUES = [
@@ -184,7 +189,26 @@ class ContributorRatingList(ContributorRatingQuerysetMixin, generics.ListCreateA
         return ratings
 
     def perform_create(self, serializer):
-        contributor_rating = serializer.save()
+        # In some cases, several concurrent requests might pass the
+        # serializer's validation and cause the view to fail here.
+        try:
+            contributor_rating = serializer.save()
+        except IntegrityError as err:
+            logger.warning(
+                "Got IntegrityError when creating ContributorRating\n"
+                "We suppose it's an unique constraint violation. If not, the error should be "
+                "addressed.",
+                exc_info=True
+            )
+            raise ValidationError(
+                {
+                    "non_field_errors": [
+                        "A ContributorRating already exists for this (user, entity, poll)",
+                    ]
+                },
+                code="unique",
+            ) from err
+
         self.prefetch_entity(contributor_rating)
 
 
