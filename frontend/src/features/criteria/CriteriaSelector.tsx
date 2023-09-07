@@ -22,6 +22,9 @@ const CriteriaSelector = ({
       size="small"
       value={criteria}
       onChange={(v) => setCriteria(v.target.value)}
+      SelectDisplayProps={{
+        style: { whiteSpace: 'normal' },
+      }}
     >
       {extraEmptyOption !== '' && (
         <MenuItem value={extraEmptyOption}>------------</MenuItem>
