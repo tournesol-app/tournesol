@@ -194,7 +194,7 @@ class ContributorRatingList(ContributorRatingQuerysetMixin, generics.ListCreateA
         try:
             contributor_rating = serializer.save()
         except IntegrityError as err:
-            logging.warning(
+            logger.warning(
                 "Got IntegrityError when creating ContributorRating\n"
                 "We suppose it's an unique constraint violation. If not, the error should be "
                 "addressed.",
