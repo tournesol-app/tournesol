@@ -202,7 +202,7 @@ const EntityTabsBox = ({
       </Tabs>
       <LoaderWrapper
         isLoading={status === TabStatus.Loading}
-        sx={{ overflowY: 'scroll' }}
+        sx={{ overflowY: 'auto' }}
       >
         {isDescriptionVisible ? (
           <TabInfo
