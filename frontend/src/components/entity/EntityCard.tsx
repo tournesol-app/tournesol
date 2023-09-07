@@ -222,7 +222,7 @@ export const RowEntityCard = ({
           }}
         />
       </Box>
-      <Stack gap="4px">
+      <Stack gap="4px" alignSelf="start" marginTop={1}>
         <EntityCardTitle
           uid={entity.uid}
           title={entity.metadata.name}

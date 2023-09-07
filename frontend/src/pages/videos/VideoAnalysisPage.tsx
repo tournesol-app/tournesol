@@ -70,7 +70,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
               {t('entityAnalysisPage.video.description')}
             </CollapseButton>
             <Collapse in={descriptionCollapsed} timeout="auto" unmountOnExit>
-              <Typography paragraph>
+              <Typography paragraph component="div">
                 <Box
                   style={
                     descriptionCollapsed
