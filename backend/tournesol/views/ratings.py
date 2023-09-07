@@ -1,6 +1,8 @@
 """
 API endpoint to interact with the contributor's ratings.
 """
+import logging
+
 from django.db import IntegrityError
 from django.db.models import Prefetch, prefetch_related_objects
 from drf_spectacular.types import OpenApiTypes
@@ -16,6 +18,8 @@ from tournesol.serializers.rating import (
     ContributorRatingUpdateAllSerializer,
 )
 from tournesol.views.mixins.poll import PollScopedViewMixin
+
+logger = logging.getLogger(__name__)
 
 # The only values accepted by the URL parameter `order_by` in the list APIs.
 ALLOWED_GENERIC_ORDER_BY_VALUES = [
@@ -190,6 +194,12 @@ class ContributorRatingList(ContributorRatingQuerysetMixin, generics.ListCreateA
         try:
             contributor_rating = serializer.save()
         except IntegrityError as err:
+            logging.warning(
+                "Got IntegrityError when creating ContributorRating\n"
+                "We suppose it's an unique constraint violation. If not, the error should be "
+                "addressed.",
+                exc_info=True
+            )
             raise ValidationError(
                 {
                     "non_field_errors": [
