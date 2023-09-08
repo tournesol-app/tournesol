@@ -211,7 +211,6 @@ html[dark] #tournesol_campaign_button {
   height: 20px;
 }
 
-[darker-dark-theme] [dark] .tournesol_simple_button img,
 html[darker-dark-theme][dark] .tournesol_simple_button img {
   filter: invert(78%) sepia(0%) saturate(0%) hue-rotate(229deg) brightness(89%) contrast(86%);
 }
@@ -227,9 +226,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button img {
   transition: all 0.1s ease;
 }
 
-[darker-dark-theme] [dark] .tournesol_simple_button:hover img,
 html[darker-dark-theme][dark] .tournesol_simple_button:hover img,
-[darker-dark-theme] [dark] .tournesol_simple_button:active img,
 html[darker-dark-theme][dark] .tournesol_simple_button:active img {
   filter: invert(99%) sepia(4%) saturate(475%) hue-rotate(206deg) brightness(116%) contrast(89%);
 }
@@ -238,7 +235,6 @@ html[darker-dark-theme][dark] .tournesol_simple_button:active img {
   filter: invert(60%) sepia(0%) saturate(0%) hue-rotate(326deg) brightness(95%) contrast(94%);
 }
 
-[darker-dark-theme] [dark] .tournesol_simple_button:disabled img,
 html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
   filter: invert(40%) sepia(0%) saturate(1199%) hue-rotate(174deg) brightness(107%) contrast(79%);
 }
