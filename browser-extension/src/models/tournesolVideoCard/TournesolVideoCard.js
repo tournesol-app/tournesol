@@ -83,7 +83,7 @@ export class TournesolVideoCard {
           chrome.runtime.getURL(lowestCriteriaIconUrl)
         );
         criteriaIcon.setAttribute('title', lowestCriteriaTitle);
-        criteriaDiv.appendChild(
+        criteriaDiv.append(
           chrome.i18n.getMessage('ratedLow') + ' ',
           criteriaIcon
         );
