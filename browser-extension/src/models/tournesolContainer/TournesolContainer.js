@@ -98,7 +98,6 @@ export class TournesolContainer {
     tournesolIcon.setAttribute('id', 'tournesol_icon');
     tournesolIcon.setAttribute(
       'src',
-      //chrome.extension.getURL('rate_now_icon.png'),
       'https://tournesol.app/svg/tournesol.svg'
     );
     tournesolIcon.setAttribute('width', '24');
@@ -128,7 +127,7 @@ export class TournesolContainer {
       const campaignButtonImg = document.createElement('img');
       campaignButtonImg.setAttribute(
         'src',
-        chrome.extension.getURL('images/campaign.svg')
+        chrome.runtime.getURL('images/campaign.svg')
       );
       campaignButtonImg.setAttribute('alt', 'Megaphone icon');
       campaignButton.append(campaignButtonImg);

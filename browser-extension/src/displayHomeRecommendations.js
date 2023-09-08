@@ -1,6 +1,6 @@
 (async () => {
   const { TournesolRecommendations } = await import(
-    chrome.extension.getURL(
+    chrome.runtime.getURL(
       './models/tournesolRecommendations/TournesolRecommendations.js'
     )
   );
