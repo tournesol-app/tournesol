@@ -185,13 +185,11 @@ export class TournesolContainer {
     }
 
     // A new button is created on each video loading, the image must be loaded accordingly
-    fetch(
-      chrome.runtime.getURL(
-        this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
-      )
-    )
-      .then((r) => r.text())
-      .then((svg) => (expand_button.innerHTML = svg));
+    const expandImg = document.createElement('img');
+    expandImg.src = chrome.runtime.getURL(
+      this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
+    );
+    expand_button.append(expandImg);
 
     expand_button.className = 'tournesol_simple_button';
     expand_button.onclick = () => {
