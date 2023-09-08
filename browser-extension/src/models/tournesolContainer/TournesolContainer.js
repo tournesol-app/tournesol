@@ -145,9 +145,10 @@ export class TournesolContainer {
     const preferencesButton = document.createElement('button');
     preferencesButton.id = 'tournesol_preferences_buton';
     preferencesButton.title = chrome.i18n.getMessage('menuPreferences');
-    fetch(chrome.runtime.getURL('images/settings.svg'))
-      .then((r) => r.text())
-      .then((svg) => (preferencesButton.innerHTML = svg));
+
+    const preferencesImg = document.createElement('img');
+    preferencesImg.src = chrome.runtime.getURL('images/settings.svg');
+    preferencesButton.append(preferencesImg);
 
     preferencesButton.className = 'tournesol_simple_button';
     preferencesButton.onclick = () => {
@@ -159,9 +160,10 @@ export class TournesolContainer {
     const refreshButton = document.createElement('button');
     refreshButton.id = 'tournesol_refresh_button';
     refreshButton.title = chrome.i18n.getMessage('refreshRecommendations');
-    fetch(chrome.runtime.getURL('images/sync-alt.svg'))
-      .then((r) => r.text())
-      .then((svg) => (refreshButton.innerHTML = svg));
+
+    const refreshImg = document.createElement('img');
+    refreshImg.src = chrome.runtime.getURL('images/sync-alt.svg');
+    refreshButton.append(refreshImg);
 
     refreshButton.className = 'tournesol_simple_button';
     refreshButton.onclick = () => {
@@ -190,6 +192,7 @@ export class TournesolContainer {
     )
       .then((r) => r.text())
       .then((svg) => (expand_button.innerHTML = svg));
+
     expand_button.className = 'tournesol_simple_button';
     expand_button.onclick = () => {
       expand_button.disabled = true;
