@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import { Campaign, Warning } from '@mui/icons-material';
 
+import linkifyStr from 'linkify-string';
+
 import { Banner } from 'src/services/openapi';
 
 interface WebsiteBannerSingleProps {
@@ -39,6 +41,9 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
   if (security) {
     bannerSx = { ...bannerSx, ...securityAdvisorySx };
   }
+
+  const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
+  const bannerParagraphs = linkifyStr(banner.text, linkifyOpts).split('\n');
 
   return (
     <Grid container width="100%" flexDirection="column" alignItems="center">
@@ -67,14 +72,25 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
               justifyContent="space-between"
               alignItems="flex-end"
             >
-              <Typography paragraph mb={0}>
-                {banner.text}
-              </Typography>
+              <Box>
+                {bannerParagraphs.map((paragraph, index) => (
+                  <Typography
+                    paragraph
+                    key={`banner_p${index}`}
+                    mb={index + 1 === bannerParagraphs.length ? 0 : 2}
+                    dangerouslySetInnerHTML={{ __html: paragraph }}
+                  />
+                ))}
+              </Box>
 
               {banner.action_link && banner.action_label && (
-                <Box>
+                <Box minWidth="100px">
                   <Button
-                    variant={security ? 'contained' : 'outlined'}
+                    variant={
+                      security || (banner.priority ?? 0) >= 100
+                        ? 'contained'
+                        : 'outlined'
+                    }
                     color={security ? 'error' : 'secondary'}
                     component={Link}
                     href={banner.action_link}
