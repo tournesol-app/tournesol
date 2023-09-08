@@ -191,7 +191,6 @@ html[dark] #tournesol_campaign_button {
 }
 
 .tournesol_simple_button {
-  fill: var(--yt-spec-text-secondary);
   width: 20px;
   height: 20px;
   border-radius: 10px;
@@ -202,7 +201,9 @@ html[dark] #tournesol_campaign_button {
   cursor: pointer;
 }
 
-.tournesol_simple_button svg {
+.tournesol_simple_button img {
+  filter: invert(38%) sepia(0%) saturate(0%) hue-rotate(66deg) brightness(96%) contrast(92%);
+
   position: absolute;
   left: 0px;
   top: 0px;
@@ -210,8 +211,13 @@ html[dark] #tournesol_campaign_button {
   height: 20px;
 }
 
-.tournesol_simple_button:hover svg {
-  fill: var(--yt-spec-text-primary);
+html[darker-dark-theme][dark] .tournesol_simple_button img {
+  filter: invert(78%) sepia(0%) saturate(0%) hue-rotate(229deg) brightness(89%) contrast(86%);
+}
+
+.tournesol_simple_button:hover img,
+.tournesol_simple_button:active img {
+  filter: invert(0%) sepia(11%) saturate(3315%) hue-rotate(338deg) brightness(79%) contrast(88%);
 
   -webkit-transition: all 0.1s ease;
   -moz-transition: all 0.1s ease;
@@ -220,32 +226,17 @@ html[dark] #tournesol_campaign_button {
   transition: all 0.1s ease;
 }
 
-.tournesol_simple_button:active svg {
-  fill: var(--yt-spec-text-primary);
-
-  -webkit-transition: all 0.1s ease;
-  -moz-transition: all 0.1s ease;
-  -o-transition: all 0.1s ease;
-  -ms-transition: all 0.1s ease;
-  transition: all 0.1s ease;
+html[darker-dark-theme][dark] .tournesol_simple_button:hover img,
+html[darker-dark-theme][dark] .tournesol_simple_button:active img {
+  filter: invert(99%) sepia(4%) saturate(475%) hue-rotate(206deg) brightness(116%) contrast(89%);
 }
 
-.tournesol_simple_button:active {
-  background: var(--yt-spec-brand-background-solid);
-
-  -webkit-transition: all 0.1s ease;
-  -moz-transition: all 0.1s ease;
-  -o-transition: all 0.1s ease;
-  -ms-transition: all 0.1s ease;
-  transition: all 0.1s ease;
+.tournesol_simple_button:disabled img {
+  filter: invert(60%) sepia(0%) saturate(0%) hue-rotate(326deg) brightness(95%) contrast(94%);
 }
 
-.tournesol_simple_button:disabled svg {
-  fill: var(--yt-spec-text-disabled);
-}
-
-.tournesol_simple_button:disabled {
-  background: var(--yt-spec-brand-background-solid);
+html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
+  filter: invert(40%) sepia(0%) saturate(1199%) hue-rotate(174deg) brightness(107%) contrast(79%);
 }
 
 .video_card {

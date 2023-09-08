@@ -98,7 +98,6 @@ export class TournesolContainer {
     tournesolIcon.setAttribute('id', 'tournesol_icon');
     tournesolIcon.setAttribute(
       'src',
-      //chrome.extension.getURL('rate_now_icon.png'),
       'https://tournesol.app/svg/tournesol.svg'
     );
     tournesolIcon.setAttribute('width', '24');
@@ -128,7 +127,7 @@ export class TournesolContainer {
       const campaignButtonImg = document.createElement('img');
       campaignButtonImg.setAttribute(
         'src',
-        chrome.extension.getURL('images/campaign.svg')
+        chrome.runtime.getURL('images/campaign.svg')
       );
       campaignButtonImg.setAttribute('alt', 'Megaphone icon');
       campaignButton.append(campaignButtonImg);
@@ -145,9 +144,10 @@ export class TournesolContainer {
     const preferencesButton = document.createElement('button');
     preferencesButton.id = 'tournesol_preferences_buton';
     preferencesButton.title = chrome.i18n.getMessage('menuPreferences');
-    fetch(chrome.runtime.getURL('images/settings.svg'))
-      .then((r) => r.text())
-      .then((svg) => (preferencesButton.innerHTML = svg));
+
+    const preferencesImg = document.createElement('img');
+    preferencesImg.src = chrome.runtime.getURL('images/settings.svg');
+    preferencesButton.append(preferencesImg);
 
     preferencesButton.className = 'tournesol_simple_button';
     preferencesButton.onclick = () => {
@@ -159,9 +159,10 @@ export class TournesolContainer {
     const refreshButton = document.createElement('button');
     refreshButton.id = 'tournesol_refresh_button';
     refreshButton.title = chrome.i18n.getMessage('refreshRecommendations');
-    fetch(chrome.runtime.getURL('images/sync-alt.svg'))
-      .then((r) => r.text())
-      .then((svg) => (refreshButton.innerHTML = svg));
+
+    const refreshImg = document.createElement('img');
+    refreshImg.src = chrome.runtime.getURL('images/sync-alt.svg');
+    refreshButton.append(refreshImg);
 
     refreshButton.className = 'tournesol_simple_button';
     refreshButton.onclick = () => {
@@ -183,13 +184,12 @@ export class TournesolContainer {
     }
 
     // A new button is created on each video loading, the image must be loaded accordingly
-    fetch(
-      chrome.runtime.getURL(
-        this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
-      )
-    )
-      .then((r) => r.text())
-      .then((svg) => (expand_button.innerHTML = svg));
+    const expandImg = document.createElement('img');
+    expandImg.src = chrome.runtime.getURL(
+      this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
+    );
+    expand_button.append(expandImg);
+
     expand_button.className = 'tournesol_simple_button';
     expand_button.onclick = () => {
       expand_button.disabled = true;

@@ -1,9 +1,9 @@
 (async () => {
-  const bannerUrl = chrome.extension.getURL('./models/banner/Banner.js'),
-    TournesolRecommendationsOptionsUrl = chrome.extension.getURL(
+  const bannerUrl = chrome.runtime.getURL('./models/banner/Banner.js'),
+    TournesolRecommendationsOptionsUrl = chrome.runtime.getURL(
       './models/tournesolRecommendations/TournesolRecommendationsOptions.js'
     ),
-    TournesolSearchRecommendationsUrl = chrome.extension.getURL(
+    TournesolSearchRecommendationsUrl = chrome.runtime.getURL(
       './models/tournesolRecommendations/TournesolSearchRecommendations.js'
     );
 

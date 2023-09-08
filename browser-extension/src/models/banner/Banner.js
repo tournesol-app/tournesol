@@ -60,7 +60,7 @@ export class Banner {
     const bannerIconContainer = document.createElement('div');
     const icon = document.createElement('img');
     icon.id = 'tournesol_banner_icon';
-    icon.setAttribute('src', chrome.extension.getURL('images/campaign.svg'));
+    icon.setAttribute('src', chrome.runtime.getURL('images/campaign.svg'));
     icon.setAttribute('alt', 'Megaphone icon');
     bannerIconContainer.append(icon);
 
@@ -92,7 +92,7 @@ export class Banner {
     closeButtonImg.id = 'tournesol_banner_close_icon';
     closeButtonImg.setAttribute(
       'src',
-      chrome.extension.getURL('images/close.svg')
+      chrome.runtime.getURL('images/close.svg')
     );
     closeButtonImg.setAttribute('alt', 'Close icon');
     closeButton.append(closeButtonImg);
