@@ -64,23 +64,29 @@ export class TournesolVideoCard {
       const highestCriteriaIconUrl = `images/criteriaIcons/${highestCriteria.criteria}.svg`;
 
       if (highestCriteria.score > 0) {
-        const criteriaIcon = document.createElement("img");
-        criteriaIcon.setAttribute("src", chrome.runtime.getURL(highestCriteriaIconUrl))
-        criteriaIcon.setAttribute("title", highestCriteriaTitle)
+        const criteriaIcon = document.createElement('img');
+        criteriaIcon.setAttribute(
+          'src',
+          chrome.runtime.getURL(highestCriteriaIconUrl)
+        );
+        criteriaIcon.setAttribute('title', highestCriteriaTitle);
         criteriaDiv.append(
-          chrome.i18n.getMessage('ratedHigh') + " ",
+          chrome.i18n.getMessage('ratedHigh') + ' ',
           criteriaIcon
-        )
+        );
       }
 
       if (lowestCriteria.score < 0) {
-        const criteriaIcon = document.createElement("img");
-        criteriaIcon.setAttribute("src", chrome.runtime.getURL(lowestCriteriaIconUrl))
-        criteriaIcon.setAttribute("title", lowestCriteriaTitle)
+        const criteriaIcon = document.createElement('img');
+        criteriaIcon.setAttribute(
+          'src',
+          chrome.runtime.getURL(lowestCriteriaIconUrl)
+        );
+        criteriaIcon.setAttribute('title', lowestCriteriaTitle);
         criteriaDiv.appendChild(
-          chrome.i18n.getMessage('ratedLow') + " ",
+          chrome.i18n.getMessage('ratedLow') + ' ',
           criteriaIcon
-        )
+        );
       }
     }
 
@@ -140,9 +146,9 @@ export class TournesolVideoCard {
     uploader.append(channelLink);
     channelDiv.append(uploader);
 
-    const dotSpan = document.createElement("span");
-    dotSpan.classList.add("dot");
-    dotSpan.textContent = "\xA0•\xA0";
+    const dotSpan = document.createElement('span');
+    dotSpan.classList.add('dot');
+    dotSpan.textContent = '\xA0•\xA0';
 
     const viewsAndDate = document.createElement('p');
     viewsAndDate.className = 'video_text';
@@ -151,7 +157,7 @@ export class TournesolVideoCard {
         TournesolVideoCard.millifyViews(video.metadata.views),
       ]),
       dotSpan.cloneNode(true),
-      TournesolVideoCard.viewPublishedDate(video.metadata.publication_date),
+      TournesolVideoCard.viewPublishedDate(video.metadata.publication_date)
     );
 
     channelDiv.append(viewsAndDate);
@@ -161,30 +167,34 @@ export class TournesolVideoCard {
     scoreAndRatings.className = 'video_text video_tournesol_rating';
 
     const tournesolLogo = document.createElement('img');
-    tournesolLogo.classList.add("tournesol_score_logo");
-    tournesolLogo.setAttribute("src", "https://tournesol.app/svg/tournesol.svg");
-    tournesolLogo.setAttribute("alt", "Tournesol logo")
+    tournesolLogo.classList.add('tournesol_score_logo');
+    tournesolLogo.setAttribute(
+      'src',
+      'https://tournesol.app/svg/tournesol.svg'
+    );
+    tournesolLogo.setAttribute('alt', 'Tournesol logo');
 
-    const tournesolScore = document.createElement("strong");
+    const tournesolScore = document.createElement('strong');
     tournesolScore.textContent = video.tournesol_score.toFixed(0);
     tournesolScore.appendChild(dotSpan);
 
-    const nComparisons = document.createElement("span");
+    const nComparisons = document.createElement('span');
     nComparisons.textContent = chrome.i18n.getMessage('comparisonsBy', [
       video.n_comparisons,
     ]);
 
-    const nContributors = document.createElement("span");
-    nContributors.classList.add("contributors");
-    nContributors.textContent = chrome.i18n.getMessage('comparisonsContributors', [
-      video.n_contributors,
-    ]);
+    const nContributors = document.createElement('span');
+    nContributors.classList.add('contributors');
+    nContributors.textContent = chrome.i18n.getMessage(
+      'comparisonsContributors',
+      [video.n_contributors]
+    );
 
     scoreAndRatings.append(
       tournesolLogo,
       tournesolScore,
       nComparisons,
-      "\xA0",
+      '\xA0',
       nContributors
     );
 
