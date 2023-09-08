@@ -192,6 +192,7 @@ export class TournesolVideoCard {
 
     scoreAndRatings.append(
       tournesolLogo,
+      '\xA0',
       tournesolScore,
       nComparisons,
       '\xA0',
