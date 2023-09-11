@@ -7,6 +7,10 @@ const initSuggested = (poll: string) => (ALREADY_SUGGESTED[poll] = []);
 export const clearSuggested = (poll: string) =>
   (ALREADY_SUGGESTED[poll].length = 0);
 
+export const clearAllSuggested = () => {
+  Object.keys(ALREADY_SUGGESTED).forEach((key) => clearSuggested(key));
+};
+
 export const dontSuggestAnymore = (poll: string, uid: string) => {
   if (ALREADY_SUGGESTED[poll] == null) {
     initSuggested(poll);
