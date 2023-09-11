@@ -4,6 +4,7 @@ import { Tooltip, Button } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { YOUTUBE_POLL_NAME, UID_YT_NAMESPACE } from 'src/utils/constants';
+import { ALREADY_SUGGESTED, dontSuggestAnymore } from 'src/utils/rateLater';
 import { getVideoForComparison, idFromUid } from 'src/utils/video';
 
 interface Props {
@@ -37,15 +38,18 @@ const AutoEntityButton = ({
   const askNewVideo = useCallback(
     async ({ fromAutoFill = false } = {}) => {
       onClick();
+
       const newVideoId: string | null = await getVideoForComparison(
         otherUid ? idFromUid(otherUid) : null,
-        idFromUid(currentUid || '')
+        idFromUid(currentUid || ''),
+        ALREADY_SUGGESTED
       );
 
       if (!mountedRef.current) return;
 
       if (newVideoId) {
         const newVideoUid = `${UID_YT_NAMESPACE}${newVideoId}`;
+        dontSuggestAnymore(newVideoUid);
 
         // When both videos are auto filled it's common to receive the same video twice.
         // When it happens we ask for another one.

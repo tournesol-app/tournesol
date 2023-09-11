@@ -92,29 +92,39 @@ async function retryRandomPick(
 
 export async function getVideoFromRateLaterListForComparison(
   otherVideo: string | null,
-  currentVideo: string | null
+  currentVideo: string | null,
+  exclude?: string[]
 ): Promise<string | null> {
   const rateLaterResult = await UsersService.usersMeRateLaterList({
     pollName: YOUTUBE_POLL_NAME,
     limit: 99,
     offset: 0,
   });
-  const rateLaterList =
+
+  let newSuggestions =
     rateLaterResult?.results?.map((rateL) => rateL.entity.metadata.video_id) ||
     [];
+
+  if (exclude) {
+    newSuggestions = newSuggestions.filter(
+      (videoId) => !exclude.includes(`yt:${videoId}`)
+    );
+  }
 
   const rateLaterVideoId = await retryRandomPick(
     5,
     otherVideo,
     currentVideo,
-    rateLaterList
+    newSuggestions
   );
+
   return rateLaterVideoId;
 }
 
 export async function getVideoFromPreviousComparisons(
   otherVideo: string | null,
-  currentVideo: string | null
+  currentVideo: string | null,
+  exclude?: string[]
 ): Promise<string | null> {
   const comparisonCount: number =
     (
@@ -134,18 +144,29 @@ export async function getVideoFromPreviousComparisons(
     ...cl.map((v) => v.entity_a.metadata.video_id),
     ...cl.map((v) => v.entity_b.metadata.video_id),
   ];
+
+  let newSuggestions = comparisonVideoList.filter(
+    (videoId, index) => comparisonVideoList.indexOf(videoId) === index
+  );
+  if (exclude) {
+    newSuggestions = newSuggestions.filter(
+      (videoId) => !exclude.includes(`yt:${videoId}`)
+    );
+  }
+
   const comparisonVideoId = retryRandomPick(
     5,
     otherVideo,
     currentVideo,
-    comparisonVideoList
+    newSuggestions
   );
   return comparisonVideoId;
 }
 
 export async function getVideoForComparison(
   otherVideo: string | null,
-  currentVideo: string | null
+  currentVideo: string | null,
+  exclude?: string[]
 ): Promise<string | null> {
   // This helper method returns a videoId following the strategy:
   // 1. Uniformily random from rate_later list (75% chance)
@@ -157,14 +178,16 @@ export async function getVideoForComparison(
   if (x < 0.75) {
     const videoFromRateLaterList = await getVideoFromRateLaterListForComparison(
       otherVideo,
-      currentVideo
+      currentVideo,
+      exclude
     );
     if (videoFromRateLaterList) return videoFromRateLaterList;
   }
   if (x < 0.95) {
     const videoFromComparisons = await getVideoFromPreviousComparisons(
       otherVideo,
-      currentVideo
+      currentVideo,
+      exclude
     );
     if (videoFromComparisons) return videoFromComparisons;
   }
