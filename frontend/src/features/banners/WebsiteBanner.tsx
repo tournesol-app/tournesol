@@ -43,7 +43,6 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
   }
 
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
-  const bannerParagraphs = linkifyStr(banner.text, linkifyOpts).split('\n');
 
   return (
     <Grid container width="100%" flexDirection="column" alignItems="center">
@@ -73,14 +72,14 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
               alignItems="flex-end"
             >
               <Box>
-                {bannerParagraphs.map((paragraph, index) => (
-                  <Typography
-                    paragraph
-                    key={`banner_p${index}`}
-                    mb={index + 1 === bannerParagraphs.length ? 0 : 2}
-                    dangerouslySetInnerHTML={{ __html: paragraph }}
-                  />
-                ))}
+                <Typography
+                  paragraph
+                  mb={0}
+                  whiteSpace="pre-wrap"
+                  dangerouslySetInnerHTML={{
+                    __html: linkifyStr(banner.text, linkifyOpts),
+                  }}
+                />
               </Box>
 
               {banner.action_link && banner.action_label && (
