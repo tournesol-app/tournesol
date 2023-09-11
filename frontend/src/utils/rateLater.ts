@@ -1,15 +1,22 @@
 const MAX_LENGTH = 60;
 
-export const ALREADY_SUGGESTED: string[] = [];
+export const ALREADY_SUGGESTED: { [key: string]: string[] } = {};
 
-export const clearSuggested = () => (ALREADY_SUGGESTED.length = 0);
+const initSuggested = (poll: string) => (ALREADY_SUGGESTED[poll] = []);
 
-export const dontSuggestAnymore = (uid: string) => {
-  if (ALREADY_SUGGESTED.length >= MAX_LENGTH) {
-    clearSuggested();
+export const clearSuggested = (poll: string) =>
+  (ALREADY_SUGGESTED[poll].length = 0);
+
+export const dontSuggestAnymore = (poll: string, uid: string) => {
+  if (ALREADY_SUGGESTED[poll] == null) {
+    initSuggested(poll);
   }
 
-  if (!ALREADY_SUGGESTED.includes(uid)) {
-    ALREADY_SUGGESTED.push(uid);
+  if (ALREADY_SUGGESTED[poll].length >= MAX_LENGTH) {
+    clearSuggested(poll);
+  }
+
+  if (!ALREADY_SUGGESTED[poll].includes(uid)) {
+    ALREADY_SUGGESTED[poll].push(uid);
   }
 };

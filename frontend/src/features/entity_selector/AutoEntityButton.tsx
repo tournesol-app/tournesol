@@ -44,14 +44,14 @@ const AutoEntityButton = ({
       const newVideoId: string | null = await getVideoForComparison(
         otherUid ? idFromUid(otherUid) : null,
         idFromUid(currentUid || ''),
-        ALREADY_SUGGESTED
+        ALREADY_SUGGESTED[pollName]
       );
 
       if (!mountedRef.current) return;
 
       if (newVideoId) {
         const newVideoUid = `${UID_YT_NAMESPACE}${newVideoId}`;
-        dontSuggestAnymore(newVideoUid);
+        dontSuggestAnymore(pollName, newVideoUid);
 
         // When both videos are auto filled it's common to receive the same video twice.
         // When it happens we ask for another one.
@@ -66,7 +66,7 @@ const AutoEntityButton = ({
         onResponse(null);
       }
     },
-    [currentUid, otherUid, onClick, onResponse]
+    [currentUid, otherUid, onClick, onResponse, pollName]
   );
 
   useEffect(() => {
