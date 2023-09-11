@@ -163,17 +163,23 @@ export async function getVideoFromPreviousComparisons(
   return comparisonVideoId;
 }
 
+/**
+ * This helper function returns a video id following the strategy:
+ *
+ *  1. Uniformily random from rate_later list (75% chance)
+ *  2. Uniformily random from already rated videos (20% chance)
+ *  3. Uniformily random from Tournesol's top 100 videos (5% chance)
+ *  If option 1 is selected and fails, option 2 will be tried
+ *  If option 2 is selected and fails, option 3 will be tried
+ *
+ * The exlude parameter allows to exclude a list of UIDs before the random
+ * selection.
+ */
 export async function getVideoForComparison(
   otherVideo: string | null,
   currentVideo: string | null,
   exclude?: string[]
 ): Promise<string | null> {
-  // This helper method returns a videoId following the strategy:
-  // 1. Uniformily random from rate_later list (75% chance)
-  // 2. Uniformily random from already rated videos (20% chance)
-  // 3. Uniformily random from Tournesol's top 100 videos (5% chance)
-  // If option 1 is selected and fails, option 2 will be tried
-  // If option 2 is selected and fails, option 3 will be tried
   const x = Math.random();
   if (x < 0.75) {
     const videoFromRateLaterList = await getVideoFromRateLaterListForComparison(
@@ -196,10 +202,26 @@ export async function getVideoForComparison(
     limit: 100,
     offset: 0,
   });
-  const videoList = (videoResult?.results || []).map((v) => idFromUid(v.uid));
-  const videoId = await retryRandomPick(5, otherVideo, currentVideo, videoList);
+
+  let newSuggestions = (videoResult?.results || []).map((v) =>
+    idFromUid(v.uid)
+  );
+
+  if (exclude) {
+    newSuggestions = newSuggestions.filter(
+      (videoId) => !exclude.includes(`yt:${videoId}`)
+    );
+  }
+
+  const videoId = await retryRandomPick(
+    5,
+    otherVideo,
+    currentVideo,
+    newSuggestions
+  );
   if (videoId) return videoId;
-  return videoList ? pick(videoList) : null;
+
+  return newSuggestions ? pick(newSuggestions) : null;
 }
 
 export const convertDurationToClockDuration = (duration: number) => {
