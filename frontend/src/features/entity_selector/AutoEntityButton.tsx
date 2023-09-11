@@ -1,7 +1,9 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Tooltip, Button } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
+
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { YOUTUBE_POLL_NAME, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { ALREADY_SUGGESTED, dontSuggestAnymore } from 'src/utils/rateLater';
