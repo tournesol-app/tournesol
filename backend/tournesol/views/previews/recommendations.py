@@ -58,7 +58,8 @@ def get_preview_recommendations_redirect_params(request):
 
     for (key, value) in params.items():
         if key == "uploader":
-            query["metadata[uploader]"] = params[key]
+            if value:
+                query["metadata[uploader]"] = params[key]
         elif key == "duration_lte":
             if value == "":
                 continue
