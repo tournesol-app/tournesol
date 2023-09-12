@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Tooltip, Button } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
 
+import {
+  ALREADY_SUGGESTED,
+  dontSuggestAnymore,
+} from 'src/features/rateLater/alreadySuggested';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { YOUTUBE_POLL_NAME, UID_YT_NAMESPACE } from 'src/utils/constants';
-import { ALREADY_SUGGESTED, dontSuggestAnymore } from 'src/utils/rateLater';
 import { getVideoForComparison, idFromUid } from 'src/utils/video';
 
 interface Props {
