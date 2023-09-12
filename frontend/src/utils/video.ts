@@ -206,7 +206,8 @@ export async function getVideoForComparison(
     limit: 100,
     // Increase the diversity of recommended videos. Changing the `offset`
     // allows us to not increase the `limit`, and this way limits the size of
-    // the JSON downloaded
+    // the JSON downloaded. We may want to adapt/remove this `offset` the day
+    // we will filter the results according to the user preferred languages.
     offset: getPeudoRandomInt(10) * 10,
   });
 
