@@ -60,6 +60,10 @@ export function idFromUid(uid: string): string {
   return '';
 }
 
+function getPeudoRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
+}
+
 function pick(arr: string[]): string | null {
   // Returns a random element of an array
   return arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null;
@@ -200,7 +204,10 @@ export async function getVideoForComparison(
   const videoResult = await PollsService.pollsRecommendationsList({
     name: 'videos',
     limit: 100,
-    offset: 0,
+    // Increase the diversity of recommended videos. Changing the `offset`
+    // allows us to not increase the `limit`, and this way limits the size of
+    // the JSON downloaded
+    offset: getPeudoRandomInt(10) * 10,
   });
 
   let newSuggestions = (videoResult?.results || []).map((v) =>
