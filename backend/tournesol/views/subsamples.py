@@ -5,54 +5,47 @@ The compared entities are ordered by score of the poll's main criterion, and
 divided into ranked groups called buckets. Each returned entity comes from a
 different bucket.
 """
+import random
 
+from django.db.models import Window
+from django.db.models.functions import Ntile
 from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
+from tournesol.models import ContributorRating
 from tournesol.serializers.subsample import SubSampleSerializer
-from tournesol.views import PollScopedViewMixin
+from tournesol.views.ratings import ContributorRatingQuerysetMixin
 
 
-class SubSamplesList(PollScopedViewMixin, generics.GenericAPIView):
+class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
+    def get_queryset(self):
+        poll = self.poll_from_url
+
+        qst = (
+            ContributorRating.objects.annotate_n_comparisons()
+            .annotate_collective_score()
+            .annotate_individual_score(poll=poll)
+            .prefetch_related(self.get_prefetch_entity_config())
+            .filter(
+                poll=poll,
+                user=self.request.user,
+                criteria_scores__criteria="largely_recommended"
+            )
+            .annotate(bucket=Window(expression=Ntile(20), order_by="-criteria_scores__score"))
+        )
+
+        # XXX can we use the database to randomly pick a video per bucket instead?
+        sub_samples = []
+        for i in range(20):
+            sub_samples.append(random.choice([rating for rating in qst if rating.bucket == i + 1]))
+
+        return sub_samples
+
+
+class SubSamplesList(SubSamplesQuerysetMixin, generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SubSampleSerializer
-
-    def get_queryset(self):
-        # pylint: disable=import-outside-toplevel
-        from tournesol.models.ratings import ContributorRating
-
-        return ContributorRating.objects.raw(
-            """
-            WITH user_ratings AS (
-                SELECT
-                    contributor_rating.id,
-                    contributor_rating.entity_id,
-
-                    NTILE(20) OVER(
-                      ORDER BY
-                        criteria_score.score DESC
-                    ) AS bucket
-
-                FROM tournesol_contributorratingcriteriascore AS criteria_score
-
-                JOIN tournesol_contributorrating AS contributor_rating
-                  ON contributor_rating.id = criteria_score.contributor_rating_id
-
-                WHERE criteria_score.criteria = 'largely_recommended'
-                  AND contributor_rating.user_id = 1
-
-                ORDER BY random()
-            )
-            SELECT DISTINCT ON (user_ratings.bucket)
-                user_ratings.id,
-                user_ratings.entity_id,
-                user_ratings.bucket
-
-            FROM user_ratings
-            ORDER BY user_ratings.bucket ASC;
-            """
-        ).prefetch_related("entity")
 
     def get(self, request, *args, **kwargs):
         sub_samples = self.get_queryset()
