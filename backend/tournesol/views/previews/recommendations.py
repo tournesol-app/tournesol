@@ -53,12 +53,14 @@ def get_preview_recommendations_redirect_params(request):
     Preview of a Recommendations page.
     Returns HTTP redirection to transform the query parameters into the format used by the backend.
     """
+    # pylint: disable=too-many-branches
     params = request.GET
     query = QueryDict("", mutable=True)
 
     for (key, value) in params.items():
         if key == "uploader":
-            query["metadata[uploader]"] = params[key]
+            if value:
+                query["metadata[uploader]"] = params[key]
         elif key == "duration_lte":
             if value == "":
                 continue

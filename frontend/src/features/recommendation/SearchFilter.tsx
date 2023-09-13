@@ -73,7 +73,7 @@ function SearchFilter({
           <Box marginBottom={1}>
             <UploaderFilter
               value={filterParams.get(recommendationFilters.uploader) ?? ''}
-              onDelete={() => setFilter(recommendationFilters.uploader, '')}
+              onDelete={() => setFilter(recommendationFilters.uploader, null)}
             />
           </Box>
         )}
