@@ -65,40 +65,37 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
               </Typography>
               {security && <Warning fontSize="large" color="error" />}
             </Stack>
-            <Stack
-              direction={{ sm: 'column', md: 'row' }}
-              spacing={{ xs: 2, sm: 2 }}
-              justifyContent="space-between"
-              alignItems="flex-end"
-            >
-              <Box>
-                <Typography
-                  paragraph
-                  mb={0}
-                  whiteSpace="pre-wrap"
-                  dangerouslySetInnerHTML={{
-                    __html: linkifyStr(banner.text, linkifyOpts),
-                  }}
-                />
-              </Box>
+            <Box>
+              <Typography
+                paragraph
+                display="inline"
+                mb={0}
+                whiteSpace="pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: linkifyStr(banner.text, linkifyOpts),
+                }}
+              />
 
               {banner.action_link && banner.action_label && (
-                <Box minWidth="100px">
-                  <Button
-                    variant={
-                      security || (banner.priority ?? 0) >= 100
-                        ? 'contained'
-                        : 'outlined'
-                    }
-                    color={security ? 'error' : 'secondary'}
-                    component={Link}
-                    href={banner.action_link}
-                  >
-                    {banner.action_label}
-                  </Button>
-                </Box>
+                <Button
+                  variant={
+                    security || (banner.priority ?? 0) >= 100
+                      ? 'contained'
+                      : 'outlined'
+                  }
+                  color={security ? 'error' : 'secondary'}
+                  component={Link}
+                  href={banner.action_link}
+                  sx={{
+                    mt: 1,
+                    ml: 1,
+                    float: 'right',
+                  }}
+                >
+                  {banner.action_label}
+                </Button>
               )}
-            </Stack>
+            </Box>
           </Stack>
         </Paper>
       </Grid>
