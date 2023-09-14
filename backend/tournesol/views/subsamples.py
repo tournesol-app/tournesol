@@ -30,7 +30,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
             .filter(
                 poll=poll,
                 user=self.request.user,
-                criteria_scores__criteria="largely_recommended"
+                criteria_scores__criteria=poll.main_criteria
             )
             .annotate(bucket=Window(expression=Ntile(20), order_by="-criteria_scores__score"))
         )
