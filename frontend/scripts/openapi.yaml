@@ -4447,6 +4447,8 @@ components:
           type: integer
         extension__search_reco:
           type: boolean
+          description: Whether Tournesol recommendations should be integrated in Youtube.com
+            search results.
         recommendations__default_date:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
@@ -4481,6 +4483,8 @@ components:
           type: integer
         extension__search_reco:
           type: boolean
+          description: Whether Tournesol recommendations should be integrated in Youtube.com
+            search results.
         recommendations__default_date:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
