@@ -1,9 +1,10 @@
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.serializers import IntegerField, ModelSerializer
 
 from tournesol.models import ContributorRating, CriteriaRank, Entity, EntityPollRating, Poll
 from tournesol.models.entity_poll_rating import UNSAFE_REASONS
-from tournesol.serializers.entity import EntityCriteriaScoreSerializer
+from tournesol.serializers.entity import EntityCriteriaScoreSerializer, RelatedEntitySerializer
 
 
 class PollCriteriaSerializer(ModelSerializer):
@@ -52,6 +53,15 @@ class CollectiveRatingSerializer(ModelSerializer):
         read_only_fields = fields
 
 
+class ExtendedCollectiveRatingSerializer(CollectiveRatingSerializer):
+    criteria_scores = EntityCriteriaScoreSerializer(many=True)
+
+    class Meta:
+        model = CollectiveRatingSerializer.Meta.model
+        fields = CollectiveRatingSerializer.Meta.fields + ["criteria_scores"]
+        read_only_fields = fields
+
+
 class IndividualRatingSerializer(ModelSerializer):
     n_comparisons = IntegerField(read_only=True, default=0)
 
@@ -64,6 +74,24 @@ class IndividualRatingSerializer(ModelSerializer):
         read_only_fields = fields
 
 
+class RecommendationMetadataSerializer(serializers.Serializer):
+    total_score = serializers.FloatField(read_only=True)
+
+
+@extend_schema_serializer(
+    deprecate_fields=[
+        # legacy fields have been moved to "entity", "collective_rating", etc.
+        "uid",
+        "type",
+        "n_comparisons",
+        "n_contributors",
+        "metadata",
+        "total_score",
+        "tournesol_score",
+        "criteria_scores",
+        "unsafe",
+    ]
+)
 class RecommendationSerializer(ModelSerializer):
     # pylint: disable=duplicate-code
     n_comparisons = serializers.IntegerField(source="rating_n_ratings")
@@ -75,6 +103,13 @@ class RecommendationSerializer(ModelSerializer):
     unsafe = UnsafeStatusSerializer(
         source="single_poll_rating", allow_null=True, default=None, read_only=True
     )
+
+    entity = RelatedEntitySerializer(source="*", read_only=True)
+    collective_rating = CollectiveRatingSerializer(
+        source="single_poll_rating",
+        read_only=True,
+    )
+    recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
 
     class Meta:
         model = Entity
@@ -88,6 +123,9 @@ class RecommendationSerializer(ModelSerializer):
             "tournesol_score",
             "criteria_scores",
             "unsafe",
+            "entity",
+            "collective_rating",
+            "recommendation_metadata",
         ]
         read_only_fields = fields
 

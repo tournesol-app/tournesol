@@ -53,10 +53,14 @@ class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
         poll = self.poll_from_url
         user = self.request.user
 
-        queryset = Entity.objects.filter(
-            contributorvideoratings__poll=poll,
-            contributorvideoratings__user=user
-        ).with_prefetched_poll_ratings(poll_name=poll.name)
+        queryset = (
+            Entity.objects.filter(
+                contributorvideoratings__poll=poll,
+                contributorvideoratings__user=user
+            )
+            .with_prefetched_poll_ratings(poll_name=poll.name)
+            .with_prefetched_contributor_ratings(poll=poll, user=user)
+        )
 
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
@@ -76,11 +80,15 @@ class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
         poll = self.poll_from_url
         user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
 
-        queryset = Entity.objects.filter(
-            contributorvideoratings__poll=poll,
-            contributorvideoratings__user=user,
-            contributorvideoratings__is_public=True,
-        ).with_prefetched_poll_ratings(poll_name=poll.name)
+        queryset = (
+            Entity.objects.filter(
+                contributorvideoratings__poll=poll,
+                contributorvideoratings__user=user,
+                contributorvideoratings__is_public=True,
+            )
+            .with_prefetched_poll_ratings(poll_name=poll.name)
+            .with_prefetched_contributor_ratings(poll=poll, user=user)
+        )
 
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
