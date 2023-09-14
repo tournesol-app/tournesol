@@ -13,6 +13,7 @@ import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoSelectoEntities from './fields/AutoSelectEntities';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
+import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
@@ -21,6 +22,8 @@ import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe'
 import RecommendationsDefaultExcludeCompared from './fields/RecommendationsDefaultExcludeCompared';
 
 interface VideosPollUserSettingsFormProps {
+  extSearchRecommendation: boolean;
+  setExtSearchRecommendation: (target: boolean) => void;
   compAutoSelectEntities: boolean;
   setCompAutoSelectEntities: (target: boolean) => void;
   compUiWeeklyColGoalDisplay:
@@ -50,6 +53,8 @@ interface VideosPollUserSettingsFormProps {
  * Display a set of fields representing the preferences of the poll `videos`.
  */
 const VideosPollUserSettingsForm = ({
+  extSearchRecommendation,
+  setExtSearchRecommendation,
   compAutoSelectEntities,
   setCompAutoSelectEntities,
   compUiWeeklyColGoalDisplay,
@@ -105,6 +110,18 @@ const VideosPollUserSettingsForm = ({
         <ComparisonOptionalCriteriaDisplayed
           displayedCriteria={displayedCriteria}
           onChange={setDisplayedCriteria}
+        />
+      </Grid>
+      <Grid item>
+        <Typography id="extension_youtube" variant="h6">
+          {t('pollUserSettingsForm.extensionYoutube')}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <ExtSearchRecommendation
+          value={extSearchRecommendation}
+          onChange={setExtSearchRecommendation}
+          pollName={pollName}
         />
       </Grid>
       <Grid item>

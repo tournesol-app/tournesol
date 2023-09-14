@@ -86,6 +86,13 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         ("ALL_TIME", "all_time"),
     ]
 
+    extension__search_reco = serializers.BooleanField(
+        required=False,
+        help_text=(
+            "Whether Tournesol recommendations should be integrated in Youtube.com search results."
+        ),
+    )
+
     recommendations__default_date = serializers.ChoiceField(
         choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
     )

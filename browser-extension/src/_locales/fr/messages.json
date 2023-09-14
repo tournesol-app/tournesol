@@ -11,14 +11,6 @@
     "message": "Analyses",
     "description": "Label du bouton de menu permettant d'accéder à la page d'analyse d'une vidéo."
   },
-  "menuSearchEnabled": {
-    "message": "Recherche activée",
-    "description": "Label du bouton de menu recherche affiché lorsque la recherche est activée."
-  },
-  "menuSearchDisabled": {
-    "message": "Recherche désactivée",
-    "description": "Label du bouton de menu recherche affiché lorsque la recherche est désactivée."
-  },
   "menuPreferences": {
     "message": "Préférences"
   },

@@ -103,53 +103,6 @@ function openAnalysisPageAction(event) {
   );
 }
 
-/**
- * Initialize the search state button style according to the current state of
- * the search defined in the local storage.
- */
-function initSearchStateButtonStyle() {
-  const searchButton = document.getElementById('search_state');
-
-  // The search is disabled by default.
-  chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-    const enabled = searchEnabled;
-    if (enabled === null || enabled === undefined) {
-      chrome.storage.local.set({ searchEnabled: false });
-    }
-
-    if (enabled) {
-      searchButton.classList.add('enabled');
-      searchButton.textContent = i18n.getMessage('menuSearchEnabled');
-    } else {
-      searchButton.classList.remove('enabled');
-      searchButton.textContent = i18n.getMessage('menuSearchDisabled');
-    }
-  });
-}
-
-/**
- * Enable or disable the search state and update the search state button style
- * accordingly.
- */
-function toggleSearchStateAction(event) {
-  const searchButton = event.target;
-
-  chrome.storage.local.get('searchEnabled', ({ searchEnabled }) => {
-    const newState = searchEnabled ? false : true;
-
-    if (newState === true) {
-      searchButton.classList.add('enabled');
-    } else {
-      searchButton.classList.remove('enabled');
-    }
-
-    searchButton.textContent = newState
-      ? i18n.getMessage('menuSearchEnabled')
-      : i18n.getMessage('menuSearchDisabled');
-    chrome.storage.local.set({ searchEnabled: newState });
-  });
-}
-
 function openOptionsPage() {
   chrome.runtime.openOptionsPage();
 }
@@ -162,16 +115,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const rateNowButton = document.getElementById('rate_now');
   const rateLaterButton = document.getElementById('rate_later');
   const analysisButton = document.getElementById('analysis');
-  const enableSearchButton = document.getElementById('search_state');
   const preferencesButton = document.getElementById('preferences');
-
-  initSearchStateButtonStyle();
 
   tournesolHomeLink.addEventListener('click', openTournesolHome);
   rateNowButton.addEventListener('click', rateNowAction);
   rateLaterButton.addEventListener('click', addToRateLaterAction);
   analysisButton.addEventListener('click', openAnalysisPageAction);
-  enableSearchButton.addEventListener('click', toggleSearchStateAction);
   preferencesButton.addEventListener('click', openOptionsPage);
 
   rateNowButton.textContent = i18n.getMessage('menuRateNow');
