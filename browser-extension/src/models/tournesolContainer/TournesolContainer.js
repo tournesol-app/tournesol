@@ -133,9 +133,12 @@ export class TournesolContainer {
       campaignButton.append(campaignButtonImg);
 
       campaignButton.onclick = () => {
-        chrome.storage.local.set({ displayBannerFundingSeptember2023: true }, () => {
-          this.banner.display();
-        });
+        chrome.storage.local.set(
+          { displayBannerFundingSeptember2023: true },
+          () => {
+            this.banner.display();
+          }
+        );
       };
 
       topActionBar.append(campaignButton);
