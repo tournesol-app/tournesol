@@ -48,9 +48,11 @@ export class Banner {
 
     // Only display the banner if the user didn't explicitly close it.
     chrome.storage.local.get(
-      'displayBannerStudy2023',
-      ({ displayBannerStudy2023 }) => {
-        if ([true, null, undefined].includes(displayBannerStudy2023)) {
+      'displayBannerFundingSeptember2023',
+      ({ displayBannerFundingSeptember2023 }) => {
+        if (
+          [true, null, undefined].includes(displayBannerFundingSeptember2023)
+        ) {
           this.display();
         }
       }
@@ -99,64 +101,12 @@ export class Banner {
     closeButtonContainer.append(closeButton);
 
     closeButton.onclick = () => {
-      chrome.storage.local.set({ displayBannerStudy2023: false }, () => {
-        this.hide();
-      });
-    };
-
-    // Dynamically get the user proof before opening the URL.
-    actionButton.onclick = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(
-          {
-            message: `getProof:${this.TS_BANNER_PROOF_KW}`,
-          },
-          (response) => {
-            if (response.success) {
-              resolve(
-                isNavigatorLang('fr')
-                  ? `${this.TS_BANNER_ACTION_FR_URL}${response.body.signature}`
-                  : `${this.TS_BANNER_ACTION_EN_URL}${response.body.signature}`
-              );
-            } else {
-              reject(response);
-            }
-          }
-        );
-      })
-        .then((url) => {
-          actionButton.setAttribute('href', url);
-          window.open(url, '_blank', 'noopener');
-        })
-        .catch((response) => {
-          /**
-           * Do not block the users in case of API error. The participation
-           * proof being optionnal, and the API tested, logging the errors
-           * should be enough.
-           *
-           * Anonymous users are expected to be redirected to the form without
-           * participation proof (HTTP 401), no logging is required.
-           */
-          if (response.status !== 401) {
-            console.error(
-              `Failed to retrieve user proof with keyword: ${this.TS_BANNER_PROOF_KW}`
-            );
-            console.error(response.body);
-          }
-
-          window.open(
-            isNavigatorLang('fr')
-              ? this.TS_BANNER_ACTION_FR_URL
-              : this.TS_BANNER_ACTION_EN_URL,
-            '_blank',
-            'noopener'
-          );
-        });
-
-      return false;
+      chrome.storage.local.set(
+        { displayBannerFundingSeptember2023: false },
+        () => {
+          this.hide();
+        }
+      );
     };
 
     actionButtonContainer.append(actionButton);

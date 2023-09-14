@@ -122,7 +122,7 @@ export class TournesolContainer {
     if (this.banner.bannerShouldBeDisplayed()) {
       const campaignButton = document.createElement('button');
       campaignButton.id = 'tournesol_campaign_button';
-      campaignButton.className = 'tournesol_simple_button';
+      campaignButton.className = 'tournesol_simple_button emphatic';
 
       const campaignButtonImg = document.createElement('img');
       campaignButtonImg.setAttribute(
