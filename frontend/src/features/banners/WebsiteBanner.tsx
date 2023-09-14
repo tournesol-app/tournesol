@@ -81,22 +81,19 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
                   }}
                 />
               </Box>
-
               {banner.action_link && banner.action_label && (
-                <Box minWidth="100px">
-                  <Button
-                    variant={
-                      security || (banner.priority ?? 0) >= 100
-                        ? 'contained'
-                        : 'outlined'
-                    }
-                    color={security ? 'error' : 'secondary'}
-                    component={Link}
-                    href={banner.action_link}
-                  >
-                    {banner.action_label}
-                  </Button>
-                </Box>
+                <Button
+                  variant={
+                    security || (banner.priority ?? 0) >= 100
+                      ? 'contained'
+                      : 'outlined'
+                  }
+                  color={security ? 'error' : 'secondary'}
+                  component={Link}
+                  href={banner.action_link}
+                >
+                  {banner.action_label}
+                </Button>
               )}
             </Stack>
           </Stack>
