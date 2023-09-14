@@ -1,9 +1,9 @@
 """
 The sub-samples API return a sub-sample of entities compared by a user.
 
-The compared entities are ordered by score of the poll's main criterion, and
-divided into ranked groups called buckets. Each returned entity comes from a
-different bucket.
+The compared entities are ordered by individual score computed for the poll's
+main criterion. They are divided into ranked groups called buckets. Each
+returned entity comes from a different bucket.
 """
 import random
 
@@ -16,6 +16,9 @@ from rest_framework.permissions import IsAuthenticated
 from tournesol.models import ContributorRating
 from tournesol.serializers.subsample import SubSampleSerializer
 from tournesol.views.ratings import ContributorRatingQuerysetMixin
+
+# The number of ranked group used to divide the rated entities.
+NTILE_BUCKETS = 20
 
 
 class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
@@ -32,12 +35,16 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
                 user=self.request.user,
                 criteria_scores__criteria=poll.main_criteria
             )
-            .annotate(bucket=Window(expression=Ntile(20), order_by="-criteria_scores__score"))
+            .annotate(bucket=Window(
+                expression=Ntile(NTILE_BUCKETS),
+                order_by="-criteria_scores__score"
+            ))
         )
 
+        buckets = len(qst)
         # XXX can we use the database to randomly pick a video per bucket instead?
         sub_samples = []
-        for i in range(20):
+        for i in range(min(buckets, NTILE_BUCKETS)):
             sub_samples.append(random.choice([rating for rating in qst if rating.bucket == i + 1]))
 
         return sub_samples
