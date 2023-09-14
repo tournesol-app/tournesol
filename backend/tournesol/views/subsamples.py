@@ -1,9 +1,8 @@
 """
 The sub-samples API return a sub-sample of entities compared by a user.
 
-The compared entities are ordered by individual score computed for the poll's
-main criterion. They are divided into ranked groups called buckets. Each
-returned entity comes from a different bucket.
+A sub-sample is a small finite number of compared entities, ranked by the
+individual score computed for the poll's main criterion.
 """
 import random
 
@@ -55,6 +54,12 @@ class SubSamplesList(SubSamplesQuerysetMixin, generics.GenericAPIView):
     serializer_class = SubSampleSerializer
 
     def get(self, request, *args, **kwargs):
+        """
+        Return a sub-sample of entities rated by the logged-in user.
+
+        Entities are ranked by the individual score computed for the poll's
+        main criterion, in the descending order.
+        """
         sub_samples = self.get_queryset()
         serializer = SubSampleSerializer(sub_samples, many=True)
         return JsonResponse(serializer.data, safe=False)
