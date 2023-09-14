@@ -123,11 +123,11 @@
     "Description": "Invite the users to see more results on the Tournesol website."
   },
   "study2023BannerText": {
-    "message": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!",
+    "message": "Tournesol exists thanks to donations of the community. Unfortunately, we are short of support to continue employing our developer for the year 2024. If you can, with 10€ per month, you would be part of the 400 people needed to guarantee the association's long-term stability. A big, heartfelt thank you 🙏",
     "description": "Invite the users to join the study."
   },
   "study2023ActionButton": {
-    "message": "Join",
+    "message": "Support",
     "description": "Label of the main action button of the banner."
   },
   "study2023JoinError": {

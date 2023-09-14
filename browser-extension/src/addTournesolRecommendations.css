@@ -64,6 +64,7 @@
 
 #tournesol_banner_icon {
   width: 35px;
+  filter: invert(36%) sepia(28%) saturate(7184%) hue-rotate(176deg) brightness(91%) contrast(86%);
 }
 
 #tournesol_banner_close_icon {
@@ -80,7 +81,6 @@ html[dark] #tournesol_banner {
   background-color: var(--yt-spec-button-chip-background-hover);
 }
 
-html[dark] #tournesol_banner_icon,
 html[dark] #tournesol_banner_close_icon {
   filter: invert(99%) saturate(0%) brightness(140%);
 }
@@ -112,22 +112,6 @@ html[dark] #tournesol_banner_close_icon {
 
   display: flex;
   justify-content: flex-end;
-}
-
-#tournesol_campaign_button {
-  width: 28px;
-}
-
-html[dark] #tournesol_campaign_button {
-  filter: invert(99%) saturate(0%) brightness(140%);
-}
-
-#tournesol_campaign_button img {
-  opacity: 0.8;
-}
-
-#tournesol_campaign_button:hover img {
-  opacity: 1;
 }
 
 .video_title_link,
@@ -229,6 +213,11 @@ html[darker-dark-theme][dark] .tournesol_simple_button img {
 html[darker-dark-theme][dark] .tournesol_simple_button:hover img,
 html[darker-dark-theme][dark] .tournesol_simple_button:active img {
   filter: invert(99%) sepia(4%) saturate(475%) hue-rotate(206deg) brightness(116%) contrast(89%);
+}
+
+.tournesol_simple_button.emphatic img,
+html[darker-dark-theme][dark] .tournesol_simple_button.emphatic img {
+  filter: invert(36%) sepia(28%) saturate(7184%) hue-rotate(176deg) brightness(91%) contrast(86%);
 }
 
 .tournesol_simple_button:disabled img {
