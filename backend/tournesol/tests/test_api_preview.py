@@ -9,9 +9,9 @@ from rest_framework.test import APIClient
 from backoffice.models import FAQEntry
 from core.tests.factories.user import UserFactory
 from tournesol.entities.video import TYPE_VIDEO
-from tournesol.models import Entity
+from tournesol.models import Entity, EntityPollRating
 
-from .factories.entity import VideoFactory
+from .factories.entity import EntityFactory, VideoCriteriaScoreFactory, VideoFactory
 
 
 def raise_(exception):
@@ -479,6 +479,22 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
         response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
+        self.assertNotIn("Content-Disposition", response.headers)
+
+    def test_recommendations_preview_without_tournesol_score(self):
+        """
+        The API shouldn't fail when displaying entities without computed
+        Tournesol score.
+        """
+        entity = VideoFactory(tournesol_score=1)
+        VideoCriteriaScoreFactory(entity=entity)
+
+        poll_rating = EntityPollRating.objects.get(entity_id=entity.id)
+        poll_rating.tournesol_score = None
+        poll_rating.save(update_fields=["tournesol_score"])
+
+        response = self.client.get(f"{self.preview_internal_url}/?unsafe=true")
+        self.assertEqual(response.status_code, 200)
         self.assertNotIn("Content-Disposition", response.headers)
 
 
