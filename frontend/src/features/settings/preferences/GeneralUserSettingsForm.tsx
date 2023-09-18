@@ -6,8 +6,8 @@ import { Alert, AlertTitle, Grid, Typography } from '@mui/material';
 import { Notifications_langEnum } from 'src/services/openapi';
 
 import NotificationsLang from './fields/NotificationsLang';
-import BooleanField from './fields/generics/BooleanField';
 import NotificationsEmailResearch from './fields/NotificationsEmailResearch';
+import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeatures';
 
 interface GeneralSettingsFormProps {
   notificationsLang: Notifications_langEnum;
@@ -63,10 +63,7 @@ const GeneralUserSettingsForm = ({
           />
         </Grid>
         <Grid item>
-          <BooleanField
-            scope="general"
-            fieldName="notifications_email__new_features"
-            label={t('generalUserSettingsForm.notificationsEmailNewFeatures')}
+          <NotificationsEmailNewFeatures
             value={notificationsEmailNewFeatures}
             onChange={setNotificationsEmailNewFeatures}
           />
