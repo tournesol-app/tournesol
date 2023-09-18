@@ -1,40 +1,41 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { FormControlLabel, Switch } from '@mui/material';
 
-interface AutoSelectoEntitiesProps {
+interface BooleanFieldProps {
+  scope: string;
+  fieldName: string;
+  label: string;
   value: boolean;
   onChange: (target: boolean) => void;
-  pollName: string;
 }
 
-const AutoSelectoEntities = ({
+const BooleanField = ({
+  scope,
+  fieldName,
+  label,
   value,
   onChange,
-  pollName,
-}: AutoSelectoEntitiesProps) => {
-  const { t } = useTranslation();
-
+}: BooleanFieldProps) => {
   return (
     <FormControlLabel
       control={
         <Switch
-          name={`${pollName}_comparison__auto_select_entities`}
+          name={`${scope}_${fieldName}`}
           checked={value}
           onChange={() => onChange(!value)}
           size="medium"
           color="secondary"
           inputProps={
             {
-              'data-testid': `${pollName}_comparison__auto_select_entities`,
+              'data-testid': `${scope}_${fieldName}`,
             } as React.InputHTMLAttributes<HTMLInputElement>
           }
         />
       }
-      label={t('pollUserSettingsForm.letTournesolSuggestElements')}
+      label={label}
     />
   );
 };
 
-export default AutoSelectoEntities;
+export default BooleanField;
