@@ -5,9 +5,9 @@ import { Alert, AlertTitle, Grid, Typography } from '@mui/material';
 
 import { Notifications_langEnum } from 'src/services/openapi';
 
-import NotificationsLang from './fields/NotificationsLang';
 import NotificationsEmailResearch from './fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeatures';
+import NotificationsLang from './fields/NotificationsLang';
 
 interface GeneralSettingsFormProps {
   notificationsLang: Notifications_langEnum;
