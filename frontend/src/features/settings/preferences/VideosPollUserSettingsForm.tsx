@@ -92,7 +92,7 @@ const VideosPollUserSettingsForm = ({
       <Grid item>
         <BooleanField
           scope={pollName}
-          fieldName="comparison__auto_select_entities"
+          name="comparison__auto_select_entities"
           label={t('pollUserSettingsForm.letTournesolSuggestElements')}
           value={compAutoSelectEntities}
           onChange={setCompAutoSelectEntities}
@@ -177,7 +177,7 @@ const VideosPollUserSettingsForm = ({
         <Grid item>
           <BooleanField
             scope={pollName}
-            fieldName="recommendations__default_unsafe"
+            name="recommendations__default_unsafe"
             label={t('videosUserSettingsForm.recommendations.defaultUnsafe')}
             value={recoDefaultUnsafe}
             onChange={setRecoDefaultUnsafe}
@@ -186,7 +186,7 @@ const VideosPollUserSettingsForm = ({
         <Grid item>
           <BooleanField
             scope={pollName}
-            fieldName="recommendations__default_exclude_compared_entities"
+            name="recommendations__default_exclude_compared_entities"
             label={t(
               'videosUserSettingsForm.recommendations.defaultExcludeCompared'
             )}

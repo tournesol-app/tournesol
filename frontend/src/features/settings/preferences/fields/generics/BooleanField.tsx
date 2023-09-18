@@ -4,7 +4,7 @@ import { FormControlLabel, Switch } from '@mui/material';
 
 interface BooleanFieldProps {
   scope: string;
-  fieldName: string;
+  name: string;
   label: string;
   value: boolean;
   onChange: (target: boolean) => void;
@@ -12,7 +12,7 @@ interface BooleanFieldProps {
 
 const BooleanField = ({
   scope,
-  fieldName,
+  name,
   label,
   value,
   onChange,
@@ -21,14 +21,14 @@ const BooleanField = ({
     <FormControlLabel
       control={
         <Switch
-          name={`${scope}_${fieldName}`}
+          name={`${scope}_${name}`}
           checked={value}
           onChange={() => onChange(!value)}
           size="medium"
           color="secondary"
           inputProps={
             {
-              'data-testid': `${scope}_${fieldName}`,
+              'data-testid': `${scope}_${name}`,
             } as React.InputHTMLAttributes<HTMLInputElement>
           }
         />

@@ -17,7 +17,7 @@ const NotificationsEmailNewFeatures = ({
   return (
     <BooleanField
       scope="general"
-      fieldName="notifications_email__new_features"
+      name="notifications_email__new_features"
       label={t('generalUserSettingsForm.notificationsEmailNewFeatures')}
       value={value}
       onChange={onChange}
