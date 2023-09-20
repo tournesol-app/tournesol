@@ -8,9 +8,9 @@ import random
 
 from django.db.models import Window
 from django.db.models.functions import Ntile
-from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from tournesol.models import ContributorRating
 from tournesol.serializers.subsample import SubSampleSerializer
@@ -65,7 +65,4 @@ class SubSamplesList(SubSamplesQuerysetMixin, generics.GenericAPIView):
         sub_samples = self.get_queryset()
         serializer = SubSampleSerializer(sub_samples, many=True)
 
-        return JsonResponse({
-            "count": len(serializer.data),
-            "results": serializer.data
-        }, safe=False)
+        return Response(serializer.data)
