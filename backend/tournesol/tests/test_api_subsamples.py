@@ -105,8 +105,6 @@ class SubSamplesListTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.data
-
-        # The API returns at most 20 rated entities.
         self.assertEqual(len(results), self.user2_ratings_nb)
 
         # The results:
