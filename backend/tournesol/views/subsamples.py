@@ -44,7 +44,9 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         # XXX can we use the database to randomly pick a video per bucket instead?
         sub_samples = []
         for i in range(min(buckets, NTILE_BUCKETS)):
-            sub_samples.append(random.choice([rating for rating in qst if rating.bucket == i + 1]))
+            sub_samples.append(
+                random.choice([rating for rating in qst if rating.bucket == i + 1])  # nosec
+            )
 
         return sub_samples
 
