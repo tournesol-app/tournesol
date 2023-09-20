@@ -64,4 +64,8 @@ class SubSamplesList(SubSamplesQuerysetMixin, generics.GenericAPIView):
         """
         sub_samples = self.get_queryset()
         serializer = SubSampleSerializer(sub_samples, many=True)
-        return JsonResponse(serializer.data, safe=False)
+
+        return JsonResponse({
+            "count": len(serializer.data),
+            "results": serializer.data
+        }, safe=False)
