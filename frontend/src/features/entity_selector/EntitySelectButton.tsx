@@ -14,13 +14,14 @@ import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { Entity, UsersService } from 'src/services/openapi';
+import { UsersService } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { useLoginState } from 'src/hooks';
 import { ComparisonsCountContext } from 'src/pages/comparisons/Comparison';
+import { EntityObject } from 'src/utils/types';
 
 // in milliseconds
 const TYPING_DELAY = 50;
@@ -99,7 +100,7 @@ const VideoInput = ({
             pollName,
             limit: 20,
           });
-          return (response.results ?? []).map((rl) => rl.entity);
+          return response.results ?? [];
         },
         disabled: !isLoggedIn,
       },
@@ -111,7 +112,7 @@ const VideoInput = ({
             pollName: YOUTUBE_POLL_NAME,
             limit: 20,
           });
-          return (response.results ?? []).map((rating) => rating.entity);
+          return response.results ?? [];
         },
         disabled: !isLoggedIn,
       },
@@ -138,7 +139,7 @@ const VideoInput = ({
             limit: 20,
             strict: false,
           });
-          return response.results ?? [];
+          return (response.results ?? []).map((entity) => ({ entity }));
         },
         disabled: !isLoggedIn || !otherUid,
       },
@@ -199,10 +200,11 @@ const VideoInput = ({
 };
 
 const CandidateInput = ({ onChange, value }: Props) => {
-  const [options, setOptions] = useState<Entity[]>([]);
+  const [options, setOptions] = useState<EntityObject[]>([]);
 
   useEffect(() => {
-    getAllCandidates().then((candidates) => {
+    getAllCandidates().then((results) => {
+      const candidates = results.map((res) => res.entity);
       const sortedCandidates = [...candidates].sort((a, b) => {
         // Sort by last name
         const aName: string = a?.metadata?.name.split(' ').slice(1).join(' ');

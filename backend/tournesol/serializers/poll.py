@@ -54,7 +54,7 @@ class CollectiveRatingSerializer(ModelSerializer):
 
 
 class ExtendedCollectiveRatingSerializer(CollectiveRatingSerializer):
-    criteria_scores = EntityCriteriaScoreSerializer(many=True)
+    criteria_scores = EntityCriteriaScoreSerializer(source="entity.criteria_scores", many=True)
 
     class Meta:
         model = CollectiveRatingSerializer.Meta.model
@@ -79,7 +79,7 @@ class RecommendationMetadataSerializer(serializers.Serializer):
 
 
 @extend_schema_serializer(
-    deprecate_fields=[
+    exclude_fields=[
         # legacy fields have been moved to "entity", "collective_rating", etc.
         "uid",
         "type",
@@ -105,7 +105,7 @@ class RecommendationSerializer(ModelSerializer):
     )
 
     entity = RelatedEntitySerializer(source="*", read_only=True)
-    collective_rating = CollectiveRatingSerializer(
+    collective_rating = ExtendedCollectiveRatingSerializer(
         source="single_poll_rating",
         read_only=True,
     )

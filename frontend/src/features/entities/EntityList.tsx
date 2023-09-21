@@ -6,11 +6,10 @@ import EntityCard from 'src/components/entity/EntityCard';
 import AvailableEntity from '../../components/entity/AvailableEntity';
 
 import { useCurrentPoll, useLoginState } from 'src/hooks';
-import { Recommendation } from 'src/services/openapi/models/Recommendation';
-import { ActionList, RelatedEntityObject } from 'src/utils/types';
+import { ActionList, EntityResult } from 'src/utils/types';
 
 interface Props {
-  entities: RelatedEntityObject[] | Recommendation[] | undefined;
+  entities: EntityResult[] | undefined;
   actions?: ActionList;
   settings?: ActionList;
   emptyMessage?: React.ReactNode;
@@ -46,14 +45,14 @@ function EntityList({
   return (
     <>
       {entities && entities.length ? (
-        entities.map((entity: Recommendation | RelatedEntityObject) => (
-          <Box key={entity.uid} mx={1} my={2}>
+        entities.map((res: EntityResult) => (
+          <Box key={res.entity.uid} mx={1} my={2}>
             <AvailableEntity
-              uid={entity.uid}
+              uid={res.entity.uid}
               actionsIfUnavailable={actionsIfUnavailable}
             >
               <EntityCard
-                entity={entity}
+                result={res}
                 actions={actions ?? defaultEntityActions}
                 settings={settings}
                 compact={false}

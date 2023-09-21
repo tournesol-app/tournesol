@@ -1,6 +1,6 @@
-import { UsersService, TypeEnum, PollsService } from 'src/services/openapi';
+import { UsersService, PollsService } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from './constants';
-import { RelatedEntityObject, VideoObject } from './types';
+import { VideoObject } from './types';
 
 export function extractVideoId(idOrUrl: string) {
   const host = process.env.PUBLIC_URL || location.host;
@@ -173,7 +173,9 @@ export async function getVideoForComparison(
     limit: 100,
     offset: 0,
   });
-  const videoList = (videoResult?.results || []).map((v) => idFromUid(v.uid));
+  const videoList = (videoResult?.results || []).map((v) =>
+    idFromUid(v.entity.uid)
+  );
   const videoId = await retryRandomPick(5, otherVideo, currentVideo, videoList);
   if (videoId) return videoId;
   return videoList ? pick(videoList) : null;
@@ -188,18 +190,3 @@ export const convertDurationToClockDuration = (duration: number) => {
   const seconds = roundToTwoDigits(duration % 60);
   return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
 };
-
-export const videoToEntity = (video: VideoObject): RelatedEntityObject => ({
-  uid: video.uid,
-  type: TypeEnum.VIDEO,
-  metadata: {
-    name: video.name,
-    description: video.description,
-    publication_date: video.publication_date,
-    uploader: video.uploader,
-    language: video.language,
-    duration: video.duration,
-    video_id: video.video_id,
-    views: video.views,
-  },
-});

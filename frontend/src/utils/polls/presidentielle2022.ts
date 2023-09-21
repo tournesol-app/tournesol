@@ -1,16 +1,16 @@
 import { TFunction } from 'react-i18next';
-import { EntitiesService, Entity, TypeEnum } from 'src/services/openapi';
-import { OrderedDialogs } from 'src/utils/types';
+import { EntitiesService, TypeEnum } from 'src/services/openapi';
+import { EntityResult, OrderedDialogs } from 'src/utils/types';
 
-let CANDIDATES: Promise<Entity[]> | null = null;
+let CANDIDATES: Promise<EntityResult[]> | null = null;
 
-export function getAllCandidates(): Promise<Entity[]> {
+export function getAllCandidates(): Promise<EntityResult[]> {
   if (CANDIDATES != null) {
     return CANDIDATES;
   }
   CANDIDATES = EntitiesService.entitiesList({
     type: TypeEnum.CANDIDATE_FR_2022,
-  }).then((data) => data.results ?? []);
+  }).then((data) => (data.results ?? []).map((entity) => ({ entity })));
   return CANDIDATES;
 }
 

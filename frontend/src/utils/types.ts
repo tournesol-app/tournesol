@@ -2,13 +2,14 @@ import React from 'react';
 import { TFunction } from 'react-i18next';
 import { SvgIconComponent } from '@mui/icons-material';
 import {
-  Entity,
-  EntityNoExtraField,
+  ContributorRating,
+  RateLater,
   Recommendation,
   RelatedEntity,
   TournesolUserSettings,
   Video,
   VideoSerializerWithCriteria,
+  EntityNoExtraField,
 } from 'src/services/openapi';
 
 export type JSONValue =
@@ -29,10 +30,16 @@ export type ActionList = Array<
 
 export type CriteriaValuesType = { [s: string]: number | undefined };
 
-export type RelatedEntityObject =
-  | EntityNoExtraField
-  | RelatedEntity
-  | Recommendation;
+interface SimpleEntityResult {
+  entity: RelatedEntity;
+}
+
+export type EntityResult =
+  | ContributorRating
+  | RateLater
+  | Recommendation
+  | SimpleEntityResult;
+export type EntityObject = RelatedEntity | EntityNoExtraField;
 export type VideoObject = Video | VideoSerializerWithCriteria;
 
 /**
@@ -112,7 +119,7 @@ export type SelectablePoll = {
   tutorialLength?: number;
   // can be used by comparison series to limit the pool of entities
   // that are suggested after each comparison
-  tutorialAlternatives?: () => Promise<Array<Entity | Recommendation>>;
+  tutorialAlternatives?: () => Promise<Array<EntityResult>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
   // a set of actions that will be displayed within the configured
   // `tutorialDialogs`, at the configured indexes, next to the main button

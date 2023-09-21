@@ -134,21 +134,22 @@ const CriteriaScoresDistributionChart = ({
 };
 
 interface CriteriaScoresDistributionProps {
-  entity: Recommendation;
+  reco: Recommendation;
 }
 
 const CriteriaScoresDistribution = ({
-  entity,
+  reco,
 }: CriteriaScoresDistributionProps) => {
   const { name: pollName } = useCurrentPoll();
   const { selectedCriterion, setSelectedCriterion } = useSelectedCriterion();
+  const entity = reco.entity;
 
   const [criteriaScoresDistribution, setCriteriaScoresDistribution] = useState<
     CriteriaDistributionScore[]
   >([]);
 
   const { data, personalScoresActivated, domain } = useCriteriaChartData({
-    entity,
+    reco,
   });
 
   const contextValue = useMemo<ChartContextValue>(

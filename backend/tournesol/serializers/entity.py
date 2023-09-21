@@ -164,12 +164,7 @@ class EntitySerializer(ModelSerializer):
             "tournesol_score",
             "polls",
         ]
-        read_only_fields = [
-            # XXX: the `tournesol_score` field is available directly in the
-            # Entity model for now, but will be moved in an n-n relation
-            # between Entity and Poll
-            "tournesol_score"
-        ]
+        read_only_fields = fields
 
     @extend_schema_field(EntityPollSerializer(many=True))
     def get_polls(self, obj):

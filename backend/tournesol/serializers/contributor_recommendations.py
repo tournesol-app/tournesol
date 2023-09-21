@@ -16,7 +16,7 @@ class IndividualRatingWithScoresSerializer(IndividualRatingSerializer):
 
 
 @extend_schema_serializer(
-    deprecate_fields=[
+    exclude_fields=[
         # legacy fields have been moved to "entity", "invidual_rating", "collective_rating", etc.
         "uid",
         "type",
