@@ -48,8 +48,8 @@ class ContributorRecommendationsSerializer(RecommendationSerializer):
     @extend_schema_field(ContributorCriteriaScoreSerializer(many=True))
     def get_criteria_scores(self, obj):
         return ContributorCriteriaScoreSerializer(
-            obj.contributorvideoratings.all()[0].criteria_scores.all(), many=True
+            obj.single_contributor_rating.criteria_scores, many=True
         ).data
 
     def get_is_public(self, obj) -> bool:
-        return obj.contributorvideoratings.all()[0].is_public
+        return obj.single_contributor_rating.is_public
