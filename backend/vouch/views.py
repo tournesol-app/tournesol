@@ -59,4 +59,4 @@ class VoucherReceivedListAPIView(generics.ListAPIView):
         return Voucher.objects.filter(
             to=self.request.user,
             by__is_active=True,
-        )
+        ).order_by('by__username')

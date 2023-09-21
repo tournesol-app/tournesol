@@ -11,9 +11,15 @@ EPSILON = 1e-6  # convergence tolerance
 
 
 @njit
-def L_prime(m: float, W: float, w, x, delta_2):
+def QrMed_Loss_Derivative(m: float, W: float, w, x, delta_2):
     x_minus_m = x - m
     return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m**2))
+
+
+@njit
+def QrQuantile_Loss_Derivative(m: float, W: float, w, x, delta_2, quantile: float):
+    x_minus_m = x - m
+    return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m**2)) + (1 - 2*quantile) * w.sum()
 
 
 @njit
@@ -31,16 +37,26 @@ def QrMed_inner(W: float, w: Union[npt.NDArray, float], x: npt.NDArray, delta: n
     """
     delta_2 = np.where(delta > 0, delta**2, np.spacing(0))
 
-    m_low = -1.0
-    while L_prime(m_low, W, w, x, delta_2) > 0:
-        m_low *= 2
+    # Brent’s method is used as a faster alternative to usual bisection
+    return brentq(QrMed_Loss_Derivative, args=(W, w, x, delta_2), xtol=EPSILON)
 
-    m_up = 1.0
-    while L_prime(m_up, W, w, x, delta_2) < 0:
-        m_up *= 2
+@njit
+def QrQuantile_inner(W: float, w: Union[npt.NDArray, float], x: npt.NDArray, delta: npt.NDArray, quantile: float):
+    """
+    Quadratically regularized median.
+    It behaves like a weighted median biased towards 0.
+
+    Parameters:
+        * `W`: Byzantine resilience parameter.
+            The influence of a single contributor 'i' is bounded by (w_i/W)
+        * `w`: voting rights vector
+        * `x`: partial scores vector
+        * `delta`: partial scores uncertainties vector
+    """
+    delta_2 = np.where(delta > 0, delta**2, np.spacing(0))
 
     # Brent’s method is used as a faster alternative to usual bisection
-    return brentq(L_prime, m_low, m_up, args=(W, w, x, delta_2), xtol=EPSILON)
+    return brentq(QrQuantile_Loss_Derivative, args=(W, w, x, delta_2, quantile), xtol=EPSILON)
 
 
 def QrMed(W: float, w: Union[npt.ArrayLike, float], x: npt.ArrayLike, delta: npt.ArrayLike):
@@ -119,3 +135,15 @@ def BrMean(W: float, w: Union[float, np.ndarray], x: np.ndarray, delta: np.ndarr
     if isinstance(w, float):
         w = np.full(x.shape, w)
     return ClipMean(w, x, center=QrMed(4 * W, w, x, delta), radius=np.sum(w) / (4 * W))
+
+
+def QrQuantile(W: float, w: Union[npt.ArrayLike, float], x: npt.ArrayLike, delta: npt.ArrayLike, quantile: float):
+    if len(x) == 0:
+        return 0.0
+    if isinstance(w, pd.Series):
+        w = w.to_numpy()
+    if isinstance(x, pd.Series):
+        x = x.to_numpy()
+    if isinstance(delta, pd.Series):
+        delta = delta.to_numpy()
+    return QrQuantile_inner(W, w, x, delta, quantile)

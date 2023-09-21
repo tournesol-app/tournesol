@@ -291,14 +291,16 @@ class RelatedEntitySerializer(EntitySerializer):
     def validate(self, attrs):
         uid = attrs.get("uid")
         try:
-            Entity.objects.get(uid=uid)
+            entity = Entity.objects.only("pk").get(uid=uid)
+            attrs["pk"] = entity.pk
         except ObjectDoesNotExist as error:
             created = False
             if self.context["poll"].entity_type == VideoEntity.name:
                 # A video entity can be created dynamically from a YouTube video id
                 video_id = uid.split(UID_DELIMITER)[1]
                 try:
-                    Entity.create_from_video_id(video_id)
+                    entity = Entity.create_from_video_id(video_id)
+                    attrs["pk"] = entity.pk
                     created = True
                 except VideoNotFound:
                     pass

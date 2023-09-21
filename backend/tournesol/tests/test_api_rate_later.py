@@ -10,7 +10,9 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollFactory
+from tournesol.tests.factories.ratings import ContributorRatingFactory
 
 
 class RateLaterCommonMixinTestCase:
@@ -34,6 +36,14 @@ class RateLaterCommonMixinTestCase:
         self.rate_later_base_url = f"/users/me/rate_later/{self.poll.name}/"
 
         self.entity_in_ratelater = VideoFactory()
+        EntityPollRatingFactory(
+            entity=self.entity_in_ratelater,
+            poll=self.poll,
+            tournesol_score=3,
+            n_contributors=1,
+            n_comparisons=2,
+        )
+
         self.entity_not_in_ratelater = VideoFactory()
 
         self.to_rate_later = RateLater.objects.create(
@@ -85,11 +95,22 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "type": "video",
                     "metadata": ANY,
                 },
-                "created_at": str(
-                    self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-                ),
+                "individual_rating": None,
+                "collective_rating": {
+                    "n_comparisons": 2,
+                    "n_contributors": 1,
+                    "tournesol_score": 3.0,
+                    "unsafe": {
+                        "status": True,
+                        "reasons": ANY,
+                    }
+                },
+                "rate_later_metadata": {
+                    "created_at": str(
+                        self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                    ),
+                },
             },
-            results[0],
         )
 
     def test_auth_200_list_is_poll_specific(self) -> None:
@@ -166,6 +187,19 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         response = self.client.post(self.rate_later_base_url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertDictEqual(response.data, {
+            "entity": {
+                "uid": self._uid_not_in_db,
+                "type": "video",
+                "metadata": ANY,
+            },
+            "collective_rating": None,
+            "individual_rating": None,
+            "rate_later_metadata": {
+                "created_at": ANY
+            }
+        })
+
         self.assertEqual(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
             initial_nbr + 1,
@@ -258,9 +292,63 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "type": "video",
                     "metadata": ANY,
                 },
-                "created_at": str(
-                    self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-                ),
+                "rate_later_metadata": {
+                    "created_at": self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                },
+                "individual_rating": None,
+                "collective_rating": {
+                    "n_comparisons": 2,
+                    "n_contributors": 1,
+                    "tournesol_score": 3.0,
+                    "unsafe": {
+                        "status": True,
+                        "reasons": ANY,
+                    }
+                },
+            },
+        )
+
+    def test_auth_200_get_with_contributor_rating(self) -> None:
+        """
+        An authenticated user can get a rate-later item from a specific poll.
+        """
+        ContributorRatingFactory(
+            user=self.user,
+            poll=self.poll,
+            entity=self.entity_in_ratelater,
+            is_public=True,
+        )
+
+        self.client.force_authenticate(self.user)
+        response = self.client.get(
+            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertDictEqual(
+            response.data,
+            {
+                "entity": {
+                    "uid": self.to_rate_later.entity.uid,
+                    "type": "video",
+                    "metadata": ANY,
+                },
+                "rate_later_metadata": {
+                    "created_at": self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                },
+                "individual_rating": {
+                    "is_public": True,
+                    "n_comparisons": 0,
+                },
+                "collective_rating": {
+                    "n_comparisons": 2,
+                    "n_contributors": 1,
+                    "tournesol_score": 3.0,
+                    "unsafe": {
+                        "status": True,
+                        "reasons": ANY,
+                    }
+                },
             },
         )
 
@@ -430,6 +518,13 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+        self.assertDictEqual(
+            response.data["individual_rating"],
+            {
+                "is_public": False,
+                "n_comparisons": 4,
+            }
+        )
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,

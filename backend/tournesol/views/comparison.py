@@ -82,12 +82,6 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.
     """
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["poll"] = self.poll_from_url
-        return context
-
     def get(self, request, *args, **kwargs):
         """
         Retrieve all comparisons made by the logged user, in a given poll.
@@ -222,7 +216,6 @@ class ComparisonDetailApi(
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["reverse"] = self.currently_reversed
-        context["poll"] = self.poll_from_url
         return context
 
     def perform_update(self, serializer):

@@ -117,6 +117,7 @@ class EntityPollRatingAdmin(admin.ModelAdmin):
         "get_tournesol_score",
         "n_comparisons",
         "n_contributors",
+        "sum_trust_scores",
         "get_language",
         "get_link_to_tournesol",
     )

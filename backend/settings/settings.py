@@ -82,9 +82,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_prometheus",
     "core",
-    "tournesol",
     "backoffice",
-    "faq",
+    "tournesol",
     "twitterbot",
     "ml",
     "oauth2_provider",
@@ -416,7 +415,8 @@ CACHES = {
 # over the age of the video is higher than this threshold.
 VIDEO_METADATA_REFRESH_THRESHOLD = 0.5
 
-RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
+RECOMMENDATIONS_MIN_TOURNESOL_SCORE = 20.0
+RECOMMENDATIONS_MIN_TRUST_SCORES = 1.5
 
 UPDATE_MEHESTAN_SCORES_ON_COMPARISON = False
 

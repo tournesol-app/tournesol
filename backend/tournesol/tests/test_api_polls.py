@@ -11,6 +11,7 @@ from tournesol.tests.factories.entity import (
     VideoCriteriaScoreFactory,
     VideoFactory,
 )
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
@@ -55,31 +56,31 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__uploader="_test_uploader_1",
             metadata__language="es",
             tournesol_score=-1,
-            rating_n_contributors=2,
+            make_safe_for_poll=False,
         )
         self.video_2 = VideoFactory(
             metadata__publication_date="2021-01-02",
             metadata__uploader="_test_uploader_2",
             metadata__language="fr",
             metadata__duration=10,
-            tournesol_score=2.2,
-            rating_n_contributors=3,
+            tournesol_score=22,
+            make_safe_for_poll=False,
         )
         self.video_3 = VideoFactory(
             metadata__publication_date="2021-01-03",
             metadata__uploader="_test_uploader_2",
             metadata__language="pt",
             metadata__duration=120,
-            tournesol_score=3.3,
-            rating_n_contributors=4,
+            tournesol_score=33,
+            make_safe_for_poll=False,
         )
         self.video_4 = VideoFactory(
             metadata__publication_date="2021-01-04",
             metadata__uploader="_test_uploader_3",
             metadata__language="it",
             metadata__duration=240,
-            tournesol_score=4.4,
-            rating_n_contributors=5,
+            tournesol_score=44,
+            make_safe_for_poll=False,
         )
 
         VideoCriteriaScoreFactory(
@@ -116,15 +117,20 @@ class PollsRecommendationsTestCase(TestCase):
             score_mode="all_equal",
         )
 
+        EntityPollRatingFactory(entity=self.video_1, sum_trust_scores=2)
+        EntityPollRatingFactory(entity=self.video_2, sum_trust_scores=3)
+        EntityPollRatingFactory(entity=self.video_3, sum_trust_scores=4)
+        EntityPollRatingFactory(entity=self.video_4, sum_trust_scores=5)
+
     def test_anonymous_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.data["results"]
         self.assertEqual(len(results), 3)
-        self.assertEqual(results[0]["tournesol_score"], 4.4)
-        self.assertEqual(results[1]["tournesol_score"], 3.3)
-        self.assertEqual(results[2]["tournesol_score"], 2.2)
+        self.assertEqual(results[0]["tournesol_score"], 44.0)
+        self.assertEqual(results[1]["tournesol_score"], 33.0)
+        self.assertEqual(results[2]["tournesol_score"], 22.0)
 
         self.assertEqual(results[0]["type"], "video")
 
@@ -145,6 +151,18 @@ class PollsRecommendationsTestCase(TestCase):
         response = self.client.get("/polls/videos/recommendations/?unsafe=true")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 4)
+        self.assertEqual(
+            response.data["results"][0]["unsafe"], {
+                "status": False,
+                "reasons": [],
+            }
+        )
+        self.assertEqual(
+            response.data["results"][3]["unsafe"], {
+                "status": True,
+                "reasons": ["insufficient_tournesol_score"],
+            }
+        )
 
     def test_anonymous_can_list_with_offset(self):
         """
@@ -388,7 +406,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.videos = [
-            VideoFactory(tournesol_score=2.2, rating_n_contributors=3) for _ in range(4)
+            VideoFactory(tournesol_score=92, rating_n_contributors=3) for _ in range(4)
         ]
         self.video_1, self.video_2, self.video_3, self.video_4 = self.videos
         self.criteria_scores = [
@@ -432,6 +450,50 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         results = response.data["results"]
         self.assertSetEqual(set(e["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
 
+    def test_response_is_not_cached_when_exclude_is_true(self):
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
+        self.client.force_authenticate(user=self.user_with_ratings)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="abc")
+        results = response.data["results"]
+        self.assertSetEqual(set(e["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
+
+    def test_response_is_not_cached_when_exclude_is_true_for_two_users(self):
+        self.client.force_authenticate(user=self.user_with_ratings)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="abc")
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="def")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
+    def test_response_is_cached_when_exclude_is_false(self):
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="abc")
+        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        VideoCriteriaScoreFactory(entity=new_video, score=2)
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
+    def test_response_anonymous_writes_to_cache_when_exclude_is_false(self):
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
+        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        VideoCriteriaScoreFactory(entity=new_video, score=2)
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
+    def test_response_anonymous_reads_from_cache_when_exclude_is_false(self):
+        self.client.force_authenticate(user=self.user_no_comparisons)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
+        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        VideoCriteriaScoreFactory(entity=new_video, score=2)
+        self.client.force_authenticate(user=None)
+        response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
+        results = response.data["results"]
+        self.assertEqual(len(results), 4)
+
     def test_user_rated_everything_sees_empty_results(self):
         self.client.force_authenticate(user=self.user_with_ratings)
         ComparisonFactory(user=self.user_with_ratings, entity_1=self.video_2, entity_2=self.video_4)
@@ -472,8 +534,13 @@ class PollsEntityTestCase(TestCase):
             tournesol_score=-2,
             rating_n_contributors=4,
             rating_n_ratings=8,
+            make_safe_for_poll=False
         )
-
+        EntityPollRatingFactory(
+            entity=self.video_1,
+            poll=Poll.default_poll(),
+            sum_trust_scores=4,
+        )
         self.user = UserFactory(username=self._user)
 
     def test_auth_can_read(self):
@@ -485,6 +552,10 @@ class PollsEntityTestCase(TestCase):
         self.assertEqual(data["tournesol_score"], -2)
         self.assertEqual(data["n_comparisons"], 8)
         self.assertEqual(data["n_contributors"], 4)
+        self.assertEqual(data["unsafe"], {
+            "status": True,
+            "reasons": ["insufficient_tournesol_score"],
+        })
         self.assertIn("total_score", data)
         self.assertIn("criteria_scores", data)
 
@@ -496,6 +567,10 @@ class PollsEntityTestCase(TestCase):
         self.assertEqual(data["tournesol_score"], -2)
         self.assertEqual(data["n_comparisons"], 8)
         self.assertEqual(data["n_contributors"], 4)
+        self.assertEqual(data["unsafe"], {
+            "status": True,
+            "reasons": ["insufficient_tournesol_score"],
+        })
         self.assertIn("total_score", data)
         self.assertIn("criteria_scores", data)
 
@@ -686,3 +761,30 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         self.assertEqual(
             max(response.data["criteria_scores_distributions"][0]["bins"]), 100
         )
+
+class PollRecommendationsWithLowSumTrustScoresTestCase(TestCase):
+    """
+    TestCase of the PollsRecommendationsView API related to the exclusion of
+    entities with not enough sum of trust scores.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.video_1 = VideoFactory(tournesol_score=42, make_safe_for_poll=False)
+        self.video_2 = VideoFactory(tournesol_score=42, make_safe_for_poll=False)
+        VideoCriteriaScoreFactory(entity=self.video_1, score=42)
+        VideoCriteriaScoreFactory(entity=self.video_2, score=42)
+        EntityPollRatingFactory(entity=self.video_1, sum_trust_scores=1)
+        EntityPollRatingFactory(entity=self.video_2, sum_trust_scores=3)
+
+    def test_low_sum_trust_scores_excluded_from_recommendations(self):
+        response = self.client.get("/polls/videos/recommendations/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["uid"], self.video_2.uid)
+        self.assertEqual(results[0]["unsafe"], {
+            "status": False,
+            "reasons": []
+        })

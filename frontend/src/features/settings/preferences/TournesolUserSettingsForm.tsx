@@ -28,10 +28,20 @@ import {
 import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
+  YT_DEFAULT_AUTO_SELECT_ENTITIES,
 } from 'src/utils/constants';
+import {
+  initRecommendationsLanguages,
+  saveRecommendationsLanguages,
+} from 'src/utils/recommendationsLanguages';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
+
+const initialLanguages = () => {
+  const languages = initRecommendationsLanguages();
+  return languages ? languages.split(',') : [];
+};
 
 /**
  * Display a form allowing the logged users to update all their Tournesol
@@ -39,6 +49,7 @@ import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
  */
 const TournesolUserSettingsForm = () => {
   const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
 
@@ -57,7 +68,7 @@ const TournesolUserSettingsForm = () => {
 
   // We think that the majority of the community speaks french.
   const [notificationsLang, setNotificationsLang] = useState(
-    generalSettings?.notifications__lang ?? Notifications_langEnum.FRENCH
+    generalSettings?.notifications__lang ?? Notifications_langEnum.FR
   );
 
   // Notifications (must be false by default according to the ToS)
@@ -72,7 +83,17 @@ const TournesolUserSettingsForm = () => {
    * Poll `videos`
    */
 
+  // Browser extension
+  const [extSearchRecommendation, setExtSearchRecommendation] = useState(
+    pollSettings?.extension__search_reco ?? false
+  );
+
   // Comparison
+  const [autoSelectEntities, setAutoSelectEntities] = useState(
+    pollSettings?.comparison__auto_select_entities ??
+      YT_DEFAULT_AUTO_SELECT_ENTITIES
+  );
+
   const [displayedCriteria, setDisplayedCriteria] = useState<string[]>(
     pollSettings?.comparison__criteria_order ?? []
   );
@@ -90,9 +111,17 @@ const TournesolUserSettingsForm = () => {
     pollSettings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
+  // Recommendations (stream)
+  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
+    Array<string>
+  >(initialLanguages());
+
   // Recommendations (page)
   const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
     pollSettings?.recommendations__default_unsafe ?? false
+  );
+  const [recoDefaultExcludeCompared, setRecoDefaultExcludeCompared] = useState(
+    pollSettings?.recommendations__default_exclude_compared_entities ?? false
   );
   const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
     Recommendations_defaultDateEnum | BlankEnum
@@ -130,16 +159,37 @@ const TournesolUserSettingsForm = () => {
       );
     }
 
+    if (pollSettings?.comparison__auto_select_entities != undefined) {
+      setAutoSelectEntities(pollSettings?.comparison__auto_select_entities);
+    }
+
     if (pollSettings?.comparison__criteria_order != undefined) {
       setDisplayedCriteria(pollSettings.comparison__criteria_order);
+    }
+
+    if (pollSettings?.extension__search_reco != undefined) {
+      setExtSearchRecommendation(pollSettings.extension__search_reco);
     }
 
     if (pollSettings?.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
 
+    if (pollSettings?.recommendations__default_languages != undefined) {
+      setRecoDefaultLanguages(pollSettings.recommendations__default_languages);
+    }
+
     if (pollSettings?.recommendations__default_unsafe != undefined) {
       setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
+    }
+
+    if (
+      pollSettings?.recommendations__default_exclude_compared_entities !=
+      undefined
+    ) {
+      setRecoDefaultExcludeCompared(
+        pollSettings.recommendations__default_exclude_compared_entities
+      );
     }
 
     if (pollSettings?.recommendations__default_date != undefined) {
@@ -151,6 +201,8 @@ const TournesolUserSettingsForm = () => {
     event.preventDefault();
     setDisabled(true);
 
+    saveRecommendationsLanguages(recoDefaultLanguages.join(','));
+
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
@@ -161,11 +213,16 @@ const TournesolUserSettingsForm = () => {
           },
           [YOUTUBE_POLL_NAME]: {
             comparison__criteria_order: displayedCriteria,
+            comparison__auto_select_entities: autoSelectEntities,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
+            extension__search_reco: extSearchRecommendation,
             rate_later__auto_remove: rateLaterAutoRemoval,
+            recommendations__default_languages: recoDefaultLanguages,
             recommendations__default_date: recoDefaultUploadDate,
             recommendations__default_unsafe: recoDefaultUnsafe,
+            recommendations__default_exclude_compared_entities:
+              recoDefaultExcludeCompared,
           },
         },
       }).catch((reason: ApiError) => {
@@ -213,14 +270,22 @@ const TournesolUserSettingsForm = () => {
           {...subSectionBreakpoints}
         >
           <VideosPollUserSettingsForm
+            extSearchRecommendation={extSearchRecommendation}
+            setExtSearchRecommendation={setExtSearchRecommendation}
+            compAutoSelectEntities={autoSelectEntities}
+            setCompAutoSelectEntities={setAutoSelectEntities}
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
             setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
             displayedCriteria={displayedCriteria}
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}
             setRateLaterAutoRemoval={setRateLaterAutoRemoval}
+            recoDefaultLanguages={recoDefaultLanguages}
+            setRecoDefaultLanguages={setRecoDefaultLanguages}
             recoDefaultUnsafe={recoDefaultUnsafe}
             setRecoDefaultUnsafe={setRecoDefaultUnsafe}
+            recoDefaultExcludeCompared={recoDefaultExcludeCompared}
+            setRecoDefaultExcludeCompared={setRecoDefaultExcludeCompared}
             recoDefaultUploadDate={recoDefaultUploadDate}
             setRecoDefaultUploadDate={setRecoDefaultUploadDate}
             apiErrors={apiErrors}

@@ -5,10 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import {
-  VideoSerializerWithCriteria,
-  Recommendation,
-} from 'src/services/openapi';
+import { Recommendation } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { criteriaIcon, criterionColor } from 'src/utils/criteria';
 import useCriteriaChartData, {
@@ -425,13 +422,12 @@ const SizedBarChart = ({
 };
 
 interface Props {
-  video?: VideoSerializerWithCriteria;
-  entity?: Recommendation;
+  entity: Recommendation;
 }
 
-const CriteriaBarChart = ({ video, entity }: Props) => {
+const CriteriaBarChart = ({ entity }: Props) => {
   const { shouldDisplayChart, data, personalScoresActivated, domain } =
-    useCriteriaChartData({ video, entity });
+    useCriteriaChartData({ entity });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number | undefined>(undefined);

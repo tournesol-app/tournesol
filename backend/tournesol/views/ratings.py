@@ -1,27 +1,25 @@
 """
 API endpoint to interact with the contributor's ratings.
 """
-from django.db.models import Func, OuterRef, Q, Subquery
-from django.shortcuts import get_object_or_404
+import logging
+
+from django.db import IntegrityError
+from django.db.models import Prefetch, prefetch_related_objects
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from tournesol.models import (
-    Comparison,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
-    EntityPollRating,
-    Poll,
-)
+from tournesol.models import ContributorRating, Entity, Poll
 from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
     ContributorRatingUpdateAllSerializer,
 )
 from tournesol.views.mixins.poll import PollScopedViewMixin
+
+logger = logging.getLogger(__name__)
 
 # The only values accepted by the URL parameter `order_by` in the list APIs.
 ALLOWED_GENERIC_ORDER_BY_VALUES = [
@@ -41,47 +39,37 @@ EXTRA_ORDER_BY = "-pk"
 DEFAULT_ORDER_BY = ["-last_compared_at", EXTRA_ORDER_BY]
 
 
-def get_annotated_ratings(poll: Poll):
-    """
-    Return a `ContributorRating` queryset with additional annotations like:
-        - the number of comparisons made by the user for the entity
-        - the date of the last comparison made for this entity
-        - etc.
+class ContributorRatingQuerysetMixin(PollScopedViewMixin):
+    def get_prefetch_entity_config(self):
+        poll = self.poll_from_url
+        return Prefetch(
+            "entity",
+            queryset=(
+                Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
+            ),
+        )
 
-    This queryset expects to be evaluated with a specific poll, user and
-    entity.
-    """
-    n_comparisons = (
-        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
-        .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-        .annotate(count=Func("id", function="Count"))
-        .values("count")
-    )
+    def get_annotated_ratings(self):
+        """
+        Return a `ContributorRating` queryset with additional annotations like:
+            - the number of comparisons made by the user for the entity
+            - the date of the last comparison made for this entity
+            - etc.
 
-    last_compared_at = (
-        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
-        .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-        .values("datetime_lastedit")
-        .order_by("-datetime_lastedit")
-    )[:1]
+        This queryset expects to be evaluated with a specific poll, user and
+        entity.
+        """
+        poll = self.poll_from_url
+        return (
+            ContributorRating.objects.annotate_n_comparisons()
+            .annotate_last_compared_at()
+            .annotate_collective_score()
+            .annotate_individual_score(poll=poll)
+            .prefetch_related(self.get_prefetch_entity_config())
+        )
 
-    collective_score = (
-        EntityPollRating.objects.filter(poll=OuterRef("poll"), entity=OuterRef("entity"))
-        .values("tournesol_score")
-    )
-
-    individual_score = (
-        ContributorRatingCriteriaScore.objects
-        .filter(contributor_rating=OuterRef("pk"), criteria=poll.main_criteria)
-        .values("score")
-    )
-
-    return ContributorRating.objects.annotate(
-        n_comparisons=Subquery(n_comparisons),
-        last_compared_at=Subquery(last_compared_at),
-        collective_score=Subquery(collective_score),
-        individual_score=Subquery(individual_score)
-    )
+    def prefetch_entity(self, contributor_rating: ContributorRating):
+        prefetch_related_objects([contributor_rating], self.get_prefetch_entity_config())
 
 
 @extend_schema_view(
@@ -98,7 +86,7 @@ def get_annotated_ratings(poll: Poll):
         "for a specific entity."
     ),
 )
-class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIView):
+class ContributorRatingDetail(ContributorRatingQuerysetMixin, generics.RetrieveUpdateAPIView):
     """
     Get or update the current user's rating for the designated entity.
     Used in particular to get or update the is_public attribute.
@@ -106,12 +94,16 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
 
     serializer_class = ContributorRatingSerializer
 
-    def get_object(self):
-        return get_object_or_404(
-            get_annotated_ratings(self.poll_from_url),
-            poll=self.poll_from_url,
-            user=self.request.user,
-            entity__uid=self.kwargs["uid"],
+    lookup_url_kwarg = "uid"
+    lookup_field = "entity__uid"
+
+    def get_queryset(self):
+        return (
+            self.get_annotated_ratings()
+            .filter(
+                poll=self.poll_from_url,
+                user=self.request.user
+            )
         )
 
 
@@ -141,7 +133,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
         "specific video in a given poll, with optional visibility settings."
     ),
 )
-class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
+class ContributorRatingList(ContributorRatingQuerysetMixin, generics.ListCreateAPIView):
     """List the contributor's rated entities on the given poll and their scores."""
 
     queryset = ContributorRating.objects.none()
@@ -154,9 +146,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
             elif is_public == "false":
                 qst = qst.filter(is_public=False)
             else:
-                raise ValidationError(
-                    "The URL parameter 'is_public' must be 'true' or 'false'"
-                )
+                raise ValidationError("The URL parameter 'is_public' must be 'true' or 'false'")
 
         return qst
 
@@ -190,17 +180,36 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
 
     def get_queryset(self):
         ratings = (
-            get_annotated_ratings(self.poll_from_url)
-            .filter(
-                poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0
-            )
-            .select_related("entity")
+            self.get_annotated_ratings()
+            .filter(poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0)
             .prefetch_related("criteria_scores")
         )
-
         ratings = self._filter_queryset_by_visibility(ratings)
         ratings = self._order_queryset(self.poll_from_url, ratings)
         return ratings
+
+    def perform_create(self, serializer):
+        # In some cases, several concurrent requests might pass the
+        # serializer's validation and cause the view to fail here.
+        try:
+            contributor_rating = serializer.save()
+        except IntegrityError as err:
+            logger.warning(
+                "Got IntegrityError when creating ContributorRating\n"
+                "We suppose it's an unique constraint violation. If not, the error should be "
+                "addressed.",
+                exc_info=True
+            )
+            raise ValidationError(
+                {
+                    "non_field_errors": [
+                        "A ContributorRating already exists for this (user, entity, poll)",
+                    ]
+                },
+                code="unique",
+            ) from err
+
+        self.prefetch_entity(contributor_rating)
 
 
 class ContributorRatingUpdateAll(PollScopedViewMixin, generics.GenericAPIView):
@@ -212,9 +221,7 @@ class ContributorRatingUpdateAll(PollScopedViewMixin, generics.GenericAPIView):
     serializer_class = ContributorRatingUpdateAllSerializer
 
     def get_queryset(self):
-        return ContributorRating.objects.filter(
-            poll=self.poll_from_url, user=self.request.user
-        )
+        return ContributorRating.objects.filter(poll=self.poll_from_url, user=self.request.user)
 
     def patch(self, request, *args, **kwargs):
         queryset = self.get_queryset()

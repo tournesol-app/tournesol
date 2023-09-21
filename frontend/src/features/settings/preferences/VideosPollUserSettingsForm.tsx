@@ -11,13 +11,21 @@ import {
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
+import AutoSelectoEntities from './fields/AutoSelectEntities';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
+import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
-import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
+import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
+import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
+import RecommendationsDefaultExcludeCompared from './fields/RecommendationsDefaultExcludeCompared';
 
 interface VideosPollUserSettingsFormProps {
+  extSearchRecommendation: boolean;
+  setExtSearchRecommendation: (target: boolean) => void;
+  compAutoSelectEntities: boolean;
+  setCompAutoSelectEntities: (target: boolean) => void;
   compUiWeeklyColGoalDisplay:
     | ComparisonUi_weeklyCollectiveGoalDisplayEnum
     | BlankEnum;
@@ -28,8 +36,12 @@ interface VideosPollUserSettingsFormProps {
   setDisplayedCriteria: (target: string[]) => void;
   rateLaterAutoRemoval: number;
   setRateLaterAutoRemoval: (number: number) => void;
+  recoDefaultLanguages: string[];
+  setRecoDefaultLanguages: (target: string[]) => void;
   recoDefaultUnsafe: boolean;
   setRecoDefaultUnsafe: (target: boolean) => void;
+  recoDefaultExcludeCompared: boolean;
+  setRecoDefaultExcludeCompared: (target: boolean) => void;
   recoDefaultUploadDate: Recommendations_defaultDateEnum | BlankEnum;
   setRecoDefaultUploadDate: (
     target: Recommendations_defaultDateEnum | BlankEnum
@@ -41,14 +53,22 @@ interface VideosPollUserSettingsFormProps {
  * Display a set of fields representing the preferences of the poll `videos`.
  */
 const VideosPollUserSettingsForm = ({
+  extSearchRecommendation,
+  setExtSearchRecommendation,
+  compAutoSelectEntities,
+  setCompAutoSelectEntities,
   compUiWeeklyColGoalDisplay,
   setCompUiWeeklyColGoalDisplay,
   displayedCriteria,
   setDisplayedCriteria,
   rateLaterAutoRemoval,
   setRateLaterAutoRemoval,
+  recoDefaultLanguages,
+  setRecoDefaultLanguages,
   recoDefaultUnsafe,
   setRecoDefaultUnsafe,
+  recoDefaultExcludeCompared,
+  setRecoDefaultExcludeCompared,
   recoDefaultUploadDate,
   setRecoDefaultUploadDate,
   apiErrors,
@@ -71,6 +91,13 @@ const VideosPollUserSettingsForm = ({
           pollName={pollName}
         />
       </Grid>
+      <Grid item>
+        <AutoSelectoEntities
+          value={compAutoSelectEntities}
+          onChange={setCompAutoSelectEntities}
+          pollName={pollName}
+        />
+      </Grid>
       {/*
           Ideally the following field could be displayed under the title
           Comparison, instead of Comparison (page). Updating the optinal
@@ -86,6 +113,18 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
+        <Typography id="extension_youtube" variant="h6">
+          {t('pollUserSettingsForm.extensionYoutube')}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <ExtSearchRecommendation
+          value={extSearchRecommendation}
+          onChange={setExtSearchRecommendation}
+          pollName={pollName}
+        />
+      </Grid>
+      <Grid item>
         <Typography id="rate_later" variant="h6">
           {t('pollUserSettingsForm.rateLater')}
         </Typography>
@@ -96,6 +135,17 @@ const VideosPollUserSettingsForm = ({
           value={rateLaterAutoRemoval}
           onChange={setRateLaterAutoRemoval}
           pollName={pollName}
+        />
+      </Grid>
+      <Grid item>
+        <Typography id="recommendations" variant="h6">
+          {t('pollUserSettingsForm.recommendations')}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <RecommendationsDefaultLanguage
+          value={recoDefaultLanguages}
+          onChange={setRecoDefaultLanguages}
         />
       </Grid>
       <Grid item>
@@ -123,12 +173,21 @@ const VideosPollUserSettingsForm = ({
           pollName={pollName}
         />
       </Grid>
-      <Grid item>
-        <RecommendationsDefaultUnsafe
-          value={recoDefaultUnsafe}
-          onChange={setRecoDefaultUnsafe}
-          pollName={pollName}
-        />
+      <Grid item container spacing={1} direction="column" alignItems="stretch">
+        <Grid item>
+          <RecommendationsDefaultUnsafe
+            value={recoDefaultUnsafe}
+            onChange={setRecoDefaultUnsafe}
+            pollName={pollName}
+          />
+        </Grid>
+        <Grid item>
+          <RecommendationsDefaultExcludeCompared
+            value={recoDefaultExcludeCompared}
+            onChange={setRecoDefaultExcludeCompared}
+            pollName={pollName}
+          />
+        </Grid>
       </Grid>
     </Grid>
   );

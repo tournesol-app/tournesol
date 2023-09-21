@@ -1,8 +1,8 @@
 import logging
 
-from django.conf import settings
 from django.db.models import Case, F, Sum, When
 from django.shortcuts import get_object_or_404
+from django.utils.cache import patch_vary_headers
 from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -159,11 +159,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         if filters["unsafe"]:
             return queryset
-
-        return queryset.filter(
-            rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
-            tournesol_score__gt=0,
-        )
+        return queryset.filter_safe_for_poll(self.poll_from_url)
 
     def sort_results(self, queryset, filters):
         """
@@ -281,8 +277,11 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     serializer_class = RecommendationSerializer
 
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
-    def list(self, *args, **kwargs):
-        return super().list(self, *args, **kwargs)
+    def list(self, request, *args, **kwargs):
+        response = super().list(self, request, *args, **kwargs)
+        if request.query_params.get("exclude_compared_entities") == "true":
+            patch_vary_headers(response, ['Authorization'])
+        return response
 
     def annotate_and_prefetch_scores(self, queryset, request, poll: Poll):
         raw_score_mode = request.query_params.get("score_mode", ScoreMode.DEFAULT)
@@ -306,9 +305,10 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
                 F("all_criteria_scores__score") * criteria_weight,
             )
         )
-
-        return queryset.filter(total_score__isnull=False).with_prefetched_scores(
-            poll_name=poll.name, mode=score_mode
+        return (
+            queryset.filter(total_score__isnull=False)
+            .with_prefetched_scores(poll_name=poll.name, mode=score_mode)
+            .with_prefetched_poll_ratings(poll_name=poll.name)
         )
 
     def get_queryset(self):
@@ -327,15 +327,17 @@ class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
     """
 
     poll_parameter = "name"
+    lookup_field = "uid"
 
     permission_classes = []
-    queryset = Entity.objects.none()
     serializer_class = RecommendationSerializer
 
+    def get_queryset(self):
+        poll = self.poll_from_url
+        return Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
+
     def get_object(self):
-        """Get the entity based on the requested uid."""
-        entity_uid = self.kwargs.get("uid")
-        entity = get_object_or_404(Entity, uid=entity_uid)
+        entity = super().get_object()
 
         # The `total_score` is not a natural attribute of an entity. It is
         # used by the recommendations API and computed during the queryset

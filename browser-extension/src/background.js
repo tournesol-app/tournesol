@@ -6,6 +6,8 @@ import {
   getAccessToken,
   getRandomSubarray,
   getUserProof,
+  getRecommendationsLanguagesAuthenticated,
+  getSingleSetting,
 } from './utils.js';
 
 const oversamplingRatioForRecentVideos = 3;
@@ -96,89 +98,6 @@ function getDateThreeWeeksAgo() {
   return threeWeeksAgo.toISOString();
 }
 
-const availableRecommendationsLanguages = [
-  // See recommendationsLanguages in frontend/src/utils/constants.ts
-  'af',
-  'ar',
-  'bg',
-  'bn',
-  'ca',
-  'cs',
-  'cy',
-  'da',
-  'de',
-  'el',
-  'en',
-  'es',
-  'et',
-  'fa',
-  'fi',
-  'fr',
-  'gu',
-  'he',
-  'hi',
-  'hr',
-  'hu',
-  'id',
-  'it',
-  'ja',
-  'kn',
-  'ko',
-  'lt',
-  'lv',
-  'mk',
-  'ml',
-  'mr',
-  'ne',
-  'nl',
-  'no',
-  'pa',
-  'pl',
-  'pt',
-  'ro',
-  'ru',
-  'sk',
-  'sl',
-  'so',
-  'sq',
-  'sv',
-  'sw',
-  'ta',
-  'te',
-  'th',
-  'tl',
-  'tr',
-  'uk',
-  'ur',
-  'vi',
-];
-
-async function recommendationsLanguages() {
-  const storedRecommendationsLanguages = () =>
-    new Promise((resolve) =>
-      chrome.storage.local.get(
-        'recommendationsLanguages',
-        ({ recommendationsLanguages }) => resolve(recommendationsLanguages)
-      )
-    );
-
-  const uniq = (array) => Array.from(new Set(array));
-  const recommendationsLanguagesFromNavigator = () =>
-    uniq(
-      navigator.languages
-        .map((languageTag) => languageTag.split('-', 1)[0])
-        .filter((language) =>
-          availableRecommendationsLanguages.includes(language)
-        )
-    ).join(',');
-
-  return (
-    (await storedRecommendationsLanguages()) ||
-    recommendationsLanguagesFromNavigator() ||
-    'en'
-  );
-}
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Return the current access token in the chrome.storage.local.
   if (request.message === 'extAccessTokenNeeded') {
@@ -213,6 +132,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
+  if (request.message === 'openOptionsPage') {
+    chrome.runtime.openOptionsPage();
+    return true;
+  }
+
   if (request.message == 'addRateLater') {
     addRateLater(request.video_id).then(sendResponse);
     return true;
@@ -231,6 +155,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.message == 'getVideoStatistics') {
     // getVideoStatistics(request.video_id).then(sendResponse);
+    return true;
+  }
+
+  if (request.message && request.message.startsWith('get:setting:')) {
+    let setting = request.message.split(':')[2];
+
+    if (!setting) {
+      sendResponse({ value: null });
+      return true;
+    }
+
+    getSingleSetting(setting, false).then((value) => {
+      sendResponse({ value: value });
+    });
     return true;
   } else if (
     request.message == 'getTournesolRecommendations' ||
@@ -277,21 +215,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
-
-        const languagesString = await recommendationsLanguages();
+        const recommendationsLangs =
+          await getRecommendationsLanguagesAuthenticated();
 
         // Only one request for both videos and additional videos
         const recentParams = new URLSearchParams([
           ['date_gte', threeWeeksAgo],
           ['limit', recentVideoToLoad + recentAdditionalVideoToLoad],
-          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
         ]);
 
         const oldParams = new URLSearchParams([
           ['date_lte', threeWeeksAgo],
           ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
-          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
         ]);
+
+        recommendationsLangs.forEach((lang) => {
+          if (lang !== '') {
+            oldParams.append('metadata[language]', lang);
+            recentParams.append('metadata[language]', lang);
+          }
+        });
 
         const [recent, old] = await Promise.all([
           request_recommendations(recentParams),
@@ -358,7 +301,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: [...videos, ...additionalVideos],
-          recommandationsLanguages: languagesString,
+          recommandationsLanguages: recommendationsLangs.join(','),
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };
@@ -368,7 +311,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
         const videosNumber = request.videosNumber;
-        const languagesString = await recommendationsLanguages();
+        const recommendationsLangs =
+          await getRecommendationsLanguagesAuthenticated();
 
         // Only one request for both videos and additional videos
         const params = new URLSearchParams([
@@ -376,8 +320,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           ['search', request.search],
           ['unsafe', false],
           ['score_mode', 'default'],
-          ...languagesString.split(',').map((l) => ['metadata[language]', l]),
         ]);
+
+        recommendationsLangs.forEach((lang) => {
+          if (lang !== '') {
+            params.append('metadata[language]', lang);
+          }
+        });
 
         const [videosList] = await Promise.all([
           request_recommendations(params),
@@ -385,7 +334,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return {
           data: videosList.splice(0, videosNumber),
-          recommandationsLanguages: languagesString,
+          recommandationsLanguages: recommendationsLangs.join(','),
           loadVideos: request.videosNumber > 0,
           loadAdditionalVideos: request.additionalVideosNumber > 0,
         };

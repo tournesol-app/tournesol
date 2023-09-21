@@ -13,10 +13,7 @@ import {
 
 import { Box } from '@mui/material';
 
-import {
-  VideoSerializerWithCriteria,
-  Recommendation,
-} from 'src/services/openapi';
+import { Recommendation } from 'src/services/openapi';
 
 import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 import useCriterionScoreData, {
@@ -137,12 +134,10 @@ const CriteriaScoresDistributionChart = ({
 };
 
 interface CriteriaScoresDistributionProps {
-  video: VideoSerializerWithCriteria;
-  entity?: Recommendation;
+  entity: Recommendation;
 }
 
 const CriteriaScoresDistribution = ({
-  video,
   entity,
 }: CriteriaScoresDistributionProps) => {
   const { name: pollName } = useCurrentPoll();
@@ -153,7 +148,6 @@ const CriteriaScoresDistribution = ({
   >([]);
 
   const { data, personalScoresActivated, domain } = useCriteriaChartData({
-    video,
     entity,
   });
 
@@ -173,12 +167,12 @@ const CriteriaScoresDistribution = ({
       const result =
         await PollsService.pollsEntitiesCriteriaScoresDistributionsRetrieve({
           name: pollName,
-          uid: video.uid,
+          uid: entity.uid,
         });
       setCriteriaScoresDistribution(result.criteria_scores_distributions);
     };
     getDistribution();
-  }, [video.uid, pollName]);
+  }, [entity.uid, pollName]);
 
   const criteriaDistributionScore = useMemo(
     () =>

@@ -37,18 +37,16 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         # Negative scores are displayed without the Tournesol logo, to have
         # more space to display the minus symbol, and to make it clear that
         # the entity is not currently trusted by Tournesol.
-        score = entity.tournesol_score
+        poll_rating = entity.single_poll_rating
 
         # If the score has not been computed yet, display a centered flower.
-        if score is None:
+        if poll_rating is None or poll_rating.tournesol_score is None:
             image.alpha_composite(
                 self.get_ts_logo(tuple(numpy.multiply((34, 34), upscale_ratio))),
                 dest=tuple(numpy.multiply((43, 24), upscale_ratio)),
             )
 
-        # If the score has been computed, and is positive, display the flower
-        # just before the score.
-        if score and score > 0:
+        elif not poll_rating.is_recommendation_unsafe:
             image.alpha_composite(
                 self.get_ts_logo(tuple(numpy.multiply((34, 34), upscale_ratio))),
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),

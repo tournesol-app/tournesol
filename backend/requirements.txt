@@ -3,13 +3,13 @@
 
 # Full stack Web Framework used for Tournesol's backend
 # https://docs.djangoproject.com
-Django==4.1.10
+Django==4.1.11
 # Used for fields computed on save for Django models
 # See https://github.com/brechin/django-computed-property/
 django-computed-property==0.3.0
 # CORS middleware
 # See https://github.com/adamchainz/django-cors-headers
-django-cors-headers==3.14.0
+django-cors-headers==4.2.0
 # Used to support OAuth
 # See https://github.com/jazzband/django-oauth-toolkit
 django-oauth-toolkit==1.7.1
@@ -18,43 +18,41 @@ django-oauth-toolkit==1.7.1
 django-prometheus==2.2.0
 # Registration, profile, password and email management
 # https://github.com/apragacz/django-rest-registration
-django-rest-registration==0.7.3
-# Useful helpers for quesries such as SubqueryCount
+django-rest-registration==0.8.2
+# Useful helpers for queries such as SubqueryCount
 django-sql-utils==0.6.1
 # Django REST Framework is used for most of the API routes
 # https://github.com/encode/django-rest-framework
 djangorestframework==3.14.0
 # Used to generate OpenAPI documentation exposed by Swagger UI
 # See https://github.com/tfranzel/drf-spectacular
-drf-spectacular==0.26.0
+drf-spectacular==0.26.4
 # Pillow is used to generate the Previews for links shared on social media
-Pillow==9.4.0
+Pillow==9.5.0
 # Needed for postgres database
-psycopg2-binary==2.9.5
+psycopg2-binary==2.9.7
 # PyYAML is used for reading the settings 
 PyYAML==6.0
-# tqdm is used to display a progressbar in some slow ML algorithms
-tqdm==4.65.0
 # langdetect is used to detect the language of video
 langdetect==1.0.9
 # Pandas is used extensively in the ML algorithms and for some data management
 # tasks such as building the public dataset
-pandas==1.5.3
+pandas==2.0.3
 # Numba provides just-in-time compilation to run optimized machine code
 # for performance-critical functions in Mehestan implementation.
-numba==0.57.0
+numba==0.57.1
 # Numpy is used extensively in the ML algorithms and in some other algorithms
 # such as computing comparison suggestions. See https://numpy.org/
 # Check the compatibility with Numba before upgrading.
 numpy==1.24.3
 # Scipy is used in some ML algorithms
-scipy==1.10.1
+scipy==1.11.2
 # API Youtube data
-google-api-python-client==2.81.0
+google-api-python-client==2.97.0
 google-auth-httplib2==0.1.0
 # matplotlib is used to generate a graph that the twitter bot tweets every
 # month
-matplotlib==3.7.1
+matplotlib==3.7.2
 # requests is used to trigger a few external tools such as Discord or fetch
 # information 
 requests==2.31.0

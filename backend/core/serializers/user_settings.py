@@ -11,9 +11,10 @@ class GeneralUserSettingsSerializer(serializers.Serializer):
     The general user settings that are not related to Tournesol polls.
     """
 
+    # The first element of the tuple should be an ISO 639-1 code.
     NOTIFICATIONS_LANG = [
-        ("ENGLISH", "en"),
-        ("FRENCH", "fr"),
+        ("en", "en"),
+        ("fr", "fr"),
     ]
 
     notifications__lang = serializers.ChoiceField(
@@ -35,9 +36,11 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
         ("NEVER", "never"),
     ]
 
+    comparison__auto_select_entities = serializers.BooleanField(required=False)
     comparison__criteria_order = serializers.ListField(
         child=serializers.CharField(), required=False
     )
+
     comparison_ui__weekly_collective_goal_display = serializers.ChoiceField(
         choices=COMPONENT_DISPLAY_STATE, allow_blank=True, required=False
     )
@@ -83,6 +86,13 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         ("ALL_TIME", "all_time"),
     ]
 
+    extension__search_reco = serializers.BooleanField(
+        required=False,
+        help_text=(
+            "Whether Tournesol recommendations should be integrated in Youtube.com search results."
+        ),
+    )
+
     recommendations__default_date = serializers.ChoiceField(
         choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
     )
@@ -90,6 +100,7 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         child=serializers.CharField(), allow_empty=True, required=False
     )
     recommendations__default_unsafe = serializers.BooleanField(required=False)
+    recommendations__default_exclude_compared_entities = serializers.BooleanField(required=False)
 
     def validate_recommendations__default_languages(self, default_languages):
         for lang in default_languages:

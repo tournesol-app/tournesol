@@ -286,7 +286,8 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
 
     def test_auth_200_list(self):
         """
-        An authenticated user can list its received vouchers
+        An authenticated user can list its received vouchers, ordered by
+        issuer name.
         """
         self.client.force_authenticate(user=self.user3)
         response = self.client.get(self.voucher_base_url, format="json")

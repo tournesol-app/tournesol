@@ -1,14 +1,14 @@
 import logging
 import os
-from functools import partial
-from math import tau as TAU
+from dataclasses import dataclass
+from functools import cached_property, partial
 from multiprocessing import Pool
 from typing import Optional
 
-import numpy as np
 import pandas as pd
 from django import db
-from solidago.comparisons_to_scores import HookeIndividualScores
+from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_deviation
+from solidago.comparisons_to_scores import ContinuousBradleyTerry
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
@@ -20,27 +20,35 @@ from ml.outputs import (
 )
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
-from tournesol.utils.constants import COMPARISON_MAX, MEHESTAN_MAX_SCALED_SCORE
+from tournesol.utils.constants import COMPARISON_MAX
 from vouch.voting_rights import compute_voting_rights
 
 from .global_scores import compute_scaled_scores, get_global_scores
 
 logger = logging.getLogger(__name__)
 
-MAX_SCORE = MEHESTAN_MAX_SCALED_SCORE
-POLL_SCALING_QUANTILE = 0.75
-POLL_SCALING_SCORE_AT_QUANTILE = 25.0
-POLL_SCALING_MIN_CONTRIBUTORS = 4
-
 VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 
-individual_scores_algo = HookeIndividualScores(r_max=COMPARISON_MAX)
+@dataclass
+class MehestanParameters:
+    alpha: float = 0.02
+    W: float = 10.0
+    score_shift_W: float = 1.
+    score_shift_quantile: float = 0.15
+    score_deviation_quantile: float = 0.9
+
+    @cached_property
+    def indiv_algo(self):
+        return ContinuousBradleyTerry(r_max=COMPARISON_MAX, alpha=self.alpha)
 
 
 def get_individual_scores(
-    ml_input: MlInput, criteria: str, single_user_id: Optional[int] = None
+    ml_input: MlInput,
+    criteria: str,
+    parameters: MehestanParameters,
+    single_user_id: Optional[int] = None,
 ) -> pd.DataFrame:
     comparisons_df = ml_input.get_comparisons(criteria=criteria, user_id=single_user_id)
     initial_contributor_scores = ml_input.get_individual_scores(
@@ -62,7 +70,7 @@ def get_individual_scores(
                 )
             except KeyError:
                 initial_entity_scores = None
-        scores = individual_scores_algo.compute_individual_scores(
+        scores = parameters.indiv_algo.compute_individual_scores(
             user_comparisons, initial_entity_scores=initial_entity_scores
         )
         if scores is None:
@@ -78,9 +86,15 @@ def get_individual_scores(
 
 
 def update_user_scores(poll: Poll, user: User):
+    params = MehestanParameters()
     ml_input = MlInputFromDb(poll_name=poll.name)
     for criteria in poll.criterias_list:
-        scores = get_individual_scores(ml_input, criteria, single_user_id=user.pk)
+        scores = get_individual_scores(
+            ml_input,
+            criteria,
+            parameters=params,
+            single_user_id=user.pk,
+        )
         scores["criteria"] = criteria
         scores.rename(
             columns={
@@ -130,7 +144,7 @@ def run_mehestan_for_criterion(
     criteria: str,
     ml_input: MlInput,
     poll_pk: int,
-    update_poll_scaling=False,
+    parameters: MehestanParameters
 ):
     """
     Run Mehestan for the given criterion, in the given poll.
@@ -144,9 +158,29 @@ def run_mehestan_for_criterion(
         criteria,
     )
 
-    indiv_scores = get_individual_scores(ml_input, criteria=criteria)
-    logger.debug("Individual scores computed for crit '%s'", criteria)
-    scaled_scores, scalings = compute_scaled_scores(ml_input, individual_scores=indiv_scores)
+    indiv_scores = get_individual_scores(ml_input, criteria=criteria, parameters=parameters)
+
+    logger.info("Individual scores computed for crit '%s'", criteria)
+    scaled_scores, scalings = compute_scaled_scores(
+        ml_input,
+        individual_scores=indiv_scores,
+        W=parameters.W
+    )
+
+    if len(scaled_scores) > 0:
+        score_shift = estimate_positive_score_shift(
+            scaled_scores,
+            W=parameters.score_shift_W,
+            quantile=parameters.score_shift_quantile,
+        )
+        score_std = estimate_score_deviation(
+            scaled_scores,
+            W=parameters.score_shift_W,
+            quantile=parameters.score_deviation_quantile,
+        )
+        scaled_scores.score -= score_shift
+        scaled_scores.score /= score_std
+        scaled_scores.uncertainty /= score_std
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
@@ -156,25 +190,8 @@ def run_mehestan_for_criterion(
     }
     for mode in ScoreMode:
         scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
-        global_scores = get_global_scores(scaled_scores_with_voting_rights)
+        global_scores = get_global_scores(scaled_scores_with_voting_rights, W=parameters.W)
         global_scores["criteria"] = criteria
-
-        if update_poll_scaling and mode == ScoreMode.DEFAULT and len(global_scores) > 0:
-            scores_to_consider = global_scores[
-                global_scores["n_contributors"] >= POLL_SCALING_MIN_CONTRIBUTORS
-            ]["score"]
-            if len(scores_to_consider) == 0:
-                # Compute poll scaling over all entities if no entity has enough contributors
-                scores_to_consider = global_scores["score"]
-            quantile_value = np.quantile(scores_to_consider, POLL_SCALING_QUANTILE)
-            if quantile_value <= 0.0:
-                scale = 1.0
-            else:
-                scale = (
-                    np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE)) / quantile_value
-                )
-            poll.sigmoid_scale = scale
-            poll.save(update_fields=["sigmoid_scale"])
 
         # Apply poll scaling
         scale_function = poll.scale_function
@@ -213,7 +230,12 @@ def run_mehestan_for_criterion(
     )
 
 
-def run_mehestan(ml_input: MlInput, poll: Poll):
+def run_mehestan(
+    ml_input: MlInput,
+    poll: Poll,
+    parameters: MehestanParameters,
+    main_criterion_only=False
+):
     """
     This function use multiprocessing.
 
@@ -252,18 +274,24 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
         ml_input=ml_input,
         poll_pk=poll_pk,
         criteria=poll.main_criteria,
-        update_poll_scaling=True,
+        parameters=parameters
     )
 
-    # compute each criterion in parallel
-    remaining_criteria = [c for c in criteria if c != poll.main_criteria]
-    cpu_count = os.cpu_count() or 1
-    with Pool(processes=max(1, cpu_count - 1)) as pool:
-        for _ in pool.imap_unordered(
-            partial(run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
-            remaining_criteria,
-        ):
-            pass
+    if not main_criterion_only:
+        # compute each criterion in parallel
+        remaining_criteria = [c for c in criteria if c != poll.main_criteria]
+        cpu_count = os.cpu_count() or 1
+        with Pool(processes=max(1, cpu_count - 1)) as pool:
+            for _ in pool.imap_unordered(
+                partial(
+                    run_mehestan_for_criterion,
+                    ml_input=ml_input,
+                    poll_pk=poll_pk,
+                    parameters=parameters
+                ),
+                remaining_criteria,
+            ):
+                pass
 
     save_tournesol_scores(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)

@@ -74,7 +74,7 @@ export class TournesolContainer {
         'tournesol_mui_like_button view_more_link small';
       view_more_link.target = '_blank';
       view_more_link.rel = 'noopener';
-      view_more_link.href = `https://tournesol.app/recommendations/?search=${
+      view_more_link.href = `https://tournesol.app/recommendations?search=${
         this.recommendations.searchQuery
       }&language=${this.recommendations.recommandationsLanguages.replaceAll(
         ',',
@@ -98,7 +98,6 @@ export class TournesolContainer {
     tournesolIcon.setAttribute('id', 'tournesol_icon');
     tournesolIcon.setAttribute(
       'src',
-      //chrome.extension.getURL('rate_now_icon.png'),
       'https://tournesol.app/svg/tournesol.svg'
     );
     tournesolIcon.setAttribute('width', '24');
@@ -123,32 +122,50 @@ export class TournesolContainer {
     if (this.banner.bannerShouldBeDisplayed()) {
       const campaignButton = document.createElement('button');
       campaignButton.id = 'tournesol_campaign_button';
-      campaignButton.className = 'tournesol_simple_button';
+      campaignButton.className = 'tournesol_simple_button emphatic';
 
       const campaignButtonImg = document.createElement('img');
       campaignButtonImg.setAttribute(
         'src',
-        chrome.extension.getURL('images/campaign.svg')
+        chrome.runtime.getURL('images/campaign.svg')
       );
       campaignButtonImg.setAttribute('alt', 'Megaphone icon');
       campaignButton.append(campaignButtonImg);
 
       campaignButton.onclick = () => {
-        chrome.storage.local.set({ displayBannerStudy2023: true }, () => {
-          this.banner.display();
-        });
+        chrome.storage.local.set(
+          { displayBannerFundingSeptember2023: true },
+          () => {
+            this.banner.display();
+          }
+        );
       };
 
       topActionBar.append(campaignButton);
     }
 
+    const preferencesButton = document.createElement('button');
+    preferencesButton.id = 'tournesol_preferences_buton';
+    preferencesButton.title = chrome.i18n.getMessage('menuPreferences');
+
+    const preferencesImg = document.createElement('img');
+    preferencesImg.src = chrome.runtime.getURL('images/settings.svg');
+    preferencesButton.append(preferencesImg);
+
+    preferencesButton.className = 'tournesol_simple_button';
+    preferencesButton.onclick = () => {
+      chrome.runtime.sendMessage({ message: 'openOptionsPage' });
+    };
+    topActionBar.append(preferencesButton);
+
     // Refresh button
     const refreshButton = document.createElement('button');
     refreshButton.id = 'tournesol_refresh_button';
     refreshButton.title = chrome.i18n.getMessage('refreshRecommendations');
-    fetch(chrome.runtime.getURL('images/sync-alt.svg'))
-      .then((r) => r.text())
-      .then((svg) => (refreshButton.innerHTML = svg));
+
+    const refreshImg = document.createElement('img');
+    refreshImg.src = chrome.runtime.getURL('images/sync-alt.svg');
+    refreshButton.append(refreshImg);
 
     refreshButton.className = 'tournesol_simple_button';
     refreshButton.onclick = () => {
@@ -170,13 +187,12 @@ export class TournesolContainer {
     }
 
     // A new button is created on each video loading, the image must be loaded accordingly
-    fetch(
-      chrome.runtime.getURL(
-        this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
-      )
-    )
-      .then((r) => r.text())
-      .then((svg) => (expand_button.innerHTML = svg));
+    const expandImg = document.createElement('img');
+    expandImg.src = chrome.runtime.getURL(
+      this.isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'
+    );
+    expand_button.append(expandImg);
+
     expand_button.className = 'tournesol_simple_button';
     expand_button.onclick = () => {
       expand_button.disabled = true;

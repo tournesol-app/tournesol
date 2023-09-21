@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  ListItem,
+  ListItemButton,
   ListItemText,
   ListItemIcon,
   Drawer,
@@ -86,9 +86,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       // their content should not be wrapped during the drawer animation.
       minWidth: `${sideBarWidth}px`,
     },
-  },
-  listItem: {
-    height: '64px',
   },
   listItemIcon: {
     color: '#CDCABC',
@@ -218,7 +215,7 @@ const SideBar = () => {
       <List
         disablePadding
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
-        sx={{ flexGrow: 1 }}
+        sx={{ flexGrow: 1, wordBreak: 'break-word' }}
       >
         {menuItems.map(
           ({ id, targetUrl, IconComponent, displayText, ariaLabel }) => {
@@ -230,15 +227,14 @@ const SideBar = () => {
 
             const selected = isItemSelected(targetUrl);
             return (
-              <ListItem
+              <ListItemButton
                 key={id}
                 aria-label={ariaLabel}
-                button
                 selected={selected}
-                className={classes.listItem}
                 component={Link}
                 to={targetUrl}
                 sx={{
+                  minHeight: '56px',
                   '&.Mui-selected': {
                     bgcolor: 'action.selected',
                   },
@@ -265,7 +261,7 @@ const SideBar = () => {
                   primary={displayText}
                   primaryTypographyProps={{ className: classes.listItemText }}
                 />
-              </ListItem>
+              </ListItemButton>
             );
           }
         )}

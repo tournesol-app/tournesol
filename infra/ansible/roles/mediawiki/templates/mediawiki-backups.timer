@@ -1,8 +1,0 @@
-[Unit]
-Description=Mediawiki XML Backup
-
-[Timer]
-OnCalendar={{mediawiki_backup_schedule}}
-
-[Install]
-WantedBy=timers.target

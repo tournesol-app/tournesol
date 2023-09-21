@@ -1,0 +1,165 @@
+.blue-bg {
+  background-color: rgb(18, 130, 178);
+}
+
+.centered {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+/**
+ * Page style
+ */
+
+body {
+  margin: 0;
+  padding: 16px;
+
+  font-size: 1em;
+  font-family: sans-serif;
+}
+
+.page-header {
+  padding: 1px;
+  color: white;
+}
+
+.page-header h1 {
+  text-align: center;
+}
+
+.page-navigation {
+  display: flex;
+  gap: 8px;
+
+  margin: 16px 0;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.page-navigation button.active {
+  background-color: rgb(255, 200, 0);
+}
+
+.page-navigation button.active:hover {
+  text-decoration: none;
+  background-color: rgb(178, 140, 0);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
+    rgba(0, 0, 0, 0.14) 0px 4px 5px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 10px 0px;
+}
+
+.page-tab {
+  visibility: hidden;
+  max-height: 0;
+}
+
+.page-tab.active {
+  visibility: visible;
+  max-height: unset;
+}
+
+.preferences-section {
+  margin-top: 16px;
+}
+
+.preferences-section h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.preferences-section h5.field-name {
+  font-size: unset;
+}
+
+.languages-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.languages-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.list-of-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+div.sticky-submit {
+  margin-top: 32px;
+
+  bottom: 16px;
+  position: sticky;
+}
+
+div.sticky-submit .flex-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.feedback-error,
+.feedback-success {
+  position: absolute;
+  /* The height of the feedback element (line height + padding) and a visual
+     gap of 8 pixels. */
+  top: -44.5px;
+
+  display: none;
+  opacity: 0;
+
+  padding: 6px 16px;
+  border-radius: 4px;
+
+  color: white;
+  font-size: 14px;
+  line-height: 24.5px;
+}
+
+.feedback-error {
+  background-color: #d32f2f;
+}
+
+.feedback-success {
+  background-color: #43a047;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.feedback-error.displayed,
+.feedback-success.displayed {
+  display: initial;
+  opacity: 1;
+
+  /* do not make it slower than the FEEDBACK_DELAY configured in options.js */
+  animation: fadeOut 1.8s ease-out;
+}
+
+.page-tab #iframe-tournesol-preferences {
+  width: 100%;
+  height: 0;
+  max-height: 0;
+
+  border: none;
+}
+
+.page-tab.active #iframe-tournesol-preferences {
+  width: 100%;
+  height: calc(100vh - 194px);
+  max-height: unset;
+
+  border: 3px solid rgb(255, 200, 0);
+}

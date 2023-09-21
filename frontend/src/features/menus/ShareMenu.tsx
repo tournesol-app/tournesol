@@ -7,22 +7,36 @@ import {
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { ContentCopy } from '@mui/icons-material';
+import { ContentCopy, Link, Twitter } from '@mui/icons-material';
+import { openTwitterPopup } from 'src/utils/ui';
 
-interface ContextualMenuProps {
+interface ShareMenuProps {
   menuAnchor: null | HTMLElement;
   open: boolean;
-  onClose: (event: React.MouseEvent<HTMLElement>) => void;
+  shareMessage?: string;
+  twitterMessage?: string;
+  onClose: (event: React.MouseEvent<HTMLElement>, reason?: string) => void;
 }
 
 /**
  * A `Menu` displaying several sharing options.
  */
-const ShareMenu = ({ menuAnchor, open, onClose }: ContextualMenuProps) => {
+const ShareMenu = ({
+  menuAnchor,
+  open,
+  shareMessage,
+  twitterMessage,
+  onClose,
+}: ShareMenuProps) => {
   const { t } = useTranslation();
 
   const copyUriToClipboard = (event: React.MouseEvent<HTMLElement>) => {
     navigator.clipboard.writeText(window.location.toString());
+    onClose(event);
+  };
+
+  const copyShareMessage = (event: React.MouseEvent<HTMLElement>) => {
+    if (shareMessage) navigator.clipboard.writeText(shareMessage);
     onClose(event);
   };
 
@@ -39,10 +53,26 @@ const ShareMenu = ({ menuAnchor, open, onClose }: ContextualMenuProps) => {
       <MenuList dense sx={{ py: 0 }}>
         <MenuItem onClick={copyUriToClipboard}>
           <ListItemIcon>
-            <ContentCopy fontSize="small" />
+            <Link fontSize="small" />
           </ListItemIcon>
           <ListItemText>{t('shareMenu.copyAddress')}</ListItemText>
         </MenuItem>
+        {shareMessage && (
+          <MenuItem onClick={copyShareMessage}>
+            <ListItemIcon>
+              <ContentCopy fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t('shareMenu.copyShareMessage')}</ListItemText>
+          </MenuItem>
+        )}
+        {twitterMessage && (
+          <MenuItem onClick={() => openTwitterPopup(twitterMessage)}>
+            <ListItemIcon>
+              <Twitter fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t('shareMenu.shareOnTwitter')}</ListItemText>
+          </MenuItem>
+        )}
       </MenuList>
     </Menu>
   );

@@ -12,14 +12,14 @@ import {
   Theme,
 } from '@mui/material';
 
-import { ActionList, VideoObject } from 'src/utils/types';
+import { ActionList } from 'src/utils/types';
+import { Recommendation } from 'src/services/openapi';
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import { videoIdFromEntity } from 'src/utils/video';
-import VideoCardScores from './VideoCardScores';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
+import EntityCardScores from 'src/components/entity/EntityCardScores';
 import { entityCardMainSx } from 'src/components/entity/style';
 import { DurationWrapper } from 'src/components/entity/EntityImagery';
 import { VideoMetadata } from 'src/components/entity/EntityMetadata';
@@ -59,7 +59,7 @@ function VideoCard({
   personalScore,
   showPlayer = true,
 }: {
-  video: VideoObject;
+  video: Recommendation;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
@@ -72,7 +72,7 @@ function VideoCard({
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
 
-  const videoId = videoIdFromEntity(video);
+  const videoId = video.metadata.video_id;
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
@@ -111,11 +111,11 @@ function VideoCard({
               to={`${baseUrl}/entities/${UID_YT_NAMESPACE}${videoId}`}
               className="full-width"
             >
-              <DurationWrapper duration={video.duration || undefined}>
+              <DurationWrapper duration={video.metadata.duration || undefined}>
                 <img
                   className="full-width entity-thumbnail"
                   src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
-                  alt={video.name}
+                  alt={video.metadata.name}
                 />
               </DurationWrapper>
             </RouterLink>
@@ -133,13 +133,17 @@ function VideoCard({
         container
         direction="column"
       >
-        <EntityCardTitle uid={video.uid} title={video.name} compact={compact} />
-        <VideoMetadata
-          views={video.views}
-          publicationDate={video.publication_date}
-          uploader={video.uploader}
+        <EntityCardTitle
+          uid={video.uid}
+          title={video.metadata.name}
+          compact={compact}
         />
-        {!compact && <VideoCardScores video={video} />}
+        <VideoMetadata
+          views={video.metadata.views}
+          publicationDate={video.metadata.publication_date}
+          uploader={video.metadata.uploader}
+        />
+        {!compact && <EntityCardScores entity={video} />}
         {personalScore !== undefined &&
           t('video.personalScore', { score: personalScore.toFixed(0) })}
       </Grid>

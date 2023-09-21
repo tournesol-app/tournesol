@@ -1,4 +1,3 @@
-from math import tau as TAU
 from typing import List
 
 import numpy as np
@@ -38,13 +37,6 @@ class Poll(models.Model):
         default=True,
         help_text="On an inactive poll, entity scores are not updated"
         " and comparisons can't be created, updated or deleted by users.",
-    )
-
-    sigmoid_scale = models.FloatField(
-        null=True,
-        default=None,
-        help_text="Scaling factor multiplied by score before the sigmoid function is applied."
-        " Updated automatically on each run. (Mehestan only)."
     )
 
     def __str__(self) -> str:
@@ -87,10 +79,7 @@ class Poll(models.Model):
 
     @property
     def scale_function(self):
-        if self.algorithm == ALGORITHM_MEHESTAN and self.sigmoid_scale is not None:
-            return lambda x: (4 * MEHESTAN_MAX_SCALED_SCORE / TAU) * \
-                             np.arctan(self.sigmoid_scale * x)
-        return lambda x: x
+        return lambda x: MEHESTAN_MAX_SCALED_SCORE * x / np.sqrt(1 + x*x)
 
     def user_meets_proof_requirements(self, user_id: int, keyword: str) -> bool:
         """

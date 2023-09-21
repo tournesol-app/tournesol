@@ -1,22 +1,13 @@
 import {
   BlankEnum,
+  Notifications_langEnum,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
   VideosPollUserSettings,
 } from 'src/services/openapi';
-import { SelectablePoll, PollUserSettingsKeys } from './types';
-import { YOUTUBE_POLL_NAME } from './constants';
 
-/**
- * Cast the value of the setting recommendations__default_unsafe to a value
- * expected by the recommendations' search filter 'safe/usafe'.
- */
-const recoDefaultUnsafeToSearchFilter = (setting: boolean): string => {
-  if (setting) {
-    return 'true';
-  }
-  return '';
-};
+import { YOUTUBE_POLL_NAME } from './constants';
+import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
  * Cast the value of the setting recommendations__default_date to a value
@@ -32,23 +23,42 @@ const recoDefaultDateToSearchFilter = (
   return setting.charAt(0) + setting.slice(1).toLowerCase();
 };
 
+/**
+ * Cast the value of the setting recommendations__default_languages to a value
+ * expected by the recommendations' search filter 'language'.
+ */
+const recoDefaultLanguagesToSearchFilter = (setting: string[]): string => {
+  return setting.join(',');
+};
+
 export const buildVideosDefaultRecoSearchParams = (
   searchParams: URLSearchParams,
   userSettings: VideosPollUserSettings | undefined
 ) => {
-  if (userSettings?.recommendations__default_unsafe != undefined) {
-    searchParams.set(
-      'unsafe',
-      recoDefaultUnsafeToSearchFilter(
-        userSettings.recommendations__default_unsafe
-      )
-    );
+  const advancedFilters: string[] = [];
+  if (userSettings?.recommendations__default_unsafe) {
+    advancedFilters.push('unsafe');
+  }
+  if (userSettings?.recommendations__default_exclude_compared_entities) {
+    advancedFilters.push('exclude_compared');
+  }
+  if (advancedFilters.length > 0) {
+    searchParams.set('advanced', advancedFilters.join(','));
   }
 
   if (userSettings?.recommendations__default_date != undefined) {
     searchParams.set(
       'date',
       recoDefaultDateToSearchFilter(userSettings.recommendations__default_date)
+    );
+  }
+
+  if (userSettings?.recommendations__default_languages != undefined) {
+    searchParams.set(
+      'language',
+      recoDefaultLanguagesToSearchFilter(
+        userSettings.recommendations__default_languages
+      )
     );
   }
 };
@@ -70,4 +80,26 @@ export const getDefaultRecommendationsSearchParams = (
 
   const strSearchParams = searchParams.toString();
   return searchParams ? '?' + strSearchParams : '';
+};
+
+/**
+ * Cast `lang` to a value of `Notifications_langEnum` if possible, else
+ * return Notifications_langEnum.EN.
+ */
+export const resolvedLangToNotificationsLang = (
+  lang: string | undefined
+): Notifications_langEnum => {
+  if (!lang) {
+    return Notifications_langEnum.EN;
+  }
+
+  if (
+    Object.values(Notifications_langEnum)
+      .map((x) => String(x))
+      .includes(lang)
+  ) {
+    return lang as Notifications_langEnum;
+  }
+
+  return Notifications_langEnum.EN;
 };

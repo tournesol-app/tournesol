@@ -55,7 +55,7 @@ const Search = () => {
     searchParams.delete('search');
     searchParams.append('search', search);
     searchParams.delete('offset');
-    history.push('/recommendations/?' + searchParams.toString());
+    history.push('/recommendations?' + searchParams.toString());
   };
 
   return (

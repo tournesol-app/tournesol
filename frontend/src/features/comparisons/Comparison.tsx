@@ -15,7 +15,7 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
-import { getEntityName, UID_YT_NAMESPACE } from 'src/utils/constants';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonHelper from './ComparisonHelper';
 
@@ -55,6 +55,8 @@ interface Props {
     uidA: string,
     uidB: string
   ) => { uid: string; refreshLeft: boolean };
+  autoFillSelectorA?: boolean;
+  autoFillSelectorB?: boolean;
 }
 
 /**
@@ -65,7 +67,11 @@ interface Props {
  * a entity uid is changed. Adding this component into a page will also add
  * these uids in the URL parameters.
  */
-const Comparison = ({ afterSubmitCallback }: Props) => {
+const Comparison = ({
+  afterSubmitCallback,
+  autoFillSelectorA = false,
+  autoFillSelectorB = false,
+}: Props) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -132,8 +138,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           setInitialComparison(comparison);
           setIsLoading(false);
         })
-        .catch((err) => {
-          console.error(err);
+        .catch(() => {
           setInitialComparison(null);
           setIsLoading(false);
         });
@@ -186,8 +191,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
-  const entityName = getEntityName(t, pollName);
-
   return (
     <Grid
       container
@@ -205,11 +208,12 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         }}
       >
         <EntitySelector
-          title={`${entityName} 1`}
+          title="A"
+          alignment="left"
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          autoFill
+          autoFill={autoFillSelectorA}
         />
       </Grid>
       <Grid
@@ -221,11 +225,12 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         }}
       >
         <EntitySelector
-          title={`${entityName} 2`}
+          title="B"
+          alignment="right"
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          autoFill
+          autoFill={autoFillSelectorB}
         />
       </Grid>
       <Grid
@@ -268,7 +273,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
               uidA={uidA || ''}
               uidB={uidB || ''}
               isComparisonPublic={
-                selectorA.rating.is_public && selectorB.rating.is_public
+                selectorA.rating.individual_rating.is_public &&
+                selectorB.rating.individual_rating.is_public
               }
             />
           )

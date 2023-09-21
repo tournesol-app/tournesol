@@ -222,49 +222,6 @@ class ContributorRecommendationsApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_users_can_list_with_param_unsafe(self):
-        """
-        Anonymous and authenticated users can filter recommendations with the
-        `unsafe` URL parameter.
-        """
-        user = UserFactory()
-        entity = EntityFactory(tournesol_score=-1)
-        rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
-        ContributorRatingCriteriaScoreFactory(
-            contributor_rating=rating,
-            criteria=self.criteria,
-            score=-1,
-        )
-
-        # anonymous checks
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 0)
-
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}?unsafe=true",
-            format="json",
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 1)
-
-        # authenticated checks
-        self.client.force_authenticate(self.user1)
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 0)
-
-        response = self.client.get(
-            f"/users/{user.username}/recommendations/{self.poll.name}?unsafe=true",
-            format="json",
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 1)
-
     def test_recommendations_score_results(self):
         user = UserFactory()
         self.client.force_authenticate(user)
@@ -294,6 +251,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             response.data["results"][0]["criteria_scores"][0]["score"],
             criteria_score,
         )
+        
         self.assertEqual(
             response.data["results"][0]["total_score"], criteria_score * weight
         )

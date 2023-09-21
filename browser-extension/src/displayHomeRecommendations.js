@@ -1,6 +1,6 @@
 (async () => {
   const { TournesolRecommendations } = await import(
-    chrome.extension.getURL(
+    chrome.runtime.getURL(
       './models/tournesolRecommendations/TournesolRecommendations.js'
     )
   );
@@ -11,6 +11,8 @@
     // Display the home page recommendations.
     if (location.pathname === '/') {
       homeRecommendations.process();
+    } else {
+      homeRecommendations.clear();
     }
   };
 

@@ -1,9 +1,9 @@
 (async () => {
-  const bannerUrl = chrome.extension.getURL('./models/banner/Banner.js'),
-    TournesolRecommendationsOptionsUrl = chrome.extension.getURL(
+  const bannerUrl = chrome.runtime.getURL('./models/banner/Banner.js'),
+    TournesolRecommendationsOptionsUrl = chrome.runtime.getURL(
       './models/tournesolRecommendations/TournesolRecommendationsOptions.js'
     ),
-    TournesolSearchRecommendationsUrl = chrome.extension.getURL(
+    TournesolSearchRecommendationsUrl = chrome.runtime.getURL(
       './models/tournesolRecommendations/TournesolSearchRecommendations.js'
     );
 
@@ -58,7 +58,18 @@
    */
   const process = () => {
     if (location.pathname === '/results') {
-      searchRecommendations.process(forceSearch);
+      chrome.runtime.sendMessage(
+        { message: 'get:setting:extension__search_reco' },
+        (setting) => {
+          if (setting?.value || forceSearch) {
+            searchRecommendations.process();
+          } else {
+            searchRecommendations.clear();
+          }
+        }
+      );
+    } else {
+      searchRecommendations.clear();
     }
   };
 

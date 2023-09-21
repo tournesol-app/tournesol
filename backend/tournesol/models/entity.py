@@ -5,7 +5,7 @@ Entity and closely related models.
 import logging
 from collections import defaultdict
 from functools import cached_property
-from typing import List
+from typing import TYPE_CHECKING, List, Optional
 from urllib.parse import urljoin
 
 import numpy as np
@@ -18,7 +18,6 @@ from django.db.models import Prefetch, Q
 from django.db.models.expressions import RawSQL
 from django.utils import timezone
 from django.utils.html import format_html
-from tqdm.auto import tqdm
 
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
@@ -33,6 +32,10 @@ from tournesol.utils.video_language import (
     SEARCH_CONFIG_CHOICES,
     language_to_postgres_config,
 )
+
+if TYPE_CHECKING:
+    from tournesol.models.entity_poll_rating import EntityPollRating
+    from tournesol.models.ratings import ContributorRating
 
 LANGUAGES = settings.LANGUAGES
 
@@ -49,6 +52,20 @@ class EntityQueryset(models.QuerySet):
             )
         )
 
+    def with_prefetched_contributor_ratings(self, poll, user):
+        # pylint: disable=import-outside-toplevel
+        from tournesol.models.ratings import ContributorRating
+        return self.prefetch_related(
+            Prefetch(
+                "contributorvideoratings",
+                queryset=ContributorRating.objects.filter(
+                    poll=poll,
+                    user=user,
+                ).annotate_n_comparisons(),
+                to_attr="_prefetched_contributor_ratings",
+            )
+        )
+
     def with_prefetched_poll_ratings(self, poll_name):
         # pylint: disable=import-outside-toplevel
         from tournesol.models.entity_poll_rating import EntityPollRating
@@ -60,6 +77,13 @@ class EntityQueryset(models.QuerySet):
                 ),
                 to_attr="single_poll_ratings"
             )
+        )
+
+    def filter_safe_for_poll(self, poll):
+        return self.filter(
+            all_poll_ratings__poll=poll,
+            all_poll_ratings__sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
+            all_poll_ratings__tournesol_score__gt=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE,
         )
 
     def filter_with_text_query(self, query: str, languages=None):
@@ -205,11 +229,13 @@ class Entity(models.Model):
         self.rating_n_ratings = Comparison.objects.filter(
             Q(entity_1=self) | Q(entity_2=self)
         ).count()
+
         self.rating_n_contributors = (
             Comparison.objects.filter(Q(entity_1=self) | Q(entity_2=self))
             .distinct("user")
             .count()
         )
+
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
 
     def update_entity_poll_rating(self, poll, ratings: tuple = None):
@@ -345,43 +371,6 @@ class Entity(models.Model):
                 key, distribution, bins))
         return criteria_distributions
 
-    @staticmethod
-    def recompute_quantiles():
-        """
-        WARNING: This implementation is obsolete, and relies on non-existing
-        fields "{criteria}_quantile" for videos.
-        """
-        from .poll import Poll  # pylint: disable=import-outside-toplevel
-
-        criteria_list = Poll.default_poll().criterias_list()
-        quantiles_by_feature_by_id = {criteria: {} for criteria in criteria_list}
-
-        # go over all features
-        for criteria in tqdm(criteria_list):
-            # order by feature (descenting, because using the top quantile)
-            qs = Entity.objects.filter(**{criteria + "__isnull": False}).order_by("-" + criteria)
-            quantiles_slicing = np.linspace(0.0, 1.0, len(qs))
-            for current_slice, video in tqdm(enumerate(qs)):
-                quantiles_by_feature_by_id[criteria][video.id] = quantiles_slicing[current_slice]
-
-        logging.warning("Writing quantiles...")
-        video_objects = []
-        # TODO: use batched updates with bulk_update
-        for entity in tqdm(Entity.objects.all()):
-            for criteria in criteria_list:
-                setattr(
-                    entity,
-                    criteria + "_quantile",
-                    quantiles_by_feature_by_id[criteria].get(entity.id, None),
-                )
-            video_objects.append(entity)
-
-        Entity.objects.bulk_update(
-            video_objects,
-            batch_size=200,
-            fields=[criteria + "_quantile" for criteria in criteria_list],
-        )
-
     @classmethod
     def create_from_video_id(cls, video_id, fetch_metadata=True):
         # pylint: disable=import-outside-toplevel
@@ -448,6 +437,30 @@ class Entity(models.Model):
         if hasattr(self, "_prefetched_criteria_scores"):
             return list(self._prefetched_criteria_scores)
         return list(self.all_criteria_scores.filter(score_mode=ScoreMode.DEFAULT))
+
+    @property
+    def single_poll_rating(self) -> Optional["EntityPollRating"]:
+        try:
+            if len(self.single_poll_ratings) == 1:
+                return self.single_poll_ratings[0]
+            return None
+        except AttributeError as exc:
+            raise RuntimeError(
+                "Accessing 'single_poll_rating' requires to initialize a "
+                "queryset with `with_prefetched_poll_ratings()`"
+            ) from exc
+
+    @property
+    def single_contributor_rating(self) -> Optional["ContributorRating"]:
+        try:
+            if len(self._prefetched_contributor_ratings) == 1:
+                return self._prefetched_contributor_ratings[0]
+            return None
+        except AttributeError as exc:
+            raise RuntimeError(
+                "Accessing 'single_contributor_rating' requires to initialize a "
+                "queryset with `with_prefetched_contributor_ratings()"
+            ) from exc
 
 
 class CriteriaDistributionScore:

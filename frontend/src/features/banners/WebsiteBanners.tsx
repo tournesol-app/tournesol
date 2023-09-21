@@ -7,7 +7,13 @@ import { BackofficeService, Banner } from 'src/services/openapi';
 
 import WebsiteBanner from './WebsiteBanner';
 
-const sortBannersByPriority = (a: Banner, b: Banner) => {
+const sortBanners = (a: Banner, b: Banner) => {
+  if (a.security_advisory && !b.security_advisory) {
+    return -1;
+  }
+  if (!a.security_advisory && b.security_advisory) {
+    return 1;
+  }
   if (a.priority !== undefined && b.priority !== undefined) {
     return b.priority - a.priority;
   }
@@ -35,7 +41,7 @@ const WebsiteBanners = () => {
       });
 
       if (bannersList?.results && bannersList.results.length > 0) {
-        bannersList.results.sort(sortBannersByPriority);
+        bannersList.results.sort(sortBanners);
         setBanners(bannersList.results);
       }
     }

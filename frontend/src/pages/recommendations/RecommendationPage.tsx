@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +13,7 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import type {
   PaginatedContributorRecommendationsList,
   PaginatedRecommendationList,
@@ -26,6 +28,7 @@ import {
   loadRecommendationsLanguages,
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
+import { PollUserSettingsKeys } from 'src/utils/types';
 
 /**
  * Display a collective or personal recommendations.
@@ -39,6 +42,11 @@ function RecommendationsPage() {
   const location = useLocation();
   const { baseUrl, name: pollName, criterias, options } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
+
+  const userSettings = useSelector(selectSettings).settings;
+  const preferredLanguages =
+    userSettings?.[pollName as PollUserSettingsKeys]
+      ?.recommendations__default_languages;
 
   const allowPublicPersonalRecommendations =
     options?.allowPublicPersonalRecommendations ?? false;
@@ -88,7 +96,11 @@ function RecommendationsPage() {
     // a dependency to the current effect.
     const searchParams = new URLSearchParams(location.search);
     if (autoLanguageDiscovery && searchParams.get('language') === null) {
-      let loadedLanguages = loadRecommendationsLanguages();
+      let loadedLanguages = preferredLanguages?.join(',') ?? null;
+
+      if (loadedLanguages === null) {
+        loadedLanguages = loadRecommendationsLanguages();
+      }
 
       if (loadedLanguages === null) {
         loadedLanguages = recommendationsLanguagesFromNavigator();
@@ -138,6 +150,7 @@ function RecommendationsPage() {
     location.search,
     options,
     pollName,
+    preferredLanguages,
     username,
   ]);
 
@@ -157,7 +170,10 @@ function RecommendationsPage() {
           <Grid container>
             {/* Filters section. */}
             <Grid item xs={12} sm={12} md={11}>
-              <SearchFilter />
+              {/* Unsafe filter is not available when fetching personal recommendations */}
+              <SearchFilter
+                showAdvancedFilter={!displayPersonalRecommendations}
+              />
             </Grid>
             {/* Contextual page menu. */}
             <Grid item xs={12} sm={12} md={1}>
@@ -168,7 +184,7 @@ function RecommendationsPage() {
                 justifyContent="flex-start"
                 gap={1}
               >
-                <ShareMenuButton />
+                <ShareMenuButton isIcon={true} />
                 <PreferencesIconButtonLink hash="#recommendations_page" />
               </Box>
             </Grid>

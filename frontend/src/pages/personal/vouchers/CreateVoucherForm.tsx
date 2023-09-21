@@ -56,7 +56,7 @@ const CreateVoucherForm = () => {
         <Button
           type="submit"
           variant="contained"
-          endIcon={<HowToReg />}
+          startIcon={<HowToReg />}
           disableElevation
         >
           {t('personalVouchers.submitButton')}

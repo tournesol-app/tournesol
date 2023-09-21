@@ -6,7 +6,7 @@ export const useListFilter = ({
 }: {
   defaults?: Array<{ name: string; value: string }>;
   setEmptyValues?: boolean;
-} = {}): [URLSearchParams, (key: string, value: string) => void] => {
+} = {}): [URLSearchParams, (key: string, value: string | null) => void] => {
   const location = useLocation();
   const history = useHistory();
   const searchParams = new URLSearchParams(location.search);

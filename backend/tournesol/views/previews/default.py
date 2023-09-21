@@ -20,6 +20,7 @@ from rest_framework.views import APIView
 
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
+from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.renderers import ImageRenderer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.utils.constants import REQUEST_TIMEOUT
@@ -40,7 +41,7 @@ ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 194)
 
 TOURNESOL_SCORE_XY = (84, 30)
-TOURNESOL_SCORE_NEGATIVE_XY = (60, 30)
+TOURNESOL_SCORE_UNSAFE_XY = (60, 30)
 
 COLOR_YELLOW_BORDER = (255, 200, 0, 255)
 COLOR_YELLOW_BACKGROUND = (255, 200, 0, 16)
@@ -48,7 +49,7 @@ COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_WHITE_FONT = (255, 255, 255, 255)
 COLOR_GREY_FONT = (160, 155, 135, 255)
-COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
+COLOR_UNSAFE_SCORE = (128, 128, 128, 248)
 COLOR_DURATION_RECTANGLE = (0, 0, 0, 201)
 
 YT_THUMBNAIL_MQ_SIZE = (320, 180)
@@ -73,7 +74,9 @@ class BasePreviewAPIView(APIView):
 
     def get_entity(self, uid: str) -> Entity:
         try:
-            entity = Entity.objects.get(uid=uid)
+            entity = Entity.objects.with_prefetched_poll_ratings(poll_name=DEFAULT_POLL_NAME).get(
+                uid=uid
+            )
         except Entity.DoesNotExist as exc:
             logger.error("Preview impossible for entity with UID %s.", uid)
             logger.error("Exception caught: %s", exc)
@@ -215,7 +218,7 @@ def font_height(font):
     return ascent + descent
 
 
-def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image.Image:
+def get_preview_frame(entity: Entity, fnt_config, upscale_ratio=1) -> Image.Image:
     tournesol_frame = Image.new(
         "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_BACKGROUND
     )
@@ -250,14 +253,16 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image.Image:
         fill=COLOR_BROWN_FONT,
     )
 
-    score = entity.tournesol_score
-    if score is not None:
-        score_color = COLOR_BROWN_FONT
-        score_xy = TOURNESOL_SCORE_XY
+    poll_rating = entity.single_poll_rating
+    if poll_rating is not None and poll_rating.tournesol_score is not None:
+        score = poll_rating.tournesol_score
 
-        if score <= 0:
-            score_color = COLOR_NEGATIVE_SCORE
-            score_xy = TOURNESOL_SCORE_NEGATIVE_XY
+        if poll_rating.is_recommendation_unsafe:
+            score_color = COLOR_UNSAFE_SCORE
+            score_xy = TOURNESOL_SCORE_UNSAFE_XY
+        else:
+            score_xy = TOURNESOL_SCORE_XY
+            score_color = COLOR_BROWN_FONT
 
         tournesol_frame_draw.text(
             tuple(numpy.multiply(score_xy, upscale_ratio)),

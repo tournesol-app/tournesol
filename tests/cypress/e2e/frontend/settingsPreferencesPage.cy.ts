@@ -1,7 +1,67 @@
 describe('Settings - preferences page', () => {
+  const username = "test-preferences-page";
+  const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
+  const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
+
+  /**
+   * Create as much comparisons as required to not trigger the tutorial.
+   */
+  const createComparisons = () => {
+    ids1.forEach(uid1 => {
+      ids2.forEach(uid2 => {
+
+        cy.sql(`
+          WITH ent AS (
+            SELECT
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid1}') AS uid1,
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid2}') AS uid2
+          )
+          INSERT INTO tournesol_comparison (
+            user_id,
+            entity_1_id,
+            entity_2_id,
+            entity_1_2_ids_sorted,
+            poll_id
+          ) VALUES (
+            (SELECT id FROM core_user WHERE username = '${username}'),
+            (SELECT uid1 FROM ent),
+            (SELECT uid2 FROM ent),
+            (SELECT uid1 FROM ent) || '__' || (SELECT uid2 FROM ent),
+          1);
+        `);
+      });
+    });
+  };
+
+  const deleteComparisons = () => {
+    cy.sql(`
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id IN (
+        SELECT id
+        FROM tournesol_comparison
+        WHERE user_id = (
+          SELECT id FROM core_user WHERE username = '${username}'
+        )
+      );
+    `);
+
+    cy.sql(`
+      DELETE FROM tournesol_comparison
+          WHERE user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          );
+    `);
+  };
+
   beforeEach(() => {
-    cy.recreateUser("test-preferences-page", "test-preferences-page@example.com", "tournesol");
+    cy.recreateUser(username, "test-preferences-page@example.com", "tournesol");
+    createComparisons();
   });
+
+
+  afterEach(() => {
+    deleteComparisons();
+  })
 
   const login = () => {
     cy.focused().type('test-preferences-page');
@@ -79,6 +139,38 @@ describe('Settings - preferences page', () => {
       cy.contains('Weekly collective goal').should('not.exist');
       cy.visit('/comparison?embed=1');
       cy.contains('Weekly collective goal').should('not.exist');
+    });
+  });
+
+  describe('Setting - automatically select entities', () => {
+    it("by default, videos are automatically suggested", () => {
+      cy.visit('/comparison');
+      login();
+
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('be.visible');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('be.visible');
+      cy.get('button[data-testid="auto-entity-button-full"]').should('not.be.visible');
+      cy.get('button[data-testid="entity-select-button-full"]').should('not.be.visible');
+    });
+
+    it("when false, videos are not automatically suggested", () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid="videos_comparison__auto_select_entities"]').click();
+      cy.contains('Update preferences').click();
+
+      cy.visit('/comparison');
+
+      cy.get('button[data-testid="auto-entity-button-compact"]').should('not.be.visible');
+      cy.get('button[data-testid="entity-select-button-compact"]').should('not.be.visible');
+      cy.get('button[data-testid="auto-entity-button-full"]').should('be.visible');
+      cy.get('button[data-testid="entity-select-button-full"]').should('be.visible');
+
+      cy.get('button[data-testid="auto-entity-button-full"]').first().click();
+      cy.get('button[data-testid="auto-entity-button-full"]').first().should('not.be.visible');
+
+      cy.get('[class="react-player__preview"]');
     });
   });
 
@@ -165,7 +257,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Today&unsafe='
+        'have.attr', 'href', '/recommendations?date=Today&language=en'
       );
     });
 
@@ -178,7 +270,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Week&unsafe='
+        'have.attr', 'href', '/recommendations?date=Week&language=en'
       );
     });
 
@@ -191,7 +283,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Year&unsafe='
+        'have.attr', 'href', '/recommendations?date=Year&language=en'
       );
     });
 
@@ -204,7 +296,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=&unsafe='
+        'have.attr', 'href', '/recommendations?date=&language=en'
       );
     });
   });
@@ -218,7 +310,7 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&unsafe='
+        'have.attr', 'href', '/recommendations?date=Month&language=en'
       );
     });
 
@@ -230,7 +322,34 @@ describe('Settings - preferences page', () => {
       cy.contains('Update preferences').click();
 
       cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&unsafe=true'
+        'have.attr', 'href', '/recommendations?date=Month&advanced=unsafe&language=en'
+      );
+    });
+  });
+
+  describe('Setting - exclude compared entities', () => {
+    it('handles the value false (exclude)', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid=videos_recommendations__default_exclude_compared_entities]');
+      cy.contains('Update preferences').click();
+
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Month&language=en'
+      );
+    });
+
+    it('handles the value true (include)', () => {
+      cy.visit('/settings/preferences');
+      login();
+
+      cy.get('[data-testid=videos_recommendations__default_exclude_compared_entities]')
+        .click();
+      cy.contains('Update preferences').click();
+
+      cy.get('a[aria-label="Link to the recommendations page"]').should(
+        'have.attr', 'href', '/recommendations?date=Month&advanced=exclude_compared&language=en'
       );
     });
   });

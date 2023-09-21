@@ -1,54 +1,132 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Grid, Button, Typography, Checkbox } from '@mui/material';
+import { Link } from 'react-router-dom';
+
+import {
+  Grid,
+  Link as MuiLink,
+  Button,
+  Typography,
+  Checkbox,
+  Alert,
+  AlertTitle,
+  Divider,
+  Box,
+  Paper,
+} from '@mui/material';
+import EmailIcon from '@mui/icons-material/Email';
+
 import {
   ContentHeader,
   ContentBox,
   Lines,
   FormTextField,
 } from 'src/components';
+import NotificationsEmailResearch from 'src/features/settings/preferences/fields/NotificationsEmailResearch';
+import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fields/NotificationsEmailNewFeatures';
 import { useNotifications } from 'src/hooks';
-import {
-  AccountsService,
-  ApiError,
-  RegisterUserRequest,
-} from 'src/services/openapi';
-import { Link } from 'react-router-dom';
-
+import { AccountsService, ApiError } from 'src/services/openapi';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
+import { resolvedLangToNotificationsLang } from 'src/utils/userSettings';
 
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
   return (
-    <Typography>
-      <Trans t={t} i18nKey="signup.successMessage">
-        Success!
-        <br />A verification link has been sent to <code>{{ email }}</code> .
-      </Trans>
-    </Typography>
+    <>
+      <Alert severity="success" sx={{ mb: 8 }}>
+        <AlertTitle>
+          <strong>{t('signup.oneLastStep')}</strong>
+        </AlertTitle>
+        <Typography>
+          <Trans t={t} i18nKey="signup.successMessage">
+            A verification link has been sent to <code>{{ email }}</code>
+          </Trans>
+        </Typography>
+      </Alert>
+      <Typography paragraph px={1} textAlign="center">
+        <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">
+          If your email address is incorrect, simply{' '}
+          <MuiLink
+            href="/signup"
+            sx={{
+              color: 'revert',
+              textDecoration: 'revert',
+            }}
+          >
+            create a new account
+          </MuiLink>
+          .
+        </Trans>
+      </Typography>
+    </>
+  );
+};
+
+const WelcomePaper = () => {
+  const { t } = useTranslation();
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 2,
+        mb: 4,
+        color: '#fff',
+        backgroundColor: 'background.emphatic',
+      }}
+    >
+      <Box display="flex" flexDirection="column" gap={1}>
+        <Typography variant="h3" textAlign="center">
+          {t('signup.welcomeToTournesol')}
+        </Typography>
+        <Typography textAlign="center">
+          {t('signup.weVeBeenWaitingForYou')}
+        </Typography>
+      </Box>
+    </Paper>
   );
 };
 
 const Signup = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { displayErrorsFrom } = useNotifications();
 
   const [apiError, setApiError] = useState<ApiError | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [successEmailAddress, setSuccessEmailAddress] = useState<string | null>(
     null
   );
+
   const [acceptPolicy, setAcceptPolicy] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { displayErrorsFrom } = useNotifications();
+
+  // Legally, the notification settings must be false by default.
+  const [notififResearch, setNotififResearch] = useState(false);
+  const [notifNewFeatures, setNnotifNewFeatures] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setApiError(null);
     setIsLoading(true);
+
     const formData = new FormData(event.currentTarget);
-    const formObject: unknown = Object.fromEntries(formData);
+
     try {
       const createdUser = await AccountsService.accountsRegisterCreate({
-        requestBody: formObject as RegisterUserRequest,
+        requestBody: {
+          email: (formData.get('email') as string) ?? '',
+          username: (formData.get('username') as string) ?? '',
+          password: (formData.get('password') as string) ?? '',
+          password_confirm: (formData.get('password_confirm') as string) ?? '',
+          settings: {
+            general: {
+              notifications__lang: resolvedLangToNotificationsLang(
+                i18n.resolvedLanguage
+              ),
+              notifications_email__research: notififResearch,
+              notifications_email__new_features: notifNewFeatures,
+            },
+          },
+        },
       });
       setSuccessEmailAddress(createdUser.email || '');
       trackEvent(TRACKED_EVENTS.signup, { props: { state: 'created' } });
@@ -67,6 +145,7 @@ const Signup = () => {
     <>
       <ContentHeader title={t('signup.title')} />
       <ContentBox maxWidth="sm">
+        <WelcomePaper />
         {successEmailAddress !== null ? (
           <SignupSuccess email={successEmailAddress} />
         ) : (
@@ -89,6 +168,7 @@ const Signup = () => {
                   label={t('emailAddress')}
                   autoComplete="email"
                   formError={formError}
+                  helperText={t('signup.anActivationEmailWillBeSent')}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -121,6 +201,7 @@ const Signup = () => {
               </Grid>
               <Grid item xs={12} display="flex" alignItems="center" gap={1}>
                 <Checkbox
+                  name="accept_terms"
                   color="secondary"
                   checked={acceptPolicy}
                   onClick={() => setAcceptPolicy(!acceptPolicy)}
@@ -141,6 +222,27 @@ const Signup = () => {
                     </Trans>
                   </Typography>
                 </span>
+              </Grid>
+              <Grid item xs={12}>
+                <Box py={2}>
+                  <Divider>
+                    <Box display="flex" alignItems="center">
+                      <EmailIcon color="secondary" />
+                    </Box>
+                  </Divider>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <NotificationsEmailResearch
+                  value={notififResearch}
+                  onChange={(value) => setNotififResearch(value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <NotificationsEmailNewFeatures
+                  value={notifNewFeatures}
+                  onChange={(value) => setNnotifNewFeatures(value)}
+                />
               </Grid>
               <Grid item xs={12}>
                 <Button

@@ -76,8 +76,8 @@ class TestMlTrain(TransactionTestCase):
         user1 = UserFactory(email="user1@verified.test")
         user2 = UserFactory(email="user2@verified.test")
 
-        video1 = VideoFactory()
-        video2 = VideoFactory()
+        video1 = VideoFactory(make_safe_for_poll=False)
+        video2 = VideoFactory(make_safe_for_poll=False)
         rating_a = EntityPollRating.objects.create(entity=video1, poll=default_poll)
         rating_b = EntityPollRating.objects.create(entity=video2, poll=default_poll)
 
@@ -141,7 +141,7 @@ class TestMlTrain(TransactionTestCase):
         self.assertEqual(video.tournesol_score, None)
         call_command("ml_train")
         video.refresh_from_db()
-        self.assertAlmostEqual(video.tournesol_score, 0.0)
+        self.assertAlmostEqual(video.tournesol_score, 0.0, delta=3)
 
     def test_individual_scaling_are_computed(self):
         # User 1 will belong to calibration users (as the most active trusted user)
@@ -214,8 +214,9 @@ class TestMlTrain(TransactionTestCase):
         call_command("ml_train")
         video1.refresh_from_db()
         video2.refresh_from_db()
-        self.assertAlmostEqual(video1.tournesol_score, -44.0, places=1)
-        self.assertAlmostEqual(video2.tournesol_score, 44.0, places=1)
+        # At least 1 pt difference between the 2 videos
+        self.assertGreater(video2.tournesol_score, video1.tournesol_score + 1)
+
         # Asserts that voting rights have been given the correct values based on the number of
         # contributors and their verified status
         # 0.4 = 0.8 [verified] * 0.5 [privacy penalty]
@@ -235,51 +236,6 @@ class TestMlTrain(TransactionTestCase):
             0.12,
             places=3,
         )
-
-    def test_tournesol_scores_different_uncertainty(self):
-        user1 = UserFactory()
-        user2 = UserFactory()
-
-        video1 = VideoFactory()
-        video2 = VideoFactory()
-
-        # User1 prefers video1
-        ComparisonCriteriaScoreFactory(
-            comparison__user=user1,
-            comparison__entity_1=video1,
-            comparison__entity_2=video2,
-            score=-10,
-            criteria="largely_recommended",
-        )
-
-        # User2 prefers video2
-        ComparisonCriteriaScoreFactory(
-            comparison__user=user2,
-            comparison__entity_1=video1,
-            comparison__entity_2=video2,
-            score=10,
-            criteria="largely_recommended",
-        )
-
-        # Reduce uncertainty on user1 scores by creating additional comparisons
-        additional_videos = VideoFactory.create_batch(6)
-        for (vid_a, vid_b) in zip(additional_videos, additional_videos[1:]):
-            ComparisonCriteriaScoreFactory(
-                comparison__entity_1=vid_a,
-                comparison__entity_2=vid_b,
-                comparison__user=user1,
-                score=1,
-                criteria="largely_recommended",
-            )
-
-        self.assertEqual(video1.tournesol_score, None)
-        self.assertEqual(video2.tournesol_score, None)
-        call_command("ml_train")
-        video1.refresh_from_db()
-        video2.refresh_from_db()
-
-        self.assertAlmostEqual(video1.tournesol_score, 8.8, places=1)
-        self.assertAlmostEqual(video2.tournesol_score, -8.8, places=1)
 
     def test_tournesol_scores_different_privacy_status(self):
         user1 = UserFactory()
@@ -314,5 +270,4 @@ class TestMlTrain(TransactionTestCase):
         video1.refresh_from_db()
         video2.refresh_from_db()
 
-        self.assertAlmostEqual(video1.tournesol_score, 44.0, places=1)
-        self.assertAlmostEqual(video2.tournesol_score, -44.0, places=1)
+        self.assertGreater(video1.tournesol_score, video2.tournesol_score + 1)

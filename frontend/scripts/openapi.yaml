@@ -34,7 +34,6 @@ paths:
   /accounts/profile/:
     get:
       operationId: accounts_profile_retrieve
-      description: Get or set user profile.
       tags:
       - accounts
       security:
@@ -49,7 +48,6 @@ paths:
           description: ''
     post:
       operationId: accounts_profile_create
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -76,7 +74,6 @@ paths:
           description: ''
     put:
       operationId: accounts_profile_update
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -103,7 +100,6 @@ paths:
           description: ''
     patch:
       operationId: accounts_profile_partial_update
-      description: Get or set user profile.
       tags:
       - accounts
       requestBody:
@@ -329,6 +325,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedBannerList'
           description: ''
+  /backoffice/faq/:
+    get:
+      operationId: backoffice_faq_list
+      description: List all questions and their answers, translated in a specific
+        language.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - backoffice
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFAQEntryList'
+          description: ''
   /backoffice/talks/:
     get:
       operationId: backoffice_talks_list
@@ -528,36 +554,6 @@ paths:
                 type: string
                 format: binary
           description: ''
-  /faq/:
-    get:
-      operationId: faq_list
-      description: List all questions and their answers, translated in a specific
-        language.
-      parameters:
-      - name: limit
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
-        schema:
-          type: integer
-      tags:
-      - faq
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedFAQEntryList'
-          description: ''
   /polls/{name}/:
     get:
       operationId: polls_retrieve
@@ -682,6 +678,13 @@ paths:
           default: false
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
+      - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
       - in: query
         name: weights
         schema:
@@ -1068,6 +1071,13 @@ paths:
           default: false
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
+      - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
       - in: query
         name: weights
         schema:
@@ -1964,6 +1974,13 @@ paths:
         description: If true, entities considered as unsafe recommendations because
           of a low score or due to too few contributions will be included.
       - in: query
+        name: exclude_compared_entities
+        schema:
+          type: boolean
+          default: false
+        description: If true and a user is authenticated, then entities compared by
+          the user will be removed from the response
+      - in: query
         name: weights
         schema:
           type: object
@@ -2466,6 +2483,34 @@ components:
       - old_password
       - password
       - password_confirm
+    CollectiveRating:
+      type: object
+      properties:
+        n_comparisons:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this entityfrom certified
+            contributors
+        n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the entity
+        tournesol_score:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+          description: The aggregated score of the main criterion for all users, in
+            a specific poll.
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          readOnly: true
+      required:
+      - n_comparisons
+      - n_contributors
+      - tournesol_score
+      - unsafe
     ComparedEntitiesStatistics:
       type: object
       properties:
@@ -2724,57 +2769,39 @@ components:
           allOf:
           - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
-        is_public:
-          type: boolean
-          description: Should the rating be public?
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/ExtendedInvididualRating'
           readOnly: true
-        n_comparisons:
-          type: integer
-          description: Number of comparisons submitted by the current user about the
-            current video
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
           readOnly: true
-        last_compared_at:
-          type: string
-          format: date-time
-          readOnly: true
+          nullable: true
       required:
-      - criteria_scores
+      - collective_rating
       - entity
-      - last_compared_at
-      - n_comparisons
+      - individual_rating
     ContributorRatingCreate:
       type: object
       properties:
-        is_public:
-          type: boolean
-          description: Should the rating be public?
         entity:
           allOf:
           - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/ExtendedInvididualRating'
           readOnly: true
-        n_comparisons:
-          type: integer
-          description: Number of comparisons submitted by the current user about the
-            current video
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
           readOnly: true
-        last_compared_at:
-          type: string
-          format: date-time
-          readOnly: true
+          nullable: true
       required:
-      - criteria_scores
+      - collective_rating
       - entity
-      - last_compared_at
-      - n_comparisons
+      - individual_rating
     ContributorRatingCreateRequest:
       type: object
       properties:
@@ -2785,6 +2812,7 @@ components:
           maxLength: 144
         is_public:
           type: boolean
+          writeOnly: true
           description: Should the rating be public?
       required:
       - uid
@@ -2793,6 +2821,7 @@ components:
       properties:
         is_public:
           type: boolean
+          writeOnly: true
           description: Should the rating be public?
     ContributorRatingUpdateAll:
       type: object
@@ -2815,11 +2844,13 @@ components:
       properties:
         uid:
           type: string
+          readOnly: true
           description: A unique identifier, build with a namespace and an external
             id.
-          maxLength: 144
         type:
-          $ref: '#/components/schemas/TypeEnum'
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
         n_comparisons:
           type: integer
         n_contributors:
@@ -2834,6 +2865,7 @@ components:
         tournesol_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
@@ -2842,6 +2874,11 @@ components:
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          readOnly: true
+          nullable: true
         is_public:
           type: boolean
           readOnly: true
@@ -2852,8 +2889,10 @@ components:
       - n_comparisons
       - n_contributors
       - total_score
+      - tournesol_score
       - type
       - uid
+      - unsafe
     CriteriaDistributionScore:
       type: object
       properties:
@@ -3080,6 +3119,32 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    ExtendedInvididualRating:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+          readOnly: true
+          description: Should the rating be public?
+        n_comparisons:
+          type: integer
+          readOnly: true
+          default: 0
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - criteria_scores
+      - is_public
+      - last_compared_at
+      - n_comparisons
     FAQEntry:
       type: object
       description: A translated question with its translated answer.
@@ -3148,6 +3213,20 @@ components:
           minLength: 1
       required:
       - to
+    IndividualRating:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+          readOnly: true
+          description: Should the rating be public?
+        n_comparisons:
+          type: integer
+          readOnly: true
+          default: 0
+      required:
+      - is_public
+      - n_comparisons
     Length3Cycles:
       type: object
       description: |-
@@ -3171,12 +3250,12 @@ components:
       - stats
     Notifications_langEnum:
       enum:
-      - ENGLISH
-      - FRENCH
+      - en
+      - fr
       type: string
       description: |-
-        * `ENGLISH` - en
-        * `FRENCH` - fr
+        * `en` - en
+        * `fr` - fr
     PaginatedBannerList:
       type: object
       properties:
@@ -3422,6 +3501,7 @@ components:
       properties:
         is_public:
           type: boolean
+          writeOnly: true
           description: Should the rating be public?
     PatchedContributorRatingUpdateAllRequest:
       type: object
@@ -3530,6 +3610,28 @@ components:
       properties:
         entity:
           $ref: '#/components/schemas/RelatedEntity'
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
+          readOnly: true
+          nullable: true
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/IndividualRating'
+          readOnly: true
+          nullable: true
+        rate_later_metadata:
+          allOf:
+          - $ref: '#/components/schemas/RateLaterMetadata'
+          readOnly: true
+      required:
+      - collective_rating
+      - entity
+      - individual_rating
+      - rate_later_metadata
+    RateLaterMetadata:
+      type: object
+      properties:
         created_at:
           type: string
           format: date-time
@@ -3537,7 +3639,6 @@ components:
           description: Time at which the video is saved.
       required:
       - created_at
-      - entity
     RateLaterRequest:
       type: object
       properties:
@@ -3565,16 +3666,26 @@ components:
       required:
       - by
       - to
+    ReasonsEnum:
+      enum:
+      - insufficient_trust
+      - insufficient_tournesol_score
+      type: string
+      description: |-
+        * `insufficient_trust` - insufficient_trust
+        * `insufficient_tournesol_score` - insufficient_tournesol_score
     Recommendation:
       type: object
       properties:
         uid:
           type: string
+          readOnly: true
           description: A unique identifier, build with a namespace and an external
             id.
-          maxLength: 144
         type:
-          $ref: '#/components/schemas/TypeEnum'
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
         n_comparisons:
           type: integer
         n_contributors:
@@ -3589,6 +3700,7 @@ components:
         tournesol_score:
           type: number
           format: double
+          readOnly: true
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
@@ -3596,14 +3708,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityCriteriaScore'
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          readOnly: true
+          nullable: true
       required:
       - criteria_scores
       - metadata
       - n_comparisons
       - n_contributors
       - total_score
+      - tournesol_score
       - type
       - uid
+      - unsafe
     Recommendations_defaultDateEnum:
       enum:
       - TODAY
@@ -3681,9 +3800,7 @@ components:
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
         settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
+          $ref: '#/components/schemas/TournesolUserSettings'
       required:
       - email
       - id
@@ -3727,9 +3844,7 @@ components:
           description: Last name
           maxLength: 100
         settings:
-          type: object
-          additionalProperties: {}
-          description: The user' preferences.
+          $ref: '#/components/schemas/TournesolUserSettingsRequest'
         password_confirm:
           type: string
           writeOnly: true
@@ -3992,6 +4107,30 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    UnsafeStatus:
+      type: object
+      properties:
+        status:
+          type: boolean
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonsEnum'
+      required:
+      - reasons
+      - status
+    UnsafeStatusRequest:
+      type: object
+      properties:
+        status:
+          type: boolean
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonsEnum'
+      required:
+      - reasons
+      - status
     UserProfile:
       type: object
       description: |-
@@ -4304,6 +4443,8 @@ components:
 
         Also inherit the settings common to each poll.
       properties:
+        comparison__auto_select_entities:
+          type: boolean
         comparison__criteria_order:
           type: array
           items:
@@ -4314,6 +4455,10 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         rate_later__auto_remove:
           type: integer
+        extension__search_reco:
+          type: boolean
+          description: Whether Tournesol recommendations should be integrated in Youtube.com
+            search results.
         recommendations__default_date:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
@@ -4324,6 +4469,8 @@ components:
             type: string
         recommendations__default_unsafe:
           type: boolean
+        recommendations__default_exclude_compared_entities:
+          type: boolean
     VideosPollUserSettingsRequest:
       type: object
       description: |-
@@ -4331,6 +4478,8 @@ components:
 
         Also inherit the settings common to each poll.
       properties:
+        comparison__auto_select_entities:
+          type: boolean
         comparison__criteria_order:
           type: array
           items:
@@ -4342,6 +4491,10 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         rate_later__auto_remove:
           type: integer
+        extension__search_reco:
+          type: boolean
+          description: Whether Tournesol recommendations should be integrated in Youtube.com
+            search results.
         recommendations__default_date:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
@@ -4352,6 +4505,8 @@ components:
             type: string
             minLength: 1
         recommendations__default_unsafe:
+          type: boolean
+        recommendations__default_exclude_compared_entities:
           type: boolean
   securitySchemes:
     cookieAuth:

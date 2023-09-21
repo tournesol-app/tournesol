@@ -155,7 +155,7 @@ const FeedbackPagePresidentielle2022 = () => {
               <Button
                 variant="contained"
                 component={RouterLink}
-                to={`${baseUrl}/comparison?series=true`}
+                to={`${baseUrl}/comparison`}
               >
                 {t('myFeedbackPage.presidentielle2022.continueComparisons')}
               </Button>

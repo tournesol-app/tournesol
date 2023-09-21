@@ -19,8 +19,8 @@
   "video": {
     "notAvailableAnymore": "Cette vidéo n'est plus disponible sur YouTube.",
     "labelShowSettings": "Voir les paramètres de cette video",
+    "insufficientScore": "Le score de cette vidéo est inférieur au seuil de recommendabilité défini par Tournesol.",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
-    "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
     "nbComparisonsBy_many": "{{count}} comparaisons par",
     "nbComparisonsBy_other": "{{count}} comparaisons par",
@@ -43,7 +43,7 @@
     "thisElementIsNotAvailable": "Cet élément n'est plus disponible."
   },
   "score": {
-    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
+    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement sélectionnés"
   },
   "pagination": {
     "showingCounts_one": "Élément {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
@@ -60,6 +60,11 @@
   "stackedCard": {
     "showAll": "Tout montrer"
   },
+  "tempStudyBanner": {
+    "join": "Participer",
+    "loginToParticipate": "Connectez-vous pour participer",
+    "isTheTournesolProjectReallyEffective": "Le projet Tournesol est-il vraiment efficace? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !"
+  },
   "criteriaScoresDistribution": {
     "lessThan": "< {{score}}",
     "fromTo": "{{from}} à {{to}}",
@@ -71,7 +76,7 @@
   },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
-    "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",
+    "pleaseSelectTwoItems": "Sélectionnez 2 éléments pour les comparer.",
     "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
@@ -97,18 +102,25 @@
     "skipTheSeries": "Passer la série"
   },
   "entitySelector": {
-    "newVideo": "Selectionner une nouvelle vidéo automatiquement",
-    "autoEntityButton": "Auto",
+    "newVideo": "Sélectionner une nouvelle vidéo automatiquement",
+    "letTournesolSelectAVideo": "Laisser Tournesol choisir une vidéo",
+    "auto": "Auto",
     "suggestions": "Suggestions",
     "rateLater": "À comparer",
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
     "unconnected": "À relier",
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "selectAVideo": "Sélectionner une vidéo",
+    "select": "Sélectionner",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
+    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
     "backButton": "Retour"
   },
   "tabsBox": {
+    "compared": "Les vidéos que vous avez comparées apparaissent ici.",
+    "recommendations": "Les vidéos recommandées par la communauté apparaissent ici.",
+    "toConnect": "Les vidéos isolées du reste de vos comparaisons apparaissent ici. Comparez-les pour améliorer les recommandations.",
+    "rateLater": "Vos vidéos à comparer plus tard apparaissent ici. Vous pouvez en ajouter sur le site web via le bouton '+'. Vous pouvez aussi les ajouter directement depuis YouTube grâce à <2>l'extension</2>.",
     "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
     "emptyList": "Cette liste est vide."
   },
@@ -305,7 +317,9 @@
   "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
   "shareMenu": {
-    "copyAddress": "Copier l'adresse de la page"
+    "copyAddress": "Copier l'adresse de la page",
+    "copyShareMessage": "Copier le message de partage",
+    "shareOnTwitter": "Partager sur Twitter"
   },
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
@@ -330,8 +344,10 @@
   "filter": {
     "filterByVisibility": "Filtrer par visibilité",
     "includeAllVideos": "Inclure toutes les vidéos",
-    "advanced": "Avancés",
+    "excludeComparedVideos": "Exclure les vidéos comparées",
     "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
+    "excludeComparedTooltip": "Enlever de la liste de recommandations les vidéos que vous avez déjà comparées",
+    "advanced": "Avancés",
     "ignore": "Ignoré",
     "notImportant": "Pas important",
     "neutral": "Neutre",
@@ -439,6 +455,7 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
+    "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
     "moveTheFollowingCriterionUp": "Déplacer le critère suivant vers le haut:",
     "moveTheFollowingCriterionDown": "Déplacer le critère suivant vers le bas:",
     "selectTheCriteriaYouWantToDisplay": "Sélectionnez les critères que vous souhaitez afficher par défaut",
@@ -446,6 +463,7 @@
     "optionalCriteriaEmptyText": "Tous les critères optionnels seront affichés par défaut.",
     "alwaysDisplayedCriteria": "Critères toujours affichés",
     "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
+    "includeTournesolResultsInYouTubeSearch": "Inclure les recommandations Tournesol dans les résultats de recherche sur YouTube.",
     "preferredLanguage": "Langue préférée",
     "autoRemove": "Suppression automatique",
     "autoRemoveHelpText_one": "Les éléments seront supprimés de votre liste à comparer plus tard après {{value}} comparison.",
@@ -459,14 +477,16 @@
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "updatePreferences": "Mettre à jour les préférences",
+    "extensionYoutube": "Extension (YouTube)",
     "comparisonPage": "Comparaison (page)",
     "rateLater": "Liste à comparer plus tard",
+    "recommendations": "Recommandations (flux)",
     "recommendationsPage": "Recommandations (page)",
     "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
   },
   "generalUserSettingsForm": {
-    "notificationsEmailNewFeatures": "Être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
-    "notificationsEmailResearch": "Recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
+    "notificationsEmailNewFeatures": "Je veux être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
+    "notificationsEmailResearch": "Je veux recevoir les invitations aux études de recherches et aux enquêtes concernant le projet (~ 6 par an).",
     "emailNotifications": "Notifications par e-mail",
     "joinTheResearchStudies": "Participez aux études de recherche !",
     "joinTheResearchStudiesDesc": "Plusieurs projets de recherches ont choisi Tournesol ou sa communauté comme sujet d'étude. Si vous souhaitez faire avancer la science nous vous invitons à accepter de recevoir des invitations par e-mail. Vous serez notifié·e lorsque d'éventuelles études démarreront."
@@ -529,6 +549,9 @@
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
+      "defaultExcludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées.",
+      "defaultLanguages": "Langues des vidéos",
+      "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)",
       "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
     }
   },
@@ -554,6 +577,10 @@
     "ratedCandidates": "Candidats notés",
     "activatedAccounts": "Comptes activés",
     "comparisons": "Comparaisons"
+  },
+  "tip": {
+    "less": "Moins",
+    "showMore": "Voir plus ..."
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",
@@ -652,9 +679,6 @@
     "whatRightsContributorsHaveOverTheirDataParagraph": "En accédant à la page de leur compte, les contributeurs peuvent télécharger les données transmises à la plateforme. Ils ont également la possibilité de demander la suppression de toutes les données personnelles les concernant que Tournesol conserve. Cela n'inclut pas les données que Tournesol a l'obligation de conserver pour des raisons administratives, légales ou à des fins de sécurité."
   },
   "clickToDownload": "Télécharger",
-  "tutorial": {
-    "skipTheTutorial": "Passer le tutoriel"
-  },
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
     "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
@@ -683,11 +707,17 @@
         "title": "Scores par critère"
       }
     },
-    "generic": {
-      "compare": "Comparer"
+    "twitter": {
+      "intro": "J'ai vu cette vidéo sur @TournesolApp",
+      "conclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
     },
     "video": {
+      "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
+      "shareMessageConclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻",
       "description": "Description (provenant de YouTube)"
+    },
+    "generic": {
+      "compare": "Comparer"
     }
   },
   "entityNotFound": {
@@ -709,11 +739,6 @@
   },
   "faqEntryList": {
     "questionURLCopied": "URL de la question copiée."
-  },
-  "tempStudyBanner": {
-    "join": "Participer",
-    "loginToParticipate": "Connectez-vous pour participer",
-    "isTheTournesolProjectReallyEffective": "Le projet Tournesol est-il vraiment efficace? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !"
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
@@ -770,16 +795,21 @@
     "downloadTheDatabase": "Télécharger la base de données",
     "ourAlgorithmsAreFree": "Nos algorithmes sont Libres",
     "ourAlgorithmsAndAllOurCodeAreFreeSoftware": "Dans une optique de transparence et de partage des connaissances, nos algorithmes et tous les codes sources que nous avons créés sont des Logiciels Libres.",
-    "accessTheCodeOnGitHub": "Accédez au code sur GitHub"
+    "accessTheCodeOnGitHub": "Accéder au code sur GitHub",
+    "discoverTheTalks": "Découvrir les Tournesol Talks",
+    "weOrganizePublicEvents": "Nous organisons des événements publics en ligne avec des experts pour parler de leurs travaux liés à l'éthique, aux algorithmes, à l'information et plus encore",
+    "accessTalksPage": "Voir les Tournesol Talks"
   },
   "researchSection": {
     "research": "Recherche",
     "weSeekToSupportResearch": "« Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains. »"
   },
   "scientificLiteratureBox": {
-    "ourPublications": "Nos publications",
-    "papers": "Articles",
-    "studenWorks": "Travaux étudiants"
+    "publications": "Publications",
+    "ourPapers": "Nos articles",
+    "studenWorks": "Travaux étudiants",
+    "theyCiteUs": "Ils nous citent",
+    "inTheMedia": "Dans les médias"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
@@ -870,9 +900,14 @@
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "profile": "Profil",
   "signup": {
-    "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
+    "oneLastStep": "Une toute dernière étape",
+    "successMessage": "Un lien de vérification vient d'être envoyé à <1>{{email}}</1>",
+    "ifYourEmailIsIncorrect": "Si votre e-mail est incorrect, créez simplement <2>un nouveau compte</2>.",
+    "welcomeToTournesol": "Bienvenue sur Tournesol",
+    "weVeBeenWaitingForYou": "Nous vous attendions 🖖",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
+    "anActivationEmailWillBeSent": "Un e-mail d'activation sera envoyé. Vous aurez besoin de confirmez votre adresse pour vous connecter.",
     "iAgreeWithTheTerms": "J'ai au moins 15 ans. J'ai lu et j'accepte les <2>Conditions Générales d'Utilisations</2> et la <6>Politique de confidentialité</6>."
   },
   "emailAddress": "Adresse e-mail",
@@ -897,17 +932,17 @@
     "replay": "Revoir",
     "join": "Rejoindre"
   },
-  "myRatedVideosPage": {
-    "title": "Mes vidéos comparées"
-  },
   "actions": {
-    "compareNow": "Comparer !",
     "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
+    "compareNow": "Comparer !",
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
     "analysis": "Analyse détaillée"
+  },
+  "myRatedVideosPage": {
+    "title": "Mes vidéos comparées"
   },
   "criteriaTooltips": {
     "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",
@@ -979,32 +1014,36 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "title1": "Bienvenue sur Tournesol 🌻",
+        "installTheExtension": "Installer l'extension",
+        "title4": "Comparez facilement avec l'extension",
+        "message4": {
+          "p10": "L'extension de navigateur Tournesol vous permet d'ajouter les vidéos que vous regardez sur YouTube à votre lister à comparer plus tard.",
+          "p20": "Vous pouvez aussi faire des comparaisons directement depuis YouTube ! Pratique."
+        }
+      }
+    },
+    "tips": {
+      "tutorial": {
+        "title1": "Comparer deux vidéos 🌻",
         "message1": {
-          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons, afin de vous aider à contribuer au projet Tournesol.",
-          "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
-          "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
-          "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
+          "p10": "Après avoir regardé les vidéos, déplacez le curseur principal vers la vidéo qui, selon vous, devrait être largement recommandée. Enregistrez quand votre choix est fait.",
+          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait se rapprocher du centre."
         },
-        "title2": "Bravo ! 🥳",
+        "title2": "Faire des comparaisons aide la science 🔬",
         "message2": {
-          "p10": "Vous avez effectué votre première comparaison. Chaque comparaison aide Tournesol à améliorer ses recommandations de vidéo.",
-          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
-          "p30": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
-          "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
-          "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+          "p10": "Chaque comparaison aide Tournesol à améliorer ses recommandations et sa base de données publique. Essayez maintenant de dérouler et d'utiliser les critères optionnels.",
+          "p20": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant. Il vous sera possible de modifier ultérieurement vos comparaisons depuis votre page Mes comparaisons."
         },
         "title3": "Comment fonctionne Tournesol ? 🤖",
         "message3": {
           "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
-          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
-          "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet d'accéder à sa description détaillée."
+          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes. Plus ce score est élevé, plus la communauté pense que la vidéo devrait être largement recommandée."
         },
-        "title4": "Merci beaucoup d'avoir suivi ce tutoriel ❤️",
+        "title4": "Merci pour ces premières contributions ❤️",
         "message4": {
-          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e.",
-          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
-          "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
+          "p10": "Tournesol est un projet à long terme, notre objectif est de recueillir autant de comparaisons que possible. Vos contributions aide grandement la recherche et nous espérons vous revoir de temps en temps.",
+          "p20": "A l'avenir, pour faire des comparaisons plus facilement et plus rapidement, nous vous invitons à suivre cette recette : (1) ajouter des vidéos depuis YouTube grace à l'extension de navigateur ; (2) utiliser le bouton Sélectionner pour comparer les vidéos ainsi ajoutées.",
+          "p30": "🌻 🌻 🌻 🌻 🌻 🌻 🐌"
         }
       }
     }

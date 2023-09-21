@@ -4,7 +4,6 @@ API returning preview images of the recommendations.
 import datetime
 
 import numpy
-from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.urls import reverse
 from django.utils import timezone
@@ -54,12 +53,14 @@ def get_preview_recommendations_redirect_params(request):
     Preview of a Recommendations page.
     Returns HTTP redirection to transform the query parameters into the format used by the backend.
     """
+    # pylint: disable=too-many-branches
     params = request.GET
     query = QueryDict("", mutable=True)
 
     for (key, value) in params.items():
         if key == "uploader":
-            query["metadata[uploader]"] = params[key]
+            if value:
+                query["metadata[uploader]"] = params[key]
         elif key == "duration_lte":
             if value == "":
                 continue
@@ -80,6 +81,8 @@ def get_preview_recommendations_redirect_params(request):
                 now = timezone.now()
                 date_gte = now - datetime.timedelta(seconds=seconds_max_age)
                 query["date_gte"] = date_gte.isoformat(timespec="seconds")
+        elif key == "advanced":
+            query["unsafe"] = "unsafe" in value.split(",")
         else:
             query[key] = params[key]
 
@@ -221,18 +224,16 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         ts_logo_size = (12 * upscale_ratio, 12 * upscale_ratio)
         ts_logo = self.get_ts_logo(ts_logo_size)
-        ts_score = recommendation.tournesol_score
-        is_safe = (
-            ts_score > 0
-            and recommendation.rating_n_contributors >= settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-        )
 
+        poll_rating = recommendation.single_poll_rating
         ts_score_box.alpha_composite(
-            ts_logo if is_safe else ts_logo.convert("LA").convert("RGBA"),
+            # Use grayscale logo if recommendation is unsafe
+            ts_logo.convert("LA").convert("RGBA")
+            if poll_rating.is_recommendation_unsafe
+            else ts_logo,
             dest=(0, 0),
         )
-
-        score = str(round(ts_score))
+        score = str(round(poll_rating.tournesol_score))
 
         comparisons = f"{recommendation.rating_n_ratings} comparisons by "
         comparisons_width = ts_score_box_draw.textlength(
@@ -277,6 +278,22 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             fill=COLOR_BROWN_FONT,
         )
 
+    def get_offset_limit(self, request):
+        try:
+            offset = max(0, int(request.GET["offset"]))
+        except (KeyError, ValueError):
+            offset = 0
+
+        try:
+            limit = min(3, int(request.GET["limit"]))
+        except (KeyError, ValueError):
+            limit = 3
+
+        if limit <= 0:
+            limit = 3
+
+        return offset, limit
+
     @method_decorator(cache_page_no_i18n(CACHE_RECOMMENDATIONS_PREVIEW))
     @extend_schema(exclude=True)
     def get(self, request, *args, **kwargs):
@@ -284,7 +301,8 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         preview_image = Image.new("RGBA", (440 * upscale_ratio, 240 * upscale_ratio), "#FAFAFA")
 
-        recommendations = super().get_queryset()[:3]
+        offset, limit = self.get_offset_limit(request)
+        recommendations = super().get_queryset()[offset:offset+limit]
         recommendation_x_pos = 10 * upscale_ratio
 
         self.draw_header(preview_image, upscale_ratio)

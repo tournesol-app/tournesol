@@ -54,7 +54,7 @@ const FAQEntryList = ({
           target="_blank"
           color="secondary"
           variant="outlined"
-          endIcon={<PeopleAlt />}
+          startIcon={<PeopleAlt />}
         >
           {t('faqPage.joinUsOnDiscord')}
         </Button>

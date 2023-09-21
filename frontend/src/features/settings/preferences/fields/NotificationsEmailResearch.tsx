@@ -18,7 +18,7 @@ const NotificationsEmailResearch = ({
     <FormControlLabel
       control={
         <Switch
-          name={`notifications_email__research`}
+          name="notifications_email__research"
           checked={value}
           onChange={() => onChange(!value)}
           size="medium"

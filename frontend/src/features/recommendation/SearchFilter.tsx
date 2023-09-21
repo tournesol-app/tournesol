@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from 'react';
+
 import { Collapse, Grid, Box } from '@mui/material';
 
 import { CollapseButton } from 'src/components';
 import { useCurrentPoll, useListFilter } from 'src/hooks';
 import DurationFilter from 'src/features/recommendation/DurationFilter';
+
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
@@ -26,7 +28,11 @@ import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages
  * When adding a new filter, it needs to be defined in constants 'recommendationFilters'
  * and 'defaultRecommendationsFilters'.
  */
-function SearchFilter() {
+function SearchFilter({
+  showAdvancedFilter = true,
+}: {
+  showAdvancedFilter?: boolean;
+}) {
   const [expanded, setExpanded] = useState(false);
   const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
 
@@ -67,7 +73,7 @@ function SearchFilter() {
           <Box marginBottom={1}>
             <UploaderFilter
               value={filterParams.get(recommendationFilters.uploader) ?? ''}
-              onDelete={() => setFilter(recommendationFilters.uploader, '')}
+              onDelete={() => setFilter(recommendationFilters.uploader, null)}
             />
           </Box>
         )}
@@ -79,7 +85,7 @@ function SearchFilter() {
                 xs={6}
                 md={3}
                 lg={3}
-                data-testid="search-date-safe-filter"
+                data-testid="search-date-and-advanced-filter"
               >
                 <DateFilter
                   value={filterParams.get(recommendationFilters.date) ?? ''}
@@ -87,12 +93,14 @@ function SearchFilter() {
                     setFilter(recommendationFilters.date, value)
                   }
                 />
-                <Box mt={2}>
-                  <AdvancedFilter
-                    value={filterParams.get('unsafe') ?? ''}
-                    onChange={(value) => setFilter('unsafe', value)}
-                  />
-                </Box>
+                {showAdvancedFilter && (
+                  <Box mt={2}>
+                    <AdvancedFilter
+                      value={filterParams.get('advanced') ?? ''}
+                      onChange={(value) => setFilter('advanced', value)}
+                    />
+                  </Box>
+                )}
               </Grid>
               <Grid
                 item
