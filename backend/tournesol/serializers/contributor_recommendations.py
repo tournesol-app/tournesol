@@ -3,11 +3,7 @@ from rest_framework.serializers import SerializerMethodField
 
 from tournesol.models.ratings import ContributorRating
 from tournesol.serializers.criteria_score import ContributorCriteriaScoreSerializer
-from tournesol.serializers.poll import (
-    CollectiveRatingSerializer,
-    IndividualRatingSerializer,
-    RecommendationSerializer,
-)
+from tournesol.serializers.poll import IndividualRatingSerializer, RecommendationSerializer
 
 
 class IndividualRatingWithScoresSerializer(IndividualRatingSerializer):
