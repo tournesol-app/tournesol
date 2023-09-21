@@ -9,7 +9,7 @@ import random
 from django.db.models import Window
 from django.db.models.functions import Ntile
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
