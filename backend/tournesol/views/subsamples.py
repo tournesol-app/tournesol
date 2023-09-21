@@ -48,6 +48,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
 
         sub_sample = []
         buckets = len(qst)
+
         for i in range(min(buckets, sub_sample_size)):
             sub_sample.append(
                 random.choice([rating for rating in qst if rating.bucket == i + 1])  # nosec
