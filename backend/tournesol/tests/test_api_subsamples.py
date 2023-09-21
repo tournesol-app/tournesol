@@ -13,7 +13,7 @@ from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFact
 class SubSamplesListTestCase(TestCase):
     _username1 = "username1"
     _username2 = "username2"
-    _max_results = 20
+    _max_bucket_size = 20
 
     def _create_contributor_ratings(self, poll: Poll, user: User, amount: int):
         videos = VideoFactory.create_batch(amount)
@@ -43,7 +43,7 @@ class SubSamplesListTestCase(TestCase):
         self.user1 = UserFactory(username=self._username1)
         self.user2 = UserFactory(username=self._username2)
 
-        self.user1_ratings_nb = self._max_results * 2
+        self.user1_ratings_nb = self._max_bucket_size * 2
         self.user2_ratings_nb = 4
 
         self.poll1_videos1 = self._create_contributor_ratings(
@@ -77,10 +77,11 @@ class SubSamplesListTestCase(TestCase):
         response = self.client.get(self.base_subsamples_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        results = response.data
+        results = response.data["results"]
 
-        # The API returns at most 20 rated entities.
-        self.assertEqual(len(results), self._max_results)
+        # By default, the API returns at most 20 rated entities from 20
+        # different buckets.
+        self.assertEqual(len(results), self._max_bucket_size)
 
         # The results:
         #  - are ordered by score descending
@@ -104,7 +105,7 @@ class SubSamplesListTestCase(TestCase):
         response = self.client.get(self.base_subsamples_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        results = response.data
+        results = response.data["results"]
         self.assertEqual(len(results), self.user2_ratings_nb)
 
         # The results:

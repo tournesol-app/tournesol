@@ -8,21 +8,27 @@ import random
 
 from django.db.models import Window
 from django.db.models.functions import Ntile
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from tournesol.models import ContributorRating
 from tournesol.serializers.subsample import SubSampleSerializer
 from tournesol.views.ratings import ContributorRatingQuerysetMixin
 
 # The number of ranked group used to divide the rated entities.
-NTILE_BUCKETS = 20
+DEFAULT_BUCKET_SIZE = 20
 
 
 class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
     def get_queryset(self):
         poll = self.poll_from_url
+
+        try:
+            sub_sample_size = int(self.request.query_params["ntile"])
+        except KeyError:
+            sub_sample_size = DEFAULT_BUCKET_SIZE
 
         qst = (
             ContributorRating.objects.annotate_n_comparisons()
@@ -35,14 +41,14 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
                 criteria_scores__criteria=poll.main_criteria
             )
             .annotate(bucket=Window(
-                expression=Ntile(NTILE_BUCKETS),
+                expression=Ntile(sub_sample_size),
                 order_by="-criteria_scores__score"
             ))
         )
 
         sub_sample = []
         buckets = len(qst)
-        for i in range(min(buckets, NTILE_BUCKETS)):
+        for i in range(min(buckets, sub_sample_size)):
             sub_sample.append(
                 random.choice([rating for rating in qst if rating.bucket == i + 1])  # nosec
             )
@@ -50,18 +56,29 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         return sub_sample
 
 
-class SubSamplesList(SubSamplesQuerysetMixin, generics.GenericAPIView):
+class SubSamplesList(SubSamplesQuerysetMixin, generics.ListAPIView, generics.GenericAPIView):
+    """
+    Return a sub-sample of entities rated by the logged-in user.
+
+    Entities are ranked by the individual score computed for the poll's
+    main criterion, in the descending order.
+    """
+
     permission_classes = [IsAuthenticated]
     serializer_class = SubSampleSerializer
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="ntile",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                default=DEFAULT_BUCKET_SIZE,
+                description="Divide the rated entities into `ntile` ranked "
+                "buckets, then pick one entity from each bucket.",
+            ),
+        ],
+    )
     def get(self, request, *args, **kwargs):
-        """
-        Return a sub-sample of entities rated by the logged-in user.
-
-        Entities are ranked by the individual score computed for the poll's
-        main criterion, in the descending order.
-        """
-        sub_sample = self.get_queryset()
-        serializer = SubSampleSerializer(sub_sample, many=True)
-
-        return Response(serializer.data)
+        return self.list(request, *args, **kwargs)
