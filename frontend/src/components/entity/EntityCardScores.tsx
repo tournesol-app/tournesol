@@ -111,15 +111,17 @@ const EntityCardScores = ({
       ''
     );
 
+  const totalScore =
+    'recommendation_metadata' in result
+      ? result.recommendation_metadata.total_score
+      : null;
+
   return (
     <>
-      {showTotalScore && 'recommendation_metadata' in result && (
+      {showTotalScore && totalScore != null && (
         <Box display="flex" alignItems="center" columnGap={1}>
           <Typography color="text.secondary">
-            Score :{' '}
-            <strong>
-              {result.recommendation_metadata.total_score.toFixed(2)}
-            </strong>
+            Score : <strong>{totalScore.toFixed(2)}</strong>
             {''}
           </Typography>
           <Tooltip

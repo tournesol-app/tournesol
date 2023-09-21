@@ -2842,6 +2842,7 @@ components:
           allOf:
           - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
+          nullable: true
         recommendation_metadata:
           allOf:
           - $ref: '#/components/schemas/RecommendationMetadata'
@@ -3704,6 +3705,7 @@ components:
           allOf:
           - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
+          nullable: true
         recommendation_metadata:
           allOf:
           - $ref: '#/components/schemas/RecommendationMetadata'
@@ -3719,6 +3721,7 @@ components:
           type: number
           format: double
           readOnly: true
+          nullable: true
       required:
       - total_score
     Recommendations_defaultDateEnum:

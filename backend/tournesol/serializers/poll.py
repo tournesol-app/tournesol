@@ -75,7 +75,7 @@ class IndividualRatingSerializer(ModelSerializer):
 
 
 class RecommendationMetadataSerializer(serializers.Serializer):
-    total_score = serializers.FloatField(read_only=True)
+    total_score = serializers.FloatField(read_only=True, allow_null=True)
 
 
 @extend_schema_serializer(
@@ -108,6 +108,7 @@ class RecommendationSerializer(ModelSerializer):
     collective_rating = ExtendedCollectiveRatingSerializer(
         source="single_poll_rating",
         read_only=True,
+        allow_null=True,
     )
     recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
 

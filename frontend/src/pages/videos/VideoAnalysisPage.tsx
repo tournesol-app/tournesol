@@ -27,8 +27,8 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   const entity = video.entity;
-  const criteriaScores = video.collective_rating.criteria_scores;
-  const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
+  const criteriaScores = video.collective_rating?.criteria_scores ?? [];
+  const shouldDisplayCharts = criteriaScores.length > 0;
 
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
   const linkifiedDescription = linkifyStr(
