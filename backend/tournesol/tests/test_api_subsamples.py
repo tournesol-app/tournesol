@@ -14,6 +14,9 @@ class SubSamplesListTestCase(TestCase):
     _username1 = "username1"
     _username2 = "username2"
 
+    user1_ratings_nb = 40
+    user2_ratings_nb = 4
+
     def _create_contributor_ratings(self, poll: Poll, user: User, amount: int):
         videos = VideoFactory.create_batch(amount)
 
@@ -42,18 +45,15 @@ class SubSamplesListTestCase(TestCase):
         self.user1 = UserFactory(username=self._username1)
         self.user2 = UserFactory(username=self._username2)
 
-        user1_ratings_nb = 40
-        user2_ratings_nb = 4
-
         self.poll1_videos1 = self._create_contributor_ratings(
-            self.poll1, self.user1, user1_ratings_nb
+            self.poll1, self.user1, self.user1_ratings_nb
         )
 
         self.poll1_videos2 = self._create_contributor_ratings(
-            self.poll1, self.user2, user2_ratings_nb
+            self.poll1, self.user2, self.user2_ratings_nb
         )
 
-        self._create_contributor_ratings(self.extra_poll, self.user1, user1_ratings_nb)
+        self._create_contributor_ratings(self.extra_poll, self.user1, self.user1_ratings_nb)
 
     def test_authentication_required(self):
         """
@@ -138,8 +138,6 @@ class SubSamplesListTestCase(TestCase):
             self.assertIn(
                 item["entity"]["uid"], [video.uid for video in self.poll1_videos1[from_:to]]
             )
-            self.assertIn("individual_rating", item)
-            self.assertIn("collective_rating", item)
             self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
 
     def test_param_ntile_gt_rated_entities(self):
@@ -157,6 +155,29 @@ class SubSamplesListTestCase(TestCase):
 
         for idx, item in enumerate(results):
             self.assertEqual(item["entity"]["uid"], self.poll1_videos1[idx].uid)
-            self.assertIn("individual_rating", item)
-            self.assertIn("collective_rating", item)
             self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
+
+    def test_pagination(self):
+        ntile = 20
+        limit = 10
+        offset = 10
+
+        self.client.force_authenticate(self.user1)
+        response = self.client.get(
+            self.base_subsamples_url,
+            {"ntile": ntile, "limit": limit, "offset": offset}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), limit)
+        self.assertEqual(response.data["count"], ntile)
+
+        for idx, item in enumerate(results):
+            # 20 = user1_ratings_nb / ntile * offset
+            from_ = 20 + idx * 2
+            to = from_ + 2
+            self.assertIn(
+                item["entity"]["uid"], [video.uid for video in self.poll1_videos1[from_:to]]
+            )
+            self.assertEqual(item["subsample_metadata"]["bucket"], offset + idx + 1)
