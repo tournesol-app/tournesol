@@ -40,15 +40,14 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
             ))
         )
 
+        sub_sample = []
         buckets = len(qst)
-        # XXX can we use the database to randomly pick a video per bucket instead?
-        sub_samples = []
         for i in range(min(buckets, NTILE_BUCKETS)):
-            sub_samples.append(
+            sub_sample.append(
                 random.choice([rating for rating in qst if rating.bucket == i + 1])  # nosec
             )
 
-        return sub_samples
+        return sub_sample
 
 
 class SubSamplesList(SubSamplesQuerysetMixin, generics.GenericAPIView):
@@ -62,7 +61,7 @@ class SubSamplesList(SubSamplesQuerysetMixin, generics.GenericAPIView):
         Entities are ranked by the individual score computed for the poll's
         main criterion, in the descending order.
         """
-        sub_samples = self.get_queryset()
-        serializer = SubSampleSerializer(sub_samples, many=True)
+        sub_sample = self.get_queryset()
+        serializer = SubSampleSerializer(sub_sample, many=True)
 
         return Response(serializer.data)
