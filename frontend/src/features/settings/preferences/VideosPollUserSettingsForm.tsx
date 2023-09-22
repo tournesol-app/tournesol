@@ -11,15 +11,13 @@ import {
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
-import AutoSelectoEntities from './fields/AutoSelectEntities';
+import BooleanField from './fields/generics/BooleanField';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
-import RecommendationsDefaultUnsafe from './fields/RecommendationsDefaultUnsafe';
-import RecommendationsDefaultExcludeCompared from './fields/RecommendationsDefaultExcludeCompared';
 
 interface VideosPollUserSettingsFormProps {
   extSearchRecommendation: boolean;
@@ -92,10 +90,12 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
-        <AutoSelectoEntities
+        <BooleanField
+          scope={pollName}
+          name="comparison__auto_select_entities"
+          label={t('pollUserSettingsForm.letTournesolSuggestElements')}
           value={compAutoSelectEntities}
           onChange={setCompAutoSelectEntities}
-          pollName={pollName}
         />
       </Grid>
       {/*
@@ -175,17 +175,23 @@ const VideosPollUserSettingsForm = ({
       </Grid>
       <Grid item container spacing={1} direction="column" alignItems="stretch">
         <Grid item>
-          <RecommendationsDefaultUnsafe
+          <BooleanField
+            scope={pollName}
+            name="recommendations__default_unsafe"
+            label={t('videosUserSettingsForm.recommendations.defaultUnsafe')}
             value={recoDefaultUnsafe}
             onChange={setRecoDefaultUnsafe}
-            pollName={pollName}
           />
         </Grid>
         <Grid item>
-          <RecommendationsDefaultExcludeCompared
+          <BooleanField
+            scope={pollName}
+            name="recommendations__default_exclude_compared_entities"
+            label={t(
+              'videosUserSettingsForm.recommendations.defaultExcludeCompared'
+            )}
             value={recoDefaultExcludeCompared}
             onChange={setRecoDefaultExcludeCompared}
-            pollName={pollName}
           />
         </Grid>
       </Grid>

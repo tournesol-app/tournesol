@@ -152,10 +152,10 @@ describe('GenericPollUserSettingsForm', () => {
     const rendered = await component({ store: store });
 
     const notificationsEmailResearch = screen.getByTestId(
-      'notifications_email__research'
+      'general_notifications_email__research'
     );
     const notificationsEmailNewFeatures = screen.getByTestId(
-      'notifications_email__new_features'
+      'general_notifications_email__new_features'
     );
     const notificationsLang = screen.getByTestId('notifications__lang');
 
