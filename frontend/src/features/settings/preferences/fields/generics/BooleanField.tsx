@@ -23,7 +23,7 @@ const BooleanField = ({
         <Switch
           name={`${scope}_${name}`}
           checked={value}
-          onChange={() => onChange(!value)}
+          onChange={(event) => onChange(event.target.checked)}
           size="medium"
           color="secondary"
           inputProps={
