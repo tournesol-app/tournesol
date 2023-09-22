@@ -57,7 +57,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         return sub_sample
 
 
-class SubSamplesList(SubSamplesQuerysetMixin, generics.ListAPIView, generics.GenericAPIView):
+class SubSamplesList(SubSamplesQuerysetMixin, generics.ListAPIView):
     """
     Return a sub-sample of entities rated by the logged-in user.
 

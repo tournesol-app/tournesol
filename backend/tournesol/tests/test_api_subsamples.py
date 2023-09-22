@@ -53,7 +53,7 @@ class SubSamplesListTestCase(TestCase):
             self.poll1, self.user2, self.user2_ratings_nb
         )
 
-        self._create_contributor_ratings(self.extra_poll, self.user1, self.user1_ratings_nb)
+        self._create_contributor_ratings(self.extra_poll, self.user1, 20)
 
     def test_authentication_required(self):
         """
