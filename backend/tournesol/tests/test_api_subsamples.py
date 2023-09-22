@@ -106,6 +106,7 @@ class SubSamplesListTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 4)
+        self.assertEqual(response.data["count"], 4)
 
         # The results:
         #  - are ordered by score descending
