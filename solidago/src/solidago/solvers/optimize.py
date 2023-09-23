@@ -7,7 +7,7 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 # pylint: skip-file
-from typing import Tuple
+from typing import Tuple, Callable, Optional
 
 import numpy as np
 from numba import njit
@@ -39,9 +39,64 @@ def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
 
     return root, status
 
+class SignChangeIntervalNotFoundError(RuntimeError):
+    pass
 
 @njit
-def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0) -> float:
+def search_sign_change_interval(
+    f: Callable,
+    a: float,
+    b: float,
+    args: Tuple = (),
+    max_iterations: int = 32,
+    search_a: bool = True,
+    search_b: bool = True,
+):
+    """
+        Searches bounds a and b of interval where `f` changes sign. This is
+        achieved by increasing the size of the interval iteratively.
+        Note that the method is not guaranteed to succeed for most functions
+        and highly depends on the initial bounds.
+
+        Parameters
+        ----------
+        f : jitted and callable
+            Python function returning a number.  `f` must be continuous.
+        a : number
+            One end of the bracketing interval [a,b].
+        b : number
+            The other end of the bracketing interval [a,b].
+        args : tuple, optional(default=())
+            Extra arguments to be used in the function call.
+        max_iterations:
+            The maximum number of iteration in the search. /!\ When using a
+            large number of iterations, bounds would become very large and
+            functions may not be well behaved.
+        search_a:
+            If true, the value of `a` provided will be updated to search for an
+            interval where `f` changes sign
+        search_b:
+            If true, the value of `b` provided will be updated to search for an
+            interval where `f` changes sign
+
+        Returns
+        -------
+        a, b:
+            An interval on which the continuous function `f` changes sign
+    """
+    if a >= b:
+        raise ValueError(f"Initial interval bounds should be such that a < b. Found a={a} and b={b}")
+    iteration_count = 0
+    while f(a, *args) * f(b, *args) > 0:
+        if iteration_count > max_iterations:
+            raise SignChangeIntervalNotFoundError("Could not find a sign changing interval")
+        iteration_count+=1
+        a = a-(b-a) if search_a else a
+        b = b+(b-a) if search_b else b
+    return a, b
+
+@njit
+def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0, search_a: bool=True, search_b: bool = True) -> float:
     """
     Find a root of a function in a bracketing interval using Brent's method
     adapted from Scipy's brentq.
@@ -69,14 +124,23 @@ def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: floa
         Maximum number of iterations.
     disp : bool, optional(default=True)
         If True, raise a RuntimeError if the algorithm didn't converge.
+    search_a:
+        If true, the value of `a` provided will be updated to search for an
+        interval where `f` changes sign
+    search_b:
+        If true, the value of `b` provided will be updated to search for an
+        interval where `f` changes sign
     Returns
     -------
     root : float
     """
-    while f(a, *args) > 0:
-        a = a - 2 * (b-a)
-    while f(b, *args) < 0:
-        b = b + 2 * (b-a)
+    a, b = search_sign_change_interval(f, a, b, args=args, search_a=search_a, search_b=search_b)
+    if f(a, *args) == 0:
+        return a
+    if f(b, *args) == 0:
+        return b
+    if f(a, *args) * f(b, *args) > 0:
+        raise ValueError("Function `f` should have opposite sign on bounds `a` and `b`")
 
     if xtol <= 0:
         raise ValueError("xtol is too small (<= 0)")
