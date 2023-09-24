@@ -149,19 +149,58 @@ class TestIndividualScores:
         assert scores.loc["C"].raw_score == pytest.approx(scores.loc["G"].raw_score, abs=1e-4)
         assert scores.loc["D"].raw_score == pytest.approx(scores.loc["H"].raw_score, abs=1e-4)
 
-def test_generalised_bradley_terry_uncertainty_is_asymetric():
-    model = ContinuousBradleyTerry(r_max=1)
+
+@pytest.mark.parametrize("comparisons",[
+    pd.DataFrame({
+        "entity_a": ["A", "A", "B", "C"],
+        "entity_b": ["B", "C", "C", "D"],
+        "score": [4, 4, 2, 4]
+    }),
+    pd.DataFrame({
+        "entity_a": ["X", "Z", "B", "C", "A", "A"],
+        "entity_b": ["Y", "X", "C", "D", "B", "C"],
+        "score": [4, 4, 2, 0, -1, -11]
+    }),
+    pd.DataFrame({
+        "entity_a": ["X", "Z", "B", "C", "A", "A"],
+        "entity_b": ["Y", "X", "C", "D", "B", "C"],
+        "score": [-11, 11, -11, 11, -11, 11],
+    })
+])
+def test_gbt_uncertainty_uncertainty_bounds_contain_score(comparisons):
+    model = ContinuousBradleyTerry(r_max=11)
+    individual_scores = model.compute_individual_scores(comparisons)
+    rows = [row for _, row in individual_scores.iterrows()]
+    assert all(
+        row["raw_score_lower_bound"] <= row["raw_score"] <= row["raw_score_upper_bound"]
+        for row in rows
+    )
+
+def test_gbt_uncertainty_has_infinite_range_with_max_comparison():
+    model = ContinuousBradleyTerry(r_max=4)
     comparisons = pd.DataFrame({
         "entity_a": ["A", "A", "B", "C"],
         "entity_b": ["B", "C", "C", "D"],
-        "score": [10, 10, 6, 10]
+        "score": [4, 4, 2, 4]
     })
     individual_scores = model.compute_individual_scores(comparisons)
-    # TODO uncomment the below assertion and finish implementing asymetry in 
-    # `compute_individual_scores`
-    # assert "raw_score_lower_bound" in individual_scores.columns
-    # assert "raw_score_upper_bound" in individual_scores.columns
-    # assert individual_scores.raw_score_lower_bound.loc["A"] == -np.inf
+    assert individual_scores.raw_score_lower_bound.loc["A"] == -np.inf
+    assert individual_scores.raw_score_upper_bound.loc["A"] < np.inf
+    assert individual_scores.raw_score_upper_bound.loc["D"] == np.inf
+
+
+def test_gbt_uncertainty_has_finite_range_with_non_max_comparison():
+    model = ContinuousBradleyTerry(r_max=5)
+    comparisons = pd.DataFrame({
+        "entity_a": ["A", "A", "B", "C"],
+        "entity_b": ["B", "C", "C", "D"],
+        "score": [4, 4, 2, 4]
+    })
+    individual_scores = model.compute_individual_scores(comparisons)
+    assert individual_scores.raw_score_lower_bound.loc["A"] != -np.inf
+    assert individual_scores.raw_score_upper_bound.loc["A"] != np.inf
+    assert individual_scores.raw_score_lower_bound.loc["D"] != -np.inf
+    assert individual_scores.raw_score_upper_bound.loc["D"] != np.inf
 
 
 @njit
