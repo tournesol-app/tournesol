@@ -6,8 +6,7 @@ individual score computed for the poll's main criterion.
 """
 import random
 
-from django.db.models import Window
-from django.db.models.functions import Ntile
+import numpy as np
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import generics
@@ -39,20 +38,13 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
                 user=self.request.user,
                 criteria_scores__criteria=poll.main_criteria
             )
-            .annotate(bucket=Window(
-                expression=Ntile(sub_sample_size),
-                order_by="-criteria_scores__score"
-            ))
-            .values_list("entity_id", "bucket")
+            .order_by("-criteria_scores__score")
+            .values_list("entity_id")
         )
 
-        selected = []
-        rated_entities = len(all_ratings)
-
-        for i in range(min(rated_entities, sub_sample_size)):
-            selected.append(
-                random.choice([rating for rating in all_ratings if rating[1] == i + 1])  # nosec
-            )
+        sub_sample_size = min(sub_sample_size, len(all_ratings))
+        selected = [random.choice(bucket)
+                    for bucket in np.array_split(all_ratings, sub_sample_size)]
 
         # Only the previously selected ratings are retrieved and annotated.
         sub_sample = (
@@ -69,7 +61,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         )
 
         for idx, item in enumerate(sub_sample):
-            item.bucket = selected[idx][1]
+            item.bucket = idx + 1
 
         return sub_sample
 
