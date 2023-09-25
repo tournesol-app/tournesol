@@ -82,9 +82,12 @@ class SubSamplesListTestCase(TestCase):
         # different buckets.
         self.assertEqual(len(results), 20)
 
+
+        score_step = 100 / self.user1_ratings_nb
+
         # The results:
         #  - are ordered by score descending
-        #  - only contains entities rated by the logged-in user
+        #  - only contain entities rated by the logged-in user
         for idx, item in enumerate(results):
             from_ = idx * 2
             to = from_ + 2
@@ -94,6 +97,15 @@ class SubSamplesListTestCase(TestCase):
             self.assertIn("individual_rating", item)
             self.assertIn("collective_rating", item)
             self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
+
+            idv_score = [score["score"]
+                         for score in item["individual_rating"]["criteria_scores"]
+                         if score["criteria"] == self.poll1.main_criteria][0]
+
+            self.assertIn(idv_score, [
+                100 - score_step * (idx * 2 + 1),
+                100 - score_step * (idx * 2 + 2)
+            ])
 
     def test_response_integrity_user2_few_ratings(self):
         """
@@ -108,14 +120,22 @@ class SubSamplesListTestCase(TestCase):
         self.assertEqual(len(results), 4)
         self.assertEqual(response.data["count"], 4)
 
+        score_step = 100 / self.user2_ratings_nb
+
         # The results:
         #  - are ordered by score descending
-        #  - only contains entities rated by the logged-in user
+        #  - only contain entities rated by the logged-in user
         for idx, item in enumerate(results):
             self.assertEqual(item["entity"]["uid"], self.poll1_videos2[idx].uid)
             self.assertIn("individual_rating", item)
             self.assertIn("collective_rating", item)
             self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
+
+            idv_score = [score["score"]
+                         for score in item["individual_rating"]["criteria_scores"]
+                         if score["criteria"] == self.poll1.main_criteria][0]
+
+            self.assertEqual(idv_score, 100 - score_step *  (idx + 1))
 
     def test_param_ntile_lt_rated_entities(self):
         """
