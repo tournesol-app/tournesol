@@ -9,8 +9,8 @@ import {
   dontSuggestAnymore,
 } from 'src/features/rateLater/alreadySuggested';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { YOUTUBE_POLL_NAME, UID_YT_NAMESPACE } from 'src/utils/constants';
-import { getVideoForComparison, idFromUid } from 'src/utils/video';
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { getUidForComparison } from 'src/utils/video';
 
 interface Props {
   currentUid: string | null;
@@ -44,27 +44,26 @@ const AutoEntityButton = ({
     async ({ fromAutoFill = false } = {}) => {
       onClick();
 
-      const newVideoId: string | null = await getVideoForComparison(
-        otherUid ? idFromUid(otherUid) : null,
-        idFromUid(currentUid || ''),
+      const newUid: string | null = await getUidForComparison(
+        currentUid || '',
+        otherUid ? otherUid : null,
         ALREADY_SUGGESTED[pollName]
       );
 
       if (!mountedRef.current) return;
 
-      if (newVideoId) {
-        const newVideoUid = `${UID_YT_NAMESPACE}${newVideoId}`;
-        dontSuggestAnymore(pollName, newVideoUid);
+      if (newUid) {
+        dontSuggestAnymore(pollName, newUid);
 
         // When both videos are auto filled it's common to receive the same video twice.
         // When it happens we ask for another one.
-        if (fromAutoFill && newVideoUid === otherUidRef.current) {
+        if (fromAutoFill && newUid === otherUidRef.current) {
           onResponse(null);
           askNewVideo({ fromAutoFill: true });
           return;
         }
 
-        onResponse(newVideoUid);
+        onResponse(newUid);
       } else {
         onResponse(null);
       }
