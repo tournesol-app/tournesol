@@ -99,7 +99,7 @@ class SubSamplesListTestCase(TestCase):
             self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
 
             idv_score = next(filter(lambda x: x["criteria"] == self.poll1.main_criteria,
-                        item["individual_rating"]["criteria_scores"]))
+                        item["individual_rating"]["criteria_scores"]))["score"]
 
             self.assertIn(idv_score, [
                 100 - score_step * (idx * 2 + 1),
@@ -131,7 +131,7 @@ class SubSamplesListTestCase(TestCase):
             self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
 
             idv_score = next(filter(lambda x: x["criteria"] == self.poll1.main_criteria,
-                        item["individual_rating"]["criteria_scores"]))
+                        item["individual_rating"]["criteria_scores"]))["score"]
 
             self.assertEqual(idv_score, 100 - score_step *  (idx + 1))
 
