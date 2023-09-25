@@ -60,7 +60,7 @@ export function idFromUid(uid: string): string {
   return '';
 }
 
-function getPeudoRandomInt(max: number) {
+function getPseudoRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
@@ -208,7 +208,7 @@ export async function getVideoForComparison(
     // allows us to not increase the `limit`, and this way limits the size of
     // the JSON downloaded. We may want to adapt/remove this `offset` the day
     // we will filter the results according to the user preferred languages.
-    offset: getPeudoRandomInt(10) * 10,
+    offset: getPseudoRandomInt(10) * 10,
   });
 
   let newSuggestions = (videoResult?.results || []).map((v) =>
