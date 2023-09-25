@@ -43,7 +43,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         )
 
         sub_sample_size = min(sub_sample_size, len(all_ratings))
-        selected = [random.choice(bucket)
+        selected = [random.choice(bucket)  #nosec
                     for bucket in np.array_split(all_ratings, sub_sample_size)]
 
         # Only the previously selected ratings are retrieved and annotated.
