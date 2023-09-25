@@ -18,7 +18,7 @@ from tournesol.serializers.subsample import SubSampleSerializer
 from tournesol.views.ratings import ContributorRatingQuerysetMixin
 
 # The number of ranked group used to divide the rated entities.
-DEFAULT_BUCKET_SIZE = 20
+DEFAULT_BUCKET_COUNT = 20
 
 
 class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
@@ -28,7 +28,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         try:
             sub_sample_size = int(self.request.query_params["ntile"])
         except KeyError:
-            sub_sample_size = DEFAULT_BUCKET_SIZE
+            sub_sample_size = DEFAULT_BUCKET_COUNT
 
         qst = (
             ContributorRating.objects.annotate_n_comparisons()
@@ -47,9 +47,9 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         )
 
         sub_sample = []
-        buckets = len(qst)
+        rated_entities = len(qst)
 
-        for i in range(min(buckets, sub_sample_size)):
+        for i in range(min(rated_entities, sub_sample_size)):
             sub_sample.append(
                 random.choice([rating for rating in qst if rating.bucket == i + 1])  # nosec
             )
@@ -75,7 +75,7 @@ class SubSamplesList(SubSamplesQuerysetMixin, generics.ListAPIView):
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.QUERY,
                 required=False,
-                default=DEFAULT_BUCKET_SIZE,
+                default=DEFAULT_BUCKET_COUNT,
                 description="Divide the rated entities into `ntile` ranked "
                 "buckets, then pick one entity from each bucket.",
             ),
