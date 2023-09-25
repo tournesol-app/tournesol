@@ -15,9 +15,9 @@ export class BannerOptions {
 }
 
 export const defaultBannerOptions = new BannerOptions(
-  '2023-04-01T00:00:00Z',
-  '2023-05-20T00:00:00Z',
-  'https://docs.google.com/forms/d/e/1FAIpQLSd4_8nF0kVnHj3GvTlEAFw-PHAGOAGc1j1NKZbXr8Ga_nIY9w/viewform?usp=pp_url&entry.939413650=',
-  'https://docs.google.com/forms/d/e/1FAIpQLSfEXZLlkLA6ngx8LV-VVpIxV9AZ9MgN-H_U0aTOnVhrXv1XLQ/viewform?usp=pp_url&entry.1924714025=',
-  'browser_extension_study_2023'
+  '2023-09-07T00:00:00Z',
+  '2023-10-01T00:00:00Z',
+  'https://tournesol.app/about/donate?utm_source=extension',
+  'https://tournesol.app/about/donate?utm_source=extension',
+  '2023_2024_funding_campaing'
 );

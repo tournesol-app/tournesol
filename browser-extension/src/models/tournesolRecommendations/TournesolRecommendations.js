@@ -121,4 +121,8 @@ export class TournesolRecommendations {
       this.loadRecommandations();
     }
   }
+
+  clear() {
+    if (this.tournesolHTMLElement) this.tournesolHTMLElement.remove();
+  }
 }

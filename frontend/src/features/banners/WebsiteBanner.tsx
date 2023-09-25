@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import { Campaign, Warning } from '@mui/icons-material';
 
+import linkifyStr from 'linkify-string';
+
 import { Banner } from 'src/services/openapi';
 
 interface WebsiteBannerSingleProps {
@@ -40,6 +42,8 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
     bannerSx = { ...bannerSx, ...securityAdvisorySx };
   }
 
+  const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
+
   return (
     <Grid container width="100%" flexDirection="column" alignItems="center">
       <Grid item width="100%" xl={9}>
@@ -61,29 +65,37 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
               </Typography>
               {security && <Warning fontSize="large" color="error" />}
             </Stack>
-            <Stack
-              direction={{ sm: 'column', md: 'row' }}
-              spacing={{ xs: 2, sm: 2 }}
-              justifyContent="space-between"
-              alignItems="flex-end"
-            >
-              <Typography paragraph mb={0}>
-                {banner.text}
-              </Typography>
+            <Box>
+              <Typography
+                paragraph
+                display="inline"
+                mb={0}
+                whiteSpace="pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: linkifyStr(banner.text, linkifyOpts),
+                }}
+              />
 
               {banner.action_link && banner.action_label && (
-                <Box>
-                  <Button
-                    variant={security ? 'contained' : 'outlined'}
-                    color={security ? 'error' : 'secondary'}
-                    component={Link}
-                    href={banner.action_link}
-                  >
-                    {banner.action_label}
-                  </Button>
-                </Box>
+                <Button
+                  variant={
+                    security || (banner.priority ?? 0) >= 100
+                      ? 'contained'
+                      : 'outlined'
+                  }
+                  color={security ? 'error' : 'secondary'}
+                  component={Link}
+                  href={banner.action_link}
+                  sx={{
+                    mt: 1,
+                    ml: 1,
+                    float: 'right',
+                  }}
+                >
+                  {banner.action_label}
+                </Button>
               )}
-            </Stack>
+            </Box>
           </Stack>
         </Paper>
       </Grid>

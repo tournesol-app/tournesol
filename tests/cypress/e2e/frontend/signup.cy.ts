@@ -50,7 +50,7 @@ describe('Signup', () => {
     cy.get('input[name=accept_terms]').check();
 
     // [GIVEN] the notification "research" is selected
-    cy.get('[data-testid=notifications_email__research]').check();
+    cy.get('[data-testid=general_notifications_email__research]').check();
 
     cy.contains('Sign up').click();
     cy.contains('verification link').should('be.visible');
@@ -65,8 +65,8 @@ describe('Signup', () => {
     cy.visit('/settings/preferences');
 
     // [THEN] only the selected notifications are checked
-    cy.get('[data-testid=notifications_email__research]').should('be.checked');
-    cy.get('[data-testid=notifications_email__new_features]').should('not.be.checked');
+    cy.get('[data-testid=general_notifications_email__research]').should('be.checked');
+    cy.get('[data-testid=general_notifications_email__new_features]').should('not.be.checked');
   });
 
   it('allows users to re-create an account if email is incorrect', () => {

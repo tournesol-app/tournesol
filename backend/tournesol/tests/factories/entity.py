@@ -65,6 +65,7 @@ class VideoMetadataFactory(factory.DictFactory):
     language = "aa"
     uploader = factory.Sequence(lambda n: "Uploader %s" % n)
     publication_date = factory.LazyFunction(lambda: datetime.date.today().isoformat())
+    views = 1000
 
 
 class VideoFactory(EntityFactory):

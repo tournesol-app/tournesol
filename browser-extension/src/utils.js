@@ -182,6 +182,16 @@ const getObjectFromLocalStorage = async (key, default_ = null) => {
   });
 };
 
+/**
+ *
+ * User preferences.
+ *
+ */
+
+const LEGACY_SETTINGS_MAP = {
+  extension__search_reco: 'searchEnabled',
+};
+
 const getRecomendationsFallbackLanguages = () => {
   const navLang = navigator.language.split('-')[0].toLowerCase();
   return ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
@@ -254,4 +264,46 @@ export const getRecommendationsLanguagesAuthenticated = async () => {
   }
 
   return languages;
+};
+
+const getSingleSettingAnonymous = async (name) => {
+  let value = await getObjectFromLocalStorage(name);
+
+  if (value == null && name in LEGACY_SETTINGS_MAP) {
+    value = await getObjectFromLocalStorage(LEGACY_SETTINGS_MAP[name]);
+  }
+
+  return value;
+};
+
+/**
+ * Get a user setting from the Tournesol API. By default, fallback to the
+ * local settings for anonymous users or when an API error occured.
+ *
+ * @param {string} name Name of the setting.
+ * @param {any} default_ The value returned if the setting is undefined.
+ * @param {boolean} localFallback If false, don't return the local setting if
+ *                  the user is not logged, or in case of API error.
+ * @param {string} scope The scope in which the API setting is located.
+ * @returns
+ */
+export const getSingleSetting = async (
+  name,
+  default_ = null,
+  localFallback = true,
+  scope = 'videos'
+) => {
+  const settings = await getUserSettings();
+
+  // Fallback to the storage settings in case of error.
+  if (!settings || !settings.success) {
+    if (localFallback) {
+      const local = await getSingleSettingAnonymous(name);
+      return local ?? default_;
+    } else {
+      return default_;
+    }
+  }
+
+  return settings.body?.[scope]?.[name] ?? default_;
 };

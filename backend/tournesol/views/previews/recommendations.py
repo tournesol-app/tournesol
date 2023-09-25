@@ -53,12 +53,14 @@ def get_preview_recommendations_redirect_params(request):
     Preview of a Recommendations page.
     Returns HTTP redirection to transform the query parameters into the format used by the backend.
     """
+    # pylint: disable=too-many-branches
     params = request.GET
     query = QueryDict("", mutable=True)
 
     for (key, value) in params.items():
         if key == "uploader":
-            query["metadata[uploader]"] = params[key]
+            if value:
+                query["metadata[uploader]"] = params[key]
         elif key == "duration_lte":
             if value == "":
                 continue
@@ -231,7 +233,10 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
             else ts_logo,
             dest=(0, 0),
         )
-        score = str(round(poll_rating.tournesol_score))
+
+        score = None
+        if poll_rating.tournesol_score is not None:
+            score = str(round(poll_rating.tournesol_score))
 
         comparisons = f"{recommendation.rating_n_ratings} comparisons by "
         comparisons_width = ts_score_box_draw.textlength(
@@ -241,12 +246,13 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         score_x_gap = ts_logo_size[0] + 2 * upscale_ratio
         comparisons_x_gap = score_x_gap + 36 * upscale_ratio
 
-        ts_score_box_draw.text(
-            (score_x_gap, -5 * upscale_ratio),
-            score,
-            font=self.fnt_config["recommendations_ts_score"],
-            fill=COLOR_BROWN_FONT,
-        )
+        if score:
+            ts_score_box_draw.text(
+                (score_x_gap, -5 * upscale_ratio),
+                score,
+                font=self.fnt_config["recommendations_ts_score"],
+                fill=COLOR_BROWN_FONT,
+            )
 
         ts_score_box_draw.text(
             (comparisons_x_gap, 2 * upscale_ratio),

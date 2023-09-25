@@ -3,38 +3,38 @@ import { useTranslation } from 'react-i18next';
 
 import { FormControlLabel, Switch } from '@mui/material';
 
-interface AutoSelectoEntitiesProps {
+interface ExtRecommendationSearchProps {
   value: boolean;
   onChange: (target: boolean) => void;
   pollName: string;
 }
 
-const AutoSelectoEntities = ({
+const ExtSearchRecommendation = ({
   value,
   onChange,
   pollName,
-}: AutoSelectoEntitiesProps) => {
+}: ExtRecommendationSearchProps) => {
   const { t } = useTranslation();
 
   return (
     <FormControlLabel
       control={
         <Switch
-          name={`${pollName}_comparison__auto_select_entities`}
+          name={`${pollName}_extension__search_reco`}
           checked={value}
           onChange={() => onChange(!value)}
           size="medium"
           color="secondary"
           inputProps={
             {
-              'data-testid': `${pollName}_comparison__auto_select_entities`,
+              'data-testid': `${pollName}_extension__search_reco`,
             } as React.InputHTMLAttributes<HTMLInputElement>
           }
         />
       }
-      label={t('pollUserSettingsForm.letTournesolSuggestElements')}
+      label={t('pollUserSettingsForm.includeTournesolResultsInYouTubeSearch')}
     />
   );
 };
 
-export default AutoSelectoEntities;
+export default ExtSearchRecommendation;

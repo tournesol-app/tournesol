@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormControlLabel, Switch } from '@mui/material';
+import BooleanField from './generics/BooleanField';
 
 interface NotificationsEmailNewFeaturesProps {
   value: boolean;
@@ -15,22 +15,12 @@ const NotificationsEmailNewFeatures = ({
   const { t } = useTranslation();
 
   return (
-    <FormControlLabel
-      control={
-        <Switch
-          name="notifications_email__new_features"
-          checked={value}
-          onChange={() => onChange(!value)}
-          size="medium"
-          color="secondary"
-          inputProps={
-            {
-              'data-testid': `notifications_email__new_features`,
-            } as React.InputHTMLAttributes<HTMLInputElement>
-          }
-        />
-      }
+    <BooleanField
+      scope="general"
+      name="notifications_email__new_features"
       label={t('generalUserSettingsForm.notificationsEmailNewFeatures')}
+      value={value}
+      onChange={onChange}
     />
   );
 };

@@ -11,14 +11,6 @@
     "message": "Analyses",
     "description": "Label du bouton de menu permettant d'accéder à la page d'analyse d'une vidéo."
   },
-  "menuSearchEnabled": {
-    "message": "Recherche activée",
-    "description": "Label du bouton de menu recherche affiché lorsque la recherche est activée."
-  },
-  "menuSearchDisabled": {
-    "message": "Recherche désactivée",
-    "description": "Label du bouton de menu recherche affiché lorsque la recherche est désactivée."
-  },
   "menuPreferences": {
     "message": "Préférences"
   },
@@ -129,11 +121,11 @@
     "Description": "Inviter les utilisateur·rices à voir plus de résultats sur le site web de Tournesol."
   },
   "study2023BannerText": {
-    "message": "Le projet Tournesol est-il vraiment efficace ? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !",
+    "message": "Tournesol existe grâce aux dons de la communauté. Malheureusement nous manquons encore de soutien pour continuer à employer notre développeur pour l'année 2024. Si vous le pouvez, avec 10€ par mois, vous feriez partie des 400 personnes nécessaires pour garantir la stabilité de l'association sur le long terme. Un grand et sincère merci 🙏",
     "description": "Inviter les utilisateur·rices à participer à l'étude."
   },
   "study2023ActionButton": {
-    "message": "Participer",
+    "message": "Soutenir",
     "description": "Label du bouton d'action principal de la bannière."
   },
   "study2023JoinError": {

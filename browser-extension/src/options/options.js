@@ -59,6 +59,19 @@ const loadLegacyRecommendationsLanguages = () => {
   });
 };
 
+const loadLegacySearchState = () => {
+  return new Promise((resolve) => {
+    try {
+      chrome.storage.local.get('searchEnabled', ({ searchEnabled }) =>
+        resolve(searchEnabled)
+      );
+    } catch (reason) {
+      console.error(reason);
+      resolve();
+    }
+  });
+};
+
 /**
  * Load the user's local preferences from the extension storage.local area. In
  * case of error, display an alert in the UI.
@@ -66,15 +79,24 @@ const loadLegacyRecommendationsLanguages = () => {
 const loadLocalPreferences = async () => {
   let error = false;
 
-  const legacy = await loadLegacyRecommendationsLanguages();
+  const legacyRecoLangs = await loadLegacyRecommendationsLanguages();
+  const legacySearchReco = await loadLegacySearchState();
 
   try {
+    chrome.storage.local.get('extension__search_reco', (settings) => {
+      const searchState = settings?.extension__search_reco ?? legacySearchReco;
+
+      if (searchState) {
+        document.querySelector('input#extension__search_reco').checked = true;
+      }
+    });
+
     chrome.storage.local.get(
       'recommendations__default_languages',
       (settings) => {
         const languages =
           settings?.recommendations__default_languages ??
-          legacy?.split(',') ??
+          legacyRecoLangs?.split(',') ??
           DEFAULT_RECO_LANG;
 
         document
@@ -110,6 +132,8 @@ const saveLocalPreferences = async () => {
   const submit = document.getElementById('save-preferences');
   submit.setAttribute('disabled', '');
 
+  const extSearchReco = document.querySelector('input#extension__search_reco');
+
   const recoDefaultLanguages = [];
   document
     .querySelectorAll(
@@ -123,6 +147,7 @@ const saveLocalPreferences = async () => {
 
   try {
     await chrome.storage.local.set({
+      extension__search_reco: extSearchReco.checked,
       recommendations__default_languages: recoDefaultLanguages,
     });
   } catch (reason) {
