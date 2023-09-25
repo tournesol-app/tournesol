@@ -30,11 +30,10 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         except KeyError:
             sub_sample_size = DEFAULT_BUCKET_COUNT
 
-        qst = (
-            ContributorRating.objects.annotate_n_comparisons()
-            .annotate_collective_score()
-            .annotate_individual_score(poll=poll)
-            .prefetch_related(self.get_prefetch_entity_config())
+        # Return a sub-sample of the user's ratings, without annotations so as
+        # not to affect performance.
+        all_ratings = (
+            ContributorRating.objects
             .filter(
                 poll=poll,
                 user=self.request.user,
@@ -44,15 +43,33 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
                 expression=Ntile(sub_sample_size),
                 order_by="-criteria_scores__score"
             ))
+            .values_list("entity_id", "bucket")
         )
 
-        sub_sample = []
-        rated_entities = len(qst)
+        selected = []
+        rated_entities = len(all_ratings)
 
         for i in range(min(rated_entities, sub_sample_size)):
-            sub_sample.append(
-                random.choice([rating for rating in qst if rating.bucket == i + 1])  # nosec
+            selected.append(
+                random.choice([rating for rating in all_ratings if rating[1] == i + 1])  # nosec
             )
+
+        # Only the previously selected ratings are retrieved and annotated.
+        sub_sample = (
+            ContributorRating.objects.annotate_n_comparisons()
+            .annotate_collective_score()
+            .annotate_individual_score(poll=poll)
+            .prefetch_related(self.get_prefetch_entity_config())
+            .filter(
+                poll=poll,
+                user=self.request.user,
+                entity_id__in=[rating[0] for rating in selected],
+                criteria_scores__criteria=poll.main_criteria
+            ).order_by("-criteria_scores__score")
+        )
+
+        for idx, item in enumerate(sub_sample):
+            item.bucket = selected[idx][1]
 
         return sub_sample
 
