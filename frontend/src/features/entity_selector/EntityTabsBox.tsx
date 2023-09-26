@@ -57,6 +57,7 @@ const TabInfo = ({
   const { t } = useTranslation();
 
   const descriptionMessages: { [key: string]: React.ReactNode } = {
+    'sub-sample': t('tabsBox.subsample'),
     'recently-compared': t('tabsBox.compared'),
     recommendations: t('tabsBox.recommendations'),
     unconnected: t('tabsBox.toConnect'),

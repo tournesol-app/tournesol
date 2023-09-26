@@ -106,6 +106,7 @@
     "letTournesolSelectAVideo": "Laisser Tournesol choisir une vidéo",
     "auto": "Auto",
     "suggestions": "Suggestions",
+    "subsample": "Échantillon",
     "rateLater": "À comparer",
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
@@ -117,6 +118,7 @@
     "backButton": "Retour"
   },
   "tabsBox": {
+    "subsample": "Un extrait ordonné de votre classement personnel. Les éléments que vous recommandez le plus apparaissent en premier.",
     "compared": "Les vidéos que vous avez comparées apparaissent ici.",
     "recommendations": "Les vidéos recommandées par la communauté apparaissent ici.",
     "toConnect": "Les vidéos isolées du reste de vos comparaisons apparaissent ici. Comparez-les pour améliorer les recommandations.",
@@ -477,8 +479,8 @@
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "updatePreferences": "Mettre à jour les préférences",
-    "extensionYoutube": "Extension (YouTube)",
     "comparisonPage": "Comparaison (page)",
+    "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Liste à comparer plus tard",
     "recommendations": "Recommandations (flux)",
     "recommendationsPage": "Recommandations (page)",

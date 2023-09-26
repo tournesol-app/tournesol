@@ -102,6 +102,7 @@
     "letTournesolSelectAVideo": "Let Tournesol select a video",
     "auto": "Auto",
     "suggestions": "Suggestions",
+    "subsample": "Sub-sample",
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
@@ -113,6 +114,7 @@
     "backButton": "Back"
   },
   "tabsBox": {
+    "subsample": "An ordered sub-sample of your personal ranking. The elements you recommend the most appear first.",
     "compared": "Compared videos appear here.",
     "recommendations": "Videos recommended by the community appear here.",
     "toConnect": "Videos isolated from your other comparisons appear here. Compare them to improve the recommendations.",
@@ -469,8 +471,8 @@
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "updatePreferences": "Update preferences",
-    "extensionYoutube": "Extension (YouTube)",
     "comparisonPage": "Comparison page",
+    "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Rate-later list",
     "recommendations": "Recommendations (stream)",
     "recommendationsPage": "Recommendations page",
