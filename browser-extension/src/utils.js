@@ -16,13 +16,6 @@ export const alertUseOnLinkToYoutube = () => {
   alertOnCurrentTab('This must be used on a link to a youtube video');
 };
 
-export const alertInvalidAccessToken = () => {
-  alertOnCurrentTab(
-    'Your connection to Tournesol needs to be refreshed.\\n\\n' +
-      'Please log in using the form below.'
-  );
-};
-
 export const fetchTournesolApi = async (url, method, data) => {
   const headers = {
     Accept: 'application/json',
@@ -43,17 +36,7 @@ export const fetchTournesolApi = async (url, method, data) => {
     body['body'] = JSON.stringify(data);
   }
   return fetch(`https://api.tournesol.app/${url}`, body)
-    .then((r) => {
-      if (r.status === 401 || r.status === 403) {
-        // 401 Unauthorized with an access token means either
-        // - the token has expired
-        // - the token has been crafted
-        if (r.status === 401 && access_token) {
-          alertInvalidAccessToken();
-        }
-      }
-      return r;
-    })
+    .then((r) => r)
     .catch(console.error);
 };
 
