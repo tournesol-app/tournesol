@@ -69,65 +69,60 @@ function pick(arr: string[]): string | null {
   return arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null;
 }
 
-async function areAlreadyCompared(videoA: string, videoB: string) {
+async function areAlreadyCompared(uidA: string, uidB: string) {
   // TODO implement this method to avoid giving a video that has already been compared
-  return videoA === videoB;
+  return uidA === uidB;
 }
 
 async function retryRandomPick(
   numberRetries: number,
-  otherVideo: string | null,
-  currentVideo: string | null,
+  uid: string | null,
+  uidOther: string | null,
   videoList: string[]
 ): Promise<string | null> {
   if (numberRetries <= 0 || videoList.length == 0) return null;
-  if (otherVideo === null) return pick(videoList);
-  const newVideoId = pick(videoList);
+
+  if (uidOther === null) return pick(videoList);
+
+  const newUid = pick(videoList);
   const alreadyCompared =
-    newVideoId && (await areAlreadyCompared(otherVideo, newVideoId));
-  if (!alreadyCompared && newVideoId !== currentVideo) return newVideoId;
+    newUid && (await areAlreadyCompared(uidOther, newUid));
+
+  if (!alreadyCompared && newUid !== uid) return newUid;
+
   return await retryRandomPick(
     numberRetries - 1,
-    otherVideo,
-    currentVideo,
-    videoList.filter((v) => v !== newVideoId)
+    uid,
+    uidOther,
+    videoList.filter((v) => v !== newUid)
   );
 }
 
-export async function getVideoFromRateLaterListForComparison(
-  otherVideo: string | null,
-  currentVideo: string | null,
+export async function getUidFromRateLaterList(
+  uid: string | null,
+  uidOther: string | null,
   exclude?: string[]
 ): Promise<string | null> {
-  const rateLaterResult = await UsersService.usersMeRateLaterList({
+  const rateLaters = await UsersService.usersMeRateLaterList({
     pollName: YOUTUBE_POLL_NAME,
     limit: 99,
     offset: 0,
   });
 
   let newSuggestions =
-    rateLaterResult?.results?.map((rateL) => rateL.entity.metadata.video_id) ||
-    [];
+    rateLaters?.results?.map((rateL) => rateL.entity.uid) || [];
 
   if (exclude) {
-    newSuggestions = newSuggestions.filter(
-      (videoId) => !exclude.includes(`yt:${videoId}`)
-    );
+    newSuggestions = newSuggestions.filter((uid) => !exclude.includes(uid));
   }
 
-  const rateLaterVideoId = await retryRandomPick(
-    5,
-    otherVideo,
-    currentVideo,
-    newSuggestions
-  );
-
-  return rateLaterVideoId;
+  const newUid = await retryRandomPick(5, uid, uidOther, newSuggestions);
+  return newUid;
 }
 
-export async function getVideoFromPreviousComparisons(
-  otherVideo: string | null,
-  currentVideo: string | null,
+export async function getUidFromPreviousComparisons(
+  uid: string | null,
+  uidOther: string | null,
   exclude?: string[]
 ): Promise<string | null> {
   const comparisonCount: number =
@@ -138,37 +133,33 @@ export async function getVideoFromPreviousComparisons(
         offset: 0,
       })
     )?.count || 0;
+
   const comparisonVideoResult = await UsersService.usersMeComparisonsList({
     pollName: YOUTUBE_POLL_NAME,
     limit: 99,
     offset: Math.floor(Math.random() * comparisonCount),
   });
+
   const cl = comparisonVideoResult?.results || [];
   const comparisonVideoList = [
-    ...cl.map((v) => v.entity_a.metadata.video_id),
-    ...cl.map((v) => v.entity_b.metadata.video_id),
+    ...cl.map((v) => v.entity_a.uid),
+    ...cl.map((v) => v.entity_b.uid),
   ];
 
   let newSuggestions = comparisonVideoList.filter(
-    (videoId, index) => comparisonVideoList.indexOf(videoId) === index
+    (uid, index) => comparisonVideoList.indexOf(uid) === index
   );
+
   if (exclude) {
-    newSuggestions = newSuggestions.filter(
-      (videoId) => !exclude.includes(`yt:${videoId}`)
-    );
+    newSuggestions = newSuggestions.filter((uid) => !exclude.includes(uid));
   }
 
-  const comparisonVideoId = retryRandomPick(
-    5,
-    otherVideo,
-    currentVideo,
-    newSuggestions
-  );
-  return comparisonVideoId;
+  const newUid = retryRandomPick(5, uid, uidOther, newSuggestions);
+  return newUid;
 }
 
 /**
- * This helper function returns a video id following the strategy:
+ * This helper function returns a UID following the strategy:
  *
  *  1. Uniformily random from rate_later list (75% chance)
  *  2. Uniformily random from already rated videos (20% chance)
@@ -179,56 +170,45 @@ export async function getVideoFromPreviousComparisons(
  * The exlude parameter allows to exclude a list of UIDs before the random
  * selection.
  */
-export async function getVideoForComparison(
-  otherVideo: string | null,
-  currentVideo: string | null,
+export async function getUidForComparison(
+  uid: string | null,
+  uidOther: string | null,
   exclude?: string[]
 ): Promise<string | null> {
   const x = Math.random();
+
+  let newUid;
+
   if (x < 0.75) {
-    const videoFromRateLaterList = await getVideoFromRateLaterListForComparison(
-      otherVideo,
-      currentVideo,
-      exclude
-    );
-    if (videoFromRateLaterList) return videoFromRateLaterList;
+    newUid = await getUidFromRateLaterList(uid, uidOther, exclude);
+    if (newUid) return newUid;
   }
+
   if (x < 0.95) {
-    const videoFromComparisons = await getVideoFromPreviousComparisons(
-      otherVideo,
-      currentVideo,
-      exclude
-    );
-    if (videoFromComparisons) return videoFromComparisons;
+    const newUid = await getUidFromPreviousComparisons(uid, uidOther, exclude);
+    if (newUid) return newUid;
   }
+
   const videoResult = await PollsService.pollsRecommendationsList({
     name: 'videos',
     limit: 100,
     // Increase the diversity of recommended videos. Changing the `offset`
-    // allows us to not increase the `limit`, and this way limits the size of
-    // the JSON downloaded. We may want to adapt/remove this `offset` the day
-    // we will filter the results according to the user preferred languages.
+    // allows us to not increase the range of suggested videos, without
+    // increasing size of the downloaded JSON. We may want to adapt/remove
+    // this `offset` the day we will filter the results according to the user
+    // preferred languages.
     offset: getPseudoRandomInt(10) * 10,
   });
 
-  let newSuggestions = (videoResult?.results || []).map((v) =>
-    idFromUid(v.uid)
-  );
+  let newSuggestions = (videoResult?.results || []).map((v) => v.uid);
 
   if (exclude) {
-    newSuggestions = newSuggestions.filter(
-      (videoId) => !exclude.includes(`yt:${videoId}`)
-    );
+    newSuggestions = newSuggestions.filter((uid) => !exclude.includes(uid));
   }
 
-  const videoId = await retryRandomPick(
-    5,
-    otherVideo,
-    currentVideo,
-    newSuggestions
-  );
-  if (videoId) return videoId;
+  newUid = await retryRandomPick(5, uid, uidOther, newSuggestions);
 
+  if (newUid) return newUid;
   return newSuggestions ? pick(newSuggestions) : null;
 }
 
