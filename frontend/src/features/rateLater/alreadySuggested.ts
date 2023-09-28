@@ -4,11 +4,8 @@ export const ALREADY_SUGGESTED: { [key: string]: string[] } = {};
 
 const initSuggested = (poll: string) => (ALREADY_SUGGESTED[poll] = []);
 
-export const clearSuggested = (poll: string) =>
-  (ALREADY_SUGGESTED[poll].length = 0);
-
 export const clearAllSuggested = () => {
-  Object.keys(ALREADY_SUGGESTED).forEach((key) => clearSuggested(key));
+  Object.keys(ALREADY_SUGGESTED).forEach((key) => initSuggested(key));
 };
 
 export const dontSuggestAnymore = (poll: string, uid: string) => {
@@ -17,7 +14,7 @@ export const dontSuggestAnymore = (poll: string, uid: string) => {
   }
 
   if (ALREADY_SUGGESTED[poll].length >= MAX_LENGTH) {
-    clearSuggested(poll);
+    initSuggested(poll);
   }
 
   if (!ALREADY_SUGGESTED[poll].includes(uid)) {
