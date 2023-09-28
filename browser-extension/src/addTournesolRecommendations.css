@@ -306,8 +306,8 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 
 .time_span {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
+  bottom: 3px;
+  right: 3px;
 
   margin: 4px;
   padding: 3px 4px;
