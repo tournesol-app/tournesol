@@ -92,9 +92,6 @@ const VideoRatingsPage = () => {
     loadData();
   }, [loadData]);
 
-  const entities = (ratings.results || []).map(
-    (rating: ContributorRating) => rating.entity
-  );
   const uidToRating = Object.fromEntries(
     (ratings.results || []).map((rating) => [rating.entity.uid, rating])
   );
@@ -141,7 +138,7 @@ const VideoRatingsPage = () => {
         )}
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
-            entities={entities}
+            entities={ratings.results}
             settings={[PublicStatusAction]}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
           />

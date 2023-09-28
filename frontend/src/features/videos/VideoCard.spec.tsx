@@ -19,24 +19,33 @@ const renderVideoCard = (video: Recommendation) =>
 describe('VideoCard content', () => {
   it('shows video metadata without criterias', () => {
     const video: Recommendation = {
-      uid: 'yt:xSqqXN0D4fY',
-      type: TypeEnum.VIDEO,
-      metadata: {
-        name: 'Video title',
-        description: 'Video description',
-        views: 154988,
-        uploader: 'Channel name',
-        duration: 120,
-        publication_date: '2021-03-21',
-        language: 'fr',
-        video_id: 'xSqqXN0D4fY',
+      entity: {
+        uid: 'yt:xSqqXN0D4fY',
+        type: TypeEnum.VIDEO,
+        metadata: {
+          name: 'Video title',
+          description: 'Video description',
+          views: 154988,
+          uploader: 'Channel name',
+          duration: 120,
+          publication_date: '2021-03-21',
+          language: 'fr',
+          video_id: 'xSqqXN0D4fY',
+        },
       },
-      n_contributors: 4,
-      n_comparisons: 9,
-      tournesol_score: 0.0,
-      total_score: 0.0,
-      criteria_scores: [],
-      unsafe: null,
+      collective_rating: {
+        n_contributors: 4,
+        n_comparisons: 9,
+        tournesol_score: 0.0,
+        criteria_scores: [],
+        unsafe: {
+          status: false,
+          reasons: [],
+        },
+      },
+      recommendation_metadata: {
+        total_score: 0.0,
+      },
     };
     renderVideoCard(video);
 
@@ -56,29 +65,38 @@ describe('VideoCard content', () => {
 
   it('shows video card with single criteria', () => {
     const video: Recommendation = {
-      uid: 'yt:xSqqXN0D4fY',
-      type: TypeEnum.VIDEO,
-      metadata: {
-        name: 'Video title',
-        description: 'Video description',
-        views: 154988,
-        uploader: 'Channel name',
-        duration: 4200,
-        video_id: 'xSqqXN0D4fY',
-        publication_date: '2021-03-21',
-        language: 'fr',
-      },
-      n_contributors: 4,
-      n_comparisons: 9,
-      tournesol_score: 4,
-      total_score: 4,
-      criteria_scores: [
-        {
-          criteria: 'largely_recommended',
-          score: 0.4,
+      entity: {
+        uid: 'yt:xSqqXN0D4fY',
+        type: TypeEnum.VIDEO,
+        metadata: {
+          name: 'Video title',
+          description: 'Video description',
+          views: 154988,
+          uploader: 'Channel name',
+          duration: 4200,
+          video_id: 'xSqqXN0D4fY',
+          publication_date: '2021-03-21',
+          language: 'fr',
         },
-      ],
-      unsafe: null,
+      },
+      collective_rating: {
+        n_contributors: 4,
+        n_comparisons: 9,
+        tournesol_score: 4,
+        criteria_scores: [
+          {
+            criteria: 'largely_recommended',
+            score: 0.4,
+          },
+        ],
+        unsafe: {
+          status: false,
+          reasons: [],
+        },
+      },
+      recommendation_metadata: {
+        total_score: 4,
+      },
     };
     renderVideoCard(video);
 
@@ -101,33 +119,42 @@ describe('VideoCard content', () => {
 
   it('shows video card with multiple criteria', () => {
     const video: Recommendation = {
-      uid: 'yt:xSqqXN0D4fY',
-      type: TypeEnum.VIDEO,
-      metadata: {
-        name: 'Video title',
-        description: 'Video description',
-        views: 154988,
-        uploader: 'Channel name',
-        duration: 120,
-        video_id: 'xSqqXN0D4fY',
-        publication_date: '2021-03-21',
-        language: 'fr',
+      entity: {
+        uid: 'yt:xSqqXN0D4fY',
+        type: TypeEnum.VIDEO,
+        metadata: {
+          name: 'Video title',
+          description: 'Video description',
+          views: 154988,
+          uploader: 'Channel name',
+          duration: 120,
+          video_id: 'xSqqXN0D4fY',
+          publication_date: '2021-03-21',
+          language: 'fr',
+        },
       },
-      n_contributors: 4,
-      n_comparisons: 9,
-      tournesol_score: 17,
-      total_score: 17,
-      criteria_scores: [
-        {
-          criteria: 'engaging',
-          score: 0.9,
+      collective_rating: {
+        n_contributors: 4,
+        n_comparisons: 9,
+        tournesol_score: 17,
+        criteria_scores: [
+          {
+            criteria: 'engaging',
+            score: 0.9,
+          },
+          {
+            criteria: 'pedagogy',
+            score: 0.8,
+          },
+        ],
+        unsafe: {
+          status: false,
+          reasons: [],
         },
-        {
-          criteria: 'pedagogy',
-          score: 0.8,
-        },
-      ],
-      unsafe: null,
+      },
+      recommendation_metadata: {
+        total_score: 17,
+      },
     };
     renderVideoCard(video);
 
@@ -142,24 +169,33 @@ describe('VideoCard content', () => {
 
   it('shows video metadata with null Tournesol score', () => {
     const video: Recommendation = {
-      uid: 'yt:xSqqXN0D4fY',
-      type: TypeEnum.VIDEO,
-      metadata: {
-        name: 'Video title',
-        description: 'Video description',
-        views: 154988,
-        uploader: 'Channel name',
-        duration: 120,
-        publication_date: '2021-03-21',
-        language: 'fr',
-        video_id: 'xSqqXN0D4fY',
+      entity: {
+        uid: 'yt:xSqqXN0D4fY',
+        type: TypeEnum.VIDEO,
+        metadata: {
+          name: 'Video title',
+          description: 'Video description',
+          views: 154988,
+          uploader: 'Channel name',
+          duration: 120,
+          publication_date: '2021-03-21',
+          language: 'fr',
+          video_id: 'xSqqXN0D4fY',
+        },
       },
-      n_contributors: 4,
-      n_comparisons: 9,
-      tournesol_score: null,
-      total_score: 0,
-      criteria_scores: [],
-      unsafe: null,
+      collective_rating: {
+        n_contributors: 4,
+        n_comparisons: 9,
+        tournesol_score: null,
+        criteria_scores: [],
+        unsafe: {
+          status: false,
+          reasons: [],
+        },
+      },
+      recommendation_metadata: {
+        total_score: 0,
+      },
     };
     renderVideoCard(video);
 

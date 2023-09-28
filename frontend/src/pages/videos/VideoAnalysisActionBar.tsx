@@ -32,7 +32,7 @@ const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
     setRateLaterInProgress(true);
 
     try {
-      await addToRateLaterList(pollName, video.uid);
+      await addToRateLaterList(pollName, video.entity.uid);
       showSuccessAlert(t('actions.videoAddedToRateLaterList'));
     } catch (error) {
       showInfoAlert(t('actions.videoAlreadyInRateLaterList'));
@@ -81,7 +81,7 @@ const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
         variant="contained"
         startIcon={<Compare />}
         component={RouterLink}
-        to={`${baseUrl}/comparison?uidA=${video.uid}`}
+        to={`${baseUrl}/comparison?uidA=${video.entity.uid}`}
       >
         {t('entityAnalysisPage.generic.compare')}
       </Button>

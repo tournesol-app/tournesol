@@ -15,10 +15,9 @@ import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
 import { useLoginState } from 'src/hooks';
-import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
-import { OrderedDialogs } from 'src/utils/types';
+import { EntityResult, OrderedDialogs } from 'src/utils/types';
 import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
 import { isMobileDevice } from 'src/utils/extension';
 import { scrollToTop } from 'src/utils/ui';
@@ -44,7 +43,7 @@ interface Props {
   generateInitial?: boolean;
   dialogs?: OrderedDialogs;
   dialogAdditionalActions?: { [key: string]: { action: React.ReactNode } };
-  getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
+  getAlternatives?: () => Promise<Array<EntityResult>>;
   // A magic flag that will enable additional behaviours specific to
   // tutorials, like  the anonymous tracking by our web analytics.
   isTutorial?: boolean;
@@ -112,9 +111,7 @@ const ComparisonSeries = ({
   // tell the `Comparison` to refresh the left entity, or the right one
   const [refreshLeft, setRefreshLeft] = useState(false);
   // a limited list of entities that can be used to suggest new comparisons
-  const [alternatives, setAlternatives] = useState<
-    Array<Entity | Recommendation>
-  >([]);
+  const [alternatives, setAlternatives] = useState<Array<EntityResult>>([]);
   // an array of already made comparisons, allowing to not suggest two times the
   // same comparison to a user, formatted like this ['uidA/uidB', 'uidA/uidC']
   const [comparisonsMade, setComparisonsMade] = useState(initComparisonsMade);
@@ -142,7 +139,7 @@ const ComparisonSeries = ({
     if (skipped) return;
 
     async function getAlternativesAsync(
-      getAlts: () => Promise<Array<Entity | Recommendation>>
+      getAlts: () => Promise<Array<EntityResult>>
     ) {
       const alts = await getAlts();
       if (alts.length > 0) {
@@ -226,10 +223,8 @@ const ComparisonSeries = ({
 
     let uid = '';
     if (alternatives.length > 0) {
-      uid = selectRandomEntity(
-        alternatives,
-        alreadyCompared.concat([keptUid])
-      ).uid;
+      uid = selectRandomEntity(alternatives, alreadyCompared.concat([keptUid]))
+        .entity.uid;
     }
 
     const nextSuggestion = { uid: uid, refreshLeft: refreshLeft };
@@ -272,7 +267,7 @@ const ComparisonSeries = ({
    * @param uidB The current value of the `uidB` URL parameter
    */
   const genInitialComparisonParams = (
-    from: Array<Entity | Recommendation>,
+    from: Array<EntityResult>,
     comparisons: Array<string>,
     uidA: string,
     uidB: string
@@ -287,13 +282,13 @@ const ComparisonSeries = ({
 
     if (uidA === '') {
       if (uidB === '') {
-        newUidA = selectRandomEntity(from, []).uid;
+        newUidA = selectRandomEntity(from, []).entity.uid;
       } else {
         // if not `uidA` and `uidB`, select an uid A that hasn't been compared with B
         newUidA = selectRandomEntity(
           from,
           alreadyComparedWith(uidB, comparisons)
-        ).uid;
+        ).entity.uid;
       }
     } else {
       newUidA = uidA;
@@ -302,7 +297,8 @@ const ComparisonSeries = ({
 
     if (uidB === '') {
       const comparedWithA = alreadyComparedWith(newUidA, comparisons);
-      newUidB = selectRandomEntity(from, comparedWithA.concat([newUidA])).uid;
+      newUidB = selectRandomEntity(from, comparedWithA.concat([newUidA])).entity
+        .uid;
     } else {
       newUidB = uidB;
     }

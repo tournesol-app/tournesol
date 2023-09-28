@@ -18,7 +18,11 @@ import {
 } from '@mui/icons-material';
 
 import { TypeEnum } from 'src/services/openapi';
-import { ActionList, JSONValue, RelatedEntityObject } from 'src/utils/types';
+import {
+  ActionList,
+  EntityResult as EntityResult,
+  JSONValue,
+} from 'src/utils/types';
 
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
@@ -27,14 +31,14 @@ import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import { entityCardMainSx } from './style';
 
 const EntityCard = ({
-  entity,
+  result,
   actions = [],
   settings = [],
   compact = false,
   entityTypeConfig,
   isAvailable = true,
 }: {
-  entity: RelatedEntityObject;
+  result: EntityResult;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
@@ -44,6 +48,7 @@ const EntityCard = ({
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const entity = result.entity;
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
@@ -57,10 +62,10 @@ const EntityCard = ({
   }, [isAvailable]);
 
   const displayEntityCardScores = () => {
-    if ('tournesol_score' in entity && !compact) {
+    if ('collective_rating' in result && !compact) {
       return (
         <EntityCardScores
-          entity={entity}
+          result={result}
           showTournesolScore={entity.type !== TypeEnum.CANDIDATE_FR_2022}
           showTotalScore={entity.type === TypeEnum.CANDIDATE_FR_2022}
         />
@@ -196,12 +201,13 @@ const EntityCard = ({
 };
 
 export const RowEntityCard = ({
-  entity,
+  result,
   withLink = false,
 }: {
-  entity: RelatedEntityObject;
+  result: EntityResult;
   withLink?: boolean;
 }) => {
+  const entity = result.entity;
   return (
     <Box
       display="flex"

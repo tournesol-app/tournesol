@@ -72,7 +72,8 @@ function VideoCard({
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
 
-  const videoId = video.metadata.video_id;
+  const entity = video.entity;
+  const videoId = entity.metadata.video_id;
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
@@ -111,11 +112,11 @@ function VideoCard({
               to={`${baseUrl}/entities/${UID_YT_NAMESPACE}${videoId}`}
               className="full-width"
             >
-              <DurationWrapper duration={video.metadata.duration || undefined}>
+              <DurationWrapper duration={entity.metadata.duration || undefined}>
                 <img
                   className="full-width entity-thumbnail"
                   src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
-                  alt={video.metadata.name}
+                  alt={entity.metadata.name}
                 />
               </DurationWrapper>
             </RouterLink>
@@ -134,16 +135,16 @@ function VideoCard({
         direction="column"
       >
         <EntityCardTitle
-          uid={video.uid}
-          title={video.metadata.name}
+          uid={entity.uid}
+          title={entity.metadata.name}
           compact={compact}
         />
         <VideoMetadata
-          views={video.metadata.views}
-          publicationDate={video.metadata.publication_date}
-          uploader={video.metadata.uploader}
+          views={entity.metadata.views}
+          publicationDate={entity.metadata.publication_date}
+          uploader={entity.metadata.uploader}
         />
-        {!compact && <EntityCardScores entity={video} />}
+        {!compact && <EntityCardScores result={video} />}
         {personalScore !== undefined &&
           t('video.personalScore', { score: personalScore.toFixed(0) })}
       </Grid>
@@ -163,7 +164,7 @@ function VideoCard({
       >
         {actions.map((Action, index) =>
           typeof Action === 'function' ? (
-            <Action key={index} uid={video.uid} />
+            <Action key={index} uid={entity.uid} />
           ) : (
             Action
           )
@@ -193,7 +194,7 @@ function VideoCard({
             >
               {settings.map((Action, index) =>
                 typeof Action === 'function' ? (
-                  <Action key={index} uid={video.uid} />
+                  <Action key={index} uid={entity.uid} />
                 ) : (
                   Action
                 )

@@ -95,12 +95,12 @@ class ContributorRecommendationsApiTestCase(TestCase):
 
         results = response.data["results"]
         for entity in results:
-            self.assertEqual(entity["is_public"], True)
+            self.assertEqual(entity["individual_rating"]["is_public"], True)
 
         # The collective metadata `n_comparisons` and `n_contributors` must
         # be present in the response of the public personal reco. endpoint.
-        self.assertEqual(results[0]["n_comparisons"], 0)
-        self.assertEqual(results[0]["n_contributors"], 0)
+        self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 0)
+        self.assertEqual(results[0]["collective_rating"]["n_contributors"], 0)
 
         response = self.client.get(
             f"/users/{self.user2.username}/recommendations/{self.poll.name}",
@@ -116,8 +116,8 @@ class ContributorRecommendationsApiTestCase(TestCase):
 
         # The collective metadata `n_comparisons` and `n_contributors` must
         # be present in the response of the public personal reco. endpoint.
-        self.assertEqual(results[0]["n_comparisons"], 0)
-        self.assertEqual(results[0]["n_contributors"], 0)
+        self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 0)
+        self.assertEqual(results[0]["collective_rating"]["n_contributors"], 0)
 
     def test_recommendations_privacy_anon(self):
         """
@@ -133,7 +133,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.data["count"], 1)
 
         for entity in response.data["results"]:
-            self.assertEqual(entity["is_public"], True)
+            self.assertEqual(entity["individual_rating"]["is_public"], True)
 
         response = self.client.get(
             f"/users/{self.user2.username}/recommendations/{self.poll.name}",
@@ -144,7 +144,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.data["count"], 2)
 
         for entity in response.data["results"]:
-            self.assertEqual(entity["is_public"], True)
+            self.assertEqual(entity["individual_rating"]["is_public"], True)
 
     def test_recommendations_are_filtered_by_poll(self):
         new_poll = PollWithCriteriasFactory()
@@ -244,16 +244,17 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            len(response.data["results"][0]["criteria_scores"]),
+            len(response.data["results"][0]["individual_rating"]["criteria_scores"]),
             1,
         )
         self.assertEqual(
-            response.data["results"][0]["criteria_scores"][0]["score"],
+            response.data["results"][0]["individual_rating"]["criteria_scores"][0]["score"],
             criteria_score,
         )
         
         self.assertEqual(
-            response.data["results"][0]["total_score"], criteria_score * weight
+            response.data["results"][0]["recommendation_metadata"]["total_score"],
+            criteria_score * weight
         )
 
         # user2's score on this entity must not affect user1's recommendations
@@ -274,16 +275,17 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            len(response.data["results"][0]["criteria_scores"]),
+            len(response.data["results"][0]["individual_rating"]["criteria_scores"]),
             1,
         )
         # It shouldn't have changed, other users' ratings are ignored
         self.assertEqual(
-            response.data["results"][0]["criteria_scores"][0]["score"],
+            response.data["results"][0]["individual_rating"]["criteria_scores"][0]["score"],
             criteria_score,
         )
         self.assertEqual(
-            response.data["results"][0]["total_score"], criteria_score * weight
+            response.data["results"][0]["recommendation_metadata"]["total_score"],
+            criteria_score * weight
         )
 
     def test_recommendations_are_sorted_by_descending_total_score(self):
@@ -307,4 +309,10 @@ class ContributorRecommendationsApiTestCase(TestCase):
         expected_results = sorted(scores, reverse=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], len(expected_results))
-        self.assertEqual([e['criteria_scores'][0]["score"] for e in response.data["results"]], expected_results)
+        self.assertEqual(
+            [
+                e["individual_rating"]['criteria_scores'][0]["score"]
+                for e in response.data["results"]
+            ],
+            expected_results
+        )
