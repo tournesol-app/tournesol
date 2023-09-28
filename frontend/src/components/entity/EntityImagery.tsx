@@ -6,7 +6,7 @@ import { Avatar, Box, useTheme } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
-import { JSONValue, RelatedEntityObject } from 'src/utils/types';
+import { JSONValue, EntityObject } from 'src/utils/types';
 import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
 
 export const DurationWrapper = React.forwardRef(function DurationWrapper(
@@ -86,7 +86,7 @@ const EntityImagery = ({
   compact = false,
   config = {},
 }: {
-  entity: RelatedEntityObject;
+  entity: EntityObject;
   compact?: boolean;
   config?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
 }) => {

@@ -2,19 +2,14 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import BooleanField, CharField, DateTimeField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from tournesol.models import ContributorRating, ContributorRatingCriteriaScore
+from tournesol.models import ContributorRating
+from tournesol.serializers.criteria_score import ContributorCriteriaScoreSerializer
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer, RelatedEntitySerializer
 from tournesol.serializers.poll import CollectiveRatingSerializer, IndividualRatingSerializer
 
 
-class ContributorCriteriaScore(ModelSerializer):
-    class Meta:
-        model = ContributorRatingCriteriaScore
-        fields = ["criteria", "score", "uncertainty"]
-
-
 class ExtendedInvididualRatingSerializer(IndividualRatingSerializer):
-    criteria_scores = ContributorCriteriaScore(many=True, read_only=True)
+    criteria_scores = ContributorCriteriaScoreSerializer(many=True, read_only=True)
     last_compared_at = DateTimeField(read_only=True, allow_null=True)
 
     class Meta:

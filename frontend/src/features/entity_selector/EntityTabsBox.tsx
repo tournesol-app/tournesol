@@ -10,7 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { RelatedEntityObject } from 'src/utils/types';
+import { EntityResult } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import EntityTextInput from './EntityTextInput';
@@ -31,7 +31,7 @@ interface Props {
 export interface EntitiesTab {
   name: string;
   label: string;
-  fetch: () => Promise<RelatedEntityObject[]>;
+  fetch: () => Promise<EntityResult[]>;
   disabled?: boolean;
 }
 
@@ -106,7 +106,7 @@ const EntityTabsBox = ({
 
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
-  const [options, setOptions] = useState<RelatedEntityObject[]>([]);
+  const [options, setOptions] = useState<EntityResult[]>([]);
   const [isDescriptionVisible, setIsDescriptionVisible] =
     useState(displayDescription);
 
@@ -226,12 +226,14 @@ const EntityTabsBox = ({
           <TabError message={t('tabsBox.errorOnLoading')} />
         ) : options.length > 0 ? (
           <ul>
-            {options.map((entity) => (
+            {options.map((res) => (
               <li
-                key={entity.uid}
-                onClick={onSelectEntity && (() => onSelectEntity(entity.uid))}
+                key={res.entity.uid}
+                onClick={
+                  onSelectEntity && (() => onSelectEntity(res.entity.uid))
+                }
               >
-                <RowEntityCard entity={entity} withLink={withLink} />
+                <RowEntityCard result={res} withLink={withLink} />
               </li>
             ))}
           </ul>
