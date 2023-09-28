@@ -99,6 +99,9 @@ describe('Comparison page', () => {
     cy.get("[data-testid=paste-video-url] input")
       .focus()
       .invoke("val", value)
+      // For some reason typing an additional character is needed for all event handlers
+      // to get the change. But a whitespace would be trimmed and ignored by the EntitySelector,
+      // so we put an arbitrary character and delete it right away.
       .type("_{backspace}", {delay: 0});
   }
 
