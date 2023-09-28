@@ -86,7 +86,7 @@ const RecommendationsSubset = ({
           </Typography>
         ) : (
           <Paper sx={{ p: 1, bgcolor: 'background.primary' }}>
-            <Grid container gap={1} flexDirection="column">
+            <Grid container gap={1} direction="column" wrap="nowrap">
               {entities.map((reco) => (
                 <Grid
                   item
