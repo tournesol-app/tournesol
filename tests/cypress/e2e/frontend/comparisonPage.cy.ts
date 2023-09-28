@@ -95,6 +95,13 @@ describe('Comparison page', () => {
       .should('have.length', 2);
   }
 
+  const pasteInVideoInput = (value: string) => {
+    cy.get("[data-testid=paste-video-url] input")
+      .focus()
+      .invoke("val", value)
+      .type("_{backspace}", {delay: 0});
+  }
+
   describe('authorization', () => {
     it('is not accessible by anonymous users', () => {
       cy.visit('/comparison');
@@ -133,7 +140,8 @@ describe('Comparison page', () => {
   });
 
   describe('video selectors', () => {
-    const videoAUrl = 'https://www.youtube.com/watch?v=lYXQvHhfKuM';
+    const videoAId = "lYXQvHhfKuM";
+    const videoAUrl = `https://www.youtube.com/watch?v=${videoAId}`;
 
     it('support pasting YouTube URLs', () => {
       cy.visit('/comparison');
@@ -145,8 +153,7 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoAUrl, {delay: 0});
+      pasteInVideoInput(videoAUrl);
 
       // wait for the auto filled video to be replaced
       cy.contains('5 IA surpuissantes');
@@ -163,7 +170,7 @@ describe('Comparison page', () => {
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url] input[type=text]")
-        .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
+        .should('have.attr', 'value', `yt:${videoAId}`);
     });
 
     it('support pasting YouTube video ID', () => {
@@ -179,8 +186,7 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoAUrl.split('?v=')[1], {delay: 0});
+      pasteInVideoInput(videoAId);
 
       // wait for the auto filled video to be replaced
       cy.contains('5 IA surpuissantes');
@@ -197,7 +203,7 @@ describe('Comparison page', () => {
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
       cy.get("[data-testid=paste-video-url] input[type=text]")
-        .should('have.attr', 'value', `yt:${videoAUrl.split('?v=')[1]}`);
+        .should('have.attr', 'value', `yt:${videoAId}`);
     });
   });
 
@@ -244,12 +250,10 @@ describe('Comparison page', () => {
 
       // add one video, and ask for a second one
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoAId, {delay: 0});
+      pasteInVideoInput(videoAId);
 
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoBId, {delay: 0});
+      pasteInVideoInput(videoBId);
 
       // only one criteria must be visible by default
       cy.contains('add optional criteria', {matchCase: false})
@@ -281,11 +285,9 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoAId, {delay: 0});
+      pasteInVideoInput(videoAId);
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoBId, {delay: 0});
+      pasteInVideoInput(videoBId);
 
       cy.contains('add optional criteria', {matchCase: false}).click();
 
@@ -318,11 +320,9 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoAId, {delay: 0});
+      pasteInVideoInput(videoAId);
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      cy.get("[data-testid=paste-video-url]")
-        .type(videoAId, {delay: 0});
+      pasteInVideoInput(videoAId);
 
       cy.contains('These two items are very similar', {matchCase: false})
           .should('be.visible');
