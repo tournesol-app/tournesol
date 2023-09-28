@@ -5,7 +5,7 @@ After=docker.service
 
 [Service]
 WorkingDirectory=/opt/plausible_analytics
-Environment="PLAUSIBLE_ANALYTICS_DOCKER_VERSION=v1.5.1"
+Environment="PLAUSIBLE_ANALYTICS_DOCKER_VERSION=v2.0.0"
 ExecStart=/usr/bin/docker compose up --remove-orphans
 ExecStop=/usr/bin/docker compose down
 # sec
