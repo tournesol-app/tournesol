@@ -15,9 +15,10 @@ interface Props {
   entity: Recommendation;
 }
 
-const CandidateAnalysisPage = ({ entity }: Props) => {
+const CandidateAnalysisPage = ({ entity: reco }: Props) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
+  const entity = reco.entity;
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
@@ -48,7 +49,7 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
                   compact={false}
                 />
                 <EntityCardScores
-                  entity={entity}
+                  result={reco}
                   showTournesolScore={
                     entity.type !== TypeEnum.CANDIDATE_FR_2022
                   }
@@ -72,7 +73,7 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
                 </Typography>
               </Box>
               <Box p={1}>
-                <CriteriaBarChart entity={entity} />
+                <CriteriaBarChart reco={reco} />
               </Box>
             </Paper>
           </Grid>

@@ -41,14 +41,15 @@ interface ScoreByCriterion {
 
 const useCriteriaChartData = ({
   video,
-  entity,
+  reco,
 }: {
   video?: VideoSerializerWithCriteria;
-  entity?: Recommendation;
+  reco?: Recommendation;
 }): UseCriteriaChartDataValue => {
   const criteriaScores: Array<EntityCriteriaScore> = useMemo(
-    () => video?.criteria_scores || entity?.criteria_scores || [],
-    [video, entity]
+    () =>
+      video?.criteria_scores || reco?.collective_rating?.criteria_scores || [],
+    [video, reco]
   );
   const shouldDisplayChart = criteriaScores && criteriaScores.length > 0;
 

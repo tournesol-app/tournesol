@@ -86,17 +86,17 @@ const RecommendationsSubset = ({
           </Typography>
         ) : (
           <Paper sx={{ p: 1, bgcolor: 'background.primary' }}>
-            <Grid container gap={1} flexDirection="column">
-              {entities.map((entity) => (
+            <Grid container gap={1} direction="column" wrap="nowrap">
+              {entities.map((reco) => (
                 <Grid
                   item
-                  key={entity.uid}
+                  key={reco.entity.uid}
                   // Allow the RecommendationsSubset's parent to overwrite the
                   // text color without impacting the EntityCard.
                   sx={{ color: theme.palette.text.primary }}
                 >
                   <EntityCard
-                    entity={entity}
+                    result={reco}
                     compact={false}
                     entityTypeConfig={{ video: { displayPlayer: false } }}
                   />

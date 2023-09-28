@@ -128,11 +128,18 @@ class PollsRecommendationsTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 3)
+
+        # Legacy fields
         self.assertEqual(results[0]["tournesol_score"], 44.0)
         self.assertEqual(results[1]["tournesol_score"], 33.0)
         self.assertEqual(results[2]["tournesol_score"], 22.0)
-
         self.assertEqual(results[0]["type"], "video")
+
+        # New fields
+        self.assertEqual(results[0]["collective_rating"]["tournesol_score"], 44.0)
+        self.assertEqual(results[1]["collective_rating"]["tournesol_score"], 33.0)
+        self.assertEqual(results[2]["collective_rating"]["tournesol_score"], 22.0)
+        self.assertEqual(results[0]["entity"]["type"], "video")
 
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")
@@ -152,13 +159,13 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 4)
         self.assertEqual(
-            response.data["results"][0]["unsafe"], {
+            response.data["results"][0]["collective_rating"]["unsafe"], {
                 "status": False,
                 "reasons": [],
             }
         )
         self.assertEqual(
-            response.data["results"][3]["unsafe"], {
+            response.data["results"][3]["collective_rating"]["unsafe"], {
                 "status": True,
                 "reasons": ["insufficient_tournesol_score"],
             }
@@ -177,7 +184,7 @@ class PollsRecommendationsTestCase(TestCase):
         # Default weights: all criterias contribute equally
         resp = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(
-            [r["uid"] for r in resp.data["results"]],
+            [r["entity"]["uid"] for r in resp.data["results"]],
             [self.video_4.uid, self.video_3.uid, self.video_2.uid],
         )
 
@@ -186,7 +193,7 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(
             # Only verifying the first two videos of the response because other videos
             # have only criteria scores for reliability
-            [r["uid"] for r in resp.data["results"]][:2],
+            [r["entity"]["uid"] for r in resp.data["results"]][:2],
             [self.video_4.uid, self.video_3.uid],
         )
 
@@ -194,20 +201,20 @@ class PollsRecommendationsTestCase(TestCase):
         resp = self.client.get(
             "/polls/videos/recommendations/?weights[reliability]=0&weights[importance]=0"
         )
-        self.assertEqual(len([r["uid"] for r in resp.data["results"]]), 3)
+        self.assertEqual(len(resp.data["results"]), 3)
 
         # Disable both reliability and importance and specify unsafe
         resp = self.client.get(
             "/polls/videos/recommendations/?weights[reliability]=0&weights[importance]=0&unsafe=true"
         )
-        self.assertEqual(len([r["uid"] for r in resp.data["results"]]), 4)
+        self.assertEqual(len(resp.data["results"]), 4)
 
         # More weight to reliability should change the order
         resp = self.client.get(
             "/polls/videos/recommendations/?weights[reliability]=100&weights[importance]=10"
         )
         self.assertEqual(
-            [r["uid"] for r in resp.data["results"]],
+            [r["entity"]["uid"] for r in resp.data["results"]],
             [self.video_2.uid, self.video_4.uid, self.video_3.uid],
         )
 
@@ -229,7 +236,7 @@ class PollsRecommendationsTestCase(TestCase):
             "/polls/videos/recommendations/?metadata[uploader]=_test_uploader_3"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp.data["results"][0]["uid"], self.video_4.uid)
+        self.assertEqual(resp.data["results"][0]["entity"]["uid"], self.video_4.uid)
 
         # filtering by an unknown single value metadata must return an empty list
         resp = self.client.get(
@@ -246,7 +253,7 @@ class PollsRecommendationsTestCase(TestCase):
         """
         resp = self.client.get("/polls/videos/recommendations/?metadata[language]=fr")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp.data["results"][0]["uid"], self.video_2.uid)
+        self.assertEqual(resp.data["results"][0]["entity"]["uid"], self.video_2.uid)
 
         resp = self.client.get(
             "/polls/videos/recommendations/?metadata[language]=fr"
@@ -255,7 +262,7 @@ class PollsRecommendationsTestCase(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            [video["uid"] for video in resp.data["results"]],
+            [video["entity"]["uid"] for video in resp.data["results"]],
             [self.video_4.uid, self.video_3.uid, self.video_2.uid],
         )
 
@@ -311,7 +318,7 @@ class PollsRecommendationsTestCase(TestCase):
         results = response.data["results"]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["metadata"]["duration"], 10)
+        self.assertEqual(results[0]["entity"]["metadata"]["duration"], 10)
 
     def test_anon_can_list_videos_filtered_by_duration_lt(self):
         response = self.client.get(
@@ -332,8 +339,8 @@ class PollsRecommendationsTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 2)
-        self.assertEqual(results[0]["metadata"]["duration"], 120)
-        self.assertEqual(results[1]["metadata"]["duration"], 10)
+        self.assertEqual(results[0]["entity"]["metadata"]["duration"], 120)
+        self.assertEqual(results[1]["entity"]["metadata"]["duration"], 10)
 
     def test_anon_can_list_videos_filtered_by_duration_gt(self):
         response = self.client.get(
@@ -344,7 +351,7 @@ class PollsRecommendationsTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["metadata"]["duration"], 240)
+        self.assertEqual(results[0]["entity"]["metadata"]["duration"], 240)
 
         response = self.client.get(
             "/polls/videos/recommendations/?metadata[duration:gte:int]=120"
@@ -354,8 +361,8 @@ class PollsRecommendationsTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 2)
-        self.assertEqual(results[0]["metadata"]["duration"], 240)
-        self.assertEqual(results[1]["metadata"]["duration"], 120)
+        self.assertEqual(results[0]["entity"]["metadata"]["duration"], 240)
+        self.assertEqual(results[1]["entity"]["metadata"]["duration"], 120)
 
     def test_anon_can_list_videos_filtered_by_duration_illegal(self):
         """
@@ -382,12 +389,12 @@ class PollsRecommendationsTestCase(TestCase):
         results = response.data["results"]
         self.assertEqual(len(results), 3)
 
-        self.assertEqual(results[0]["uid"], self.video_3.uid)
-        self.assertEqual(results[0]["total_score"], 5.0)
-        self.assertEqual(results[1]["uid"], self.video_4.uid)
-        self.assertEqual(results[1]["total_score"], 4.0)
-        self.assertEqual(results[2]["uid"], self.video_2.uid)
-        self.assertEqual(results[2]["total_score"], -2.0)
+        self.assertEqual(results[0]["entity"]["uid"], self.video_3.uid)
+        self.assertEqual(results[0]["recommendation_metadata"]["total_score"], 5.0)
+        self.assertEqual(results[1]["entity"]["uid"], self.video_4.uid)
+        self.assertEqual(results[1]["recommendation_metadata"]["total_score"], 4.0)
+        self.assertEqual(results[2]["entity"]["uid"], self.video_2.uid)
+        self.assertEqual(results[2]["recommendation_metadata"]["total_score"], -2.0)
 
     def test_can_list_recommendations_with_mehestan_default_weights(self):
         response = self.client.get(
@@ -448,14 +455,14 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         self.client.force_authenticate(user=self.user_with_ratings)
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
         results = response.data["results"]
-        self.assertSetEqual(set(e["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
+        self.assertSetEqual(set(e["entity"]["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
 
     def test_response_is_not_cached_when_exclude_is_true(self):
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
         self.client.force_authenticate(user=self.user_with_ratings)
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="abc")
         results = response.data["results"]
-        self.assertSetEqual(set(e["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
+        self.assertSetEqual(set(e["entity"]["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
 
     def test_response_is_not_cached_when_exclude_is_true_for_two_users(self):
         self.client.force_authenticate(user=self.user_with_ratings)
@@ -508,7 +515,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true")
         results = response.data["results"]
         self.assertEqual(len(results), 1)
-        self.assertSetEqual(set(e["uid"] for e in results), {self.video_4.uid})
+        self.assertSetEqual(set(e["entity"]["uid"] for e in results), {self.video_4.uid})
 
 
 
@@ -540,6 +547,9 @@ class PollsEntityTestCase(TestCase):
             entity=self.video_1,
             poll=Poll.default_poll(),
             sum_trust_scores=4,
+            n_contributors=self.video_1.rating_n_contributors,
+            n_comparisons=self.video_1.rating_n_ratings,
+            tournesol_score=self.video_1.tournesol_score,
         )
         self.user = UserFactory(username=self._user)
 
@@ -549,6 +559,8 @@ class PollsEntityTestCase(TestCase):
 
         data = response.data
         self.assertEqual(response.status_code, 200)
+
+        # Legacy fields
         self.assertEqual(data["tournesol_score"], -2)
         self.assertEqual(data["n_comparisons"], 8)
         self.assertEqual(data["n_contributors"], 4)
@@ -558,12 +570,25 @@ class PollsEntityTestCase(TestCase):
         })
         self.assertIn("total_score", data)
         self.assertIn("criteria_scores", data)
+
+        # New fields
+        self.assertEqual(data["collective_rating"]["tournesol_score"], -2)
+        self.assertEqual(data["collective_rating"]["n_comparisons"], 8)
+        self.assertEqual(data["collective_rating"]["n_contributors"], 4)
+        self.assertEqual(data["collective_rating"]["unsafe"], {
+            "status": True,
+            "reasons": ["insufficient_tournesol_score"],
+        })
+        self.assertIn("total_score", data["recommendation_metadata"])
+        self.assertIn("criteria_scores", data["collective_rating"])
 
     def test_anon_can_read(self):
         response = self.client.get(f"/polls/videos/entities/{self.video_1.uid}")
 
         data = response.data
         self.assertEqual(response.status_code, 200)
+
+        # Legacy fields
         self.assertEqual(data["tournesol_score"], -2)
         self.assertEqual(data["n_comparisons"], 8)
         self.assertEqual(data["n_contributors"], 4)
@@ -573,6 +598,18 @@ class PollsEntityTestCase(TestCase):
         })
         self.assertIn("total_score", data)
         self.assertIn("criteria_scores", data)
+
+        # New fields
+        self.assertEqual(data["collective_rating"]["tournesol_score"], -2)
+        self.assertEqual(data["collective_rating"]["n_comparisons"], 8)
+        self.assertEqual(data["collective_rating"]["n_contributors"], 4)
+        self.assertEqual(data["collective_rating"]["unsafe"], {
+            "status": True,
+            "reasons": ["insufficient_tournesol_score"],
+        })
+        self.assertIn("total_score", data["recommendation_metadata"])
+        self.assertIn("criteria_scores", data["collective_rating"])
+
 
     def test_users_read_404_if_uid_doesnt_exist(self):
         # anonymous user
@@ -783,8 +820,23 @@ class PollRecommendationsWithLowSumTrustScoresTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 1)
+
+        # Legacy fields
         self.assertEqual(results[0]["uid"], self.video_2.uid)
         self.assertEqual(results[0]["unsafe"], {
             "status": False,
             "reasons": []
         })
+
+        # New fields
+        self.assertEqual(
+            results[0]["entity"]["uid"],
+            self.video_2.uid,
+        )
+        self.assertEqual(
+            results[0]["collective_rating"]["unsafe"],
+            {
+                "status": False,
+                "reasons": []
+            }
+        )

@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 import { Typography, Link, Box, Grid } from '@mui/material';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
-import { Entity } from 'src/services/openapi';
+import { EntityObject } from 'src/utils/types';
 
 const ComparisonHelperPresidentielle2022 = () => {
-  const [candidates, setCandidates] = useState<Entity[]>([]);
+  const [candidates, setCandidates] = useState<EntityObject[]>([]);
 
   useEffect(() => {
-    getAllCandidates().then((candidates) => {
+    getAllCandidates().then((results) => {
+      const candidates = results.map((res) => res.entity);
       const sortedCandidates = [...candidates].sort((a, b) => {
         // Sort by last name
         const aName: string = a?.metadata?.name.split(' ').slice(1).join(' ');
