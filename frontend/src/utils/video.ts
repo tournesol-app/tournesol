@@ -120,35 +120,19 @@ export async function getUidFromRateLaterList(
   return newUid;
 }
 
-export async function getUidFromPreviousComparisons(
+export async function getUidFromComparedList(
   uid: string | null,
   uidOther: string | null,
   exclude?: string[]
 ): Promise<string | null> {
-  const comparisonCount: number =
-    (
-      await UsersService.usersMeComparisonsList({
-        pollName: YOUTUBE_POLL_NAME,
-        limit: 0,
-        offset: 0,
-      })
-    )?.count || 0;
-
-  const comparisonVideoResult = await UsersService.usersMeComparisonsList({
+  const contributorRatings = await UsersService.usersMeContributorRatingsList({
     pollName: YOUTUBE_POLL_NAME,
     limit: 99,
-    offset: Math.floor(Math.random() * comparisonCount),
+    offset: 0,
   });
 
-  const cl = comparisonVideoResult?.results || [];
-  const comparisonVideoList = [
-    ...cl.map((v) => v.entity_a.uid),
-    ...cl.map((v) => v.entity_b.uid),
-  ];
-
-  let newSuggestions = comparisonVideoList.filter(
-    (uid, index) => comparisonVideoList.indexOf(uid) === index
-  );
+  let newSuggestions =
+    contributorRatings.results?.map((rating) => rating.entity.uid) || [];
 
   if (exclude) {
     newSuggestions = newSuggestions.filter((uid) => !exclude.includes(uid));
@@ -185,7 +169,7 @@ export async function getUidForComparison(
   }
 
   if (x < 0.95) {
-    const newUid = await getUidFromPreviousComparisons(uid, uidOther, exclude);
+    const newUid = await getUidFromComparedList(uid, uidOther, exclude);
     if (newUid) return newUid;
   }
 
