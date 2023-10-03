@@ -10,7 +10,6 @@ import { Recommendation } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { openTwitterPopup } from 'src/utils/ui';
-import { extractVideoId } from 'src/utils/video';
 
 // in milliseconds
 const FEEDBACK_DURATION = 1200;
@@ -66,7 +65,7 @@ const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
         <ShareMenuButton
           shareMessage={shareMessage}
           youtubeLink={
-            'https://www.youtube.com/watch?v=' + extractVideoId(video)
+            'https://www.youtube.com/watch?v=' + video.entity.metadata.video_id
           }
         />
       </ButtonGroup>

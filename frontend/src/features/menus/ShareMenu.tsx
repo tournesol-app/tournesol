@@ -43,7 +43,7 @@ const ShareMenu = ({
   };
 
   const shareYoutubeLink = (event: React.MouseEvent<HTMLElement>) => {
-    if (youtubeLink && navigator.canShare()) {
+    if (youtubeLink && navigator.share) {
       navigator.share({ url: youtubeLink });
     }
     onClose(event);
