@@ -12,11 +12,13 @@ const ShareMenuButton = ({
   isIcon,
   shareMessage,
   twitterMessage,
+  youtubeLink,
   feedbackDuration = 1200,
 }: {
   isIcon?: boolean;
   shareMessage?: string;
   twitterMessage?: string;
+  youtubeLink?: string;
   feedbackDuration?: number;
 }) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
@@ -72,6 +74,7 @@ const ShareMenuButton = ({
       <ShareMenu
         shareMessage={shareMessage}
         twitterMessage={twitterMessage}
+        youtubeLink={youtubeLink}
         menuAnchor={menuAnchor}
         open={isMenuOpen}
         onClose={handleMenuClose}

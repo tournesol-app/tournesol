@@ -321,7 +321,8 @@
   "shareMenu": {
     "copyAddress": "Copy the page address",
     "copyShareMessage": "Copy the share message",
-    "shareOnTwitter": "Share on Twitter"
+    "shareOnTwitter": "Share on Twitter",
+    "shareYoutubeLink": "Share YouTube Link"
   },
   "ratelater": {
     "videoIdOrURL": "Video ID or URL",

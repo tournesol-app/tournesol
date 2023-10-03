@@ -15,6 +15,7 @@ interface ShareMenuProps {
   open: boolean;
   shareMessage?: string;
   twitterMessage?: string;
+  youtubeLink?: string;
   onClose: (event: React.MouseEvent<HTMLElement>, reason?: string) => void;
 }
 
@@ -26,6 +27,7 @@ const ShareMenu = ({
   open,
   shareMessage,
   twitterMessage,
+  youtubeLink,
   onClose,
 }: ShareMenuProps) => {
   const { t } = useTranslation();
@@ -37,6 +39,13 @@ const ShareMenu = ({
 
   const copyShareMessage = (event: React.MouseEvent<HTMLElement>) => {
     if (shareMessage) navigator.clipboard.writeText(shareMessage);
+    onClose(event);
+  };
+
+  const shareYoutubeLink = (event: React.MouseEvent<HTMLElement>) => {
+    if (youtubeLink && navigator.canShare()) {
+      navigator.share({ url: youtubeLink });
+    }
     onClose(event);
   };
 
@@ -73,6 +82,12 @@ const ShareMenu = ({
             <ListItemText>{t('shareMenu.shareOnTwitter')}</ListItemText>
           </MenuItem>
         )}
+        <MenuItem onClick={shareYoutubeLink}>
+          <ListItemIcon>
+            <Link fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t('shareMenu.shareYoutubeLink')}</ListItemText>
+        </MenuItem>
       </MenuList>
     </Menu>
   );

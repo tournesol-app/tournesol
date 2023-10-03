@@ -327,7 +327,8 @@
   "shareMenu": {
     "copyAddress": "Copier l'adresse de la page",
     "copyShareMessage": "Copier le message de partage",
-    "shareOnTwitter": "Partager sur Twitter"
+    "shareOnTwitter": "Partager sur Twitter",
+    "shareYoutubeLink": "Partager le lien YouTube"
   },
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
