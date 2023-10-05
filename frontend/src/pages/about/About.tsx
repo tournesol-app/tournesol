@@ -157,7 +157,7 @@ const AboutPage = () => {
             <Typography paragraph>
               <Trans t={t} i18nKey="about.introductionTournesol">
                 Tournesol is an open source platform which aims to
-                collaboratively identify top videos of public utility by
+                collaboratively identify top videos of public interest by
                 eliciting contributors&apos; judgements on content quality. We
                 hope to contribute to making today&apos;s and tomorrow&apos;s
                 large-scale algorithms robustly beneficial for all of humanity.
