@@ -153,7 +153,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         new_height = 59 * upscale_ratio
 
         if thumbnail is not None:
-            thumbnail = thumbnail.resize((new_width, new_height), Image.LANCZOS)
+            thumbnail = thumbnail.resize((new_width, new_height), Image.Resampling.LANCZOS)
             thumbnail_bbox = tuple(numpy.multiply((105, 59, 0, 0), upscale_ratio))
             draw_video_duration(thumbnail, recommendation, thumbnail_bbox, upscale_ratio=1)
             box.paste(thumbnail, (1, 1))
