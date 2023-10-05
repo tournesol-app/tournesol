@@ -3,33 +3,47 @@ Models for Tournesol's main functions related to contributor's ratings
 """
 
 from django.db import models
-from django.db.models import Func, OuterRef, Q, Subquery
+from django.db.models import Count, F, FilteredRelation, Max, OuterRef, Q, Subquery
 
 from core.models import User
 
-from .comparisons import Comparison
 from .entity import Entity
 from .poll import Poll
 
 
 class ContributorRatingQueryset(models.QuerySet):
-    def annotate_n_comparisons(self):
-        n_comparisons = (
-            Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
-            .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-            .annotate(count=Func("id", function="Count"))
-            .values("count")
+    _related_comparisons_is_annotated = False
+
+    def _annotate_related_comparisons(self):
+        if self._related_comparisons_is_annotated:
+            return self
+        self._related_comparisons_is_annotated = True
+        return self.annotate(
+            related_comparisons=FilteredRelation(
+                "user__comparisons",
+                condition=(
+                    Q(user__comparisons__poll=F("poll"))
+                    & (
+                        Q(user__comparisons__entity_1=F("entity"))
+                        | Q(user__comparisons__entity_2=F("entity"))
+                    )
+                ),
+            )
         )
-        return self.annotate(n_comparisons=Subquery(n_comparisons))
+
+    def annotate_n_comparisons(self):
+        return (
+            self
+            ._annotate_related_comparisons()
+            .annotate(n_comparisons=Count("related_comparisons"))
+        )
 
     def annotate_last_compared_at(self):
-        last_compared_at = (
-            Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
-            .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-            .values("datetime_lastedit")
-            .order_by("-datetime_lastedit")
-        )[:1]
-        return self.annotate(last_compared_at=Subquery(last_compared_at))
+        return (
+            self
+            ._annotate_related_comparisons()
+            .annotate(last_compared_at=Max("related_comparisons__datetime_lastedit"))
+        )
 
     def annotate_collective_score(self):
         # pylint: disable=import-outside-toplevel
