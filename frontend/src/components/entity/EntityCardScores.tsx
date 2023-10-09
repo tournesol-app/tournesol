@@ -7,11 +7,11 @@ import {
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { Recommendation } from 'src/services/openapi';
 import CriteriaIcon from '../CriteriaIcon';
+import { EntityResult } from 'src/utils/types';
 
 interface Props {
-  entity: Recommendation;
+  result: EntityResult;
   showTournesolScore?: boolean;
   showTotalScore?: boolean;
 }
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const EntityCardScores = ({
-  entity,
+  result,
   showTournesolScore = true,
   showTotalScore = false,
 }: Props) => {
@@ -51,16 +51,20 @@ const EntityCardScores = ({
   const { getCriteriaLabel, options } = useCurrentPoll();
   const mainCriterionName = options?.mainCriterionName ?? '';
 
-  const nbRatings = entity.n_comparisons;
-  const nbContributors = entity.n_contributors;
+  if (!('collective_rating' in result) || result.collective_rating == null) {
+    return null;
+  }
+
+  const nbRatings = result.collective_rating.n_comparisons;
+  const nbContributors = result.collective_rating.n_contributors;
 
   let max_score = -Infinity;
   let min_score = Infinity;
   let max_criteria = '';
   let min_criteria = '';
 
-  const isUnsafe = entity.unsafe?.status === true;
-  const unsafeReasons = (entity.unsafe?.reasons ?? [])
+  const isUnsafe = result.collective_rating.unsafe.status;
+  const unsafeReasons = result.collective_rating.unsafe.reasons
     .map((reason) => {
       if (reason === 'insufficient_tournesol_score') {
         return t('video.insufficientScore');
@@ -72,8 +76,8 @@ const EntityCardScores = ({
     })
     .filter((str) => str !== '');
 
-  if ('criteria_scores' in entity) {
-    entity.criteria_scores?.forEach((criteria) => {
+  if ('criteria_scores' in result.collective_rating) {
+    result.collective_rating.criteria_scores.forEach((criteria) => {
       if (
         criteria.score != undefined &&
         criteria.score > max_score &&
@@ -107,12 +111,17 @@ const EntityCardScores = ({
       ''
     );
 
+  const totalScore =
+    'recommendation_metadata' in result
+      ? result.recommendation_metadata.total_score
+      : null;
+
   return (
     <>
-      {showTotalScore && (
+      {showTotalScore && totalScore != null && (
         <Box display="flex" alignItems="center" columnGap={1}>
           <Typography color="text.secondary">
-            Score : <strong>{entity.total_score.toFixed(2)}</strong>
+            Score : <strong>{totalScore.toFixed(2)}</strong>
             {''}
           </Typography>
           <Tooltip
@@ -131,8 +140,7 @@ const EntityCardScores = ({
         py={1}
       >
         {showTournesolScore &&
-          'tournesol_score' in entity &&
-          entity.tournesol_score != null && (
+          result.collective_rating?.tournesol_score != null && (
             <Tooltip title={tournesolScoreTitle} placement="right">
               <Box
                 display="flex"
@@ -153,7 +161,7 @@ const EntityCardScores = ({
                   width={32}
                 />
                 <span className={classes.nb_tournesol}>
-                  {entity.tournesol_score.toFixed(0)}
+                  {result.collective_rating.tournesol_score.toFixed(0)}
                 </span>
               </Box>
             </Tooltip>

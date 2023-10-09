@@ -162,7 +162,6 @@ const RateLaterPage = () => {
     loadList();
   }, [loadList]);
 
-  const entities = rateLaterList.map((r) => r.entity);
   const rateLaterPageActions = [
     CompareNowAction,
     RemoveFromRateLater(loadList),
@@ -276,7 +275,7 @@ const RateLaterPage = () => {
           <Box width="100%" textAlign="center">
             <LoaderWrapper isLoading={isLoading}>
               <EntityList
-                entities={entities}
+                entities={rateLaterList}
                 actions={rateLaterPageActions}
                 actionsIfUnavailable={[RemoveFromRateLater(loadList)]}
               />

@@ -3,7 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, Tooltip, Link } from '@mui/material';
 import { TypeEnum } from 'src/services/openapi';
-import { RelatedEntityObject } from 'src/utils/types';
+import { EntityObject } from 'src/utils/types';
 
 const toPaddedString = (num: number): string => {
   return num.toString().padStart(2, '0');
@@ -83,7 +83,7 @@ export const VideoMetadata = ({
   );
 };
 
-const EntityMetadata = ({ entity }: { entity: RelatedEntityObject }) => {
+const EntityMetadata = ({ entity }: { entity: EntityObject }) => {
   if (entity.type === TypeEnum.VIDEO) {
     return (
       <VideoMetadata

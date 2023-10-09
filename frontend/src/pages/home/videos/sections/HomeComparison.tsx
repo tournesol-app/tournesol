@@ -95,24 +95,24 @@ const HomeComparison = () => {
       .then(([comparisons, entities]) => {
         // Build the comparison.
         if (entities.length > 0) {
-          const entityA = selectRandomEntity(entities, []);
+          const recoA = selectRandomEntity(entities, []);
           let alreadyComparedWithA: string[] = [];
 
           // Exlude entities already compared with A.
           if (isLoggedIn) {
             alreadyComparedWithA = alreadyComparedWith(
-              entityA.uid,
+              recoA.entity.uid,
               comparisons[1]
             );
           }
 
-          const entityB = selectRandomEntity(
+          const recoB = selectRandomEntity(
             entities,
-            alreadyComparedWithA.concat([entityA.uid])
+            alreadyComparedWithA.concat([recoA.entity.uid])
           );
-          setComparison([entityA.uid, entityB.uid]);
-          setSelectorA({ uid: entityA.uid, rating: null });
-          setSelectorB({ uid: entityB.uid, rating: null });
+          setComparison([recoA.entity.uid, recoB.entity.uid]);
+          setSelectorA({ uid: recoA.entity.uid, rating: null });
+          setSelectorB({ uid: recoB.entity.uid, rating: null });
         }
 
         setIsLoading(false);

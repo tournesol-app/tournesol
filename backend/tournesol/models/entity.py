@@ -52,16 +52,21 @@ class EntityQueryset(models.QuerySet):
             )
         )
 
-    def with_prefetched_contributor_ratings(self, poll, user):
+    def with_prefetched_contributor_ratings(self, poll, user, prefetch_criteria_scores=False):
         # pylint: disable=import-outside-toplevel
         from tournesol.models.ratings import ContributorRating
+
+        contributor_ratings = (
+            ContributorRating.objects.filter(poll=poll, user=user)
+            .annotate_n_comparisons()
+        )
+        if prefetch_criteria_scores:
+            contributor_ratings = contributor_ratings.prefetch_related("criteria_scores")
+
         return self.prefetch_related(
             Prefetch(
                 "contributorvideoratings",
-                queryset=ContributorRating.objects.filter(
-                    poll=poll,
-                    user=user,
-                ).annotate_n_comparisons(),
+                queryset=contributor_ratings,
                 to_attr="_prefetched_contributor_ratings",
             )
         )

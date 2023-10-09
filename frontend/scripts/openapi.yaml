@@ -2877,67 +2877,30 @@ components:
       - is_public
     ContributorRecommendations:
       type: object
-      description: |-
-        An entity recommended by a user.
-
-        In addition to the fields inherited from `RecommendationSerializer`, this
-        serializer also display the public status of the `ContributorRating`
-        related to the trio poll / entity / user.
-
-        Note that the fields `n_comparisons` and `n_contributors` contain
-        the collective values, and are not specific to the user.
+      description: An entity recommended by a user.
       properties:
-        uid:
-          type: string
-          readOnly: true
-          description: A unique identifier, build with a namespace and an external
-            id.
-        type:
+        entity:
           allOf:
-          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/RelatedEntity'
           readOnly: true
-        n_comparisons:
-          type: integer
-        n_contributors:
-          type: integer
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        total_score:
-          type: number
-          format: double
-        tournesol_score:
-          type: number
-          format: double
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
           nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
-          readOnly: true
-        unsafe:
+        recommendation_metadata:
           allOf:
-          - $ref: '#/components/schemas/UnsafeStatus'
+          - $ref: '#/components/schemas/RecommendationMetadata'
           readOnly: true
-          nullable: true
-        is_public:
-          type: boolean
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/IndividualRatingWithScores'
           readOnly: true
       required:
-      - criteria_scores
-      - is_public
-      - metadata
-      - n_comparisons
-      - n_contributors
-      - total_score
-      - tournesol_score
-      - type
-      - uid
-      - unsafe
+      - collective_rating
+      - entity
+      - individual_rating
+      - recommendation_metadata
     CriteriaDistributionScore:
       type: object
       properties:
@@ -3044,14 +3007,17 @@ components:
       properties:
         uid:
           type: string
+          readOnly: true
           description: A unique identifier, build with a namespace and an external
             id.
-          maxLength: 144
         type:
-          $ref: '#/components/schemas/TypeEnum'
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
         metadata:
           type: object
           additionalProperties: {}
+          readOnly: true
         tournesol_score:
           type: number
           format: double
@@ -3065,6 +3031,7 @@ components:
             $ref: '#/components/schemas/EntityPoll'
           readOnly: true
       required:
+      - metadata
       - polls
       - tournesol_score
       - type
@@ -3164,6 +3131,39 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    ExtendedCollectiveRating:
+      type: object
+      properties:
+        n_comparisons:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this entityfrom certified
+            contributors
+        n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the entity
+        tournesol_score:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+          description: The aggregated score of the main criterion for all users, in
+            a specific poll.
+        unsafe:
+          allOf:
+          - $ref: '#/components/schemas/UnsafeStatus'
+          readOnly: true
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCriteriaScore'
+      required:
+      - criteria_scores
+      - n_comparisons
+      - n_contributors
+      - tournesol_score
+      - unsafe
     ExtendedInvididualRating:
       type: object
       properties:
@@ -3270,6 +3270,26 @@ components:
           readOnly: true
           default: 0
       required:
+      - is_public
+      - n_comparisons
+    IndividualRatingWithScores:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+          readOnly: true
+          description: Should the rating be public?
+        n_comparisons:
+          type: integer
+          readOnly: true
+          default: 0
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+      required:
+      - criteria_scores
       - is_public
       - n_comparisons
     Length3Cycles:
@@ -3742,52 +3762,33 @@ components:
     Recommendation:
       type: object
       properties:
-        uid:
-          type: string
-          readOnly: true
-          description: A unique identifier, build with a namespace and an external
-            id.
-        type:
+        entity:
           allOf:
-          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/RelatedEntity'
           readOnly: true
-        n_comparisons:
-          type: integer
-        n_contributors:
-          type: integer
-        metadata:
-          type: object
-          additionalProperties: {}
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
+          nullable: true
+        recommendation_metadata:
+          allOf:
+          - $ref: '#/components/schemas/RecommendationMetadata'
+          readOnly: true
+      required:
+      - collective_rating
+      - entity
+      - recommendation_metadata
+    RecommendationMetadata:
+      type: object
+      properties:
         total_score:
           type: number
           format: double
-        tournesol_score:
-          type: number
-          format: double
-          readOnly: true
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityCriteriaScore'
-        unsafe:
-          allOf:
-          - $ref: '#/components/schemas/UnsafeStatus'
           readOnly: true
           nullable: true
       required:
-      - criteria_scores
-      - metadata
-      - n_comparisons
-      - n_contributors
       - total_score
-      - tournesol_score
-      - type
-      - uid
-      - unsafe
     Recommendations_defaultDateEnum:
       enum:
       - TODAY

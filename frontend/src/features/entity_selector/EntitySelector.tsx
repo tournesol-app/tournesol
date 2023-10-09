@@ -121,7 +121,7 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
   }, [isLoggedIn, pollName, uid]);
 
   return entityFallback ? (
-    <EntityCard compact entity={entityFallback} settings={undefined} />
+    <EntityCard compact result={entityFallback} settings={undefined} />
   ) : (
     <EmptyEntityCard compact loading={loading} />
   );
@@ -333,7 +333,7 @@ const EntitySelectorInnerAuth = ({
         {rating ? (
           <EntityCard
             compact
-            entity={rating.entity}
+            result={rating}
             settings={showRatingControl ? toggleAction : undefined}
           ></EntityCard>
         ) : (

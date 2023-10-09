@@ -26,12 +26,13 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
 
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
-  const { criteria_scores: criteriaScores } = video;
-  const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
+  const entity = video.entity;
+  const criteriaScores = video.collective_rating?.criteria_scores ?? [];
+  const shouldDisplayCharts = criteriaScores.length > 0;
 
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
   const linkifiedDescription = linkifyStr(
-    video.metadata.description || '',
+    entity.metadata.description || '',
     linkifyOpts
   );
 
@@ -49,8 +50,8 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
             <VideoPlayer
-              videoId={video.metadata.video_id}
-              duration={video.metadata.duration}
+              videoId={entity.metadata.video_id}
+              duration={entity.metadata.duration}
               controls
             />
           </Grid>
@@ -88,7 +89,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
           {/* Data visualization. */}
           {shouldDisplayCharts && (
             <SelectedCriterionProvider>
-              <PersonalCriteriaScoresContextProvider uid={video.uid}>
+              <PersonalCriteriaScoresContextProvider uid={entity.uid}>
                 <Grid item xs={12} sm={12} md={6}>
                   <Paper>
                     <Box
@@ -105,7 +106,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                       <PersonalScoreCheckbox />
                     </Box>
                     <Box p={1}>
-                      <CriteriaBarChart entity={video} />
+                      <CriteriaBarChart reco={video} />
                     </Box>
                   </Paper>
                 </Grid>
@@ -122,7 +123,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                       </Typography>
                     </Box>
                     <Box p={1}>
-                      <CriteriaScoresDistribution entity={video} />
+                      <CriteriaScoresDistribution reco={video} />
                     </Box>
                   </Paper>
                 </Grid>
@@ -133,8 +134,8 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
       </Box>
       <Box flex={1}>
         <ContextualRecommendations
-          contextUid={video.uid}
-          uploader={video.metadata.uploader || undefined}
+          contextUid={entity.uid}
+          uploader={entity.metadata.uploader || undefined}
         />
       </Box>
     </Box>

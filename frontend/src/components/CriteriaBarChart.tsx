@@ -422,12 +422,12 @@ const SizedBarChart = ({
 };
 
 interface Props {
-  entity: Recommendation;
+  reco: Recommendation;
 }
 
-const CriteriaBarChart = ({ entity }: Props) => {
+const CriteriaBarChart = ({ reco }: Props) => {
   const { shouldDisplayChart, data, personalScoresActivated, domain } =
-    useCriteriaChartData({ entity });
+    useCriteriaChartData({ reco });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number | undefined>(undefined);

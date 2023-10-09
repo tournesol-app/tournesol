@@ -49,17 +49,17 @@ const StackedCandidatesPaper = ({
   const sortedRecommendations = recommendations
     .filter(
       (entityWithScores) =>
-        entityWithScores.criteria_scores.find(
+        entityWithScores.individual_rating.criteria_scores.find(
           ({ criteria }) => criteria == sortingCriteria
         )?.score != null
     )
     .map((entityWithScores) => ({
-      entity: entityWithScores,
-      score: entityWithScores.criteria_scores.find(
+      reco: entityWithScores,
+      score: entityWithScores.individual_rating.criteria_scores.find(
         ({ criteria }) => criteria == sortingCriteria
       )?.score,
     }))
-    .map(({ entity, score }) => ({ entity, score: 10 * (score as number) }))
+    .map(({ reco, score }) => ({ reco, score: 10 * (score as number) }))
     .sort((a, b) => (a.score < b.score ? 1 : -1));
 
   return (
@@ -76,7 +76,8 @@ const StackedCandidatesPaper = ({
           </Trans>
         </Typography>
       }
-      items={sortedRecommendations.map(({ entity, score }) => {
+      items={sortedRecommendations.map(({ reco, score }) => {
+        const entity = reco.entity;
         const nComp = nComparisons[entity.uid] || 0;
         return (
           <ListItem key={entity.uid} alignItems="flex-start">

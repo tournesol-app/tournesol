@@ -36,10 +36,10 @@ function isLive(talk: TalkEntry) {
     return false;
   }
 
+  const talkDate = new Date(talk.date);
   const now = new Date();
   return (
-    !isPast(talk) &&
-    new Date(talk.date) < new Date(now.getTime() + TOLERANCE_PERIOD)
+    talkDate < now && now < new Date(talkDate.getTime() + TOLERANCE_PERIOD)
   );
 }
 
