@@ -33,6 +33,7 @@ export interface EntitiesTab {
   label: string;
   fetch: () => Promise<EntityResult[]>;
   disabled?: boolean;
+  displayIndividualMainScore?: boolean;
 }
 
 export enum TabStatus {
@@ -40,6 +41,14 @@ export enum TabStatus {
   Loading = 'loading',
   Error = 'error',
 }
+
+const getIndividualScores = (res: EntityResult) => {
+  if ('individual_rating' in res && res.individual_rating) {
+    if ('criteria_scores' in res.individual_rating) {
+      return res.individual_rating.criteria_scores;
+    }
+  }
+};
 
 const TabError = ({ message }: { message: string }) => (
   <Typography variant="subtitle1" paragraph m={2} color="neutral.main">
@@ -110,6 +119,9 @@ const EntityTabsBox = ({
   const [options, setOptions] = useState<EntityResult[]>([]);
   const [isDescriptionVisible, setIsDescriptionVisible] =
     useState(displayDescription);
+  const [displayIndividualMainScore, setDisplayIndividualMainScore] = useState(
+    tabs[0]?.displayIndividualMainScore
+  );
 
   const canCloseDescription = !displayDescription;
 
@@ -137,6 +149,8 @@ const EntityTabsBox = ({
           setStatus(TabStatus.Error);
         }
       }
+
+      setDisplayIndividualMainScore(tab?.displayIndividualMainScore ?? false);
     };
 
     loadTab();
@@ -234,7 +248,15 @@ const EntityTabsBox = ({
                   onSelectEntity && (() => onSelectEntity(res.entity.uid))
                 }
               >
-                <RowEntityCard result={res} withLink={withLink} />
+                <RowEntityCard
+                  result={res}
+                  withLink={withLink}
+                  individualScores={
+                    displayIndividualMainScore
+                      ? getIndividualScores(res)
+                      : undefined
+                  }
+                />
               </li>
             ))}
           </ul>
