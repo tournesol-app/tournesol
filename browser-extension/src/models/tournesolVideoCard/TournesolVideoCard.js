@@ -17,28 +17,27 @@ const videoDurationToTime = (duration) => {
 };
 
 export class TournesolVideoCard {
-
   /**
    * Create and return a HTMLDivElement representing a video.
    *
-   * @param item One item of the results returned by the Tournesol API.
+   * @param video One item of the results returned by the Tournesol API.
    * @param displayCriteria If true display the criteria with the highest and lowest scores.
    */
-  static makeCard(item, displayCriteria) {
+  static makeCard(video, displayCriteria) {
     const videoCard = document.createElement('div');
     videoCard.className = 'video_card';
 
-    const thumbnailDiv = TournesolVideoCard.createThumbnailDiv(item);
+    const thumbnailDiv = TournesolVideoCard.createThumbnailDiv(video);
     videoCard.append(thumbnailDiv);
 
-    const metadataDiv = TournesolVideoCard.createMetadataDiv(item);
+    const metadataDiv = TournesolVideoCard.createMetadataDiv(video);
 
     /**
      * If the content script is executed on the YT research page, add the
      * criteria to the video's details.
      */
     if (displayCriteria) {
-      const criteriaDiv = TournesolVideoCard.createVideoCriteria(item);
+      const criteriaDiv = TournesolVideoCard.createVideoCriteria(video);
       metadataDiv.append(criteriaDiv);
     }
 
@@ -46,13 +45,13 @@ export class TournesolVideoCard {
     return videoCard;
   }
 
-  static createVideoCriteria(item) {
+  static createVideoCriteria(video) {
     const criteriaDiv = document.createElement('div');
     criteriaDiv.className = 'video_text video_criteria';
 
-    if (item.collective_rating.criteria_scores.length > 1) {
+    if (video.collective_rating.criteria_scores.length > 1) {
       // Sort the criteria by score (the main criterion is excluded)
-      const sortedCriteria = item.collective_rating.criteria_scores
+      const sortedCriteria = video.collective_rating.criteria_scores
         .filter((criteria) => criteria.criteria != 'largely_recommended')
         .sort((a, b) => a.score - b.score);
 
@@ -100,33 +99,33 @@ export class TournesolVideoCard {
     return criteriaDiv;
   }
 
-  static createThumbnailDiv(item) {
+  static createThumbnailDiv(video) {
     const thumbDiv = document.createElement('div');
     thumbDiv.setAttribute('class', 'thumb_div');
 
     const thumbnail = document.createElement('img');
     thumbnail.className = 'video_thumb';
-    thumbnail.src = `https://img.youtube.com/vi/${item.entity.metadata.video_id}/mqdefault.jpg`;
+    thumbnail.src = `https://img.youtube.com/vi/${video.entity.metadata.video_id}/mqdefault.jpg`;
     thumbDiv.append(thumbnail);
 
     const duration = document.createElement('p');
     duration.setAttribute('class', 'time_span');
     duration.append(
       document.createTextNode(
-        videoDurationToTime(item.entity.metadata.duration)
+        videoDurationToTime(video.entity.metadata.duration)
       )
     );
     thumbDiv.append(duration);
 
     const watchLink = document.createElement('a');
     watchLink.className = 'video_link';
-    watchLink.href = '/watch?v=' + item.entity.metadata.video_id;
+    watchLink.href = '/watch?v=' + video.entity.metadata.video_id;
     thumbDiv.append(watchLink);
 
     return thumbDiv;
   }
 
-  static createMetadataDiv(item) {
+  static createMetadataDiv(video) {
     const metadataDiv = document.createElement('div');
     metadataDiv.setAttribute('class', 'details_div');
 
@@ -135,8 +134,8 @@ export class TournesolVideoCard {
 
     const titleLink = document.createElement('a');
     titleLink.className = 'video_title_link';
-    titleLink.href = '/watch?v=' + item.entity.metadata.video_id;
-    titleLink.append(item.entity.metadata.name);
+    titleLink.href = '/watch?v=' + video.entity.metadata.video_id;
+    titleLink.append(video.entity.metadata.name);
 
     title.append(titleLink);
     metadataDiv.append(title);
@@ -149,8 +148,8 @@ export class TournesolVideoCard {
 
     const channelLink = document.createElement('a');
     channelLink.classList.add('video_channel_link');
-    channelLink.textContent = item.entity.metadata.uploader;
-    channelLink.href = `https://youtube.com/channel/${item.entity.metadata.channel_id}`;
+    channelLink.textContent = video.entity.metadata.uploader;
+    channelLink.href = `https://youtube.com/channel/${video.entity.metadata.channel_id}`;
 
     uploader.append(channelLink);
     channelDiv.append(uploader);
@@ -163,11 +162,11 @@ export class TournesolVideoCard {
     viewsAndDate.className = 'video_text';
     viewsAndDate.append(
       chrome.i18n.getMessage('views', [
-        TournesolVideoCard.millifyViews(item.entity.metadata.views),
+        TournesolVideoCard.millifyViews(video.entity.metadata.views),
       ]),
       dotSpan.cloneNode(true),
       TournesolVideoCard.viewPublishedDate(
-        item.entity.metadata.publication_date
+        video.entity.metadata.publication_date
       )
     );
 
@@ -187,19 +186,19 @@ export class TournesolVideoCard {
 
     const tournesolScore = document.createElement('strong');
     tournesolScore.textContent =
-      item.collective_rating.tournesol_score.toFixed(0);
+      video.collective_rating.tournesol_score.toFixed(0);
     tournesolScore.appendChild(dotSpan);
 
     const nComparisons = document.createElement('span');
     nComparisons.textContent = chrome.i18n.getMessage('comparisonsBy', [
-      item.collective_rating.n_comparisons,
+      video.collective_rating.n_comparisons,
     ]);
 
     const nContributors = document.createElement('span');
     nContributors.classList.add('contributors');
     nContributors.textContent = chrome.i18n.getMessage(
       'comparisonsContributors',
-      [item.collective_rating.n_contributors]
+      [video.collective_rating.n_contributors]
     );
 
     scoreAndRatings.append(
