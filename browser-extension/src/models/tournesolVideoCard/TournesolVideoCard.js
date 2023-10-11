@@ -17,21 +17,28 @@ const videoDurationToTime = (duration) => {
 };
 
 export class TournesolVideoCard {
-  static makeCard(video, displayCriteria) {
+
+  /**
+   * Create and return a HTMLDivElement representing a video.
+   *
+   * @param item One item of the results returned by the Tournesol API.
+   * @param displayCriteria If true display the criteria with the highest and lowest scores.
+   */
+  static makeCard(item, displayCriteria) {
     const videoCard = document.createElement('div');
     videoCard.className = 'video_card';
 
-    const thumbnailDiv = TournesolVideoCard.createThumbnailDiv(video);
+    const thumbnailDiv = TournesolVideoCard.createThumbnailDiv(item);
     videoCard.append(thumbnailDiv);
 
-    const metadataDiv = TournesolVideoCard.createMetadataDiv(video);
+    const metadataDiv = TournesolVideoCard.createMetadataDiv(item);
 
     /**
      * If the content script is executed on the YT research page, add the
      * criteria to the video's details.
      */
     if (displayCriteria) {
-      const criteriaDiv = TournesolVideoCard.createVideoCriteria(video);
+      const criteriaDiv = TournesolVideoCard.createVideoCriteria(item);
       metadataDiv.append(criteriaDiv);
     }
 
@@ -39,13 +46,13 @@ export class TournesolVideoCard {
     return videoCard;
   }
 
-  static createVideoCriteria(video) {
+  static createVideoCriteria(item) {
     const criteriaDiv = document.createElement('div');
     criteriaDiv.className = 'video_text video_criteria';
 
-    if (video.criteria_scores.length > 1) {
+    if (item.collective_rating.criteria_scores.length > 1) {
       // Sort the criteria by score (the main criterion is excluded)
-      const sortedCriteria = video.criteria_scores
+      const sortedCriteria = item.collective_rating.criteria_scores
         .filter((criteria) => criteria.criteria != 'largely_recommended')
         .sort((a, b) => a.score - b.score);
 
