@@ -175,19 +175,20 @@ export class TournesolVideoCard {
     tournesolLogo.setAttribute('alt', 'Tournesol logo');
 
     const tournesolScore = document.createElement('strong');
-    tournesolScore.textContent = video.tournesol_score.toFixed(0);
+    tournesolScore.textContent =
+      video.collective_rating.tournesol_score.toFixed(0);
     tournesolScore.appendChild(dotSpan);
 
     const nComparisons = document.createElement('span');
     nComparisons.textContent = chrome.i18n.getMessage('comparisonsBy', [
-      video.n_comparisons,
+      video.collective_rating.n_comparisons,
     ]);
 
     const nContributors = document.createElement('span');
     nContributors.classList.add('contributors');
     nContributors.textContent = chrome.i18n.getMessage(
       'comparisonsContributors',
-      [video.n_contributors]
+      [video.collective_rating.n_contributors]
     );
 
     scoreAndRatings.append(
