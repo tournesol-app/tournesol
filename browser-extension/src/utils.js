@@ -36,7 +36,6 @@ export const fetchTournesolApi = async (url, method, data) => {
     body['body'] = JSON.stringify(data);
   }
   return fetch(`https://api.tournesol.app/${url}`, body)
-    .then((r) => r)
     .catch(console.error);
 };
 
