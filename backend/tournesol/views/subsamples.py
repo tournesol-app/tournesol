@@ -49,9 +49,9 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         # Only the previously selected ratings are retrieved and annotated.
         sub_sample = (
             ContributorRating.objects.annotate_n_comparisons()
-            .annotate_collective_score()
-            .annotate_individual_score(poll=poll)
+            .annotate_last_compared_at()
             .prefetch_related(self.get_prefetch_entity_config())
+            .prefetch_related("criteria_scores")
             .filter(
                 poll=poll,
                 user=self.request.user,
