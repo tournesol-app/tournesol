@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { UsersService, ContributorRating } from 'src/services/openapi';
+import {
+  UsersService,
+  ContributorRating,
+  IndividualRating,
+} from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const setPublicStatus = async (
@@ -19,20 +23,19 @@ const setPublicStatus = async (
   });
 };
 
-export const UserRatingPublicToggle = ({
+export const RatingControl = ({
   uid,
-  nComparisons,
-  initialIsPublic,
+  individualRating,
   onChange,
 }: {
   uid: string;
-  nComparisons: number;
-  initialIsPublic: boolean;
+  individualRating: IndividualRating | null;
   onChange?: (rating: ContributorRating) => void;
 }) => {
   const { t } = useTranslation();
   const { name: pollName, baseUrl, options } = useCurrentPoll();
-  const [isPublic, setIsPublic] = useState(initialIsPublic);
+  const [isPublic, setIsPublic] = useState(individualRating?.is_public ?? true);
+  const nComparisons = individualRating?.n_comparisons ?? 0;
 
   const handleChange = React.useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +67,7 @@ export const UserRatingPublicToggle = ({
         )}
       </Typography>
       <Box flexGrow={1} minWidth="12px" />
-      {options?.comparisonsCanBePublic === true && (
+      {individualRating && options?.comparisonsCanBePublic === true && (
         <Tooltip
           title={
             <Typography variant="caption">

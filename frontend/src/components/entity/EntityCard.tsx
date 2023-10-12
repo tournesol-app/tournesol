@@ -23,7 +23,7 @@ import {
   EntityResult as EntityResult,
   JSONValue,
 } from 'src/utils/types';
-import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
+import { RatingControl } from 'src/features/ratings/RatingControl';
 
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
@@ -190,17 +190,15 @@ const EntityCard = ({
                   gap="16px"
                   color="text.secondary"
                 >
-                  {'individual_rating' in result &&
-                    result.individual_rating && (
-                      <UserRatingPublicToggle
-                        // Custom key to make sure the state is reset after rating has been updated by another component
-                        key={`${entity.uid}__${result.individual_rating.is_public}`}
-                        uid={entity.uid}
-                        nComparisons={result.individual_rating.n_comparisons}
-                        initialIsPublic={result.individual_rating.is_public}
-                        onChange={onRatingChange}
-                      />
-                    )}
+                  {'individual_rating' in result && (
+                    <RatingControl
+                      // Custom key to make sure the state is reset after rating has been updated by another component
+                      key={`${entity.uid}__${result.individual_rating?.is_public}`}
+                      uid={entity.uid}
+                      individualRating={result.individual_rating}
+                      onChange={onRatingChange}
+                    />
+                  )}
                 </Box>
               </Collapse>
             </Grid>
