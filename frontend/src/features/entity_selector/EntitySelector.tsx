@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Theme, useTheme } from '@mui/material/styles';
@@ -7,11 +7,9 @@ import { Box, Grid, Typography } from '@mui/material';
 
 import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
-import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 
-import { ActionList } from 'src/utils/types';
 import {
   UsersService,
   ContributorRating,
@@ -259,20 +257,6 @@ const EntitySelectorInnerAuth = ({
     [onChange]
   );
 
-  const toggleAction: ActionList = useMemo(() => {
-    return rating?.individual_rating.is_public != null
-      ? [
-          <UserRatingPublicToggle
-            key="isPublicToggle"
-            uid={rating.entity.uid}
-            nComparisons={rating.individual_rating.n_comparisons}
-            initialIsPublic={rating.individual_rating.is_public}
-            onChange={handleRatingUpdate}
-          />,
-        ]
-      : [];
-  }, [handleRatingUpdate, rating]);
-
   return (
     <>
       {showEntityInput && (
@@ -334,8 +318,7 @@ const EntitySelectorInnerAuth = ({
           <EntityCard
             compact
             result={rating}
-            // settings={showRatingControl ? toggleAction : undefined}
-            withRatingStatus={showRatingControl}
+            showRatingControl={showRatingControl}
             onRatingChange={handleRatingUpdate}
           ></EntityCard>
         ) : (

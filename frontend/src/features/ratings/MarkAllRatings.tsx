@@ -1,17 +1,15 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Button, Box } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { TitledSection } from 'src/components';
 import { UsersService } from 'src/services/openapi';
-import { RatingsContext } from 'src/features/videos/PublicStatusAction';
 import { useNotifications } from 'src/hooks';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-function MarkAllRatings() {
+function MarkAllRatings({ onChange }: { onChange: () => void }) {
   const { t } = useTranslation();
-  const { onChange: onRatingChange } = useContext(RatingsContext);
   const { showErrorAlert, showInfoAlert } = useNotifications();
   const { name: pollName } = useCurrentPoll();
 
@@ -25,9 +23,7 @@ function MarkAllRatings() {
       showErrorAlert(err?.message || 'Server error');
       return;
     }
-    if (onRatingChange) {
-      onRatingChange();
-    }
+    onChange();
     showInfoAlert(
       isPublic
         ? t('ratings.allRatingsMarkedPublic')

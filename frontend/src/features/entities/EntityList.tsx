@@ -13,7 +13,6 @@ interface Props {
   actions?: ActionList;
   settings?: ActionList;
   emptyMessage?: React.ReactNode;
-  personalScores?: { [uid: string]: number };
   actionsIfUnavailable?: ActionList;
   cardProps?: Partial<EntityCardProps>;
 }
@@ -31,8 +30,6 @@ interface Props {
 function EntityList({
   entities,
   actions,
-  // settings = [],
-  // personalScores,
   emptyMessage,
   actionsIfUnavailable,
   cardProps = {},

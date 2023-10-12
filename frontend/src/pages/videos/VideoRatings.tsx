@@ -3,14 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory, Link } from 'react-router-dom';
 import { Box, Button, Divider } from '@mui/material';
 
-import type {
-  ContributorRating,
-  PaginatedContributorRatingList,
-} from 'src/services/openapi';
+import type { PaginatedContributorRatingList } from 'src/services/openapi';
 import Pagination from 'src/components/Pagination';
 import { UsersService } from 'src/services/openapi';
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
-import { RatingsContext } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
 import { scrollToTop } from 'src/utils/ui';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -89,39 +85,19 @@ const VideoRatingsPage = () => {
     loadData();
   }, [loadData]);
 
-  const uidToRating = Object.fromEntries(
-    (ratings.results || []).map((rating) => [rating.entity.uid, rating])
-  );
-  const getRating = (uid: string) => uidToRating[uid];
-
-  const onRatingChange = (newRating: ContributorRating | undefined) => {
-    if (newRating) {
-      setRatings((prevRatings) => {
-        const updatedResults = (prevRatings.results || []).map((rating) =>
-          rating.entity.uid === newRating.entity.uid ? newRating : rating
-        );
-        return { ...prevRatings, results: updatedResults };
-      });
+  const onAllRatingsChange = () => {
+    if (hasFilter) {
+      // A filter had been selected. Let's reset the filter to reload the list.
+      searchParams.delete('isPublic');
+      history.push({ search: searchParams.toString() });
     } else {
-      // All ratings have been updated.
-      if (hasFilter) {
-        // A filter had been selected. Let's reset the filter to reload the list.
-        searchParams.delete('isPublic');
-        history.push({ search: searchParams.toString() });
-      } else {
-        // No filter is selected. Let's simply refresh the list.
-        loadData();
-      }
+      // No filter is selected. Let's simply refresh the list.
+      loadData();
     }
   };
 
   return (
-    <RatingsContext.Provider
-      value={{
-        getContributorRating: getRating,
-        onChange: onRatingChange,
-      }}
-    >
+    <>
       <ContentHeader title={t('myRatedVideosPage.title')} />
       <ContentBox noMinPaddingX maxWidth="lg">
         {options?.comparisonsCanBePublic === true && (
@@ -130,6 +106,7 @@ const VideoRatingsPage = () => {
               defaultFilters={[
                 { name: 'orderBy', value: DEFAULT_FILTER_ORDER_BY },
               ]}
+              onAllRatingsChange={onAllRatingsChange}
             />
           </Box>
         )}
@@ -137,7 +114,7 @@ const VideoRatingsPage = () => {
           <EntityList
             entities={ratings.results}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
-            cardProps={{ withRatingStatus: true }}
+            cardProps={{ showRatingControl: true }}
           />
         </LoaderWrapper>
         {!isLoading && videoCount > 0 && videoCount > limit && (
@@ -149,7 +126,7 @@ const VideoRatingsPage = () => {
           />
         )}
       </ContentBox>
-    </RatingsContext.Provider>
+    </>
   );
 };
 

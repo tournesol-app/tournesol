@@ -36,7 +36,7 @@ export interface EntityCardProps {
   actions?: ActionList;
   compact?: boolean;
   isAvailable?: boolean;
-  withRatingStatus?: boolean;
+  showRatingControl?: boolean;
   onRatingChange?: (rating: ContributorRating) => void;
   // Configuration specific to the entity type.
   entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
@@ -48,7 +48,7 @@ const EntityCard = ({
   compact = false,
   entityTypeConfig,
   isAvailable = true,
-  withRatingStatus = false,
+  showRatingControl = false,
   onRatingChange,
 }: EntityCardProps) => {
   const { t } = useTranslation();
@@ -60,7 +60,9 @@ const EntityCard = ({
   });
 
   const [contentDisplayed, setContentDisplayed] = useState(true);
-  const [ratingVisible, setSettingsVisible] = useState(!isSmallScreen);
+  const [ratingVisible, setSettingsVisible] = useState(
+    !isSmallScreen && showRatingControl
+  );
 
   useEffect(() => {
     setContentDisplayed(isAvailable);
@@ -165,7 +167,7 @@ const EntityCard = ({
                 Action
               )
             )}
-            {isSmallScreen && withRatingStatus && (
+            {isSmallScreen && showRatingControl && (
               <>
                 <Box flexGrow={1} />
                 <IconButton
@@ -178,7 +180,7 @@ const EntityCard = ({
               </>
             )}
           </Grid>
-          {withRatingStatus && (
+          {showRatingControl && (
             <Grid item xs={12}>
               <Collapse in={ratingVisible || !isSmallScreen}>
                 <Box
@@ -188,26 +190,17 @@ const EntityCard = ({
                   gap="16px"
                   color="text.secondary"
                 >
-                  <>
-                    {/* {settings.map((Action, index) =>
-                      typeof Action === 'function' ? (
-                        <Action key={index} uid={entity.uid} />
-                      ) : (
-                        Action
-                      )
-                    )} */}
-                    {'individual_rating' in result &&
-                      result.individual_rating && (
-                        <UserRatingPublicToggle
-                          // Custom key to make sure the state is reset after rating has been updated by another component
-                          key={`${entity.uid}__${result.individual_rating.is_public}`}
-                          uid={entity.uid}
-                          nComparisons={result.individual_rating.n_comparisons}
-                          initialIsPublic={result.individual_rating.is_public}
-                          onChange={onRatingChange}
-                        />
-                      )}
-                  </>
+                  {'individual_rating' in result &&
+                    result.individual_rating && (
+                      <UserRatingPublicToggle
+                        // Custom key to make sure the state is reset after rating has been updated by another component
+                        key={`${entity.uid}__${result.individual_rating.is_public}`}
+                        uid={entity.uid}
+                        nComparisons={result.individual_rating.n_comparisons}
+                        initialIsPublic={result.individual_rating.is_public}
+                        onChange={onRatingChange}
+                      />
+                    )}
                 </Box>
               </Collapse>
             </Grid>

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
@@ -98,26 +98,3 @@ export const UserRatingPublicToggle = ({
     </Box>
   );
 };
-
-interface RatingsContextValue {
-  getContributorRating?: (uid: string) => ContributorRating;
-  onChange?: (rating?: ContributorRating) => void;
-}
-
-export const RatingsContext = React.createContext<RatingsContextValue>({});
-
-// export const PublicStatusAction = ({ uid }: { uid: string }) => {
-//   const { getContributorRating, onChange } = useContext(RatingsContext);
-//   const contributorRating = getContributorRating?.(uid);
-//   if (contributorRating == null) {
-//     return null;
-//   }
-//   return (
-//     <UserRatingPublicToggle
-//       nComparisons={contributorRating.individual_rating.n_comparisons}
-//       initialIsPublic={contributorRating.individual_rating.is_public}
-//       uid={uid}
-//       onChange={onChange}
-//     />
-//   );
-// };
