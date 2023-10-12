@@ -55,7 +55,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
             .filter(
                 poll=poll,
                 user=self.request.user,
-                entity_id__in=[rating for rating in selected],
+                entity_id__in=selected,
                 criteria_scores__criteria=poll.main_criteria
             ).order_by("-criteria_scores__score")
         )
