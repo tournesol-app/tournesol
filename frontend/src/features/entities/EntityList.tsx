@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Box, Typography } from '@mui/material';
 
-import EntityCard from 'src/components/entity/EntityCard';
+import EntityCard, { EntityCardProps } from 'src/components/entity/EntityCard';
 import AvailableEntity from '../../components/entity/AvailableEntity';
 
 import { useCurrentPoll, useLoginState } from 'src/hooks';
@@ -15,6 +15,7 @@ interface Props {
   emptyMessage?: React.ReactNode;
   personalScores?: { [uid: string]: number };
   actionsIfUnavailable?: ActionList;
+  cardProps?: Partial<EntityCardProps>;
 }
 
 /**
@@ -30,10 +31,11 @@ interface Props {
 function EntityList({
   entities,
   actions,
-  settings = [],
+  // settings = [],
   // personalScores,
   emptyMessage,
   actionsIfUnavailable,
+  cardProps = {},
 }: Props) {
   const { isLoggedIn } = useLoginState();
   const { options } = useCurrentPoll();
@@ -54,9 +56,9 @@ function EntityList({
               <EntityCard
                 result={res}
                 actions={actions ?? defaultEntityActions}
-                settings={settings}
                 compact={false}
                 entityTypeConfig={{ video: { displayPlayer: false } }}
+                {...cardProps}
               />
             </AvailableEntity>
           </Box>

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
@@ -22,26 +22,28 @@ const setPublicStatus = async (
 export const UserRatingPublicToggle = ({
   uid,
   nComparisons,
-  isPublic,
+  initialIsPublic,
   onChange,
 }: {
   uid: string;
   nComparisons: number;
-  isPublic: boolean;
+  initialIsPublic: boolean;
   onChange?: (rating: ContributorRating) => void;
 }) => {
   const { t } = useTranslation();
   const { name: pollName, baseUrl, options } = useCurrentPoll();
+  const [isPublic, setIsPublic] = useState(initialIsPublic);
 
   const handleChange = React.useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const newStatus = e.target.checked;
-      const rating = await setPublicStatus(pollName, uid, newStatus);
+      const result = await setPublicStatus(pollName, uid, newStatus);
+      setIsPublic(result.individual_rating.is_public);
       if (onChange) {
-        onChange(rating);
+        onChange(result);
       }
     },
-    [onChange, pollName, uid]
+    [onChange, setIsPublic, pollName, uid]
   );
 
   return (
@@ -104,18 +106,18 @@ interface RatingsContextValue {
 
 export const RatingsContext = React.createContext<RatingsContextValue>({});
 
-export const PublicStatusAction = ({ uid }: { uid: string }) => {
-  const { getContributorRating, onChange } = useContext(RatingsContext);
-  const contributorRating = getContributorRating?.(uid);
-  if (contributorRating == null) {
-    return null;
-  }
-  return (
-    <UserRatingPublicToggle
-      nComparisons={contributorRating.individual_rating.n_comparisons}
-      isPublic={contributorRating.individual_rating.is_public}
-      uid={uid}
-      onChange={onChange}
-    />
-  );
-};
+// export const PublicStatusAction = ({ uid }: { uid: string }) => {
+//   const { getContributorRating, onChange } = useContext(RatingsContext);
+//   const contributorRating = getContributorRating?.(uid);
+//   if (contributorRating == null) {
+//     return null;
+//   }
+//   return (
+//     <UserRatingPublicToggle
+//       nComparisons={contributorRating.individual_rating.n_comparisons}
+//       initialIsPublic={contributorRating.individual_rating.is_public}
+//       uid={uid}
+//       onChange={onChange}
+//     />
+//   );
+// };

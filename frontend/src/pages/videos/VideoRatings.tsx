@@ -10,10 +10,7 @@ import type {
 import Pagination from 'src/components/Pagination';
 import { UsersService } from 'src/services/openapi';
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
-import {
-  PublicStatusAction,
-  RatingsContext,
-} from 'src/features/videos/PublicStatusAction';
+import { RatingsContext } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
 import { scrollToTop } from 'src/utils/ui';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -139,8 +136,8 @@ const VideoRatingsPage = () => {
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={ratings.results}
-            settings={[PublicStatusAction]}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
+            cardProps={{ withRatingStatus: true }}
           />
         </LoaderWrapper>
         {!isLoading && videoCount > 0 && videoCount > limit && (

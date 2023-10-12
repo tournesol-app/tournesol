@@ -17,12 +17,13 @@ import {
   ArrowDropUp,
 } from '@mui/icons-material';
 
-import { TypeEnum } from 'src/services/openapi';
+import { ContributorRating, TypeEnum } from 'src/services/openapi';
 import {
   ActionList,
   EntityResult as EntityResult,
   JSONValue,
 } from 'src/utils/types';
+import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
@@ -30,22 +31,26 @@ import EntityImagery from './EntityImagery';
 import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import { entityCardMainSx } from './style';
 
+export interface EntityCardProps {
+  result: EntityResult;
+  actions?: ActionList;
+  compact?: boolean;
+  isAvailable?: boolean;
+  withRatingStatus?: boolean;
+  onRatingChange?: (rating: ContributorRating) => void;
+  // Configuration specific to the entity type.
+  entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
+}
+
 const EntityCard = ({
   result,
   actions = [],
-  settings = [],
   compact = false,
   entityTypeConfig,
   isAvailable = true,
-}: {
-  result: EntityResult;
-  actions?: ActionList;
-  settings?: ActionList;
-  compact?: boolean;
-  isAvailable?: boolean;
-  // Configuration specific to the entity type.
-  entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
-}) => {
+  withRatingStatus = false,
+  onRatingChange,
+}: EntityCardProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const entity = result.entity;
@@ -55,7 +60,7 @@ const EntityCard = ({
   });
 
   const [contentDisplayed, setContentDisplayed] = useState(true);
-  const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
+  const [ratingVisible, setSettingsVisible] = useState(!isSmallScreen);
 
   useEffect(() => {
     setContentDisplayed(isAvailable);
@@ -160,22 +165,22 @@ const EntityCard = ({
                 Action
               )
             )}
-            {isSmallScreen && settings.length > 0 && (
+            {isSmallScreen && withRatingStatus && (
               <>
                 <Box flexGrow={1} />
                 <IconButton
                   size="small"
                   aria-label={t('video.labelShowSettings')}
-                  onClick={() => setSettingsVisible(!settingsVisible)}
+                  onClick={() => setSettingsVisible(!ratingVisible)}
                 >
-                  {settingsVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  {ratingVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
               </>
             )}
           </Grid>
-          {settings.length > 0 && (
+          {withRatingStatus && (
             <Grid item xs={12}>
-              <Collapse in={settingsVisible || !isSmallScreen}>
+              <Collapse in={ratingVisible || !isSmallScreen}>
                 <Box
                   paddingY={1}
                   borderTop="1px solid rgba(0, 0, 0, 0.12)"
@@ -183,13 +188,26 @@ const EntityCard = ({
                   gap="16px"
                   color="text.secondary"
                 >
-                  {settings.map((Action, index) =>
-                    typeof Action === 'function' ? (
-                      <Action key={index} uid={entity.uid} />
-                    ) : (
-                      Action
-                    )
-                  )}
+                  <>
+                    {/* {settings.map((Action, index) =>
+                      typeof Action === 'function' ? (
+                        <Action key={index} uid={entity.uid} />
+                      ) : (
+                        Action
+                      )
+                    )} */}
+                    {'individual_rating' in result &&
+                      result.individual_rating && (
+                        <UserRatingPublicToggle
+                          // Custom key to make sure the state is reset after rating has been updated by another component
+                          key={`${entity.uid}__${result.individual_rating.is_public}`}
+                          uid={entity.uid}
+                          nComparisons={result.individual_rating.n_comparisons}
+                          initialIsPublic={result.individual_rating.is_public}
+                          onChange={onRatingChange}
+                        />
+                      )}
+                  </>
                 </Box>
               </Collapse>
             </Grid>

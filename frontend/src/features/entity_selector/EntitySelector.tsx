@@ -121,7 +121,7 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
   }, [isLoggedIn, pollName, uid]);
 
   return entityFallback ? (
-    <EntityCard compact result={entityFallback} settings={undefined} />
+    <EntityCard compact result={entityFallback} />
   ) : (
     <EmptyEntityCard compact loading={loading} />
   );
@@ -266,7 +266,7 @@ const EntitySelectorInnerAuth = ({
             key="isPublicToggle"
             uid={rating.entity.uid}
             nComparisons={rating.individual_rating.n_comparisons}
-            isPublic={rating.individual_rating.is_public}
+            initialIsPublic={rating.individual_rating.is_public}
             onChange={handleRatingUpdate}
           />,
         ]
@@ -334,7 +334,9 @@ const EntitySelectorInnerAuth = ({
           <EntityCard
             compact
             result={rating}
-            settings={showRatingControl ? toggleAction : undefined}
+            // settings={showRatingControl ? toggleAction : undefined}
+            withRatingStatus={showRatingControl}
+            onRatingChange={handleRatingUpdate}
           ></EntityCard>
         ) : (
           <>
