@@ -17,6 +17,12 @@ const videoDurationToTime = (duration) => {
 };
 
 export class TournesolVideoCard {
+  /**
+   * Create and return a HTMLDivElement representing a video.
+   *
+   * @param video One item of the results returned by the Tournesol API.
+   * @param displayCriteria If true display the criteria with the highest and lowest scores.
+   */
   static makeCard(video, displayCriteria) {
     const videoCard = document.createElement('div');
     videoCard.className = 'video_card';
@@ -43,9 +49,9 @@ export class TournesolVideoCard {
     const criteriaDiv = document.createElement('div');
     criteriaDiv.className = 'video_text video_criteria';
 
-    if (video.criteria_scores.length > 1) {
+    if (video.collective_rating.criteria_scores.length > 1) {
       // Sort the criteria by score (the main criterion is excluded)
-      const sortedCriteria = video.criteria_scores
+      const sortedCriteria = video.collective_rating.criteria_scores
         .filter((criteria) => criteria.criteria != 'largely_recommended')
         .sort((a, b) => a.score - b.score);
 
@@ -99,19 +105,21 @@ export class TournesolVideoCard {
 
     const thumbnail = document.createElement('img');
     thumbnail.className = 'video_thumb';
-    thumbnail.src = `https://img.youtube.com/vi/${video.metadata.video_id}/mqdefault.jpg`;
+    thumbnail.src = `https://img.youtube.com/vi/${video.entity.metadata.video_id}/mqdefault.jpg`;
     thumbDiv.append(thumbnail);
 
     const duration = document.createElement('p');
     duration.setAttribute('class', 'time_span');
     duration.append(
-      document.createTextNode(videoDurationToTime(video.metadata.duration))
+      document.createTextNode(
+        videoDurationToTime(video.entity.metadata.duration)
+      )
     );
     thumbDiv.append(duration);
 
     const watchLink = document.createElement('a');
     watchLink.className = 'video_link';
-    watchLink.href = '/watch?v=' + video.metadata.video_id;
+    watchLink.href = '/watch?v=' + video.entity.metadata.video_id;
     thumbDiv.append(watchLink);
 
     return thumbDiv;
@@ -126,8 +134,8 @@ export class TournesolVideoCard {
 
     const titleLink = document.createElement('a');
     titleLink.className = 'video_title_link';
-    titleLink.href = '/watch?v=' + video.metadata.video_id;
-    titleLink.append(video.metadata.name);
+    titleLink.href = '/watch?v=' + video.entity.metadata.video_id;
+    titleLink.append(video.entity.metadata.name);
 
     title.append(titleLink);
     metadataDiv.append(title);
@@ -140,8 +148,8 @@ export class TournesolVideoCard {
 
     const channelLink = document.createElement('a');
     channelLink.classList.add('video_channel_link');
-    channelLink.textContent = video.metadata.uploader;
-    channelLink.href = `https://youtube.com/channel/${video.metadata.channel_id}`;
+    channelLink.textContent = video.entity.metadata.uploader;
+    channelLink.href = `https://youtube.com/channel/${video.entity.metadata.channel_id}`;
 
     uploader.append(channelLink);
     channelDiv.append(uploader);
@@ -154,10 +162,12 @@ export class TournesolVideoCard {
     viewsAndDate.className = 'video_text';
     viewsAndDate.append(
       chrome.i18n.getMessage('views', [
-        TournesolVideoCard.millifyViews(video.metadata.views),
+        TournesolVideoCard.millifyViews(video.entity.metadata.views),
       ]),
       dotSpan.cloneNode(true),
-      TournesolVideoCard.viewPublishedDate(video.metadata.publication_date)
+      TournesolVideoCard.viewPublishedDate(
+        video.entity.metadata.publication_date
+      )
     );
 
     channelDiv.append(viewsAndDate);
@@ -175,19 +185,20 @@ export class TournesolVideoCard {
     tournesolLogo.setAttribute('alt', 'Tournesol logo');
 
     const tournesolScore = document.createElement('strong');
-    tournesolScore.textContent = video.tournesol_score.toFixed(0);
+    tournesolScore.textContent =
+      video.collective_rating.tournesol_score.toFixed(0);
     tournesolScore.appendChild(dotSpan);
 
     const nComparisons = document.createElement('span');
     nComparisons.textContent = chrome.i18n.getMessage('comparisonsBy', [
-      video.n_comparisons,
+      video.collective_rating.n_comparisons,
     ]);
 
     const nContributors = document.createElement('span');
     nContributors.classList.add('contributors');
     nContributors.textContent = chrome.i18n.getMessage(
       'comparisonsContributors',
-      [video.n_contributors]
+      [video.collective_rating.n_contributors]
     );
 
     scoreAndRatings.append(
