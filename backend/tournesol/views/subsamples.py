@@ -61,7 +61,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
         )
 
         for idx, item in enumerate(sub_sample):
-            item.bucket = idx + 1
+            item.bucket = idx
 
         return sub_sample
 

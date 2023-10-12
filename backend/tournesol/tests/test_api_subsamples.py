@@ -96,7 +96,7 @@ class SubSamplesListTestCase(TestCase):
             )
             self.assertIn("individual_rating", item)
             self.assertIn("collective_rating", item)
-            self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
+            self.assertEqual(item["subsample_metadata"]["bucket"], idx)
 
             idv_score = next(filter(lambda x: x["criteria"] == self.poll1.main_criteria,
                         item["individual_rating"]["criteria_scores"]))["score"]
@@ -128,7 +128,7 @@ class SubSamplesListTestCase(TestCase):
             self.assertEqual(item["entity"]["uid"], self.poll1_videos2[idx].uid)
             self.assertIn("individual_rating", item)
             self.assertIn("collective_rating", item)
-            self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
+            self.assertEqual(item["subsample_metadata"]["bucket"], idx)
 
             idv_score = next(filter(lambda x: x["criteria"] == self.poll1.main_criteria,
                         item["individual_rating"]["criteria_scores"]))["score"]
@@ -157,7 +157,7 @@ class SubSamplesListTestCase(TestCase):
             self.assertIn(
                 item["entity"]["uid"], [video.uid for video in self.poll1_videos1[from_:to]]
             )
-            self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
+            self.assertEqual(item["subsample_metadata"]["bucket"], idx)
 
     def test_param_ntile_gt_rated_entities(self):
         """
@@ -174,7 +174,7 @@ class SubSamplesListTestCase(TestCase):
 
         for idx, item in enumerate(results):
             self.assertEqual(item["entity"]["uid"], self.poll1_videos1[idx].uid)
-            self.assertEqual(item["subsample_metadata"]["bucket"], idx + 1)
+            self.assertEqual(item["subsample_metadata"]["bucket"], idx)
 
     def test_pagination(self):
         ntile = 20
@@ -199,4 +199,4 @@ class SubSamplesListTestCase(TestCase):
             self.assertIn(
                 item["entity"]["uid"], [video.uid for video in self.poll1_videos1[from_:to]]
             )
-            self.assertEqual(item["subsample_metadata"]["bucket"], offset + idx + 1)
+            self.assertEqual(item["subsample_metadata"]["bucket"], offset + idx)
