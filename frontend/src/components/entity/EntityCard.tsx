@@ -17,7 +17,11 @@ import {
   ArrowDropUp,
 } from '@mui/icons-material';
 
-import { ContributorCriteriaScore, TypeEnum } from 'src/services/openapi';
+import {
+  ContributorRating,
+  ContributorCriteriaScore,
+  TypeEnum,
+} from 'src/services/openapi';
 import {
   ActionList,
   EntityResult as EntityResult,
