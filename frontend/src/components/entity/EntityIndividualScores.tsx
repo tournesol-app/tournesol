@@ -5,6 +5,11 @@ import { Box, Chip, Avatar, Tooltip } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks';
 import { ContributorCriteriaScore } from 'src/services/openapi';
 
+/**
+ * Display a list of MUI Chip representing individual scores.
+ *
+ * Only the main criterion is supported for now.
+ */
 export const EntityIndividualScores = ({
   scores,
 }: {
@@ -23,22 +28,24 @@ export const EntityIndividualScores = ({
   }
 
   return (
-    <Box display="flex" justifyContent="flex-end" pr={1}>
-      <Tooltip
-        title={getCriteriaLabel(mainCriterionName)}
-        placement="top-start"
-      >
-        <Chip
-          size="small"
-          variant="outlined"
-          avatar={<Avatar alt="sunflower icon" src="/svg/tournesol.svg" />}
-          label={
-            <Trans t={t} i18nKey="entityIndividualScores.inYourOpinion">
-              your view <strong>{{ mainCriterionScore }}</strong>
-            </Trans>
-          }
-        />
-      </Tooltip>
+    <Box pr={1} display="flex" justifyContent="flex-end">
+      {mainCriterionScore && (
+        <Tooltip
+          title={getCriteriaLabel(mainCriterionName)}
+          placement="top-start"
+        >
+          <Chip
+            size="small"
+            variant="outlined"
+            avatar={<Avatar alt="sunflower icon" src="/svg/tournesol.svg" />}
+            label={
+              <Trans t={t} i18nKey="entityIndividualScores.inYourOpinion">
+                in your opinion <strong>{{ mainCriterionScore }}</strong>
+              </Trans>
+            }
+          />
+        </Tooltip>
+      )}
     </Box>
   );
 };
