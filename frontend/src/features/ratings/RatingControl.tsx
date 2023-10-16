@@ -1,8 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { UsersService, ContributorRating } from 'src/services/openapi';
+import {
+  UsersService,
+  ContributorRating,
+  IndividualRating,
+} from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const setPublicStatus = async (
@@ -19,29 +23,30 @@ const setPublicStatus = async (
   });
 };
 
-export const UserRatingPublicToggle = ({
+export const RatingControl = ({
   uid,
-  nComparisons,
-  isPublic,
+  individualRating,
   onChange,
 }: {
   uid: string;
-  nComparisons: number;
-  isPublic: boolean;
+  individualRating: IndividualRating | null;
   onChange?: (rating: ContributorRating) => void;
 }) => {
   const { t } = useTranslation();
   const { name: pollName, baseUrl, options } = useCurrentPoll();
+  const [isPublic, setIsPublic] = useState(individualRating?.is_public ?? true);
+  const nComparisons = individualRating?.n_comparisons ?? 0;
 
   const handleChange = React.useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const newStatus = e.target.checked;
-      const rating = await setPublicStatus(pollName, uid, newStatus);
+      const result = await setPublicStatus(pollName, uid, newStatus);
+      setIsPublic(result.individual_rating.is_public);
       if (onChange) {
-        onChange(rating);
+        onChange(result);
       }
     },
-    [onChange, pollName, uid]
+    [onChange, setIsPublic, pollName, uid]
   );
 
   return (
@@ -62,7 +67,7 @@ export const UserRatingPublicToggle = ({
         )}
       </Typography>
       <Box flexGrow={1} minWidth="12px" />
-      {options?.comparisonsCanBePublic === true && (
+      {individualRating && options?.comparisonsCanBePublic === true && (
         <Tooltip
           title={
             <Typography variant="caption">
@@ -94,28 +99,5 @@ export const UserRatingPublicToggle = ({
         </Tooltip>
       )}
     </Box>
-  );
-};
-
-interface RatingsContextValue {
-  getContributorRating?: (uid: string) => ContributorRating;
-  onChange?: (rating?: ContributorRating) => void;
-}
-
-export const RatingsContext = React.createContext<RatingsContextValue>({});
-
-export const PublicStatusAction = ({ uid }: { uid: string }) => {
-  const { getContributorRating, onChange } = useContext(RatingsContext);
-  const contributorRating = getContributorRating?.(uid);
-  if (contributorRating == null) {
-    return null;
-  }
-  return (
-    <UserRatingPublicToggle
-      nComparisons={contributorRating.individual_rating.n_comparisons}
-      isPublic={contributorRating.individual_rating.is_public}
-      uid={uid}
-      onChange={onChange}
-    />
   );
 };

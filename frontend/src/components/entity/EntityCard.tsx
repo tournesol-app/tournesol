@@ -23,6 +23,7 @@ import {
   EntityResult as EntityResult,
   JSONValue,
 } from 'src/utils/types';
+import { RatingControl } from 'src/features/ratings/RatingControl';
 
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
@@ -31,22 +32,26 @@ import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import EntityIndividualScores from './EntityIndividualScores';
 import { entityCardMainSx } from './style';
 
+export interface EntityCardProps {
+  result: EntityResult;
+  actions?: ActionList;
+  compact?: boolean;
+  isAvailable?: boolean;
+  showRatingControl?: boolean;
+  onRatingChange?: (rating: ContributorRating) => void;
+  // Configuration specific to the entity type.
+  entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
+}
+
 const EntityCard = ({
   result,
   actions = [],
-  settings = [],
   compact = false,
   entityTypeConfig,
   isAvailable = true,
-}: {
-  result: EntityResult;
-  actions?: ActionList;
-  settings?: ActionList;
-  compact?: boolean;
-  isAvailable?: boolean;
-  // Configuration specific to the entity type.
-  entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
-}) => {
+  showRatingControl = false,
+  onRatingChange,
+}: EntityCardProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const entity = result.entity;
@@ -56,7 +61,9 @@ const EntityCard = ({
   });
 
   const [contentDisplayed, setContentDisplayed] = useState(true);
-  const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
+  const [ratingVisible, setSettingsVisible] = useState(
+    !isSmallScreen && showRatingControl
+  );
 
   useEffect(() => {
     setContentDisplayed(isAvailable);
@@ -161,22 +168,22 @@ const EntityCard = ({
                 Action
               )
             )}
-            {isSmallScreen && settings.length > 0 && (
+            {isSmallScreen && showRatingControl && (
               <>
                 <Box flexGrow={1} />
                 <IconButton
                   size="small"
                   aria-label={t('video.labelShowSettings')}
-                  onClick={() => setSettingsVisible(!settingsVisible)}
+                  onClick={() => setSettingsVisible(!ratingVisible)}
                 >
-                  {settingsVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  {ratingVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
               </>
             )}
           </Grid>
-          {settings.length > 0 && (
+          {showRatingControl && (
             <Grid item xs={12}>
-              <Collapse in={settingsVisible || !isSmallScreen}>
+              <Collapse in={ratingVisible || !isSmallScreen}>
                 <Box
                   paddingY={1}
                   borderTop="1px solid rgba(0, 0, 0, 0.12)"
@@ -184,12 +191,14 @@ const EntityCard = ({
                   gap="16px"
                   color="text.secondary"
                 >
-                  {settings.map((Action, index) =>
-                    typeof Action === 'function' ? (
-                      <Action key={index} uid={entity.uid} />
-                    ) : (
-                      Action
-                    )
+                  {'individual_rating' in result && (
+                    <RatingControl
+                      // Custom key to make sure the state is reset after rating has been updated by another component
+                      key={`${entity.uid}__${result.individual_rating?.is_public}`}
+                      uid={entity.uid}
+                      individualRating={result.individual_rating}
+                      onChange={onRatingChange}
+                    />
                   )}
                 </Box>
               </Collapse>

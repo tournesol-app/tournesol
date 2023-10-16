@@ -11,9 +11,11 @@ import RatingOrderByInput from './RatingOrderByInput';
 
 function RatingsFilter({
   defaultFilters = [],
+  onAllRatingsChange,
 }: {
   // A list of default values used to initialize the filters.
   defaultFilters: Array<{ name: string; value: string }>;
+  onAllRatingsChange: () => void;
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -43,7 +45,7 @@ function RatingsFilter({
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <MarkAllRatingsMenu />
+            <MarkAllRatingsMenu onChange={onAllRatingsChange} />
           </Grid>
         </Grid>
       </Collapse>
