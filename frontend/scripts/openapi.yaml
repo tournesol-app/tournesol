@@ -2103,6 +2103,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/TournesolUserSettings'
           description: ''
+  /users/me/subsamples/{poll_name}/:
+    get:
+      operationId: users_me_subsamples_list
+      description: |-
+        Return a sub-sample of entities rated by the logged-in user.
+
+        Entities are ranked by the individual score computed for the poll's
+        main criterion, in the descending order.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: ntile
+        schema:
+          type: integer
+          default: 20
+        description: Divide the rated entities into `ntile` ranked buckets, then pick
+          one entity from each bucket.
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubSampleList'
+          description: ''
   /users/me/unconnected_entities/{poll_name}/{uid}/:
     get:
       operationId: users_me_unconnected_entities_list
@@ -3476,6 +3521,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Recommendation'
+    PaginatedSubSampleList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubSample'
     PaginatedTalkEntryList:
       type: object
       properties:
@@ -4030,6 +4095,36 @@ components:
         * `RJ` - Rejected
         * `ACK` - Accepted
         * `PD` - Pending
+    SubSample:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/RelatedEntity'
+        individual_rating:
+          allOf:
+          - $ref: '#/components/schemas/ExtendedInvididualRating'
+          readOnly: true
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
+          readOnly: true
+        subsample_metadata:
+          allOf:
+          - $ref: '#/components/schemas/SubSampleMetadata'
+          readOnly: true
+      required:
+      - collective_rating
+      - entity
+      - individual_rating
+      - subsample_metadata
+    SubSampleMetadata:
+      type: object
+      properties:
+        bucket:
+          type: integer
+          readOnly: true
+      required:
+      - bucket
     TalkEntry:
       type: object
       properties:

@@ -44,6 +44,7 @@ from .views.ratings import (
     ContributorRatingUpdateAll,
 )
 from .views.stats import StatisticsView
+from .views.subsamples import SubSamplesList
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
@@ -130,6 +131,12 @@ urlpatterns = [
         "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
+    ),
+    # Sub-samples API
+    path(
+        "users/me/subsamples/<str:poll_name>/",
+        SubSamplesList.as_view(),
+        name="subsamples_me_detail",
     ),
     # Inconsistencies API
     path(
