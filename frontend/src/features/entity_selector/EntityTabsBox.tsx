@@ -33,7 +33,7 @@ export interface EntitiesTab {
   label: string;
   fetch: () => Promise<EntityResult[]>;
   disabled?: boolean;
-  displayIndividualMainScore?: boolean;
+  displayIndividualScores?: boolean;
 }
 
 export enum TabStatus {
@@ -119,8 +119,8 @@ const EntityTabsBox = ({
   const [options, setOptions] = useState<EntityResult[]>([]);
   const [isDescriptionVisible, setIsDescriptionVisible] =
     useState(displayDescription);
-  const [displayIndividualMainScore, setDisplayIndividualMainScore] = useState(
-    tabs[0]?.displayIndividualMainScore
+  const [displayIndividualScores, setDisplayIndividualScores] = useState(
+    tabs[0]?.displayIndividualScores
   );
 
   const canCloseDescription = !displayDescription;
@@ -150,7 +150,7 @@ const EntityTabsBox = ({
         }
       }
 
-      setDisplayIndividualMainScore(tab?.displayIndividualMainScore ?? false);
+      setDisplayIndividualScores(tab?.displayIndividualScores ?? false);
     };
 
     loadTab();
@@ -252,7 +252,7 @@ const EntityTabsBox = ({
                   result={res}
                   withLink={withLink}
                   individualScores={
-                    displayIndividualMainScore
+                    displayIndividualScores
                       ? getIndividualScores(res)
                       : undefined
                   }

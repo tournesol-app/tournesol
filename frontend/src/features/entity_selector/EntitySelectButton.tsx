@@ -141,7 +141,7 @@ const VideoInput = ({
           return response.results ?? [];
         },
         disabled: !isLoggedIn,
-        displayIndividualMainScore: true,
+        displayIndividualScores: true,
       },
       {
         name: 'unconnected',
