@@ -33,7 +33,7 @@ export const EntityIndividualScores = ({
           variant="outlined"
           avatar={<Avatar alt="sunflower icon" src="/svg/tournesol.svg" />}
           label={
-            <Trans t={t} i18nKey="entityIndividualScores.yourView">
+            <Trans t={t} i18nKey="entityIndividualScores.inYourOpinion">
               your view <strong>{{ mainCriterionScore }}</strong>
             </Trans>
           }

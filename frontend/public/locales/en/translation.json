@@ -43,7 +43,7 @@
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
   },
   "entityIndividualScores": {
-    "yourView": "in your opinion <1>{{mainCriterionScore}}</1>"
+    "inYourOpinion": "in your opinion <1>{{mainCriterionScore}}</1>"
   },
   "pagination": {
     "showingCounts_one": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}",
