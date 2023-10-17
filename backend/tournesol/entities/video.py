@@ -39,6 +39,10 @@ class VideoEntity(EntityType):
         return ["duration", "publication_date"]
 
     @classmethod
+    def get_filter_date_field(cls):
+        return "metadata__publication_date"
+
+    @classmethod
     def filter_date_lte(cls, qs, max_date):
         return qs.filter(metadata__publication_date__lte=max_date.isoformat())
 

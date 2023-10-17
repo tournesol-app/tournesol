@@ -3,7 +3,7 @@ from enum import Enum
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.serializers.suggestion import RandomEntity
+from tournesol.serializers.suggestion import EntityFromPollRating
 from tournesol.views import PollScopedViewMixin
 
 from .strategies.classic import ClassicEntitySuggestionStrategy
@@ -15,7 +15,7 @@ class ToCompareStrategy(Enum):
 
 class EntityToCompare(PollScopedViewMixin, generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = RandomEntity
+    serializer_class = EntityFromPollRating
 
     strategy = None
 
@@ -24,6 +24,9 @@ class EntityToCompare(PollScopedViewMixin, generics.RetrieveAPIView):
 
         # TODO: select the strategy from the request's parameters
         self.strategy = ClassicEntitySuggestionStrategy(request, self.poll_from_url)
+
+    def get_serializer_class(self):
+        return self.strategy.get_serializer_class()
 
     def get_object(self):
         return self.strategy.get_result()
