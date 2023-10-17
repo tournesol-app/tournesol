@@ -7,7 +7,7 @@ from django.db.models import Prefetch
 from core.utils.time import time_ago
 from tournesol.models import ContributorRating, Entity, EntityPollRating, Poll, RateLater
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
-from tournesol.serializers.suggestion import EntityFromPollRating, EntityFromRateLater
+from tournesol.serializers.suggestion import ResultFromPollRating, ResultFromRelatedEntity
 
 from .base import ContributionSuggestionStrategy
 
@@ -141,8 +141,8 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def get_serializer_class(self):
         if self.selected_pool < 0.78:
-            return EntityFromRateLater
-        return EntityFromPollRating
+            return ResultFromRelatedEntity
+        return ResultFromPollRating
 
     def get_result(self):
         return self.get_result_intermediate_user()
