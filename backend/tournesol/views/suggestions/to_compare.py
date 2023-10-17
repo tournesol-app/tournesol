@@ -1,5 +1,6 @@
-from enum import Enum
-
+from django.db import models
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
@@ -9,10 +10,23 @@ from tournesol.views import PollScopedViewMixin
 from .strategies.classic import ClassicEntitySuggestionStrategy
 
 
-class ToCompareStrategy(Enum):
-    CLASSIC = 0
+class ToCompareStrategy(models.TextChoices):
+    CLASSIC = "CLASSIC"
 
 
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="strategy",
+                required=False,
+                enum=ToCompareStrategy.values,
+                default=ToCompareStrategy.CLASSIC,
+                description="The strategy used to suggest an entity to compare.",
+            ),
+        ],
+    )
+)
 class EntityToCompare(PollScopedViewMixin, generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ResultFromRelatedEntity
@@ -22,8 +36,13 @@ class EntityToCompare(PollScopedViewMixin, generics.RetrieveAPIView):
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
 
-        # TODO: select the strategy from the request's parameters
-        self.strategy = ClassicEntitySuggestionStrategy(request, self.poll_from_url)
+        strategy = request.query_params.get("strategy", ToCompareStrategy.CLASSIC)
+
+        if strategy == ToCompareStrategy.CLASSIC:
+            self.strategy = ClassicEntitySuggestionStrategy(request, self.poll_from_url)
+        else:
+            # Fallback to the classic strategy if an unknown strategy is provided.
+            self.strategy = ClassicEntitySuggestionStrategy(request, self.poll_from_url)
 
     def get_serializer_class(self):
         return self.strategy.get_serializer_class()
