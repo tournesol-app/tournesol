@@ -45,7 +45,7 @@ from .views.ratings import (
 )
 from .views.stats import StatisticsView
 from .views.subsamples import SubSamplesList
-from .views.suggestions.to_compare import EntityToCompare
+from .views.suggestions.to_compare import SuggestionsToCompare
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
@@ -135,9 +135,9 @@ urlpatterns = [
     ),
     # Suggestions
     path(
-        "users/me/random/<str:poll_name>/tocompare/",
-        EntityToCompare.as_view(),
-        name="random_me_to_compare"
+        "users/me/suggestions/<str:poll_name>/tocompare/",
+        SuggestionsToCompare.as_view(),
+        name="suggestions_me_to_compare"
     ),
     # Sub-samples API
     path(

@@ -1,13 +1,11 @@
-from typing import Optional
+import random
 
-import numpy as np
 from django.conf import settings
-from django.db.models import Prefetch
 
 from core.utils.time import time_ago
-from tournesol.models import ContributorRating, Entity, EntityPollRating, Poll, RateLater
+from tournesol.models import ContributorRating, EntityPollRating, RateLater
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
-from tournesol.serializers.suggestion import ResultFromPollRating, ResultFromRelatedEntity
+from tournesol.serializers.suggestion import ResultFromPollRating
 
 from .base import ContributionSuggestionStrategy
 
@@ -25,50 +23,17 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         - use the user's preferred language(s)
     """
 
+    n_entity_rate_later = 14
+    n_entity_reco_last_month = 3
+    n_entity_reco_all_time = 3
+
     top_recommendations_limit = 400
     recent_recommendations_days = 30
 
-    def __init__(self, request, poll: Poll):
-        super().__init__(request, poll)
-
-        rng = np.random.default_rng()
-        self.selected_pool = rng.random()
-
-    def _get_from_pool_rate_later(self) -> Optional[RateLater]:
-        """
-        Return a random element from the user's rate-later list.
-        """
+    def _get_recommendations(self, entity_filters, exclude_uids: list[int]) -> list[int]:
         poll = self.poll
-        rate_later_size = RateLater.objects.filter(poll=poll, user=self.request.user).count()
 
-        if not rate_later_size:
-            return None
-
-        return RateLater.objects.filter(poll=poll, user=self.request.user).prefetch_related(
-            self.get_prefetch_entity_config()
-        )[np.random.randint(0, rate_later_size)]
-
-    def _get_from_pool_reco_last_month(self) -> Optional[EntityPollRating]:
-        """
-        Return a random element from the recent recommendations.
-
-        Only elements that have been compared less than the setting
-        `rate_later__auto_remove` are returned.
-        """
-        poll = self.poll
-        user = self.request.user
-
-        max_threshold = user.settings.get(poll.name, {}).get(
-            "rate_later__auto_remove", RATE_LATER_AUTO_REMOVE_DEFAULT
-        )
-
-        entity_filters = {
-            f"entity__{poll.entity_cls.get_filter_date_field()}__gte": time_ago(
-                days=self.recent_recommendations_days
-            ).isoformat()
-        }
-
-        recommendations = (
+        return (
             EntityPollRating.objects.filter(
                 poll=poll,
                 sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
@@ -76,32 +41,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             )
             .select_related("entity")
             .filter(**entity_filters)
-        )
-
-        already_compared = (
-            ContributorRating.objects.filter(poll=poll, user=user)
-            .select_related("entity")
-            .filter(**entity_filters)
-            .annotate_n_comparisons()
-            .filter(n_comparisons__lt=max_threshold)
+            .exclude(entity_id__in=exclude_uids)
             .values_list("entity_id", flat=True)
         )
 
-        suggestions = [reco for reco in recommendations if reco.entity_id in already_compared]
-
-        count = len(suggestions)
-        if count:
-            return suggestions[np.random.randint(0, count)]
-
-        return None
-
-    def _get_from_pool_reco_all_time(self) -> Optional[EntityPollRating]:
-        """
-        Return a random element from the top recommendations.
-
-        Only elements that have been compared less than the setting
-        `rate_later__auto_remove` are returned.
-        """
+    def _get_already_compared(self, entity_filters) -> list[int]:
         poll = self.poll
         user = self.request.user
 
@@ -109,69 +53,109 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             "rate_later__auto_remove", RATE_LATER_AUTO_REMOVE_DEFAULT
         )
 
-        recommendations = (
-            EntityPollRating.objects.filter(
-                poll=poll,
-                sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
-                tournesol_score__gt=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE,
-            ).select_related("entity")
-        )[: self.top_recommendations_limit]
-
-        already_compared = (
+        return (
             ContributorRating.objects.filter(poll=poll, user=user)
+            .select_related("entity")
+            .filter(**entity_filters)
             .annotate_n_comparisons()
-            .filter(n_comparisons__lt=max_threshold)
+            .filter(n_comparisons__gte=max_threshold)
             .values_list("entity_id", flat=True)
         )
 
-        suggestions = [reco for reco in recommendations if reco.entity_id in already_compared]
-
-        count = len(suggestions)
-        if count:
-            return suggestions[np.random.randint(0, count)]
-
-        return None
-
-    def get_prefetch_entity_config(self):
+    def _uids_from_pool_rate_later(self) -> list[int]:
+        """
+        Return random UIDs from the user's rate-later list.
+        """
         poll = self.poll
-        return Prefetch(
-            "entity",
-            queryset=(Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)),
+        user = self.request.user
+
+        rate_later_size = RateLater.objects.filter(poll=poll, user=user).count()
+
+        if not rate_later_size:
+            return []
+
+        results = RateLater.objects.filter(poll=poll, user=user).values_list(
+            "entity_id", flat=True
         )
 
+        return random.sample(list(results), min(rate_later_size, self.n_entity_rate_later))
+
+    def _uids_from_pool_reco_last_month(self, exclude_uids: list[int]) -> list[int]:
+        """
+        Return random UIDs from the recent recommendations.
+
+        Only UIDs of entities that have been compared less than the user's
+        setting `rate_later__auto_remove` are returned.
+        """
+        poll = self.poll
+
+        entity_filters = {
+            f"entity__{poll.entity_cls.get_filter_date_field()}__gte": time_ago(
+                days=self.recent_recommendations_days
+            ).isoformat(),
+        }
+
+        recommendations = self._get_recommendations(entity_filters, exclude_uids)
+        already_compared = self._get_already_compared(entity_filters)
+        results = [reco for reco in recommendations if reco not in already_compared]
+
+        size = len(results)
+        if not size:
+            return []
+
+        return random.sample(results, min(size, self.n_entity_reco_last_month))
+
+    def _uids_from_pool_reco_all_time(self, exclude_uids: list[int]) -> list[int]:
+        """
+        Return random UIDs from the top recommendations.
+
+        Only UIDs of entities that have been compared less than the user's
+        setting `rate_later__auto_remove` are returned.
+        """
+        poll = self.poll
+
+        entity_filters = {
+            f"entity__{poll.entity_cls.get_filter_date_field()}__lt": time_ago(
+                days=self.recent_recommendations_days
+            ).isoformat(),
+        }
+
+        recommendations = self._get_recommendations(entity_filters, exclude_uids)[
+            : self.top_recommendations_limit
+        ]
+        already_compared = self._get_already_compared(entity_filters)
+        results = [reco for reco in recommendations if reco not in already_compared]
+
+        size = len(results)
+        if not size:
+            return []
+
+        return random.sample(results, min(size, self.n_entity_reco_all_time))
+
     def get_serializer_class(self):
-        if self.selected_pool < 0.78:
-            return ResultFromRelatedEntity
         return ResultFromPollRating
 
-    def get_result(self):
-        return self.get_result_intermediate_user()
+    def get_results(self):
+        return self.get_result_for_user_intermediate()
 
-    def get_result_new_user(self):
+    def get_result_for_user_new(self):
         raise NotImplementedError
 
-    def get_result_intermediate_user(self):
-        # 0.78 ensures that more than 3/4 and less than 4/5 suggested entities
-        # come from user's rate-later list.
-        if self.selected_pool < 0.78:
-            result = self._get_from_pool_rate_later()
-            if result:
-                return result
+    def get_result_for_user_intermediate(self):
+        poll = self.poll
+        rate_later = self._uids_from_pool_rate_later()
+        last_month = self._uids_from_pool_reco_last_month(rate_later)
+        all_time = self._uids_from_pool_reco_all_time(rate_later + last_month)
 
-        # The remaining 22 % are divided equally between recent entities and
-        # all entities. Note that "all entities" can include recent entities
-        # if they are part of the top recommendations. Thus, recent entities
-        # have slightly higher chance to be suggested.
-        if self.selected_pool < 0.89:
-            result = self._get_from_pool_reco_last_month()
-            if result:
-                return result
+        results = (
+            EntityPollRating.objects.filter(
+                poll=poll,
+            )
+            .select_related("entity")
+            .filter(entity_id__in=rate_later + last_month + all_time)
+        )
 
-        result = self._get_from_pool_reco_all_time()
-        if result:
-            return result
+        return results
 
-        return None
-
-    def get_result_advanced_user(self):
+    def get_result_for_user_advanced(self):
         raise NotImplementedError

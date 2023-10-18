@@ -10,11 +10,3 @@ class ResultFromPollRating(serializers.Serializer):
         source="*",
         read_only=True,
     )
-
-
-class ResultFromRelatedEntity(serializers.Serializer):
-    entity = RelatedEntitySerializer()
-    collective_rating = CollectiveRatingSerializer(
-        source="entity.single_poll_rating",
-        read_only=True,
-    )

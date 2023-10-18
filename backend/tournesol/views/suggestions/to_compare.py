@@ -1,10 +1,9 @@
 from django.db import models
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.serializers.suggestion import ResultFromRelatedEntity
+from tournesol.serializers.suggestion import ResultFromPollRating
 from tournesol.views import PollScopedViewMixin
 
 from .strategies.classic import ClassicEntitySuggestionStrategy
@@ -22,14 +21,14 @@ class ToCompareStrategy(models.TextChoices):
                 required=False,
                 enum=ToCompareStrategy.values,
                 default=ToCompareStrategy.CLASSIC,
-                description="The strategy used to suggest an entity to compare.",
+                description="The strategy used to suggest a entities to compare.",
             ),
         ],
     )
 )
-class EntityToCompare(PollScopedViewMixin, generics.RetrieveAPIView):
+class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ResultFromRelatedEntity
+    serializer_class = ResultFromPollRating
 
     strategy = None
 
@@ -47,5 +46,5 @@ class EntityToCompare(PollScopedViewMixin, generics.RetrieveAPIView):
     def get_serializer_class(self):
         return self.strategy.get_serializer_class()
 
-    def get_object(self):
-        return self.strategy.get_result()
+    def get_queryset(self):
+        return self.strategy.get_results()
