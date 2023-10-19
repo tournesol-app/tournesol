@@ -131,7 +131,7 @@ const VideoInput = ({
       },
       {
         name: 'sub-sample',
-        label: t('entitySelector.subsample'),
+        label: t('entitySelector.yourScores'),
         fetch: async () => {
           const response = await UsersService.usersMeSubsamplesList({
             pollName,
