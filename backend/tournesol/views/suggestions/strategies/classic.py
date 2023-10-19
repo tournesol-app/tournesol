@@ -164,7 +164,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         Return a consolidated list of elements from all provided pools.
 
         A list is considered consolidated when its population size is equals,
-        or as close as possible, to the sum of all pool's sample sizes.
+        or is as close as possible, to the sum of all pool's sample sizes.
         """
         extra_sample2 = 0
         extra_sample3 = 0
