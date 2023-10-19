@@ -40,7 +40,6 @@ interface Props {
   // The parent can provide the list of user's comparisons, to avoid suggesting
   // comparisons the user already made.
   initComparisonsMade: string[];
-  generateInitial?: boolean;
   dialogs?: OrderedDialogs;
   dialogAdditionalActions?: { [key: string]: { action: React.ReactNode } };
   getAlternatives?: () => Promise<Array<EntityResult>>;
@@ -74,12 +73,57 @@ const generateSteps = (length: number) => {
   return content;
 };
 
+/**
+ * Build a string representing the URL parameters of a comparison.
+ *
+ * @param from An array of entities from which `uidA` and `uidB` params will be built.
+ * @param comparisons An array of existing comparisons.
+ * @param uidA The current value of the `uidA` URL parameter
+ * @param uidB The current value of the `uidB` URL parameter
+ */
+const genInitialComparisonParams = (
+  from: Array<EntityResult>,
+  comparisons: Array<string>,
+  uidA: string,
+  uidB: string
+): string => {
+  if (from.length === 0) {
+    return '';
+  }
+
+  const newSearchParams = new URLSearchParams();
+  let newUidA: string;
+  let newUidB: string;
+
+  if (uidA === '') {
+    if (uidB === '') {
+      newUidA = selectRandomEntity(from, []).entity.uid;
+    } else {
+      // if not `uidA` and `uidB`, select an uid A that hasn't been compared with B
+      newUidA = selectRandomEntity(from, alreadyComparedWith(uidB, comparisons))
+        .entity.uid;
+    }
+  } else {
+    newUidA = uidA;
+  }
+  newSearchParams.append(UID_PARAMS.vidA, newUidA);
+
+  if (uidB === '') {
+    const comparedWithA = alreadyComparedWith(newUidA, comparisons);
+    newUidB = selectRandomEntity(from, comparedWithA.concat([newUidA])).entity
+      .uid;
+  } else {
+    newUidB = uidB;
+  }
+  newSearchParams.append(UID_PARAMS.vidB, newUidB);
+  return newSearchParams.toString();
+};
+
 const ComparisonSeries = ({
   step,
   onStepUp,
   length,
   initComparisonsMade,
-  generateInitial,
   dialogs,
   dialogAdditionalActions,
   getAlternatives,
@@ -100,12 +144,7 @@ const ComparisonSeries = ({
 
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected once the series has started
-  const initialize = useRef(
-    generateInitial != undefined ? generateInitial : false
-  );
-  // display a circular progress placeholder while async requests are made to
-  // initialize the component
-  const [isLoading, setIsLoading] = React.useState(true);
+  const initializing = useRef(true);
   // open/close state of the `Dialog` component
   const [dialogOpen, setDialogOpen] = useState(true);
   // tell the `Comparison` to refresh the left entity, or the right one
@@ -136,41 +175,26 @@ const ComparisonSeries = ({
    * series.
    */
   useEffect(() => {
-    if (skipped) return;
+    if (skipped || length < MIN_LENGTH) {
+      return;
+    }
 
-    async function getAlternativesAsync(
-      getAlts: () => Promise<Array<EntityResult>>
-    ) {
-      const alts = await getAlts();
-      if (alts.length > 0) {
-        setAlternatives(alts);
-        return alts;
+    const alternativesPromise = getAlternatives
+      ? getAlternatives()
+      : Promise.resolve([]);
+    alternativesPromise.then((entities) => {
+      if (entities.length > 0) {
+        setAlternatives(entities);
       }
-      return [];
-    }
-
-    if (length >= MIN_LENGTH) {
-      const alternativesPromise = getAlternatives
-        ? getAlternativesAsync(getAlternatives)
-        : Promise.resolve();
-
-      alternativesPromise
-        .then((entities) => {
-          if (resumable && comparisonsMade.length > 0) {
-            onStepUp(comparisonsMade.length);
-          }
-
-          if (entities && initialize.current && (uidA === '' || uidB === '')) {
-            setFirstComparisonParams(
-              genInitialComparisonParams(entities, comparisonsMade, uidA, uidB)
-            );
-          }
-        })
-        .then(() => setIsLoading(false));
-    } else {
-      // stop loading if no series is going to be rendered
-      setIsLoading(false);
-    }
+      if (resumable && comparisonsMade.length > 0) {
+        onStepUp(comparisonsMade.length);
+      }
+      if (entities && initializing.current && (uidA === '' || uidB === '')) {
+        setFirstComparisonParams(
+          genInitialComparisonParams(entities, comparisonsMade, uidA, uidB)
+        );
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -258,60 +282,11 @@ const ComparisonSeries = ({
     }
   };
 
-  /**
-   * Build a string representing the URL parameters of a comparison.
-   *
-   * @param from An array of entities from which `uidA` and `uidB` params will be built.
-   * @param comparisons An array of existing comparisons.
-   * @param uidA The current value of the `uidA` URL parameter
-   * @param uidB The current value of the `uidB` URL parameter
-   */
-  const genInitialComparisonParams = (
-    from: Array<EntityResult>,
-    comparisons: Array<string>,
-    uidA: string,
-    uidB: string
-  ): string => {
-    if (from.length === 0) {
-      return '';
-    }
-
-    const newSearchParams = new URLSearchParams();
-    let newUidA: string;
-    let newUidB: string;
-
-    if (uidA === '') {
-      if (uidB === '') {
-        newUidA = selectRandomEntity(from, []).entity.uid;
-      } else {
-        // if not `uidA` and `uidB`, select an uid A that hasn't been compared with B
-        newUidA = selectRandomEntity(
-          from,
-          alreadyComparedWith(uidB, comparisons)
-        ).entity.uid;
-      }
-    } else {
-      newUidA = uidA;
-    }
-    newSearchParams.append(UID_PARAMS.vidA, newUidA);
-
-    if (uidB === '') {
-      const comparedWithA = alreadyComparedWith(newUidA, comparisons);
-      newUidB = selectRandomEntity(from, comparedWithA.concat([newUidA])).entity
-        .uid;
-    } else {
-      newUidB = uidB;
-    }
-    newSearchParams.append(UID_PARAMS.vidB, newUidB);
-
-    return newSearchParams.toString();
-  };
-
-  if (initialize.current && uidA !== '' && uidB !== '') {
-    initialize.current = false;
+  if (initializing.current && uidA !== '' && uidB !== '') {
+    initializing.current = false;
   }
 
-  if (initialize.current && firstComparisonParams) {
+  if (initializing.current && firstComparisonParams) {
     return (
       <Redirect
         to={{ pathname: location.pathname, search: firstComparisonParams }}
@@ -321,7 +296,6 @@ const ComparisonSeries = ({
 
   if (redirectTo && (step >= length || skipped)) {
     const futureSearchParams = new URLSearchParams();
-
     if (keepUIDsAfterRedirect) {
       if (uidA) {
         futureSearchParams.append('uidA', uidA);
@@ -330,7 +304,6 @@ const ComparisonSeries = ({
         futureSearchParams.append('uidB', uidB);
       }
     }
-
     return (
       <Redirect
         to={{ pathname: redirectTo, search: futureSearchParams.toString() }}
@@ -338,66 +311,59 @@ const ComparisonSeries = ({
     );
   }
 
+  if (length < MIN_LENGTH) {
+    return <Comparison />;
+  }
+
+  const currentDialog = dialogs?.[step];
   return (
-    <>
-      {length >= MIN_LENGTH ? (
-        <LoaderWrapper isLoading={isLoading}>
-          {/*
-            Do not display the dialog box while the alternatives array
-            is being built, to avoid a blink effect.
-          */}
-          {!isLoading &&
-            dialogs &&
-            step in dialogs &&
-            (!isMobileDevice() || dialogs[step].mobile) &&
-            (!getAlternatives || alternatives.length > 0) && (
-              <DialogBox
-                title={dialogs[step].title}
-                content={dialogs[step].messages.map((message, index) => {
-                  return (
-                    <Typography key={index} paragraph>
-                      {message}
-                    </Typography>
-                  );
-                })}
-                open={dialogOpen}
-                onClose={closeDialog}
-                additionalActionButton={
-                  skipKey ? (
-                    <Button
-                      color="secondary"
-                      variant="text"
-                      onClick={skipTheSeries}
-                    >
-                      {skipButtonLabel
-                        ? skipButtonLabel
-                        : t('comparisonSeries.skipTheSeries')}
-                    </Button>
-                  ) : (
-                    dialogAdditionalActions &&
-                    step in dialogAdditionalActions &&
-                    dialogAdditionalActions[step].action
-                  )
-                }
-              />
-            )}
-          {displayStepper && (
-            <Container maxWidth="md" sx={{ my: 2 }}>
-              <Stepper
-                activeStep={step}
-                alternativeLabel
-                sx={{ marginBottom: 4 }}
-              >
-                {generateSteps(length)}
-              </Stepper>
-            </Container>
-          )}
-          <Comparison afterSubmitCallback={afterSubmitCallback} />
-        </LoaderWrapper>
-      ) : (
-        <Comparison />
+    <LoaderWrapper isLoading={initializing.current}>
+      {/*
+        Do not display the dialog box while the alternatives array
+        is being built, to avoid a blink effect.
+      */}
+      {!initializing.current &&
+        currentDialog &&
+        (!isMobileDevice() || currentDialog.mobile) && (
+          <DialogBox
+            title={currentDialog.title}
+            content={currentDialog.messages.map((message, index) => {
+              return (
+                <Typography key={index} paragraph>
+                  {message}
+                </Typography>
+              );
+            })}
+            open={dialogOpen}
+            onClose={closeDialog}
+            additionalActionButton={
+              skipKey ? (
+                <Button
+                  color="secondary"
+                  variant="text"
+                  onClick={skipTheSeries}
+                >
+                  {skipButtonLabel
+                    ? skipButtonLabel
+                    : t('comparisonSeries.skipTheSeries')}
+                </Button>
+              ) : (
+                dialogAdditionalActions?.[step]?.action ?? null
+              )
+            }
+          />
+        )}
+      {displayStepper && (
+        <Container maxWidth="md" sx={{ my: 2 }}>
+          <Stepper activeStep={step} alternativeLabel sx={{ marginBottom: 4 }}>
+            {generateSteps(length)}
+          </Stepper>
+        </Container>
       )}
-    </>
+      {!initializing.current && (
+        <Comparison afterSubmitCallback={afterSubmitCallback} />
+      )}
+    </LoaderWrapper>
   );
 };
 
