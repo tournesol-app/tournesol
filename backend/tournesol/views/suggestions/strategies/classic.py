@@ -19,12 +19,13 @@ class UIDsPool:
 
 class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
     """
-    A contribution strategy that will suggest a random entity to compare.
+    A contribution strategy that will suggest random entities to compare.
 
-    The entity is retrieved from the following pools:
-        - user's rate-later list
-        - last month recommendations
-        - all time recommendations
+    The entity are retrieved from the following pools:
+        - entities already compared by the users
+        - entities in the user's rate-later list
+        - the recent recommendations
+        - completed by the top recommendations if needed
 
     Expected future updates:
         - use the user's preferred language(s)
@@ -33,6 +34,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
     # The maximum number of results returned by the strategy.
     max_suggestions = 20
 
+    # The expected number of entities retrieved from each pool.
     sample_size_compared = 9
     sample_size_rate_later = 7
     sample_size_reco_last_month = 4
@@ -164,16 +166,12 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         A list is considered consolidated when its population size is equals,
         or as close as possible, to the sum of all pool's sample sizes.
         """
-        sample1_size = len(pool1.uids[: pool1.sample_size])
-        sample2_size = len(pool2.uids[: pool2.sample_size])
-        sample3_size = len(pool3.uids[: pool3.sample_size])
-
         extra_sample2 = 0
         extra_sample3 = 0
 
-        free_slots_in_pool1 = pool1.sample_size - sample1_size
-        free_slots_in_pool2 = pool2.sample_size - sample2_size
-        free_slots_in_pool3 = pool3.sample_size - sample3_size
+        free_slots_in_pool1 = pool1.sample_size - len(pool1.uids[: pool1.sample_size])
+        free_slots_in_pool2 = pool2.sample_size - len(pool2.uids[: pool2.sample_size])
+        free_slots_in_pool3 = pool3.sample_size - len(pool3.uids[: pool3.sample_size])
 
         # If the pool 1 contains less UIDs than expected, try to pick more
         # UIDs from the pools 2 and 3.
@@ -237,6 +235,10 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
                 .filter(entity_id__in=pool1 + pool2 + pool3)
             )
 
+        # This optional step allows the empty slots from a pool to be filled
+        # by additional UIDs from other pools. The UIDs from the top
+        # recommendations are used as a last resort, only if the current pools
+        # are not able to provide enough UIDs by themselves.
         results = self._consolidate_results(
             UIDsPool(pool1, self.sample_size_compared),
             UIDsPool(pool2, self.sample_size_rate_later),
@@ -246,8 +248,8 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         free_slots = self.max_suggestions - len(results)
 
         if free_slots > 0:
-            extra_pool = self._uids_from_pool_reco_all_time(results)
-            results += extra_pool[:free_slots]
+            last_resort = self._uids_from_pool_reco_all_time(results)
+            results += last_resort[:free_slots]
 
         return (
             EntityPollRating.objects.filter(
