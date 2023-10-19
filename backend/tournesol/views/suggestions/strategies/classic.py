@@ -126,11 +126,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         already_compared = self._get_already_compared(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
 
-        size = len(results)
-        if not size:
-            return []
-
-        return random.sample(results, min(size, self.max_suggestions))
+        return random.sample(results, min(len(results), self.max_suggestions))
 
     def _uids_from_pool_reco_all_time(self, exclude_uids: list[int]) -> list[int]:
         """
@@ -153,11 +149,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         already_compared = self._get_already_compared(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
 
-        size = len(results)
-        if not size:
-            return []
-
-        return random.sample(results, min(size, self.max_suggestions))
+        return random.sample(results, min(len(results), self.max_suggestions))
 
     def _consolidate_results(self, pool1: UIDsPool, pool2: UIDsPool, pool3: UIDsPool):
         """
