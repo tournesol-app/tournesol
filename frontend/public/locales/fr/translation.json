@@ -46,7 +46,7 @@
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement sélectionnés"
   },
   "entityIndividualScores": {
-    "inYourOpinion": "selon vous <1>{{mainCriterionScore}}</1>"
+    "inYourOpinion": "selon vous <1></1>"
   },
   "pagination": {
     "showingCounts_one": "Élément {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
