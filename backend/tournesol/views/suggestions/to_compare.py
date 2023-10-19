@@ -10,7 +10,7 @@ from .strategies.classic import ClassicEntitySuggestionStrategy
 
 
 class ToCompareStrategy(models.TextChoices):
-    CLASSIC = "CLASSIC"
+    CLASSIC = "Classic"
 
 
 @extend_schema_view(
@@ -27,6 +27,12 @@ class ToCompareStrategy(models.TextChoices):
     )
 )
 class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
+    """
+    Suggest a list of entities to compare to the logged-in user.
+
+    The suggestion strategy is determined by the `strategy` query parameter.
+    """
+
     permission_classes = [IsAuthenticated]
     serializer_class = ResultFromPollRating
 
