@@ -3,7 +3,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.serializers.suggestion import ResultFromPollRating
+from tournesol.serializers.suggestion import EntityToCompare
 from tournesol.views import PollScopedViewMixin
 
 from .strategies.classic import ClassicEntitySuggestionStrategy
@@ -34,7 +34,7 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
     """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = ResultFromPollRating
+    serializer_class = EntityToCompare
 
     strategy = None
 

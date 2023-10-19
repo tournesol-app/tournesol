@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from django.conf import settings
 
 from core.utils.time import time_ago
-from tournesol.models import ContributorRating, EntityPollRating, RateLater
+from tournesol.models import ContributorRating, Entity, EntityPollRating, RateLater
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
-from tournesol.serializers.suggestion import ResultFromPollRating
+from tournesol.serializers.suggestion import EntityToCompare
 
 from .base import ContributionSuggestionStrategy
 
@@ -207,7 +207,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         return sample1 + sample2 + sample3
 
     def get_serializer_class(self):
-        return ResultFromPollRating
+        return EntityToCompare
 
     def get_results(self):
         return self.get_result_for_user_intermediate()
@@ -227,13 +227,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         sample3_size = len(pool3[: self.sample_size_reco_last_month])
 
         if sample1_size + sample2_size + sample3_size >= self.max_suggestions:
-            return (
-                EntityPollRating.objects.filter(
-                    poll=poll,
-                )
-                .select_related("entity")
-                .filter(entity_id__in=pool1 + pool2 + pool3)
-            )
+            return Entity.objects.filter(
+                id__in=pool1 + pool2 + pool3
+            ).with_prefetched_poll_ratings(poll_name=poll.name)
 
         # This optional step allows the empty slots from a pool to be filled
         # by additional UIDs from other pools. The UIDs from the top
@@ -251,12 +247,8 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             last_resort = self._uids_from_pool_reco_all_time(results)
             results += last_resort[:free_slots]
 
-        return (
-            EntityPollRating.objects.filter(
-                poll=poll,
-            )
-            .select_related("entity")
-            .filter(entity_id__in=results)
+        return Entity.objects.filter(id__in=results).with_prefetched_poll_ratings(
+            poll_name=poll.name
         )
 
     def get_result_for_user_advanced(self):
