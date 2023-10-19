@@ -17,7 +17,11 @@ import {
   ArrowDropUp,
 } from '@mui/icons-material';
 
-import { ContributorRating, TypeEnum } from 'src/services/openapi';
+import {
+  ContributorRating,
+  ContributorCriteriaScore,
+  TypeEnum,
+} from 'src/services/openapi';
 import {
   ActionList,
   EntityResult as EntityResult,
@@ -29,6 +33,7 @@ import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
 import EntityImagery from './EntityImagery';
 import EntityMetadata, { VideoMetadata } from './EntityMetadata';
+import EntityIndividualScores from './EntityIndividualScores';
 import { entityCardMainSx } from './style';
 
 export interface EntityCardProps {
@@ -212,9 +217,11 @@ const EntityCard = ({
 export const RowEntityCard = ({
   result,
   withLink = false,
+  individualScores,
 }: {
   result: EntityResult;
   withLink?: boolean;
+  individualScores?: ContributorCriteriaScore[];
 }) => {
   const entity = result.entity;
   return (
@@ -223,7 +230,7 @@ export const RowEntityCard = ({
       flexDirection="row"
       alignItems="center"
       gap={1}
-      height="70px"
+      height="90px"
       sx={{ ...entityCardMainSx, bgcolor: 'transparent' }}
     >
       <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
@@ -237,7 +244,7 @@ export const RowEntityCard = ({
           }}
         />
       </Box>
-      <Stack gap="4px" alignSelf="start" marginTop={1}>
+      <Stack gap="4px" alignSelf="start" marginTop={1} width="100%">
         <EntityCardTitle
           uid={entity.uid}
           title={entity.metadata.name}
@@ -252,6 +259,9 @@ export const RowEntityCard = ({
             publicationDate={entity.metadata.publication_date}
             withLinks={false}
           />
+        )}
+        {individualScores && (
+          <EntityIndividualScores scores={individualScores} />
         )}
       </Stack>
     </Box>

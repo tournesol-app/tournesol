@@ -45,6 +45,9 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement sélectionnés"
   },
+  "entityIndividualScores": {
+    "inYourOpinion": "selon vous <1></1>"
+  },
   "pagination": {
     "showingCounts_one": "Élément {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
     "showingCounts_many": "Éléments {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
@@ -109,6 +112,7 @@
     "rateLater": "À comparer",
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
+    "yourScores": "Vos scores",
     "unconnected": "À relier",
     "selectAVideo": "Sélectionner une vidéo",
     "select": "Sélectionner",
@@ -117,6 +121,7 @@
     "backButton": "Retour"
   },
   "tabsBox": {
+    "subsample": "Un extrait ordonné de votre classement personnel. Les éléments que vous recommandez le plus apparaissent en premier.",
     "compared": "Les vidéos que vous avez comparées apparaissent ici.",
     "recommendations": "Les vidéos recommandées par la communauté apparaissent ici.",
     "toConnect": "Les vidéos isolées du reste de vos comparaisons apparaissent ici. Comparez-les pour améliorer les recommandations.",
@@ -455,7 +460,6 @@
     "deleteAccount": "Supprimer votre compte"
   },
   "pollUserSettingsForm": {
-    "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
     "moveTheFollowingCriterionUp": "Déplacer le critère suivant vers le haut:",
     "moveTheFollowingCriterionDown": "Déplacer le critère suivant vers le bas:",
     "selectTheCriteriaYouWantToDisplay": "Sélectionnez les critères que vous souhaitez afficher par défaut",
@@ -477,8 +481,9 @@
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "updatePreferences": "Mettre à jour les préférences",
-    "extensionYoutube": "Extension (YouTube)",
     "comparisonPage": "Comparaison (page)",
+    "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
+    "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Liste à comparer plus tard",
     "recommendations": "Recommandations (flux)",
     "recommendationsPage": "Recommandations (page)",
@@ -549,10 +554,10 @@
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
-      "defaultExcludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées.",
       "defaultLanguages": "Langues des vidéos",
       "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)",
-      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices."
+      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices.",
+      "defaultExcludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
     }
   },
   "preferences": {

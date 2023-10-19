@@ -9,6 +9,7 @@ import { makeStyles } from '@mui/styles';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import CriteriaIcon from '../CriteriaIcon';
 import { EntityResult } from 'src/utils/types';
+import TournesolScore from './TournesolScore';
 
 interface Props {
   result: EntityResult;
@@ -141,30 +142,13 @@ const EntityCardScores = ({
       >
         {showTournesolScore &&
           result.collective_rating?.tournesol_score != null && (
-            <Tooltip title={tournesolScoreTitle} placement="right">
-              <Box
-                display="flex"
-                alignItems="center"
-                data-testid="video-card-overall-score"
-                {...(isUnsafe && {
-                  sx: {
-                    filter: 'grayscale(100%)',
-                    opacity: 0.6,
-                  },
-                })}
-              >
-                <img
-                  className="tournesol"
-                  src={'/svg/tournesol.svg'}
-                  alt="logo"
-                  title="Overall score"
-                  width={32}
-                />
-                <span className={classes.nb_tournesol}>
-                  {result.collective_rating.tournesol_score.toFixed(0)}
-                </span>
-              </Box>
-            </Tooltip>
+            <TournesolScore
+              score={result.collective_rating.tournesol_score}
+              tooltip={tournesolScoreTitle}
+              fontSize={32}
+              unsafe={isUnsafe}
+              data-testid="video-card-overall-score"
+            />
           )}
 
         {nbRatings != null && nbRatings > 0 && (

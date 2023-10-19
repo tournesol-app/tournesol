@@ -130,6 +130,20 @@ const VideoInput = ({
         },
       },
       {
+        name: 'sub-sample',
+        label: t('entitySelector.yourScores'),
+        fetch: async () => {
+          const response = await UsersService.usersMeSubsamplesList({
+            pollName,
+            limit: 20,
+            ntile: 20,
+          });
+          return response.results ?? [];
+        },
+        disabled: !isLoggedIn,
+        displayIndividualScores: true,
+      },
+      {
         name: 'unconnected',
         label: t('entitySelector.unconnected'),
         fetch: async () => {

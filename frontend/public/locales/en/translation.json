@@ -42,6 +42,9 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
   },
+  "entityIndividualScores": {
+    "inYourOpinion": "your score <1></1>"
+  },
   "pagination": {
     "showingCounts_one": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}",
     "showingCounts_other": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}"
@@ -105,6 +108,7 @@
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
+    "yourScores": "Your scores",
     "unconnected": "To connect",
     "selectAVideo": "Select a video",
     "select": "Select",
@@ -113,6 +117,7 @@
     "backButton": "Back"
   },
   "tabsBox": {
+    "subsample": "An ordered sample of your personal ranking. The elements you recommend the most appear first.",
     "compared": "Compared videos appear here.",
     "recommendations": "Videos recommended by the community appear here.",
     "toConnect": "Videos isolated from your other comparisons appear here. Compare them to improve the recommendations.",
@@ -448,7 +453,6 @@
     "deleteAccount": "Delete account"
   },
   "pollUserSettingsForm": {
-    "letTournesolSuggestElements": "Let Tournesol suggest elements to compare when opening the comparison interface.",
     "moveTheFollowingCriterionUp": "Move the following criterion up:",
     "moveTheFollowingCriterionDown": "Move the following criterion down:",
     "selectTheCriteriaYouWantToDisplay": "Select the criteria you want to display by default",
@@ -469,8 +473,9 @@
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "updatePreferences": "Update preferences",
-    "extensionYoutube": "Extension (YouTube)",
     "comparisonPage": "Comparison page",
+    "letTournesolSuggestElements": "Let Tournesol suggest elements to compare when opening the comparison interface.",
+    "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Rate-later list",
     "recommendations": "Recommendations (stream)",
     "recommendationsPage": "Recommendations page",
@@ -541,10 +546,10 @@
   "videosUserSettingsForm": {
     "recommendations": {
       "defaultUploadDate": "Default value of the uploaded date filter",
-      "defaultExcludeCompared": "Exclude by default the videos that you have already compared.",
       "defaultLanguages": "Videos languages",
       "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)",
-      "defaultUnsafe": "Display by default the items having a negative score and those with few contributors."
+      "defaultUnsafe": "Display by default the items having a negative score and those with few contributors.",
+      "defaultExcludeCompared": "Exclude by default the videos that you have already compared."
     }
   },
   "preferences": {
