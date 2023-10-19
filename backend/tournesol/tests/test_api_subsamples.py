@@ -200,3 +200,12 @@ class SubSamplesListTestCase(TestCase):
                 item["entity"]["uid"], [video.uid for video in self.poll1_videos1[from_:to]]
             )
             self.assertEqual(item["subsample_metadata"]["bucket"], offset + idx)
+
+    def test_with_no_rating(self):
+        new_user = UserFactory()
+        self.client.force_authenticate(new_user)
+        response = self.client.get(self.base_subsamples_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.data["results"]
+        self.assertEqual(len(results), 0)

@@ -42,6 +42,9 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
             .values_list("entity_id", flat=True)
         )
 
+        if len(all_ratings) == 0:
+            return ContributorRating.objects.none()
+
         sub_sample_size = min(sub_sample_size, len(all_ratings))
         selected = [random.choice(bucket)  # nosec
                     for bucket in np.array_split(all_ratings, sub_sample_size)]
