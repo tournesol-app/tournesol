@@ -1,9 +1,13 @@
+from datetime import timedelta
+
 from django.test import TestCase
+from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
 from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
 from tournesol.models import RateLater
 from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFactory
 
@@ -18,7 +22,17 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         self.strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1)
 
-        self.videos = VideoFactory.create_batch(40)
+        today = timezone.now().date()
+
+        self.recent_videos = VideoFactory.create_batch(
+            20, metadata__publication_date=today.isoformat()
+        )
+
+        self.past_videos = VideoFactory.create_batch(
+            20, metadata__publication_date=(today - timedelta(days=60)).isoformat()
+        )
+
+        self.videos = self.recent_videos + self.past_videos
 
     def test_uids_from_pool_compared(self):
         compared = self.strategy._uids_from_pool_compared()
@@ -40,7 +54,8 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
     def test_uids_from_pool_rate_later(self):
         """
         The `_uids_from_pool_rate_later` method should return a random list of
-        entity ids from the configured pair poll / user.
+        entity ids from the rate-later list defined by the pair
+        `strategy.poll` / `strategy.user`.
         """
         results = self.strategy._uids_from_pool_rate_later([])
         self.assertEqual(len(results), 0)
@@ -79,7 +94,39 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertFalse(set(results).issubset(set(user2_rlater_list)))
 
     def test_uids_from_pool_reco_last_month(self):
-        pass
+        """
+        The `_uids_from_pool_reco_last_month` method should return a random
+        list of entity ids from the last month recommendations.
+        """
+        results = self.strategy._uids_from_pool_reco_last_month([])
+        self.assertEqual(len(results), 0)
+
+        recent_entities = []
+
+        for entity in self.recent_videos[:10]:
+            recent_entities.append(
+                EntityPollRatingFactory.create(
+                    poll=self.poll1,
+                    entity=entity,
+                    # XXX use the settings
+                    tournesol_score=99,
+                    sum_trust_scores=99,
+                ).entity_id
+            )
+
+        for entity in self.recent_videos[10:]:
+            EntityPollRatingFactory.create(
+                poll=self.poll1, entity=entity, tournesol_score=0, sum_trust_scores=0
+            )
+
+        results = self.strategy._uids_from_pool_reco_last_month([])
+        self.assertEqual(len(results), 10)
+        self.assertTrue(set(results).issubset(set(recent_entities)))
+
+        # Excluded entity ids should not be returned.
+        results = self.strategy._uids_from_pool_reco_last_month(recent_entities[:5])
+        self.assertEqual(len(results), 5)
+        self.assertTrue(set(results).issubset(set(recent_entities[5:])))
 
     def test_uids_from_pool_reco_all_time(self):
         pass
