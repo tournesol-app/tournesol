@@ -41,7 +41,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
     top_recommendations_limit = 400
     recent_recommendations_days = 30
 
-    def _get_recommendations(self, entity_filters, exclude_uids: list[int]) -> list[int]:
+    def _get_recommendations(self, entity_filters, exclude_ids: list[int]) -> list[int]:
         poll = self.poll
 
         return (
@@ -52,7 +52,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             )
             .select_related("entity")
             .filter(**entity_filters)
-            .exclude(entity_id__in=exclude_uids)
+            .exclude(entity_id__in=exclude_ids)
             .values_list("entity_id", flat=True)
         )
 
@@ -91,7 +91,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return random.sample(list(compared), min(len(compared), self.max_suggestions))
 
-    def _uids_from_pool_rate_later(self, exclude_uids: list[int]) -> list[int]:
+    def _uids_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
         """
         Return random UIDs from the user's rate-later list.
         """
@@ -100,13 +100,13 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         results = (
             RateLater.objects.filter(poll=poll, user=user)
-            .exclude(entity_id__in=exclude_uids)
+            .exclude(entity_id__in=exclude_ids)
             .values_list("entity_id", flat=True)
         )
 
         return random.sample(list(results), min(len(results), self.max_suggestions))
 
-    def _uids_from_pool_reco_last_month(self, exclude_uids: list[int]) -> list[int]:
+    def _uids_from_pool_reco_last_month(self, exclude_ids: list[int]) -> list[int]:
         """
         Return random UIDs from the recent recommendations.
 
@@ -121,13 +121,13 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             ).isoformat(),
         }
 
-        recommendations = self._get_recommendations(entity_filters, exclude_uids)
+        recommendations = self._get_recommendations(entity_filters, exclude_ids)
         already_compared = self._get_already_compared(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
 
         return random.sample(results, min(len(results), self.max_suggestions))
 
-    def _uids_from_pool_reco_all_time(self, exclude_uids: list[int]) -> list[int]:
+    def _uids_from_pool_reco_all_time(self, exclude_ids: list[int]) -> list[int]:
         """
         Return random UIDs from the top recommendations.
 
@@ -142,7 +142,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             ).isoformat(),
         }
 
-        recommendations = self._get_recommendations(entity_filters, exclude_uids)[
+        recommendations = self._get_recommendations(entity_filters, exclude_ids)[
             : self.top_recommendations_limit
         ]
         already_compared = self._get_already_compared(entity_filters)
