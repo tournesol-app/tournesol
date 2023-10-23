@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
@@ -24,15 +25,15 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         today = timezone.now().date()
 
-        self.recent_videos = VideoFactory.create_batch(
+        self.videos_new = VideoFactory.create_batch(
             20, metadata__publication_date=today.isoformat()
         )
 
-        self.past_videos = VideoFactory.create_batch(
+        self.videos_past = VideoFactory.create_batch(
             20, metadata__publication_date=(today - timedelta(days=60)).isoformat()
         )
 
-        self.videos = self.recent_videos + self.past_videos
+        self.videos = self.videos_new + self.videos_past
 
     def test_ids_from_pool_compared(self):
         compared = self.strategy._ids_from_pool_compared()
@@ -103,20 +104,27 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         recent_entities = []
 
-        for entity in self.recent_videos[:10]:
+        for entity in self.videos_new[:10]:
             recent_entities.append(
                 EntityPollRatingFactory.create(
                     poll=self.poll1,
                     entity=entity,
-                    # XXX use the settings
-                    tournesol_score=99,
-                    sum_trust_scores=99,
+                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
+                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
                 ).entity_id
             )
 
-        for entity in self.recent_videos[10:]:
+        for entity in self.videos_new[10:]:
             EntityPollRatingFactory.create(
-                poll=self.poll1, entity=entity, tournesol_score=0, sum_trust_scores=0
+                poll=self.poll1, entity=entity, tournesol_score=-1, sum_trust_scores=0
+            )
+
+        for entity in self.videos_past:
+            EntityPollRatingFactory.create(
+                poll=self.poll1,
+                entity=entity,
+                tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
+                sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
             )
 
         results = self.strategy._ids_from_pool_reco_last_month([])
@@ -129,7 +137,46 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results).issubset(set(recent_entities[5:])))
 
     def test_ids_from_pool_reco_all_time(self):
-        pass
+        """
+        The `_ids_from_pool_reco_all_time` method should return a random
+        list of entity ids from the last month recommendations.
+        """
+        results = self.strategy._ids_from_pool_reco_all_time([])
+        self.assertEqual(len(results), 0)
+
+        past_entities = []
+
+        for entity in self.videos_past[:10]:
+            past_entities.append(
+                EntityPollRatingFactory.create(
+                    poll=self.poll1,
+                    entity=entity,
+                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
+                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
+                ).entity_id
+            )
+
+        for entity in self.videos_past[10:]:
+            EntityPollRatingFactory.create(
+                poll=self.poll1, entity=entity, tournesol_score=0, sum_trust_scores=0
+            )
+
+        for entity in self.videos_new:
+            EntityPollRatingFactory.create(
+                poll=self.poll1,
+                entity=entity,
+                tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
+                sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
+            )
+
+        results = self.strategy._ids_from_pool_reco_all_time([])
+        self.assertEqual(len(results), 10)
+        self.assertTrue(set(results).issubset(set(past_entities)))
+
+        # Excluded entity ids should not be returned.
+        results = self.strategy._ids_from_pool_reco_all_time(past_entities[:5])
+        self.assertEqual(len(results), 5)
+        self.assertTrue(set(results).issubset(set(past_entities[5:])))
 
     def test_consolidate_results(self):
         pass
