@@ -43,10 +43,10 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
         strategy = request.query_params.get("strategy", ToCompareStrategy.CLASSIC)
 
         if strategy == ToCompareStrategy.CLASSIC:
-            self.strategy = ClassicEntitySuggestionStrategy(request, self.poll_from_url)
+            self.strategy = ClassicEntitySuggestionStrategy(self.poll_from_url, request.user)
         else:
             # Fallback to the classic strategy if an unknown strategy is provided.
-            self.strategy = ClassicEntitySuggestionStrategy(request, self.poll_from_url)
+            self.strategy = ClassicEntitySuggestionStrategy(self.poll_from_url, request.user)
 
     def get_serializer_class(self):
         return self.strategy.get_serializer_class()

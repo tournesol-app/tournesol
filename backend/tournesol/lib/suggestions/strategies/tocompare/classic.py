@@ -58,7 +58,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def _get_already_compared(self, entity_filters) -> list[int]:
         poll = self.poll
-        user = self.request.user
+        user = self.user
 
         max_threshold = user.settings.get(poll.name, {}).get(
             "rate_later__auto_remove", RATE_LATER_AUTO_REMOVE_DEFAULT
@@ -75,7 +75,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def _uids_from_pool_compared(self) -> list[int]:
         poll = self.poll
-        user = self.request.user
+        user = self.user
 
         max_threshold = user.settings.get(poll.name, {}).get(
             "rate_later__auto_remove", RATE_LATER_AUTO_REMOVE_DEFAULT
@@ -96,7 +96,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         Return random UIDs from the user's rate-later list.
         """
         poll = self.poll
-        user = self.request.user
+        user = self.user
 
         results = (
             RateLater.objects.filter(poll=poll, user=user)
