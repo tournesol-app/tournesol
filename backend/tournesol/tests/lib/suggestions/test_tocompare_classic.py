@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
 from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
+from tournesol.lib.suggestions.strategies.tocompare.classic import IdPool
 from tournesol.models import RateLater
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
@@ -179,7 +180,83 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results).issubset(set(past_entities[5:])))
 
     def test_consolidate_results(self):
-        pass
+        """
+        The `_consolidate_results` should return list made of items from three
+        pools.
+
+        If one pool doesn't contain enough items, more items from the other
+        pools should be used to compensate.
+        """
+        pool1 = list(range(100, 120))
+        pool2 = list(range(200, 220))
+        pool3 = list(range(300, 320))
+
+        p1_sample_size = 9
+        p2_sample_size = 7
+        p3_sample_size = 4
+
+        # [WHEN] all the pools contain enough items to create samples
+        # of the expected size.
+        results = self.strategy._consolidate_results(
+            IdPool(pool1, p1_sample_size),
+            IdPool(pool2, p2_sample_size),
+            IdPool(pool3, p3_sample_size),
+        )
+
+        # [THEN] the final results should contain exactly p1_sample_size items
+        # from the pool 1, p2_sample_size from the pool 2, etc.
+        self.assertTrue(set(results[:9]).issubset(pool1))
+        self.assertTrue(set(results[9:16]).issubset(pool2))
+        self.assertTrue(set(results[16:]).issubset(pool3))
+
+        # [WHEN] the pool 1 contains empty slots.
+        results = self.strategy._consolidate_results(
+            IdPool(pool1[:7], 9),
+            IdPool(pool2, 7),
+            IdPool(pool3, 4),
+        )
+
+        # [THEN] the pools 2 and 3 should each fill half of the empty slots.
+        self.assertTrue(set(results[:7]).issubset(pool1))
+        self.assertTrue(set(results[7:15]).issubset(pool2))
+        self.assertTrue(set(results[15:]).issubset(pool3))
+
+        # [WHEN] the pool 1 and 3 contain empty slots.
+        results = self.strategy._consolidate_results(
+            IdPool(pool1[:7], 9),
+            IdPool(pool2, 7),
+            IdPool(pool3[:2], 4),
+        )
+
+        # [THEN] the pool 2 should be able to fill all empty slots.
+        self.assertTrue(set(results[:7]).issubset(pool1))
+        self.assertTrue(set(results[7:18]).issubset(pool2))
+        self.assertTrue(set(results[18:]).issubset(pool3))
+
+        # [WHEN] the pool 1 and 2 contain empty slots.
+        results = self.strategy._consolidate_results(
+            IdPool(pool1[:7], 9),
+            IdPool(pool2[:5], 7),
+            IdPool(pool3, 4),
+        )
+
+        # [THEN] the pool 3 should be able to fill all empty slots.
+        self.assertTrue(set(results[:7]).issubset(pool1))
+        self.assertTrue(set(results[7:12]).issubset(pool2))
+        self.assertTrue(set(results[12:]).issubset(pool3))
+
+
+        # [WHEN] the pools 2 and 3 contain empty slots.
+        results = self.strategy._consolidate_results(
+            IdPool(pool1, 9),
+            IdPool(pool2[:5], 7),
+            IdPool(pool3[:2], 4),
+        )
+
+        # [THEN] the pool 1 should be able to fill all empty slots.
+        self.assertTrue(set(results[:13]).issubset(pool1))
+        self.assertTrue(set(results[13:18]).issubset(pool2))
+        self.assertTrue(set(results[18:]).issubset(pool3))
 
     def test_get_result_for_user_intermediate(self):
         pass
