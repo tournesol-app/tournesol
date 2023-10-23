@@ -11,8 +11,8 @@ from tournesol.serializers.suggestion import EntityToCompare
 
 
 @dataclass
-class UIDsPool:
-    uids: list[int]
+class IdPool:
+    ids: list[int]
     sample_size: int
 
 
@@ -73,7 +73,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             .values_list("entity_id", flat=True)
         )
 
-    def _uids_from_pool_compared(self) -> list[int]:
+    def _ids_from_pool_compared(self) -> list[int]:
         poll = self.poll
         user = self.user
 
@@ -91,9 +91,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return random.sample(list(compared), min(len(compared), self.max_suggestions))
 
-    def _uids_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
+    def _ids_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
         """
-        Return random UIDs from the user's rate-later list.
+        Return random ids from the user's rate-later list.
         """
         poll = self.poll
         user = self.user
@@ -106,11 +106,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return random.sample(list(results), min(len(results), self.max_suggestions))
 
-    def _uids_from_pool_reco_last_month(self, exclude_ids: list[int]) -> list[int]:
+    def _ids_from_pool_reco_last_month(self, exclude_ids: list[int]) -> list[int]:
         """
-        Return random UIDs from the recent recommendations.
+        Return random ids from the recent recommendations.
 
-        Only UIDs of entities that have been compared less than the user's
+        Only ids of entities that have been compared less than the user's
         setting `rate_later__auto_remove` are returned.
         """
         poll = self.poll
@@ -127,11 +127,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return random.sample(results, min(len(results), self.max_suggestions))
 
-    def _uids_from_pool_reco_all_time(self, exclude_ids: list[int]) -> list[int]:
+    def _ids_from_pool_reco_all_time(self, exclude_ids: list[int]) -> list[int]:
         """
-        Return random UIDs from the top recommendations.
+        Return random ids from the top recommendations.
 
-        Only UIDs of entities that have been compared less than the user's
+        Only ids of entities that have been compared less than the user's
         setting `rate_later__auto_remove` are returned.
         """
         poll = self.poll
@@ -150,7 +150,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return random.sample(results, min(len(results), self.max_suggestions))
 
-    def _consolidate_results(self, pool1: UIDsPool, pool2: UIDsPool, pool3: UIDsPool):
+    def _consolidate_results(self, pool1: IdPool, pool2: IdPool, pool3: IdPool):
         """
         Return a consolidated list of elements from all provided pools.
 
@@ -160,12 +160,12 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         extra_sample2 = 0
         extra_sample3 = 0
 
-        free_slots_in_pool1 = pool1.sample_size - len(pool1.uids[: pool1.sample_size])
-        free_slots_in_pool2 = pool2.sample_size - len(pool2.uids[: pool2.sample_size])
-        free_slots_in_pool3 = pool3.sample_size - len(pool3.uids[: pool3.sample_size])
+        free_slots_in_pool1 = pool1.sample_size - len(pool1.ids[: pool1.sample_size])
+        free_slots_in_pool2 = pool2.sample_size - len(pool2.ids[: pool2.sample_size])
+        free_slots_in_pool3 = pool3.sample_size - len(pool3.ids[: pool3.sample_size])
 
-        # If the pool 1 contains less UIDs than expected, try to pick more
-        # UIDs from the pools 2 and 3.
+        # If the pool 1 contains fewer ids than expected, try to pick more
+        # ids from the pools 2 and 3.
         if free_slots_in_pool1 > 0:
             extra_sample2 = free_slots_in_pool1 // 2
             extra_sample3 = free_slots_in_pool1 // 2
@@ -173,27 +173,27 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             if free_slots_in_pool1 % 2 == 1:
                 extra_sample2 += 1
 
-        sample1 = pool1.uids[: pool1.sample_size]
+        sample1 = pool1.ids[: pool1.sample_size]
 
-        # If the pool 3 contains less UIDs than expected, try to pick more
-        # UIDs from the pool 2.
+        # If the pool 3 contains fewer ids than expected, try to pick more
+        # ids from the pool 2.
         if free_slots_in_pool3 > 0:
             extra_sample2 += extra_sample3 + free_slots_in_pool3
 
-        sample2 = pool2.uids[: pool2.sample_size + extra_sample2]
+        sample2 = pool2.ids[: pool2.sample_size + extra_sample2]
 
-        # If the pool 2 contains less UIDs than expected, try to pick more
-        # UIDs from the pool 3.
+        # If the pool 2 contains fewer ids than expected, try to pick more
+        # ids from the pool 3.
         if free_slots_in_pool2 > 0:
             extra_sample3 += extra_sample2 + free_slots_in_pool2
 
-        sample3 = pool3.uids[: pool3.sample_size + extra_sample3]
+        sample3 = pool3.ids[: pool3.sample_size + extra_sample3]
 
         free_slots = self.max_suggestions - len(sample1) - len(sample2) - len(sample3)
 
-        # In case of need, add more UIDs from the pool 1.
+        # In case of need, add more ids from the pool 1.
         if free_slots > 0:
-            sample1 = pool1.uids[: pool1.sample_size + free_slots]
+            sample1 = pool1.ids[: pool1.sample_size + free_slots]
 
         return sample1 + sample2 + sample3
 
@@ -209,9 +209,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
     def get_result_for_user_intermediate(self):
         poll = self.poll
 
-        pool1 = self._uids_from_pool_compared()
-        pool2 = self._uids_from_pool_rate_later(pool1)
-        pool3 = self._uids_from_pool_reco_last_month(pool1 + pool2)
+        pool1 = self._ids_from_pool_compared()
+        pool2 = self._ids_from_pool_rate_later(pool1)
+        pool3 = self._ids_from_pool_reco_last_month(pool1 + pool2)
 
         sample1_size = len(pool1[: self.sample_size_compared])
         sample2_size = len(pool2[: self.sample_size_rate_later])
@@ -223,19 +223,19 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             ).with_prefetched_poll_ratings(poll_name=poll.name)
 
         # This optional step allows the empty slots from a pool to be filled
-        # by additional UIDs from other pools. The UIDs from the top
+        # by additional ids from other pools. The ids from the top
         # recommendations are used as a last resort, only if the current pools
-        # are not able to provide enough UIDs by themselves.
+        # are not able to provide enough ids by themselves.
         results = self._consolidate_results(
-            UIDsPool(pool1, self.sample_size_compared),
-            UIDsPool(pool2, self.sample_size_rate_later),
-            UIDsPool(pool3, self.sample_size_reco_last_month),
+            IdPool(pool1, self.sample_size_compared),
+            IdPool(pool2, self.sample_size_rate_later),
+            IdPool(pool3, self.sample_size_reco_last_month),
         )
 
         free_slots = self.max_suggestions - len(results)
 
         if free_slots > 0:
-            last_resort = self._uids_from_pool_reco_all_time(results)
+            last_resort = self._ids_from_pool_reco_all_time(results)
             results += last_resort[:free_slots]
 
         return Entity.objects.filter(id__in=results).with_prefetched_poll_ratings(

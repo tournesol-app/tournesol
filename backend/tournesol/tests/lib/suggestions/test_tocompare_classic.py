@@ -34,8 +34,8 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         self.videos = self.recent_videos + self.past_videos
 
-    def test_uids_from_pool_compared(self):
-        compared = self.strategy._uids_from_pool_compared()
+    def test_ids_from_pool_compared(self):
+        compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 0)
 
         for count, video in enumerate(reversed(self.videos)):
@@ -47,17 +47,17 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
                 contributor_rating__user=self.user1,
             )
 
-        compared = self.strategy._uids_from_pool_compared()
+        compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), self.strategy.max_suggestions)
         self.assertTrue(set(compared).issubset(set(video.id for video in self.videos)))
 
-    def test_uids_from_pool_rate_later(self):
+    def test_ids_from_pool_rate_later(self):
         """
-        The `_uids_from_pool_rate_later` method should return a random list of
+        The `_ids_from_pool_rate_later` method should return a random list of
         entity ids from the rate-later list defined by the pair
         `strategy.poll` / `strategy.user`.
         """
-        results = self.strategy._uids_from_pool_rate_later([])
+        results = self.strategy._ids_from_pool_rate_later([])
         self.assertEqual(len(results), 0)
 
         for i in range(20):
@@ -82,23 +82,23 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         )
 
         # 20 entity ids should be returned by default.
-        results = self.strategy._uids_from_pool_rate_later([])
+        results = self.strategy._ids_from_pool_rate_later([])
         self.assertEqual(len(results), 20)
         self.assertTrue(set(results).issubset(set(user1_rlater_list)))
         self.assertFalse(set(results).issubset(set(user2_rlater_list)))
 
         # The `exclude_ids` arg should exclude the provided entity ids.
-        results = self.strategy._uids_from_pool_rate_later(exclude_ids=user1_rlater_list[:10])
+        results = self.strategy._ids_from_pool_rate_later(exclude_ids=user1_rlater_list[:10])
         self.assertEqual(len(results), 10)
         self.assertTrue(set(results).issubset(set(user1_rlater_list)))
         self.assertFalse(set(results).issubset(set(user2_rlater_list)))
 
-    def test_uids_from_pool_reco_last_month(self):
+    def test_ids_from_pool_reco_last_month(self):
         """
-        The `_uids_from_pool_reco_last_month` method should return a random
+        The `_ids_from_pool_reco_last_month` method should return a random
         list of entity ids from the last month recommendations.
         """
-        results = self.strategy._uids_from_pool_reco_last_month([])
+        results = self.strategy._ids_from_pool_reco_last_month([])
         self.assertEqual(len(results), 0)
 
         recent_entities = []
@@ -119,16 +119,16 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
                 poll=self.poll1, entity=entity, tournesol_score=0, sum_trust_scores=0
             )
 
-        results = self.strategy._uids_from_pool_reco_last_month([])
+        results = self.strategy._ids_from_pool_reco_last_month([])
         self.assertEqual(len(results), 10)
         self.assertTrue(set(results).issubset(set(recent_entities)))
 
         # Excluded entity ids should not be returned.
-        results = self.strategy._uids_from_pool_reco_last_month(recent_entities[:5])
+        results = self.strategy._ids_from_pool_reco_last_month(recent_entities[:5])
         self.assertEqual(len(results), 5)
         self.assertTrue(set(results).issubset(set(recent_entities[5:])))
 
-    def test_uids_from_pool_reco_all_time(self):
+    def test_ids_from_pool_reco_all_time(self):
         pass
 
     def test_consolidate_results(self):
