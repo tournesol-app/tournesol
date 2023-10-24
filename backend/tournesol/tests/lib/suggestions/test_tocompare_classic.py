@@ -8,10 +8,28 @@ from core.tests.factories.user import UserFactory
 from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
 from tournesol.lib.suggestions.strategies.tocompare.classic import IdPool
 from tournesol.models import RateLater
+from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFactory
+
+
+def create_entity_poll_rating(poll, entities, recommended):
+    ids = []
+
+    scores = {
+        "tournesol_score": settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
+        "sum_trust_scores": settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
+    }
+
+    if not recommended:
+        scores["tournesol_score"] = settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE - 1
+        scores["sum_trust_scores"] = settings.RECOMMENDATIONS_MIN_TRUST_SCORES - 1
+
+    for entity in entities:
+        ids.append(EntityPollRatingFactory.create(poll=poll, entity=entity, **scores).entity_id)
+    return ids
 
 
 class ClassicEntitySuggestionStrategyTestCase(TestCase):
@@ -37,60 +55,34 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.videos = self.videos_new + self.videos_past
 
     def test_get_recommendations(self):
+        """
+        The method `_get_recommendations` should return all ids of recommended
+        entities, filtered according to the provided parameters.
+        """
         results = self.strategy._get_recommendations({}, [])
         self.assertEqual(len(results), 0)
 
         recent_entities = []
-        for entity in self.videos_new[:10]:
-            recent_entities.append(
-                EntityPollRatingFactory.create(
-                    poll=self.poll1,
-                    entity=entity,
-                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
-                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
-                ).entity_id
-            )
-
-        for entity in self.videos_new[10:]:
-            recent_entities.append(
-                EntityPollRatingFactory.create(
-                    poll=self.poll1,
-                    entity=entity,
-                    tournesol_score=-1,
-                    sum_trust_scores=0,
-                ).entity_id
-            )
+        # [GIVEN] a set of "recent" recommended entities.
+        recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[:10], True))
+        recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[10:], False))
 
         past_entities = []
-        for entity in self.videos_past[:10]:
-            past_entities.append(
-                EntityPollRatingFactory.create(
-                    poll=self.poll1,
-                    entity=entity,
-                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
-                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
-                ).entity_id
-            )
-
-        for entity in self.videos_past[10:]:
-            past_entities.append(
-                EntityPollRatingFactory.create(
-                    poll=self.poll1,
-                    entity=entity,
-                    tournesol_score=-1,
-                    sum_trust_scores=0,
-                ).entity_id
-            )
+        # [GIVEN] a set of "past" recommended entities.
+        past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[:10], True))
+        past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[10:], False))
 
         today = timezone.now().date()
 
-        # [WHEN] no filter is used, 20 id of recommended entities are returned.
+        # [WHEN] no filters are used.
+        # [THEN] ids of all recommended entities should be returned.
         results = self.strategy._get_recommendations({}, [])
         self.assertEqual(len(results), 20)
         self.assertTrue(set(results).issuperset(recent_entities[:10]))
         self.assertTrue(set(results).issuperset(past_entities[:10]))
 
-        # [WHEN] an entity filter is provided, only ids of matching entities are returned.
+        # [WHEN] the filter `excluded_ids` is provided.
+        # [THEN] only ids of matching entities should be returned.
         results = self.strategy._get_recommendations(
             {
                 f"entity__{self.poll1.entity_cls.get_filter_date_field()}__gte": (
@@ -100,20 +92,87 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
             [],
         )
         self.assertEqual(len(results), 10)
-        self.assertTrue(set(results).issubset(recent_entities[:10]))
+        self.assertTrue(set(results) == set(recent_entities[:10]))
 
-        # [WHEN] an exclusion list is provided, only ids of non-matching entities are returned.
+        # [WHEN] the filter `excluded_ids` is provided.
+        # [THEN] excluded entity ids should not be returned.
         results = self.strategy._get_recommendations({}, exclude_ids=recent_entities)
         self.assertEqual(len(results), 10)
-        self.assertTrue(set(results).issubset(past_entities[:10]))
+        self.assertTrue(set(results) == set(past_entities[:10]))
+
+    def test_get_already_compared(self):
+        results = self.strategy._get_already_compared({})
+        self.assertEqual(len(results), 0)
+
+        for count, video in enumerate(self.videos_new):
+            ContributorRatingCriteriaScoreFactory.create(
+                score=(100 / len(self.videos_new)) * count,
+                criteria=self.poll1.main_criteria,
+                contributor_rating__poll=self.poll1,
+                contributor_rating__entity=video,
+                contributor_rating__user=self.user1,
+            )
+
+            ContributorRatingCriteriaScoreFactory.create(
+                score=(100 / len(self.videos_new)) * count,
+                criteria=self.poll1.main_criteria,
+                contributor_rating__poll=self.poll1,
+                contributor_rating__entity=video,
+                contributor_rating__user=self.user2,
+            )
+
+        for count, video in enumerate(self.videos_past):
+            ContributorRatingCriteriaScoreFactory.create(
+                score=(100 / len(self.videos_past)) * count,
+                criteria=self.poll1.main_criteria,
+                contributor_rating__poll=self.poll2,
+                contributor_rating__entity=video,
+                contributor_rating__user=self.user1,
+            )
+
+        results = self.strategy._get_already_compared({})
+        self.assertEqual(len(results), 0)
+
+        comparisons_batch_user1 = [
+            # Videos compared 4 times should be considered "already compared".
+            dict(entity_1=self.videos_new[4], entity_2=self.videos_new[10]),
+            dict(entity_1=self.videos_new[4], entity_2=self.videos_new[11]),
+            dict(entity_1=self.videos_new[4], entity_2=self.videos_new[12]),
+            dict(entity_1=self.videos_new[4], entity_2=self.videos_new[13]),
+            # Videos compared more than 4 times should be considered "already compared".
+            dict(entity_1=self.videos_new[5], entity_2=self.videos_new[14]),
+            dict(entity_1=self.videos_new[5], entity_2=self.videos_new[15]),
+            dict(entity_1=self.videos_new[5], entity_2=self.videos_new[16]),
+            dict(entity_1=self.videos_new[5], entity_2=self.videos_new[17]),
+            dict(entity_1=self.videos_new[5], entity_2=self.videos_new[18]),
+        ]
+
+        for comp in comparisons_batch_user1:
+            ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
+
+        comparisons_batch_user2 = [
+            # Videos compared 4 times should be considered "already compared".
+            dict(entity_1=self.videos_new[0], entity_2=self.videos_new[10]),
+            dict(entity_1=self.videos_new[0], entity_2=self.videos_new[11]),
+            dict(entity_1=self.videos_new[0], entity_2=self.videos_new[12]),
+            dict(entity_1=self.videos_new[0], entity_2=self.videos_new[13]),
+        ]
+
+        for comp in comparisons_batch_user2:
+            ComparisonFactory(poll=self.poll1, user=self.user2, **comp)
+
+        results = self.strategy._get_already_compared({})
+        self.assertEqual(len(results), 2)
+        self.assertIn(self.videos_new[4].id, results)
+        self.assertIn(self.videos_new[5].id, results)
 
     def test_ids_from_pool_compared(self):
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 0)
 
-        for count, video in enumerate(reversed(self.videos)):
+        for count, video in enumerate(self.videos_new):
             ContributorRatingCriteriaScoreFactory.create(
-                score=(100 / len(self.videos)) * count,
+                score=(100 / len(self.videos_new)) * count,
                 criteria=self.poll1.main_criteria,
                 contributor_rating__poll=self.poll1,
                 contributor_rating__entity=video,
@@ -122,7 +181,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), self.strategy.max_suggestions)
-        self.assertTrue(set(compared).issubset(set(video.id for video in self.videos)))
+        self.assertTrue(set(compared).issubset([video.id for video in self.videos]))
 
     def test_ids_from_pool_rate_later(self):
         """
@@ -168,87 +227,55 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
     def test_ids_from_pool_reco_last_month(self):
         """
-        The `_ids_from_pool_reco_last_month` method should return a random
+        The method `_ids_from_pool_reco_last_month` should return a random
         list of entity ids from the last month recommendations.
         """
         results = self.strategy._ids_from_pool_reco_last_month([])
         self.assertEqual(len(results), 0)
 
         recent_entities = []
+        # [GIVEN] a set of recent and past recommended entities.
+        recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[:10], True))
+        create_entity_poll_rating(self.poll1, self.videos_new[10:], False)
+        create_entity_poll_rating(self.poll1, self.videos_past[:10], True)
 
-        for entity in self.videos_new[:10]:
-            recent_entities.append(
-                EntityPollRatingFactory.create(
-                    poll=self.poll1,
-                    entity=entity,
-                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
-                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
-                ).entity_id
-            )
-
-        for entity in self.videos_new[10:]:
-            EntityPollRatingFactory.create(
-                poll=self.poll1, entity=entity, tournesol_score=-1, sum_trust_scores=0
-            )
-
-        for entity in self.videos_past:
-            EntityPollRatingFactory.create(
-                poll=self.poll1,
-                entity=entity,
-                tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
-                sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
-            )
-
+        # [WHEN] no filters are provided.
+        # [THEN] only the recommended "recent" entities should be returned.
         results = self.strategy._ids_from_pool_reco_last_month([])
         self.assertEqual(len(results), 10)
-        self.assertTrue(set(results).issubset(set(recent_entities)))
+        self.assertTrue(set(results) == set(recent_entities[:10]))
 
-        # Excluded entity ids should not be returned.
+        # [WHEN] the filter `excluded_ids` is provided.
+        # [THEN] excluded entity ids should not be returned.
         results = self.strategy._ids_from_pool_reco_last_month(recent_entities[:5])
         self.assertEqual(len(results), 5)
-        self.assertTrue(set(results).issubset(set(recent_entities[5:])))
+        self.assertTrue(set(results) == set(recent_entities[5:]))
 
     def test_ids_from_pool_reco_all_time(self):
         """
-        The `_ids_from_pool_reco_all_time` method should return a random
+        The method `_ids_from_pool_reco_all_time` should return a random
         list of entity ids from the last month recommendations.
         """
         results = self.strategy._ids_from_pool_reco_all_time([])
         self.assertEqual(len(results), 0)
 
         past_entities = []
+        # [GIVEN] a set of recent and past recommended entities.
+        past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[:10], True))
+        create_entity_poll_rating(self.poll1, self.videos_past[10:], False)
+        create_entity_poll_rating(self.poll1, self.videos_new[:10], True)
 
-        for entity in self.videos_past[:10]:
-            past_entities.append(
-                EntityPollRatingFactory.create(
-                    poll=self.poll1,
-                    entity=entity,
-                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
-                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
-                ).entity_id
-            )
-
-        for entity in self.videos_past[10:]:
-            EntityPollRatingFactory.create(
-                poll=self.poll1, entity=entity, tournesol_score=0, sum_trust_scores=0
-            )
-
-        for entity in self.videos_new:
-            EntityPollRatingFactory.create(
-                poll=self.poll1,
-                entity=entity,
-                tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
-                sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
-            )
-
+        # [WHEN] no filters are provided.
+        # [THEN] only the recommended "past" entities should be returned.
         results = self.strategy._ids_from_pool_reco_all_time([])
         self.assertEqual(len(results), 10)
-        self.assertTrue(set(results).issubset(set(past_entities)))
+        self.assertTrue(set(results) == set(past_entities[:10]))
 
-        # Excluded entity ids should not be returned.
+        # [WHEN] the filter `excluded_ids` is provided.
+        # [THEN] excluded entity ids should not be returned.
         results = self.strategy._ids_from_pool_reco_all_time(past_entities[:5])
         self.assertEqual(len(results), 5)
-        self.assertTrue(set(results).issubset(set(past_entities[5:])))
+        self.assertTrue(set(results) == set(past_entities[5:]))
 
     def test_consolidate_results(self):
         """
