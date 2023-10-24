@@ -189,6 +189,7 @@
       wget -qO- https://check.torproject.org/exit-addresses
       | grep ExitAddress
       | cut -d ' ' -f 2
+      | sort -u
       | sed "s/^/deny /g; s/$/;/g"
       > /etc/nginx/snippets/block_tor.conf
     when: find_snippet.matched == 0
