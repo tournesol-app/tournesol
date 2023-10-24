@@ -178,6 +178,14 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertIn(self.videos_new[4].id, results)
         self.assertIn(self.videos_new[5].id, results)
 
+        self.user1.settings[self.poll1.name] = {"rate_later__auto_remove": 99}
+        self.user1.save(update_fields=["settings"])
+
+        # [WHEN] all entities have not been compared sufficiently by the user1,
+        # [THEN] no entity id should be returned.
+        results = self.strategy._get_compared_sufficiently({})
+        self.assertEqual(len(results), 0)
+
     def test_ids_from_pool_compared(self):
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 0)
