@@ -116,7 +116,7 @@ server {
         proxy_pass http://unix:/run/gunicorn.sock;
     }
 
-    location ~ /accounts/(register-email|send-reset-password-link) {
+    location ~* /accounts/(register|send-reset-password-link)/ {
         {% if maintenance %}
             return 503;
         {% else %}
