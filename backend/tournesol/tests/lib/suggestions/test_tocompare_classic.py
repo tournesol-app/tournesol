@@ -32,6 +32,17 @@ def create_entity_poll_rating(poll, entities, recommended):
     return ids
 
 
+def create_contributor_rating_criteria_scores(poll, user, entities):
+    for entity in entities:
+        ContributorRatingCriteriaScoreFactory.create(
+            score=44,
+            criteria=poll.main_criteria,
+            contributor_rating__poll=poll,
+            contributor_rating__entity=entity,
+            contributor_rating__user=user,
+        )
+
+
 class ClassicEntitySuggestionStrategyTestCase(TestCase):
     def setUp(self):
         self.user1 = UserFactory(username="username1")
@@ -74,14 +85,14 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         today = timezone.now().date()
 
-        # [WHEN] no filters are used.
+        # [WHEN] no filters are used,
         # [THEN] ids of all recommended entities should be returned.
         results = self.strategy._get_recommendations({}, [])
         self.assertEqual(len(results), 20)
         self.assertTrue(set(results).issuperset(recent_entities[:10]))
         self.assertTrue(set(results).issuperset(past_entities[:10]))
 
-        # [WHEN] the filter `excluded_ids` is provided.
+        # [WHEN] the filter `excluded_ids` is provided,
         # [THEN] only ids of matching entities should be returned.
         results = self.strategy._get_recommendations(
             {
@@ -94,7 +105,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 10)
         self.assertTrue(set(results) == set(recent_entities[:10]))
 
-        # [WHEN] the filter `excluded_ids` is provided.
+        # [WHEN] the filter `excluded_ids` is provided,
         # [THEN] excluded entity ids should not be returned.
         results = self.strategy._get_recommendations({}, exclude_ids=recent_entities)
         self.assertEqual(len(results), 10)
@@ -104,34 +115,14 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
 
-        for count, video in enumerate(self.videos_new):
-            ContributorRatingCriteriaScoreFactory.create(
-                score=(100 / len(self.videos_new)) * count,
-                criteria=self.poll1.main_criteria,
-                contributor_rating__poll=self.poll1,
-                contributor_rating__entity=video,
-                contributor_rating__user=self.user1,
-            )
-
-            ContributorRatingCriteriaScoreFactory.create(
-                score=(100 / len(self.videos_new)) * count,
-                criteria=self.poll1.main_criteria,
-                contributor_rating__poll=self.poll1,
-                contributor_rating__entity=video,
-                contributor_rating__user=self.user2,
-            )
-
-        for count, video in enumerate(self.videos_past):
-            ContributorRatingCriteriaScoreFactory.create(
-                score=(100 / len(self.videos_past)) * count,
-                criteria=self.poll1.main_criteria,
-                contributor_rating__poll=self.poll2,
-                contributor_rating__entity=video,
-                contributor_rating__user=self.user1,
-            )
+        create_contributor_rating_criteria_scores(self.poll1, self.user1, self.videos_new)
+        create_contributor_rating_criteria_scores(self.poll1, self.user2, self.videos_new)
+        create_contributor_rating_criteria_scores(self.poll2, self.user1, self.videos_past)
 
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
+
+        # XXX update the user settings
 
         comparisons_batch_user1 = [
             # Videos compared 4 times should be considered "already compared".
@@ -170,18 +161,54 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 0)
 
-        for count, video in enumerate(self.videos_new):
-            ContributorRatingCriteriaScoreFactory.create(
-                score=(100 / len(self.videos_new)) * count,
-                criteria=self.poll1.main_criteria,
-                contributor_rating__poll=self.poll1,
-                contributor_rating__entity=video,
-                contributor_rating__user=self.user1,
-            )
+        # [GIVEN] a list of contributor ratings.
+        create_contributor_rating_criteria_scores(self.poll1, self.user1, self.videos_new)
 
+        # [GIVEN] 9 entities with comparisons.
+        # Their number of comparisons is inferior to the user's rate_later__auto_remove.
+        comparisons_batch_user1 = [
+            dict(entity_1=self.videos_new[1], entity_2=self.videos_new[10]),
+            dict(entity_1=self.videos_new[2], entity_2=self.videos_new[11]),
+            dict(entity_1=self.videos_new[2], entity_2=self.videos_new[12]),
+            dict(entity_1=self.videos_new[3], entity_2=self.videos_new[13]),
+            dict(entity_1=self.videos_new[3], entity_2=self.videos_new[14]),
+            dict(entity_1=self.videos_new[3], entity_2=self.videos_new[15]),
+        ]
+
+        for comp in comparisons_batch_user1:
+            ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
+
+        # [WHEN] the method `_ids_from_pool_compared` is called,
+        # [THEN] all compared entity ids should be returned.
         compared = self.strategy._ids_from_pool_compared()
-        self.assertEqual(len(compared), self.strategy.max_suggestions)
-        self.assertTrue(set(compared).issubset([video.id for video in self.videos]))
+        self.assertEqual(len(compared), 9)
+        self.assertTrue(
+            set(compared).issuperset(set([video.id for video in self.videos_new[1:4]]))
+        )
+        self.assertTrue(
+            set(compared).issuperset(set([video.id for video in self.videos_new[10:16]]))
+        )
+
+        # [GIVEN] more comparisons for two previous entities.
+        # Their number of comparisons is superior to the user's rate_later__auto_remove.
+        comparisons_batch_user1 = [
+            dict(entity_1=self.videos_new[2], entity_2=self.videos_new[10]),
+            dict(entity_1=self.videos_new[2], entity_2=self.videos_new[13]),
+            dict(entity_1=self.videos_new[3], entity_2=self.videos_new[11]),
+        ]
+
+        for comp in comparisons_batch_user1:
+            ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
+
+        # [WHEN] the method `_ids_from_pool_compared` is called,
+        # [THEN] only entity ids that have been compared between 1 <= n < rate_later__auto_remove.
+        # times should be returned
+        compared = self.strategy._ids_from_pool_compared()
+        self.assertEqual(len(compared), 7)
+        self.assertTrue(set(compared).issuperset(set([self.videos_new[1].id])))
+        self.assertTrue(
+            set(compared).issuperset(set([video.id for video in self.videos_new[10:16]]))
+        )
 
     def test_ids_from_pool_rate_later(self):
         """
