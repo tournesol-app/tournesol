@@ -171,6 +171,28 @@
     state: started
     daemon_reload: true
 
+- name: Copy gunicorn snippet
+  copy:
+    src: gunicorn_proxy.conf
+    dest: /etc/nginx/snippets/
+
+- name: Create block_tor snippet
+  block:
+  - find:
+      paths: /etc/nginx/snippets
+      patterns: block_tor.conf
+      age: -30d
+    register: find_snippet
+
+  - name: Generate block_tor snippet
+    shell: >
+      wget -qO- https://check.torproject.org/exit-addresses
+      | grep ExitAddress
+      | cut -d ' ' -f 2
+      | sed "s/^/deny /g; s/$/;/g"
+      > /etc/nginx/snippets/block_tor.conf
+    when: find_snippet.matched == 0
+
 - name: Copy Nginx configuration
   template:
     src: tournesol.j2
