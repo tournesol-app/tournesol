@@ -100,8 +100,8 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 10)
         self.assertTrue(set(results) == set(past_entities[:10]))
 
-    def test_get_already_compared(self):
-        results = self.strategy._get_already_compared({})
+    def test_get_compared_sufficiently(self):
+        results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
 
         for count, video in enumerate(self.videos_new):
@@ -130,7 +130,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
                 contributor_rating__user=self.user1,
             )
 
-        results = self.strategy._get_already_compared({})
+        results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
 
         comparisons_batch_user1 = [
@@ -161,7 +161,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         for comp in comparisons_batch_user2:
             ComparisonFactory(poll=self.poll1, user=self.user2, **comp)
 
-        results = self.strategy._get_already_compared({})
+        results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 2)
         self.assertIn(self.videos_new[4].id, results)
         self.assertIn(self.videos_new[5].id, results)

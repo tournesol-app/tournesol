@@ -42,6 +42,10 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
     recent_recommendations_days = 30
 
     def _get_recommendations(self, entity_filters, exclude_ids: list[int]) -> list[int]:
+        """
+        Return all entity ids of all recommendations based on the provided
+        filters.
+        """
         poll = self.poll
 
         return (
@@ -56,7 +60,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             .values_list("entity_id", flat=True)
         )
 
-    def _get_already_compared(self, entity_filters) -> list[int]:
+    def _get_compared_sufficiently(self, entity_filters) -> list[int]:
+        """
+        Return the list of entity ids that have been sufficiently compared by
+        the user.
+        """
         poll = self.poll
         user = self.user
 
@@ -74,6 +82,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         )
 
     def _ids_from_pool_compared(self) -> list[int]:
+        """
+        Return random list of entity ids that have been compared at least one
+        time by the user, but less than the user's setting
+        `rate_later__auto_remove`.
+        """
         poll = self.poll
         user = self.user
 
@@ -86,6 +99,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             .select_related("entity")
             .annotate_n_comparisons()
             .filter(n_comparisons__lt=max_threshold)
+            .filter(n_comparisons__gt=0)
             .values_list("entity_id", flat=True)
         )
 
@@ -93,7 +107,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def _ids_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
         """
-        Return random ids from the user's rate-later list.
+        Return a random list entity ids from the user's rate-later list.
         """
         poll = self.poll
         user = self.user
@@ -110,8 +124,8 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         """
         Return random ids from the recent recommendations.
 
-        Only ids of entities that have been compared less than the user's
-        setting `rate_later__auto_remove` are returned.
+        Only ids of entities that have been compared fewer times than the
+        user's setting `rate_later__auto_remove` are returned.
         """
         poll = self.poll
 
@@ -122,7 +136,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         }
 
         recommendations = self._get_recommendations(entity_filters, exclude_ids)
-        already_compared = self._get_already_compared(entity_filters)
+        already_compared = self._get_compared_sufficiently(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
 
         return random.sample(results, min(len(results), self.max_suggestions))
@@ -131,8 +145,8 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         """
         Return random ids from the top recommendations.
 
-        Only ids of entities that have been compared less than the user's
-        setting `rate_later__auto_remove` are returned.
+        Only ids of entities that have been compared fewer times than the
+        user's setting `rate_later__auto_remove` are returned.
         """
         poll = self.poll
 
@@ -145,7 +159,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         recommendations = self._get_recommendations(entity_filters, exclude_ids)[
             : self.top_recommendations_limit
         ]
-        already_compared = self._get_already_compared(entity_filters)
+        already_compared = self._get_compared_sufficiently(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
 
         return random.sample(results, min(len(results), self.max_suggestions))
