@@ -45,11 +45,23 @@ def create_contributor_rating_criteria_scores(poll, user, entities):
 
 class ClassicEntitySuggestionStrategyTestCase(TestCase):
     def setUp(self):
-        self.user1 = UserFactory(username="username1")
-        self.user2 = UserFactory(username="username2")
+        self.poll1 = PollWithCriteriasFactory(name="poll1", entity_type="video")
+        self.poll2 = PollWithCriteriasFactory(name="poll2", entity_type="video")
 
-        self.poll1 = PollWithCriteriasFactory(entity_type="video")
-        self.poll2 = PollWithCriteriasFactory(entity_type="video")
+        self.user1 = UserFactory(
+            username="username1",
+            settings={
+                "poll1": {"rate_later__auto_remove": 4},
+                "poll2": {"rate_later__auto_remove": 4},
+            },
+        )
+        self.user2 = UserFactory(
+            username="username2",
+            settings={
+                "poll1": {"rate_later__auto_remove": 4},
+                "poll2": {"rate_later__auto_remove": 4},
+            },
+        )
 
         self.strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1)
 
@@ -112,6 +124,11 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results) == set(past_entities[:10]))
 
     def test_get_compared_sufficiently(self):
+        """
+        The method `_get_compared_sufficiently` should return entity ids that
+        have been compared at least one time by the user, but less than the
+        user's setting `rate_later__auto_remove`.
+        """
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
 
@@ -119,18 +136,19 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         create_contributor_rating_criteria_scores(self.poll1, self.user2, self.videos_new)
         create_contributor_rating_criteria_scores(self.poll2, self.user1, self.videos_past)
 
+        # [WHEN] the contributor ratings exist, but without comparison,
+        # [THEN] no entity ids should be returned.
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
 
-        # XXX update the user settings
-
+        # [GIVEN] a list of videos that have been compared sufficiently by the user1.
         comparisons_batch_user1 = [
-            # Videos compared 4 times should be considered "already compared".
+            # nb comparisons is equal to the user's setting rate_later__auto_remove
             dict(entity_1=self.videos_new[4], entity_2=self.videos_new[10]),
             dict(entity_1=self.videos_new[4], entity_2=self.videos_new[11]),
             dict(entity_1=self.videos_new[4], entity_2=self.videos_new[12]),
             dict(entity_1=self.videos_new[4], entity_2=self.videos_new[13]),
-            # Videos compared more than 4 times should be considered "already compared".
+            # nb comparisons is superior to the user's setting rate_later__auto_remove
             dict(entity_1=self.videos_new[5], entity_2=self.videos_new[14]),
             dict(entity_1=self.videos_new[5], entity_2=self.videos_new[15]),
             dict(entity_1=self.videos_new[5], entity_2=self.videos_new[16]),
@@ -141,8 +159,9 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         for comp in comparisons_batch_user1:
             ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
 
+        # [GIVEN] a list of videos that have been compared sufficiently by the user2.
         comparisons_batch_user2 = [
-            # Videos compared 4 times should be considered "already compared".
+            # nb comparisons is equal to the user's setting rate_later__auto_remove
             dict(entity_1=self.videos_new[0], entity_2=self.videos_new[10]),
             dict(entity_1=self.videos_new[0], entity_2=self.videos_new[11]),
             dict(entity_1=self.videos_new[0], entity_2=self.videos_new[12]),
@@ -152,6 +171,8 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         for comp in comparisons_batch_user2:
             ComparisonFactory(poll=self.poll1, user=self.user2, **comp)
 
+        # [WHEN] some entities have been compared sufficiently by the user1,
+        # [THEN] their entity ids should be returned.
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 2)
         self.assertIn(self.videos_new[4].id, results)
