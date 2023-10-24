@@ -86,12 +86,10 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
         recent_entities = []
-        # [GIVEN] a set of "recent" recommended entities.
         recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[:10], True))
         recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[10:], False))
 
         past_entities = []
-        # [GIVEN] a set of "past" recommended entities.
         past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[:10], True))
         past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[10:], False))
 
@@ -125,9 +123,8 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
     def test_get_compared_sufficiently(self):
         """
-        The method `_get_compared_sufficiently` should return entity ids that
-        have been compared at least one time by the user, but less than the
-        user's setting `rate_later__auto_remove`.
+        The method `_ids_from_pool_compared` should return entity ids that
+        have been compared more than the user's setting `rate_later__auto_remove` times.
         """
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
@@ -141,7 +138,6 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
 
-        # [GIVEN] a list of videos that have been compared sufficiently by the user1.
         comparisons_batch_user1 = [
             # nb comparisons is equal to the user's setting rate_later__auto_remove
             dict(entity_1=self.videos_new[4], entity_2=self.videos_new[10]),
@@ -159,9 +155,8 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         for comp in comparisons_batch_user1:
             ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
 
-        # [GIVEN] a list of videos that have been compared sufficiently by the user2.
+        # Ensure the returned entity ids match the user1 comparisons.
         comparisons_batch_user2 = [
-            # nb comparisons is equal to the user's setting rate_later__auto_remove
             dict(entity_1=self.videos_new[0], entity_2=self.videos_new[10]),
             dict(entity_1=self.videos_new[0], entity_2=self.videos_new[11]),
             dict(entity_1=self.videos_new[0], entity_2=self.videos_new[12]),
@@ -181,18 +176,21 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.user1.settings[self.poll1.name] = {"rate_later__auto_remove": 99}
         self.user1.save(update_fields=["settings"])
 
-        # [WHEN] all entities have not been compared sufficiently by the user1,
-        # [THEN] no entity id should be returned.
+        # [WHEN] no entities have been compared sufficiently by the user1,
+        # [THEN] no entity ids should be returned.
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
 
     def test_ids_from_pool_compared(self):
+        """
+        The method `_ids_from_pool_compared` should return entity ids that
+        have been compared at least one time by the user, but less than the
+        user's setting `rate_later__auto_remove` times.
+        """
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 0)
 
-        # [GIVEN] a list of contributor ratings.
         create_contributor_rating_criteria_scores(self.poll1, self.user1, self.videos_new)
-
         # [GIVEN] 9 entities with comparisons.
         # Their number of comparisons is inferior to the user's rate_later__auto_remove.
         comparisons_batch_user1 = [
@@ -218,8 +216,6 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
             set(compared).issuperset(set([video.id for video in self.videos_new[10:16]]))
         )
 
-        # [GIVEN] more comparisons for two previous entities.
-        # Their number of comparisons is superior to the user's rate_later__auto_remove.
         comparisons_batch_user1 = [
             dict(entity_1=self.videos_new[2], entity_2=self.videos_new[10]),
             dict(entity_1=self.videos_new[2], entity_2=self.videos_new[13]),
@@ -230,14 +226,27 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
             ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
 
         # [WHEN] the method `_ids_from_pool_compared` is called,
-        # [THEN] only entity ids that have been compared between 1 <= n < rate_later__auto_remove.
-        # times should be returned
+        # [THEN] only entity ids that have been compared between 1 <= n < rate_later__auto_remove
+        # times should be returned.
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 7)
         self.assertTrue(set(compared).issuperset(set([self.videos_new[1].id])))
         self.assertTrue(
             set(compared).issuperset(set([video.id for video in self.videos_new[10:16]]))
         )
+
+        self.user1.settings[self.poll1.name] = {"rate_later__auto_remove": 2}
+        self.user1.save(update_fields=["settings"])
+
+        # [WHEN] the method `_ids_from_pool_compared` is called,
+        # [THEN] only entity ids that have been compared between 1 <= n < 2
+        # times should be returned.
+        results = self.strategy._ids_from_pool_compared()
+        self.assertEqual(len(results), 4)
+        self.assertIn(self.videos_new[1].id, results)
+        self.assertIn(self.videos_new[12].id, results)
+        self.assertIn(self.videos_new[14].id, results)
+        self.assertIn(self.videos_new[15].id, results)
 
     def test_ids_from_pool_rate_later(self):
         """
@@ -248,18 +257,18 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         results = self.strategy._ids_from_pool_rate_later([])
         self.assertEqual(len(results), 0)
 
-        for i in range(20):
-            RateLater.objects.create(poll=self.poll1, entity=self.videos[i], user=self.user1)
+        for video in self.videos[:20]:
+            RateLater.objects.create(poll=self.poll1, entity=video, user=self.user1)
 
         # A second rate-later list with distinct entities ensures that all
         # entity ids are returned from the correct poll.
-        for i in range(20, 40):
-            RateLater.objects.create(poll=self.poll2, entity=self.videos[i], user=self.user1)
+        for video in self.videos[20:]:
+            RateLater.objects.create(poll=self.poll2, entity=video, user=self.user1)
 
         # A third rate-later list with distinct entities ensures that all
         # entity ids are returned from the correct user's rate-later list.
-        for i in range(20, 40):
-            RateLater.objects.create(poll=self.poll1, entity=self.videos[i], user=self.user2)
+        for video in self.videos[20:]:
+            RateLater.objects.create(poll=self.poll1, entity=video, user=self.user2)
 
         user1_rlater_list = RateLater.objects.filter(poll=self.poll1, user=self.user1).values_list(
             "entity_id", flat=True
@@ -275,7 +284,8 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results).issubset(set(user1_rlater_list)))
         self.assertFalse(set(results).issubset(set(user2_rlater_list)))
 
-        # The `exclude_ids` arg should exclude the provided entity ids.
+        # [WHEN] the filter `excluded_ids` is provided,
+        # [THEN] excluded entity ids should not be returned.
         results = self.strategy._ids_from_pool_rate_later(exclude_ids=user1_rlater_list[:10])
         self.assertEqual(len(results), 10)
         self.assertTrue(set(results).issubset(set(user1_rlater_list)))
@@ -290,7 +300,6 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
         recent_entities = []
-        # [GIVEN] a set of recent and past recommended entities.
         recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[:10], True))
         create_entity_poll_rating(self.poll1, self.videos_new[10:], False)
         create_entity_poll_rating(self.poll1, self.videos_past[:10], True)
@@ -316,7 +325,6 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
         past_entities = []
-        # [GIVEN] a set of recent and past recommended entities.
         past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[:10], True))
         create_entity_poll_rating(self.poll1, self.videos_past[10:], False)
         create_entity_poll_rating(self.poll1, self.videos_new[:10], True)

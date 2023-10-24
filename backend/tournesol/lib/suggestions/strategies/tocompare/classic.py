@@ -85,7 +85,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         """
         Return random list of entity ids that have been compared at least one
         time by the user, but less than the user's setting
-        `rate_later__auto_remove`.
+        `rate_later__auto_remove` times.
         """
         poll = self.poll
         user = self.user
