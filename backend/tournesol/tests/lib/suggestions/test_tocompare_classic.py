@@ -36,6 +36,77 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         self.videos = self.videos_new + self.videos_past
 
+    def test_get_recommendations(self):
+        results = self.strategy._get_recommendations({}, [])
+        self.assertEqual(len(results), 0)
+
+        recent_entities = []
+        for entity in self.videos_new[:10]:
+            recent_entities.append(
+                EntityPollRatingFactory.create(
+                    poll=self.poll1,
+                    entity=entity,
+                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
+                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
+                ).entity_id
+            )
+
+        for entity in self.videos_new[10:]:
+            recent_entities.append(
+                EntityPollRatingFactory.create(
+                    poll=self.poll1,
+                    entity=entity,
+                    tournesol_score=-1,
+                    sum_trust_scores=0,
+                ).entity_id
+            )
+
+        past_entities = []
+        for entity in self.videos_past[:10]:
+            past_entities.append(
+                EntityPollRatingFactory.create(
+                    poll=self.poll1,
+                    entity=entity,
+                    tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
+                    sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
+                ).entity_id
+            )
+
+        for entity in self.videos_past[10:]:
+            past_entities.append(
+                EntityPollRatingFactory.create(
+                    poll=self.poll1,
+                    entity=entity,
+                    tournesol_score=-1,
+                    sum_trust_scores=0,
+                ).entity_id
+            )
+
+        today = timezone.now().date()
+
+        # [WHEN] no filter is used, 20 id of recommended entities are returned.
+        results = self.strategy._get_recommendations({}, [])
+        self.assertEqual(len(results), 20)
+        self.assertTrue(set(results).issuperset(recent_entities[:10]))
+        self.assertTrue(set(results).issuperset(past_entities[:10]))
+
+        # [WHEN] an entity filter is provided, only ids of matching entities are returned.
+        results = self.strategy._get_recommendations(
+            {
+                f"entity__{self.poll1.entity_cls.get_filter_date_field()}__gte": (
+                    today - timedelta(days=1)
+                ).isoformat()
+            },
+            [],
+        )
+        self.assertEqual(len(results), 10)
+        self.assertTrue(set(results).issubset(recent_entities[:10]))
+
+        # [WHEN] an exclusion list is provided, only ids of non-matching entities are returned.
+        results = self.strategy._get_recommendations({}, exclude_ids=recent_entities)
+        self.assertEqual(len(results), 10)
+        self.assertTrue(set(results).issubset(past_entities[:10]))
+
     def test_ids_from_pool_compared(self):
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 0)
@@ -244,7 +315,6 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results[:7]).issubset(pool1))
         self.assertTrue(set(results[7:12]).issubset(pool2))
         self.assertTrue(set(results[12:]).issubset(pool3))
-
 
         # [WHEN] the pools 2 and 3 contain empty slots.
         results = self.strategy._consolidate_results(
