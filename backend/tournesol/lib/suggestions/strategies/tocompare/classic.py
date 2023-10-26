@@ -225,7 +225,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         if sample1_size + sample2_size + sample3_size >= self.max_suggestions:
             return Entity.objects.filter(
-                id__in=pool1 + pool2 + pool3
+                id__in=pool1[: self.sample_size_compared]
+                + pool2[: self.sample_size_rate_later]
+                + pool3[: self.sample_size_reco_last_month]
             ).with_prefetched_poll_ratings(poll_name=poll.name)
 
         # Allow the empty slots from the pool "compared" to be filled by the

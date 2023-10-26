@@ -407,7 +407,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results[7:12]).issubset(pool2))
         self.assertTrue(set(results[12:]).issubset(pool3))
 
-    def test_get_result_for_user_intermediate_only_compared(self):
+    def test_get_results_for_user_intermediate_only_compared(self):
         """
         When the user has 0 entity in his/her rate-later list, the slots
         dedicated to the rate-late list should be filled by compared entity
@@ -442,7 +442,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results_ids[:16]).issubset([vid.id for vid in self.videos_new]))
         self.assertTrue(set(results_ids[16:]).issubset([vid.id for vid in self.videos_past]))
 
-    def test_get_result_for_user_intermediate_only_ratelater(self):
+    def test_get_results_for_user_intermediate_only_ratelater(self):
         """
         When 0 entities have been compared by the user, the slots dedicated to
         compared entities should be filled by ids from the user's rate-later
@@ -472,7 +472,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results_ids[:16]).issubset(rate_later_id))
         self.assertTrue(set(results_ids[16:]).issubset([vid.id for vid in self.videos_past]))
 
-    def test_get_result_for_user_intermediate_only_reco_recent(self):
+    def test_get_results_for_user_intermediate_only_reco_recent(self):
         """
         When the user has compared 0 entity and has 0 entity in his/her
         rate later-list, the recent and all-time recommendations should each
@@ -497,12 +497,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results_ids[:12]).issubset([vid.id for vid in self.videos_new]))
         self.assertTrue(set(results_ids[12:]).issubset([vid.id for vid in self.videos_past]))
 
-    def test_get_result_for_user_intermediate_only_reco_alltime(self):
-        """
-        When the user has compared 0 entity and has 0 entity in his/her
-        rate later-list, the recent and all-time recommendations should each
-        fill half of the free slots.
-        """
+    def test_get_results_for_user_intermediate_only_reco_alltime(self):
         results = self.strategy.get_results_for_user_intermediate()
         self.assertEqual(len(results), 0)
 
@@ -512,3 +507,41 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         self.assertEqual(len(results), 20)
         self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_past]))
+
+    def test_get_results_for_user_intermediate(self):
+        """
+        The method `_get_result_for_user_intermediate` should return 9
+        entities compared by the user, 7 from his/her rate-later list, and 4
+        from the recent recommendations.
+        """
+        results = self.strategy.get_results_for_user_intermediate()
+        self.assertEqual(len(results), 0)
+
+        compared_entities = self.videos_past[:10]
+        rate_later_entities = self.videos_past[10:]
+
+        create_contributor_rating_criteria_scores(self.poll1, self.user1, compared_entities)
+        comparisons_batch_user1 = []
+
+        for i in range(10):
+            comparisons_batch_user1.append(
+                dict(entity_1=compared_entities[i], entity_2=compared_entities[i - 1])
+            )
+
+        for comp in comparisons_batch_user1:
+            ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
+
+        rate_later_id = []
+        for video in rate_later_entities:
+            rate_later_id.append(
+                RateLater.objects.create(poll=self.poll1, entity=video, user=self.user1).entity_id
+            )
+
+        create_entity_poll_rating(self.poll1, self.videos_new, True)
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 20)
+        self.assertEqual(len(set(results_ids) & set([ent.id for ent in compared_entities])), 9)
+        self.assertEqual(len(set(results_ids) & set([ent.id for ent in rate_later_entities])), 7)
+        self.assertEqual(len(set(results_ids) & set([ent.id for ent in self.videos_new])), 4)
