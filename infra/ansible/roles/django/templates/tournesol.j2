@@ -116,18 +116,20 @@ server {
         proxy_pass http://unix:/run/gunicorn.sock;
     }
 
+    location ~* /accounts/(register|send-reset-password-link)/ {
+        {% if maintenance %}
+            return 503;
+        {% else %}
+            include /etc/nginx/snippets/block_tor.conf;
+            include /etc/nginx/snippets/gunicorn_proxy.conf;
+        {% endif %}
+    }
+
     location / {
         {% if maintenance %}
             return 503;
         {% else %}
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header Host $host;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection $connection_upgrade;
-            proxy_redirect off;
-            proxy_buffering off;
-            proxy_pass http://unix:/run/gunicorn.sock;
+            include /etc/nginx/snippets/gunicorn_proxy.conf;
         {% endif %}
     }
 
