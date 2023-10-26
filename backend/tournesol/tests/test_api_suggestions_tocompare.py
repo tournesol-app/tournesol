@@ -1,11 +1,14 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
-from tournesol.models import Poll
+from tournesol.models import Poll, RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
@@ -77,14 +80,14 @@ class SuggestionsToCompareTestCase(TestCase):
         response = self.client.get(self.base_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_response_integrity_default_strategy(self):
+    def test_response_integrity_strategy_classic(self):
         """
         Authenticated users can be suggested videos to compare in the given
         poll.
         """
-        compared_videos_user1_poll1 = VideoFactory.create_batch(10)
-        compared_videos_user1_poll2 = VideoFactory.create_batch(10)
-        compared_videos_user2_poll1 = VideoFactory.create_batch(10)
+        compared_videos_user1_poll1 = VideoFactory.create_batch(9)
+        compared_videos_user1_poll2 = VideoFactory.create_batch(9)
+        compared_videos_user2_poll1 = VideoFactory.create_batch(9)
 
         create_comparisons(self.poll1, self.user1, compared_videos_user1_poll1)
         create_comparisons(self.poll2, self.user1, compared_videos_user1_poll2)
@@ -106,16 +109,57 @@ class SuggestionsToCompareTestCase(TestCase):
             n_contributors=44,
         )
 
+        rate_later_videos_user1_poll1 = VideoFactory.create_batch(7)
+        rate_later_videos_user1_poll2 = VideoFactory.create_batch(7)
+        rate_later_videos_user2_poll1 = VideoFactory.create_batch(7)
+
+        for i in range(7):
+            RateLater.objects.create(
+                poll=self.poll1, entity=rate_later_videos_user1_poll1[i], user=self.user1
+            )
+            RateLater.objects.create(
+                poll=self.poll2, entity=rate_later_videos_user1_poll2[i], user=self.user1
+            )
+            RateLater.objects.create(
+                poll=self.poll1, entity=rate_later_videos_user2_poll1[i], user=self.user2
+            )
+
+        today = timezone.now().date()
+        recommendations_new = VideoFactory.create_batch(
+            4, metadata__publication_date=today.isoformat()
+        )
+
+        long_time_ago = timezone.now() - timedelta(days=120)
+        recommendations_past = VideoFactory.create_batch(
+            4, metadata__publication_date=long_time_ago.isoformat()
+        )
+
+        create_entity_poll_rating(
+            self.poll1,
+            recommendations_new,
+            recommended=True,
+        )
+
+        create_entity_poll_rating(
+            self.poll1,
+            recommendations_past,
+            recommended=True,
+        )
+
         self.client.force_authenticate(self.user1)
         response = self.client.get(self.base_url)
         results = response.data["results"]
 
         uids_compared = [ent.uid for ent in compared_videos_user1_poll1]
+        uids_rate_later = [ent.uid for ent in rate_later_videos_user1_poll1]
+        uids_recommendations_new = [ent.uid for ent in recommendations_new]
         uids_returned = [res["entity"]["uid"] for res in results]
 
-        self.assertEqual(len(results), 10)
+        # The results match the pair user1 / poll1
+        self.assertEqual(len(results), 20)
         self.assertIn("entity", results[0])
         self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 11)
         self.assertEqual(results[0]["collective_rating"]["n_contributors"], 33)
-        # The results match the pair user1 / poll1
-        self.assertTrue(set(uids_compared) == set(uids_returned))
+        self.assertTrue(set(uids_returned).issuperset(uids_compared))
+        self.assertTrue(set(uids_returned).issuperset(uids_rate_later))
+        self.assertTrue(set(uids_returned).issuperset(uids_recommendations_new))
