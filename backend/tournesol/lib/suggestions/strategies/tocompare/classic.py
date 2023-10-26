@@ -18,22 +18,24 @@ class IdPool:
 
 class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
     """
-    A contribution strategy that will suggest random entities to compare.
+    A contribution strategy that suggests random entities for comparison.
 
     The entity are retrieved from the following pools:
-        - entities already compared by the users
+        - entities already compared by the users (but not enough)
         - entities in the user's rate-later list
-        - the recent recommendations
-        - completed by the top recommendations if needed
+        - the recently recommended entities
+        - completed by the all-time recommendations if needed
 
     Expected future updates:
-        - use the user's preferred language(s)
+        - use the user's preferred language(s) when retrieving the
+          recommendations
     """
 
     # The maximum number of results returned by the strategy.
     max_suggestions = 20
 
-    # The expected number of entities retrieved from each pool.
+    # The expected number of entities retrieved from each pool. The sum should
+    # match the `max_suggestions`.
     sample_size_compared = 9
     sample_size_rate_later = 7
     sample_size_reco_last_month = 4
@@ -43,8 +45,8 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def _get_recommendations(self, entity_filters, exclude_ids: list[int]) -> list[int]:
         """
-        Return all entity ids of all recommendations based on the provided
-        filters.
+        Return the list of entity ids of all recommendations based on the
+        provided filters.
         """
         poll = self.poll
 
@@ -83,9 +85,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def _ids_from_pool_compared(self) -> list[int]:
         """
-        Return random list of entity ids that have been compared at least one
-        time by the user, but less than the user's setting
-        `rate_later__auto_remove` times.
+        Return a random list of entity ids that have been compared at least
+        one time by the user, but strictly less than the user's setting
+        `rate_later__auto_remove`.
         """
         poll = self.poll
         user = self.user
@@ -122,7 +124,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def _ids_from_pool_reco_last_month(self, exclude_ids: list[int]) -> list[int]:
         """
-        Return random ids from the recent recommendations.
+        Return random entity ids from the recent recommendations.
 
         Only ids of entities that have been compared fewer times than the
         user's setting `rate_later__auto_remove` are returned.
@@ -143,7 +145,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     def _ids_from_pool_reco_all_time(self, exclude_ids: list[int]) -> list[int]:
         """
-        Return random ids from the top recommendations.
+        Return random entity ids from the all-time top recommendations.
 
         Only ids of entities that have been compared fewer times than the
         user's setting `rate_later__auto_remove` are returned.

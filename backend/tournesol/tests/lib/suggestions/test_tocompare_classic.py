@@ -15,7 +15,7 @@ from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFactory
 
 
-def create_entity_poll_rating(poll, entities, recommended):
+def create_entity_poll_ratings(poll, entities, recommended):
     ids = []
 
     scores = {
@@ -86,12 +86,12 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
         recent_entities = []
-        recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[:10], True))
-        recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[10:], False))
+        recent_entities.extend(create_entity_poll_ratings(self.poll1, self.videos_new[:10], True))
+        recent_entities.extend(create_entity_poll_ratings(self.poll1, self.videos_new[10:], False))
 
         past_entities = []
-        past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[:10], True))
-        past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[10:], False))
+        past_entities.extend(create_entity_poll_ratings(self.poll1, self.videos_past[:10], True))
+        past_entities.extend(create_entity_poll_ratings(self.poll1, self.videos_past[10:], False))
 
         today = timezone.now().date()
 
@@ -124,7 +124,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
     def test_get_compared_sufficiently(self):
         """
         The method `_ids_from_pool_compared` should return entity ids that
-        have been compared more than the user's setting `rate_later__auto_remove` times.
+        have been compared more than the user's setting `rate_later__auto_remove`.
         """
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
@@ -133,7 +133,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         create_contributor_rating_criteria_scores(self.poll1, self.user2, self.videos_new)
         create_contributor_rating_criteria_scores(self.poll2, self.user1, self.videos_past)
 
-        # [WHEN] the contributor ratings exist, but without comparison,
+        # [WHEN] the contributor ratings exist, and comparisons have been made,
         # [THEN] no entity ids should be returned.
         results = self.strategy._get_compared_sufficiently({})
         self.assertEqual(len(results), 0)
@@ -184,13 +184,15 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
     def test_ids_from_pool_compared(self):
         """
         The method `_ids_from_pool_compared` should return entity ids that
-        have been compared at least one time by the user, but less than the
-        user's setting `rate_later__auto_remove` times.
+        have been compared at least one time by the user, but strictly less
+        than the user's setting `rate_later__auto_remove`.
         """
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 0)
 
         create_contributor_rating_criteria_scores(self.poll1, self.user1, self.videos_new)
+        create_contributor_rating_criteria_scores(self.poll1, self.user2, self.videos_past)
+
         # [GIVEN] 9 entities with comparisons.
         # Their number of comparisons is inferior to the user's rate_later__auto_remove.
         comparisons_batch_user1 = [
@@ -205,16 +207,20 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         for comp in comparisons_batch_user1:
             ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
 
+        for i in range(len(self.videos_past)):
+            ComparisonFactory(
+                poll=self.poll1,
+                user=self.user2,
+                entity_1=self.videos_past[i],
+                entity_2=self.videos_past[i - 1],
+            )
+
         # [WHEN] the method `_ids_from_pool_compared` is called,
-        # [THEN] all compared entity ids should be returned.
+        # [THEN] all entity ids compared by the user1 should be returned.
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 9)
-        self.assertTrue(
-            set(compared).issuperset(set([video.id for video in self.videos_new[1:4]]))
-        )
-        self.assertTrue(
-            set(compared).issuperset(set([video.id for video in self.videos_new[10:16]]))
-        )
+        self.assertTrue(set(compared).issuperset(set([vid.id for vid in self.videos_new[1:4]])))
+        self.assertTrue(set(compared).issuperset(set([vid.id for vid in self.videos_new[10:16]])))
 
         comparisons_batch_user1 = [
             dict(entity_1=self.videos_new[2], entity_2=self.videos_new[10]),
@@ -231,9 +237,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         compared = self.strategy._ids_from_pool_compared()
         self.assertEqual(len(compared), 7)
         self.assertTrue(set(compared).issuperset(set([self.videos_new[1].id])))
-        self.assertTrue(
-            set(compared).issuperset(set([video.id for video in self.videos_new[10:16]]))
-        )
+        self.assertTrue(set(compared).issuperset(set([vid.id for vid in self.videos_new[10:16]])))
 
         self.user1.settings[self.poll1.name] = {"rate_later__auto_remove": 2}
         self.user1.save(update_fields=["settings"])
@@ -257,18 +261,18 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         results = self.strategy._ids_from_pool_rate_later([])
         self.assertEqual(len(results), 0)
 
-        for video in self.videos[:20]:
-            RateLater.objects.create(poll=self.poll1, entity=video, user=self.user1)
+        for vid in self.videos[:20]:
+            RateLater.objects.create(poll=self.poll1, entity=vid, user=self.user1)
 
         # A second rate-later list with distinct entities ensures that all
         # entity ids are returned from the correct poll.
-        for video in self.videos[20:]:
-            RateLater.objects.create(poll=self.poll2, entity=video, user=self.user1)
+        for vid in self.videos[20:]:
+            RateLater.objects.create(poll=self.poll2, entity=vid, user=self.user1)
 
         # A third rate-later list with distinct entities ensures that all
         # entity ids are returned from the correct user's rate-later list.
-        for video in self.videos[20:]:
-            RateLater.objects.create(poll=self.poll1, entity=video, user=self.user2)
+        for vid in self.videos[20:]:
+            RateLater.objects.create(poll=self.poll1, entity=vid, user=self.user2)
 
         user1_rlater_list = RateLater.objects.filter(poll=self.poll1, user=self.user1).values_list(
             "entity_id", flat=True
@@ -300,9 +304,9 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
         recent_entities = []
-        recent_entities.extend(create_entity_poll_rating(self.poll1, self.videos_new[:10], True))
-        create_entity_poll_rating(self.poll1, self.videos_new[10:], False)
-        create_entity_poll_rating(self.poll1, self.videos_past[:10], True)
+        recent_entities.extend(create_entity_poll_ratings(self.poll1, self.videos_new[:10], True))
+        create_entity_poll_ratings(self.poll1, self.videos_new[10:], False)
+        create_entity_poll_ratings(self.poll1, self.videos_past[:10], True)
 
         # [WHEN] no filters are provided.
         # [THEN] only the recommended "recent" entities should be returned.
@@ -325,9 +329,9 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
         past_entities = []
-        past_entities.extend(create_entity_poll_rating(self.poll1, self.videos_past[:10], True))
-        create_entity_poll_rating(self.poll1, self.videos_past[10:], False)
-        create_entity_poll_rating(self.poll1, self.videos_new[:10], True)
+        past_entities.extend(create_entity_poll_ratings(self.poll1, self.videos_past[:10], True))
+        create_entity_poll_ratings(self.poll1, self.videos_past[10:], False)
+        create_entity_poll_ratings(self.poll1, self.videos_new[:10], True)
 
         # [WHEN] no filters are provided.
         # [THEN] only the recommended "past" entities should be returned.
@@ -434,7 +438,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_new]))
 
         # The recent recommendations always fill the remaining empty slots.
-        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        create_entity_poll_ratings(self.poll1, self.videos_past, True)
         results = self.strategy.get_results_for_user_intermediate()
         results_ids = [entity.id for entity in results]
 
@@ -452,9 +456,9 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 0)
 
         rate_later_id = []
-        for video in self.videos_new:
+        for vid in self.videos_new:
             rate_later_id.append(
-                RateLater.objects.create(poll=self.poll1, entity=video, user=self.user1).entity_id
+                RateLater.objects.create(poll=self.poll1, entity=vid, user=self.user1).entity_id
             )
 
         results = self.strategy.get_results_for_user_intermediate()
@@ -464,7 +468,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results_ids).issubset(rate_later_id))
 
         # The recent recommendations always fill the remaining empty slots.
-        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        create_entity_poll_ratings(self.poll1, self.videos_past, True)
         results = self.strategy.get_results_for_user_intermediate()
         results_ids = [entity.id for entity in results]
 
@@ -481,7 +485,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         results = self.strategy.get_results_for_user_intermediate()
         self.assertEqual(len(results), 0)
 
-        create_entity_poll_rating(self.poll1, self.videos_new, True)
+        create_entity_poll_ratings(self.poll1, self.videos_new, True)
         results = self.strategy.get_results_for_user_intermediate()
         results_ids = [entity.id for entity in results]
 
@@ -489,7 +493,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_new]))
 
         # The recent recommendations always fill the remaining empty slots.
-        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        create_entity_poll_ratings(self.poll1, self.videos_past, True)
         results = self.strategy.get_results_for_user_intermediate()
         results_ids = [entity.id for entity in results]
 
@@ -501,7 +505,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         results = self.strategy.get_results_for_user_intermediate()
         self.assertEqual(len(results), 0)
 
-        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        create_entity_poll_ratings(self.poll1, self.videos_past, True)
         results = self.strategy.get_results_for_user_intermediate()
         results_ids = [entity.id for entity in results]
 
@@ -537,11 +541,11 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
                 RateLater.objects.create(poll=self.poll1, entity=video, user=self.user1).entity_id
             )
 
-        create_entity_poll_rating(self.poll1, self.videos_new, True)
+        create_entity_poll_ratings(self.poll1, self.videos_new, True)
         results = self.strategy.get_results_for_user_intermediate()
         results_ids = [entity.id for entity in results]
 
         self.assertEqual(len(results), 20)
-        self.assertEqual(len(set(results_ids) & set([ent.id for ent in compared_entities])), 9)
-        self.assertEqual(len(set(results_ids) & set([ent.id for ent in rate_later_entities])), 7)
-        self.assertEqual(len(set(results_ids) & set([ent.id for ent in self.videos_new])), 4)
+        self.assertEqual(len(set(results_ids) & set([vid.id for vid in compared_entities])), 9)
+        self.assertEqual(len(set(results_ids) & set([vid.id for vid in rate_later_entities])), 7)
+        self.assertEqual(len(set(results_ids) & set([vid.id for vid in self.videos_new])), 4)
