@@ -199,7 +199,7 @@ Decrease the Time To Live (TTL) of the DNS A records to a low value (e.g., 180 s
 2. **Deploy the services in Maintenance Mode on the old server**  
 Put the platform into maintenance mode to prevent write operations to the database. This ensures data consistency during the migration process.
 
-3. **Stop all Timers"  
+3. **Stop all Timers**  
 This will avoid related services to start and avoid potential data loss or duplicated events.
 
 ```bash
@@ -208,10 +208,10 @@ sudo systemctl stop "tournesol*.timer" export-backups.timer ml-train.timer pg-ba
 
 4. **Create a manual backup of the database**
 
-5. **Copy Backup Files to the New Server**
+5. **Copy Backup Files to the New Server**  
 Transfer the backup files to the new server using a secure method such as SCP. Make sure the files are placed in the directory `/backups/tournesol/db/<backup-name>/`.
 
-6. **Update DNS Record with the new IP**
+6. **Update DNS Record with the new IP**  
 Update the DNS records to point to the IP address of the new server. This step may take some time to be visible globally, depending on your DNS provider and the TTL you set earlier.
 
 7. **Launch Provisioning Script with Maintenance Mode Enabled**  
