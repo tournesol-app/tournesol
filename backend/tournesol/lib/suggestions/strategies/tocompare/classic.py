@@ -187,7 +187,6 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         if free_slots_in_pool2 > 0:
             extra_sample1 = free_slots_in_pool2
 
-
         sample1 = pool1.ids[: pool1.sample_size + extra_sample1]
         sample2 = pool2.ids[: pool2.sample_size + extra_sample2]
         sample3 = pool3.ids[: pool3.sample_size]
@@ -200,7 +199,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             if free_slots % 2 == 1:
                 extra_sample3 += 1
 
-            sample3 = pool3.ids[: pool3.sample_size + extra_sample3 ]
+            sample3 = pool3.ids[: pool3.sample_size + extra_sample3]
 
         return sample1 + sample2 + sample3
 
@@ -208,12 +207,12 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         return EntityToCompare
 
     def get_results(self):
-        return self.get_result_for_user_intermediate()
+        return self.get_results_for_user_intermediate()
 
-    def get_result_for_user_new(self):
+    def get_results_for_user_new(self):
         raise NotImplementedError
 
-    def get_result_for_user_intermediate(self):
+    def get_results_for_user_intermediate(self):
         poll = self.poll
 
         pool1 = self._ids_from_pool_compared()
@@ -247,5 +246,5 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             poll_name=poll.name
         )
 
-    def get_result_for_user_advanced(self):
+    def get_results_for_user_advanced(self):
         raise NotImplementedError

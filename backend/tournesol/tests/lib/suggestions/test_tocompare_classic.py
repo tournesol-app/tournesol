@@ -406,3 +406,109 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results[:7]).issubset(pool1))
         self.assertTrue(set(results[7:12]).issubset(pool2))
         self.assertTrue(set(results[12:]).issubset(pool3))
+
+    def test_get_result_for_user_intermediate_only_compared(self):
+        """
+        When the user has 0 entity in his/her rate-later list, the slots
+        dedicated to the rate-late list should be filled by compared entity
+        ids.
+        """
+        results = self.strategy.get_results_for_user_intermediate()
+        self.assertEqual(len(results), 0)
+
+        create_contributor_rating_criteria_scores(self.poll1, self.user1, self.videos_new)
+        comparisons_batch_user1 = []
+
+        for i in range(20):
+            comparisons_batch_user1.append(
+                dict(entity_1=self.videos_new[i], entity_2=self.videos_new[i - 1])
+            )
+
+        for comp in comparisons_batch_user1:
+            ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
+
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 16)
+        self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_new]))
+
+        # The recent recommendations always fill the remaining empty slots.
+        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 20)
+        self.assertTrue(set(results_ids[:16]).issubset([vid.id for vid in self.videos_new]))
+        self.assertTrue(set(results_ids[16:]).issubset([vid.id for vid in self.videos_past]))
+
+    def test_get_result_for_user_intermediate_only_ratelater(self):
+        """
+        When 0 entities have been compared by the user, the slots dedicated to
+        compared entities should be filled by ids from the user's rate-later
+        list.
+        """
+        results = self.strategy.get_results_for_user_intermediate()
+        self.assertEqual(len(results), 0)
+
+        rate_later_id = []
+        for video in self.videos_new:
+            rate_later_id.append(
+                RateLater.objects.create(poll=self.poll1, entity=video, user=self.user1).entity_id
+            )
+
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 16)
+        self.assertTrue(set(results_ids).issubset(rate_later_id))
+
+        # The recent recommendations always fill the remaining empty slots.
+        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 20)
+        self.assertTrue(set(results_ids[:16]).issubset(rate_later_id))
+        self.assertTrue(set(results_ids[16:]).issubset([vid.id for vid in self.videos_past]))
+
+    def test_get_result_for_user_intermediate_only_reco_recent(self):
+        """
+        When the user has compared 0 entity and has 0 entity in his/her
+        rate later-list, the recent and all-time recommendations should each
+        fill half of the free slots.
+        """
+        results = self.strategy.get_results_for_user_intermediate()
+        self.assertEqual(len(results), 0)
+
+        create_entity_poll_rating(self.poll1, self.videos_new, True)
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 12)
+        self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_new]))
+
+        # The recent recommendations always fill the remaining empty slots.
+        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 20)
+        self.assertTrue(set(results_ids[:12]).issubset([vid.id for vid in self.videos_new]))
+        self.assertTrue(set(results_ids[12:]).issubset([vid.id for vid in self.videos_past]))
+
+    def test_get_result_for_user_intermediate_only_reco_alltime(self):
+        """
+        When the user has compared 0 entity and has 0 entity in his/her
+        rate later-list, the recent and all-time recommendations should each
+        fill half of the free slots.
+        """
+        results = self.strategy.get_results_for_user_intermediate()
+        self.assertEqual(len(results), 0)
+
+        create_entity_poll_rating(self.poll1, self.videos_past, True)
+        results = self.strategy.get_results_for_user_intermediate()
+        results_ids = [entity.id for entity in results]
+
+        self.assertEqual(len(results), 20)
+        self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_past]))
