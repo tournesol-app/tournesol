@@ -190,7 +190,6 @@ const ComparisonPage = () => {
                   length={tutorialLength}
                   initComparisonsMade={userComparisons ?? []}
                   isTutorial={true}
-                  generateInitial={true}
                   dialogs={dialogs}
                   dialogAdditionalActions={dialogActions}
                   getAlternatives={tutorialAlternatives}
