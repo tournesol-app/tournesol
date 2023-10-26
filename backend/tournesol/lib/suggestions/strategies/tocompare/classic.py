@@ -171,43 +171,36 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         A list is considered consolidated when its population size is equals,
         or is as close as possible, to the sum of all pool's sample sizes.
         """
+        extra_sample1 = 0
         extra_sample2 = 0
-        extra_sample3 = 0
 
         free_slots_in_pool1 = pool1.sample_size - len(pool1.ids[: pool1.sample_size])
         free_slots_in_pool2 = pool2.sample_size - len(pool2.ids[: pool2.sample_size])
-        free_slots_in_pool3 = pool3.sample_size - len(pool3.ids[: pool3.sample_size])
 
         # If the pool 1 contains fewer ids than expected, try to pick more
-        # ids from the pools 2 and 3.
+        # ids from the pools 2.
         if free_slots_in_pool1 > 0:
-            extra_sample2 = free_slots_in_pool1 // 2
-            extra_sample3 = free_slots_in_pool1 // 2
-
-            if free_slots_in_pool1 % 2 == 1:
-                extra_sample2 += 1
-
-        sample1 = pool1.ids[: pool1.sample_size]
-
-        # If the pool 3 contains fewer ids than expected, try to pick more
-        # ids from the pool 2.
-        if free_slots_in_pool3 > 0:
-            extra_sample2 += extra_sample3 + free_slots_in_pool3
-
-        sample2 = pool2.ids[: pool2.sample_size + extra_sample2]
+            extra_sample2 = free_slots_in_pool1
 
         # If the pool 2 contains fewer ids than expected, try to pick more
-        # ids from the pool 3.
+        # ids from the pool 1.
         if free_slots_in_pool2 > 0:
-            extra_sample3 += extra_sample2 + free_slots_in_pool2
+            extra_sample1 = free_slots_in_pool2
 
-        sample3 = pool3.ids[: pool3.sample_size + extra_sample3]
+
+        sample1 = pool1.ids[: pool1.sample_size + extra_sample1]
+        sample2 = pool2.ids[: pool2.sample_size + extra_sample2]
+        sample3 = pool3.ids[: pool3.sample_size]
 
         free_slots = self.max_suggestions - len(sample1) - len(sample2) - len(sample3)
 
-        # In case of need, add more ids from the pool 1.
         if free_slots > 0:
-            sample1 = pool1.ids[: pool1.sample_size + free_slots]
+            extra_sample3 = free_slots // 2
+
+            if free_slots % 2 == 1:
+                extra_sample3 += 1
+
+            sample3 = pool3.ids[: pool3.sample_size + extra_sample3 ]
 
         return sample1 + sample2 + sample3
 
@@ -236,10 +229,8 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
                 id__in=pool1 + pool2 + pool3
             ).with_prefetched_poll_ratings(poll_name=poll.name)
 
-        # This optional step allows the empty slots from a pool to be filled
-        # by additional ids from other pools. The ids from the top
-        # recommendations are used as a last resort, only if the current pools
-        # are not able to provide enough ids by themselves.
+        # Allow the empty slots from the pool "compared" to be filled by the
+        # items of the pool "rate-later" and vice-versa.
         results = self._consolidate_results(
             IdPool(pool1, self.sample_size_compared),
             IdPool(pool2, self.sample_size_rate_later),

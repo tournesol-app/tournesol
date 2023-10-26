@@ -378,22 +378,22 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
             IdPool(pool3, 4),
         )
 
-        # [THEN] the pools 2 and 3 should each fill half of the empty slots.
+        # [THEN] the pools 2 should fill the empty slots.
         self.assertTrue(set(results[:7]).issubset(pool1))
-        self.assertTrue(set(results[7:15]).issubset(pool2))
-        self.assertTrue(set(results[15:]).issubset(pool3))
+        self.assertTrue(set(results[7:16]).issubset(pool2))
+        self.assertTrue(set(results[16:]).issubset(pool3))
 
-        # [WHEN] the pool 1 and 3 contain empty slots.
+        # [WHEN] the pool 2 contains empty slots.
         results = self.strategy._consolidate_results(
-            IdPool(pool1[:7], 9),
-            IdPool(pool2, 7),
-            IdPool(pool3[:2], 4),
+            IdPool(pool1, 9),
+            IdPool(pool2[:5], 7),
+            IdPool(pool3, 4),
         )
 
-        # [THEN] the pool 2 should be able to fill all empty slots.
-        self.assertTrue(set(results[:7]).issubset(pool1))
-        self.assertTrue(set(results[7:18]).issubset(pool2))
-        self.assertTrue(set(results[18:]).issubset(pool3))
+        # [THEN] the pool 1 should fill the empty slots.
+        self.assertTrue(set(results[:11]).issubset(pool1))
+        self.assertTrue(set(results[11:6]).issubset(pool2))
+        self.assertTrue(set(results[16:]).issubset(pool3))
 
         # [WHEN] the pool 1 and 2 contain empty slots.
         results = self.strategy._consolidate_results(
@@ -402,22 +402,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
             IdPool(pool3, 4),
         )
 
-        # [THEN] the pool 3 should be able to fill all empty slots.
+        # [THEN] the pool 3 should fill the empty slots.
         self.assertTrue(set(results[:7]).issubset(pool1))
         self.assertTrue(set(results[7:12]).issubset(pool2))
         self.assertTrue(set(results[12:]).issubset(pool3))
-
-        # [WHEN] the pools 2 and 3 contain empty slots.
-        results = self.strategy._consolidate_results(
-            IdPool(pool1, 9),
-            IdPool(pool2[:5], 7),
-            IdPool(pool3[:2], 4),
-        )
-
-        # [THEN] the pool 1 should be able to fill all empty slots.
-        self.assertTrue(set(results[:13]).issubset(pool1))
-        self.assertTrue(set(results[13:18]).issubset(pool2))
-        self.assertTrue(set(results[18:]).issubset(pool3))
-
-    def test_get_result_for_user_intermediate(self):
-        pass
