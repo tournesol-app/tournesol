@@ -3,7 +3,7 @@ version: "3.3"
 services:
   db:
     container_name: tournesol-dev-db
-    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2023-07-16}
+    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2023-10-27}
     user: ${DB_UID}:${DB_GID}
     volumes:
       - ./db-data:/var/lib/postgresql/data
@@ -28,7 +28,7 @@ services:
     container_name: tournesol-dev-api
     environment:
       - SETTINGS_FILE=/backend/dev-env/settings-tournesol.yaml
-    entrypoint: ["/bin/bash", "-c"]
+    entrypoint: ["/bin/bash", "-eux", "-c"]
     command:
       - |
         pip install -r tests/requirements.txt -r requirements.txt
