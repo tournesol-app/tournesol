@@ -4,10 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Tooltip, Button } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
 
-import {
-  ALREADY_SUGGESTED,
-  dontSuggestAnymore,
-} from 'src/features/rateLater/alreadySuggested';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { getUidForComparison } from 'src/utils/video';
@@ -47,14 +43,12 @@ const AutoEntityButton = ({
       const newUid: string | null = await getUidForComparison(
         currentUid || '',
         otherUid ? otherUid : null,
-        ALREADY_SUGGESTED[pollName]
+        pollName
       );
 
       if (!mountedRef.current) return;
 
       if (newUid) {
-        dontSuggestAnymore(pollName, newUid);
-
         // When both videos are auto filled it's common to receive the same video twice.
         // When it happens we ask for another one.
         if (fromAutoFill && newUid === otherUidRef.current) {
