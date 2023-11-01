@@ -16,6 +16,7 @@ import {
 } from 'src/utils/constants';
 import { UsersService } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
+import { getGoodShortVideos } from 'src/utils/api/goodShortVideos';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
@@ -156,6 +157,14 @@ const VideoInput = ({
           return (response.results ?? []).map((entity) => ({ entity }));
         },
         disabled: !isLoggedIn || !otherUid,
+      },
+      {
+        name: 'good-short-videos',
+        label: t('entitySelector.goodShortVideos'),
+        fetch: async () => {
+          return await getGoodShortVideos();
+        },
+        disabled: !isLoggedIn,
       },
     ],
     [t, isLoggedIn, otherUid, pollName]
