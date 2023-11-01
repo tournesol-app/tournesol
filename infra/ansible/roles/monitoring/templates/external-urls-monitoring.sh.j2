@@ -9,7 +9,11 @@ do
         echo "error checking $u"
 {% if discord_infra_alert_webhook is defined and discord_infra_alert_webhook != "" %}
         wget -qO /dev/null \
+    {% if discord_role_id_urls_checks is defined and discord_role_id_urls_checks != "" %}
+        --post-data='{"content": "<@&{{discord_role_id_urls_checks}}> - health check of '"$u"' failed"}' \
+    {% else %}
         --post-data='{"content": "health check of '"$u"' failed"}' \
+    {% endif %}
         --header='Content-Type:application/json' \
         '{{discord_infra_alert_webhook}}?wait=true'
         echo "alert sent"
