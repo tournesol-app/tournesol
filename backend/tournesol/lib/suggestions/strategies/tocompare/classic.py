@@ -49,8 +49,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         poll = self.poll
 
         return (
-            Entity.objects
-            .filter_safe_for_poll(poll)
+            Entity.objects.filter_safe_for_poll(poll)
             .filter(**entity_filters)
             .exclude(id__in=exclude_ids)
             .values_list("id", flat=True)
@@ -219,11 +218,15 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         sample3_size = len(pool3[: self.sample_size_reco_last_month])
 
         if sample1_size + sample2_size + sample3_size >= self.max_suggestions:
-            return Entity.objects.filter(
-                id__in=pool1[: self.sample_size_compared]
-                + pool2[: self.sample_size_rate_later]
-                + pool3[: self.sample_size_reco_last_month]
-            ).with_prefetched_poll_ratings(poll_name=poll.name)
+            return (
+                Entity.objects.filter(
+                    id__in=pool1[: self.sample_size_compared]
+                    + pool2[: self.sample_size_rate_later]
+                    + pool3[: self.sample_size_reco_last_month]
+                )
+                .with_prefetched_poll_ratings(poll_name=poll.name)
+                .order_by("?")
+            )
 
         # Allow the empty slots from the pool "compared" to be filled by the
         # items of the pool "rate-later" and vice-versa.
@@ -239,8 +242,10 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             last_resort = self._ids_from_pool_reco_all_time(results)
             results += last_resort[:free_slots]
 
-        return Entity.objects.filter(id__in=results).with_prefetched_poll_ratings(
-            poll_name=poll.name
+        return (
+            Entity.objects.filter(id__in=results)
+            .with_prefetched_poll_ratings(poll_name=poll.name)
+            .order_by("?")
         )
 
     def get_results_for_user_advanced(self):

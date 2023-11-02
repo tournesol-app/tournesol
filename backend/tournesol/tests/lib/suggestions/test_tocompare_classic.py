@@ -437,14 +437,17 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 16)
         self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_new]))
 
-        # The recent recommendations always fill the remaining empty slots.
+        # The all-time recommendations always fill the remaining empty slots.
         create_entity_poll_ratings(self.poll1, self.videos_past, True)
         results = self.strategy.get_results_for_user_intermediate()
+
         results_ids = [entity.id for entity in results]
+        results_compared = set(results_ids) & set([vid.id for vid in self.videos_new])
+        results_alltime_reco = set(results_ids) & set([vid.id for vid in self.videos_past])
 
         self.assertEqual(len(results), 20)
-        self.assertTrue(set(results_ids[:16]).issubset([vid.id for vid in self.videos_new]))
-        self.assertTrue(set(results_ids[16:]).issubset([vid.id for vid in self.videos_past]))
+        self.assertEqual(len(results_compared), 16)
+        self.assertEqual(len(results_alltime_reco), 4)
 
     def test_get_results_for_user_intermediate_only_ratelater(self):
         """
@@ -467,14 +470,17 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 16)
         self.assertTrue(set(results_ids).issubset(rate_later_id))
 
-        # The recent recommendations always fill the remaining empty slots.
+        # The all-time recommendations always fill the remaining empty slots.
         create_entity_poll_ratings(self.poll1, self.videos_past, True)
         results = self.strategy.get_results_for_user_intermediate()
+
         results_ids = [entity.id for entity in results]
+        results_rate_later = set(results_ids) & set([vid.id for vid in self.videos_new])
+        results_alltime_reco = set(results_ids) & set([vid.id for vid in self.videos_past])
 
         self.assertEqual(len(results), 20)
-        self.assertTrue(set(results_ids[:16]).issubset(rate_later_id))
-        self.assertTrue(set(results_ids[16:]).issubset([vid.id for vid in self.videos_past]))
+        self.assertEqual(len(results_rate_later), 16)
+        self.assertEqual(len(results_alltime_reco), 4)
 
     def test_get_results_for_user_intermediate_only_reco_recent(self):
         """
@@ -492,14 +498,17 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 12)
         self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_new]))
 
-        # The recent recommendations always fill the remaining empty slots.
+        # The all-time recommendations always fill the remaining empty slots.
         create_entity_poll_ratings(self.poll1, self.videos_past, True)
         results = self.strategy.get_results_for_user_intermediate()
+
         results_ids = [entity.id for entity in results]
+        results_recent_reco = set(results_ids) & set([vid.id for vid in self.videos_new])
+        results_alltime_reco = set(results_ids) & set([vid.id for vid in self.videos_past])
 
         self.assertEqual(len(results), 20)
-        self.assertTrue(set(results_ids[:12]).issubset([vid.id for vid in self.videos_new]))
-        self.assertTrue(set(results_ids[12:]).issubset([vid.id for vid in self.videos_past]))
+        self.assertEqual(len(results_recent_reco), 12)
+        self.assertEqual(len(results_alltime_reco), 8)
 
     def test_get_results_for_user_intermediate_only_reco_alltime(self):
         results = self.strategy.get_results_for_user_intermediate()
