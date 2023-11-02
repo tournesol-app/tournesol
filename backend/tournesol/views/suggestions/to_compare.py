@@ -9,7 +9,7 @@ from tournesol.views import PollScopedViewMixin
 
 
 class ToCompareStrategy(models.TextChoices):
-    CLASSIC = "Classic"
+    CLASSIC = "classic"
 
 
 @extend_schema_view(
