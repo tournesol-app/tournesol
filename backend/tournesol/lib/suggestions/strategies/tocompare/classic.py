@@ -51,15 +51,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         poll = self.poll
 
         return (
-            EntityPollRating.objects.filter(
-                poll=poll,
-                sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
-                tournesol_score__gt=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE,
-            )
-            .select_related("entity")
+            Entity.objects
+            .filter_safe_for_poll(poll)
             .filter(**entity_filters)
-            .exclude(entity_id__in=exclude_ids)
-            .values_list("entity_id", flat=True)
+            .exclude(id__in=exclude_ids)
+            .values_list("id", flat=True)
         )
 
     def _get_compared_sufficiently(self, entity_filters) -> list[int]:
@@ -76,8 +72,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return (
             ContributorRating.objects.filter(poll=poll, user=user)
-            .select_related("entity")
-            .filter(**entity_filters)
+            .filter(entity__in=Entity.objects.filter(**entity_filters))
             .annotate_n_comparisons()
             .filter(n_comparisons__gte=max_threshold)
             .values_list("entity_id", flat=True)
@@ -132,7 +127,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         poll = self.poll
 
         entity_filters = {
-            f"entity__{poll.entity_cls.get_filter_date_field()}__gte": time_ago(
+            f"{poll.entity_cls.get_filter_date_field()}__gte": time_ago(
                 days=self.recent_recommendations_days
             ).isoformat(),
         }
@@ -153,7 +148,7 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         poll = self.poll
 
         entity_filters = {
-            f"entity__{poll.entity_cls.get_filter_date_field()}__lt": time_ago(
+            f"{poll.entity_cls.get_filter_date_field()}__lt": time_ago(
                 days=self.recent_recommendations_days
             ).isoformat(),
         }

@@ -106,7 +106,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         # [THEN] only ids of matching entities should be returned.
         results = self.strategy._get_recommendations(
             {
-                f"entity__{self.poll1.entity_cls.get_filter_date_field()}__gte": (
+                f"{self.poll1.entity_cls.get_filter_date_field()}__gte": (
                     today - timedelta(days=1)
                 ).isoformat()
             },
