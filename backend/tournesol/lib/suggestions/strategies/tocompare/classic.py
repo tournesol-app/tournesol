@@ -1,11 +1,9 @@
 import random
 from dataclasses import dataclass
 
-from django.conf import settings
-
 from core.utils.time import time_ago
 from tournesol.lib.suggestions.strategies.base import ContributionSuggestionStrategy
-from tournesol.models import ContributorRating, Entity, EntityPollRating, RateLater
+from tournesol.models import ContributorRating, Entity, RateLater
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
 from tournesol.serializers.suggestion import EntityToCompare
 
