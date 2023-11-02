@@ -24,7 +24,7 @@ server {
 
     keepalive_timeout 5;
 
-    error_page 503 /maintenance;
+    error_page 503 /maintenance/index.html;
 
     location / {
         {% if maintenance %}
@@ -37,8 +37,8 @@ server {
     }
 
     location /maintenance {
-        root /srv/maintenance;
-        try_files $uri /index.html =404;
+        alias /srv/maintenance;
+        try_files $uri =404;
     }
 
     location @index {
