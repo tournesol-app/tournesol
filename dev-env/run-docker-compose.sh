@@ -61,6 +61,14 @@ function wait_for() {
 }
 
 function dev_env_restart() {
+  echo "Restarting dev containers..."
+  compose restart
+  wait_for is_front_ready "front"
+  wait_for is_api_ready "api"
+  echo "You can now access Tournesol on http://localhost:3000"
+}
+
+function dev_env_recreate() {
   echo "Recreating dev containers..."
   compose_up
   wait_for is_front_ready "front"
@@ -153,8 +161,12 @@ Commands:
     ./run-docker-compose.sh download --user-sampling 0.1
 
   restart
-  Recreate containers and restart all dev_env services using the existing database. Containers will be rebuilt if necessary.
+  Restart all dev_env services using the existing database and containers.
     ./run-docker-compose.sh restart
+
+  recreate
+  Recreate containers and restart all dev_env services using the existing database. Containers will be rebuilt if necessary.
+    ./run-docker-compose.sh recreate
 
   stop
   Stop dev containers. The database will be persisted in "$DB_DIR" folder.
@@ -170,6 +182,8 @@ case ${1:-""} in
     dev_env_init "${@:2}" ;;
   restart)
     dev_env_restart ;;
+  recreate)
+    dev_env_recreate ;;
   stop)
     dev_env_stop ;;
 	*)
