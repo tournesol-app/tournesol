@@ -23,36 +23,25 @@ function is_front_ready() {
   curl -s localhost:3000 --max-time 1 -o /dev/null
 }
 
-function compose_up(){
+function compose(){
   if docker compose version 2>/dev/null; then
-      echo "compose_up : docker-compose-plugin found"
-      docker compose up --build --force-recreate -d "$@"
+      docker compose "$@"
   else
-    echo "compose_up : docker-compose-plugin not found, trying to find docker-compose command"
     if command -v docker-compose ; then
-      echo "compose_up : docker-compose found"
-      docker-compose up --build --force-recreate -d "$@"
+      docker-compose "$@"
     else
-      echo "please install either docker-compose or docker-compose-plugin "
+      echo "Please install either docker-compose or docker-compose-plugin"
       exit 1
     fi
   fi
 }
 
+function compose_up(){
+  compose up --build --force-recreate -d "$@"
+}
+
 function compose_stop(){
-  if docker compose version 2>/dev/null; then
-      echo "compose_stop: docker-compose-plugin found"
-      docker compose stop
-  else
-    echo "compose_stop : docker-compose-plugin not found, trying to find docker-compose command"
-    if command -v docker-compose ; then
-      echo "compose_stop : docker-compose found"
-      docker-compose stop
-    else
-      echo "please install either docker-compose or docker-compose-plugin "
-      exit 1
-    fi
-  fi
+  compose stop
 }
 
 function wait_for() {
