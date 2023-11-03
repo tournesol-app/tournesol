@@ -89,6 +89,7 @@ const TabInfo = ({
         .
       </Trans>
     ),
+    'good-short-videos': t('tabsBox.goodShortVideos'),
   };
 
   if (!(messageKey in descriptionMessages)) {

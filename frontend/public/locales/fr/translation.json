@@ -127,6 +127,7 @@
     "recommendations": "Les vidéos recommandées par la communauté apparaissent ici.",
     "toConnect": "Les vidéos isolées du reste de vos comparaisons apparaissent ici. Comparez-les pour améliorer les recommandations.",
     "rateLater": "Vos vidéos à comparer plus tard apparaissent ici. Vous pouvez en ajouter sur le site web via le bouton '+'. Vous pouvez aussi les ajouter directement depuis YouTube grâce à <2>l'extension</2>.",
+    "goodShortVideos": "Un échantillon aléatoire de vidéos courtes recommandées par la communauté.",
     "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
     "emptyList": "Cette liste est vide."
   },
