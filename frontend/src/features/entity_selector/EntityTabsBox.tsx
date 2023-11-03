@@ -105,7 +105,7 @@ const TabInfo = ({
 const EntityTabsBox = ({
   tabs,
   onSelectEntity,
-  width = 'min(800px, 100vw)',
+  width = 'min(760px, 100vw)',
   elevation = 1,
   maxHeight = '40vh',
   withLink = false,
