@@ -36,12 +36,8 @@ function compose(){
   fi
 }
 
-function compose_up(){
+function compose_up_recreate(){
   compose up --build --force-recreate -d "$@"
-}
-
-function compose_stop(){
-  compose stop
 }
 
 function wait_for() {
@@ -70,7 +66,7 @@ function dev_env_restart() {
 
 function dev_env_recreate() {
   echo "Recreating dev containers..."
-  compose_up
+  compose_up_recreate
   wait_for is_front_ready "front"
   wait_for is_api_ready "api"
   echo "You can now access Tournesol on http://localhost:3000"
@@ -78,7 +74,7 @@ function dev_env_recreate() {
 
 function dev_env_stop() {
   echo "Stopping dev containers..."
-  compose_stop
+  compose stop
   echo "Docker containers are stopped."
 }
 
@@ -102,10 +98,10 @@ function dev_env_init() {
     export DB_IMAGE="postgres:13-bullseye"
   fi
 
-  compose_up db
+  compose_up_recreate db
   wait_for is_db_ready "db"
 
-  compose_up
+  compose_up_recreate
   wait_for is_api_ready "api"
 
   if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
