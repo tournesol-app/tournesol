@@ -20,7 +20,7 @@ import { getGoodShortVideos } from 'src/utils/api/goodShortVideos';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
-import { useLoginState } from 'src/hooks';
+import { useLoginState, usePreferredLanguages } from 'src/hooks';
 import { ComparisonsCountContext } from 'src/pages/comparisons/Comparison';
 import { EntityObject } from 'src/utils/types';
 
@@ -55,6 +55,8 @@ const VideoInput = ({
   );
 
   const comparisonsCount = useContext(ComparisonsCountContext).comparisonsCount;
+
+  const preferredLanguages = usePreferredLanguages({ pollName });
 
   const handleOptionClick = (uid: string) => {
     onChange(uid);
@@ -162,12 +164,12 @@ const VideoInput = ({
         name: 'good-short-videos',
         label: t('entitySelector.goodShortVideos'),
         fetch: async () => {
-          return await getGoodShortVideos();
+          return await getGoodShortVideos({ preferredLanguages });
         },
         disabled: !isLoggedIn,
       },
     ],
-    [t, isLoggedIn, otherUid, pollName]
+    [t, isLoggedIn, otherUid, pollName, preferredLanguages]
   );
 
   return (

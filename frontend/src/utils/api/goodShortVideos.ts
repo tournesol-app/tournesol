@@ -1,4 +1,3 @@
-import { initRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 import { PollsService } from 'src/services/openapi';
 import { Recommendation } from 'src/services/openapi';
 
@@ -10,16 +9,18 @@ const shuffleRecommendations = (array: Recommendation[]) => {
   }
 };
 
-export const getGoodShortVideos = async (): Promise<Recommendation[]> => {
-  const languages = initRecommendationsLanguages();
-
+export const getGoodShortVideos = async ({
+  preferredLanguages,
+}: {
+  preferredLanguages: string[];
+}): Promise<Recommendation[]> => {
   const metadata: Record<string, string | string[]> = {};
 
   const minutesMax = 5;
   const top = 100;
 
   metadata['duration:lte:int'] = (60 * minutesMax).toString();
-  metadata['language'] = languages.split(',');
+  metadata['language'] = preferredLanguages;
 
   const videos = await PollsService.pollsRecommendationsList({
     name: 'videos',
