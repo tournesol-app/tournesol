@@ -104,13 +104,12 @@ all:
             - https://api.tournesol.app/admin
             - https://webanalytics.tournesol.app/login
 
-          grafana_domain_name: "grafana.{{domain_name}}"
-          grafana_scheme: https
-
           # ID of the Discord role that will be highlighted when a monitored
           # URL is unreachable. (optional)
           discord_role_id_urls_checks: 928020834885464086
 
+          grafana_domain_name: "grafana.{{domain_name}}"
+          grafana_scheme: https
           plausible_hosting_tag: "2023.09.28"
 
           # Daily clean-up of the back end's expired items.
@@ -174,6 +173,10 @@ all:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
             - https://webanalytics.staging.tournesol.app/login
+
+          # ID of the Discord role that will be highlighted when a monitored
+          # URL is unreachable. (optional)
+          discord_role_id_urls_checks: 928020834885464086
 
           grafana_domain_name: "grafana.{{domain_name}}"
           grafana_scheme: https
