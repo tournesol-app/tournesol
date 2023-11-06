@@ -89,6 +89,7 @@ const TabInfo = ({
         .
       </Trans>
     ),
+    'good-short-videos': t('tabsBox.goodShortVideos'),
   };
 
   if (!(messageKey in descriptionMessages)) {
@@ -105,7 +106,7 @@ const TabInfo = ({
 const EntityTabsBox = ({
   tabs,
   onSelectEntity,
-  width = 'min(700px, 100vw)',
+  width = 'min(760px, 100vw)',
   elevation = 1,
   maxHeight = '40vh',
   withLink = false,
