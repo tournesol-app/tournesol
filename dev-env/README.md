@@ -60,12 +60,19 @@ Then, the application is accessible on http://localhost:3000.
 The created database includes video metadata, users and comparisons derived from a subset of Tournesol public dataset.
 An additional non-admin user is also created: `user1` with password `tournesol`.
 
-## Rebuild the containers while preserving the database
+## Restart the containers
 
-By default, the database content is initialized with test data.
-To recreate the containers (e.g to update the backend dependencies) while preserving the data, use:
+When you need to start or restart the existing containers, use:
 ```bash
 ./run-docker-compose.sh restart
+```
+
+## Rebuild the containers while preserving the database
+
+When you run `init`, the database content is initialized with test data.
+To recreate the containers (e.g to update the backend dependencies) while preserving the data, use:
+```bash
+./run-docker-compose.sh recreate
 ```
 
 ## See all available commands

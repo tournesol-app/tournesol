@@ -23,36 +23,21 @@ function is_front_ready() {
   curl -s localhost:3000 --max-time 1 -o /dev/null
 }
 
-function compose_up(){
+function compose(){
   if docker compose version 2>/dev/null; then
-      echo "compose_up : docker-compose-plugin found"
-      docker compose up --build --force-recreate -d "$@"
+      docker compose "$@"
   else
-    echo "compose_up : docker-compose-plugin not found, trying to find docker-compose command"
     if command -v docker-compose ; then
-      echo "compose_up : docker-compose found"
-      docker-compose up --build --force-recreate -d "$@"
+      docker-compose "$@"
     else
-      echo "please install either docker-compose or docker-compose-plugin "
+      echo "Please install either docker-compose or docker-compose-plugin"
       exit 1
     fi
   fi
 }
 
-function compose_stop(){
-  if docker compose version 2>/dev/null; then
-      echo "compose_stop: docker-compose-plugin found"
-      docker compose stop
-  else
-    echo "compose_stop : docker-compose-plugin not found, trying to find docker-compose command"
-    if command -v docker-compose ; then
-      echo "compose_stop : docker-compose found"
-      docker-compose stop
-    else
-      echo "please install either docker-compose or docker-compose-plugin "
-      exit 1
-    fi
-  fi
+function compose_up_recreate(){
+  compose up --build --force-recreate -d "$@"
 }
 
 function wait_for() {
@@ -72,8 +57,16 @@ function wait_for() {
 }
 
 function dev_env_restart() {
+  echo "Restarting dev containers..."
+  compose restart
+  wait_for is_front_ready "front"
+  wait_for is_api_ready "api"
+  echo "You can now access Tournesol on http://localhost:3000"
+}
+
+function dev_env_recreate() {
   echo "Recreating dev containers..."
-  compose_up
+  compose_up_recreate
   wait_for is_front_ready "front"
   wait_for is_api_ready "api"
   echo "You can now access Tournesol on http://localhost:3000"
@@ -81,7 +74,7 @@ function dev_env_restart() {
 
 function dev_env_stop() {
   echo "Stopping dev containers..."
-  compose_stop
+  compose stop
   echo "Docker containers are stopped."
 }
 
@@ -105,10 +98,10 @@ function dev_env_init() {
     export DB_IMAGE="postgres:13-bullseye"
   fi
 
-  compose_up db
+  compose_up_recreate db
   wait_for is_db_ready "db"
 
-  compose_up
+  compose_up_recreate
   wait_for is_api_ready "api"
 
   if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
@@ -164,8 +157,12 @@ Commands:
     ./run-docker-compose.sh download --user-sampling 0.1
 
   restart
-  Recreate containers and restart all dev_env services using the existing database. Containers will be rebuilt if necessary.
+  Restart all dev_env services using the existing database and containers.
     ./run-docker-compose.sh restart
+
+  recreate
+  Recreate containers and restart all dev_env services using the existing database. Containers will be rebuilt if necessary.
+    ./run-docker-compose.sh recreate
 
   stop
   Stop dev containers. The database will be persisted in "$DB_DIR" folder.
@@ -181,6 +178,8 @@ case ${1:-""} in
     dev_env_init "${@:2}" ;;
   restart)
     dev_env_restart ;;
+  recreate)
+    dev_env_recreate ;;
   stop)
     dev_env_stop ;;
 	*)
