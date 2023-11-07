@@ -321,7 +321,11 @@ def compute_scaled_scores(
         axis=1,
         inplace=True,
     )
-    all_scalings = pd.concat([calibration_scaling, non_calibration_scaling])
+    all_scalings = pd.concat(
+        f
+        for f in [calibration_scaling, non_calibration_scaling]
+        if not f.empty
+    )
     return df, all_scalings
 
 

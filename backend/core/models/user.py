@@ -13,8 +13,6 @@ from django.db.models.functions import Lower
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 
-from core.utils.models import WithDynamicFields
-
 logger = logging.getLogger(__name__)
 
 
@@ -364,7 +362,3 @@ class ExpertiseKeyword(models.Model):
 
     def __str__(self):
         return self.name
-
-
-# adding dynamic fields
-WithDynamicFields.create_all()
