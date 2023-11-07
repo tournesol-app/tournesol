@@ -4,11 +4,13 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory, VideoFactory
 
 from ..models import Comparison, Entity
+from .factories.poll import PollWithCriteriasFactory
 
 
 class StatisticsAPI(TestCase):
@@ -42,7 +44,7 @@ class StatisticsAPI(TestCase):
             rating_n_ratings=4,
         )
 
-        non_video = EntityFactory(type="another_type", rating_n_ratings=5)
+        EntityFactory(type="another_type", rating_n_ratings=5)
 
         Entity.objects.filter(pk=video_1.pk).update(add_time=time_ago(days=5))
         Entity.objects.filter(pk=video_2.pk).update(add_time=time_ago(days=29))
@@ -131,3 +133,35 @@ class StatisticsAPI(TestCase):
 
         self.assertEqual(user_count, len(self._list_of_users))
         self.assertEqual(active_users["joined_last_30_days"], 1)
+
+    def test_url_param_poll(self):
+        client = APIClient()
+
+        new_poll = "new_poll"
+        new_user = "new_user"
+
+        response = client.get("/stats/")
+        data = response.data
+
+        self.assertEqual(len(data["polls"]), 2)
+        for poll in data["polls"]:
+            self.assertNotEqual(poll["name"], new_poll)
+
+        poll = PollWithCriteriasFactory.create(name=new_poll)
+        user = UserFactory(username=new_user)
+        ComparisonFactory.create_batch(8, poll=poll, user=user)
+
+        response = client.get("/stats/")
+        data = response.data
+        self.assertEqual(len(data["polls"]), 3)
+
+        response = client.get("/stats/", {"poll": poll.name})
+        data = response.data
+
+        poll = [poll for poll in data["polls"] if poll["name"] == new_poll][0]
+        self.assertEqual(len(data["polls"]), 1)
+        self.assertEqual(poll["comparisons"]["total"], 8)
+
+        # Using an unknown poll should return all polls.
+        response = client.get("/stats/", {"poll": "unknown"})
+        self.assertEqual(len(response.data["polls"]), 3)

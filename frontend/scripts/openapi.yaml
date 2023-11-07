@@ -1006,6 +1006,12 @@ paths:
     get:
       operationId: stats_retrieve
       description: Fetch all Tournesol's public statistics.
+      parameters:
+      - in: query
+        name: poll
+        schema:
+          type: string
+        description: Only get stats related to this poll.
       tags:
       - stats
       security:

@@ -12,8 +12,8 @@ const EXPIRATION_TIME = 4000;
 
 interface StatsContextValue {
   stats: Statistics;
-  getStats: () => Statistics;
-  refreshStats: () => void;
+  getStats: (poll?: string) => Statistics;
+  refreshStats: (poll?: string) => void;
 }
 
 const initialState: Statistics = {
@@ -41,8 +41,8 @@ export const StatsLazyProvider = ({
 
   const [stats, setStats] = useState(initialState);
 
-  const refreshStats = useCallback(async () => {
-    const newStats = await StatsService.statsRetrieve();
+  const refreshStats = useCallback(async (poll: string | undefined) => {
+    const newStats = await StatsService.statsRetrieve({ poll });
     loading.current = false;
     lastRefreshAt.current = Date.now();
     setStats(newStats);
@@ -52,23 +52,26 @@ export const StatsLazyProvider = ({
    * Initialize the stats if they are empty or refresh them if they are
    * outdated.
    */
-  const getStats = useCallback(() => {
-    const currentTime = Date.now();
+  const getStats = useCallback(
+    (poll: string | undefined) => {
+      const currentTime = Date.now();
 
-    if (loading.current) {
+      if (loading.current) {
+        return stats;
+      }
+
+      if (
+        stats.polls.length === 0 ||
+        currentTime - lastRefreshAt.current >= EXPIRATION_TIME
+      ) {
+        loading.current = true;
+        refreshStats(poll);
+      }
+
       return stats;
-    }
-
-    if (
-      stats.polls.length === 0 ||
-      currentTime - lastRefreshAt.current >= EXPIRATION_TIME
-    ) {
-      loading.current = true;
-      refreshStats();
-    }
-
-    return stats;
-  }, [stats, refreshStats]);
+    },
+    [stats, refreshStats]
+  );
 
   const contextValue = useMemo(
     () => ({
