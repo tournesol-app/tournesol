@@ -191,7 +191,15 @@ As with Nginx logs, you can use the Grafana query language to combine multiple f
 > Direct link (on staging):  
 https://grafana.staging.tournesol.app/goto/lVgjR0pVk?orgId=1
 
-## Procedure to migrate to another server
+## Migrate to another server
+
+Throughout this procedure we will use the following vocabulary:
+- **old server** refers to the server you want to migrate from;
+- **new server** refers to the server that will host the new Tournesol instance.
+
+When you see `<OLD_IP>` or `<NEW_IP>` in the commands, replace them by
+respectively the IP address of the old server, and the IP address of the new
+server.
 
 1. **Reduce DNS TTL**
 
@@ -245,7 +253,8 @@ sudo systemctl start pg-backups.service
 6. **Copy Backup Files to the New Server**
 
 Transfer the backup files to the new server using a secure method such as SCP.
-Make sure the files are placed in the directory `/backups/tournesol/db/<backup-name>/`.
+Make sure the Tournesol database files are placed in the directory
+`/backups/tournesol/db/<backup-name>/`.
 
 ```bash
 # from the new server
@@ -257,22 +266,36 @@ sudo mkdir -p -m 777 /backups/tournesol/db
 Don't forget to reset the directory mode of `/backups/plausible` to 755 after
 the migration.
 
+```bash
+# from your local computer
+
+# Plausible
+scp -C -3 -r <OLD_IP>:/backups/plausible <USER>@<NEW_IP>:/backups
+
+# PostgreSQL (example)
+scp -C -3 -r <OLD_IP>:/backups/tournesol/db/2023-11-09-daily <USER>@<NEW_IP>:/backups/tournesol/db/2023-11-09-uploaded
+```
+
 7. **Update DNS Record with the new IP**
 
-Update the DNS records to point to the IP address of the new server. This step may take some time to be visible globally, depending on your DNS provider and the TTL you set earlier.
+Update the DNS records to point to the IP address of the new server. This step
+may take some time to be visible globally, depending on your DNS provider and
+the TTL you set earlier.
 
 8. **Launch Deployment Script with Maintenance Mode Enabled**
 
-To reuse the secrets from the old server, and to avoid generating new ones, we use a modified version ofthe deployment script instead of using the provisioning script.
+To reuse the secrets from the old server, and to avoid generating new ones,
+we use a modified version ofthe deployment script instead of using the default
+provisioning script.
 
-First, update the script `deploy-with-secrets.sh`.
+First, update the script `ansible/deploy-with-secrets.sh`:
 
 ```bash
-# replace
+# replace the line:
 source "./scripts/get-vm-secrets.sh" "$DOMAIN_NAME"
 
-# by (use the IP of the old server)
-source "./scripts/get-vm-secrets.sh" "192.168.0.1"
+# by:
+source "./scripts/get-vm-secrets.sh" "<OLD_IP>"
 ```
 
 Do not forget to revert this change once the migration is complete.
