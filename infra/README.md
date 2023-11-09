@@ -137,7 +137,7 @@ The server is using Nginx as a reverse proxy, and produces access logs in JSON f
 
 The Loki plugin provides a query builder and an "explain" option that make relatively easy to create a custom query to look for specific events.
 
-> Direct link (on staging):
+> Direct link (on staging):  
 https://grafana.staging.tournesol.app/goto/mPTIzpt4k?orgId=1
 
 #### Query examples
@@ -188,7 +188,7 @@ As with Nginx logs, you can use the Grafana query language to combine multiple f
 ```
 {unit="gunicorn.service"} |= `Warning`
 ```
-> Direct link (on staging):
+> Direct link (on staging):  
 https://grafana.staging.tournesol.app/goto/lVgjR0pVk?orgId=1
 
 ## Migrate to another server
