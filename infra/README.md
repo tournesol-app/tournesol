@@ -226,18 +226,24 @@ Put the platform into maintenance mode to prevent write operations to the databa
 This will avoid related services to start and avoid potential data loss or duplicated events.
 
 ```bash
+# from the old server
+
 sudo systemctl stop "tournesol*.timer" export-backups.timer ml-train.timer pg-backups.timer
 ```
 
 5. **Stop the web analytics Docker containers**
 
 ```bash
+# from the old server
+
 sudo systemctl stop tournesol-website-analytics.service
 ```
 
 5. **(a) Create a manual backup of the web analytics volumes**
 
 ```bash
+# from the old server
+
 sudo mkdir /backups/plausible
 
 cd /var/lib/docker/volumes/
@@ -249,6 +255,8 @@ tar cvzf /backups/plausible/plausible_analytics_event-data.tar.gz plausible_anal
 5. **(b) Create a manual backup of the Tournesol database**
 
 ```bash
+# from the old server
+
 sudo systemctl start pg-backups.service
 ```
 
@@ -290,9 +298,11 @@ To reuse the secrets from the old server, and to avoid generating new ones,
 we use a modified version ofthe deployment script instead of using the default
 provisioning script.
 
-First, update the script `ansible/deploy-with-secrets.sh`:
+First, update the script `ansible/scripts/deploy-with-secrets.sh`:
 
 ```bash
+# from your local computer
+
 # replace the line:
 source "./scripts/get-vm-secrets.sh" "$DOMAIN_NAME"
 
@@ -302,11 +312,20 @@ source "./scripts/get-vm-secrets.sh" "<OLD_IP>"
 
 Do not forget to revert this change once the migration is complete.
 
-Once the new IP address is available in the DNS, and once the deployment script has been updated to fetch the secrets from the old server, execute the deployment script on the new server. Ensure that the script is configured to operate in maintenance mode, so it does not allow public access until the migration is complete.
+Once the new IP address is available in the DNS, and once the deployment
+script has been updated to fetch the secrets from the old server, execute
+the deployment script on the new server. Ensure that the script is configured
+to operate in maintenance mode, so it does not allow public access until the
+migration is complete.
 
 ```bash
-# use deploy-prod.sh instead to deploy the production server
+# from your local computer
+
+# either
 ./infra/ansible/scripts/deploy-staging.sh apply notfast
+
+# or
+./infra/ansible/scripts/deploy-prod.sh apply notfast
 ```
 
 9. **Import Backup**
