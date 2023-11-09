@@ -123,7 +123,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
     def test_get_compared_sufficiently(self):
         """
-        The method `_ids_from_pool_compared` should return entity ids that
+        The method `_get_compared_sufficiently` should return entity ids that
         have been compared more than the user's setting `rate_later__auto_remove`.
         """
         results = self.strategy._get_compared_sufficiently({})
