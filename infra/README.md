@@ -262,6 +262,8 @@ source "./scripts/get-vm-secrets.sh" "$DOMAIN_NAME"
 source "./scripts/get-vm-secrets.sh" "192.168.0.1"
 ```
 
+Do not forget to revert this change once the migration is complete.
+
 Once the new IP address is available in the DNS, and once the deployment script has been updated to fetch the secrets from the old server, execute the deployment script on the new server. Ensure that the script is configured to operate in maintenance mode, so it does not allow public access until the migration is complete.
 
 ```bash
@@ -272,6 +274,22 @@ Once the new IP address is available in the DNS, and once the deployment script 
 9. **Import Backup**
 
 On the new server, load the backup data and configuration files that you copied in step 5.
+
+To restore the Plausible Analytics data:
+
+```bash
+sudo systemctl stop tournesol-website-analytics.service
+
+cd /var/lib/docker/volumes/
+
+sudo mv plausible_analytics_db-data plausible_analytics_db-data.OLD
+sudo mv plausible_analytics_event-data plausible_analytics_event-data.OLD
+
+sudo tar xvzf /backups/plausible/plausible_analytics_db-data.tar.gz plausible_analytics_db-data
+sudo tar xvzf /backups/plausible/plausible_analyticse_vent-data.tar.gz plausible_analytics_event-data
+
+sudo systemctl stop tournesol-website-analytics.service
+```
 
 10. **Redeploy the Stack Without Maintenance Mode**
 
