@@ -248,12 +248,25 @@ Transfer the backup files to the new server using a secure method such as SCP. M
 
 Update the DNS records to point to the IP address of the new server. This step may take some time to be visible globally, depending on your DNS provider and the TTL you set earlier.
 
-8. **Launch Provisioning Script with Maintenance Mode Enabled**
+8. **Launch Deployment Script with Maintenance Mode Enabled**
 
-Once the new IP address is available in the DNS, execute a provisioning script on the new server. Ensure that the script is configured to operate in maintenance mode, so it does not allow public access until the migration is complete.
+To reuse the secrets from the old server, and to avoid generating new ones, we use a modified version ofthe deployment script instead of using the provisioning script.
 
-```note
-**TODO:** how to reuse secrets from the old server when provisioning?
+First, update the script `deploy-with-secrets.sh`.
+
+```bash
+# replace
+source "./scripts/get-vm-secrets.sh" "$DOMAIN_NAME"
+
+# by (use the IP of the old server)
+source "./scripts/get-vm-secrets.sh" "192.168.0.1"
+```
+
+Once the new IP address is available in the DNS, and once the deployment script has been updated to fetch the secrets from the old server, execute the deployment script on the new server. Ensure that the script is configured to operate in maintenance mode, so it does not allow public access until the migration is complete.
+
+```bash
+# use deploy-prod.sh instead to deploy the production server
+./infra/ansible/scripts/deploy-staging.sh apply notfast
 ```
 
 9. **Import Backup**
