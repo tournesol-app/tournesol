@@ -32,8 +32,8 @@ This personal environment allows developers to work on the Ansible deployment re
 - Once the installation terminates and the VM has rebooted:
   - login as root using your hypervisor interface, install `sudo` and add your user into the `sudo` group: `apt install sudo && gpasswd -a <username> sudo`
   - make sure to be able to reach port 22 of the VM somehow (could be a port forward in your hypervisor)
-  
-If for any reason you're not able to set up a virtual machine on your computer - your hardware have missing virtualization capabilities, or is not powerful enough - you can still use a remote virtual machine from a Cloud provider. Some Cloud providers offer free credits for new users, but it can get costly if you rent a powerful server and forget to stop it after use. Note this installation method **is not supported** by the team, and you might encounter unexpected issues. 
+
+If for any reason you're not able to set up a virtual machine on your computer - your hardware have missing virtualization capabilities, or is not powerful enough - you can still use a remote virtual machine from a Cloud provider. Some Cloud providers offer free credits for new users, but it can get costly if you rent a powerful server and forget to stop it after use. Note this installation method **is not supported** by the team, and you might encounter unexpected issues.
 
 
 ## Provisioning
@@ -137,7 +137,7 @@ The server is using Nginx as a reverse proxy, and produces access logs in JSON f
 
 The Loki plugin provides a query builder and an "explain" option that make relatively easy to create a custom query to look for specific events.
 
-> Direct link (on staging):  
+> Direct link (on staging):
 https://grafana.staging.tournesol.app/goto/mPTIzpt4k?orgId=1
 
 #### Query examples
@@ -188,7 +188,7 @@ As with Nginx logs, you can use the Grafana query language to combine multiple f
 ```
 {unit="gunicorn.service"} |= `Warning`
 ```
-> Direct link (on staging):  
+> Direct link (on staging):
 https://grafana.staging.tournesol.app/goto/lVgjR0pVk?orgId=1
 
 ## Migrate to another server
@@ -203,13 +203,15 @@ server.
 
 1. **Reduce DNS TTL**
 
-Decrease the Time To Live (TTL) of the DNS A records to a low value (e.g., 180 seconds).  
+Decrease the Time To Live (TTL) of the DNS A records to a low value (e.g., 180 seconds).
 
 2. **Disable the external URLs monitoring timer**
 
 Connect to the server monitoring the machine being migrated.
 
 ```bash
+# from the monitoring server
+
 sudo systemctl stop external-urls-monitoring.timer
 ```
 
@@ -314,6 +316,8 @@ On the new server, load the backup data and configuration files that you copied 
 To restore the Plausible Analytics data:
 
 ```bash
+# from the new server
+
 sudo systemctl stop tournesol-website-analytics.service
 
 cd /var/lib/docker/volumes/
@@ -322,9 +326,18 @@ sudo mv plausible_analytics_db-data plausible_analytics_db-data.OLD
 sudo mv plausible_analytics_event-data plausible_analytics_event-data.OLD
 
 sudo tar xvzf /backups/plausible/plausible_analytics_db-data.tar.gz plausible_analytics_db-data
-sudo tar xvzf /backups/plausible/plausible_analyticse_vent-data.tar.gz plausible_analytics_event-data
+sudo tar xvzf /backups/plausible/plausible_analytics_event-data.tar.gz plausible_analytics_event-data
 
-sudo systemctl stop tournesol-website-analytics.service
+sudo systemctl start tournesol-website-analytics.service
+```
+
+To restore the Tournesol database (PostgreSQL):
+
+```bash
+# from your local computer
+
+cd ansible
+ansible-playbook restore-backup.yml -i inventory.yml -l <ansible-host> -e restore_backup_name=2023-11-09-uploaded
 ```
 
 10. **Redeploy the Stack Without Maintenance Mode**
@@ -333,7 +346,40 @@ After successful data import and configuration adjustments, redeploy your web ap
 
 11. **Cleanup**
 
-...
+Reset the temporary modifications. The secrets should now be retrieved from
+the new server.
+
+```bash
+# from you local machine
+
+git checkout ansible/scripts/deploy-with-secrets.sh
+```
+
+Restart the URLs monitoring:
+
+```bash
+# from the monitoring server
+
+sudo systemctl start external-urls-monitoring.timer
+```
+
+Reset the directory mode of the directories in `/backups/` to 755:
+
+```bash
+# from the new server
+
+sudo chomd 755 /backups/plausible
+sudo chomd 755 /backups/tournesol
+```
+
+Check if all systemd timers are enabled and started. They should be loaded and
+active:
+
+```bash
+# from the new server
+
+sudo systemctl stop "tournesol*.timer" export-backups.timer ml-train.timer pg-backups.timer
+```
 
 ## Copyright & License
 
