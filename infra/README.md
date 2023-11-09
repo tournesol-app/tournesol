@@ -217,7 +217,28 @@ This will avoid related services to start and avoid potential data loss or dupli
 sudo systemctl stop "tournesol*.timer" export-backups.timer ml-train.timer pg-backups.timer
 ```
 
-5. **Create a manual backup of the database**
+5. **Stop the web analytics Docker containers**
+
+```bash
+sudo docker stop {container_id1} {container_id2} etc.
+```
+
+5. **(a) Create a manual backup of the web analytics volumes**
+
+```bash
+sudo mkdir /backups/plausible
+
+cd /var/lib/docker/volumes/
+
+tar cvzf /backups/plausible/plausible_analytics_db-data.tar.gz plausible_analytics_db-data
+tar cvzf /backups/plausible/plausible_analytics_event-data.tar.gz plausible_analytics_event-data
+```
+
+5. **(b) Create a manual backup of the Tournesol database**
+
+```bash
+sudo systemctl start pg-backups.service
+```
 
 6. **Copy Backup Files to the New Server**
 
