@@ -71,7 +71,7 @@ class SuggestionsToCompareTestCase(TestCase):
 
     def test_authentication_required(self):
         """
-        Anonymous users cannot access their ratings' sub-samples.
+        Anonymous users cannot be suggested videos to compare.
         """
         response = self.client.get(self.base_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
