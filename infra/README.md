@@ -202,8 +202,10 @@ Decrease the Time To Live (TTL) of the DNS A records to a low value (e.g., 180 s
 Connect to the server monitoring the machine being migrated.
 
 ```bash
-sudo systemctl disable external-urls-monitoring.timer
+sudo systemctl stop external-urls-monitoring.timer
 ```
+
+Don't forget to restart it again after the migration.
 
 3. **Deploy the services in Maintenance Mode on the old server**
 
@@ -220,7 +222,7 @@ sudo systemctl stop "tournesol*.timer" export-backups.timer ml-train.timer pg-ba
 5. **Stop the web analytics Docker containers**
 
 ```bash
-sudo docker stop {container_id1} {container_id2} etc.
+sudo systemctl stop tournesol-website-analytics.service
 ```
 
 5. **(a) Create a manual backup of the web analytics volumes**
@@ -242,7 +244,18 @@ sudo systemctl start pg-backups.service
 
 6. **Copy Backup Files to the New Server**
 
-Transfer the backup files to the new server using a secure method such as SCP. Make sure the files are placed in the directory `/backups/tournesol/db/<backup-name>/`.
+Transfer the backup files to the new server using a secure method such as SCP.
+Make sure the files are placed in the directory `/backups/tournesol/db/<backup-name>/`.
+
+```bash
+# from the new server
+
+sudo mkdir -p -m 777 /backups/plausible
+sudo mkdir -p -m 777 /backups/tournesol/db
+```
+
+Don't forget to reset the directory mode of `/backups/plausible` to 755 after
+the migration.
 
 7. **Update DNS Record with the new IP**
 
@@ -295,6 +308,9 @@ sudo systemctl stop tournesol-website-analytics.service
 
 After successful data import and configuration adjustments, redeploy your web application stack without maintenance mode. This allows the application to be accessible to users again.
 
+11. **Cleanup**
+
+...
 
 ## Copyright & License
 
