@@ -193,38 +193,54 @@ https://grafana.staging.tournesol.app/goto/lVgjR0pVk?orgId=1
 
 ## Procedure to migrate to another server
 
-1. **Reduce DNS TTL**  
+1. **Reduce DNS TTL**
+
 Decrease the Time To Live (TTL) of the DNS A records to a low value (e.g., 180 seconds).  
 
-2. **Deploy the services in Maintenance Mode on the old server**  
+2. **Disable the external URLs monitoring timer**
+
+Connect to the server monitoring the machine being migrated.
+
+```bash
+sudo systemctl disable external-urls-monitoring.timer
+```
+
+3. **Deploy the services in Maintenance Mode on the old server**
+
 Put the platform into maintenance mode to prevent write operations to the database. This ensures data consistency during the migration process.
 
-3. **Stop all Timers**  
+4. **Stop all Timers**
+
 This will avoid related services to start and avoid potential data loss or duplicated events.
 
 ```bash
 sudo systemctl stop "tournesol*.timer" export-backups.timer ml-train.timer pg-backups.timer
 ```
 
-4. **Create a manual backup of the database**
+5. **Create a manual backup of the database**
 
-5. **Copy Backup Files to the New Server**  
+6. **Copy Backup Files to the New Server**
+
 Transfer the backup files to the new server using a secure method such as SCP. Make sure the files are placed in the directory `/backups/tournesol/db/<backup-name>/`.
 
-6. **Update DNS Record with the new IP**  
+7. **Update DNS Record with the new IP**
+
 Update the DNS records to point to the IP address of the new server. This step may take some time to be visible globally, depending on your DNS provider and the TTL you set earlier.
 
-7. **Launch Provisioning Script with Maintenance Mode Enabled**  
+8. **Launch Provisioning Script with Maintenance Mode Enabled**
+
 Once the new IP address is available in the DNS, execute a provisioning script on the new server. Ensure that the script is configured to operate in maintenance mode, so it does not allow public access until the migration is complete.
 
 ```note
 **TODO:** how to reuse secrets from the old server when provisioning?
 ```
 
-8. **Import Backup**  
+9. **Import Backup**
+
 On the new server, load the backup data and configuration files that you copied in step 5.
 
-9. **Redeploy the Stack Without Maintenance Mode**  
+10. **Redeploy the Stack Without Maintenance Mode**
+
 After successful data import and configuration adjustments, redeploy your web application stack without maintenance mode. This allows the application to be accessible to users again.
 
 
