@@ -135,6 +135,10 @@ class StatisticsAPI(TestCase):
         self.assertEqual(active_users["joined_last_30_days"], 1)
 
     def test_url_param_poll(self):
+        """
+        The `poll` URL parameter allows to filter the returned results by
+        poll.
+        """
         client = APIClient()
 
         new_poll = "new_poll"
@@ -164,4 +168,4 @@ class StatisticsAPI(TestCase):
 
         # Using an unknown poll should return all polls.
         response = client.get("/stats/", {"poll": "unknown"})
-        self.assertEqual(len(response.data["polls"]), 3)
+        self.assertEqual(len(response.data["polls"]), 0)

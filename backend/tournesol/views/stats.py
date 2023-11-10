@@ -143,7 +143,7 @@ class StatisticsView(generics.GenericAPIView):
             try:
                 poll = Poll.objects.get(name=selected_poll)
             except Poll.DoesNotExist:
-                polls = Poll.objects.iterator()
+                polls = []
             else:
                 polls = [poll]
         else:
