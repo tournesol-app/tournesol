@@ -158,8 +158,21 @@ class SuggestionsToCompareTestCase(TestCase):
         # The results match the pair user1 / poll1
         self.assertEqual(len(results), 20)
         self.assertIn("entity", results[0])
-        self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 11)
-        self.assertEqual(results[0]["collective_rating"]["n_contributors"], 33)
+
+        videos_with_comparisons = [
+            r["entity"]["uid"]
+            for r in results
+            if r["collective_rating"] and r["collective_rating"]["n_comparisons"] == 11
+        ]
+        videos_with_contributors = [
+            r["entity"]["uid"]
+            for r in results
+            if r["collective_rating"] and r["collective_rating"]["n_contributors"] == 33
+        ]
+
+        self.assertEqual(len(videos_with_comparisons), 9)
+        self.assertEqual(len(videos_with_contributors), 9)
+        self.assertEqual(set(videos_with_comparisons), set(videos_with_contributors))
         self.assertTrue(set(uids_returned).issuperset(uids_compared))
         self.assertTrue(set(uids_returned).issuperset(uids_rate_later))
         self.assertTrue(set(uids_returned).issuperset(uids_recommendations_new))
