@@ -12,10 +12,6 @@ export const fillAutoSuggestions = (
   uids: string[],
   exclude?: string[]
 ) => {
-  if (exclude == null) {
-    AUTO_SUGGESTIONS[poll] = [...uids];
-  }
-
   AUTO_SUGGESTIONS[poll] = uids.filter((uid) => !exclude?.includes(uid));
 };
 
