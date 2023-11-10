@@ -45,6 +45,7 @@ from .views.ratings import (
 )
 from .views.stats import StatisticsView
 from .views.subsamples import SubSamplesList
+from .views.suggestions.to_compare import SuggestionsToCompare
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
@@ -131,6 +132,12 @@ urlpatterns = [
         "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
+    ),
+    # Suggestions
+    path(
+        "users/me/suggestions/<str:poll_name>/tocompare/",
+        SuggestionsToCompare.as_view(),
+        name="suggestions_me_to_compare"
     ),
     # Sub-samples API
     path(

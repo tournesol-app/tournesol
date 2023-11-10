@@ -2148,6 +2148,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSubSampleList'
           description: ''
+  /users/me/suggestions/{poll_name}/tocompare/:
+    get:
+      operationId: users_me_suggestions_tocompare_retrieve
+      description: |-
+        Suggest a list of entities to compare to the logged-in user.
+
+        The suggestion strategy is determined by the `strategy` query parameter.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: strategy
+        schema:
+          type: string
+          enum:
+          - Classic
+          default: Classic
+        description: The strategy used to suggest a entities to compare.
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          description: No response body
   /users/me/unconnected_entities/{poll_name}/{uid}/:
     get:
       operationId: users_me_unconnected_entities_list

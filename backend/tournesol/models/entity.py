@@ -60,6 +60,7 @@ class EntityQueryset(models.QuerySet):
             ContributorRating.objects.filter(poll=poll, user=user)
             .annotate_n_comparisons()
         )
+
         if prefetch_criteria_scores:
             contributor_ratings = contributor_ratings.prefetch_related("criteria_scores")
 
