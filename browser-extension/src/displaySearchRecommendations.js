@@ -1,31 +1,25 @@
 (async () => {
-  const bannerUrl = chrome.runtime.getURL('./models/banner/Banner.js'),
-    TournesolRecommendationsOptionsUrl = chrome.runtime.getURL(
-      './models/tournesolRecommendations/TournesolRecommendationsOptions.js'
-    ),
-    TournesolSearchRecommendationsUrl = chrome.runtime.getURL(
-      './models/tournesolRecommendations/TournesolSearchRecommendations.js'
-    );
-
   const [
     { Banner },
     { TournesolRecommendationsOptions },
     { TournesolSearchRecommendations },
-  ] = await Promise.all([
-    import(bannerUrl),
-    import(TournesolRecommendationsOptionsUrl),
-    import(TournesolSearchRecommendationsUrl),
-  ]);
+  ] = await Promise.all(
+    [
+      './models/banner/Banner.js',
+      './models/tournesolRecommendations/TournesolRecommendationsOptions.js',
+      './models/tournesolRecommendations/TournesolSearchRecommendations.js',
+    ].map((path) => import(chrome.runtime.getURL(path)))
+  );
 
   const PARENT_CSS_SELECTORS = '#page-manager #container #primary';
 
-  const options = new TournesolRecommendationsOptions(
-    3,
-    1,
-    new Banner(),
-    PARENT_CSS_SELECTORS,
-    true
-  );
+  const options = new TournesolRecommendationsOptions({
+    videosPerRow: 3,
+    rowsWhenExpanded: 1,
+    banner: new Banner(),
+    parentComponentQuery: PARENT_CSS_SELECTORS,
+    displayCriteria: true,
+  });
 
   const searchRecommendations = new TournesolSearchRecommendations(options);
 

@@ -1,8 +1,7 @@
-import { defaultTournesolRecommendationsOptions } from './TournesolRecommendationsOptions.js';
 import { TournesolContainer } from '../tournesolContainer/TournesolContainer.js';
 
 export class TournesolRecommendations {
-  constructor(options = defaultTournesolRecommendationsOptions) {
+  constructor(options) {
     this.isPageLoaded = false;
     this.isExpanded = false;
     this.areRecommendationsLoading = false;

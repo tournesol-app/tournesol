@@ -1,11 +1,24 @@
 (async () => {
-  const { TournesolRecommendations } = await import(
-    chrome.runtime.getURL(
-      './models/tournesolRecommendations/TournesolRecommendations.js'
-    )
+  const [
+    { TournesolRecommendations },
+    { TournesolRecommendationsOptions },
+    { Banner },
+  ] = await Promise.all(
+    [
+      './models/tournesolRecommendations/TournesolRecommendations.js',
+      './models/tournesolRecommendations/TournesolRecommendationsOptions.js',
+      './models/banner/Banner.js',
+    ].map((path) => import(chrome.runtime.getURL(path)))
   );
 
-  const homeRecommendations = new TournesolRecommendations();
+  const options = new TournesolRecommendationsOptions({
+    videosPerRow: 4,
+    rowsWhenExpanded: 3,
+    banner: new Banner(),
+    parentComponentQuery: '#primary > ytd-rich-grid-renderer',
+    displayCriteria: false,
+  });
+  const homeRecommendations = new TournesolRecommendations(options);
 
   const process = () => {
     // Display the home page recommendations.
