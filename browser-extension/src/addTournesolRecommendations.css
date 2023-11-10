@@ -64,7 +64,18 @@
 
 #tournesol_banner_icon {
   width: 35px;
+}
+
+#tournesol_banner_icon.campaign {
   filter: invert(36%) sepia(28%) saturate(7184%) hue-rotate(176deg) brightness(91%) contrast(86%);
+}
+
+#tournesol_banner_icon.security {
+  filter: brightness(0) saturate(100%) invert(27%) sepia(50%) saturate(1983%) hue-rotate(335deg) brightness(107%) contrast(98%);
+}
+
+#tournesol_banner_close_button_container {
+  margin-left: auto;
 }
 
 #tournesol_banner_close_icon {

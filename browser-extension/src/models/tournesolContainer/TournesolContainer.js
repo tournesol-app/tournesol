@@ -1,13 +1,9 @@
 import { TournesolVideoCard } from '../tournesolVideoCard/TournesolVideoCard.js';
 
-/**
- * TODO:
- * - Make the banner optional
- */
 export class TournesolContainer {
   /**
    * @param {TournesolRecommendations} recommendations An object containing the videos to display.
-   * @param {Banner} banner A banner displayed if its display conditions are satisfied.
+   * @param {Banner} banner An optional banner displayed if its display conditions are satisfied.
    */
   constructor(recommendations, banner) {
     this.isExpanded = false;
@@ -37,7 +33,7 @@ export class TournesolContainer {
 
     tournesolContainer.append(topActionBar);
 
-    if (this.banner.bannerShouldBeDisplayed()) {
+    if (this.banner && this.banner.bannerShouldBeDisplayed()) {
       tournesolContainer.append(this.banner.element);
     }
 
@@ -119,7 +115,7 @@ export class TournesolContainer {
     topActionBar.append(learnMore);
 
     // Display the campaign button only if there is a banner.
-    if (this.banner.bannerShouldBeDisplayed()) {
+    if (this.banner && this.banner.bannerShouldBeDisplayed()) {
       const campaignButton = document.createElement('button');
       campaignButton.id = 'tournesol_campaign_button';
       campaignButton.className = 'tournesol_simple_button emphatic';
@@ -132,13 +128,9 @@ export class TournesolContainer {
       campaignButtonImg.setAttribute('alt', 'Megaphone icon');
       campaignButton.append(campaignButtonImg);
 
-      campaignButton.onclick = () => {
-        chrome.storage.local.set(
-          { displayBannerFundingSeptember2023: true },
-          () => {
-            this.banner.display();
-          }
-        );
+      campaignButton.onclick = async () => {
+        await this.banner.saveDisplayPreference(true);
+        this.banner.display();
       };
 
       topActionBar.append(campaignButton);

@@ -1,6 +1,3 @@
-import { isNavigatorLang } from '../../utils.js';
-import { defaultBannerOptions } from './BannerOptions.js';
-
 /**
  * A banner displaying a message and an action button.
  *
@@ -12,12 +9,26 @@ import { defaultBannerOptions } from './BannerOptions.js';
  * - etc.
  */
 export class Banner {
-  constructor(options = defaultBannerOptions) {
-    this.TS_BANNER_DATE_START = options.TS_BANNER_DATE_START;
-    this.TS_BANNER_DATE_END = options.TS_BANNER_DATE_END;
-    this.TS_BANNER_ACTION_FR_URL = options.TS_BANNER_ACTION_FR_URL;
-    this.TS_BANNER_ACTION_EN_URL = options.TS_BANNER_ACTION_EN_URL;
-    this.TS_BANNER_PROOF_KW = options.TS_BANNER_PROOF_KW;
+  constructor({
+    name,
+    dateStart,
+    dateEnd,
+    title,
+    text,
+    actionLabel,
+    actionLink,
+    securityAdvisory,
+  }) {
+    this.name = name;
+    this.dateStart = dateStart;
+    this.dateEnd = dateEnd;
+    this.title = title;
+    this.text = text;
+    this.actionLabel = actionLabel;
+    this.actionLink = actionLink;
+    this.securityAdvisory = securityAdvisory;
+
+    this.displayBannerKey = `displayBanner:${this.name}`;
 
     // Create the banner at the initialisation.
     this.element = this.createBanner();
@@ -34,11 +45,30 @@ export class Banner {
   bannerShouldBeDisplayed() {
     const now = new Date();
 
-    if (this.TS_BANNER_DATE_START <= now && now <= this.TS_BANNER_DATE_END) {
+    if (this.dateStart <= now && now <= this.dateEnd) {
       return true;
     }
 
     return false;
+  }
+
+  async loadDisplayPreference() {
+    const { displayBannerKey } = this;
+
+    return new Promise((resolve) => {
+      chrome.storage.local.get(displayBannerKey, (result) => {
+        const displayBanner = result[displayBannerKey] ?? true;
+        resolve(displayBanner);
+      });
+    });
+  }
+
+  async saveDisplayPreference(value) {
+    return new Promise((resolve) => {
+      chrome.storage.local.set({ [this.displayBannerKey]: value }, () => {
+        resolve();
+      });
+    });
   }
 
   createBanner() {
@@ -47,47 +77,57 @@ export class Banner {
     banner.className = 'tournesol_banner';
 
     // Only display the banner if the user didn't explicitly close it.
-    chrome.storage.local.get(
-      'displayBannerFundingSeptember2023',
-      ({ displayBannerFundingSeptember2023 }) => {
-        if (
-          [true, null, undefined].includes(displayBannerFundingSeptember2023)
-        ) {
-          this.display();
-        }
-      }
-    );
+    this.loadDisplayPreference().then((displayBanner) => {
+      if (displayBanner) this.display();
+    });
 
     // The first flex item is the campaign icon.
     const bannerIconContainer = document.createElement('div');
     const icon = document.createElement('img');
     icon.id = 'tournesol_banner_icon';
-    icon.setAttribute('src', chrome.runtime.getURL('images/campaign.svg'));
-    icon.setAttribute('alt', 'Megaphone icon');
+    const { iconName, iconClass, iconAltKey } = this.securityAdvisory
+      ? {
+          iconName: 'warning',
+          iconClass: 'security',
+          iconAltKey: 'securityIconAlt',
+        }
+      : {
+          iconName: 'campaign',
+          iconClass: 'campaign',
+          iconAltKey: 'campaignIconAlt',
+        };
+    icon.setAttribute('src', chrome.runtime.getURL(`images/${iconName}.svg`));
+    icon.classList.add(iconClass);
+    icon.setAttribute('alt', chrome.i18n.getMessage(iconAltKey));
     bannerIconContainer.append(icon);
+    banner.appendChild(bannerIconContainer);
 
     // The second flex item is the text.
     const bannerTextContainer = document.createElement('div');
+    const bannerTitle = document.createElement('h2');
+    bannerTitle.textContent = this.title;
+    bannerTextContainer.append(bannerTitle);
     const bannerText = document.createElement('p');
-    bannerText.textContent = chrome.i18n.getMessage('study2023BannerText');
+    bannerText.textContent = this.text;
     bannerTextContainer.append(bannerText);
+    banner.appendChild(bannerTextContainer);
 
     // The third flex item is the action button.
-    const actionButtonContainer = document.createElement('div');
-    const actionButton = document.createElement('a');
-    actionButton.textContent = chrome.i18n.getMessage('study2023ActionButton');
-    actionButton.className = 'tournesol_mui_like_button';
-    actionButton.setAttribute(
-      'href',
-      isNavigatorLang('fr')
-        ? this.TS_BANNER_ACTION_FR_URL
-        : this.TS_BANNER_ACTION_EN_URL
-    );
-    actionButton.setAttribute('target', '_blank');
-    actionButton.setAttribute('rel', 'noopener');
+    if (this.actionLabel && this.actionLink) {
+      const actionButtonContainer = document.createElement('div');
+      const actionButton = document.createElement('a');
+      actionButton.textContent = this.actionLabel;
+      actionButton.className = 'tournesol_mui_like_button';
+      actionButton.setAttribute('href', this.actionLink);
+      actionButton.setAttribute('target', '_blank');
+      actionButton.setAttribute('rel', 'noopener');
+      actionButtonContainer.append(actionButton);
+      banner.appendChild(actionButtonContainer);
+    }
 
     // The last flex item is the close button.
     const closeButtonContainer = document.createElement('div');
+    closeButtonContainer.id = 'tournesol_banner_close_button_container';
     const closeButton = document.createElement('button');
     closeButton.className = 'tournesol_simple_button';
     const closeButtonImg = document.createElement('img');
@@ -96,25 +136,15 @@ export class Banner {
       'src',
       chrome.runtime.getURL('images/close.svg')
     );
-    closeButtonImg.setAttribute('alt', 'Close icon');
+    closeButtonImg.setAttribute('alt', chrome.i18n.getMessage('closeIconAlt'));
     closeButton.append(closeButtonImg);
     closeButtonContainer.append(closeButton);
-
-    closeButton.onclick = () => {
-      chrome.storage.local.set(
-        { displayBannerFundingSeptember2023: false },
-        () => {
-          this.hide();
-        }
-      );
-    };
-
-    actionButtonContainer.append(actionButton);
-
-    banner.appendChild(bannerIconContainer);
-    banner.appendChild(bannerTextContainer);
-    banner.appendChild(actionButtonContainer);
     banner.appendChild(closeButtonContainer);
+
+    closeButton.onclick = async () => {
+      await this.saveDisplayPreference(false);
+      this.hide();
+    };
 
     return banner;
   }

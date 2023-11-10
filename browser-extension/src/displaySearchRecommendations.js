@@ -1,27 +1,49 @@
 (async () => {
-  const [
-    { Banner },
-    { TournesolRecommendationsOptions },
-    { TournesolSearchRecommendations },
-  ] = await Promise.all(
-    [
-      './models/banner/Banner.js',
-      './models/tournesolRecommendations/TournesolRecommendationsOptions.js',
-      './models/tournesolRecommendations/TournesolSearchRecommendations.js',
-    ].map((path) => import(chrome.runtime.getURL(path)))
-  );
+  let searchRecommendations;
 
-  const PARENT_CSS_SELECTORS = '#page-manager #container #primary';
+  const initializeSearchRecommendations = async () => {
+    const [
+      { TournesolRecommendationsOptions },
+      { TournesolSearchRecommendations },
+      { fetchBanner },
+    ] = await Promise.all(
+      [
+        './models/tournesolRecommendations/TournesolRecommendationsOptions.js',
+        './models/tournesolRecommendations/TournesolSearchRecommendations.js',
+        './models/banner/fetchBanner.js',
+      ].map((path) => import(chrome.runtime.getURL(path)))
+    );
 
-  const options = new TournesolRecommendationsOptions({
-    videosPerRow: 3,
-    rowsWhenExpanded: 1,
-    banner: new Banner(),
-    parentComponentQuery: PARENT_CSS_SELECTORS,
-    displayCriteria: true,
-  });
+    const PARENT_CSS_SELECTORS = '#page-manager #container #primary';
 
-  const searchRecommendations = new TournesolSearchRecommendations(options);
+    const banner = await fetchBanner();
+
+    const options = new TournesolRecommendationsOptions({
+      videosPerRow: 3,
+      rowsWhenExpanded: 1,
+      banner,
+      parentComponentQuery: PARENT_CSS_SELECTORS,
+      displayCriteria: true,
+    });
+
+    searchRecommendations = new TournesolSearchRecommendations(options);
+  };
+
+  const processSearchRecommendations = async () => {
+    if (searchRecommendations === undefined) {
+      await initializeSearchRecommendations();
+    }
+
+    searchRecommendations.process();
+  };
+
+  const clearSearchRecommendations = () => {
+    if (searchRecommendations === undefined) {
+      return;
+    }
+
+    searchRecommendations.clear();
+  };
 
   // Allow to display the Tournesol search results without modifying the
   // user's preferences in the local storage.
@@ -56,14 +78,14 @@
         { message: 'get:setting:extension__search_reco' },
         (setting) => {
           if (setting?.value || forceSearch) {
-            searchRecommendations.process();
+            processSearchRecommendations();
           } else {
-            searchRecommendations.clear();
+            clearSearchRecommendations();
           }
         }
       );
     } else {
-      searchRecommendations.clear();
+      clearSearchRecommendations();
     }
   };
 

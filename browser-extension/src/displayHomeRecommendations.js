@@ -1,31 +1,52 @@
 (async () => {
-  const [
-    { TournesolRecommendations },
-    { TournesolRecommendationsOptions },
-    { Banner },
-  ] = await Promise.all(
-    [
-      './models/tournesolRecommendations/TournesolRecommendations.js',
-      './models/tournesolRecommendations/TournesolRecommendationsOptions.js',
-      './models/banner/Banner.js',
-    ].map((path) => import(chrome.runtime.getURL(path)))
-  );
+  let homeRecommendations;
 
-  const options = new TournesolRecommendationsOptions({
-    videosPerRow: 4,
-    rowsWhenExpanded: 3,
-    banner: new Banner(),
-    parentComponentQuery: '#primary > ytd-rich-grid-renderer',
-    displayCriteria: false,
-  });
-  const homeRecommendations = new TournesolRecommendations(options);
+  const initializeHomeRecommendations = async () => {
+    const [
+      { TournesolRecommendations },
+      { TournesolRecommendationsOptions },
+      { fetchBanner },
+    ] = await Promise.all(
+      [
+        './models/tournesolRecommendations/TournesolRecommendations.js',
+        './models/tournesolRecommendations/TournesolRecommendationsOptions.js',
+        './models/banner/fetchBanner.js',
+      ].map((path) => import(chrome.runtime.getURL(path)))
+    );
+
+    const banner = await fetchBanner();
+
+    const options = new TournesolRecommendationsOptions({
+      videosPerRow: 4,
+      rowsWhenExpanded: 3,
+      banner,
+      parentComponentQuery: '#primary > ytd-rich-grid-renderer',
+      displayCriteria: false,
+    });
+    homeRecommendations = new TournesolRecommendations(options);
+  };
+
+  const processHomeRecommendations = async () => {
+    if (homeRecommendations === undefined) {
+      await initializeHomeRecommendations();
+    }
+
+    homeRecommendations.process();
+  };
+
+  const clearHomeRecommendations = () => {
+    if (homeRecommendations === undefined) {
+      return;
+    }
+    homeRecommendations.clear();
+  };
 
   const process = () => {
     // Display the home page recommendations.
     if (location.pathname === '/') {
-      homeRecommendations.process();
+      processHomeRecommendations();
     } else {
-      homeRecommendations.clear();
+      clearHomeRecommendations();
     }
   };
 
