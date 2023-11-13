@@ -2167,8 +2167,8 @@ paths:
         schema:
           type: string
           enum:
-          - Classic
-          default: Classic
+          - classic
+          default: classic
         description: The strategy used to suggest a entities to compare.
       tags:
       - users
