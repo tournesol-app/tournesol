@@ -10,24 +10,26 @@ export const isAutoSuggestionsEmpty = (poll: string) =>
 export const fillAutoSuggestions = (
   poll: string,
   uids: string[],
-  exclude?: string[]
+  exclude?: string[] | null
 ) => {
-  AUTO_SUGGESTIONS[poll] = uids.filter((uid) => !exclude?.includes(uid));
+  const excludeSet = new Set(exclude);
+  AUTO_SUGGESTIONS[poll] = uids.filter((uid) => !excludeSet?.has(uid));
 };
 
 export const autoSuggestionsRandom = (
   poll: string,
-  exclude?: string[]
+  exclude?: string[] | null
 ): string | null => {
   if (isAutoSuggestionsEmpty(poll)) {
     return null;
   }
 
+  const excludeSet = new Set(exclude);
   const uids = [
-    ...AUTO_SUGGESTIONS[poll].filter((uid) => !exclude?.includes(uid)),
+    ...AUTO_SUGGESTIONS[poll].filter((uid) => !excludeSet?.has(uid)),
   ];
-  const selected = uids[Math.floor(Math.random() * uids.length)];
 
+  const selected = uids[Math.floor(Math.random() * uids.length)];
   AUTO_SUGGESTIONS[poll].splice(AUTO_SUGGESTIONS[poll].indexOf(selected), 1);
   return selected;
 };
