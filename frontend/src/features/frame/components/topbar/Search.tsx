@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
+import { extractVideoId } from 'src/utils/video';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
@@ -55,7 +55,15 @@ const Search = () => {
     searchParams.delete('search');
     searchParams.append('search', search);
     searchParams.delete('offset');
-    history.push('/recommendations?' + searchParams.toString());
+
+    // Parse the searchParams to see if it matches a youtube video
+    // And if so stripes it UID and automatically push to the specific Tournesol page
+    const videoId = extractVideoId(search);
+
+    if (videoId)
+      history.push('/entities/yt:' + videoId.toString());
+    else
+      history.push('/recommendations?' + searchParams.toString());
   };
 
   return (
