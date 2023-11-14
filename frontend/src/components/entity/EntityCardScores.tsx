@@ -73,6 +73,9 @@ const EntityCardScores = ({
       if (reason === 'insufficient_trust') {
         return t('video.unsafeNotEnoughContributor');
       }
+      if (reason === 'moderation_by_association') {
+        return t('video.moderationByAssociation');
+      }
       return '';
     })
     .filter((str) => str !== '');

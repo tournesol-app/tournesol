@@ -9,7 +9,7 @@ DAYS_TOO_RECENT = 7  # min 1 week old
 DAYS_TOO_OLD = 210  # max 7 months old
 
 # Number of days to wait before tweeting the same uploader again
-DAYS_ALREADY_TWEETED_UPLOADER = 30
+DAYS_ALREADY_TWEETED_UPLOADER = 7
 
 # Daily tweet text template
 tweet_text_template = {
