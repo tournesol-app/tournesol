@@ -343,7 +343,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   } else if (request.message === 'getBanners') {
     const process = async () => {
-      const path = `backoffice/banners/`;
+      const path = 'backoffice/banners/';
 
       const response = await fetchTournesolApi(path, { authenticate: false });
       const banners =
