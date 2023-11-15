@@ -60,10 +60,8 @@ const Search = () => {
     // And if so stripes it UID and automatically push to the specific Tournesol page
     const videoId = extractVideoId(search);
 
-    if (videoId)
-      history.push('/entities/yt:' + videoId.toString());
-    else
-      history.push('/recommendations?' + searchParams.toString());
+    if (videoId) history.push('/entities/yt:' + videoId.toString());
+    else history.push('/recommendations?' + searchParams.toString());
   };
 
   return (
