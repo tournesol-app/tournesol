@@ -399,8 +399,8 @@ class EntityContextLocaleInline(admin.TabularInline):
 @admin.register(EntityContext)
 class EntityContextAdmin(admin.ModelAdmin):
     search_fields = ("name",)
-    list_display = ("name", "poll", "created_at", "has_answer", "unsafe", "enabled")
-    list_filter = ("poll", HasTextListFilter, "unsafe", "enabled")
+    list_display = ("name", "poll", "origin", "created_at", "has_answer", "unsafe", "enabled")
+    list_filter = ("poll", "origin", HasTextListFilter, "unsafe", "enabled")
     ordering = ("-created_at",)
     inlines = (EntityContextLocaleInline,)
 
