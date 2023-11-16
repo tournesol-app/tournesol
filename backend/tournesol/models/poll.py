@@ -141,10 +141,7 @@ class Poll(models.Model):
 
             for field, value in predicate.items():
                 try:
-                    if entity_metadata[field] == value:
-                        matching.append(True)
-                    else:
-                        matching.append(False)
+                    matching.append(entity_metadata[field] == value)
                 except KeyError:
                     pass
 
