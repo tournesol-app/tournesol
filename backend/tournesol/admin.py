@@ -411,7 +411,6 @@ class FAQEntryAdmin(admin.ModelAdmin):
 
     @admin.display(description="has text?", boolean=True)
     def has_answer(self, obj) -> bool:
-        # TODO: check if the FAQ admin is properly working
         if obj.texts.exists():
             return True
         return False
