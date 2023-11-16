@@ -148,4 +148,4 @@ class Poll(models.Model):
             if matching and all(matching):
                 return True, context_.origin
 
-        return False, context_.origin
+        return False, None
