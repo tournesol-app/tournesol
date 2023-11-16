@@ -6,11 +6,11 @@ from tournesol.models import Poll
 
 
 class EntityContext(LocalizedFieldsMixin, models.Model):
-    CONTRIBUTOR = "CONTRIBUTOR"
     ASSOCIATION = "ASSOCIATION"
+    CONTRIBUTOR = "CONTRIBUTORS"
     ORIGIN_CHOICES = [
-        (CONTRIBUTOR, "Contributor"),
-        (CONTRIBUTOR, "Association"),
+        (ASSOCIATION, "Association"),
+        (CONTRIBUTOR, "Contributors"),
     ]
 
     name = models.CharField(
@@ -22,7 +22,7 @@ class EntityContext(LocalizedFieldsMixin, models.Model):
         max_length=16,
         choices=ORIGIN_CHOICES,
         default=ASSOCIATION,
-        help_text="The persons who want to share this context.",
+        help_text="The persons who want to share this context with the rest of the community.",
     )
     predicate = models.JSONField(
         blank=True,
