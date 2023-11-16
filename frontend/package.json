@@ -36,8 +36,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:e2e": "cp .env.development .env.production.local && react-scripts build && sirv build --host --single -p 3000",
-    "build": "react-scripts build && precompress -t gz -i json,js,css,xml,svg,ttf build",
+    "start:e2e": "cp .env.development .env.production.local && react-scripts --max-old-space-size=1200 build && sirv build --host --single -p 3000",
+    "build": "react-scripts --max-old-space-size=1200 build && precompress -t gz -i json,js,css,xml,svg,ttf build",
     "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
     "update-schema": "wget -O scripts/openapi.yaml \"${REACT_APP_API_URL:-http://localhost:8000}/schema/\"",
