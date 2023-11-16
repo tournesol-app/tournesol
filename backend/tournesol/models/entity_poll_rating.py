@@ -16,12 +16,15 @@ from tournesol.models.ratings import ContributorRating, ContributorRatingCriteri
 
 UNSAFE_REASON_INSUFFICIENT_SCORE = "insufficient_tournesol_score"
 UNSAFE_REASON_INSUFFICIENT_TRUST = "insufficient_trust"
-UNSAFE_REASON_MODERATION = "moderation_by_association"
+
+UNSAFE_REASON_MODERATION_ASSOCIATION = "moderation_by_association"
+UNSAFE_REASON_MODERATION_CONTRIBUTORS = "moderation_by_contributors"
 
 UNSAFE_REASONS = [
     UNSAFE_REASON_INSUFFICIENT_TRUST,
     UNSAFE_REASON_INSUFFICIENT_SCORE,
-    UNSAFE_REASON_MODERATION
+    UNSAFE_REASON_MODERATION_ASSOCIATION,
+    UNSAFE_REASON_MODERATION_CONTRIBUTORS,
 ]
 
 
@@ -68,7 +71,7 @@ class EntityPollRating(models.Model):
 
     sum_trust_scores = models.FloatField(
         null=False,
-        default=0.,
+        default=0.0,
         help_text="Sum of trust scores of the contributors who rated the entity",
     )
 
@@ -145,6 +148,9 @@ class EntityPollRating(models.Model):
 
     @cached_property
     def unsafe_recommendation_reasons(self):
+        # pylint: disable-next=import-outside-toplevel
+        from tournesol.models.entity_context import EntityContext
+
         reasons = []
 
         if (
@@ -158,7 +164,11 @@ class EntityPollRating(models.Model):
         ):
             reasons.append(UNSAFE_REASON_INSUFFICIENT_TRUST)
 
-        if self.poll.entity_in_moderation(self.entity.metadata):
-            reasons.append(UNSAFE_REASON_MODERATION)
+        unsafe, origin = self.poll.entity_has_unsafe_context(self.entity.metadata)
+        if unsafe:
+            if origin == EntityContext.CONTRIBUTOR:
+                reasons.append(UNSAFE_REASON_MODERATION_CONTRIBUTORS)
+            else:
+                reasons.append(UNSAFE_REASON_MODERATION_ASSOCIATION)
 
         return reasons

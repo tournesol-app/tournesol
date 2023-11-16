@@ -79,7 +79,9 @@ class EntityQueryset(models.QuerySet):
         return self.prefetch_related(
             Prefetch(
                 "all_poll_ratings",
-                queryset=EntityPollRating.objects.select_related("poll").filter(
+                queryset=EntityPollRating.objects.prefetch_related(
+                    "poll__all_entity_contexts"
+                ).filter(
                     poll__name=poll_name,
                 ),
                 to_attr="single_poll_ratings",
@@ -89,23 +91,24 @@ class EntityQueryset(models.QuerySet):
     def filter_safe_for_poll(self, poll):
         exclude_condition = None
 
-        # Do not fail if `poll.moderation` is not a list.
-        if isinstance(poll.moderation, list):
-            for predicate in poll.moderation:
-                expression = None
+        for context_ in poll.all_entity_contexts.all():
+            if not context_.enabled or not context_.unsafe:
+                continue
 
-                for field, value in predicate.items():
-                    kwargs = {f'metadata__{field}': value}
-                    if expression:
-                        expression = expression & Q(**kwargs)
-                    else:
-                        expression = Q(**kwargs)
+            expression = None
 
-                if exclude_condition:
-                    # pylint: disable-next=unsupported-binary-operation
-                    exclude_condition = exclude_condition | expression
+            for field, value in context_.predicate.items():
+                kwargs = {f"metadata__{field}": value}
+                if expression:
+                    expression = expression & Q(**kwargs)
                 else:
-                    exclude_condition = expression
+                    expression = Q(**kwargs)
+
+            if exclude_condition:
+                # pylint: disable-next=unsupported-binary-operation
+                exclude_condition = exclude_condition | expression
+            else:
+                exclude_condition = expression
 
         qst = self.filter(
             all_poll_ratings__poll=poll,

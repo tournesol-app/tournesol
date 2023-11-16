@@ -55,8 +55,7 @@ class Poll(models.Model):
     @classmethod
     def default_poll(cls) -> "Poll":
         poll, _created = cls.objects.get_or_create(
-            name=DEFAULT_POLL_NAME,
-            defaults={"entity_type": VideoEntity.name}
+            name=DEFAULT_POLL_NAME, defaults={"entity_type": VideoEntity.name}
         )
         return poll
 
@@ -89,7 +88,7 @@ class Poll(models.Model):
 
     @property
     def scale_function(self):
-        return lambda x: MEHESTAN_MAX_SCALED_SCORE * x / np.sqrt(1 + x*x)
+        return lambda x: MEHESTAN_MAX_SCALED_SCORE * x / np.sqrt(1 + x * x)
 
     def user_meets_proof_requirements(self, user_id: int, keyword: str) -> bool:
         """
@@ -126,26 +125,27 @@ class Poll(models.Model):
         signer = Signer(salt=f"{keyword}:{self.name}")
         return signer.sign(f"{user_id:05d}")
 
-    def entity_in_moderation(self, entity_metadata) -> bool:
+    def entity_has_unsafe_context(self, entity_metadata) -> tuple:
         """
-        Return True if the entity's metadata match at least one moderation
-        predicate, False instead.
+        If the entity's metadata match at least one "unsafe" context's
+        predicate of this poll, return True and the context's origin, False
+        instead.
         """
 
-        # Be tolerant with unexpected values.
-        if not self.moderation or not isinstance(self.moderation, list):
-            return False
+        # The entity contexts are expected to be already prefetched.
+        for context_ in self.all_entity_contexts.all():
+            if not context_.enabled or not context_.unsafe:
+                continue
 
-        for predicate in self.moderation:
             matching = []
 
-            for field, value in predicate.items():
+            for field, value in context_.predicate.items():
                 try:
                     matching.append(entity_metadata[field] == value)
                 except KeyError:
                     pass
 
             if matching and all(matching):
-                return True
+                return True, context_.origin
 
-        return False
+        return False, context_.origin
