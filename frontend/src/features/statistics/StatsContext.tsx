@@ -38,6 +38,7 @@ export const StatsLazyProvider = ({
 }) => {
   const loading = useRef(false);
   const lastRefreshAt = useRef(0);
+  const lastPoll = useRef<string | undefined>(undefined);
 
   const [stats, setStats] = useState(initialState);
 
@@ -62,9 +63,11 @@ export const StatsLazyProvider = ({
 
       if (
         stats.polls.length === 0 ||
-        currentTime - lastRefreshAt.current >= EXPIRATION_TIME
+        currentTime - lastRefreshAt.current >= EXPIRATION_TIME ||
+        poll !== lastPoll.current
       ) {
         loading.current = true;
+        lastPoll.current = poll;
         refreshStats(poll);
       }
 
