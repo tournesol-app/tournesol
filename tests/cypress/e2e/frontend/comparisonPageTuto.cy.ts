@@ -57,7 +57,8 @@ describe('Comparison page tutorial', () => {
 
       for (var tutorialLength = 0; tutorialLength < 3; tutorialLength++){
         cy.get('[data-testid=tips-next]').should('not.have.attr', 'disabled');
-        cy.get('[data-testid=tips-next]').click();
+        // A snackbar may hide the tips-next button and persist for 5 seconds.
+        cy.get('[data-testid=tips-next]').click({timeout: 6000});
       }
 
       cy.get('[data-testid=tips-next]').should('have.attr', 'disabled');
