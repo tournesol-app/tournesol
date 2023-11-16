@@ -39,6 +39,16 @@ class Poll(models.Model):
         " and comparisons can't be created, updated or deleted by users.",
     )
 
+    # A list of dictionaries, each of them representing a set of predicates
+    # matching one or more entities that should be discarded from the
+    # recommendations.
+    #
+    # This temporary mechanism will be replaced by a more democratic and
+    # sustainable one: the contextual notes. Those notes could be created by
+    # the contributors and the association, and will attach additional context
+    # to the recommended and non-recommended entities.
+    moderation = models.JSONField(blank=True, default=list)
+
     def __str__(self) -> str:
         return f'Poll "{self.name}"'
 
@@ -115,3 +125,27 @@ class Poll(models.Model):
         """
         signer = Signer(salt=f"{keyword}:{self.name}")
         return signer.sign(f"{user_id:05d}")
+
+    def entity_in_moderation(self, entity_metadata) -> bool:
+        """
+        Return True if the entity's metadata match at least one moderation
+        predicate, False instead.
+        """
+
+        # Be tolerant with unexpected values.
+        if not self.moderation or not isinstance(self.moderation, list):
+            return False
+
+        for predicate in self.moderation:
+            matching = []
+
+            for field, value in predicate.items():
+                try:
+                    matching.append(entity_metadata[field] == value)
+                except KeyError:
+                    pass
+
+            if matching and all(matching):
+                return True
+
+        return False

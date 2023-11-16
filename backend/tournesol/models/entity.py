@@ -75,22 +75,48 @@ class EntityQueryset(models.QuerySet):
     def with_prefetched_poll_ratings(self, poll_name):
         # pylint: disable=import-outside-toplevel
         from tournesol.models.entity_poll_rating import EntityPollRating
+
         return self.prefetch_related(
             Prefetch(
                 "all_poll_ratings",
-                queryset=EntityPollRating.objects.filter(
+                queryset=EntityPollRating.objects.select_related("poll").filter(
                     poll__name=poll_name,
                 ),
-                to_attr="single_poll_ratings"
+                to_attr="single_poll_ratings",
             )
         )
 
     def filter_safe_for_poll(self, poll):
-        return self.filter(
+        exclude_condition = None
+
+        # Do not fail if `poll.moderation` is not a list.
+        if isinstance(poll.moderation, list):
+            for predicate in poll.moderation:
+                expression = None
+
+                for field, value in predicate.items():
+                    kwargs = {f'metadata__{field}': value}
+                    if expression:
+                        expression = expression & Q(**kwargs)
+                    else:
+                        expression = Q(**kwargs)
+
+                if exclude_condition:
+                    # pylint: disable-next=unsupported-binary-operation
+                    exclude_condition = exclude_condition | expression
+                else:
+                    exclude_condition = expression
+
+        qst = self.filter(
             all_poll_ratings__poll=poll,
             all_poll_ratings__sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
             all_poll_ratings__tournesol_score__gt=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE,
         )
+
+        if exclude_condition:
+            qst = qst.exclude(exclude_condition)
+
+        return qst
 
     def filter_with_text_query(self, query: str, languages=None):
         """

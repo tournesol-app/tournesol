@@ -16,9 +16,12 @@ from tournesol.models.ratings import ContributorRating, ContributorRatingCriteri
 
 UNSAFE_REASON_INSUFFICIENT_SCORE = "insufficient_tournesol_score"
 UNSAFE_REASON_INSUFFICIENT_TRUST = "insufficient_trust"
+UNSAFE_REASON_MODERATION = "moderation_by_association"
+
 UNSAFE_REASONS = [
     UNSAFE_REASON_INSUFFICIENT_TRUST,
     UNSAFE_REASON_INSUFFICIENT_SCORE,
+    UNSAFE_REASON_MODERATION
 ]
 
 
@@ -143,6 +146,7 @@ class EntityPollRating(models.Model):
     @cached_property
     def unsafe_recommendation_reasons(self):
         reasons = []
+
         if (
             self.tournesol_score is None
             or self.tournesol_score <= settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE
@@ -153,4 +157,8 @@ class EntityPollRating(models.Model):
             and self.sum_trust_scores < settings.RECOMMENDATIONS_MIN_TRUST_SCORES
         ):
             reasons.append(UNSAFE_REASON_INSUFFICIENT_TRUST)
+
+        if self.poll.entity_in_moderation(self.entity.metadata):
+            reasons.append(UNSAFE_REASON_MODERATION)
+
         return reasons
