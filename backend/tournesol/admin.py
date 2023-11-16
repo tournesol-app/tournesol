@@ -397,16 +397,16 @@ class EntityContextLocaleInline(admin.TabularInline):
 
 
 @admin.register(EntityContext)
-class FAQEntryAdmin(admin.ModelAdmin):
+class EntityContextAdmin(admin.ModelAdmin):
     search_fields = ("name",)
-    list_display = ("name", "created_at", "has_answer", "unsafe", "enabled")  # add poll
-    list_filter = (HasTextListFilter, "enabled")
+    list_display = ("name", "poll", "created_at", "has_answer", "unsafe", "enabled")
+    list_filter = ("poll", HasTextListFilter, "unsafe", "enabled")
     ordering = ("-created_at",)
     inlines = (EntityContextLocaleInline,)
 
     def get_queryset(self, request):
         qst = super().get_queryset(request)
-        qst = qst.prefetch_related("texts")
+        qst = qst.prefetch_related("texts").select_related("poll")
         return qst
 
     @admin.display(description="has text?", boolean=True)
