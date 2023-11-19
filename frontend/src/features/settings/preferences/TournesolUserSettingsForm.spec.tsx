@@ -1,7 +1,7 @@
 import React from 'react';
-import { vi, SpyInstance } from 'vitest';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 
+import { SpyInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
 import * as reactRedux from 'react-redux';
 import configureStore, {
@@ -57,7 +57,6 @@ describe('GenericPollUserSettingsForm', () => {
       req.method === 'PATCH' && new RegExp('/users/me/settings/').test(req.url),
     (req) => {
       const body = (req.body || '').toString();
-      console.info(body);
       if (body.includes('"rate_later__auto_remove":101')) {
         return {
           init: {

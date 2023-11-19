@@ -1,5 +1,4 @@
 import React from 'react';
-import { vi } from 'vitest';
 import { SnackbarProvider } from 'notistack';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';

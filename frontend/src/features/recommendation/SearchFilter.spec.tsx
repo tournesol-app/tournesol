@@ -5,7 +5,6 @@
 // eslint-disable-next-line
 // @ts-nocheck
 import React from 'react';
-import { vi } from 'vitest';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from 'src/theme';
 import {

@@ -5,7 +5,6 @@
 // eslint-disable-next-line
 // @ts-nocheck
 import React from 'react';
-import { vi } from 'vitest';
 import * as reactRedux from 'react-redux';
 
 import configureStore, {

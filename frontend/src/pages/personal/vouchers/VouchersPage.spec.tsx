@@ -1,5 +1,4 @@
 import React from 'react';
-import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';

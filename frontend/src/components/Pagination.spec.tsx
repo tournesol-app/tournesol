@@ -1,5 +1,4 @@
 import React from 'react';
-import { vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import Pagination from './Pagination';

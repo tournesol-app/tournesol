@@ -1,7 +1,7 @@
 import React from 'react';
-import { vi, SpyInstance } from 'vitest';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 
+import { SpyInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
 import * as reactRedux from 'react-redux';
 import configureStore, {

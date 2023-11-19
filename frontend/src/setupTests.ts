@@ -4,7 +4,6 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
 import { MockTrans } from './mockI18next.setup';
-import { vi } from 'vitest';
 import createFetchMock from 'vitest-fetch-mock';
 
 const fetchMocker = createFetchMock(vi);
