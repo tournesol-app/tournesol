@@ -49,7 +49,6 @@ jobs:
       - uses: cypress-io/github-action@v5
         with:
           working-directory: tests
-          wait-on: 'http://localhost:3000'
           browser: chrome
           spec: "cypress/e2e/frontend/**/*"
 
