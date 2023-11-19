@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import {
   recommendationsLanguagesFromNavigator,
   saveRecommendationsLanguages,
@@ -18,7 +19,7 @@ describe('recommendationsLanguagesFromNavigator', () => {
 
   testCases.forEach(([input, expected]) =>
     it(`converts ${JSON.stringify(input)}`, () => {
-      const languagesGetter = jest.spyOn(window.navigator, 'languages', 'get');
+      const languagesGetter = vi.spyOn(window.navigator, 'languages', 'get');
       languagesGetter.mockReturnValue(input as string[]);
       expect(recommendationsLanguagesFromNavigator()).toEqual(expected);
     })
@@ -27,7 +28,7 @@ describe('recommendationsLanguagesFromNavigator', () => {
 
 describe('saveRecommendationsLanguages', () => {
   it('dispatches an event for the extension', () => {
-    const eventHandler = jest.fn((event) => {
+    const eventHandler = vi.fn((event) => {
       const { detail } = event;
       expect(detail).toEqual({ recommendationsLanguages: 'fr,de' });
     });

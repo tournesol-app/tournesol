@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import Pagination from './Pagination';
@@ -12,7 +13,7 @@ interface PaginationProps {
   widthScreen?: number;
 }
 
-const onOffsetChange = jest.fn();
+const onOffsetChange = vi.fn();
 
 const defineMatchMedia = (width: number) => {
   Object.defineProperty(window, 'innerWidth', {
@@ -20,16 +21,16 @@ const defineMatchMedia = (width: number) => {
     configurable: true,
     value: width,
   });
-  window.matchMedia = jest.fn().mockImplementation((query) => {
+  window.matchMedia = vi.fn().mockImplementation((query) => {
     return {
       matches: width == theme.breakpoints.values.sm ? true : false,
       media: query,
       onchange: null,
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
     };
   });
 };

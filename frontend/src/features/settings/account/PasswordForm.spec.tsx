@@ -1,6 +1,5 @@
 import React from 'react';
-
-import fetchMock from 'fetch-mock-jest';
+import { vi } from 'vitest';
 import { SnackbarProvider } from 'notistack';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
@@ -21,10 +20,10 @@ interface MockState {
   token: LoginState;
 }
 
-const mockEnqueueSnackbar = jest.fn();
+const mockEnqueueSnackbar = vi.fn();
 
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual<object>('notistack')),
   useSnackbar: () => {
     return {
       enqueueSnackbar: mockEnqueueSnackbar,
@@ -38,73 +37,8 @@ describe('change password feature', () => {
     ThunkDispatch<LoginState, undefined, AnyAction>
   > = configureStore([thunk]);
 
-  const api_url = process.env.REACT_APP_API_URL || '';
+  const api_url = import.meta.env.REACT_APP_API_URL || '';
   OpenAPI.BASE = api_url;
-
-  fetchMock
-    .mock(
-      {
-        name: 'success',
-        url: api_url + '/accounts/change-password/',
-        method: 'POST',
-        functionMatcher: (_, { body }) => {
-          return (
-            body ===
-            '{"old_password":"success","password":"new_passwd","password_confirm":"new_passwd"}'
-          );
-        },
-      },
-      {
-        status: 200,
-        body: {
-          detail: 'Password changed successfully',
-        },
-      },
-      { sendAsJson: true }
-    )
-    .mock(
-      {
-        name: 'success_malformed',
-        url: api_url + '/accounts/change-password/',
-        method: 'POST',
-        functionMatcher: (_, { body }) => {
-          return (
-            body ===
-            '{"old_password":"success_malformed","password":"new_passwd","password_confirm":"new_passwd"}'
-          );
-        },
-      },
-      {
-        status: 200,
-        body: {
-          random_key: 'random message',
-        },
-      },
-      { sendAsJson: true }
-    )
-    .mock(
-      {
-        name: 'errors',
-        url: api_url + '/accounts/change-password/',
-        method: 'POST',
-        functionMatcher: (_, { body }) => {
-          return (
-            body ===
-            '{"old_password":"errors","password":"too_short","password_confirm":"too_short"}'
-          );
-        },
-      },
-      {
-        status: 400,
-        body: {
-          old_password: ['Old password is not correct'],
-          password: [
-            'This password is too short. It must contain at least 8 characters.',
-          ],
-        },
-      },
-      { sendAsJson: true }
-    );
 
   const component = ({ store }: { store: MockStoreEnhanced<MockState> }) =>
     render(
@@ -135,6 +69,22 @@ describe('change password feature', () => {
   };
 
   it('handles successful password updates', async () => {
+    fetchMock.mockIf(
+      (req) =>
+        req.method == 'POST' && /accounts\/change-password/.test(req.url),
+      () => ({
+        init: {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        body: JSON.stringify({
+          detail: 'Password changed successfully',
+        }),
+      })
+    );
+
     const { oldPassword, password, passwordConfirm, submit } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'success' } });
@@ -150,8 +100,8 @@ describe('change password feature', () => {
     expect(password).toHaveValue('');
     expect(passwordConfirm).toHaveValue('');
     expect(submit).toBeEnabled();
-    expect(mockEnqueueSnackbar).toBeCalledTimes(1);
-    expect(mockEnqueueSnackbar).toBeCalledWith(
+    expect(mockEnqueueSnackbar).toHaveBeenCalledTimes(1);
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
       expect.stringMatching(/successfully/i),
       {
         variant: 'success',
@@ -160,6 +110,22 @@ describe('change password feature', () => {
   });
 
   it('handles success body responses containing no detail key', async () => {
+    fetchMock.mockIf(
+      (req) =>
+        req.method == 'POST' && /accounts\/change-password/.test(req.url),
+      () => ({
+        init: {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        body: JSON.stringify({
+          random_key: 'random message',
+        }),
+      })
+    );
+
     const { oldPassword, password, passwordConfirm, submit } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'success_malformed' } });
@@ -175,8 +141,8 @@ describe('change password feature', () => {
     expect(password).toHaveValue('');
     expect(passwordConfirm).toHaveValue('');
     expect(submit).toBeEnabled();
-    expect(mockEnqueueSnackbar).toBeCalledTimes(1);
-    expect(mockEnqueueSnackbar).toBeCalledWith(
+    expect(mockEnqueueSnackbar).toHaveBeenCalledTimes(1);
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
       expect.stringMatching(/successfully/i),
       {
         variant: 'success',
@@ -185,6 +151,25 @@ describe('change password feature', () => {
   });
 
   it('handles bad requests and displays all error messages', async () => {
+    fetchMock.mockIf(
+      (req) =>
+        req.method == 'POST' && /accounts\/change-password/.test(req.url),
+      () => ({
+        init: {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        body: JSON.stringify({
+          old_password: ['Old password is not correct'],
+          password: [
+            'This password is too short. It must contain at least 8 characters.',
+          ],
+        }),
+      })
+    );
+
     const { oldPassword, password, passwordConfirm, submit } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'errors' } });

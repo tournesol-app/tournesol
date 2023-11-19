@@ -5,6 +5,7 @@
 // eslint-disable-next-line
 // @ts-nocheck
 import React from 'react';
+import { vi } from 'vitest';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from 'src/theme';
 import {
@@ -33,8 +34,8 @@ describe('Filters feature', () => {
   async function renderSearchFilters(loggedIn: boolean) {
     // Used to spy on URL parameters updates
     const history = createMemoryHistory();
-    pushSpy = jest.spyOn(history, 'push');
-    jest.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
+    pushSpy = vi.spyOn(history, 'push');
+    vi.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
       name: 'videos',
       criterias: [
         {
