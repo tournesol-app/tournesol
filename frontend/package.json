@@ -38,7 +38,7 @@
     "start": "vite",
     "start:e2e": "cp .env.development .env.production.local && vite preview --port 3000",
     "build": "vite build && precompress -t gz -i json,js,css,xml,svg,ttf build",
-    "test": "tsc --noEmit && vitest",
+    "test": "tsc && vitest",
     "update-schema": "wget -O scripts/openapi.yaml \"${REACT_APP_API_URL:-http://localhost:8000}/schema/\"",
     "openapi": "openapi --useOptions -i scripts/openapi.yaml -o src/services/openapi",
     "lint": "eslint src --ext '.js,.jsx,.ts,.tsx'",
