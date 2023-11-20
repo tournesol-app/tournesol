@@ -149,3 +149,28 @@ class Poll(models.Model):
                 return True, context_.origin
 
         return False, None
+
+    def get_entity_contexts(self, entity_metadata) -> list:
+        """
+        Return a list of all enabled contexts matching the given entity's
+        metadata.
+        """
+        contexts = []
+
+        # The entity contexts are expected to be already prefetched.
+        for context_ in self.all_entity_contexts.all():
+            if not context_.enabled:
+                continue
+
+            matching = []
+
+            for field, value in context_.predicate.items():
+                try:
+                    matching.append(entity_metadata[field] == value)
+                except KeyError:
+                    pass
+
+            if matching and all(matching):
+                contexts.append(context_)
+
+        return contexts
