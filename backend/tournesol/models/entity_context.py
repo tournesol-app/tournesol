@@ -57,7 +57,7 @@ class EntityContext(LocalizedFieldsMixin, models.Model):
 
     def get_context_text_prefetch(self, lang=None) -> str:
         """Return the translated text of the context."""
-        return self.get_localized_text_prefetch(related="entity_context", field="text", lang=lang)
+        return self.get_localized_text_prefetch(related="texts", field="text", lang=lang)
 
 
 class EntityContextLocale(models.Model):
