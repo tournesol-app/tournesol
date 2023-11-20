@@ -2918,6 +2918,11 @@ components:
           - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
           nullable: true
+        entity_contexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityContext'
+          readOnly: true
         recommendation_metadata:
           allOf:
           - $ref: '#/components/schemas/RecommendationMetadata'
@@ -2929,6 +2934,7 @@ components:
       required:
       - collective_rating
       - entity
+      - entity_contexts
       - individual_rating
       - recommendation_metadata
     CriteriaDistributionScore:
@@ -3066,6 +3072,29 @@ components:
       - tournesol_score
       - type
       - uid
+    EntityContext:
+      type: object
+      properties:
+        origin:
+          allOf:
+          - $ref: '#/components/schemas/OriginEnum'
+          description: |-
+            The persons who want to share this context with the rest of the community.
+
+            * `ASSOCIATION` - Association
+            * `CONTRIBUTORS` - Contributors
+        unsafe:
+          type: boolean
+          description: If True, this context will make the targeted entities unsafe.
+        text:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - text
     EntityCriteriaDistribution:
       type: object
       description: An Entity serializer that show distribution of score for a given
@@ -3351,6 +3380,14 @@ components:
       description: |-
         * `en` - en
         * `fr` - fr
+    OriginEnum:
+      enum:
+      - ASSOCIATION
+      - CONTRIBUTORS
+      type: string
+      description: |-
+        * `ASSOCIATION` - Association
+        * `CONTRIBUTORS` - Contributors
     PaginatedBannerList:
       type: object
       properties:
@@ -3785,10 +3822,14 @@ components:
       enum:
       - insufficient_trust
       - insufficient_tournesol_score
+      - moderation_by_association
+      - moderation_by_contributors
       type: string
       description: |-
         * `insufficient_trust` - insufficient_trust
         * `insufficient_tournesol_score` - insufficient_tournesol_score
+        * `moderation_by_association` - moderation_by_association
+        * `moderation_by_contributors` - moderation_by_contributors
     Recommendation:
       type: object
       properties:
@@ -3801,6 +3842,11 @@ components:
           - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
           nullable: true
+        entity_contexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityContext'
+          readOnly: true
         recommendation_metadata:
           allOf:
           - $ref: '#/components/schemas/RecommendationMetadata'
@@ -3808,6 +3854,7 @@ components:
       required:
       - collective_rating
       - entity
+      - entity_contexts
       - recommendation_metadata
     RecommendationMetadata:
       type: object

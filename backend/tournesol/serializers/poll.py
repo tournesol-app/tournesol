@@ -111,7 +111,10 @@ class RecommendationSerializer(ModelSerializer):
         read_only=True,
         allow_null=True,
     )
-    entity_contexts = serializers.SerializerMethodField(read_only=True)
+
+    entity_contexts = EntityContextSerializer(
+        source="get_entity_contexts", read_only=True, many=True
+    )
     recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
 
     class Meta:
