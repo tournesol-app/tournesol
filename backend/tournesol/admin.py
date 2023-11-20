@@ -391,7 +391,7 @@ class HasTextListFilter(admin.SimpleListFilter):
         return queryset
 
 
-class EntityContextLocaleInline(admin.TabularInline):
+class EntityContextLocaleInline(admin.StackedInline):
     model = EntityContextLocale
     extra = 0
 

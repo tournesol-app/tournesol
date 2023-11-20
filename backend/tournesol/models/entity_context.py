@@ -68,8 +68,6 @@ class EntityContextLocale(models.Model):
     context = models.ForeignKey(EntityContext, on_delete=models.CASCADE, related_name="texts")
     language = models.CharField(max_length=10, choices=settings.LANGUAGES)
     text = models.TextField()
-    source_url = models.URLField()
-    source_label = models.CharField(max_length=254)
 
     class Meta:
         unique_together = ["context", "language"]
