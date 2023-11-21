@@ -32,6 +32,7 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
     The suggestion strategy is determined by the `strategy` query parameter.
     """
 
+    pagination_class = None
     permission_classes = [IsAuthenticated]
     serializer_class = EntityToCompare
 

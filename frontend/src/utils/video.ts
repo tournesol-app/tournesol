@@ -1,4 +1,4 @@
-import { UsersService, RelatedEntity } from 'src/services/openapi';
+import { UsersService } from 'src/services/openapi';
 import { VideoObject } from './types';
 import {
   autoSuggestionsRandom,
@@ -82,16 +82,12 @@ export async function getUidForComparison(
       pollName: poll,
     });
 
-    if (suggestions['count'] && suggestions['count'] > 0) {
-      if (suggestions['results']) {
-        fillAutoSuggestions(
-          poll,
-          suggestions['results'].map(
-            (item: { entity: RelatedEntity }) => item.entity.uid
-          ),
-          exclude
-        );
-      }
+    if (suggestions && suggestions.length > 0) {
+      fillAutoSuggestions(
+        poll,
+        suggestions.map((item) => item.entity.uid),
+        exclude
+      );
     }
   }
 
