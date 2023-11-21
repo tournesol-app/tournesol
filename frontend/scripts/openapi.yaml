@@ -2151,7 +2151,7 @@ paths:
           description: ''
   /users/me/suggestions/{poll_name}/tocompare/:
     get:
-      operationId: users_me_suggestions_tocompare_retrieve
+      operationId: users_me_suggestions_tocompare_list
       description: |-
         Suggest a list of entities to compare to the logged-in user.
 
@@ -2162,6 +2162,18 @@ paths:
         schema:
           type: string
         required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
       - in: query
         name: strategy
         schema:
@@ -2177,7 +2189,11 @@ paths:
         - read write groups
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntityToCompareList'
+          description: ''
   /users/me/unconnected_entities/{poll_name}/{uid}/:
     get:
       operationId: users_me_unconnected_entities_list
@@ -3153,6 +3169,18 @@ components:
       required:
       - criteria_scores
       - name
+    EntityToCompare:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/RelatedEntity'
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
+          readOnly: true
+      required:
+      - collective_rating
+      - entity
     EntityTypeEnum:
       enum:
       - video
@@ -3491,6 +3519,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityNoExtraField'
+    PaginatedEntityToCompareList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityToCompare'
     PaginatedFAQEntryList:
       type: object
       properties:
@@ -3785,10 +3833,12 @@ components:
       enum:
       - insufficient_trust
       - insufficient_tournesol_score
+      - moderation_by_association
       type: string
       description: |-
         * `insufficient_trust` - insufficient_trust
         * `insufficient_tournesol_score` - insufficient_tournesol_score
+        * `moderation_by_association` - moderation_by_association
     Recommendation:
       type: object
       properties:

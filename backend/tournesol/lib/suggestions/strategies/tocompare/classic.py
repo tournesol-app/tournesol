@@ -197,9 +197,6 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return sample1 + sample2 + sample3
 
-    def get_serializer_class(self):
-        return EntityToCompare
-
     def get_results(self):
         return self.get_results_for_user_intermediate()
 

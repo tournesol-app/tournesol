@@ -78,18 +78,20 @@ export async function getUidForComparison(
   });
 
   if (isAutoSuggestionsEmpty(poll)) {
-    const suggestions = await UsersService.usersMeSuggestionsTocompareRetrieve({
+    const suggestions = await UsersService.usersMeSuggestionsTocompareList({
       pollName: poll,
     });
 
-    if (suggestions['count'] > 0) {
-      fillAutoSuggestions(
-        poll,
-        suggestions['results'].map(
-          (item: { entity: RelatedEntity }) => item.entity.uid
-        ),
-        exclude
-      );
+    if (suggestions['count'] && suggestions['count'] > 0) {
+      if (suggestions['results']) {
+        fillAutoSuggestions(
+          poll,
+          suggestions['results'].map(
+            (item: { entity: RelatedEntity }) => item.entity.uid
+          ),
+          exclude
+        );
+      }
     }
   }
 
