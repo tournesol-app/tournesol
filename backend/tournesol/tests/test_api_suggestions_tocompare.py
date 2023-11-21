@@ -148,7 +148,7 @@ class SuggestionsToCompareTestCase(TestCase):
 
         self.client.force_authenticate(self.user1)
         response = self.client.get(self.base_url)
-        results = response.data["results"]
+        results = response.data
 
         uids_compared = [ent.uid for ent in compared_videos_user1_poll1]
         uids_rate_later = [ent.uid for ent in rate_later_videos_user1_poll1]
