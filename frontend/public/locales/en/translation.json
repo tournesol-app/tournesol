@@ -102,6 +102,10 @@
   "comparisonSeries": {
     "skipTheSeries": "Skip the series"
   },
+  "contextsFromOrigin": {
+    "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element.",
+    "theContributorsWouldLikeToGiveYouContext": "The contributors would like to give you some context on this element."
+  },
   "entitySelector": {
     "newVideo": "Select a new video automatically",
     "letTournesolSelectAVideo": "Let Tournesol select a video",
