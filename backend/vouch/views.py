@@ -22,11 +22,10 @@ class VoucherCreateAPIView(generics.CreateAPIView):
 @extend_schema_view(
     delete=extend_schema(
         description="Delete a voucher given to a target user by the logged-in user.",
+        responses=None,
     ),
 )
 class VoucherGivenDestroyAPIView(generics.DestroyAPIView):
-    serializer_class = GivenVoucherSerializer
-
     def get_object(self):
         target = get_object_or_404(User, username=self.kwargs["username"])
         return get_object_or_404(Voucher, by=self.request.user, to=target)
