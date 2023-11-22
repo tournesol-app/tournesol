@@ -32,6 +32,7 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
     The suggestion strategy is determined by the `strategy` query parameter.
     """
 
+    pagination_class = None
     permission_classes = [IsAuthenticated]
     serializer_class = EntityToCompare
 
@@ -47,9 +48,6 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
         else:
             # Fallback to the classic strategy if an unknown strategy is provided.
             self.strategy = ClassicEntitySuggestionStrategy(self.poll_from_url, request.user)
-
-    def get_serializer_class(self):
-        return self.strategy.get_serializer_class()
 
     def get_queryset(self):
         return self.strategy.get_results()

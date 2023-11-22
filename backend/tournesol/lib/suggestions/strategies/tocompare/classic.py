@@ -5,7 +5,6 @@ from core.utils.time import time_ago
 from tournesol.lib.suggestions.strategies.base import ContributionSuggestionStrategy
 from tournesol.models import ContributorRating, Entity, RateLater
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
-from tournesol.serializers.suggestion import EntityToCompare
 
 
 @dataclass
@@ -196,9 +195,6 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             sample3 = pool3.ids[: pool3.sample_size + extra_sample3]
 
         return sample1 + sample2 + sample3
-
-    def get_serializer_class(self):
-        return EntityToCompare
 
     def get_results(self):
         return self.get_results_for_user_intermediate()

@@ -266,32 +266,23 @@ def run_mehestan(
 
     os.register_at_fork(before=db.connections.close_all)
 
-    # Run Mehestan for main criterion:
-    # Global scores for other criteria will use the poll scaling computed
-    # based on this criterion. That's why it needs to run first, before other
-    # criteria can be parallelized.
-    run_mehestan_for_criterion(
-        ml_input=ml_input,
-        poll_pk=poll_pk,
-        criteria=poll.main_criteria,
-        parameters=parameters
-    )
-
+    criteria_to_run = [poll.main_criteria]
     if not main_criterion_only:
-        # compute each criterion in parallel
-        remaining_criteria = [c for c in criteria if c != poll.main_criteria]
-        cpu_count = os.cpu_count() or 1
-        with Pool(processes=max(1, cpu_count - 1)) as pool:
-            for _ in pool.imap_unordered(
-                partial(
-                    run_mehestan_for_criterion,
-                    ml_input=ml_input,
-                    poll_pk=poll_pk,
-                    parameters=parameters
-                ),
-                remaining_criteria,
-            ):
-                pass
+        criteria_to_run.extend(c for c in criteria if c != poll.main_criteria)
+
+    # compute each criterion in parallel
+    cpu_count = os.cpu_count() or 1
+    with Pool(processes=max(1, cpu_count - 1)) as pool:
+        for _ in pool.imap_unordered(
+            partial(
+                run_mehestan_for_criterion,
+                ml_input=ml_input,
+                poll_pk=poll_pk,
+                parameters=parameters
+            ),
+            criteria_to_run,
+        ):
+            pass
 
     save_tournesol_scores(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)

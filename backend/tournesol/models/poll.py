@@ -80,7 +80,7 @@ class Poll(models.Model):
         criterias = self.criterias_list
         if len(criterias) > 0:
             return criterias[0]
-        return None
+        raise RuntimeError(f"No criteria in poll {self.name}")
 
     @property
     def entity_cls(self):
