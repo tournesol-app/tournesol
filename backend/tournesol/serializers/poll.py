@@ -112,9 +112,7 @@ class RecommendationSerializer(ModelSerializer):
         allow_null=True,
     )
 
-    entity_contexts = EntityContextSerializer(
-        source="get_entity_contexts", read_only=True, many=True
-    )
+    entity_contexts = EntityContextSerializer(read_only=True, many=True)
     recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
 
     class Meta:
@@ -136,14 +134,17 @@ class RecommendationSerializer(ModelSerializer):
         ]
         read_only_fields = fields
 
-    def get_entity_contexts(self, obj):
-        try:
-            poll = obj.single_poll_rating.poll
-        except AttributeError:
-            return []
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
 
-        entity_contexts = poll.get_entity_contexts(obj.metadata)
-        return EntityContextSerializer(entity_contexts, many=True).data
+        try:
+            poll = instance.single_poll_rating.poll
+        except AttributeError:
+            return ret
+
+        entity_contexts = poll.get_entity_contexts(instance.metadata)
+        ret["entity_contexts"] = EntityContextSerializer(entity_contexts, many=True).data
+        return ret
 
 
 class RecommendationsFilterSerializer(serializers.Serializer):
