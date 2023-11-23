@@ -62,6 +62,14 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
+          {video.entity_contexts && (
+            <Grid item xs={12}>
+              <EntityContextBox
+                uid={video.entity.uid}
+                contexts={video.entity_contexts}
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <CollapseButton
               expanded={descriptionCollapsed}
@@ -86,15 +94,6 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
               </Typography>
             </Collapse>
           </Grid>
-
-          {video.entity_contexts && (
-            <Grid item xs={12}>
-              <EntityContextBox
-                uid={video.entity.uid}
-                contexts={video.entity_contexts}
-              />
-            </Grid>
-          )}
 
           {/* Data visualization. */}
           {shouldDisplayCharts && (

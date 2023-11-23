@@ -93,7 +93,7 @@ const EntityContextBox = ({ uid, contexts }: EntityContextBoxProps) => {
   return (
     <>
       {associationContexts.length > 0 && (
-        <Box key={`contexts_${uid}_${OriginEnum.ASSOCIATION}`} sx={{ mb: 2 }}>
+        <Box key={`contexts_${uid}_${OriginEnum.ASSOCIATION}`}>
           <EntityContextList
             uid={uid}
             origin_={OriginEnum.ASSOCIATION}
