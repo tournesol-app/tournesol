@@ -2,7 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import linkifyStr from 'linkify-string';
 
-import { Alert, AlertTitle, Box, Divider, Typography } from '@mui/material';
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Divider,
+  SxProps,
+  Typography,
+} from '@mui/material';
 
 import { EntityContext, OriginEnum } from 'src/services/openapi';
 
@@ -64,8 +71,14 @@ const EntityContextList = ({
 
   const entityHasWarnings = warnings.length > 0;
 
+  let alertSx: SxProps = {};
+
+  if (entityHasWarnings) {
+    alertSx = { border: '1px solid' };
+  }
+
   return (
-    <Alert severity={entityHasWarnings ? 'warning' : 'info'}>
+    <Alert severity={entityHasWarnings ? 'warning' : 'info'} sx={alertSx}>
       <AlertTitle>
         <strong>
           {origin_ === OriginEnum.ASSOCIATION &&
