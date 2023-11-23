@@ -70,8 +70,6 @@ const EntityContextList = ({
         <strong>
           {origin_ === OriginEnum.ASSOCIATION &&
             t('contextsFromOrigin.theAssociationWouldLikeToGiveYouContext')}
-          {origin_ === OriginEnum.CONTRIBUTORS &&
-            t('contextsFromOrigin.theContributorsWouldLikeToGiveYouContext')}
         </strong>
       </AlertTitle>
 

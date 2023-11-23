@@ -107,8 +107,7 @@
     "skipTheSeries": "Passer la série"
   },
   "contextsFromOrigin": {
-    "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément.",
-    "theContributorsWouldLikeToGiveYouContext": "Les contributeur·rices souhaitent vous apporter du contexte sur cet élément."
+    "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément."
   },
   "entitySelector": {
     "newVideo": "Sélectionner une nouvelle vidéo automatiquement",
