@@ -6,6 +6,16 @@ from tournesol.models import Poll
 
 
 class EntityContext(LocalizedFieldsMixin, models.Model):
+    """
+    A context related to one or more entities.
+
+    A context represents information that a sender, such as the contributors or
+    the association, want to share with the rest of the community.
+
+    When flagged as unsafe, a context becomes a reason to make the targeted
+    entities unsafe.
+    """
+
     ASSOCIATION = "ASSOCIATION"
     CONTRIBUTOR = "CONTRIBUTORS"
     ORIGIN_CHOICES = [
