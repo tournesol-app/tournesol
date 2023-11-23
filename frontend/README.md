@@ -1,4 +1,4 @@
-This project is developped and built with [Vite](https://vite.dev), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/).
+This project is developped and built with [Vite](https://vite.dev), using [React](https://react.dev), [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/).
 
 ## Setup
 
@@ -76,7 +76,7 @@ To learn React, check out the [React documentation](https://react.dev/learn).
 
 ### Source code
 
-Copyright 2023 Association Tournesol and contributors.
+Copyright 2021-2023 Association Tournesol and contributors.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
