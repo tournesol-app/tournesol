@@ -31,24 +31,39 @@ const ShareMenu = ({
   onClose,
 }: ShareMenuProps) => {
   const { t } = useTranslation();
+  const navigatorCanShare = navigator.share != undefined;
 
-  const copyUriToClipboard = (event: React.MouseEvent<HTMLElement>) => {
-    navigator.clipboard.writeText(window.location.toString());
+  const shareText = (text: string) => {
+    if (navigatorCanShare) {
+      navigator.share({ text });
+    } else {
+      navigator.clipboard.writeText(text);
+    }
+  };
+
+  const shareUrl = (url: string) => {
+    if (navigatorCanShare) {
+      navigator.share({ url });
+    } else {
+      navigator.clipboard.writeText(url);
+    }
+  };
+
+  const shareCurrentUrl = (event: React.MouseEvent<HTMLElement>) => {
+    shareUrl(window.location.toString());
     onClose(event);
   };
 
-  const copyShareMessage = (event: React.MouseEvent<HTMLElement>) => {
-    if (shareMessage) navigator.clipboard.writeText(shareMessage);
+  const shareAsMessage = (event: React.MouseEvent<HTMLElement>) => {
+    if (shareMessage) {
+      shareText(shareMessage);
+    }
     onClose(event);
   };
 
   const shareYoutubeLink = (event: React.MouseEvent<HTMLElement>) => {
     if (youtubeLink) {
-      if (navigator.share) {
-        navigator.share({ url: youtubeLink });
-      } else {
-        navigator.clipboard.writeText(youtubeLink);
-      }
+      shareUrl(youtubeLink);
     }
     onClose(event);
   };
@@ -64,18 +79,26 @@ const ShareMenu = ({
       }}
     >
       <MenuList dense sx={{ py: 0 }}>
-        <MenuItem onClick={copyUriToClipboard}>
+        <MenuItem onClick={shareCurrentUrl}>
           <ListItemIcon>
             <Link fontSize="small" />
           </ListItemIcon>
-          <ListItemText>{t('shareMenu.copyAddress')}</ListItemText>
+          <ListItemText>
+            {navigatorCanShare
+              ? t('shareMenu.shareAddress')
+              : t('shareMenu.copyAddress')}
+          </ListItemText>
         </MenuItem>
         {shareMessage && (
-          <MenuItem onClick={copyShareMessage}>
+          <MenuItem onClick={shareAsMessage}>
             <ListItemIcon>
               <ContentCopy fontSize="small" />
             </ListItemIcon>
-            <ListItemText>{t('shareMenu.copyShareMessage')}</ListItemText>
+            <ListItemText>
+              {navigatorCanShare
+                ? t('shareMenu.shareAsMessage')
+                : t('shareMenu.copyShareMessage')}
+            </ListItemText>
           </MenuItem>
         )}
         {twitterMessage && (
@@ -86,12 +109,14 @@ const ShareMenu = ({
             <ListItemText>{t('shareMenu.shareOnTwitter')}</ListItemText>
           </MenuItem>
         )}
-        <MenuItem onClick={shareYoutubeLink}>
-          <ListItemIcon>
-            <Link fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>{t('shareMenu.shareYoutubeLink')}</ListItemText>
-        </MenuItem>
+        {navigatorCanShare && (
+          <MenuItem onClick={shareYoutubeLink}>
+            <ListItemIcon>
+              <Link fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t('shareMenu.shareYoutubeLink')}</ListItemText>
+          </MenuItem>
+        )}
       </MenuList>
     </Menu>
   );
