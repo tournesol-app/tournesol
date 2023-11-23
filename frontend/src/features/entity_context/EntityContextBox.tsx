@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import linkifyStr from 'linkify-string';
 
-import { Alert, AlertTitle, Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Divider, Typography } from '@mui/material';
 
 import { EntityContext, OriginEnum } from 'src/services/openapi';
 
@@ -36,16 +36,15 @@ const EntityContextTextList = ({
         if (context.text) {
           const text = linkifyStr(context.text || '', linkifyOpts);
           return (
-            <Typography
-              paragraph
-              component="div"
-              key={`context_${uid}_${origin_}_p${idx}`}
-            >
-              <Box
-                whiteSpace="pre-wrap"
-                dangerouslySetInnerHTML={{ __html: text }}
-              />
-            </Typography>
+            <Box key={`context_${uid}_${origin_}_p${idx}`}>
+              <Typography paragraph component="div">
+                <Box
+                  whiteSpace="pre-wrap"
+                  dangerouslySetInnerHTML={{ __html: text }}
+                />
+              </Typography>
+              {idx < contexts.length - 1 && <Divider sx={{ mb: 2 }} />}
+            </Box>
           );
         }
       })}
