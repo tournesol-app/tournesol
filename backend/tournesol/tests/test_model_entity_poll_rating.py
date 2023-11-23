@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from core.tests.factories.user import UserFactory
 from tournesol.models import Comparison, EntityPollRating
+from tournesol.models.entity_context import EntityContext
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
 from tournesol.tests.factories.ratings import (
@@ -97,6 +98,92 @@ class EntityPollRatingTestCase(TestCase):
         self.assertEqual(updated_rating_1.n_contributors, 2)
         self.assertEqual(updated_rating_2.n_comparisons, 1)
         self.assertEqual(updated_rating_2.n_contributors, 1)
+
+    def test_unsafe_recommendation_reasons(self):
+        entity = VideoFactory()
+        entity_poll_rating = EntityPollRating.objects.create(
+            poll=self.poll,
+            entity=entity,
+            tournesol_score=None,
+            sum_trust_scores=0.0,
+        )
+
+        unsafe_reasons = entity_poll_rating.unsafe_recommendation_reasons
+        self.assertEqual(len(unsafe_reasons), 1)
+        self.assertIn('insufficient_tournesol_score', unsafe_reasons)
+
+        entity_poll_rating.tournesol_score = 0.0
+        entity_poll_rating.save(update_fields=["tournesol_score"])
+        # We re-assign entity_poll_rating, because
+        # unsafe_recommendation_reasons is a cached property tied ot its model
+        # instance.
+        entity_poll_rating = EntityPollRating.objects.get(pk=entity_poll_rating.pk)
+
+        unsafe_reasons = entity_poll_rating.unsafe_recommendation_reasons
+        self.assertEqual(len(unsafe_reasons), 2)
+        self.assertIn('insufficient_tournesol_score', unsafe_reasons)
+        self.assertIn('insufficient_trust', unsafe_reasons)
+
+    def test_unsafe_recommendation_reasons_moderation(self):
+        entity = VideoFactory()
+        entity_poll_rating = EntityPollRating.objects.create(
+            poll=self.poll,
+            entity=entity,
+            tournesol_score=40,
+            sum_trust_scores=40,
+        )
+
+        # The predicate doesn't match any entity.
+        self.poll.all_entity_contexts.create(
+            name="test",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": "_"},
+            unsafe=True,
+            enabled=True
+        )
+        self.assertEqual(len(entity_poll_rating.unsafe_recommendation_reasons), 0)
+
+        self.poll.all_entity_contexts.all().delete()
+        entity_poll_rating = EntityPollRating.objects.get(pk=entity_poll_rating.pk)
+
+        # The context isn't flagged as unsafe.
+        self.poll.all_entity_contexts.create(
+            name="test",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": entity.metadata["video_id"]},
+            unsafe=False,
+            enabled=True
+        )
+        self.assertEqual(len(entity_poll_rating.unsafe_recommendation_reasons), 0)
+
+        self.poll.all_entity_contexts.all().delete()
+        entity_poll_rating = EntityPollRating.objects.get(pk=entity_poll_rating.pk)
+
+        # The context is not enabled.
+        self.poll.all_entity_contexts.create(
+            name="test",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": entity.metadata["video_id"]},
+            unsafe=True,
+            enabled=False
+        )
+        self.assertEqual(len(entity_poll_rating.unsafe_recommendation_reasons), 0)
+
+        self.poll.all_entity_contexts.all().delete()
+        entity_poll_rating = EntityPollRating.objects.get(pk=entity_poll_rating.pk)
+
+        self.poll.all_entity_contexts.create(
+            name="test",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": entity.metadata["video_id"]},
+            unsafe=True,
+            enabled=True
+        )
+
+        unsafe_reasons = entity_poll_rating.unsafe_recommendation_reasons
+        self.assertEqual(len(unsafe_reasons), 1)
+        self.assertIn('moderation_by_association', unsafe_reasons)
+
 
 class EntityPollRatingBulkTrustScoreUpdate(TestCase):
     """
