@@ -135,7 +135,7 @@ class EntityPollRatingTestCase(TestCase):
 
         # The predicate doesn't match any entity.
         self.poll.all_entity_contexts.create(
-            name="test",
+            name="orphan_context",
             origin=EntityContext.ASSOCIATION,
             predicate={"video_id": "_"},
             unsafe=True,
@@ -148,7 +148,7 @@ class EntityPollRatingTestCase(TestCase):
 
         # The context isn't flagged as unsafe.
         self.poll.all_entity_contexts.create(
-            name="test",
+            name="context_safe",
             origin=EntityContext.ASSOCIATION,
             predicate={"video_id": entity.metadata["video_id"]},
             unsafe=False,
@@ -161,7 +161,7 @@ class EntityPollRatingTestCase(TestCase):
 
         # The context is not enabled.
         self.poll.all_entity_contexts.create(
-            name="test",
+            name="context_unsafe_disabled",
             origin=EntityContext.ASSOCIATION,
             predicate={"video_id": entity.metadata["video_id"]},
             unsafe=True,
@@ -173,7 +173,7 @@ class EntityPollRatingTestCase(TestCase):
         entity_poll_rating = EntityPollRating.objects.get(pk=entity_poll_rating.pk)
 
         self.poll.all_entity_contexts.create(
-            name="test",
+            name="context_unsafe_enabled",
             origin=EntityContext.ASSOCIATION,
             predicate={"video_id": entity.metadata["video_id"]},
             unsafe=True,
