@@ -11,7 +11,6 @@ import configureStore, {
 import { Provider } from 'react-redux';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from '@reduxjs/toolkit';
-import fetchMock from 'fetch-mock-jest';
 import { SnackbarProvider } from 'notistack';
 import Login from './Login';
 import { LoginState } from './LoginState.model';
@@ -30,91 +29,76 @@ export const mockStore: MockStoreCreator<
   ThunkDispatch<LoginState, undefined, AnyAction>
 > = configureStore([thunk]);
 
-const api_url = process.env.REACT_APP_API_URL;
-const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
-const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
-fetchMock
-  .mock(
-    {
-      name: 'valid_login',
-      url: api_url + '/o/token/',
-      method: 'POST',
-      headers: {
-        Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
+const client_id = import.meta.env.REACT_APP_OAUTH_CLIENT_ID || '';
+const client_secret = import.meta.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
+fetchMock.mockIf(
+  (req) => {
+    if (req.method !== 'POST') {
+      return false;
+    }
+    return req.url.match('/o/token') != null;
+  },
+  (req) => {
+    const params = new URLSearchParams(req.body?.toString());
+    const hasCorrectAuth =
+      req.headers.get('Authorization') ===
+      'Basic ' + btoa(client_id + ':' + client_secret);
+    const isPassword = params.get('grant_type') === 'password';
+    const isRefreshToken = params.get('grant_type') === 'refresh_token';
+
+    // Valid login
+    if (
+      hasCorrectAuth &&
+      isPassword &&
+      params.get('username') === 'jst' &&
+      params.get('password') === 'yop' &&
+      params.get('scope') === 'read write groups'
+    ) {
+      return {
+        init: {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        body: JSON.stringify({
+          access_token: 'dummy_new_access_token',
+          refresh_token: 'dummy_new_refresh_token',
+          expires_in: 3600,
+        }),
+      };
+    }
+
+    // Refresh token
+    if (
+      hasCorrectAuth &&
+      isRefreshToken &&
+      params.get('refresh_token') === 'dummy_refresh_token' &&
+      params.get('scope') === 'read write groups'
+    ) {
+      return {
+        init: {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        body: JSON.stringify({
+          access_token: 'dummy_new_access_token',
+          refresh_token: 'dummy_new_refresh_token',
+          expires_in: 3600,
+        }),
+      };
+    }
+
+    return {
+      init: {
+        status: 401,
       },
-      functionMatcher: (_, { body }) => {
-        const params = new URLSearchParams(body?.toString());
-        return (
-          params.get('grant_type') === 'password' &&
-          params.get('username') === 'jst' &&
-          params.get('password') === 'yop' &&
-          params.get('scope') === 'read write groups'
-        );
-      },
-    },
-    {
-      status: 200,
-      body: {
-        access_token: 'dummy_new_access_token',
-        refresh_token: 'dummy_new_refresh_token',
-        expires_in: 3600,
-      },
-    },
-    { sendAsJson: true }
-  )
-  .mock(
-    {
-      name: 'invalid_login',
-      url: api_url + '/o/token/',
-      method: 'POST',
-      functionMatcher: (_, { headers, body }: any) => {
-        const params = new URLSearchParams(body?.toString());
-        if (!headers) {
-          return false;
-        }
-        return (
-          params.get('grant_type') === 'password' &&
-          (headers.Authorization !==
-            'Basic ' + btoa(client_id + ':' + client_secret) ||
-            params.get('username') !== 'jst' ||
-            params.get('password') !== 'yop' ||
-            params.get('scope') !== 'read write groups')
-        );
-      },
-    },
-    {
-      status: 401,
-      body: {},
-    },
-    { sendAsJson: true }
-  )
-  .mock(
-    {
-      name: 'token_from_refresh_token',
-      url: api_url + '/o/token/',
-      method: 'POST',
-      headers: {
-        Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
-      },
-      functionMatcher: (_, { body }) => {
-        const params = new URLSearchParams(body?.toString());
-        return (
-          params.get('grant_type') === 'refresh_token' &&
-          params.get('refresh_token') === 'dummy_refresh_token' &&
-          params.get('scope') === 'read write groups'
-        );
-      },
-    },
-    {
-      status: 200,
-      body: {
-        access_token: 'dummy_new_access_token',
-        refresh_token: 'dummy_new_refresh_token',
-        expires_in: 3600,
-      },
-    },
-    { sendAsJson: true }
-  );
+      body: '{}',
+    };
+  }
+);
 
 describe('login feature', () => {
   const component = ({ store }: { store: MockStoreEnhanced<MockState> }) =>

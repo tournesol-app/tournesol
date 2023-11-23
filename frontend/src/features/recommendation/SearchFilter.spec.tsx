@@ -33,8 +33,8 @@ describe('Filters feature', () => {
   async function renderSearchFilters(loggedIn: boolean) {
     // Used to spy on URL parameters updates
     const history = createMemoryHistory();
-    pushSpy = jest.spyOn(history, 'push');
-    jest.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
+    pushSpy = vi.spyOn(history, 'push');
+    vi.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
       name: 'videos',
       criterias: [
         {

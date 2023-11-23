@@ -15,8 +15,8 @@ export const TRACKED_EVENTS = {
 
 const doNotTrack = new URLSearchParams(location.search).get('dnt') === '1';
 const analyticsClient =
-  process.env.REACT_APP_WEBSITE_ANALYTICS_URL && !doNotTrack
-    ? Plausible({ apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL })
+  import.meta.env.REACT_APP_WEBSITE_ANALYTICS_URL && !doNotTrack
+    ? Plausible({ apiHost: import.meta.env.REACT_APP_WEBSITE_ANALYTICS_URL })
     : null;
 
 if (analyticsClient) {

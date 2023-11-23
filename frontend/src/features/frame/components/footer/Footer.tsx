@@ -26,7 +26,7 @@ import {
 import { theme } from 'src/theme';
 
 const Footer = () => {
-  const apiUrl = process.env.REACT_APP_API_URL;
+  const apiUrl = import.meta.env.REACT_APP_API_URL;
 
   const { t, i18n } = useTranslation();
   const currentLanguage = i18n.resolvedLanguage;

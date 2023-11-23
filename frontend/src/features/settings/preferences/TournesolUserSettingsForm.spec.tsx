@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 
-import fetchMock from 'fetch-mock-jest';
+import { SpyInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
 import * as reactRedux from 'react-redux';
 import configureStore, {
@@ -30,10 +30,10 @@ interface MockState {
   settings: TournesolUserSettings;
 }
 
-const mockEnqueueSnackbar = jest.fn();
+const mockEnqueueSnackbar = vi.fn();
 
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual<object>('notistack')),
   useSnackbar: () => {
     return {
       enqueueSnackbar: mockEnqueueSnackbar,
@@ -47,29 +47,41 @@ describe('GenericPollUserSettingsForm', () => {
     ThunkDispatch<LoginState, undefined, AnyAction>
   > = configureStore([thunk]);
 
-  const api_url = process.env.REACT_APP_API_URL || '';
+  const api_url = import.meta.env.REACT_APP_API_URL || '';
   OpenAPI.BASE = api_url;
 
   const INIT_AUTO_REMOVAL_STORE = 2;
 
-  fetchMock
-    .mock(
-      {
-        name: 'success_patch',
-        url: api_url + '/users/me/settings/',
-        method: 'PATCH',
-        functionMatcher: (_, { body }) => {
-          if (!body) {
-            return false;
-          }
-
-          const bodyContent = body.toString();
-          return bodyContent.includes('"rate_later__auto_remove":16');
+  fetchMock.mockIf(
+    (req) =>
+      req.method === 'PATCH' && new RegExp('/users/me/settings/').test(req.url),
+    (req) => {
+      const body = (req.body || '').toString();
+      if (body.includes('"rate_later__auto_remove":101')) {
+        return {
+          init: {
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+          body: JSON.stringify({
+            videos: {
+              rate_later__auto_remove: [
+                'This parameter cannot be greater than 100.',
+              ],
+            },
+          }),
+        };
+      }
+      return {
+        init: {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      },
-      {
-        status: 200,
-        body: {
+        body: JSON.stringify({
           videos: {
             rate_later__auto_remove: 16,
             comparison_ui__weekly_collective_goal_display: 'NEVER',
@@ -79,34 +91,10 @@ describe('GenericPollUserSettingsForm', () => {
             notifications_email__research: true,
             notifications_email__new_features: true,
           },
-        },
-      },
-      { sendAsJson: true }
-    )
-    .mock(
-      {
-        name: 'errors_patch',
-        url: api_url + '/users/me/settings/',
-        method: 'PATCH',
-        functionMatcher: (_, { body }) => {
-          if (!body) {
-            return false;
-          }
-
-          const bodyContent = body.toString();
-          return bodyContent.includes('"rate_later__auto_remove":-1');
-        },
-      },
-      {
-        status: 400,
-        body: {
-          videos: {
-            rate_later__auto_remove: ['This parameter cannot be lower than 1.'],
-          },
-        },
-      },
-      { sendAsJson: true }
-    );
+        }),
+      };
+    }
+  );
 
   const component = async ({
     store,
@@ -132,8 +120,8 @@ describe('GenericPollUserSettingsForm', () => {
     });
   };
 
-  let storeDispatchSpy: jest.SpyInstance;
-  const useSelectorSpy = jest.spyOn(reactRedux, 'useSelector');
+  let storeDispatchSpy: SpyInstance;
+  const useSelectorSpy = vi.spyOn(reactRedux, 'useSelector');
 
   const setup = async () => {
     const state = {
@@ -147,7 +135,7 @@ describe('GenericPollUserSettingsForm', () => {
       },
     };
     const store = mockStore(state);
-    storeDispatchSpy = jest.spyOn(store, 'dispatch');
+    storeDispatchSpy = vi.spyOn(store, 'dispatch');
 
     const rendered = await component({ store: store });
 
@@ -189,16 +177,11 @@ describe('GenericPollUserSettingsForm', () => {
   };
 
   beforeEach(() => {
-    useSelectorSpy.mockClear();
     // The value of `rate_later__auto_remove` should be different than the one
     // used to initialize the store, to make the tests relevant.
     useSelectorSpy.mockReturnValue({
       settings: { videos: { rate_later__auto_remove: 8 } },
     });
-  });
-
-  afterEach(() => {
-    storeDispatchSpy.mockClear();
   });
 
   describe('Success', () => {
@@ -348,20 +331,20 @@ describe('GenericPollUserSettingsForm', () => {
         fireEvent.click(submit);
       });
 
-      expect(storeDispatchSpy).toBeCalledTimes(0);
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(0);
     });
 
     it('displays a generic error message with notistack', async () => {
       const { rateLaterAutoRemove, submit } = await setup();
 
-      fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
+      fireEvent.change(rateLaterAutoRemove, { target: { value: 101 } });
 
       await act(async () => {
         fireEvent.click(submit);
       });
 
-      expect(mockEnqueueSnackbar).toBeCalledTimes(1);
-      expect(mockEnqueueSnackbar).toBeCalledWith(
+      expect(mockEnqueueSnackbar).toHaveBeenCalledTimes(1);
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
         'pollUserSettingsForm.errorOccurredDuringPreferencesUpdate',
         {
           variant: 'error',
@@ -372,10 +355,10 @@ describe('GenericPollUserSettingsForm', () => {
     it('displays the error messages of each field', async () => {
       const { rateLaterAutoRemove, submit } = await setup();
 
-      fireEvent.change(rateLaterAutoRemove, { target: { value: -1 } });
+      fireEvent.change(rateLaterAutoRemove, { target: { value: 101 } });
 
       expect(
-        screen.queryByText(/this parameter cannot be lower than 1./i)
+        screen.queryByText(/this parameter cannot be greater than 100./i)
       ).not.toBeInTheDocument();
 
       await act(async () => {
@@ -383,7 +366,7 @@ describe('GenericPollUserSettingsForm', () => {
       });
 
       expect(
-        screen.getByText(/this parameter cannot be lower than 1./i)
+        screen.getByText(/this parameter cannot be greater than 100./i)
       ).toBeInTheDocument();
     });
   });
