@@ -37,17 +37,25 @@ interface MockState {
   settings: TournesolUserSettings;
 }
 
-const EntityList = () => null;
-jest.mock('src/features/entities/EntityList', () => EntityList);
+vi.mock('src/features/entities/EntityList', () => {
+  const EntityList = () => null;
+  return {
+    default: EntityList,
+  };
+});
 
-const SearchFilter = () => null;
-jest.mock('src/features/recommendation/SearchFilter', () => SearchFilter);
+vi.mock('src/features/recommendation/SearchFilter', () => {
+  const SearchFilter = () => null;
+  return {
+    default: SearchFilter,
+  };
+});
 
 describe('RecommendationPage', () => {
   let history: ReturnType<typeof createMemoryHistory>;
-  let historySpy: ReturnType<typeof jest.spyOn>;
-  let navigatorLanguagesGetter: ReturnType<typeof jest.spyOn>;
-  let getRecommendedVideosSpy: ReturnType<typeof jest.spyOn>;
+  let historySpy: ReturnType<typeof vi.spyOn>;
+  let navigatorLanguagesGetter: ReturnType<typeof vi.spyOn>;
+  let getRecommendedVideosSpy: ReturnType<typeof vi.spyOn>;
 
   const mockStore: MockStoreCreator<
     MockState,
@@ -56,14 +64,14 @@ describe('RecommendationPage', () => {
 
   beforeEach(() => {
     history = createMemoryHistory();
-    historySpy = jest.spyOn(history, 'replace');
-    navigatorLanguagesGetter = jest.spyOn(window.navigator, 'languages', 'get');
-    getRecommendedVideosSpy = jest
+    historySpy = vi.spyOn(history, 'replace');
+    navigatorLanguagesGetter = vi.spyOn(window.navigator, 'languages', 'get');
+    getRecommendedVideosSpy = vi
       .spyOn(RecommendationApi, 'getRecommendations')
       .mockImplementation(async () => ({ count: 0, results: [] }));
 
     // prevent the useCurrentPoll hook to make HTTP requests
-    jest.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
+    vi.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
       name: 'videos',
       criterias: [
         {

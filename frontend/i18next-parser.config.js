@@ -1,8 +1,8 @@
-/* eslint-disable */
+import packageJson from "./package.json" assert { type: 'json' };
 
-const SUPPORTED_LANGUAGES = require('./package').config.supported_languages;
+const SUPPORTED_LANGUAGES = packageJson.config.supported_languages;
 
-module.exports = {
+export default {
   contextSeparator: '_',
   // Key separator used in your translation keys
 
