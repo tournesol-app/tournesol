@@ -17,10 +17,10 @@ class EntityContext(LocalizedFieldsMixin, models.Model):
     """
 
     ASSOCIATION = "ASSOCIATION"
-    CONTRIBUTOR = "CONTRIBUTORS"
+    CONTRIBUTORS = "CONTRIBUTORS"
     ORIGIN_CHOICES = [
         (ASSOCIATION, "Association"),
-        (CONTRIBUTOR, "Contributors"),
+        (CONTRIBUTORS, "Contributors"),
     ]
 
     name = models.CharField(

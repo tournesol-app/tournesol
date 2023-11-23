@@ -166,7 +166,7 @@ class EntityPollRating(models.Model):
 
         unsafe, origin = self.poll.entity_has_unsafe_context(self.entity.metadata)
         if unsafe:
-            if origin == EntityContext.CONTRIBUTOR:
+            if origin == EntityContext.CONTRIBUTORS:
                 reasons.append(UNSAFE_REASON_MODERATION_CONTRIBUTORS)
             else:
                 reasons.append(UNSAFE_REASON_MODERATION_ASSOCIATION)
