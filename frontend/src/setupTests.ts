@@ -4,13 +4,17 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
 import { MockTrans } from './mockI18next.setup';
+import createFetchMock from 'vitest-fetch-mock';
 
-jest.mock('react-i18next', () => ({
+const fetchMocker = createFetchMock(vi);
+fetchMocker.enableMocks();
+
+vi.mock('react-i18next', () => ({
   // this mock makes sure any components using the `useTranslation`
   // hook can use it without a warning being shown
   useTranslation: () => {
     return {
-      t: (str) => str,
+      t: (key: string) => key,
       i18n: {
         changeLanguage: () => new Promise(() => null),
         resolvedLanguage: 'en',
@@ -18,5 +22,5 @@ jest.mock('react-i18next', () => ({
     };
   },
   Trans: MockTrans,
-  initReactI18next: { type: '3rdParty', init: jest.fn() },
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));

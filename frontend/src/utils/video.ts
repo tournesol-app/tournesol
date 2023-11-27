@@ -1,4 +1,4 @@
-import { UsersService, RelatedEntity } from 'src/services/openapi';
+import { UsersService } from 'src/services/openapi';
 import { VideoObject } from './types';
 import {
   autoSuggestionsRandom,
@@ -7,15 +7,17 @@ import {
 } from 'src/features/rateLater/autoSuggestions';
 
 export function extractVideoId(idOrUrl: string) {
-  const host = process.env.PUBLIC_URL || location.host;
-  const escapedCurrentHost = host.replace(/[.\\]/g, '\\$&');
-
+  const protocol = /(?:https?:\/\/)?/;
+  const subdomain = /(?:www\.|m\.)?/;
+  const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/))/;
+  const youtubeShortUrl = /(?:youtu\.be\/)/;
+  const tournesolEntityUrl = /(?:[.\w]+\/entities\/)/;
+  const youtubeId = /(?:yt:)?([A-Za-z0-9-_]{11})/;
   const matchUrl = idOrUrl.match(
     new RegExp(
-      '(?:https?:\\/\\/)?(?:www\\.|m\\.)?' +
-        '(?:youtube\\.com\\/watch\\?v=|youtube\\.com\\/live\\/|youtu\\.be\\/|' +
-        escapedCurrentHost +
-        '\\/entities\\/yt:|yt:)([A-Za-z0-9-_]{11})'
+      `^${protocol.source}${subdomain.source}` +
+        `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})?` +
+        `${youtubeId.source}`
     )
   );
   const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
@@ -78,16 +80,14 @@ export async function getUidForComparison(
   });
 
   if (isAutoSuggestionsEmpty(poll)) {
-    const suggestions = await UsersService.usersMeSuggestionsTocompareRetrieve({
+    const suggestions = await UsersService.usersMeSuggestionsTocompareList({
       pollName: poll,
     });
 
-    if (suggestions['count'] > 0) {
+    if (suggestions && suggestions.length > 0) {
       fillAutoSuggestions(
         poll,
-        suggestions['results'].map(
-          (item: { entity: RelatedEntity }) => item.entity.uid
-        ),
+        suggestions.map((item) => item.entity.uid),
         exclude
       );
     }

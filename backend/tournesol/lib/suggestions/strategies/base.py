@@ -19,11 +19,3 @@ class ContributionSuggestionStrategy(ABC):
     @abstractmethod
     def get_results(self):
         raise NotImplementedError
-
-    @abstractmethod
-    def get_serializer_class(self):
-        """
-        Return a DRF serializer class that should be used to serialize the
-        results returned by `get_results()`.
-        """
-        raise NotImplementedError

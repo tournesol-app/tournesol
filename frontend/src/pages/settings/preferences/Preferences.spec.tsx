@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 
-import fetchMock from 'fetch-mock-jest';
+import { SpyInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
 import * as reactRedux from 'react-redux';
 import configureStore, {
@@ -28,10 +28,10 @@ interface MockState {
   settings: TournesolUserSettings;
 }
 
-const mockEnqueueSnackbar = jest.fn();
+const mockEnqueueSnackbar = vi.fn();
 
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
+vi.mock('notistack', async () => ({
+  ...(await vi.importActual<object>('notistack')),
   useSnackbar: () => {
     return {
       enqueueSnackbar: mockEnqueueSnackbar,
@@ -45,7 +45,7 @@ describe('Preferences Page', () => {
     ThunkDispatch<LoginState, undefined, AnyAction>
   > = configureStore([thunk]);
 
-  const api_url = process.env.REACT_APP_API_URL || '';
+  const api_url = import.meta.env.REACT_APP_API_URL || '';
   OpenAPI.BASE = api_url;
 
   // The values used by the store and the API are different to ensure the form
@@ -77,7 +77,7 @@ describe('Preferences Page', () => {
     });
   };
 
-  let storeDispatchSpy: jest.SpyInstance;
+  let storeDispatchSpy: SpyInstance;
 
   const setup = async () => {
     const state = {
@@ -89,7 +89,7 @@ describe('Preferences Page', () => {
       },
     };
     const store = mockStore(state);
-    storeDispatchSpy = jest.spyOn(store, 'dispatch');
+    storeDispatchSpy = vi.spyOn(store, 'dispatch');
     await component({ store: store });
 
     return {
@@ -104,31 +104,23 @@ describe('Preferences Page', () => {
   describe("Successfully fetch the user's settings", () => {
     beforeAll(() => {
       fetchMock.mockReset();
-      fetchMock.mock(
-        {
-          name: 'success_get',
-          url: api_url + '/users/me/settings/',
-          method: 'GET',
-        },
-        {
-          status: 200,
-          body: {
-            videos: {
-              rate_later__auto_remove: INIT_AUTO_REMOVAL_API,
-              weekly_collective_goal_display:
-                ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
-            },
+      fetchMock.doMockIf(
+        new RegExp('/users/me/settings/'),
+        JSON.stringify({
+          videos: {
+            rate_later__auto_remove: INIT_AUTO_REMOVAL_API,
+            weekly_collective_goal_display:
+              ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
           },
-        },
-        { sendAsJson: true }
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
       );
     });
 
     it('retrieves the preferences from the API and dispatch them', async () => {
       const { storeDispatchSpy } = await setup();
       expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
-
-      expect(storeDispatchSpy).toBeCalledWith({
+      expect(storeDispatchSpy).toHaveBeenCalledWith({
         type: 'settings/replaceSettings',
         payload: {
           videos: {
@@ -144,24 +136,14 @@ describe('Preferences Page', () => {
   describe("Error while fetching the user's settings", () => {
     beforeAll(() => {
       fetchMock.mockReset();
-      fetchMock.mock(
-        {
-          name: 'error_get',
-          url: api_url + '/users/me/settings/',
-          method: 'GET',
-        },
-        {
-          status: 429,
-          body: {},
-        },
-        { sendAsJson: true }
-      );
+      fetchMock.mockIf(new RegExp('/users/me/settings/'), '{}', {
+        status: 429,
+      });
     });
 
     it('displays human readable errors', async () => {
       await setup();
-
-      expect(mockEnqueueSnackbar).toBeCalledTimes(2);
+      expect(mockEnqueueSnackbar).toHaveBeenCalledTimes(2);
       expect(mockEnqueueSnackbar).toHaveBeenNthCalledWith(
         1,
         'notifications.tryAgainLaterOrContactAdministrator',

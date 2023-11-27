@@ -1,13 +1,11 @@
-import { Banner } from '../banner/Banner.js';
-
 export class TournesolRecommendationsOptions {
-  constructor(
+  constructor({
     videosPerRow,
     rowsWhenExpanded,
     banner,
     parentComponentQuery,
-    displayCriteria
-  ) {
+    displayCriteria,
+  }) {
     this.videosPerRow = videosPerRow;
     this.rowsWhenExpanded = rowsWhenExpanded;
     this.banner = banner;
@@ -15,12 +13,3 @@ export class TournesolRecommendationsOptions {
     this.displayCriteria = displayCriteria;
   }
 }
-
-export const defaultTournesolRecommendationsOptions =
-  new TournesolRecommendationsOptions(
-    4,
-    3,
-    new Banner(),
-    '#primary > ytd-rich-grid-renderer',
-    false
-  );

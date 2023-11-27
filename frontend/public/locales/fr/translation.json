@@ -21,6 +21,7 @@
     "labelShowSettings": "Voir les paramètres de cette video",
     "insufficientScore": "Le score de cette vidéo est inférieur au seuil de recommendabilité défini par Tournesol.",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
+    "moderationByAssociation": "L'Association Tournesol a temporairement écarté cette vidéo des recommandations. Consultez la FAQ pour plus de détails.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
     "nbComparisonsBy_many": "{{count}} comparaisons par",
     "nbComparisonsBy_other": "{{count}} comparaisons par",

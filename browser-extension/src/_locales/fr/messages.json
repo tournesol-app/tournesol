@@ -120,16 +120,16 @@
     "message": "Voir plus sur tournesol",
     "Description": "Inviter les utilisateur·rices à voir plus de résultats sur le site web de Tournesol."
   },
-  "study2023BannerText": {
-    "message": "Tournesol existe grâce aux dons de la communauté. Malheureusement nous manquons encore de soutien pour continuer à employer notre développeur pour l'année 2024. Si vous le pouvez, avec 10€ par mois, vous feriez partie des 400 personnes nécessaires pour garantir la stabilité de l'association sur le long terme. Un grand et sincère merci 🙏",
-    "description": "Inviter les utilisateur·rices à participer à l'étude."
+  "securityIconAlt": {
+    "message": "Icône d'alerte",
+    "description": "Texte alternatif à l'icône affichée en cas de bannière d'alerte de sécurité"
   },
-  "study2023ActionButton": {
-    "message": "Soutenir",
-    "description": "Label du bouton d'action principal de la bannière."
+  "campaignIconAlt": {
+    "message": "Icône de mégaphone",
+    "description": "Texte alternatif à l'icône de mégaphone affichée en cas de bannière générique"
   },
-  "study2023JoinError": {
-    "message": "Désolé, une erreur est survenue.\n\nS'il vous plaît, reportez l'erreur dans notre espace GitHub ou sur notre serveur Discord.\n\n GitHub : https://github.com/tournesol-app/tournesol/issues/new\n\n Discord : https://discord.com/invite/TvsFB8RNBV",
-    "description": "Inviter les utilisateur·rices à reporter l'erreur de participation."
+  "closeIconAlt": {
+    "message": "Icône de fermeture",
+    "description": "Texte alternatif à l'icône de fermeture de la bannière"
   }
 }

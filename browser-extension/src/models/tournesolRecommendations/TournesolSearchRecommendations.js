@@ -1,8 +1,7 @@
 import { TournesolRecommendations } from './TournesolRecommendations.js';
-import { defaultTournesolRecommendationsOptions } from './TournesolRecommendationsOptions.js';
 
 export class TournesolSearchRecommendations extends TournesolRecommendations {
-  constructor(options = defaultTournesolRecommendationsOptions) {
+  constructor(options) {
     super(options);
     this.searchQuery = '';
   }
