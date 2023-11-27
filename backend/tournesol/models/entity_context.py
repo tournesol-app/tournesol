@@ -28,6 +28,12 @@ class EntityContext(LocalizedFieldsMixin, models.Model):
         max_length=64,
         help_text="Human readable name, used to identify the context in the admin interface.",
     )
+    poll = models.ForeignKey(
+        Poll,
+        on_delete=models.CASCADE,
+        related_name="all_entity_contexts",
+        default=Poll.default_poll_pk,
+    )
     origin = models.CharField(
         max_length=16,
         choices=ORIGIN_CHOICES,
@@ -47,12 +53,6 @@ class EntityContext(LocalizedFieldsMixin, models.Model):
     enabled = models.BooleanField(
         default=False,
         help_text="If False, this context will have no effect, and won't be returned by the API.",
-    )
-    poll = models.ForeignKey(
-        Poll,
-        on_delete=models.CASCADE,
-        related_name="all_entity_contexts",
-        default=Poll.default_poll_pk,
     )
     created_at = models.DateTimeField(
         blank=True,
