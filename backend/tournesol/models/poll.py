@@ -55,7 +55,8 @@ class Poll(models.Model):
     @classmethod
     def default_poll(cls) -> "Poll":
         poll, _created = cls.objects.get_or_create(
-            name=DEFAULT_POLL_NAME, defaults={"entity_type": VideoEntity.name}
+            name=DEFAULT_POLL_NAME,
+            defaults={"entity_type": VideoEntity.name}
         )
         return poll
 
