@@ -127,7 +127,7 @@ class PollsRecommendationsTestCase(TestCase):
         EntityPollRatingFactory(entity=self.video_3, sum_trust_scores=4)
         EntityPollRatingFactory(entity=self.video_4, sum_trust_scores=5)
 
-    def test_anonymous_can_list_recommendations(self):
+    def test_anon_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -149,8 +149,8 @@ class PollsRecommendationsTestCase(TestCase):
         for result in results:
             self.assertEqual(result["entity_contexts"], [])
 
-    def test_anonymous_can_list_recommendations_with_contexts(self):
-        # An entity with unsafe rating shouldn't be marked safe by a context.
+    def test_anon_can_list_reco_with_contexts(self):
+        # An entity with an unsafe rating shouldn't be marked as safe by a context.
         EntityContext.objects.create(
             name="context_video1",
             origin=EntityContext.ASSOCIATION,
@@ -160,7 +160,7 @@ class PollsRecommendationsTestCase(TestCase):
             poll=self.poll,
         )
 
-        # An entity with at least one unsafe context should be marked unsafe.
+        # An entity with at least one unsafe context should be marked as unsafe.
         EntityContext.objects.create(
             name="context_video2_unsafe",
             origin=EntityContext.ASSOCIATION,
@@ -255,6 +255,76 @@ class PollsRecommendationsTestCase(TestCase):
                 'created_at': context3_2.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             }
         )
+
+    def test_anon_can_list_reco_with_contexts_unsafe(self):
+        """
+        Recommendations marked as unsafe by their context should be returned
+        when the query parameter `unsafe` is used.
+        """
+        response = self.client.get("/polls/videos/recommendations/")
+        initial_safe_results_nbr = len(response.data["results"])
+
+        EntityContext.objects.create(
+            name="context_video4_unsafe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=True,
+            enabled=True,
+            poll=self.poll,
+        )
+
+        response = self.client.get("/polls/videos/recommendations/")
+        results = response.data["results"]
+
+        self.assertEqual(len(results), initial_safe_results_nbr - 1)
+        for result in results:
+            self.assertNotEqual(result["uid"], self.video_4.uid)
+
+        response = self.client.get("/polls/videos/recommendations/?unsafe=true")
+        vid4 = response.data["results"][0]
+
+        self.assertEqual(vid4["uid"], self.video_4.uid)
+        self.assertEqual(vid4["collective_rating"]["unsafe"]["status"], True)
+        self.assertEqual(len(vid4["collective_rating"]["unsafe"]["reasons"]), 1)
+        self.assertEqual(
+            vid4["collective_rating"]["unsafe"]["reasons"][0],
+            'moderation_by_association'
+        )
+
+    def test_anon_can_list_reco_with_contexts_poll_specific(self):
+        """
+        Only contexts related to the poll provided in the URL should be
+        returned.
+        """
+        response = self.client.get("/polls/videos/recommendations/")
+        initial_safe_results_nbr = len(response.data["results"])
+        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
+
+        other_poll = Poll.objects.create(name="other")
+        EntityContext.objects.create(
+            name="context_video4_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=other_poll,
+        )
+
+        EntityContext.objects.create(
+            name="context_video4_unsafe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=True,
+            enabled=True,
+            poll=other_poll,
+        )
+
+        response = self.client.get("/polls/videos/recommendations/")
+        results = response.data["results"]
+
+        self.assertEqual(len(results), initial_safe_results_nbr)
+        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
+        self.assertEqual(response.data["results"][0]["entity_contexts"], [])
 
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")
