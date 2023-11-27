@@ -127,9 +127,8 @@ class Poll(models.Model):
 
     def entity_has_unsafe_context(self, entity_metadata) -> tuple:
         """
-        If the entity's metadata match at least one "unsafe" context's
-        predicate of this poll, return True and the context's origin, False
-        instead.
+        If the entity metadata match at least one "unsafe" context predicate
+        of this poll, return True and the context's origin, False instead.
         """
 
         # The entity contexts are expected to be already prefetched.
@@ -152,7 +151,7 @@ class Poll(models.Model):
 
     def get_entity_contexts(self, entity_metadata) -> list:
         """
-        Return a list of all enabled contexts matching the given entity's
+        Return a list of all enabled contexts matching the given entity
         metadata.
         """
         contexts = []
