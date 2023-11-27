@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.core.cache import cache
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework import status
@@ -273,6 +274,7 @@ class PollsRecommendationsTestCase(TestCase):
             poll=self.poll,
         )
 
+        cache.clear()
         response = self.client.get("/polls/videos/recommendations/")
         results = response.data["results"]
 
@@ -319,6 +321,7 @@ class PollsRecommendationsTestCase(TestCase):
             poll=other_poll,
         )
 
+        cache.clear()
         response = self.client.get("/polls/videos/recommendations/")
         results = response.data["results"]
 
