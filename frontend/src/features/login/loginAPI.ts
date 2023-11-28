@@ -1,8 +1,8 @@
 import { JSONObject } from 'src/utils/types';
 
-const api_url = process.env.REACT_APP_API_URL;
-const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
-const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
+const api_url = import.meta.env.REACT_APP_API_URL;
+const client_id = import.meta.env.REACT_APP_OAUTH_CLIENT_ID || '';
+const client_secret = import.meta.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
 
 export class LoginError extends Error {
   public readonly data: JSONObject;

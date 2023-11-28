@@ -8,6 +8,7 @@ import { BackofficeService, Banner } from 'src/services/openapi';
 import WebsiteBanner from './WebsiteBanner';
 
 const sortBanners = (a: Banner, b: Banner) => {
+  // This function also exists in browser-extension/src/models/banner/fetchBanner.js
   if (a.security_advisory && !b.security_advisory) {
     return -1;
   }

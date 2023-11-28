@@ -1,17 +1,23 @@
-import { UsersService, PollsService } from 'src/services/openapi';
-import { YOUTUBE_POLL_NAME } from './constants';
+import { UsersService } from 'src/services/openapi';
 import { VideoObject } from './types';
+import {
+  autoSuggestionsRandom,
+  fillAutoSuggestions,
+  isAutoSuggestionsEmpty,
+} from 'src/features/rateLater/autoSuggestions';
 
 export function extractVideoId(idOrUrl: string) {
-  const host = process.env.PUBLIC_URL || location.host;
-  const escapedCurrentHost = host.replace(/[.\\]/g, '\\$&');
-
+  const protocol = /(?:https?:\/\/)?/;
+  const subdomain = /(?:www\.|m\.)?/;
+  const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/))/;
+  const youtubeShortUrl = /(?:youtu\.be\/)/;
+  const tournesolEntityUrl = /(?:[.\w]+\/entities\/)/;
+  const youtubeId = /(?:yt:)?([A-Za-z0-9-_]{11})/;
   const matchUrl = idOrUrl.match(
     new RegExp(
-      '(?:https?:\\/\\/)?(?:www\\.|m\\.)?' +
-        '(?:youtube\\.com\\/watch\\?v=|youtube\\.com\\/live\\/|youtu\\.be\\/|' +
-        escapedCurrentHost +
-        '\\/entities\\/yt:|yt:)([A-Za-z0-9-_]{11})'
+      `^${protocol.source}${subdomain.source}` +
+        `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})?` +
+        `${youtubeId.source}`
     )
   );
   const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
@@ -60,140 +66,38 @@ export function idFromUid(uid: string): string {
   return '';
 }
 
-function getPseudoRandomInt(max: number) {
-  return Math.floor(Math.random() * max);
-}
-
-function pick(arr: string[]): string | null {
-  // Returns a random element of an array
-  return arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null;
-}
-
-async function areAlreadyCompared(uidA: string, uidB: string) {
-  // TODO implement this method to avoid giving a video that has already been compared
-  return uidA === uidB;
-}
-
-async function retryRandomPick(
-  numberRetries: number,
-  uid: string | null,
-  uidOther: string | null,
-  videoList: string[]
-): Promise<string | null> {
-  if (numberRetries <= 0 || videoList.length == 0) return null;
-
-  if (uidOther === null) return pick(videoList);
-
-  const newUid = pick(videoList);
-  const alreadyCompared =
-    newUid && (await areAlreadyCompared(uidOther, newUid));
-
-  if (!alreadyCompared && newUid !== uid) return newUid;
-
-  return await retryRandomPick(
-    numberRetries - 1,
-    uid,
-    uidOther,
-    videoList.filter((v) => v !== newUid)
-  );
-}
-
-export async function getUidFromRateLaterList(
-  uid: string | null,
-  uidOther: string | null,
-  exclude?: string[]
-): Promise<string | null> {
-  const rateLaters = await UsersService.usersMeRateLaterList({
-    pollName: YOUTUBE_POLL_NAME,
-    limit: 99,
-    offset: 0,
-  });
-
-  let newSuggestions =
-    rateLaters?.results?.map((rateL) => rateL.entity.uid) || [];
-
-  if (exclude) {
-    newSuggestions = newSuggestions.filter((uid) => !exclude.includes(uid));
-  }
-
-  const newUid = await retryRandomPick(5, uid, uidOther, newSuggestions);
-  return newUid;
-}
-
-export async function getUidFromComparedList(
-  uid: string | null,
-  uidOther: string | null,
-  exclude?: string[]
-): Promise<string | null> {
-  const contributorRatings = await UsersService.usersMeContributorRatingsList({
-    pollName: YOUTUBE_POLL_NAME,
-    limit: 99,
-    offset: 0,
-  });
-
-  let newSuggestions =
-    contributorRatings.results?.map((rating) => rating.entity.uid) || [];
-
-  if (exclude) {
-    newSuggestions = newSuggestions.filter((uid) => !exclude.includes(uid));
-  }
-
-  const newUid = retryRandomPick(5, uid, uidOther, newSuggestions);
-  return newUid;
-}
-
-/**
- * This helper function returns a UID following the strategy:
- *
- *  1. Uniformily random from rate_later list (75% chance)
- *  2. Uniformily random from already rated videos (20% chance)
- *  3. Uniformily random from Tournesol's top 100 videos (5% chance)
- *  If option 1 is selected and fails, option 2 will be tried
- *  If option 2 is selected and fails, option 3 will be tried
- *
- * The exlude parameter allows to exclude a list of UIDs before the random
- * selection.
- */
 export async function getUidForComparison(
   uid: string | null,
   uidOther: string | null,
-  exclude?: string[]
+  poll: string
 ): Promise<string | null> {
-  const x = Math.random();
+  const exclude: string[] = [];
 
-  let newUid;
-
-  if (x < 0.75) {
-    newUid = await getUidFromRateLaterList(uid, uidOther, exclude);
-    if (newUid) return newUid;
-  }
-
-  if (x < 0.95) {
-    const newUid = await getUidFromComparedList(uid, uidOther, exclude);
-    if (newUid) return newUid;
-  }
-
-  const videoResult = await PollsService.pollsRecommendationsList({
-    name: 'videos',
-    limit: 100,
-    // Increase the diversity of recommended videos. Changing the `offset`
-    // allows us to not increase the range of suggested videos, without
-    // increasing size of the downloaded JSON. We may want to adapt/remove
-    // this `offset` the day we will filter the results according to the user
-    // preferred languages.
-    offset: getPseudoRandomInt(10) * 10,
+  [uid, uidOther].forEach((item) => {
+    if (item) {
+      exclude.push(item);
+    }
   });
 
-  let newSuggestions = (videoResult?.results || []).map((v) => v.entity.uid);
+  if (isAutoSuggestionsEmpty(poll)) {
+    const suggestions = await UsersService.usersMeSuggestionsTocompareList({
+      pollName: poll,
+    });
 
-  if (exclude) {
-    newSuggestions = newSuggestions.filter((uid) => !exclude.includes(uid));
+    if (suggestions && suggestions.length > 0) {
+      fillAutoSuggestions(
+        poll,
+        suggestions.map((item) => item.entity.uid),
+        exclude
+      );
+    }
   }
 
-  newUid = await retryRandomPick(5, uid, uidOther, newSuggestions);
+  if (isAutoSuggestionsEmpty(poll)) {
+    return null;
+  }
 
-  if (newUid) return newUid;
-  return newSuggestions ? pick(newSuggestions) : null;
+  return autoSuggestionsRandom(poll, exclude);
 }
 
 export const convertDurationToClockDuration = (duration: number) => {

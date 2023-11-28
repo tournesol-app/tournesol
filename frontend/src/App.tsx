@@ -42,7 +42,7 @@ const VideoAnalysisPage = React.lazy(
   () => import('./pages/videos/VideoAnalysisPage')
 );
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = import.meta.env.REACT_APP_API_URL;
 
 const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
   OpenAPI.BASE = API_URL ?? '';

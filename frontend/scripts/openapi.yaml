@@ -890,6 +890,7 @@ paths:
           - br
           - bs
           - ca
+          - ckb
           - cs
           - cy
           - da
@@ -2154,6 +2155,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSubSampleList'
           description: ''
+  /users/me/suggestions/{poll_name}/tocompare/:
+    get:
+      operationId: users_me_suggestions_tocompare_list
+      description: |-
+        Suggest a list of entities to compare to the logged-in user.
+
+        The suggestion strategy is determined by the `strategy` query parameter.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: strategy
+        schema:
+          type: string
+          enum:
+          - classic
+          default: classic
+        description: The strategy used to suggest a entities to compare.
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EntityToCompare'
+          description: ''
   /users/me/unconnected_entities/{poll_name}/{uid}/:
     get:
       operationId: users_me_unconnected_entities_list
@@ -3129,6 +3165,18 @@ components:
       required:
       - criteria_scores
       - name
+    EntityToCompare:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/RelatedEntity'
+        collective_rating:
+          allOf:
+          - $ref: '#/components/schemas/CollectiveRating'
+          readOnly: true
+      required:
+      - collective_rating
+      - entity
     EntityTypeEnum:
       enum:
       - video
@@ -3761,10 +3809,12 @@ components:
       enum:
       - insufficient_trust
       - insufficient_tournesol_score
+      - moderation_by_association
       type: string
       description: |-
         * `insufficient_trust` - insufficient_trust
         * `insufficient_tournesol_score` - insufficient_tournesol_score
+        * `moderation_by_association` - moderation_by_association
     Recommendation:
       type: object
       properties:

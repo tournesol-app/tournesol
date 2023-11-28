@@ -16,33 +16,42 @@ export const alertUseOnLinkToYoutube = () => {
   alertOnCurrentTab('This must be used on a link to a youtube video');
 };
 
-export const fetchTournesolApi = async (url, method, data) => {
+export const fetchTournesolApi = async (path, options = {}) => {
+  const { method, data, authenticate, headers: extraHeaders } = options;
+
   const headers = {
     Accept: 'application/json',
-    'Content-Type': 'application/json',
+    ...extraHeaders,
   };
-  const access_token = await getAccessToken();
-  if (access_token) {
-    headers['Authorization'] = `Bearer ${access_token}`;
+
+  const fetchOptions = {
+    method: method ?? 'GET',
+    headers,
+    credentials: 'include',
+    mode: 'cors',
+  };
+
+  if (data !== undefined) {
+    headers['Content-Type'] = 'application/json';
+    fetchOptions.body = JSON.stringify(data);
   }
 
-  const body = {
-    credentials: 'include',
-    method: method,
-    mode: 'cors',
-    headers: headers,
-  };
-  if (data) {
-    body['body'] = JSON.stringify(data);
+  if (authenticate === undefined || authenticate === true) {
+    const access_token = await getAccessToken();
+    if (access_token) {
+      headers['Authorization'] = `Bearer ${access_token}`;
+    }
   }
-  return fetch(`https://api.tournesol.app/${url}`, body).catch(console.error);
+
+  return fetch(`https://api.tournesol.app/${path}`, fetchOptions).catch(
+    console.error
+  );
 };
 
 export const addRateLater = async (video_id) => {
   const ratingStatusReponse = await fetchTournesolApi(
     'users/me/rate_later/videos/',
-    'POST',
-    { entity: { uid: 'yt:' + video_id } }
+    { method: 'POST', data: { entity: { uid: 'yt:' + video_id } } }
   );
   if (ratingStatusReponse && ratingStatusReponse.ok) {
     return {
@@ -67,8 +76,7 @@ export const addRateLater = async (video_id) => {
  */
 export const getUserProof = async (keyword) => {
   const userProofResponse = await fetchTournesolApi(
-    `users/me/proof/videos?keyword=${keyword}`,
-    'GET'
+    `users/me/proof/videos?keyword=${keyword}`
   );
 
   if ([200, 401].includes(userProofResponse.status)) {
@@ -85,10 +93,7 @@ export const getUserProof = async (keyword) => {
 };
 
 export const getUserSettings = async () => {
-  const userSettingsResponse = await fetchTournesolApi(
-    'users/me/settings/',
-    'GET'
-  );
+  const userSettingsResponse = await fetchTournesolApi('users/me/settings/');
 
   if ([200, 401].includes(userSettingsResponse.status)) {
     const responseJson = await userSettingsResponse.json();
@@ -123,32 +128,7 @@ export const getRandomSubarray = (arr, size) => {
 };
 
 export const getVideoStatistics = (videoId) => {
-  return fetchTournesolApi(`videos/?video_id=${videoId}`, 'GET', {});
-};
-
-/**
- * The browser API is expected to return the language indentifier following
- * the RFC 5646.
- *
- * See: https://datatracker.ietf.org/doc/html/rfc5646#section-2.1
- */
-export const isNavigatorLang = (lang) => {
-  let expected = lang.toLowerCase();
-  let found = window.navigator.language.toLocaleLowerCase();
-
-  // `expected` can be the shortest ISO 639 code of a language.
-  //  Example: 'fr'.
-  if (found === expected) {
-    return true;
-  }
-
-  // The shortest ISO 639 code can be followed by other "subtags" like the
-  // region, or the variant. Example: 'fr-CA'.
-  if (found.startsWith(expected + '-')) {
-    return true;
-  }
-
-  return false;
+  return fetchTournesolApi(`videos/?video_id=${videoId}`);
 };
 
 const getObjectFromLocalStorage = async (key, default_ = null) => {

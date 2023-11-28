@@ -237,6 +237,7 @@ const ScientificLiteratureBox = () => {
   return (
     <TitledPaper
       title={t('scientificLiteratureBox.publications')}
+      titleId="publications"
       contentBoxPadding={0}
     >
       <>

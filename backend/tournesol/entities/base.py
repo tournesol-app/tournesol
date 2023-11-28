@@ -183,6 +183,10 @@ class EntityType(ABC):
         return qst
 
     @classmethod
+    def get_filter_date_field(cls):
+        return "add_time"
+
+    @classmethod
     def filter_date_lte(cls, qs, max_date):
         return qs.filter(add_time__lte=max_date)
 

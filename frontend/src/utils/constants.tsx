@@ -17,7 +17,7 @@ import { SelectablePoll, RouteID } from './types';
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
 const PRESIDENTIELLE_2022_ENABLED =
-  process.env.REACT_APP_POLL_PRESIDENTIELLE_2022_ENABLED === 'true';
+  import.meta.env.REACT_APP_POLL_PRESIDENTIELLE_2022_ENABLED === 'true';
 
 const UID_DELIMITER = ':';
 export const UID_YT_NAMESPACE = 'yt' + UID_DELIMITER;

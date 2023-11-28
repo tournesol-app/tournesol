@@ -22,6 +22,7 @@ class VoucherCreateAPIView(generics.CreateAPIView):
 @extend_schema_view(
     delete=extend_schema(
         description="Delete a voucher given to a target user by the logged-in user.",
+        responses=None,
     ),
 )
 class VoucherGivenDestroyAPIView(generics.DestroyAPIView):

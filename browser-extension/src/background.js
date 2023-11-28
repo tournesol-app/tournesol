@@ -176,12 +176,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   ) {
     const poll_name = 'videos';
 
-    const api_url = `polls/${poll_name}/recommendations/`;
+    const api_path = `polls/${poll_name}/recommendations/`;
 
     const request_recommendations = async (options) => {
       const resp = await fetchTournesolApi(
-        `${api_url}${options ? '?' : ''}${options}`,
-        'GET'
+        `${api_path}${options ? '?' : ''}${options}`
       );
       if (resp && resp.ok) {
         const json = await resp.json();
@@ -342,6 +341,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       process().then(sendResponse);
       return true;
     }
+  } else if (request.message === 'getBanners') {
+    const process = async () => {
+      const path = 'backoffice/banners/';
+
+      const response = await fetchTournesolApi(path, { authenticate: false });
+      const banners =
+        response && response.ok ? await response.json() : undefined;
+
+      sendResponse({ banners });
+    };
+    process();
+    return true;
   }
 });
 

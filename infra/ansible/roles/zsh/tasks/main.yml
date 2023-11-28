@@ -7,6 +7,14 @@
     install_recommends: no
     update_cache: yes
 
+- name: Set a default timeout for all zsh shells
+  blockinfile:
+    path: /etc/zsh/zshrc
+    block: |
+    
+      # Automatically log out after an inactivity period (in seconds)
+      export TMOUT=480
+
 - name: Create fonts directory
   file:
     path: /usr/local/share/fonts

@@ -1,18 +1,52 @@
 (async () => {
-  const { TournesolRecommendations } = await import(
-    chrome.runtime.getURL(
-      './models/tournesolRecommendations/TournesolRecommendations.js'
-    )
-  );
+  let homeRecommendations;
 
-  const homeRecommendations = new TournesolRecommendations();
+  const initializeHomeRecommendations = async () => {
+    const [
+      { TournesolRecommendations },
+      { TournesolRecommendationsOptions },
+      { fetchBanner },
+    ] = await Promise.all(
+      [
+        './models/tournesolRecommendations/TournesolRecommendations.js',
+        './models/tournesolRecommendations/TournesolRecommendationsOptions.js',
+        './models/banner/fetchBanner.js',
+      ].map((path) => import(chrome.runtime.getURL(path)))
+    );
+
+    const banner = await fetchBanner();
+
+    const options = new TournesolRecommendationsOptions({
+      videosPerRow: 4,
+      rowsWhenExpanded: 3,
+      banner,
+      parentComponentQuery: '#primary > ytd-rich-grid-renderer',
+      displayCriteria: false,
+    });
+    homeRecommendations = new TournesolRecommendations(options);
+  };
+
+  const processHomeRecommendations = async () => {
+    if (homeRecommendations === undefined) {
+      await initializeHomeRecommendations();
+    }
+
+    homeRecommendations.process();
+  };
+
+  const clearHomeRecommendations = () => {
+    if (homeRecommendations === undefined) {
+      return;
+    }
+    homeRecommendations.clear();
+  };
 
   const process = () => {
     // Display the home page recommendations.
     if (location.pathname === '/') {
-      homeRecommendations.process();
+      processHomeRecommendations();
     } else {
-      homeRecommendations.clear();
+      clearHomeRecommendations();
     }
   };
 

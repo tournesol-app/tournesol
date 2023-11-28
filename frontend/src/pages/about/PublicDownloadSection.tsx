@@ -12,7 +12,7 @@ const PublicDownloadSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const api_url = process.env.REACT_APP_API_URL;
+  const api_url = import.meta.env.REACT_APP_API_URL;
 
   const stats = useStats({ poll: pollName });
   const pollStats = getPollStats(stats, pollName);
