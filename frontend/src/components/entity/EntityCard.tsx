@@ -20,6 +20,8 @@ import {
 import {
   ContributorRating,
   ContributorCriteriaScore,
+  EntityContext,
+  OriginEnum,
   TypeEnum,
 } from 'src/services/openapi';
 import {
@@ -27,6 +29,7 @@ import {
   EntityResult as EntityResult,
   JSONValue,
 } from 'src/utils/types';
+import EntityCardContextAlert from 'src/features/entity_context/EntityCardContextAlert';
 import { RatingControl } from 'src/features/ratings/RatingControl';
 
 import EntityCardTitle from './EntityCardTitle';
@@ -45,6 +48,7 @@ export interface EntityCardProps {
   onRatingChange?: (rating: ContributorRating) => void;
   // Configuration specific to the entity type.
   entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
+  displayContextAlert?: boolean;
 }
 
 const EntityCard = ({
@@ -55,10 +59,21 @@ const EntityCard = ({
   isAvailable = true,
   showRatingControl = false,
   onRatingChange,
+  displayContextAlert = false,
 }: EntityCardProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
+
   const entity = result.entity;
+  let unsafeContext: EntityContext | undefined;
+
+  if ('entity_contexts' in result) {
+    // TODO: when context from contribors are implemented, remove the
+    // context.origin condition
+    unsafeContext = result.entity_contexts.find(
+      (context) => context.unsafe && context.origin === OriginEnum.ASSOCIATION
+    );
+  }
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
@@ -185,6 +200,13 @@ const EntityCard = ({
               </>
             )}
           </Grid>
+
+          {displayContextAlert && unsafeContext && (
+            <Grid item xs={12}>
+              <EntityCardContextAlert uid={entity.uid} />
+            </Grid>
+          )}
+
           {showRatingControl && (
             <Grid item xs={12}>
               <Collapse in={ratingVisible || !isSmallScreen}>

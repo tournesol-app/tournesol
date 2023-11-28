@@ -78,7 +78,11 @@ const EntityContextList = ({
   }
 
   return (
-    <Alert severity={entityHasWarnings ? 'warning' : 'info'} sx={alertSx}>
+    <Alert
+      id="entity-context"
+      severity={entityHasWarnings ? 'warning' : 'info'}
+      sx={alertSx}
+    >
       <AlertTitle>
         <strong>
           {origin_ === OriginEnum.ASSOCIATION &&
