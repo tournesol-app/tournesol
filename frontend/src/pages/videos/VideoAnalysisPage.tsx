@@ -10,7 +10,7 @@ import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
 import VideoCard from 'src/features/videos/VideoCard';
-import { useLoginState } from 'src/hooks';
+import { useLoginState, useScrollToLocation } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
@@ -26,6 +26,8 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
   const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
 
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
+
+  useScrollToLocation();
 
   const entity = video.entity;
   const criteriaScores = video.collective_rating?.criteria_scores ?? [];

@@ -102,6 +102,10 @@
   "comparisonSeries": {
     "skipTheSeries": "Skip the series"
   },
+  "entityCardContextAlert": {
+    "contextHasBeenAddedToThisElement": "Context has been added to this element.",
+    "see": "See"
+  },
   "contextsFromOrigin": {
     "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element."
   },

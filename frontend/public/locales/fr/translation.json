@@ -106,6 +106,10 @@
   "comparisonSeries": {
     "skipTheSeries": "Passer la série"
   },
+  "entityCardContextAlert": {
+    "contextHasBeenAddedToThisElement": "Du contexte a été ajouté à cet élément.",
+    "see": "Voir"
+  },
   "contextsFromOrigin": {
     "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément."
   },
