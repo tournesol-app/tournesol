@@ -80,7 +80,7 @@ class EntityQueryset(models.QuerySet):
             Prefetch(
                 "all_poll_ratings",
                 queryset=EntityPollRating.objects.prefetch_related(
-                    "poll__all_entity_contexts"
+                    "poll__all_entity_contexts__texts"
                 ).filter(
                     poll__name=poll_name,
                 ),
