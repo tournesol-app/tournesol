@@ -8,7 +8,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Poll
-from tournesol.models.entity_context import EntityContext
+from tournesol.models.entity_context import EntityContext, EntityContextLocale
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import (
     EntityFactory,
@@ -199,6 +199,12 @@ class PollsRecommendationsTestCase(TestCase):
             poll=self.poll,
         )
 
+        context3_2_text = EntityContextLocale.objects.create(
+            context=context3_2,
+            language="en",
+            text="Hello context3_2",
+        )
+
         # An entity can have several contexts.
         context4_1 = EntityContext.objects.create(
             name="context_video4_1_safe",
@@ -210,6 +216,12 @@ class PollsRecommendationsTestCase(TestCase):
             poll=self.poll,
         )
 
+        context4_1_text = EntityContextLocale.objects.create(
+            context=context4_1,
+            language="en",
+            text="Hello context4_1",
+        )
+
         context4_2 = EntityContext.objects.create(
             name="context_video4_2_safe",
             origin=EntityContext.ASSOCIATION,
@@ -218,6 +230,12 @@ class PollsRecommendationsTestCase(TestCase):
             enabled=True,
             created_at=timezone.now(),
             poll=self.poll,
+        )
+
+        context4_2_text = EntityContextLocale.objects.create(
+            context=context4_2,
+            language="en",
+            text="Hello context4_2",
         )
 
         response = self.client.get("/polls/videos/recommendations/")
@@ -232,7 +250,7 @@ class PollsRecommendationsTestCase(TestCase):
             {
                 'origin': 'ASSOCIATION',
                 'unsafe': False,
-                'text': '',
+                'text': context4_2_text.text,
                 'created_at': context4_2.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             }
         )
@@ -241,7 +259,7 @@ class PollsRecommendationsTestCase(TestCase):
             {
                 'origin': 'ASSOCIATION',
                 'unsafe': False,
-                'text': '',
+                'text': context4_1_text.text,
                 'created_at': context4_1.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             }
         )
@@ -252,7 +270,7 @@ class PollsRecommendationsTestCase(TestCase):
             {
                 'origin': 'ASSOCIATION',
                 'unsafe': False,
-                'text': '',
+                'text': context3_2_text.text,
                 'created_at': context3_2.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             }
         )
