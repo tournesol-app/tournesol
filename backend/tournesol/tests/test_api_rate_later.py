@@ -113,16 +113,6 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "type": "video",
                     "metadata": ANY,
                 },
-                "individual_rating": None,
-                "collective_rating": {
-                    "n_comparisons": 2,
-                    "n_contributors": 1,
-                    "tournesol_score": 3.0,
-                    "unsafe": {
-                        "status": True,
-                        "reasons": ANY,
-                    },
-                },
                 "entity_contexts": [
                     {
                         "origin": "ASSOCIATION",
@@ -133,6 +123,16 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
                         ),
                     }
                 ],
+                "individual_rating": None,
+                "collective_rating": {
+                    "n_comparisons": 2,
+                    "n_contributors": 1,
+                    "tournesol_score": 3.0,
+                    "unsafe": {
+                        "status": True,
+                        "reasons": ANY,
+                    },
+                },
                 "rate_later_metadata": {
                     "created_at": str(
                         self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -223,9 +223,9 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "type": "video",
                     "metadata": ANY,
                 },
+                "entity_contexts": [],
                 "collective_rating": None,
                 "individual_rating": None,
-                "entity_contexts": [],
                 "rate_later_metadata": {"created_at": ANY},
             },
         )
@@ -317,19 +317,6 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "type": "video",
                     "metadata": ANY,
                 },
-                "rate_later_metadata": {
-                    "created_at": self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                },
-                "individual_rating": None,
-                "collective_rating": {
-                    "n_comparisons": 2,
-                    "n_contributors": 1,
-                    "tournesol_score": 3.0,
-                    "unsafe": {
-                        "status": True,
-                        "reasons": ANY,
-                    },
-                },
                 "entity_contexts": [
                     {
                         "origin": "ASSOCIATION",
@@ -340,6 +327,19 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                         ),
                     }
                 ],
+                "individual_rating": None,
+                "collective_rating": {
+                    "n_comparisons": 2,
+                    "n_contributors": 1,
+                    "tournesol_score": 3.0,
+                    "unsafe": {
+                        "status": True,
+                        "reasons": ANY,
+                    },
+                },
+                "rate_later_metadata": {
+                    "created_at": self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                },
             },
         )
 
@@ -366,9 +366,16 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "type": "video",
                     "metadata": ANY,
                 },
-                "rate_later_metadata": {
-                    "created_at": self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                },
+                "entity_contexts": [
+                    {
+                        "origin": "ASSOCIATION",
+                        "unsafe": False,
+                        "text": self.entity_in_rl_context_text.text,
+                        "created_at": self.entity_in_rl_context.created_at.strftime(
+                            "%Y-%m-%dT%H:%M:%S.%fZ"
+                        ),
+                    }
+                ],
                 "individual_rating": {
                     "is_public": True,
                     "n_comparisons": 0,
@@ -382,16 +389,9 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                         "reasons": ANY,
                     },
                 },
-                "entity_contexts": [
-                    {
-                        "origin": "ASSOCIATION",
-                        "unsafe": False,
-                        "text": self.entity_in_rl_context_text.text,
-                        "created_at": self.entity_in_rl_context.created_at.strftime(
-                            "%Y-%m-%dT%H:%M:%S.%fZ"
-                        ),
-                    }
-                ],
+                "rate_later_metadata": {
+                    "created_at": self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                },
             },
         )
 

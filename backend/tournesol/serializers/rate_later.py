@@ -19,6 +19,11 @@ class RateLaterMetadataSerializer(ModelSerializer):
 class RateLaterSerializer(ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     entity = RelatedEntitySerializer()
+    entity_contexts = EntityContextSerializer(
+        source="entity.single_poll_entity_contexts",
+        read_only=True,
+        many=True
+    )
     collective_rating = CollectiveRatingSerializer(
         source="entity.single_poll_rating",
         read_only=True,
@@ -28,11 +33,6 @@ class RateLaterSerializer(ModelSerializer):
         source="entity.single_contributor_rating",
         read_only=True,
         allow_null=True,
-    )
-    entity_contexts = EntityContextSerializer(
-        source="entity.single_poll_entity_contexts",
-        read_only=True,
-        many=True
     )
     rate_later_metadata = RateLaterMetadataSerializer(source="*", read_only=True)
 
