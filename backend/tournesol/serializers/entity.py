@@ -135,6 +135,7 @@ class VideoSerializerWithCriteria(VideoSerializer):
     tournesol_score = serializers.FloatField(
         source="single_poll_rating.tournesol_score",
         read_only=True,
+        allow_null=True,
         default=None
     )
 
