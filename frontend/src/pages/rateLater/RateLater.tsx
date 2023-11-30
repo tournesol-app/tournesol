@@ -279,6 +279,7 @@ const RateLaterPage = () => {
                 actions={rateLaterPageActions}
                 actionsIfUnavailable={[RemoveFromRateLater(loadList)]}
                 cardProps={{ showRatingControl: true }}
+                displayContextAlert={true}
               />
             </LoaderWrapper>
           </Box>

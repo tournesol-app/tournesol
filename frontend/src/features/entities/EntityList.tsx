@@ -15,6 +15,7 @@ interface Props {
   emptyMessage?: React.ReactNode;
   actionsIfUnavailable?: ActionList;
   cardProps?: Partial<EntityCardProps>;
+  displayContextAlert?: boolean;
 }
 
 /**
@@ -33,6 +34,7 @@ function EntityList({
   emptyMessage,
   actionsIfUnavailable,
   cardProps = {},
+  displayContextAlert = false,
 }: Props) {
   const { isLoggedIn } = useLoginState();
   const { options } = useCurrentPoll();
@@ -55,6 +57,7 @@ function EntityList({
                 actions={actions ?? defaultEntityActions}
                 compact={false}
                 entityTypeConfig={{ video: { displayPlayer: false } }}
+                displayContextAlert={displayContextAlert}
                 {...cardProps}
               />
             </AvailableEntity>
