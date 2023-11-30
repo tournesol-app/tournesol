@@ -414,9 +414,10 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(len(response.data["results"]), response.data["count"])
 
         sorted_scores = sorted(scores, reverse=True)
+        results = response.data["results"]
         for index, score in enumerate(sorted_scores):
             entity = entities[scores.index(score)]
-            self.assertEqual(response.data["results"][index]["uid"], entity.uid)
+            self.assertEqual(results[index]["entity"]["uid"], entity.uid)
 
     def test_public_contributor_recommendations_sorting_depends_on_total_score(self):
         """
@@ -442,9 +443,10 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(len(response.data["results"]), response.data["count"])
 
         sorted_scores = sorted(scores, reverse=True)
+        results = response.data["results"]
         for index, score in enumerate(sorted_scores):
             entity = entities[scores.index(score)]
-            self.assertEqual(response.data["results"][index]["uid"], entity.uid)
+            self.assertEqual(results[index]["entity"]["uid"], entity.uid)
 
     def test_private_contributor_recommendations_sorting_depends_on_total_score(self):
         """
@@ -471,9 +473,10 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(len(response.data["results"]), response.data["count"])
 
         sorted_scores = sorted(scores, reverse=True)
+        results = response.data["results"]
         for index, score in enumerate(sorted_scores):
             entity = entities[scores.index(score)]
-            self.assertEqual(response.data["results"][index]["uid"], entity.uid)
+            self.assertEqual(results[index]["entity"]["uid"], entity.uid)
 
     def test_videos_fields_weights(self):
         """
@@ -503,8 +506,8 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
-        self.assertEqual(response.data["results"][0]["uid"], self.setup_entity.uid)
-        self.assertEqual(response.data["results"][1]["uid"], other_entity.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], self.setup_entity.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], other_entity.uid)
 
     def test_query_weights(self):
         """
@@ -542,8 +545,8 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
-        self.assertEqual(response.data["results"][0]["uid"], entity_2.uid)
-        self.assertEqual(response.data["results"][1]["uid"], entity_1.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], entity_2.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], entity_1.uid)
 
         response = self.client.get(
             self._make_url(query) + f"&weights[{criteria_1}]=10&weights[{criteria_2}]=50",
@@ -552,8 +555,8 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
-        self.assertEqual(response.data["results"][0]["uid"], entity_1.uid)
-        self.assertEqual(response.data["results"][1]["uid"], entity_2.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], entity_1.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], entity_2.uid)
 
     def test_multiple_matches(self):
         """
@@ -580,8 +583,8 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
-        self.assertEqual(response.data["results"][0]["uid"], relevant_entity.uid)
-        self.assertEqual(response.data["results"][1]["uid"], less_relevant_entity.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], relevant_entity.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], less_relevant_entity.uid)
 
     def test_public_contributor_recommendations_multiple_matches(self):
         """
@@ -609,8 +612,8 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
-        self.assertEqual(response.data["results"][0]["uid"], relevant_entity.uid)
-        self.assertEqual(response.data["results"][1]["uid"], less_relevant_entity.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], relevant_entity.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], less_relevant_entity.uid)
 
     def test_private_contributor_recommendations_multiple_matches(self):
         """
@@ -639,8 +642,8 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
-        self.assertEqual(response.data["results"][0]["uid"], relevant_entity.uid)
-        self.assertEqual(response.data["results"][1]["uid"], less_relevant_entity.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], relevant_entity.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], less_relevant_entity.uid)
 
     def test_multiple_words(self):
         """
@@ -666,7 +669,7 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
-        self.assertEqual(response.data["results"][0]["uid"], relevant_entity.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], relevant_entity.uid)
 
     def test_case_insensitive(self):
 
