@@ -399,7 +399,7 @@ class EntityContextLocaleInline(admin.StackedInline):
 @admin.register(EntityContext)
 class EntityContextAdmin(admin.ModelAdmin):
     search_fields = ("name",)
-    list_display = ("name", "poll", "origin", "created_at", "has_answer", "unsafe", "enabled")
+    list_display = ("name", "poll", "origin", "created_at", "has_text", "unsafe", "enabled")
     list_filter = ("poll", "origin", HasTextListFilter, "unsafe", "enabled")
     ordering = ("-created_at",)
     inlines = (EntityContextLocaleInline,)
@@ -410,7 +410,5 @@ class EntityContextAdmin(admin.ModelAdmin):
         return qst
 
     @admin.display(description="has text?", boolean=True)
-    def has_answer(self, obj) -> bool:
-        if obj.texts.exists():
-            return True
-        return False
+    def has_text(self, obj) -> bool:
+        return obj.texts.exists()
