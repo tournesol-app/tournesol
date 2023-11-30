@@ -499,11 +499,10 @@ class Entity(models.Model):
 
     @property
     def single_poll_entity_contexts(self):
-        try:
-            poll = self.single_poll_rating.poll
-        except RuntimeError:
+        if self.single_poll_rating is None:
             return []
 
+        poll = self.single_poll_rating.poll
         return poll.get_entity_contexts(self.metadata)
 
 
