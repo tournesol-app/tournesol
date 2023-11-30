@@ -133,20 +133,20 @@ class Poll(models.Model):
         """
 
         # The entity contexts are expected to be already prefetched.
-        for context_ in self.all_entity_contexts.all():
-            if not context_.enabled or not context_.unsafe:
+        for entity_context in self.all_entity_contexts.all():
+            if not entity_context.enabled or not entity_context.unsafe:
                 continue
 
             matching = []
 
-            for field, value in context_.predicate.items():
+            for field, value in entity_context.predicate.items():
                 try:
                     matching.append(entity_metadata[field] == value)
                 except KeyError:
                     pass
 
             if matching and all(matching):
-                return True, context_.origin
+                return True, entity_context.origin
 
         return False, None
 
@@ -158,19 +158,19 @@ class Poll(models.Model):
         contexts = []
 
         # The entity contexts are expected to be already prefetched.
-        for context_ in self.all_entity_contexts.all():
-            if not context_.enabled:
+        for entity_context in self.all_entity_contexts.all():
+            if not entity_context.enabled:
                 continue
 
             matching = []
 
-            for field, value in context_.predicate.items():
+            for field, value in entity_context.predicate.items():
                 try:
                     matching.append(entity_metadata[field] == value)
                 except KeyError:
                     pass
 
             if matching and all(matching):
-                contexts.append(context_)
+                contexts.append(entity_context)
 
         return contexts

@@ -94,7 +94,7 @@ class PollTestCase(TestCase):
         video = VideoFactory()
 
         # Safe context.
-        context_ = EntityContext.objects.create(
+        entity_context = EntityContext.objects.create(
             name="context_safe",
             origin=EntityContext.ASSOCIATION,
             predicate={"uploader": video.metadata["uploader"]},
@@ -105,11 +105,11 @@ class PollTestCase(TestCase):
 
         contexts = self.poll1.get_entity_contexts(video.metadata)
         self.assertEqual(len(contexts), 1)
-        self.assertEqual(contexts[0].pk, context_.pk)
+        self.assertEqual(contexts[0].pk, entity_context.pk)
 
         EntityContext.objects.all().delete()
         # Unsafe context.
-        context_ = EntityContext.objects.create(
+        entity_context = EntityContext.objects.create(
             name="context_unsafe",
             origin=EntityContext.ASSOCIATION,
             predicate={"uploader": video.metadata["uploader"]},
@@ -120,7 +120,7 @@ class PollTestCase(TestCase):
 
         contexts = self.poll1.get_entity_contexts(video.metadata)
         self.assertEqual(len(contexts), 1)
-        self.assertEqual(contexts[0].pk, context_.pk)
+        self.assertEqual(contexts[0].pk, entity_context.pk)
 
         EntityContext.objects.all().delete()
         # Disabled contexts.

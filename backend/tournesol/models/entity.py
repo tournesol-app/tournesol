@@ -91,13 +91,13 @@ class EntityQueryset(models.QuerySet):
     def filter_safe_for_poll(self, poll):
         exclude_condition = None
 
-        for context_ in poll.all_entity_contexts.all():
-            if not context_.enabled or not context_.unsafe:
+        for entity_context in poll.all_entity_contexts.all():
+            if not entity_context.enabled or not entity_context.unsafe:
                 continue
 
             expression = None
 
-            for field, value in context_.predicate.items():
+            for field, value in entity_context.predicate.items():
                 kwargs = {f"metadata__{field}": value}
                 if expression:
                     expression = expression & Q(**kwargs)
@@ -496,6 +496,15 @@ class Entity(models.Model):
                 "Accessing 'single_contributor_rating' requires to initialize a "
                 "queryset with `with_prefetched_contributor_ratings()"
             ) from exc
+
+    @property
+    def single_poll_entity_contexts(self):
+        try:
+            poll = self.single_poll_rating.poll
+        except RuntimeError:
+            return []
+
+        return poll.get_entity_contexts(self.metadata)
 
 
 class CriteriaDistributionScore:
