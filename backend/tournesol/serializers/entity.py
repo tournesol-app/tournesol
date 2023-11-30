@@ -52,6 +52,16 @@ class VideoSerializer(ModelSerializer):
     duration = serializers.IntegerField(
         source="metadata.duration", read_only=True, allow_null=True
     )
+    rating_n_ratings = serializers.IntegerField(
+        source="single_poll_rating.n_comparisons",
+        read_only=True,
+        default=0,
+    )
+    rating_n_contributors = serializers.IntegerField(
+        source="single_poll_rating.n_contributors",
+        read_only=True,
+        default=0
+    )
 
     class Meta:
         model = Entity
@@ -122,6 +132,11 @@ class EntityCriteriaScoreSerializer(ModelSerializer):
 
 class VideoSerializerWithCriteria(VideoSerializer):
     criteria_scores = EntityCriteriaScoreSerializer(many=True)
+    tournesol_score = serializers.FloatField(
+        source="single_poll_rating.tournesol_score",
+        read_only=True,
+        default=None
+    )
 
     class Meta(VideoSerializer.Meta):
         # XXX: the `tournesol_score` field is available directly in the
@@ -199,7 +214,6 @@ class EntityCriteriaDistributionSerializer(EntitySerializer):
             "type",
             "metadata",
             "tournesol_score",
-            "rating_n_contributors",
             "criteria_scores_distributions"
         ]
         read_only_fields = [
@@ -207,7 +221,6 @@ class EntityCriteriaDistributionSerializer(EntitySerializer):
             "type",
             "metadata",
             "tournesol_score",
-            "rating_n_contributors",
             "criteria_scores_distributions"
         ]
 

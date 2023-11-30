@@ -274,7 +274,7 @@ def get_preview_frame(entity: Entity, fnt_config, upscale_ratio=1) -> Image.Imag
     x_coordinate, y_coordinate = ENTITY_N_CONTRIBUTORS_XY
     tournesol_frame_draw.text(
         tuple(numpy.multiply((x_coordinate, y_coordinate), upscale_ratio)),
-        f"{entity.rating_n_ratings}",
+        f"{poll_rating.n_comparisons if poll_rating else 0}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
@@ -288,7 +288,7 @@ def get_preview_frame(entity: Entity, fnt_config, upscale_ratio=1) -> Image.Imag
     )
     tournesol_frame_draw.text(
         tuple(numpy.multiply((x_coordinate, y_coordinate + 82), upscale_ratio)),
-        f"{entity.rating_n_contributors}",
+        f"{poll_rating.n_contributors if poll_rating else 0}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",

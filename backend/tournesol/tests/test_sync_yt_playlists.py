@@ -38,7 +38,6 @@ class SyncYtPlaylistsCommandTest(TestCase):
         video = VideoFactory.create_batch(
             3,
             tournesol_score=100,
-            rating_n_contributors=3,
             metadata__language="en",
             metadata__publication_date=date.today().isoformat(),
         )
@@ -46,7 +45,6 @@ class SyncYtPlaylistsCommandTest(TestCase):
         # Set up 1 video that should NOT be inserted into the playlist
         VideoFactory(
             tournesol_score=-10,
-            rating_n_contributors=3,
             metadata__language="en",
             metadata__publication_date=date.today().isoformat(),
         )

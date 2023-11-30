@@ -31,18 +31,18 @@ class StatisticsAPI(TestCase):
 
         video_1 = VideoFactory(
             metadata__uploader="uploader1",
-            rating_n_ratings=2,
+            n_comparisons=2,
         )
         video_2 = VideoFactory(
             metadata__uploader="uploader2",
-            rating_n_ratings=3,
+            n_comparisons=3,
         )
         video_3 = VideoFactory(
             metadata__uploader="uploader2",
-            rating_n_ratings=4,
+            n_comparisons=4,
         )
 
-        non_video = EntityFactory(type="another_type", rating_n_ratings=5)
+        non_video = EntityFactory(type="another_type", n_comparisons=5)
 
         Entity.objects.filter(pk=video_1.pk).update(add_time=time_ago(days=5))
         Entity.objects.filter(pk=video_2.pk).update(add_time=time_ago(days=29))

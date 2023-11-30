@@ -113,7 +113,7 @@ class VideoViewSet(
 
     def get_object(self):
         obj = get_object_or_404(
-            self.queryset,
+            self.get_queryset(),
             uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
         )
         self.check_object_permissions(self.request, obj)
@@ -121,7 +121,7 @@ class VideoViewSet(
 
     def get_queryset(self):
         if self.action != "list":
-            return self.queryset
+            return self.queryset.with_prefetched_poll_ratings(poll_name=DEFAULT_POLL_NAME)
 
         request = self.request
         queryset = self.queryset
@@ -186,6 +186,7 @@ class VideoViewSet(
         return (
             queryset
             .with_prefetched_scores(poll_name=DEFAULT_POLL_NAME)
+            .with_prefetched_poll_ratings(poll_name=DEFAULT_POLL_NAME)
             .order_by("-total_score", "-metadata__publication_date")
         )
 
@@ -193,3 +194,7 @@ class VideoViewSet(
         if self.action in ("retrieve", "list"):
             return VideoSerializerWithCriteria
         return VideoSerializer
+
+    def perform_create(self, serializer):
+        entity = serializer.save()
+        entity.single_poll_ratings = []

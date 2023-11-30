@@ -952,12 +952,12 @@ class ComparisonApiTestCase(TestCase):
         video6 = Entity.objects.get(uid=self._uid_06)
         video7 = Entity.objects.get(uid=self._uid_07)
 
-        self.assertEqual(video5.rating_n_contributors, 2)
-        self.assertEqual(video5.rating_n_ratings, 3)
-        self.assertEqual(video6.rating_n_contributors, 2)
-        self.assertEqual(video6.rating_n_ratings, 2)
-        self.assertEqual(video7.rating_n_contributors, 1)
-        self.assertEqual(video7.rating_n_ratings, 1)
+        self.assertEqual(video5.all_poll_ratings.get().n_contributors, 2)
+        self.assertEqual(video5.all_poll_ratings.get().n_comparisons, 3)
+        self.assertEqual(video6.all_poll_ratings.get().n_contributors, 2)
+        self.assertEqual(video6.all_poll_ratings.get().n_comparisons, 2)
+        self.assertEqual(video7.all_poll_ratings.get().n_contributors, 1)
+        self.assertEqual(video7.all_poll_ratings.get().n_comparisons, 1)
 
     @patch("tournesol.utils.api_youtube.get_video_metadata")
     def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):

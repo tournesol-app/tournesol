@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.exceptions import NotFound
 
-from tournesol.models import Poll
+from tournesol.models import Entity, Poll
 from tournesol.renderers import ImageRenderer
 from tournesol.utils.cache import cache_page_no_i18n
 
@@ -216,7 +216,12 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         image.paste(video_metadata_box, (110 * upscale_ratio, 3 * upscale_ratio))
 
-    def draw_tournesol_score_box(self, recommendation, image: Image.Image, upscale_ratio: int):
+    def draw_tournesol_score_box(
+        self,
+        recommendation: Entity,
+        image: Image.Image,
+        upscale_ratio: int
+    ):
         ts_score_box = Image.new(
             "RGBA", (300 * upscale_ratio, 20 * upscale_ratio), COLOR_WHITE_FONT
         )
@@ -226,6 +231,9 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         ts_logo = self.get_ts_logo(ts_logo_size)
 
         poll_rating = recommendation.single_poll_rating
+        if poll_rating is None:
+            return
+
         ts_score_box.alpha_composite(
             # Use grayscale logo if recommendation is unsafe
             ts_logo.convert("LA").convert("RGBA")
@@ -238,7 +246,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         if poll_rating.tournesol_score is not None:
             score = str(round(poll_rating.tournesol_score))
 
-        comparisons = f"{recommendation.rating_n_ratings} comparisons by "
+        comparisons = f"{poll_rating.n_comparisons} comparisons by "
         comparisons_width = ts_score_box_draw.textlength(
             comparisons, self.fnt_config["recommendations_rating"]
         )
@@ -246,7 +254,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         score_x_gap = ts_logo_size[0] + 2 * upscale_ratio
         comparisons_x_gap = score_x_gap + 36 * upscale_ratio
 
-        if score:
+        if score is not None:
             ts_score_box_draw.text(
                 (score_x_gap, -5 * upscale_ratio),
                 score,
@@ -263,7 +271,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         ts_score_box_draw.text(
             (comparisons_x_gap + comparisons_width, 2 * upscale_ratio),
-            f"{recommendation.rating_n_contributors} contributors",
+            f"{poll_rating.n_contributors} contributors",
             font=self.fnt_config["recommendations_rating"],
             fill="#B38B00",
         )
