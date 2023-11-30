@@ -135,13 +135,6 @@ class PollsRecommendationsTestCase(TestCase):
         results = response.data["results"]
         self.assertEqual(len(results), 3)
 
-        # Legacy fields
-        self.assertEqual(results[0]["tournesol_score"], 44.0)
-        self.assertEqual(results[1]["tournesol_score"], 33.0)
-        self.assertEqual(results[2]["tournesol_score"], 22.0)
-        self.assertEqual(results[0]["type"], "video")
-
-        # New fields
         self.assertEqual(results[0]["collective_rating"]["tournesol_score"], 44.0)
         self.assertEqual(results[1]["collective_rating"]["tournesol_score"], 33.0)
         self.assertEqual(results[2]["collective_rating"]["tournesol_score"], 22.0)
@@ -297,13 +290,12 @@ class PollsRecommendationsTestCase(TestCase):
         results = response.data["results"]
 
         self.assertEqual(len(results), initial_safe_results_nbr - 1)
-        for result in results:
-            self.assertNotEqual(result["uid"], self.video_4.uid)
+        self.assertNotIn(self.video_4.uid, [res["entity"]["uid"] for res in results])
 
         response = self.client.get("/polls/videos/recommendations/?unsafe=true")
         vid4 = response.data["results"][0]
 
-        self.assertEqual(vid4["uid"], self.video_4.uid)
+        self.assertEqual(vid4["entity"]["uid"], self.video_4.uid)
         self.assertEqual(vid4["collective_rating"]["unsafe"]["status"], True)
         self.assertEqual(len(vid4["collective_rating"]["unsafe"]["reasons"]), 1)
         self.assertEqual(
@@ -318,7 +310,7 @@ class PollsRecommendationsTestCase(TestCase):
         """
         response = self.client.get("/polls/videos/recommendations/")
         initial_safe_results_nbr = len(response.data["results"])
-        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], self.video_4.uid)
 
         other_poll = Poll.objects.create(name="other")
         EntityContext.objects.create(
@@ -344,7 +336,7 @@ class PollsRecommendationsTestCase(TestCase):
         results = response.data["results"]
 
         self.assertEqual(len(results), initial_safe_results_nbr)
-        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], self.video_4.uid)
         self.assertEqual(response.data["results"][0]["entity_contexts"], [])
 
     def test_ignore_score_attached_to_another_poll(self):
@@ -434,7 +426,7 @@ class PollsRecommendationsTestCase(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            [video["uid"] for video in resp.data["results"]],
+            [video["entity"]["uid"] for video in resp.data["results"]],
             [self.video_3.uid, self.video_2.uid],
         )
 
@@ -483,7 +475,7 @@ class PollsRecommendationsTestCase(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            [video["uid"] for video in resp.data["results"]],
+            [video["entity"]["uid"] for video in resp.data["results"]],
             [self.video_3.uid, self.video_2.uid],
         )
 
@@ -535,7 +527,7 @@ class PollsRecommendationsTestCase(TestCase):
 
         results = response.data["results"]
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["metadata"]["duration"], 10)
+        self.assertEqual(results[0]["entity"]["metadata"]["duration"], 10)
 
         response = self.client.get(
             "/polls/videos/recommendations/?metadata[duration:lte:int]=120"
@@ -766,18 +758,6 @@ class PollsEntityTestCase(TestCase):
         data = response.data
         self.assertEqual(response.status_code, 200)
 
-        # Legacy fields
-        self.assertEqual(data["tournesol_score"], -2)
-        self.assertEqual(data["n_comparisons"], 8)
-        self.assertEqual(data["n_contributors"], 4)
-        self.assertEqual(data["unsafe"], {
-            "status": True,
-            "reasons": ["insufficient_tournesol_score"],
-        })
-        self.assertIn("total_score", data)
-        self.assertIn("criteria_scores", data)
-
-        # New fields
         self.assertEqual(data["collective_rating"]["tournesol_score"], -2)
         self.assertEqual(data["collective_rating"]["n_comparisons"], 8)
         self.assertEqual(data["collective_rating"]["n_contributors"], 4)
@@ -794,18 +774,6 @@ class PollsEntityTestCase(TestCase):
         data = response.data
         self.assertEqual(response.status_code, 200)
 
-        # Legacy fields
-        self.assertEqual(data["tournesol_score"], -2)
-        self.assertEqual(data["n_comparisons"], 8)
-        self.assertEqual(data["n_contributors"], 4)
-        self.assertEqual(data["unsafe"], {
-            "status": True,
-            "reasons": ["insufficient_tournesol_score"],
-        })
-        self.assertIn("total_score", data)
-        self.assertIn("criteria_scores", data)
-
-        # New fields
         self.assertEqual(data["collective_rating"]["tournesol_score"], -2)
         self.assertEqual(data["collective_rating"]["n_comparisons"], 8)
         self.assertEqual(data["collective_rating"]["n_contributors"], 4)
@@ -1027,14 +995,6 @@ class PollRecommendationsWithLowSumTrustScoresTestCase(TestCase):
         results = response.data["results"]
         self.assertEqual(len(results), 1)
 
-        # Legacy fields
-        self.assertEqual(results[0]["uid"], self.video_2.uid)
-        self.assertEqual(results[0]["unsafe"], {
-            "status": False,
-            "reasons": []
-        })
-
-        # New fields
         self.assertEqual(
             results[0]["entity"]["uid"],
             self.video_2.uid,

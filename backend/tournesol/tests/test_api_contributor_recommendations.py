@@ -112,7 +112,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
 
         results = response.data["results"]
         for entity in results:
-            self.assertEqual(entity["is_public"], True)
+            self.assertEqual(entity["individual_rating"]["is_public"], True)
 
         # The collective metadata `n_comparisons` and `n_contributors` must
         # be present in the response of the public personal reco. endpoint.
