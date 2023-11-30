@@ -319,9 +319,12 @@
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
   "shareMenu": {
-    "copyAddress": "Copy the page address",
+    "shareAddress": "Share page link",
+    "copyAddress": "Copy page link",
+    "shareAsMessage": "Share as a message",
     "copyShareMessage": "Copy the share message",
-    "shareOnTwitter": "Share on Twitter"
+    "shareOnTwitter": "Share on Twitter",
+    "shareYoutubeLink": "Share YouTube Link"
   },
   "ratelater": {
     "videoIdOrURL": "Video ID or URL",
