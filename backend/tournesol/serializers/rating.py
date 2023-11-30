@@ -5,6 +5,7 @@ from rest_framework.serializers import ModelSerializer, Serializer
 from tournesol.models import ContributorRating
 from tournesol.serializers.criteria_score import ContributorCriteriaScoreSerializer
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer, RelatedEntitySerializer
+from tournesol.serializers.entity_context import EntityContextSerializer
 from tournesol.serializers.poll import CollectiveRatingSerializer, IndividualRatingSerializer
 
 
@@ -20,6 +21,11 @@ class ExtendedInvididualRatingSerializer(IndividualRatingSerializer):
 
 class ContributorRatingSerializer(ModelSerializer):
     entity = EntityNoExtraFieldSerializer(read_only=True)
+    entity_contexts = EntityContextSerializer(
+        source="entity.single_poll_entity_contexts",
+        read_only=True,
+        many=True
+    )
     individual_rating = ExtendedInvididualRatingSerializer(source="*", read_only=True)
     collective_rating = CollectiveRatingSerializer(
         source="entity.single_poll_rating",
@@ -31,6 +37,7 @@ class ContributorRatingSerializer(ModelSerializer):
         model = ContributorRating
         fields = [
             "entity",
+            "entity_contexts",
             "individual_rating",
             "collective_rating",
             "is_public",
@@ -55,6 +62,7 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
             "uid",
             "is_public",
             "entity",
+            "entity_contexts",
             "individual_rating",
             "collective_rating",
         ]
