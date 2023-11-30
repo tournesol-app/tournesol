@@ -6,6 +6,7 @@ from rest_framework.serializers import ModelSerializer
 from tournesol.errors import ConflictError
 from tournesol.models import RateLater
 from tournesol.serializers.entity import RelatedEntitySerializer
+from tournesol.serializers.entity_context import EntityContextSerializer
 from tournesol.serializers.poll import CollectiveRatingSerializer, IndividualRatingSerializer
 
 
@@ -28,6 +29,11 @@ class RateLaterSerializer(ModelSerializer):
         read_only=True,
         allow_null=True,
     )
+    entity_contexts = EntityContextSerializer(
+        source="entity.single_poll_entity_contexts",
+        read_only=True,
+        many=True
+    )
     rate_later_metadata = RateLaterMetadataSerializer(source="*", read_only=True)
 
     class Meta:
@@ -37,6 +43,7 @@ class RateLaterSerializer(ModelSerializer):
             "entity",
             "collective_rating",
             "individual_rating",
+            "entity_contexts",
             "rate_later_metadata",
         ]
 

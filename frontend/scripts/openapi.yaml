@@ -3101,6 +3101,25 @@ components:
       required:
       - created_at
       - text
+    EntityContextRequest:
+      type: object
+      properties:
+        origin:
+          allOf:
+          - $ref: '#/components/schemas/OriginEnum'
+          description: |-
+            The persons who want to share this context with the rest of the community.
+
+            * `ASSOCIATION` - Association
+            * `CONTRIBUTORS` - Contributors
+        unsafe:
+          type: boolean
+          description: If True, this context will make the targeted entities unsafe.
+        text:
+          type: string
+          minLength: 1
+      required:
+      - text
     EntityCriteriaDistribution:
       type: object
       description: An Entity serializer that show distribution of score for a given
@@ -3790,6 +3809,11 @@ components:
           - $ref: '#/components/schemas/IndividualRating'
           readOnly: true
           nullable: true
+        entity_contexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityContext'
+          readOnly: true
         rate_later_metadata:
           allOf:
           - $ref: '#/components/schemas/RateLaterMetadata'
@@ -3797,6 +3821,7 @@ components:
       required:
       - collective_rating
       - entity
+      - entity_contexts
       - individual_rating
       - rate_later_metadata
     RateLaterMetadata:
