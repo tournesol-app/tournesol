@@ -105,6 +105,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
                         "reasons": ANY,
                     }
                 },
+                "entity_contexts": [],
                 "rate_later_metadata": {
                     "created_at": str(
                         self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -195,6 +196,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
             },
             "collective_rating": None,
             "individual_rating": None,
+            "entity_contexts": [],
             "rate_later_metadata": {
                 "created_at": ANY
             }
@@ -305,6 +307,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                         "reasons": ANY,
                     }
                 },
+                "entity_contexts": [],
             },
         )
 
@@ -349,6 +352,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                         "reasons": ANY,
                     }
                 },
+                "entity_contexts": [],
             },
         )
 
