@@ -56,11 +56,19 @@ const Search = () => {
     searchParams.append('search', search);
     searchParams.delete('offset');
 
-    // Parse the searchParams to see if it matches a youtube video
-    // And if so stripes it UID and automatically push to the specific Tournesol page
+    /*
+     * Video URL (ex:`https://www.youtube.com/watch?v=xbBsSEProGY`) =>	Redirected to entity page on Tournesol
+     * Tournesol UID	(ex:`yt:xbBsSEProGY`)	=> Redirected to entity page on Tournesol
+     * Youtube video ID	(ex:`xbBsSEProGY`) =>	Redirected to search results which contain the video
+     * 11-letter word	(ex:`algorithmes`) => Redirected to search results which contain videos related to the query
+     *
+     * /!\ Youtube video IDs are 11 characters, so both last conditions are checked in the same way
+     */
+
     const videoId = extractVideoId(search);
 
-    if (videoId) history.push('/entities/yt:' + videoId.toString());
+    if (videoId && !(search.length === 11))
+      history.push('/entities/yt:' + videoId.toString());
     else history.push('/recommendations?' + searchParams.toString());
   };
 

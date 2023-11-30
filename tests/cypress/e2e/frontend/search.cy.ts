@@ -30,7 +30,7 @@ describe('Search', () => {
             cy.visit('/');
 
             // Input the video URL
-            cy.get('input[id="searchInput"]').click().type(`${videoUID}{enter}`);
+            cy.get('input[id="searchInput"]').click().type(`yt:${videoUID}{enter}`);
 
             // Check if AJAX returns 200
             cy.wait(`@videopoll`).its('response.statusCode').should('eq', 200)
