@@ -21,7 +21,8 @@
     "labelShowSettings": "Voir les paramètres de cette video",
     "insufficientScore": "Le score de cette vidéo est inférieur au seuil de recommendabilité défini par Tournesol.",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
-    "moderationByAssociation": "L'Association Tournesol a temporairement écarté cette vidéo des recommandations. Consultez la FAQ pour plus de détails.",
+    "discardedByAssociation": "L'Association Tournesol a temporairement écarté cette vidéo des recommandations. Consultez la FAQ pour plus de détails.",
+    "discardedByContributors": "Les contributeur·rices ont écarté cette vidéo des recommandations.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
     "nbComparisonsBy_many": "{{count}} comparaisons par",
     "nbComparisonsBy_other": "{{count}} comparaisons par",
@@ -104,6 +105,9 @@
   "submit": "enregistrer",
   "comparisonSeries": {
     "skipTheSeries": "Passer la série"
+  },
+  "contextsFromOrigin": {
+    "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément."
   },
   "entitySelector": {
     "newVideo": "Sélectionner une nouvelle vidéo automatiquement",

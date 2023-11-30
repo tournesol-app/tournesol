@@ -12,6 +12,8 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from sql_util.utils import SubqueryCount
 
+from tournesol.models.entity_context import EntityContext, EntityContextLocale
+
 from .entities.video import YOUTUBE_PUBLISHED_AT_FORMAT
 from .models import (
     Comparison,
@@ -365,3 +367,48 @@ class PollAdmin(admin.ModelAdmin):
 @admin.register(Criteria)
 class CriteriaAdmin(admin.ModelAdmin):
     inlines = (CriteriaLocalesInline,)
+
+
+class HasTextListFilter(admin.SimpleListFilter):
+    title = _("has text?")
+    parameter_name = "has_text"
+
+    def lookups(self, request, model_admin):
+        return (
+            (1, _("Yes")),
+            (0, _("No")),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "1":
+            return queryset.filter(
+                texts__isnull=False,
+            )
+        if self.value() == "0":
+            return queryset.filter(
+                texts__isnull=True,
+            )
+        return queryset
+
+
+class EntityContextLocaleInline(admin.StackedInline):
+    model = EntityContextLocale
+    extra = 0
+
+
+@admin.register(EntityContext)
+class EntityContextAdmin(admin.ModelAdmin):
+    search_fields = ("name",)
+    list_display = ("name", "poll", "origin", "created_at", "has_text", "unsafe", "enabled")
+    list_filter = ("poll", "origin", HasTextListFilter, "unsafe", "enabled")
+    ordering = ("-created_at",)
+    inlines = (EntityContextLocaleInline,)
+
+    def get_queryset(self, request):
+        qst = super().get_queryset(request)
+        qst = qst.prefetch_related("texts").select_related("poll")
+        return qst
+
+    @admin.display(description="has text?", boolean=True)
+    def has_text(self, obj) -> bool:
+        return obj.texts.exists()

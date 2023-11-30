@@ -21,7 +21,8 @@
     "labelShowSettings": "Show settings related to this video",
     "insufficientScore": "The score of this video is below the recommendability threshold defined by Tournesol.",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
-    "moderationByAssociation": "The Tournesol Assocition has temporarily discarded this video from the recomendations. Learn more in the FAQ.",
+    "discardedByAssociation": "The Tournesol Assocition has temporarily discarded this video from the recomendations. Learn more in the FAQ.",
+    "discardedByContributors": "The contributors have discarded this video from the recommendations.",
     "nbComparisonsBy_one": "{{count}} comparison by",
     "nbComparisonsBy_other": "{{count}} comparisons by",
     "nbContributors_one": "{{count}} contributor",
@@ -100,6 +101,9 @@
   "submit": "submit",
   "comparisonSeries": {
     "skipTheSeries": "Skip the series"
+  },
+  "contextsFromOrigin": {
+    "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element."
   },
   "entitySelector": {
     "newVideo": "Select a new video automatically",

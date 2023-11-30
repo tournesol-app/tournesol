@@ -79,7 +79,9 @@ class EntityQueryset(models.QuerySet):
         return self.prefetch_related(
             Prefetch(
                 "all_poll_ratings",
-                queryset=EntityPollRating.objects.select_related("poll").filter(
+                queryset=EntityPollRating.objects.prefetch_related(
+                    "poll__all_entity_contexts__texts"
+                ).filter(
                     poll__name=poll_name,
                 ),
                 to_attr="single_poll_ratings",
@@ -89,23 +91,24 @@ class EntityQueryset(models.QuerySet):
     def filter_safe_for_poll(self, poll):
         exclude_condition = None
 
-        # Do not fail if `poll.moderation` is not a list.
-        if isinstance(poll.moderation, list):
-            for predicate in poll.moderation:
-                expression = None
+        for entity_context in poll.all_entity_contexts.all():
+            if not entity_context.enabled or not entity_context.unsafe:
+                continue
 
-                for field, value in predicate.items():
-                    kwargs = {f'metadata__{field}': value}
-                    if expression:
-                        expression = expression & Q(**kwargs)
-                    else:
-                        expression = Q(**kwargs)
+            expression = None
 
-                if exclude_condition:
-                    # pylint: disable-next=unsupported-binary-operation
-                    exclude_condition = exclude_condition | expression
+            for field, value in entity_context.predicate.items():
+                kwargs = {f"metadata__{field}": value}
+                if expression:
+                    expression = expression & Q(**kwargs)
                 else:
-                    exclude_condition = expression
+                    expression = Q(**kwargs)
+
+            if exclude_condition:
+                # pylint: disable-next=unsupported-binary-operation
+                exclude_condition = exclude_condition | expression
+            else:
+                exclude_condition = expression
 
         qst = self.filter(
             all_poll_ratings__poll=poll,
@@ -493,6 +496,14 @@ class Entity(models.Model):
                 "Accessing 'single_contributor_rating' requires to initialize a "
                 "queryset with `with_prefetched_contributor_ratings()"
             ) from exc
+
+    @property
+    def single_poll_entity_contexts(self):
+        if self.single_poll_rating is None:
+            return []
+
+        poll = self.single_poll_rating.poll
+        return poll.get_entity_contexts(self.metadata)
 
 
 class CriteriaDistributionScore:

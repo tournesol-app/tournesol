@@ -1,9 +1,14 @@
+from datetime import timedelta
+
+from django.core.cache import cache
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Poll
+from tournesol.models.entity_context import EntityContext, EntityContextLocale
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import (
     EntityFactory,
@@ -50,6 +55,7 @@ class PollsRecommendationsTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        self.poll = Poll.default_poll()
 
         self.video_1 = VideoFactory(
             metadata__publication_date="2021-01-01",
@@ -122,7 +128,7 @@ class PollsRecommendationsTestCase(TestCase):
         EntityPollRatingFactory(entity=self.video_3, sum_trust_scores=4)
         EntityPollRatingFactory(entity=self.video_4, sum_trust_scores=5)
 
-    def test_anonymous_can_list_recommendations(self):
+    def test_anon_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -140,6 +146,206 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(results[1]["collective_rating"]["tournesol_score"], 33.0)
         self.assertEqual(results[2]["collective_rating"]["tournesol_score"], 22.0)
         self.assertEqual(results[0]["entity"]["type"], "video")
+
+        for result in results:
+            self.assertEqual(result["entity_contexts"], [])
+
+    def test_anon_can_list_reco_with_contexts(self):
+        # An entity with an unsafe rating shouldn't be marked as safe by a context.
+        EntityContext.objects.create(
+            name="context_video1",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_1.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll,
+        )
+
+        # An entity with at least one unsafe context should be marked as unsafe.
+        EntityContext.objects.create(
+            name="context_video2_unsafe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_2.metadata["video_id"]},
+            unsafe=True,
+            enabled=True,
+            poll=self.poll,
+        )
+
+        EntityContext.objects.create(
+            name="context_video2_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_2.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll,
+        )
+
+        # An entity with disabled unsafe contexts shouldn't be marked unsafe.
+        EntityContext.objects.create(
+            name="context_video3_1_unsafe_disabled",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_3.metadata["video_id"]},
+            unsafe=True,
+            enabled=False,
+            poll=self.poll,
+        )
+
+        context3_2 = EntityContext.objects.create(
+            name="context_video3_2_unsafe_disabled",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_3.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll,
+        )
+
+        context3_2_text = EntityContextLocale.objects.create(
+            context=context3_2,
+            language="en",
+            text="Hello context3_2",
+        )
+
+        # An entity can have several contexts.
+        context4_1 = EntityContext.objects.create(
+            name="context_video4_1_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            created_at=timezone.now() - timedelta(days=1),
+            poll=self.poll,
+        )
+
+        context4_1_text = EntityContextLocale.objects.create(
+            context=context4_1,
+            language="en",
+            text="Hello context4_1",
+        )
+
+        context4_2 = EntityContext.objects.create(
+            name="context_video4_2_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            created_at=timezone.now(),
+            poll=self.poll,
+        )
+
+        context4_2_text = EntityContextLocale.objects.create(
+            context=context4_2,
+            language="en",
+            text="Hello context4_2",
+        )
+
+        response = self.client.get("/polls/videos/recommendations/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertEqual(len(results[0]["entity_contexts"]), 2)
+        self.assertDictEqual(
+            results[0]["entity_contexts"][0],
+            {
+                'origin': 'ASSOCIATION',
+                'unsafe': False,
+                'text': context4_2_text.text,
+                'created_at': context4_2.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            }
+        )
+        self.assertDictEqual(
+            results[0]["entity_contexts"][1],
+            {
+                'origin': 'ASSOCIATION',
+                'unsafe': False,
+                'text': context4_1_text.text,
+                'created_at': context4_1.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            }
+        )
+
+        self.assertEqual(len(results[1]["entity_contexts"]), 1)
+        self.assertDictEqual(
+            results[1]["entity_contexts"][0],
+            {
+                'origin': 'ASSOCIATION',
+                'unsafe': False,
+                'text': context3_2_text.text,
+                'created_at': context3_2.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            }
+        )
+
+    def test_anon_can_list_reco_with_contexts_unsafe(self):
+        """
+        Recommendations marked as unsafe by their context should be returned
+        when the query parameter `unsafe` is used.
+        """
+        response = self.client.get("/polls/videos/recommendations/")
+        initial_safe_results_nbr = len(response.data["results"])
+
+        EntityContext.objects.create(
+            name="context_video4_unsafe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=True,
+            enabled=True,
+            poll=self.poll,
+        )
+
+        cache.clear()
+        response = self.client.get("/polls/videos/recommendations/")
+        results = response.data["results"]
+
+        self.assertEqual(len(results), initial_safe_results_nbr - 1)
+        for result in results:
+            self.assertNotEqual(result["uid"], self.video_4.uid)
+
+        response = self.client.get("/polls/videos/recommendations/?unsafe=true")
+        vid4 = response.data["results"][0]
+
+        self.assertEqual(vid4["uid"], self.video_4.uid)
+        self.assertEqual(vid4["collective_rating"]["unsafe"]["status"], True)
+        self.assertEqual(len(vid4["collective_rating"]["unsafe"]["reasons"]), 1)
+        self.assertEqual(
+            vid4["collective_rating"]["unsafe"]["reasons"][0],
+            'moderation_by_association'
+        )
+
+    def test_anon_can_list_reco_with_contexts_poll_specific(self):
+        """
+        Only contexts related to the poll provided in the URL should be
+        returned.
+        """
+        response = self.client.get("/polls/videos/recommendations/")
+        initial_safe_results_nbr = len(response.data["results"])
+        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
+
+        other_poll = Poll.objects.create(name="other")
+        EntityContext.objects.create(
+            name="context_video4_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=other_poll,
+        )
+
+        EntityContext.objects.create(
+            name="context_video4_unsafe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video_4.metadata["video_id"]},
+            unsafe=True,
+            enabled=True,
+            poll=other_poll,
+        )
+
+        cache.clear()
+        response = self.client.get("/polls/videos/recommendations/")
+        results = response.data["results"]
+
+        self.assertEqual(len(results), initial_safe_results_nbr)
+        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
+        self.assertEqual(response.data["results"][0]["entity_contexts"], [])
 
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")

@@ -29,7 +29,6 @@ const CollapseButton = ({
   return (
     <Badge color="secondary" variant="dot" invisible={!showBadge}>
       <Button
-        color="secondary"
         size="large"
         startIcon={!expanded ? <ExpandMore /> : <ExpandLess />}
         aria-expanded={expanded}
@@ -37,8 +36,6 @@ const CollapseButton = ({
         onClick={onClick}
         sx={{
           padding: '0 8px',
-          marginBottom: '8px',
-          marginLeft: '-8px', // keep the text aligned to the left
           color: expanded
             ? theme.palette.secondary.main
             : theme.palette.action.active,

@@ -124,12 +124,9 @@ class FAQEntryAdmin(admin.ModelAdmin):
 
     @admin.display(description="has answer?", boolean=True)
     def has_answer(self, obj) -> bool:
-        try:
-            obj.answers
-        except FAQEntry.answers.RelatedObjectDoesNotExist:  # pylint: disable=no-member
-            return False
-        else:
+        if obj.answers.exists():
             return True
+        return False
 
     @admin.action(description=_("Enable the selected entries."))
     def enable_entries(self, request, queryset):

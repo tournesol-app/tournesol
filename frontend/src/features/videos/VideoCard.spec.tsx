@@ -43,6 +43,7 @@ describe('VideoCard content', () => {
           reasons: [],
         },
       },
+      entity_contexts: [],
       recommendation_metadata: {
         total_score: 0.0,
       },
@@ -94,6 +95,7 @@ describe('VideoCard content', () => {
           reasons: [],
         },
       },
+      entity_contexts: [],
       recommendation_metadata: {
         total_score: 4,
       },
@@ -152,6 +154,7 @@ describe('VideoCard content', () => {
           reasons: [],
         },
       },
+      entity_contexts: [],
       recommendation_metadata: {
         total_score: 17,
       },
@@ -193,6 +196,7 @@ describe('VideoCard content', () => {
           reasons: [],
         },
       },
+      entity_contexts: [],
       recommendation_metadata: {
         total_score: 0,
       },

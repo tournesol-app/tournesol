@@ -5,6 +5,7 @@ from rest_framework.serializers import IntegerField, ModelSerializer
 from tournesol.models import ContributorRating, CriteriaRank, Entity, EntityPollRating, Poll
 from tournesol.models.entity_poll_rating import UNSAFE_REASONS
 from tournesol.serializers.entity import EntityCriteriaScoreSerializer, RelatedEntitySerializer
+from tournesol.serializers.entity_context import EntityContextSerializer
 
 
 class PollCriteriaSerializer(ModelSerializer):
@@ -110,6 +111,11 @@ class RecommendationSerializer(ModelSerializer):
         read_only=True,
         allow_null=True,
     )
+    entity_contexts = EntityContextSerializer(
+        source="single_poll_entity_contexts",
+        read_only=True,
+        many=True
+    )
     recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
 
     class Meta:
@@ -126,6 +132,7 @@ class RecommendationSerializer(ModelSerializer):
             "unsafe",
             "entity",
             "collective_rating",
+            "entity_contexts",
             "recommendation_metadata",
         ]
         read_only_fields = fields
