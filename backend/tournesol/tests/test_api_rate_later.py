@@ -8,6 +8,7 @@ from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
 from tournesol.models import RateLater
+from tournesol.models.entity_context import EntityContext, EntityContextLocale
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
@@ -36,12 +37,28 @@ class RateLaterCommonMixinTestCase:
         self.rate_later_base_url = f"/users/me/rate_later/{self.poll.name}/"
 
         self.entity_in_ratelater = VideoFactory()
+
         EntityPollRatingFactory(
             entity=self.entity_in_ratelater,
             poll=self.poll,
             tournesol_score=3,
             n_contributors=1,
             n_comparisons=2,
+        )
+
+        self.entity_in_rl_context = EntityContext.objects.create(
+            name="context_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.entity_in_ratelater.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll,
+        )
+
+        self.entity_in_rl_context_text = EntityContextLocale.objects.create(
+            context=self.entity_in_rl_context,
+            language="en",
+            text="Hello context",
         )
 
         self.entity_not_in_ratelater = VideoFactory()
@@ -59,6 +76,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
 
     The `RateLaterList` API provides the endpoints list and create.
     """
+
     def test_anon_401_list(self) -> None:
         """
         An anonymous user cannot list its rate-later items, even if the poll
@@ -103,9 +121,18 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "unsafe": {
                         "status": True,
                         "reasons": ANY,
-                    }
+                    },
                 },
-                "entity_contexts": [],
+                "entity_contexts": [
+                    {
+                        "origin": "ASSOCIATION",
+                        "unsafe": False,
+                        "text": self.entity_in_rl_context_text.text,
+                        "created_at": self.entity_in_rl_context.created_at.strftime(
+                            "%Y-%m-%dT%H:%M:%S.%fZ"
+                        ),
+                    }
+                ],
                 "rate_later_metadata": {
                     "created_at": str(
                         self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -188,19 +215,20 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         response = self.client.post(self.rate_later_base_url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertDictEqual(response.data, {
-            "entity": {
-                "uid": self._uid_not_in_db,
-                "type": "video",
-                "metadata": ANY,
+        self.assertDictEqual(
+            response.data,
+            {
+                "entity": {
+                    "uid": self._uid_not_in_db,
+                    "type": "video",
+                    "metadata": ANY,
+                },
+                "collective_rating": None,
+                "individual_rating": None,
+                "entity_contexts": [],
+                "rate_later_metadata": {"created_at": ANY},
             },
-            "collective_rating": None,
-            "individual_rating": None,
-            "entity_contexts": [],
-            "rate_later_metadata": {
-                "created_at": ANY
-            }
-        })
+        )
 
         self.assertEqual(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
@@ -208,9 +236,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
 
         # Rate-later items are saved per poll.
-        self.assertEqual(
-            RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
-        )
+        self.assertEqual(RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0)
 
     @override_settings(YOUTUBE_API_KEY=None)
     def test_auth_409_create_two_times(self) -> None:
@@ -253,14 +279,13 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
 
     The `RateLaterList` API provides the endpoints get and delete.
     """
+
     def test_anon_401_get(self) -> None:
         """
         An anonymous user cannot get a rate-later item, even if the poll
         exists.
         """
-        response = self.client.get(
-            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
-        )
+        response = self.client.get(f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         response = self.client.get(f"{self.rate_later_base_url}invalid/")
@@ -281,9 +306,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         An authenticated user can get a rate-later item from a specific poll.
         """
         self.client.force_authenticate(self.user)
-        response = self.client.get(
-            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
-        )
+        response = self.client.get(f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertDictEqual(
@@ -305,9 +328,18 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "unsafe": {
                         "status": True,
                         "reasons": ANY,
-                    }
+                    },
                 },
-                "entity_contexts": [],
+                "entity_contexts": [
+                    {
+                        "origin": "ASSOCIATION",
+                        "unsafe": False,
+                        "text": self.entity_in_rl_context_text.text,
+                        "created_at": self.entity_in_rl_context.created_at.strftime(
+                            "%Y-%m-%dT%H:%M:%S.%fZ"
+                        ),
+                    }
+                ],
             },
         )
 
@@ -323,9 +355,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
 
         self.client.force_authenticate(self.user)
-        response = self.client.get(
-            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
-        )
+        response = self.client.get(f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertDictEqual(
@@ -350,9 +380,18 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                     "unsafe": {
                         "status": True,
                         "reasons": ANY,
-                    }
+                    },
                 },
-                "entity_contexts": [],
+                "entity_contexts": [
+                    {
+                        "origin": "ASSOCIATION",
+                        "unsafe": False,
+                        "text": self.entity_in_rl_context_text.text,
+                        "created_at": self.entity_in_rl_context.created_at.strftime(
+                            "%Y-%m-%dT%H:%M:%S.%fZ"
+                        ),
+                    }
+                ],
             },
         )
 
@@ -368,9 +407,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
 
         self.client.force_authenticate(self.user)
-        response = self.client.get(
-            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
-        )
+        response = self.client.get(f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.client.get(
@@ -394,9 +431,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         An anonymous user cannot delete an item from its rate-later list, even
         if the poll exists.
         """
-        response = self.client.delete(
-            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
-        )
+        response = self.client.delete(f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         response = self.client.delete(f"{self.rate_later_base_url}invalid/")
@@ -418,16 +453,12 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         """
         # A second poll ensures the delete operation is poll specific.
         other_poll = PollFactory()
-        RateLater.objects.create(
-            entity=self.entity_in_ratelater, user=self.user, poll=other_poll
-        )
+        RateLater.objects.create(entity=self.entity_in_ratelater, user=self.user, poll=other_poll)
 
         initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
 
         self.client.force_authenticate(self.user)
-        response = self.client.delete(
-            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
-        )
+        response = self.client.delete(f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
@@ -435,9 +466,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
 
         # Rate-later items are saved per poll.
-        self.assertEqual(
-            RateLater.objects.filter(poll=other_poll, user=self.user).count(), 1
-        )
+        self.assertEqual(RateLater.objects.filter(poll=other_poll, user=self.user).count(), 1)
 
     def test_auth_404_delete_invalid_poll(self) -> None:
         """
@@ -458,6 +487,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
     Note: the tests related to `Entity.auto_remove_from_rate_later` could be
     moved in an Entity specific test case.
     """
+
     def test_auto_remove(self) -> None:
         """
         Test of the `auto_remove_from_rate_later` method of the Entity model.
@@ -527,7 +557,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
             {
                 "is_public": False,
                 "n_comparisons": 4,
-            }
+            },
         )
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
