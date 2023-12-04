@@ -59,18 +59,16 @@ const EntityContextTextList = ({
         }
       })}
       <Box display="flex" justifyContent="flex-end">
-        <Typography variant="body2">
-          <Link
-            to="/faq?scrollTo=are_recommendations_moderated_by_the_association"
-            component={RouterLink}
-            sx={{
-              color: 'inherit',
-              textDecorationColor: 'inherit',
-            }}
-          >
-            {t('entityContextTextList.whyThisMessage')}
-          </Link>
-        </Typography>
+        <Link
+          to="/faq?scrollTo=are_recommendations_moderated_by_the_association"
+          component={RouterLink}
+          sx={{
+            color: 'inherit',
+            textDecorationColor: 'inherit',
+          }}
+        >
+          {t('entityContextTextList.whyThisMessage')}
+        </Link>
       </Box>
     </>
   );
