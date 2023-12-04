@@ -39,16 +39,6 @@ class Poll(models.Model):
         " and comparisons can't be created, updated or deleted by users.",
     )
 
-    # A list of dictionaries, each of them representing a set of predicates
-    # matching one or more entities that should be discarded from the
-    # recommendations.
-    #
-    # This temporary mechanism will be replaced by a more democratic and
-    # sustainable one: the contextual notes. Those notes could be created by
-    # the contributors and the association, and will attach additional context
-    # to the recommended and non-recommended entities.
-    moderation = models.JSONField(blank=True, default=list)
-
     def __str__(self) -> str:
         return f'Poll "{self.name}"'
 
