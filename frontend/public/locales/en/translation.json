@@ -91,6 +91,11 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
     "comparisonCriteria": "Comparison criteria"
   },
+  "entityContext": {
+    "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - The Tournesol association would like to give you some context.",
+    "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - The Tournesol association would like to give you some context.",
+    "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element."
+  },
   "comparisonHelper": {
     "hideHelp": "Hide the help",
     "showHelp": "Show help for comparisons"
@@ -108,9 +113,6 @@
   },
   "entityContextTextList": {
     "whyThisMessage": "Why this message?"
-  },
-  "contextsFromOrigin": {
-    "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element."
   },
   "entitySelector": {
     "newVideo": "Select a new video automatically",

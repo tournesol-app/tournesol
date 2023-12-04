@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import linkifyStr from 'linkify-string';
@@ -7,23 +7,34 @@ import {
   Alert,
   AlertTitle,
   Box,
+  Collapse,
   Divider,
+  IconButton,
   Link,
   SxProps,
   Typography,
 } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 
 import { EntityContext, OriginEnum } from 'src/services/openapi';
+import {
+  getCollapsedState,
+  setCollapsedState,
+} from 'src/utils/entityContexts/collapsed';
 
 interface EntityContextBoxProps {
   uid: string;
   contexts: Array<EntityContext>;
+  collapsible?: boolean;
+  altTitleAssociation?: React.ReactElement;
 }
 
 interface EntityContextListProps {
   uid: string;
   origin_?: OriginEnum;
   contexts: Array<EntityContext>;
+  collapsible?: boolean;
+  title?: React.ReactElement;
 }
 
 interface EntityContextTextListProps {
@@ -78,8 +89,19 @@ const EntityContextList = ({
   uid,
   contexts,
   origin_,
+  title,
+  collapsible,
 }: EntityContextListProps) => {
   const { t } = useTranslation();
+
+  const [displayText, setDisplayText] = useState(
+    collapsible ? !getCollapsedState(uid) : true
+  );
+
+  const toggleDisplayText = (previousState: boolean) => {
+    setCollapsedState(uid, previousState);
+    setDisplayText(!previousState);
+  };
 
   const infos = contexts.filter((ctx) => !ctx.unsafe);
   const warnings = contexts.filter((ctx) => ctx.unsafe);
@@ -96,25 +118,52 @@ const EntityContextList = ({
     <Alert
       id="entity-context"
       severity={entityHasWarnings ? 'warning' : 'info'}
-      sx={alertSx}
+      sx={{
+        '.MuiAlert-message': { width: '100%' },
+        ...alertSx,
+      }}
     >
-      <AlertTitle>
-        <strong>
-          {origin_ === OriginEnum.ASSOCIATION &&
-            t('contextsFromOrigin.theAssociationWouldLikeToGiveYouContext')}
-        </strong>
-      </AlertTitle>
+      <Box display="flex" justifyContent="space-between">
+        <AlertTitle>
+          {title ? (
+            title
+          ) : (
+            <strong>
+              {origin_ === OriginEnum.ASSOCIATION &&
+                t('entityContext.theAssociationWouldLikeToGiveYouContext')}
+            </strong>
+          )}
+        </AlertTitle>
 
-      <EntityContextTextList
-        uid={uid}
-        origin_={origin_}
-        contexts={entityHasWarnings ? warnings : infos}
-      />
+        {collapsible && (
+          <IconButton
+            aria-label="Show question's answer"
+            onClick={() => {
+              toggleDisplayText(displayText ? true : false);
+            }}
+          >
+            {displayText ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          </IconButton>
+        )}
+      </Box>
+
+      <Collapse in={displayText}>
+        <EntityContextTextList
+          uid={uid}
+          origin_={origin_}
+          contexts={entityHasWarnings ? warnings : infos}
+        />
+      </Collapse>
     </Alert>
   );
 };
 
-const EntityContextBox = ({ uid, contexts }: EntityContextBoxProps) => {
+const EntityContextBox = ({
+  uid,
+  contexts,
+  altTitleAssociation,
+  collapsible = false,
+}: EntityContextBoxProps) => {
   const associationContexts = contexts.filter(
     (ctx) => ctx.origin === OriginEnum.ASSOCIATION
   );
@@ -127,6 +176,8 @@ const EntityContextBox = ({ uid, contexts }: EntityContextBoxProps) => {
             uid={uid}
             origin_={OriginEnum.ASSOCIATION}
             contexts={associationContexts}
+            title={altTitleAssociation}
+            collapsible={collapsible}
           />
         </Box>
       )}
