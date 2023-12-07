@@ -50,26 +50,32 @@ const Search = () => {
   const searchParams = new URLSearchParams(paramsString);
   const [search, setSearch] = useState(searchParams.get('search') || '');
 
+  /**
+   * Redirect to analysis page when `search` is a:
+   * - YouTube URL
+   * - Tournesol URL (analysis page)
+   * - Tournesol UID
+   *
+   * ...else redirect to the regular search results.
+   *
+   * It's not easy to distinguish a YT video id from a string of 11
+   * characters, so both case are treated in the same way.
+   */
   const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     searchParams.delete('search');
     searchParams.append('search', search);
     searchParams.delete('offset');
 
-    /*
-     * Video URL (ex:`https://www.youtube.com/watch?v=xbBsSEProGY`) =>	Redirected to entity page on Tournesol
-     * Tournesol UID	(ex:`yt:xbBsSEProGY`)	=> Redirected to entity page on Tournesol
-     * Youtube video ID	(ex:`xbBsSEProGY`) =>	Redirected to search results which contain the video
-     * 11-letter word	(ex:`algorithmes`) => Redirected to search results which contain videos related to the query
-     *
-     * /!\ Youtube video IDs are 11 characters, so both last conditions are checked in the same way
-     */
-
     const videoId = extractVideoId(search);
 
-    if (videoId && !(search.length === 11))
+    // TODO: we should pass an argument to `extractVideoId` so that raw YouTube
+    // ids are ignored.
+    if (videoId && search.length !== 11) {
       history.push('/entities/yt:' + videoId.toString());
-    else history.push('/recommendations?' + searchParams.toString());
+    } else {
+      history.push('/recommendations?' + searchParams.toString());
+    }
   };
 
   return (

@@ -1,42 +1,32 @@
 describe('Search', () => {
-    describe('YouTube URL search', () => {
-        it('redirects automatically to the corresponding video page', () => {
-            const videoURL = 'https://www.youtube.com/watch?v=b6vdKFxCvfU';
-            const videoUID = 'b6vdKFxCvfU';
+  describe('with a YouTube URL', () => {
+    it('redirect automatically to the analysis page', () => {
+      const videoURL = 'https://www.youtube.com/watch?v=b6vdKFxCvfU';
+      const videoId = 'b6vdKFxCvfU';
 
-            // Intercept the AJAX request to API for specific video
-            cy.intercept('GET', `/polls/videos/entities/yt:${videoUID}/**`).as('videopoll')
+      // Intercept the request to the API
+      cy.intercept('GET', `/polls/videos/entities/yt:${videoId}/**`).as('videopoll');
 
-            // Visit main page (should work on every page since search bar is the same)
-            cy.visit('/');
+      cy.visit('/');
+      cy.get('input[id="searchInput"]').click().type(`${videoURL}{enter}`);
 
-            // Input the video URL
-            cy.get('input[id="searchInput"]').click().type(`${videoURL}{enter}`);
-            
-            // Redirection to video page
-            cy.url().should('include', `/entities/yt:${videoUID}`)
 
-            // Check if AJAX returns 200
-            cy.wait(`@videopoll`).its('response.statusCode').should('eq', 200)
-        })
+      cy.url().should('include', `/entities/yt:${videoId}`)
+      cy.wait(`@videopoll`).its('response.statusCode').should('eq', 200);
     });
+  });
 
-    describe('YouTube video UID search', () => {
-        it('redirects automatically to the corresponding video page', () => {
-            // https://youtu.be/WPPPFqsECz0
-            const videoUID = 'WPPPFqsECz0';
+  describe('with a Tournesol video UID', () => {
+    it('redirect automatically to the analysis page', () => {
+      const videoId = 'WPPPFqsECz0';
 
-            // Intercept the AJAX request to API for specific video
-            cy.intercept('GET', `/polls/videos/entities/yt:${videoUID}/**`).as('videopoll')
+      // Intercept the request to the API
+      cy.intercept('GET', `/polls/videos/entities/yt:${videoId}/**`).as('videopoll');
 
-            // Visit main page (should work on every page since search bar is the same)
-            cy.visit('/');
+      cy.visit('/');
+      cy.get('input[id="searchInput"]').click().type(`yt:${videoId}{enter}`);
 
-            // Input the video URL
-            cy.get('input[id="searchInput"]').click().type(`yt:${videoUID}{enter}`);
-
-            // Check if AJAX returns 200
-            cy.wait(`@videopoll`).its('response.statusCode').should('eq', 200)
-        });
+      cy.wait(`@videopoll`).its('response.statusCode').should('eq', 200);
     });
+  });
 });
