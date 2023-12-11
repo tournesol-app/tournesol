@@ -14,11 +14,11 @@ groups:
               relativeTimeRange:
                 from: 1200
                 to: 0
-              datasourceUid: j1so19VIz
+              datasourceUid: {{grafana.datasource_loki_uid}}
               model:
                 datasource:
                     type: loki
-                    uid: j1so19VIz
+                    uid: {{grafana.datasource_loki_uid}}
                 editorMode: code
                 expr: quantile_over_time(0.95,{filename="/var/log/nginx/json_access.log", host="localhost"} | json | unwrap request_time |  __error__="" | http_host!="grafana.staging.tournesol.app"  [30s]) by (host)
                 intervalMs: 30000
@@ -86,13 +86,13 @@ groups:
                 settings:
                     mode: dropNN
                 type: reduce
-          dashboardUid: kemHo2Mnz
+          dashboardUid: {{grafana.dashboard_alerting_uid}}
           panelId: 7
           noDataState: OK
           execErrState: Error
           for: 0s
           annotations:
-            __dashboardUid__: kemHo2Mnz
+            __dashboardUid__: {{grafana.dashboard_alerting_uid}}
             __panelId__: "7"
           labels: {}
           isPaused: false
@@ -104,11 +104,11 @@ groups:
               relativeTimeRange:
                 from: 3600
                 to: 0
-              datasourceUid: tRVp1rVIk
+              datasourceUid: {{grafana.datasource_prometheus_uid}}
               model:
                 datasource:
                     type: prometheus
-                    uid: tRVp1rVIk
+                    uid: {{grafana.datasource_prometheus_uid}}
                 editorMode: code
                 exemplar: true
                 expr: increase(django_http_responses_total_by_status_total{status=~"5.+"}[2m]) or on() vector(0)
@@ -147,13 +147,13 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
-          dashboardUid: kemHo2Mnz
+          dashboardUid: {{grafana.dashboard_alerting_uid}}
           panelId: 2
           noDataState: OK
           execErrState: Error
           for: 0s
           annotations:
-            __dashboardUid__: kemHo2Mnz
+            __dashboardUid__: {{grafana.dashboard_alerting_uid}}
             __panelId__: "2"
           labels: {}
           isPaused: false
@@ -165,11 +165,11 @@ groups:
               relativeTimeRange:
                 from: 300
                 to: 0
-              datasourceUid: tRVp1rVIk
+              datasourceUid: {{grafana.datasource_prometheus_uid}}
               model:
                 datasource:
                     type: prometheus
-                    uid: tRVp1rVIk
+                    uid: {{grafana.datasource_prometheus_uid}}
                 editorMode: code
                 exemplar: false
                 expr: 100 - ((node_filesystem_avail_bytes{instance="localhost:9100",job="node",mountpoint="/",fstype!="rootfs"} * 100) / node_filesystem_size_bytes{instance="localhost:9100",job="node",mountpoint="/",fstype!="rootfs"})
@@ -208,13 +208,13 @@ groups:
                 maxDataPoints: 43200
                 refId: B
                 type: threshold
-          dashboardUid: kemHo2Mnz
+          dashboardUid: {{grafana.dashboard_alerting_uid}}
           panelId: 4
           noDataState: Alerting
           execErrState: Alerting
           for: 0s
           annotations:
-            __dashboardUid__: kemHo2Mnz
+            __dashboardUid__: {{grafana.dashboard_alerting_uid}}
             __panelId__: "4"
           labels: {}
           isPaused: false
