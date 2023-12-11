@@ -1,7 +1,7 @@
 - name: Copy Grafana alerting configuration
   template:
     dest: "/etc/grafana/provisioning/alerting/{{ item }}"
-    src: "{{ item }}"
+    src: "{{ item }}.j2"
     mode: u=rw,g=r,o=
     group: grafana
   with_items:
