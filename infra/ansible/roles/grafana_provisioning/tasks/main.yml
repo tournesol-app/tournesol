@@ -8,4 +8,5 @@
     - contactPoints.yaml
     - defaultEvaluationGroup.yaml
     - policies.yaml
+  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
   notify: Restart Grafana

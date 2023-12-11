@@ -7,5 +7,5 @@ contactPoints:
           type: discord
           settings:
             uploadImage: true
-            url: https://discord.com/api/webhooks/SECRET
+            url: {{discord_infra_alert_webhook}}
           disableResolveMessage: false
