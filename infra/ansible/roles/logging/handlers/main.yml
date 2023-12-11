@@ -30,5 +30,6 @@
     url_password: "{{grafana_admin_password}}"
     validate_certs: no
     name: Loki
+    uid: "{{grafana.datasource_loki_uid}}"
     ds_type: "loki"
     ds_url: "http://127.0.0.1:3100"

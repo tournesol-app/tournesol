@@ -62,6 +62,7 @@
     url_password: "{{grafana_admin_password}}"
     validate_certs: no
     name: Prometheus
+    uid: "{{grafana.datasource_prometheus_uid}}"
     ds_type: "prometheus"
     ds_url: "http://127.0.0.1:9090"
     is_default: yes
