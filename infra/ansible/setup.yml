@@ -12,6 +12,7 @@
     - django
     - monitoring
     - logging
+    - grafana_provisioning
     - frontend
     - plausible_analytics
     - backups

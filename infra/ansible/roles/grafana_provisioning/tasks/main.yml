@@ -1,0 +1,11 @@
+- name: Copy Grafana alerting configuration
+  template:
+    dest: "/etc/grafana/provisioning/alerting/{{ item }}"
+    src: "{{ item }}"
+    mode: u=rw,g=r,o=
+    group: grafana
+  with_items:
+    - contactPoints.yaml
+    - defaultEvaluationGroup.yaml
+    - policies.yaml
+  notify: Restart Grafana
