@@ -1,4 +1,12 @@
-- name: Copy Grafana alerting configuration
+- name: Set up Grafana alerts
+  template:
+    dest: /etc/grafana/provisioning/alerting/defaultEvaluationGroup.yaml
+    src: defaultEvaluationGroup.yaml.j2
+    mode: u=rw,g=r,o=
+    group: grafana
+  notify: Restart Grafana
+
+- name: Set up Grafana alerting policies
   template:
     dest: "/etc/grafana/provisioning/alerting/{{ item }}"
     src: "{{ item }}.j2"
@@ -6,7 +14,6 @@
     group: grafana
   with_items:
     - contactPoints.yaml
-    - defaultEvaluationGroup.yaml
     - policies.yaml
   when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
   notify: Restart Grafana

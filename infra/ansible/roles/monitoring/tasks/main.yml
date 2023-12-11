@@ -326,22 +326,6 @@
   when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
   notify: Enable and restart Grafana
 
-- name: Create Discord notification channel
-  register: discord_notification_channel
-  community.grafana.grafana_notification_channel:
-    grafana_url: "http://127.0.0.1:3000"
-    url_username: admin
-    url_password: "{{grafana_admin_password}}"
-    validate_certs: no
-    uid: discord
-    name: Tournesol Discord
-    type: discord
-    discord_url: "{{discord_infra_alert_webhook}}"
-    is_default: yes
-    include_image: yes
-    reminder_frequency: 5m
-  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
-
 - name: Create Grafana dashboards
   community.grafana.grafana_dashboard:
     grafana_url: "http://127.0.0.1:3000"
