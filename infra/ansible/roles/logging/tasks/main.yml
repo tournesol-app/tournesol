@@ -95,7 +95,7 @@
 - name: Create Grafana Loki datasource
   template:
     dest: /etc/grafana/provisioning/datasources/loki.yaml
-    src: loki.yaml.j2
+    src: datasource_loki.yaml.j2
     mode: u=rw,g=r,o=
     group: grafana
   notify: Restart Grafana

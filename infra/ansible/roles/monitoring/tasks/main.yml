@@ -193,7 +193,6 @@
     # - Set Grafana default organization role
     - Create Grafana OIDC application in Django database
     - Enable and restart Grafana
-    - Create Grafana Prometheus datasource
 
 - name: Setup Grafana server parameters
   blockinfile:
@@ -247,6 +246,14 @@
       name_attribute_path = username
   notify:
     - Enable and restart Grafana
+
+- name: Create Grafana Prometheus datasource
+  template:
+    dest: /etc/grafana/provisioning/datasources/prometheus.yaml
+    src: datasource_prometheus.yaml.j2
+    mode: u=rw,g=r,o=
+    group: grafana
+  notify: Enable and restart Grafana
 
 - meta: flush_handlers
 
