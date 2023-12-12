@@ -333,6 +333,13 @@
   when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
   notify: Enable and restart Grafana
 
+- meta: flush_handlers
+
+- name: Wait for Grafana API
+  wait_for:
+    port: 3000
+    timeout: 32
+
 - name: Create Grafana dashboards
   community.grafana.grafana_dashboard:
     grafana_url: "http://127.0.0.1:3000"

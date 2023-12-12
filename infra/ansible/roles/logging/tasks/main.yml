@@ -111,6 +111,11 @@
 
 - meta: flush_handlers
 
+- name: Wait for Grafana API
+  wait_for:
+    port: 3000
+    timeout: 32
+
 - name: Copy Grafana dashboard based on Nginx logs
   copy:
     src: nginx-loki-dashboard.json
