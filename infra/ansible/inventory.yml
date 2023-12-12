@@ -27,6 +27,11 @@ all:
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
           loki_version: "v2.9.2"
+          grafana:
+            dashboard_alerting_uid: kemHo2Mnz
+            datasource_loki_uid: j1so19VIz
+            datasource_prometheus_uid: tRVp1rVIk
+
           nvm_version: "v0.38.0"
           npm_lts_version: "hydrogen"  # codename for Node.js 18 (LTS)
           frontend_scheme: http
