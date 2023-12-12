@@ -1,4 +1,5 @@
 import { addRateLater } from '../utils.js';
+import { frontendUrl } from '../config.js';
 
 const i18n = chrome.i18n;
 
@@ -24,7 +25,7 @@ function get_current_tab_video_id() {
  */
 function openTournesolHome() {
   chrome.tabs.create({
-    url: 'https://tournesol.app?utm_source=extension&utm_medium=menu',
+    url: `${frontendUrl}?utm_source=extension&utm_medium=menu`,
   });
 }
 
@@ -36,7 +37,7 @@ function rateNowAction(event) {
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
-        url: `https://tournesol.app/comparison?uidA=yt:${videoId}&utm_source=extension&utm_medium=menu`,
+        url: `${frontendUrl}comparison?uidA=yt:${videoId}&utm_source=extension&utm_medium=menu`,
       });
     },
     () => {
@@ -93,7 +94,7 @@ function openAnalysisPageAction(event) {
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
-        url: `https://tournesol.app/entities/yt:${videoId}?utm_source=extension&utm_medium=menu`,
+        url: `${frontendUrl}entities/yt:${videoId}?utm_source=extension&utm_medium=menu`,
       });
     },
     () => {

@@ -3,6 +3,8 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
+import { frontendUrl } from './config.js';
+
 var browser = browser || chrome;
 
 document.addEventListener('yt-navigate-finish', process);
@@ -87,9 +89,7 @@ function process() {
 
           // On click
           statisticsButton.onclick = () => {
-            open(
-              `https://tournesol.app/entities/yt:${videoId}?utm_source=extension`
-            );
+            open(`${frontendUrl}entities/yt:${videoId}?utm_source=extension`);
           };
 
           var div =

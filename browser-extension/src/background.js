@@ -10,6 +10,8 @@ import {
   getSingleSetting,
 } from './utils.js';
 
+import { frontendHostEquals } from './config.js';
+
 const oversamplingRatioForRecentVideos = 3;
 const oversamplingRatioForOldVideos = 50;
 // Higher means videos recommended can come from further down the recommandation list
@@ -363,6 +365,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
     chrome.tabs.sendMessage(event.tabId, 'historyStateUpdated');
   },
   {
-    url: [{ hostEquals: 'tournesol.app' }],
+    url: [{ hostEquals: frontendHostEquals }],
   }
 );

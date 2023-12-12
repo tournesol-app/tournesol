@@ -1,3 +1,5 @@
+import { apiUrl } from './config.js';
+
 export const getAccessToken = async () => {
   return new Promise((resolve) => {
     chrome.storage.local.get(['access_token'], (items) => {
@@ -43,9 +45,7 @@ export const fetchTournesolApi = async (path, options = {}) => {
     }
   }
 
-  return fetch(`https://api.tournesol.app/${path}`, fetchOptions).catch(
-    console.error
-  );
+  return fetch(`${apiUrl}${path}`, fetchOptions).catch(console.error);
 };
 
 export const addRateLater = async (video_id) => {
