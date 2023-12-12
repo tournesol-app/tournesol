@@ -1,3 +1,15 @@
+# Grafana Alerting
+#
+# These tasks configure the Grafana alerts using file provisioning.
+#
+# [REQUIREMENTS]
+#
+# They depend on the following tasks:
+#
+#   - monitoring
+#   - logging
+#
+
 - name: Set up Grafana alerts
   template:
     dest: /etc/grafana/provisioning/alerting/defaultEvaluationGroup.yaml
