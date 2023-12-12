@@ -343,7 +343,7 @@ class PollsRecommendationsTestCase(TestCase):
         other_poll = Poll.objects.create(name="other")
         video_5 = VideoFactory(
             metadata__publication_date="2021-01-05",
-            rating_n_contributors=6,
+            n_contributors=6,
         )
         VideoCriteriaScoreFactory(
             poll=other_poll, entity=video_5, criteria="importance", score=0.5
@@ -611,7 +611,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.videos = [
-            VideoFactory(tournesol_score=92, rating_n_contributors=3) for _ in range(4)
+            VideoFactory(tournesol_score=92, n_contributors=3) for _ in range(4)
         ]
         self.video_1, self.video_2, self.video_3, self.video_4 = self.videos
         self.criteria_scores = [
@@ -673,7 +673,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
     def test_response_is_cached_when_exclude_is_false(self):
         self.client.force_authenticate(user=self.user_no_comparisons)
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="abc")
-        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        new_video = VideoFactory(tournesol_score=2.2, n_contributors=3)
         VideoCriteriaScoreFactory(entity=new_video, score=2)
         self.client.force_authenticate(user=self.user_no_comparisons)
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
@@ -682,7 +682,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
 
     def test_response_anonymous_writes_to_cache_when_exclude_is_false(self):
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
-        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        new_video = VideoFactory(tournesol_score=2.2, n_contributors=3)
         VideoCriteriaScoreFactory(entity=new_video, score=2)
         self.client.force_authenticate(user=self.user_no_comparisons)
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
@@ -692,7 +692,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
     def test_response_anonymous_reads_from_cache_when_exclude_is_false(self):
         self.client.force_authenticate(user=self.user_no_comparisons)
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
-        new_video = VideoFactory(tournesol_score=2.2, rating_n_contributors=3)
+        new_video = VideoFactory(tournesol_score=2.2, n_contributors=3)
         VideoCriteriaScoreFactory(entity=new_video, score=2)
         self.client.force_authenticate(user=None)
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
@@ -737,16 +737,14 @@ class PollsEntityTestCase(TestCase):
         self.video_1 = VideoFactory(
             uid="yt:video_id_01",
             tournesol_score=-2,
-            rating_n_contributors=4,
-            rating_n_ratings=8,
             make_safe_for_poll=False
         )
         EntityPollRatingFactory(
             entity=self.video_1,
             poll=Poll.default_poll(),
             sum_trust_scores=4,
-            n_contributors=self.video_1.rating_n_contributors,
-            n_comparisons=self.video_1.rating_n_ratings,
+            n_contributors=4,
+            n_comparisons=8,
             tournesol_score=self.video_1.tournesol_score,
         )
         self.user = UserFactory(username=self._user)
