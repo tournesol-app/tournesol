@@ -210,23 +210,6 @@ class Entity(models.Model):
         help_text="The aggregated of all criteria for all users in a specific poll.",
     )
 
-    # TODO
-    # the following fields should be moved in a n-n relation with Poll
-    rating_n_ratings = models.IntegerField(
-        null=False,
-        default=0,
-        help_text="Total number of pairwise comparisons for this video"
-        "from certified contributors",
-    )
-
-    # TODO
-    # the following fields should be moved in a n-n relation with Poll
-    rating_n_contributors = models.IntegerField(
-        null=False,
-        default=0,
-        help_text="Total number of certified contributors who rated the video",
-    )
-
     search_config_name = models.CharField(
         blank=True,
         default=DEFAULT_SEARCH_CONFIG,
@@ -258,31 +241,12 @@ class Entity(models.Model):
             if self.type in ENTITY_TYPE_NAME_TO_CLASS:
                 self.entity_cls.update_search_vector(self)
 
-    def update_n_ratings(self):
-        from .comparisons import Comparison  # pylint: disable=import-outside-toplevel
-
-        self.rating_n_ratings = Comparison.objects.filter(
-            Q(entity_1=self) | Q(entity_2=self)
-        ).count()
-
-        self.rating_n_contributors = (
-            Comparison.objects.filter(Q(entity_1=self) | Q(entity_2=self))
-            .distinct("user")
-            .count()
-        )
-
-        self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
-
-    def update_entity_poll_rating(self, poll, ratings: tuple = None):
+    def update_entity_poll_rating(self, poll):
         """
         Update the related `EntityPollRating` object.
 
         The new ratings can be provided directly by passing `ratings` as
         argument, or automatically computed by reading the database instead.
-
-        TODO: the `ratings` parameter won't be needed anymore when the ratings
-              fields will be removed from the `Entity` model. Don't forget to
-              delete it.
 
         Keyword arguments:
         poll -- the poll inside which the ratings will be saved
@@ -290,17 +254,10 @@ class Entity(models.Model):
                    nbr of contributors
         """
         from .entity_poll_rating import EntityPollRating  # pylint: disable=import-outside-toplevel
-
         entity_rating, _ = EntityPollRating.objects.get_or_create(
             poll=poll, entity=self
         )
-
-        if ratings:
-            entity_rating.n_comparisons = ratings[0]
-            entity_rating.n_contributors = ratings[1]
-            entity_rating.save(update_fields=["n_comparisons", "n_contributors"])
-        else:
-            entity_rating.update_n_ratings()
+        entity_rating.update_n_ratings()
 
     def auto_remove_from_rate_later(self, poll, user) -> None:
         """

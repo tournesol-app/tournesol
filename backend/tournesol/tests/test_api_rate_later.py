@@ -447,7 +447,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_auth_201_delete(self) -> None:
+    def test_auth_204_delete(self) -> None:
         """
         An authenticated user can delete an item from its rate-later list.
         """

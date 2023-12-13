@@ -25,7 +25,14 @@ class EntityFactory(factory.django.DjangoModelFactory):
         return random.uniform(min_score, max_score)
 
     @classmethod
-    def create(cls, *args, make_safe_for_poll: Union[bool, Poll] = True, **kwargs):
+    def create(
+        cls,
+        *args,
+        make_safe_for_poll: Union[bool, Poll] = True,
+        n_comparisons: int = 0,
+        n_contributors: int = 0,
+        **kwargs
+    ):
         entity = super().create(*args, **kwargs)
         """
         If `make_safe_for_poll` is True, the entity will be made safe for the default Poll by
@@ -46,8 +53,8 @@ class EntityFactory(factory.django.DjangoModelFactory):
                     if entity.tournesol_score is None
                     else entity.tournesol_score
                 ),
-                n_comparisons=entity.rating_n_ratings,
-                n_contributors=entity.rating_n_contributors,
+                n_comparisons=n_comparisons,
+                n_contributors=n_contributors,
             )
         return entity
 

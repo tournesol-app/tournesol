@@ -228,10 +228,10 @@ class VideoApi(TestCase):
         self.assertEqual(response.json()["video_id"], self.video_1.video_id)
         self.assertEqual(response.json()["tournesol_score"], self.video_1.tournesol_score)
 
-    def test_anonymous_can_get_video_with_score_zero(self):
+    def test_anonymous_can_get_video_without_score(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
         client = APIClient()
-        VideoFactory(metadata__video_id="vid_score_0")
+        VideoFactory(metadata__video_id="vid_score_0", make_safe_for_poll=False)
         response = client.get("/video/vid_score_0/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], "vid_score_0")
@@ -267,7 +267,7 @@ class VideoApi(TestCase):
 
     def test_no_negative_tournesol_score_video(self):
         client = APIClient()
-        video = VideoFactory(rating_n_contributors=2, tournesol_score=-10)
+        video = VideoFactory(n_contributors=2, tournesol_score=-10)
         VideoCriteriaScoreFactory(entity=video, criteria="engaging", score=-1)
         VideoCriteriaScoreFactory(entity=video, criteria="importance", score=1)
         safe_response = client.get("/video/?importance=50&engaging=0")
@@ -281,9 +281,9 @@ class VideoApi(TestCase):
         client = APIClient()
 
         # Add 1 video in French and 2 videos in English
-        video1 = VideoFactory(metadata__language="fr", rating_n_contributors=2, tournesol_score=10)
-        video2 = VideoFactory(metadata__language="en", rating_n_contributors=2, tournesol_score=10)
-        video3 = VideoFactory(metadata__language="en", rating_n_contributors=2, tournesol_score=10)
+        video1 = VideoFactory(metadata__language="fr", n_contributors=2, tournesol_score=10)
+        video2 = VideoFactory(metadata__language="en", n_contributors=2, tournesol_score=10)
+        video3 = VideoFactory(metadata__language="en", n_contributors=2, tournesol_score=10)
         VideoCriteriaScoreFactory(entity=video1)
         VideoCriteriaScoreFactory(entity=video2)
         VideoCriteriaScoreFactory(entity=video3)

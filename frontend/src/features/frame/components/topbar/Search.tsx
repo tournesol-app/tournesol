@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
+import { extractVideoId } from 'src/utils/video';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
@@ -50,12 +50,32 @@ const Search = () => {
   const searchParams = new URLSearchParams(paramsString);
   const [search, setSearch] = useState(searchParams.get('search') || '');
 
+  /**
+   * Redirect to analysis page when `search` is a:
+   * - YouTube URL
+   * - Tournesol URL (analysis page)
+   * - Tournesol UID
+   *
+   * ...else redirect to the regular search results.
+   *
+   * It's not easy to distinguish a YT video id from a string of 11
+   * characters, so both case are treated in the same way.
+   */
   const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     searchParams.delete('search');
     searchParams.append('search', search);
     searchParams.delete('offset');
-    history.push('/recommendations?' + searchParams.toString());
+
+    const videoId = extractVideoId(search);
+
+    // TODO: we should pass an argument to `extractVideoId` so that raw YouTube
+    // ids are ignored.
+    if (videoId && search.length !== 11) {
+      history.push('/entities/yt:' + videoId.toString());
+    } else {
+      history.push('/recommendations?' + searchParams.toString());
+    }
   };
 
   return (

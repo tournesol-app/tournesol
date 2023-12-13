@@ -107,23 +107,13 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
             )
         comparison: Comparison = serializer.save()
 
-        # TODO To be removed, replaced by update_n_poll_ratings
-        comparison.entity_1.update_n_ratings()
-        comparison.entity_1.update_entity_poll_rating(
-            poll, (comparison.entity_1.rating_n_ratings, comparison.entity_1.rating_n_contributors)
-        )
-
+        comparison.entity_1.update_entity_poll_rating(poll=poll)
         comparison.entity_1.inner.refresh_metadata()
         comparison.entity_1.auto_remove_from_rate_later(
             poll=poll, user=self.request.user
         )
 
-        # TODO To be removed, replaced by update_n_poll_ratings
-        comparison.entity_2.update_n_ratings()
-        comparison.entity_2.update_entity_poll_rating(
-            poll, (comparison.entity_2.rating_n_ratings, comparison.entity_2.rating_n_contributors)
-        )
-
+        comparison.entity_2.update_entity_poll_rating(poll=poll)
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(
             poll=poll, user=self.request.user

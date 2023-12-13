@@ -42,6 +42,9 @@ table inet filter {
 
     ip protocol igmp accept
 
+    # accept DHCPv6: necessary to initialize networking.service on Infomaniak cloud
+    ip6 daddr fe80::/10 udp sport 547 udp dport 546 accept
+
     # accept SSH, HTTP, HTTPS
     tcp dport { 22, 80, 443 } accept
   }
