@@ -120,10 +120,23 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     entity_a = RelatedEntitySerializer(source="entity_1", read_only=True)
     entity_b = RelatedEntitySerializer(source="entity_2", read_only=True)
+    entity_a_contexts = EntityContextSerializer(
+        source="entity_1.single_poll_entity_contexts", read_only=True, many=True
+    )
+    entity_b_contexts = EntityContextSerializer(
+        source="entity_2.single_poll_entity_contexts", read_only=True, many=True
+    )
 
     class Meta:
         model = Comparison
-        fields = ["criteria_scores", "duration_ms", "entity_a", "entity_b"]
+        fields = [
+            "criteria_scores",
+            "duration_ms",
+            "entity_a",
+            "entity_b",
+            "entity_a_contexts",
+            "entity_b_contexts",
+        ]
 
     def to_representation(self, instance):
         """

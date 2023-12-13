@@ -4,11 +4,12 @@ API endpoints to interact with the contributor's comparisons.
 
 from django.conf import settings
 from django.db.models import ObjectDoesNotExist, Q
-from django.db.models.query import Prefetch
+from django.db.models.query import Prefetch, prefetch_related_objects
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
+from rest_framework.response import Response
 
 from ml.mehestan.run import update_user_scores
 from tournesol.models import Comparison, Entity
@@ -42,6 +43,21 @@ class ComparisonApiMixin:
 
         return bool(comparison)
 
+    def get_prefetch_entity_config(self, lookup: str):
+        poll = self.poll_from_url
+        return Prefetch(
+            lookup=lookup,
+            queryset=(
+                Entity.objects.with_prefetched_poll_ratings(
+                    poll_name=poll.name
+                )
+            ),
+        )
+
+    def prefetch_entity(self, comparison: Comparison):
+        prefetch_related_objects([comparison], self.get_prefetch_entity_config("entity_1"))
+        prefetch_related_objects([comparison], self.get_prefetch_entity_config("entity_2"))
+
 
 class ComparisonListBaseApi(
     ComparisonApiMixin,
@@ -55,17 +71,6 @@ class ComparisonListBaseApi(
 
     serializer_class = ComparisonSerializer
     queryset = Comparison.objects.none()
-
-    def get_prefetch_entity_config(self, lookup: str):
-        poll = self.poll_from_url
-        return Prefetch(
-            lookup=lookup,
-            queryset=(
-                Entity.objects.with_prefetched_poll_ratings(
-                    poll_name=poll.name
-                )
-            ),
-        )
 
     def get_queryset(self):
         """
@@ -122,6 +127,7 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
                 f"with {self.request.data['entity_b']['uid']}."
             )
         comparison: Comparison = serializer.save()
+        self.prefetch_entity(comparison)
 
         comparison.entity_1.update_entity_poll_rating(poll=poll)
         comparison.entity_1.inner.refresh_metadata()
@@ -221,7 +227,9 @@ class ComparisonDetailApi(
         return context
 
     def perform_update(self, serializer):
-        super().perform_update(serializer)
+        instance = serializer.save()
+        self.prefetch_entity(instance)
+
         poll = self.poll_from_url
         if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:
             update_user_scores(poll, user=self.request.user)
@@ -234,7 +242,10 @@ class ComparisonDetailApi(
 
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""
-        return self.retrieve(request, *args, **kwargs)
+        instance = self.get_object()
+        self.prefetch_entity(instance)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user, in the given poll"""

@@ -2751,10 +2751,22 @@ components:
           allOf:
           - $ref: '#/components/schemas/RelatedEntity'
           readOnly: true
+        entity_a_contexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityContext'
+          readOnly: true
+        entity_b_contexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityContext'
+          readOnly: true
       required:
       - criteria_scores
       - entity_a
+      - entity_a_contexts
       - entity_b
+      - entity_b_contexts
     ComparisonUpdateRequest:
       type: object
       description: |-
