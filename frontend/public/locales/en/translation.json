@@ -106,6 +106,9 @@
     "contextHasBeenAddedToThisElement": "Context has been added to this element.",
     "see": "See"
   },
+  "entityContextTextList": {
+    "whyThisMessage": "Why this message?"
+  },
   "contextsFromOrigin": {
     "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element."
   },

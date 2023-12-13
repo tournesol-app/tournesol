@@ -110,6 +110,9 @@
     "contextHasBeenAddedToThisElement": "Du contexte a été ajouté à cet élément.",
     "see": "Voir"
   },
+  "entityContextTextList": {
+    "whyThisMessage": "Pourquoi ce message ?"
+  },
   "contextsFromOrigin": {
     "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément."
   },

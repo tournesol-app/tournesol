@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import linkifyStr from 'linkify-string';
 
@@ -7,6 +8,7 @@ import {
   AlertTitle,
   Box,
   Divider,
+  Link,
   SxProps,
   Typography,
 } from '@mui/material';
@@ -35,6 +37,7 @@ const EntityContextTextList = ({
   origin_,
   contexts,
 }: EntityContextTextListProps) => {
+  const { t } = useTranslation();
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
 
   return (
@@ -55,6 +58,18 @@ const EntityContextTextList = ({
           );
         }
       })}
+      <Box display="flex" justifyContent="flex-end">
+        <Link
+          to="/faq?scrollTo=are_recommendations_moderated_by_the_association"
+          component={RouterLink}
+          sx={{
+            color: 'inherit',
+            textDecorationColor: 'inherit',
+          }}
+        >
+          {t('entityContextTextList.whyThisMessage')}
+        </Link>
+      </Box>
     </>
   );
 };
