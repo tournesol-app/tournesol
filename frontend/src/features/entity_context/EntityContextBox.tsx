@@ -25,6 +25,8 @@ import {
 interface EntityContextBoxProps {
   uid: string;
   contexts: Array<EntityContext>;
+  // If set, display the entity name before the contexts.
+  entityName?: string;
   collapsible?: boolean;
   altTitleAssociation?: React.ReactElement;
 }
@@ -33,6 +35,7 @@ interface EntityContextListProps {
   uid: string;
   origin_?: OriginEnum;
   contexts: Array<EntityContext>;
+  entityName?: string;
   collapsible?: boolean;
   title?: React.ReactElement;
 }
@@ -90,6 +93,7 @@ const EntityContextList = ({
   contexts,
   origin_,
   title,
+  entityName,
   collapsible,
 }: EntityContextListProps) => {
   const { t } = useTranslation();
@@ -148,6 +152,11 @@ const EntityContextList = ({
       </Box>
 
       <Collapse in={displayText}>
+        {entityName && (
+          <Typography paragraph variant="body2" fontStyle="italic">
+            {t('entityContext.about')} « {entityName} »
+          </Typography>
+        )}
         <EntityContextTextList
           uid={uid}
           origin_={origin_}
@@ -161,6 +170,7 @@ const EntityContextList = ({
 const EntityContextBox = ({
   uid,
   contexts,
+  entityName,
   altTitleAssociation,
   collapsible = false,
 }: EntityContextBoxProps) => {
@@ -177,6 +187,7 @@ const EntityContextBox = ({
             origin_={OriginEnum.ASSOCIATION}
             contexts={associationContexts}
             title={altTitleAssociation}
+            entityName={entityName}
             collapsible={collapsible}
           />
         </Box>

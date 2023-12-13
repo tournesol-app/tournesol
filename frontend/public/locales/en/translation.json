@@ -94,7 +94,8 @@
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - The Tournesol association would like to give you some context.",
     "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - The Tournesol association would like to give you some context.",
-    "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element."
+    "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element.",
+    "about": "About"
   },
   "comparisonHelper": {
     "hideHelp": "Hide the help",

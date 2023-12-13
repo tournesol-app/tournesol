@@ -26,6 +26,7 @@ const ComparisonEntityContextsItem = ({
         <EntityContextBox
           uid={selector.uid}
           contexts={selector.rating.entity_contexts}
+          entityName={selector.rating?.entity?.metadata?.name}
           altTitleAssociation={altTitleAssociation}
           collapsible={true}
         />
