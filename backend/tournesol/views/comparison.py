@@ -56,6 +56,17 @@ class ComparisonListBaseApi(
     serializer_class = ComparisonSerializer
     queryset = Comparison.objects.none()
 
+    def get_prefetch_entity_config(self, lookup: str):
+        poll = self.poll_from_url
+        return Prefetch(
+            lookup=lookup,
+            queryset=(
+                Entity.objects.with_prefetched_poll_ratings(
+                    poll_name=poll.name
+                )
+            ),
+        )
+
     def get_queryset(self):
         """
         Return all or a filtered list of comparisons made by the logged user
@@ -65,18 +76,10 @@ class ComparisonListBaseApi(
         uid -- the entity uid used to filter the results (default None)
         """
 
-        poll = self.poll_from_url
         queryset = (
-            Comparison.objects.prefetch_related(
-                Prefetch(
-                    "entity_1", Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
-                )
-            )
-            .prefetch_related(
-                Prefetch(
-                    "entity_2", Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
-                )
-            )
+            Comparison.objects
+            .prefetch_related(self.get_prefetch_entity_config("entity_1"))
+            .prefetch_related(self.get_prefetch_entity_config("entity_2"))
             .prefetch_related("criteria_scores")
             .filter(poll=self.poll_from_url, user=self.request.user)
             .order_by("-datetime_lastedit")
