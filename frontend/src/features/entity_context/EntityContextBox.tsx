@@ -27,8 +27,10 @@ interface EntityContextBoxProps {
   contexts: Array<EntityContext>;
   // If set, display the entity name before the contexts.
   entityName?: string;
+  // If true the contexts can be collapsed.
   collapsible?: boolean;
-  altTitleAssociation?: React.ReactElement;
+  // Replace the default association disclaier.
+  altAssociationDisclaimer?: React.ReactElement;
 }
 
 interface EntityContextListProps {
@@ -37,7 +39,7 @@ interface EntityContextListProps {
   contexts: Array<EntityContext>;
   entityName?: string;
   collapsible?: boolean;
-  title?: React.ReactElement;
+  diclaimer?: React.ReactElement;
 }
 
 interface EntityContextTextListProps {
@@ -92,7 +94,7 @@ const EntityContextList = ({
   uid,
   contexts,
   origin_,
-  title,
+  diclaimer,
   entityName,
   collapsible,
 }: EntityContextListProps) => {
@@ -129,8 +131,8 @@ const EntityContextList = ({
     >
       <Box display="flex" justifyContent="space-between">
         <AlertTitle>
-          {title ? (
-            title
+          {diclaimer ? (
+            diclaimer
           ) : (
             <strong>
               {origin_ === OriginEnum.ASSOCIATION &&
@@ -171,7 +173,7 @@ const EntityContextBox = ({
   uid,
   contexts,
   entityName,
-  altTitleAssociation,
+  altAssociationDisclaimer,
   collapsible = false,
 }: EntityContextBoxProps) => {
   const associationContexts = contexts.filter(
@@ -186,7 +188,7 @@ const EntityContextBox = ({
             uid={uid}
             origin_={OriginEnum.ASSOCIATION}
             contexts={associationContexts}
-            title={altTitleAssociation}
+            diclaimer={altAssociationDisclaimer}
             entityName={entityName}
             collapsible={collapsible}
           />

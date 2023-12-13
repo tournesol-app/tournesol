@@ -15,10 +15,10 @@ interface EntityContextBoxProps {
 
 const ComparisonEntityContextsItem = ({
   selector,
-  altTitleAssociation,
+  altAssociationDisclaimer,
 }: {
   selector: SelectorValue;
-  altTitleAssociation?: React.ReactElement;
+  altAssociationDisclaimer?: React.ReactElement;
 }) => {
   return (
     <>
@@ -27,7 +27,7 @@ const ComparisonEntityContextsItem = ({
           uid={selector.uid}
           contexts={selector.rating.entity_contexts}
           entityName={selector.rating?.entity?.metadata?.name}
-          altTitleAssociation={altTitleAssociation}
+          altAssociationDisclaimer={altAssociationDisclaimer}
           collapsible={true}
         />
       )}
@@ -67,7 +67,7 @@ const ComparisonEntityContexts = ({
           <Grid item xs={12} sm={12} md={6}>
             <ComparisonEntityContextsItem
               selector={selectorA}
-              altTitleAssociation={
+              altAssociationDisclaimer={
                 <strong>
                   <Trans
                     t={t}
@@ -83,7 +83,7 @@ const ComparisonEntityContexts = ({
           <Grid item xs={12} sm={12} md={6}>
             <ComparisonEntityContextsItem
               selector={selectorB}
-              altTitleAssociation={
+              altAssociationDisclaimer={
                 <strong>
                   <Trans
                     t={t}
