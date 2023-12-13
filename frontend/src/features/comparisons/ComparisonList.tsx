@@ -26,8 +26,12 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
     >
       <EntityCard
         compact
-        result={{ entity: entity_a }}
+        result={{
+          entity: entity_a,
+          entity_contexts: comparison.entity_a_contexts,
+        }}
         entityTypeConfig={{ video: { displayPlayer: false } }}
+        displayContextAlert={true}
       />
       <Box
         sx={{
@@ -58,8 +62,12 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
       </Box>
       <EntityCard
         compact
-        result={{ entity: entity_b }}
+        result={{
+          entity: entity_b,
+          entity_contexts: comparison.entity_b_contexts,
+        }}
         entityTypeConfig={{ video: { displayPlayer: false } }}
+        displayContextAlert={true}
       />
     </Box>
   );

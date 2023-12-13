@@ -5,6 +5,7 @@ from rest_framework.serializers import ModelSerializer
 
 from tournesol.models import Comparison, ComparisonCriteriaScore
 from tournesol.serializers.entity import RelatedEntitySerializer
+from tournesol.serializers.entity_context import EntityContextSerializer
 
 
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
@@ -35,9 +36,7 @@ class ComparisonSerializerMixin:
             score["criteria"] for score in value
         )
         if missing_criterias:
-            raise ValidationError(
-                f"Missing required criteria: {','.join(missing_criterias)}"
-            )
+            raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
         return value
 
 
@@ -53,12 +52,26 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     entity_a = RelatedEntitySerializer(source="entity_1")
     entity_b = RelatedEntitySerializer(source="entity_2")
+    entity_a_contexts = EntityContextSerializer(
+        source="entity_1.single_poll_entity_contexts", read_only=True, many=True
+    )
+    entity_b_contexts = EntityContextSerializer(
+        source="entity_2.single_poll_entity_contexts", read_only=True, many=True
+    )
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Comparison
-        fields = ["user", "entity_a", "entity_b", "criteria_scores", "duration_ms"]
+        fields = [
+            "user",
+            "entity_a",
+            "entity_b",
+            "entity_a_contexts",
+            "entity_b_contexts",
+            "criteria_scores",
+            "duration_ms",
+        ]
 
     def to_representation(self, instance):
         """
@@ -69,9 +82,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
-            ret["criteria_scores"] = self.reverse_criteria_scores(
-                ret["criteria_scores"]
-            )
+            ret["criteria_scores"] = self.reverse_criteria_scores(ret["criteria_scores"])
 
         return ret
 
@@ -91,9 +102,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         )
 
         for criteria_score in criteria_scores:
-            ComparisonCriteriaScore.objects.create(
-                comparison=comparison, **criteria_score
-            )
+            ComparisonCriteriaScore.objects.create(comparison=comparison, **criteria_score)
 
         return comparison
 
@@ -128,9 +137,7 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
 
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
-            ret["criteria_scores"] = self.reverse_criteria_scores(
-                ret["criteria_scores"]
-            )
+            ret["criteria_scores"] = self.reverse_criteria_scores(ret["criteria_scores"])
 
         ret.move_to_end("entity_b", last=False)
         ret.move_to_end("entity_a", last=False)
@@ -144,9 +151,7 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         ret = super().to_internal_value(data)
 
         if self.context.get("reverse", False):
-            ret["criteria_scores"] = self.reverse_criteria_scores(
-                ret["criteria_scores"]
-            )
+            ret["criteria_scores"] = self.reverse_criteria_scores(ret["criteria_scores"])
         return ret
 
     @transaction.atomic

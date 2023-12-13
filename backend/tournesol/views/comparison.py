@@ -4,13 +4,14 @@ API endpoints to interact with the contributor's comparisons.
 
 from django.conf import settings
 from django.db.models import ObjectDoesNotExist, Q
+from django.db.models.query import Prefetch
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
 from ml.mehestan.run import update_user_scores
-from tournesol.models import Comparison
+from tournesol.models import Comparison, Entity
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -63,8 +64,19 @@ class ComparisonListBaseApi(
         Keyword arguments:
         uid -- the entity uid used to filter the results (default None)
         """
+
+        poll = self.poll_from_url
         queryset = (
-            Comparison.objects.select_related("entity_1", "entity_2")
+            Comparison.objects.prefetch_related(
+                Prefetch(
+                    "entity_1", Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
+                )
+            )
+            .prefetch_related(
+                Prefetch(
+                    "entity_2", Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
+                )
+            )
             .prefetch_related("criteria_scores")
             .filter(poll=self.poll_from_url, user=self.request.user)
             .order_by("-datetime_lastedit")
@@ -82,6 +94,7 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.
     """
+
     def get(self, request, *args, **kwargs):
         """
         Retrieve all comparisons made by the logged user, in a given poll.
@@ -109,15 +122,11 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
 
         comparison.entity_1.update_entity_poll_rating(poll=poll)
         comparison.entity_1.inner.refresh_metadata()
-        comparison.entity_1.auto_remove_from_rate_later(
-            poll=poll, user=self.request.user
-        )
+        comparison.entity_1.auto_remove_from_rate_later(poll=poll, user=self.request.user)
 
         comparison.entity_2.update_entity_poll_rating(poll=poll)
         comparison.entity_2.inner.refresh_metadata()
-        comparison.entity_2.auto_remove_from_rate_later(
-            poll=poll, user=self.request.user
-        )
+        comparison.entity_2.auto_remove_from_rate_later(poll=poll, user=self.request.user)
 
         if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:
             update_user_scores(poll, user=self.request.user)
