@@ -23,6 +23,11 @@ class ComparisonCriteriaScoreSerializer(ModelSerializer):
 
 
 class ComparisonSerializerMixin:
+    def format_entity_contexts(self, poll, contexts, metadata):
+        return EntityContextSerializer(
+            poll.get_entity_contexts(metadata, contexts), many=True
+        ).data
+
     def reverse_criteria_scores(self, criteria_scores):
         opposite_scores = criteria_scores.copy()
         for index, score in enumerate(criteria_scores):
@@ -78,25 +83,18 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         ret = super().to_representation(instance)
 
         poll = self.context["poll"]
-        entity_contexts = self.context.get("entity_contexts")
+        ent_contexts = self.context.get("entity_contexts")
 
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
             ret["criteria_scores"] = self.reverse_criteria_scores(ret["criteria_scores"])
 
-            ret["entity_a_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
-            ).data
-            ret["entity_b_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
-            ).data
-        else:
-            ret["entity_a_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
-            ).data
-            ret["entity_b_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
-            ).data
+        ret["entity_a_contexts"] = self.format_entity_contexts(
+            poll, ent_contexts, ret["entity_a"]["metadata"]
+        )
+        ret["entity_b_contexts"] = self.format_entity_contexts(
+            poll, ent_contexts, ret["entity_b"]["metadata"]
+        )
 
         return ret
 
@@ -159,25 +157,18 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         ret = super().to_representation(instance)
 
         poll = self.context["poll"]
-        entity_contexts = self.context.get("entity_contexts")
+        ent_contexts = self.context.get("entity_contexts")
 
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
             ret["criteria_scores"] = self.reverse_criteria_scores(ret["criteria_scores"])
 
-            ret["entity_a_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
-            ).data
-            ret["entity_b_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
-            ).data
-        else:
-            ret["entity_a_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
-            ).data
-            ret["entity_b_contexts"] = EntityContextSerializer(
-                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
-            ).data
+        ret["entity_a_contexts"] = self.format_entity_contexts(
+            poll, ent_contexts, ret["entity_a"]["metadata"]
+        )
+        ret["entity_b_contexts"] = self.format_entity_contexts(
+            poll, ent_contexts, ret["entity_b"]["metadata"]
+        )
 
         ret.move_to_end("entity_b", last=False)
         ret.move_to_end("entity_a", last=False)
