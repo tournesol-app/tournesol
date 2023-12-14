@@ -8,7 +8,6 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
-from rest_framework.response import Response
 
 from ml.mehestan.run import update_user_scores
 from tournesol.models import Comparison
