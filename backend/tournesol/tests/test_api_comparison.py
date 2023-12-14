@@ -20,6 +20,7 @@ from tournesol.models import (
     Poll,
     RateLater,
 )
+from tournesol.models.entity_context import EntityContext, EntityContextLocale
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
@@ -115,6 +116,21 @@ class ComparisonApiTestCase(TestCase):
                 datetime_lastedit=time_ahead(minutes=2),
             ),
         ]
+
+        self.ent_context_01 = EntityContext.objects.create(
+            name="context_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.videos[0].metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll_videos,
+        )
+
+        self.ent_context_01_text = EntityContextLocale.objects.create(
+            context=self.ent_context_01,
+            language="en",
+            text="Hello context",
+        )
 
     def _remove_optional_fields(self, comparison):
         comparison.pop("duration_ms", None)
@@ -260,9 +276,15 @@ class ComparisonApiTestCase(TestCase):
         )
 
         # check the representation integrity
-        self.assertEqual(response.data["entity_a"]["uid"], data["entity_a"]["uid"])
-        self.assertEqual(response.data["entity_b"]["uid"], data["entity_b"]["uid"])
-        self.assertEqual(response.data["duration_ms"], data["duration_ms"])
+        resp_data = response.data
+        self.assertEqual(resp_data["entity_a"]["uid"], data["entity_a"]["uid"])
+        self.assertEqual(resp_data["entity_b"]["uid"], data["entity_b"]["uid"])
+
+        self.assertEqual(len(resp_data["entity_a_contexts"]), 1)
+        self.assertEqual(resp_data["entity_a_contexts"][0]["text"], self.ent_context_01_text.text)
+        self.assertEqual(resp_data["entity_b_contexts"], [])
+
+        self.assertEqual(resp_data["duration_ms"], data["duration_ms"])
 
         self.assertEqual(
             len(response.data["criteria_scores"]), len(data["criteria_scores"])
@@ -602,24 +624,21 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(len(response.data["results"]), comparisons_made.count())
 
         # the comparisons must be ordered by datetime_lastedit
-        comparison1 = response.data["results"][0]
-        comparison2 = response.data["results"][1]
+        results = response.data["results"]
+        comp1 = results[0]
+        comp2 = results[1]
 
-        self.assertEqual(
-            comparison1["entity_a"]["uid"], self.comparisons[1].entity_1.uid
-        )
-        self.assertEqual(
-            comparison1["entity_b"]["uid"], self.comparisons[1].entity_2.uid
-        )
-        self.assertEqual(comparison1["duration_ms"], self.comparisons[1].duration_ms)
+        self.assertEqual(comp1["entity_a"]["uid"], self.comparisons[1].entity_1.uid)
+        self.assertEqual(comp1["entity_b"]["uid"], self.comparisons[1].entity_2.uid)
+        self.assertEqual(comp1["duration_ms"], self.comparisons[1].duration_ms)
 
-        self.assertEqual(
-            comparison2["entity_a"]["uid"], self.comparisons[0].entity_1.uid
-        )
-        self.assertEqual(
-            comparison2["entity_b"]["uid"], self.comparisons[0].entity_2.uid
-        )
-        self.assertEqual(comparison2["duration_ms"], self.comparisons[0].duration_ms)
+        self.assertEqual(comp2["entity_a"]["uid"], self.comparisons[0].entity_1.uid)
+        self.assertEqual(comp2["entity_b"]["uid"], self.comparisons[0].entity_2.uid)
+
+        self.assertEqual(len(comp1["entity_a_contexts"]), 1)
+        self.assertEqual(comp1["entity_a_contexts"][0]["text"], self.ent_context_01_text.text)
+        self.assertEqual(comp1["entity_b_contexts"], [])
+        self.assertEqual(comp2["duration_ms"], self.comparisons[0].duration_ms)
 
     def test_authenticated_can_list_filtered(self):
         """
@@ -692,9 +711,13 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(response.data["entity_a"]["uid"], self._uid_01)
-        self.assertEqual(response.data["entity_b"]["uid"], self._uid_02)
-        self.assertEqual(response.data["duration_ms"], 102)
+        data = response.data
+        self.assertEqual(data["entity_a"]["uid"], self._uid_01)
+        self.assertEqual(data["entity_b"]["uid"], self._uid_02)
+        self.assertEqual(len(data["entity_a_contexts"]), 1)
+        self.assertEqual(data["entity_a_contexts"][0]["text"], self.ent_context_01_text.text)
+        self.assertEqual(data["entity_b_contexts"], [])
+        self.assertEqual(data["duration_ms"], 102)
 
     def test_authenticated_can_read_reverse(self):
         """
@@ -724,10 +747,15 @@ class ComparisonApiTestCase(TestCase):
             ),
             format="json",
         )
+
+        data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["entity_a"]["uid"], self._uid_02)
-        self.assertEqual(response.data["entity_b"]["uid"], self._uid_01)
-        self.assertEqual(response.data["duration_ms"], 102)
+        self.assertEqual(data["entity_a"]["uid"], self._uid_02)
+        self.assertEqual(data["entity_b"]["uid"], self._uid_01)
+        self.assertEqual(data["entity_a_contexts"], [])
+        self.assertEqual(len(data["entity_b_contexts"]), 1)
+        self.assertEqual(data["entity_b_contexts"][0]["text"], self.ent_context_01_text.text)
+        self.assertEqual(data["duration_ms"], 102)
 
     def test_anonymous_cant_update(self):
         """
