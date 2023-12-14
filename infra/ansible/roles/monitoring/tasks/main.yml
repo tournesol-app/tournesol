@@ -393,3 +393,11 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+- name: Run tasks of role logging
+  import_role:
+    name: logging
+
+- name: Run tasks of role grafana_alerting
+  import_role:
+    name: grafana_alerting

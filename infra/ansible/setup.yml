@@ -11,8 +11,6 @@
     - repository
     - django
     - monitoring
-    - logging
-    - grafana_alerting
     - frontend
     - plausible_analytics
     - backups
