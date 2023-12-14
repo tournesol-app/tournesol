@@ -25,6 +25,19 @@ class InactivePollError(exceptions.PermissionDenied):
 class ComparisonApiMixin:
     """A mixin used to factorize behaviours common to all API views."""
 
+    entity_contexts = None
+
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+        self.entity_contexts = self.poll_from_url.all_entity_contexts.prefetch_related(
+            "texts"
+        ).all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["entity_contexts"] = self.entity_contexts
+        return context
+
     def comparison_already_exists(self, poll_id, request):
         """Return True if the comparison already exist, False instead."""
         try:
@@ -42,21 +55,6 @@ class ComparisonApiMixin:
             return False
 
         return bool(comparison)
-
-    def get_prefetch_entity_config(self, lookup: str):
-        poll = self.poll_from_url
-        return Prefetch(
-            lookup=lookup,
-            queryset=(
-                Entity.objects.with_prefetched_poll_ratings(
-                    poll_name=poll.name
-                )
-            ),
-        )
-
-    def prefetch_entity(self, comparison: Comparison):
-        prefetch_related_objects([comparison], self.get_prefetch_entity_config("entity_1"))
-        prefetch_related_objects([comparison], self.get_prefetch_entity_config("entity_2"))
 
 
 class ComparisonListBaseApi(
@@ -82,9 +80,7 @@ class ComparisonListBaseApi(
         """
 
         queryset = (
-            Comparison.objects
-            .prefetch_related(self.get_prefetch_entity_config("entity_1"))
-            .prefetch_related(self.get_prefetch_entity_config("entity_2"))
+            Comparison.objects.select_related("entity_1", "entity_2")
             .prefetch_related("criteria_scores")
             .filter(poll=self.poll_from_url, user=self.request.user)
             .order_by("-datetime_lastedit")
@@ -127,7 +123,6 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
                 f"with {self.request.data['entity_b']['uid']}."
             )
         comparison: Comparison = serializer.save()
-        self.prefetch_entity(comparison)
 
         comparison.entity_1.update_entity_poll_rating(poll=poll)
         comparison.entity_1.inner.refresh_metadata()
@@ -170,7 +165,6 @@ class ComparisonDetailApi(
 
     DEFAULT_SERIALIZER = ComparisonSerializer
     UPDATE_SERIALIZER = ComparisonUpdateSerializer
-
     currently_reversed = False
 
     def _select_serialization(self, straight=True):
@@ -227,9 +221,7 @@ class ComparisonDetailApi(
         return context
 
     def perform_update(self, serializer):
-        instance = serializer.save()
-        self.prefetch_entity(instance)
-
+        super().perform_update(serializer)
         poll = self.poll_from_url
         if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:
             update_user_scores(poll, user=self.request.user)
@@ -243,7 +235,6 @@ class ComparisonDetailApi(
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""
         instance = self.get_object()
-        self.prefetch_entity(instance)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

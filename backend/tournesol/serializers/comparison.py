@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from tournesol.models import Comparison, ComparisonCriteriaScore
+from tournesol.models import Comparison, ComparisonCriteriaScore, Poll
 from tournesol.serializers.entity import RelatedEntitySerializer
 from tournesol.serializers.entity_context import EntityContextSerializer
 
@@ -52,12 +52,9 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     entity_a = RelatedEntitySerializer(source="entity_1")
     entity_b = RelatedEntitySerializer(source="entity_2")
-    entity_a_contexts = EntityContextSerializer(
-        source="entity_1.single_poll_entity_contexts", read_only=True, many=True
-    )
-    entity_b_contexts = EntityContextSerializer(
-        source="entity_2.single_poll_entity_contexts", read_only=True, many=True
-    )
+    entity_a_contexts = EntityContextSerializer(read_only=True, many=True)
+    entity_b_contexts = EntityContextSerializer(read_only=True, many=True)
+
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -80,9 +77,26 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         """
         ret = super().to_representation(instance)
 
+        poll = self.context["poll"]
+        entity_contexts = self.context.get("entity_contexts")
+
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
             ret["criteria_scores"] = self.reverse_criteria_scores(ret["criteria_scores"])
+
+            ret["entity_a_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
+            ).data
+            ret["entity_b_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
+            ).data
+        else:
+            ret["entity_a_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
+            ).data
+            ret["entity_b_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
+            ).data
 
         return ret
 
@@ -120,12 +134,8 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     entity_a = RelatedEntitySerializer(source="entity_1", read_only=True)
     entity_b = RelatedEntitySerializer(source="entity_2", read_only=True)
-    entity_a_contexts = EntityContextSerializer(
-        source="entity_1.single_poll_entity_contexts", read_only=True, many=True
-    )
-    entity_b_contexts = EntityContextSerializer(
-        source="entity_2.single_poll_entity_contexts", read_only=True, many=True
-    )
+    entity_a_contexts = EntityContextSerializer(read_only=True, many=True)
+    entity_b_contexts = EntityContextSerializer(read_only=True, many=True)
 
     class Meta:
         model = Comparison
@@ -148,9 +158,26 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         """
         ret = super().to_representation(instance)
 
+        poll = self.context["poll"]
+        entity_contexts = self.context.get("entity_contexts")
+
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
             ret["criteria_scores"] = self.reverse_criteria_scores(ret["criteria_scores"])
+
+            ret["entity_a_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
+            ).data
+            ret["entity_b_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
+            ).data
+        else:
+            ret["entity_a_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_a"]["metadata"], entity_contexts), many=True
+            ).data
+            ret["entity_b_contexts"] = EntityContextSerializer(
+                poll.get_entity_contexts(ret["entity_b"]["metadata"], entity_contexts), many=True
+            ).data
 
         ret.move_to_end("entity_b", last=False)
         ret.move_to_end("entity_a", last=False)

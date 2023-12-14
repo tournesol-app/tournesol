@@ -140,15 +140,20 @@ class Poll(models.Model):
 
         return False, None
 
-    def get_entity_contexts(self, entity_metadata) -> list:
+    def get_entity_contexts(self, entity_metadata, prefetched_contexts=None) -> list:
         """
         Return a list of all enabled contexts matching the given entity
         metadata.
         """
         contexts = []
 
+        if prefetched_contexts is not None:
+            available_contexts = prefetched_contexts
+        else:
+            available_contexts = self.all_entity_contexts.all()
+
         # The entity contexts are expected to be already prefetched.
-        for entity_context in self.all_entity_contexts.all():
+        for entity_context in available_contexts:
             if not entity_context.enabled:
                 continue
 
