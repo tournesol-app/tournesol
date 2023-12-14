@@ -233,9 +233,7 @@ class ComparisonDetailApi(
 
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user, in the given poll"""
