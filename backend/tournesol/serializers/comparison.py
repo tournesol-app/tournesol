@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from tournesol.models import Comparison, ComparisonCriteriaScore, Poll
+from tournesol.models import Comparison, ComparisonCriteriaScore
 from tournesol.serializers.entity import RelatedEntitySerializer
 from tournesol.serializers.entity_context import EntityContextSerializer
 

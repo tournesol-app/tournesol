@@ -4,7 +4,6 @@ API endpoints to interact with the contributor's comparisons.
 
 from django.conf import settings
 from django.db.models import ObjectDoesNotExist, Q
-from django.db.models.query import Prefetch, prefetch_related_objects
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
@@ -12,7 +11,7 @@ from rest_framework import exceptions, generics, mixins
 from rest_framework.response import Response
 
 from ml.mehestan.run import update_user_scores
-from tournesol.models import Comparison, Entity
+from tournesol.models import Comparison
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
