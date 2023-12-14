@@ -20,7 +20,7 @@ groups:
                     type: loki
                     uid: {{grafana.datasource_loki_uid}}
                 editorMode: code
-                expr: quantile_over_time(0.95,{filename="/var/log/nginx/json_access.log", host="localhost"} | json | unwrap request_time |  __error__="" | http_host!="grafana.staging.tournesol.app"  [120s]) by (host)
+                expr: quantile_over_time(0.95,{filename="/var/log/nginx/json_access.log", host="localhost"} | json | unwrap request_time |  __error__="" | http_host!="{{grafana_domain_name}}"  [120s]) by (host)
                 intervalMs: 30000
                 legendFormat: 95th percentile
                 maxDataPoints: 43200
