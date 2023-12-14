@@ -20,7 +20,6 @@ from tournesol.models.poll import ALGORITHM_MEHESTAN
 
 from .inputs import MlInputFromDb
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -87,7 +86,6 @@ def save_tournesol_scores(poll):
 
             poll_rating = entity.single_poll_rating
             if poll_rating is None:
-                raise Exception
                 logger.warning(
                     "Entity had not EntityPollRating to save tournesol_score. "
                     "It will be created now."
