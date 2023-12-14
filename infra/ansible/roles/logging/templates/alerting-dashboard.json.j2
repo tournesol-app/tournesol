@@ -25,42 +25,6 @@
   "links": [],
   "panels": [
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                0.5
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "15m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "15m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "Requests latency too high",
-        "name": "{{domain_name}} 95th percentile of Request Time alert",
-        "noDataState": "ok",
-        "notifications": []
-      },
       "datasource": "Loki",
       "description": "",
       "fieldConfig": {
@@ -172,42 +136,6 @@
       "type": "timeseries"
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                1
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "1m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "max"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "1m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "Too many 5xx errors",
-        "name": "{{domain_name}} Too Many 5xx Errors in Django During the Last Minute",
-        "noDataState": "no_data",
-        "notifications": []
-      },
       "datasource": null,
       "fieldConfig": {
         "defaults": {
@@ -298,42 +226,6 @@
       "type": "timeseries"
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                80
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "1m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "1m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "Free space on RootFS above threshold",
-        "name": "{{domain_name}} Disk Usage on RootFS alert",
-        "noDataState": "alerting",
-        "notifications": []
-      },
       "datasource": null,
       "fieldConfig": {
         "defaults": {
