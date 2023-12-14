@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 metadata__language=language,
             )
             .filter_safe_for_poll(Poll.default_poll())
-            .order_by("tournesol_score")
+            .order_by("all_poll_ratings__tournesol_score")
         )
 
     def get_existing_items(self, yt_client, playlist_id):

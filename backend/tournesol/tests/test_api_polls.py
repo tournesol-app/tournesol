@@ -123,11 +123,6 @@ class PollsRecommendationsTestCase(TestCase):
             score_mode="all_equal",
         )
 
-        EntityPollRatingFactory(entity=self.video_1, sum_trust_scores=2)
-        EntityPollRatingFactory(entity=self.video_2, sum_trust_scores=3)
-        EntityPollRatingFactory(entity=self.video_3, sum_trust_scores=4)
-        EntityPollRatingFactory(entity=self.video_4, sum_trust_scores=5)
-
     def test_anon_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -737,15 +732,8 @@ class PollsEntityTestCase(TestCase):
         self.video_1 = VideoFactory(
             uid="yt:video_id_01",
             tournesol_score=-2,
-            make_safe_for_poll=False
-        )
-        EntityPollRatingFactory(
-            entity=self.video_1,
-            poll=Poll.default_poll(),
-            sum_trust_scores=4,
             n_contributors=4,
-            n_comparisons=8,
-            tournesol_score=self.video_1.tournesol_score,
+            n_comparisons=8
         )
         self.user = UserFactory(username=self._user)
 
@@ -979,12 +967,12 @@ class PollRecommendationsWithLowSumTrustScoresTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.video_1 = VideoFactory(tournesol_score=42, make_safe_for_poll=False)
-        self.video_2 = VideoFactory(tournesol_score=42, make_safe_for_poll=False)
+        epr1 = EntityPollRatingFactory(sum_trust_scores=1, tournesol_score=42)
+        epr2 =  EntityPollRatingFactory(sum_trust_scores=3, tournesol_score=42)
+        self.video_1 = epr1.entity
+        self.video_2 = epr2.entity
         VideoCriteriaScoreFactory(entity=self.video_1, score=42)
         VideoCriteriaScoreFactory(entity=self.video_2, score=42)
-        EntityPollRatingFactory(entity=self.video_1, sum_trust_scores=1)
-        EntityPollRatingFactory(entity=self.video_2, sum_trust_scores=3)
 
     def test_low_sum_trust_scores_excluded_from_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")

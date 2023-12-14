@@ -17,6 +17,11 @@ class ComparisonFactory(factory.django.DjangoModelFactory):
     entity_1 = factory.SubFactory(VideoFactory)
     entity_2 = factory.SubFactory(VideoFactory)
 
+    @factory.post_generation
+    def update_n_ratings(obj, create, extracted, **kwargs):
+        obj.entity_1.update_entity_poll_rating(poll=obj.poll)
+        obj.entity_2.update_entity_poll_rating(poll=obj.poll)
+
 
 class ComparisonCriteriaScoreFactory(factory.django.DjangoModelFactory):
 

@@ -201,15 +201,6 @@ class Entity(models.Model):
         null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
     )
 
-    # TODO
-    # the following fields should be moved in a n-n relation with Poll
-    tournesol_score = models.FloatField(
-        null=True,
-        blank=True,
-        default=None,
-        help_text="The aggregated of all criteria for all users in a specific poll.",
-    )
-
     search_config_name = models.CharField(
         blank=True,
         default=DEFAULT_SEARCH_CONFIG,
