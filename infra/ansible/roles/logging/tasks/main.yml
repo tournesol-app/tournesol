@@ -65,7 +65,6 @@
     dest: /etc/systemd/system/loki.service
   notify:
     - Restart Loki
-    - Create Grafana Loki datasource
 
 - name: Enable and start Loki
   systemd:
@@ -93,6 +92,14 @@
     enabled: yes
     daemon_reload: yes
 
+- name: Create Grafana Loki datasource
+  template:
+    dest: /etc/grafana/provisioning/datasources/loki.yaml
+    src: datasource_loki.yaml.j2
+    mode: u=rw,g=r,o=
+    group: grafana
+  notify: Restart Grafana
+
 - name: Install Grafana worldmap panel plugin
   community.grafana.grafana_plugin:
     name: grafana-worldmap-panel
@@ -103,6 +110,11 @@
   notify: Restart Grafana
 
 - meta: flush_handlers
+
+- name: Wait for Grafana API
+  wait_for:
+    port: 3000
+    timeout: 32
 
 - name: Copy Grafana dashboard based on Nginx logs
   copy:
