@@ -54,9 +54,7 @@ class ComparisonApiTestCase(TestCase):
     non_existing_comparison = {
         "entity_a": {"uid": _uid_01},
         "entity_b": {"uid": _uid_03},
-        "criteria_scores": [
-            {"criteria": "largely_recommended", "score": 10, "weight": 10}
-        ],
+        "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
         "duration_ms": 103,
     }
 
@@ -67,9 +65,7 @@ class ComparisonApiTestCase(TestCase):
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
         self.poll_videos = Poll.default_poll()
-        self.comparisons_base_url = "/users/me/comparisons/{}".format(
-            self.poll_videos.name
-        )
+        self.comparisons_base_url = "/users/me/comparisons/{}".format(self.poll_videos.name)
 
         self.client = APIClient()
 
@@ -261,16 +257,12 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
         comparison_criteria_scores = comparison.criteria_scores.all()
-        self.assertEqual(
-            comparison_criteria_scores.count(), len(data["criteria_scores"])
-        )
+        self.assertEqual(comparison_criteria_scores.count(), len(data["criteria_scores"]))
         self.assertEqual(
             comparison_criteria_scores[0].criteria,
             data["criteria_scores"][0]["criteria"],
         )
-        self.assertEqual(
-            comparison_criteria_scores[0].score, data["criteria_scores"][0]["score"]
-        )
+        self.assertEqual(comparison_criteria_scores[0].score, data["criteria_scores"][0]["score"])
         self.assertEqual(
             comparison_criteria_scores[0].weight, data["criteria_scores"][0]["weight"]
         )
@@ -286,9 +278,7 @@ class ComparisonApiTestCase(TestCase):
 
         self.assertEqual(resp_data["duration_ms"], data["duration_ms"])
 
-        self.assertEqual(
-            len(response.data["criteria_scores"]), len(data["criteria_scores"])
-        )
+        self.assertEqual(len(response.data["criteria_scores"]), len(data["criteria_scores"]))
         self.assertEqual(
             response.data["criteria_scores"][0]["criteria"],
             data["criteria_scores"][0]["criteria"],
@@ -401,9 +391,7 @@ class ComparisonApiTestCase(TestCase):
         )
 
         comparison_criteria_scores = comparison.criteria_scores.all()
-        self.assertEqual(
-            comparison_criteria_scores.count(), len(data["criteria_scores"])
-        )
+        self.assertEqual(comparison_criteria_scores.count(), len(data["criteria_scores"]))
         self.assertEqual(comparison_criteria_scores[0].weight, 1)
 
     @override_settings(YOUTUBE_API_KEY=None)
@@ -767,11 +755,7 @@ class ComparisonApiTestCase(TestCase):
                 self._uid_01,
                 self._uid_02,
             ),
-            {
-                "criteria_scores": [
-                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
-                ]
-            },
+            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -787,14 +771,68 @@ class ComparisonApiTestCase(TestCase):
             "/users/me/comparisons/{}/{}/{}/".format(
                 non_existing_poll, self._uid_01, self._uid_02
             ),
-            {
-                "criteria_scores": [
-                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
-                ]
-            },
+            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_authenticated_can_update(self):
+        self.client.force_authenticate(user=self.user)
+
+        ent_context = EntityContext.objects.create(
+            name="context_safe_03",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.videos[2].metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll_videos,
+        )
+
+        ent_context_text = EntityContextLocale.objects.create(
+            context=ent_context,
+            language="en",
+            text="Hello context 03",
+        )
+
+        comparison1 = Comparison.objects.create(
+            poll=self.poll_videos,
+            user=self.user,
+            entity_1=self.videos[2],
+            entity_2=self.videos[3],
+        )
+        comparison2 = Comparison.objects.create(
+            poll=self.poll_videos,
+            user=self.user,
+            entity_1=self.videos[1],
+            entity_2=self.videos[2],
+        )
+        response = self.client.put(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_03,
+                self._uid_04,
+            ),
+            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
+            format="json",
+        )
+
+        data = response.data
+        self.assertEqual(len(data["entity_a_contexts"]), 1)
+        self.assertEqual(data["entity_a_contexts"][0]["text"], ent_context_text.text)
+        self.assertEqual(data["entity_b_contexts"], [])
+
+        response = self.client.get(
+            self.comparisons_base_url,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        comp1 = response.data["results"][0]
+        comp2 = response.data["results"][1]
+        self.assertEqual(comp1["entity_a"]["uid"], comparison1.entity_1.uid)
+        self.assertEqual(comp1["entity_b"]["uid"], comparison1.entity_2.uid)
+        self.assertEqual(comp2["entity_a"]["uid"], comparison2.entity_1.uid)
+        self.assertEqual(comp2["entity_b"]["uid"], comparison2.entity_2.uid)
 
     def test_anonymous_cant_delete(self):
         """
@@ -874,54 +912,6 @@ class ComparisonApiTestCase(TestCase):
                 entity_2=self.videos[1],
             )
 
-    def test_authenticated_integrated_comparison_list(self):
-        self.client.force_authenticate(user=self.user)
-        comparison1 = Comparison.objects.create(
-            poll=self.poll_videos,
-            user=self.user,
-            entity_1=self.videos[2],
-            entity_2=self.videos[3],
-        )
-        comparison2 = Comparison.objects.create(
-            poll=self.poll_videos,
-            user=self.user,
-            entity_1=self.videos[1],
-            entity_2=self.videos[2],
-        )
-        self.client.put(
-            "{}/{}/{}/".format(
-                self.comparisons_base_url,
-                self._uid_03,
-                self._uid_04,
-            ),
-            {
-                "criteria_scores": [
-                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
-                ]
-            },
-            format="json",
-        )
-        response = self.client.get(
-            self.comparisons_base_url,
-            format="json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        result_comparison1 = response.data["results"][0]
-        result_comparison2 = response.data["results"][1]
-        self.assertEqual(
-            result_comparison1["entity_a"]["uid"], comparison1.entity_1.uid
-        )
-        self.assertEqual(
-            result_comparison1["entity_b"]["uid"], comparison1.entity_2.uid
-        )
-        self.assertEqual(
-            result_comparison2["entity_a"]["uid"], comparison2.entity_1.uid
-        )
-        self.assertEqual(
-            result_comparison2["entity_b"]["uid"], comparison2.entity_2.uid
-        )
-
     def test_n_ratings_from_video(self):
         self.client.force_authenticate(user=self.user)
 
@@ -932,9 +922,7 @@ class ComparisonApiTestCase(TestCase):
         data1 = {
             "entity_a": {"uid": self._uid_05},
             "entity_b": {"uid": self._uid_06},
-            "criteria_scores": [
-                {"criteria": "largely_recommended", "score": 10, "weight": 10}
-            ],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
         response = self.client.post(
@@ -947,9 +935,7 @@ class ComparisonApiTestCase(TestCase):
         data2 = {
             "entity_a": {"uid": self._uid_05},
             "entity_b": {"uid": self._uid_07},
-            "criteria_scores": [
-                {"criteria": "largely_recommended", "score": 10, "weight": 10}
-            ],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
         response = self.client.post(
@@ -964,9 +950,7 @@ class ComparisonApiTestCase(TestCase):
         data3 = {
             "entity_a": {"uid": self._uid_05},
             "entity_b": {"uid": self._uid_06},
-            "criteria_scores": [
-                {"criteria": "largely_recommended", "score": 10, "weight": 10}
-            ],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
         response = self.client.post(
@@ -989,9 +973,7 @@ class ComparisonApiTestCase(TestCase):
 
     @patch("tournesol.utils.api_youtube.get_video_metadata")
     def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):
-        mock_get_video_metadata.return_value = {
-            "views": "42000"
-        }
+        mock_get_video_metadata.return_value = {"views": "42000"}
 
         user = UserFactory(username="non_existing_user")
         self.client.force_authenticate(user=user)
@@ -1007,9 +989,7 @@ class ComparisonApiTestCase(TestCase):
         data = {
             "entity_a": {"uid": self._uid_01},
             "entity_b": {"uid": self._uid_02},
-            "criteria_scores": [
-                {"criteria": "largely_recommended", "score": 10, "weight": 10}
-            ],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
         }
         response = self.client.post(self.comparisons_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
@@ -1020,9 +1000,7 @@ class ComparisonApiTestCase(TestCase):
         data = {
             "entity_a": {"uid": self._uid_01},
             "entity_b": {"uid": self._uid_03},
-            "criteria_scores": [
-                {"criteria": "largely_recommended", "score": 10, "weight": 10}
-            ],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
         }
 
         response = self.client.post(self.comparisons_base_url, data, format="json")
@@ -1117,18 +1095,9 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         resp = self.client.post(
             f"/users/me/comparisons/{self.poll.name}",
             data={
-                "entity_a": {
-                    "uid": self.entities[0].uid
-                },
-                "entity_b": {
-                    "uid": self.entities[2].uid
-                },
-                "criteria_scores": [
-                    {
-                        "criteria": "criteria1",
-                        "score": 3
-                    }
-                ]
+                "entity_a": {"uid": self.entities[0].uid},
+                "entity_b": {"uid": self.entities[2].uid},
+                "criteria_scores": [{"criteria": "criteria1", "score": 3}],
             },
             format="json",
         )
