@@ -236,13 +236,8 @@ class Entity(models.Model):
         """
         Update the related `EntityPollRating` object.
 
-        The new ratings can be provided directly by passing `ratings` as
-        argument, or automatically computed by reading the database instead.
-
         Keyword arguments:
         poll -- the poll inside which the ratings will be saved
-        ratings -- the first item is the nbr of comparisons, the second the
-                   nbr of contributors
         """
         from .entity_poll_rating import EntityPollRating  # pylint: disable=import-outside-toplevel
         entity_rating, _ = EntityPollRating.objects.get_or_create(
