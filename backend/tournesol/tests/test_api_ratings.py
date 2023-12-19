@@ -36,9 +36,9 @@ class RatingApi(TestCase):
         self.user1 = UserFactory()
         self.user2 = UserFactory()
 
-        self.video1 = VideoFactory(make_safe_for_poll=False)
-        self.video2 = VideoFactory(make_safe_for_poll=False)
-        self.video3 = VideoFactory(make_safe_for_poll=False)
+        self.video1 = VideoFactory(tournesol_score=6)
+        self.video2 = VideoFactory(tournesol_score=1)
+        self.video3 = VideoFactory(tournesol_score=-10)
 
         ComparisonFactory(
             user=self.user1,
@@ -148,9 +148,7 @@ class RatingApi(TestCase):
         """
         An authenticated user can create a public rating.
         """
-        EntityPollRatingFactory(
-            poll=self.poll_videos,
-            entity=self.video3,
+        self.video3.all_poll_ratings.update(
             tournesol_score=50,
             n_contributors=20,
             n_comparisons=30,
@@ -311,8 +309,6 @@ class RatingApi(TestCase):
             language="en",
             text="Hello context",
         )
-
-        EntityPollRatingFactory(poll=self.poll_videos, entity=self.video1, tournesol_score=1)
 
         response = self.client.get(self.ratings_base_url, format="json")
         rating1 = response.data["results"][1]
@@ -478,10 +474,6 @@ class RatingApi(TestCase):
         An authenticated user can list his/her ratings related to the `videos`
         poll by the entities' collective score.
         """
-
-        EntityPollRatingFactory(poll=self.poll_videos, entity=self.video1, tournesol_score=6)
-        EntityPollRatingFactory(poll=self.poll_videos, entity=self.video2, tournesol_score=1)
-
         self.client.force_authenticate(user=self.user1)
 
         response = self.client.get(

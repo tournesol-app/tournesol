@@ -336,18 +336,6 @@ class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
         poll = self.poll_from_url
         return Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
 
-    def get_object(self):
-        entity = super().get_object()
-
-        # The `total_score` is not a natural attribute of an entity. It is
-        # used by the recommendations API and computed during the queryset
-        # building. The value of the `total_score` may vary depending on the
-        # criteria filters used in a recommendations HTTP request. As there is
-        # no such filters in the `PollsEntityView` we consider that the
-        # `total_score` matches the `tournesol_score`.
-        entity.total_score = entity.tournesol_score
-        return entity
-
 
 class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     """

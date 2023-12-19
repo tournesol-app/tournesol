@@ -5,7 +5,7 @@ from typing import Optional
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Exists, OuterRef, Q, Subquery, Sum
+from django.db.models import Count, Exists, OuterRef, Q, Subquery, Sum
 from django.db.models.functions import Coalesce
 from django.utils.functional import cached_property
 
@@ -79,19 +79,17 @@ class EntityPollRating(models.Model):
         """
         Refresh the number of comparisons and contributors.
         """
-        self.n_comparisons = (
-            Comparison.objects.filter(Q(entity_1=self.entity) | Q(entity_2=self.entity))
-            .filter(Q(poll=self.poll))
-            .count()
+        counts = (
+            Comparison.objects
+            .filter(Q(entity_1=self.entity) | Q(entity_2=self.entity))
+            .filter(poll=self.poll)
+            .aggregate(
+                n_comparisons=Count("*"),
+                n_contributors=Count("user", distinct=True),
+            )
         )
-
-        self.n_contributors = (
-            Comparison.objects.filter(Q(entity_1=self.entity) | Q(entity_2=self.entity))
-            .filter(Q(poll=self.poll))
-            .distinct("user")
-            .count()
-        )
-
+        self.n_comparisons = counts["n_comparisons"]
+        self.n_contributors = counts["n_contributors"]
         self.save(update_fields=["n_comparisons", "n_contributors"])
 
     @staticmethod

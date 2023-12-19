@@ -174,10 +174,6 @@ class EntitySerializer(ModelSerializer):
             "uid",
             "type",
             "metadata",
-            # XXX: the `tournesol_score` field is available directly in the
-            # Entity model for now, but will be moved in an n-n relation
-            # between Entity and Poll
-            "tournesol_score",
             "polls",
         ]
         read_only_fields = fields
@@ -214,14 +210,12 @@ class EntityCriteriaDistributionSerializer(EntitySerializer):
             "uid",
             "type",
             "metadata",
-            "tournesol_score",
             "criteria_scores_distributions"
         ]
         read_only_fields = [
             "uid",
             "type",
             "metadata",
-            "tournesol_score",
             "criteria_scores_distributions"
         ]
 

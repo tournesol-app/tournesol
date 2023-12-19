@@ -1,7 +1,7 @@
 import datetime
 import random
 import string
-from typing import Union
+from typing import Optional, Union
 
 import factory
 from django.conf import settings
@@ -31,27 +31,34 @@ class EntityFactory(factory.django.DjangoModelFactory):
         make_safe_for_poll: Union[bool, Poll] = True,
         n_comparisons: int = 0,
         n_contributors: int = 0,
+        tournesol_score: Optional[float] = None,
         **kwargs
     ):
-        entity = super().create(*args, **kwargs)
         """
         If `make_safe_for_poll` is True, the entity will be made safe for the default Poll by
         creating an EntityPollRating with a high `sum_trust_score`. If a poll is provided it will
         be made safe for the specified Poll. If something else is provided, nothing will be done.
         """
+        entity = super().create(*args, **kwargs)
+        create_rating_for_poll = None
         if make_safe_for_poll is True:
-            make_safe_for_poll = Poll.default_poll()
-        if isinstance(make_safe_for_poll, Poll):
+            create_rating_for_poll = Poll.default_poll()
+        elif make_safe_for_poll is False and tournesol_score is not None:
+            create_rating_for_poll = Poll.default_poll()
+        elif isinstance(make_safe_for_poll, Poll):
+            create_rating_for_poll = make_safe_for_poll
+
+        if create_rating_for_poll is not None:
             from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 
             EntityPollRatingFactory(
                 sum_trust_scores=settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
                 entity=entity,
-                poll=make_safe_for_poll,
+                poll=create_rating_for_poll,
                 tournesol_score=(
                     cls.get_safe_tournesol_score()
-                    if entity.tournesol_score is None
-                    else entity.tournesol_score
+                    if tournesol_score is None
+                    else tournesol_score
                 ),
                 n_comparisons=n_comparisons,
                 n_contributors=n_contributors,

@@ -78,8 +78,8 @@ class TestMlTrain(TransactionTestCase):
 
         video1 = VideoFactory(make_safe_for_poll=False)
         video2 = VideoFactory(make_safe_for_poll=False)
-        rating_a = EntityPollRating.objects.create(entity=video1, poll=default_poll)
-        rating_b = EntityPollRating.objects.create(entity=video2, poll=default_poll)
+        rating_1 = EntityPollRating.objects.create(entity=video1, poll=default_poll)
+        rating_2 = EntityPollRating.objects.create(entity=video2, poll=default_poll)
 
         for user in [user1, user2]:
             ComparisonCriteriaScoreFactory(
@@ -90,19 +90,14 @@ class TestMlTrain(TransactionTestCase):
                 criteria="largely_recommended",
             )
 
-        self.assertEqual(video1.tournesol_score, None)
-        self.assertEqual(video2.tournesol_score, None)
+        self.assertEqual(rating_1.tournesol_score, None)
+        self.assertEqual(rating_2.tournesol_score, None)
 
         call_command("ml_train")
-        video1.refresh_from_db()
-        video2.refresh_from_db()
-        rating_a.refresh_from_db()
-        rating_b.refresh_from_db()
-
-        self.assertTrue(video1.tournesol_score < 0)
-        self.assertTrue(video2.tournesol_score > 0)
-        self.assertTrue(rating_a.tournesol_score < 0)
-        self.assertTrue(rating_b.tournesol_score > 0)
+        rating_1.refresh_from_db()
+        rating_2.refresh_from_db()
+        self.assertTrue(rating_1.tournesol_score < 0)
+        self.assertTrue(rating_2.tournesol_score > 0)
 
     def test_ml_on_multiple_polls(self):
         user1 = UserFactory(email="user1@verified.test")
@@ -131,17 +126,18 @@ class TestMlTrain(TransactionTestCase):
         )
 
     def test_ml_run_with_video_having_score_zero(self):
-        video = VideoFactory()
+        video = VideoFactory(make_safe_for_poll=False)
         ComparisonCriteriaScoreFactory(
             comparison__entity_1=video,
             score=0,
             criteria="largely_recommended",
         )
+        rating = video.all_poll_ratings.get()
 
-        self.assertEqual(video.tournesol_score, None)
+        self.assertEqual(rating.tournesol_score, None)
         call_command("ml_train")
-        video.refresh_from_db()
-        self.assertAlmostEqual(video.tournesol_score, 0.0, delta=3)
+        rating.refresh_from_db()
+        self.assertAlmostEqual(rating.tournesol_score, 0.0, delta=3)
 
     def test_individual_scaling_are_computed(self):
         # User 1 will belong to calibration users (as the most active trusted user)
@@ -186,8 +182,8 @@ class TestMlTrain(TransactionTestCase):
         # 20 non_verified_users
         non_verified_users = UserFactory.create_batch(20)
 
-        video1 = VideoFactory()
-        video2 = VideoFactory()
+        video1 = VideoFactory(make_safe_for_poll=False)
+        video2 = VideoFactory(make_safe_for_poll=False)
 
         # Pretrusted users prefer video 2
         for user in verified_users:
@@ -209,13 +205,16 @@ class TestMlTrain(TransactionTestCase):
                 criteria="largely_recommended",
             )
 
-        self.assertEqual(video1.tournesol_score, None)
-        self.assertEqual(video2.tournesol_score, None)
+        rating1 = video1.all_poll_ratings.get()
+        rating2 = video2.all_poll_ratings.get()
+
+        self.assertEqual(rating1.tournesol_score, None)
+        self.assertEqual(rating2.tournesol_score, None)
         call_command("ml_train")
-        video1.refresh_from_db()
-        video2.refresh_from_db()
+        rating1.refresh_from_db()
+        rating2.refresh_from_db()
         # At least 1 pt difference between the 2 videos
-        self.assertGreater(video2.tournesol_score, video1.tournesol_score + 1)
+        self.assertGreater(rating2.tournesol_score, rating1.tournesol_score + 1)
 
         # Asserts that voting rights have been given the correct values based on the number of
         # contributors and their verified status
@@ -241,8 +240,8 @@ class TestMlTrain(TransactionTestCase):
         user1 = UserFactory()
         user2 = UserFactory()
 
-        video1 = VideoFactory()
-        video2 = VideoFactory()
+        video1 = VideoFactory(make_safe_for_poll=False)
+        video2 = VideoFactory(make_safe_for_poll=False)
 
         # User1 prefers video1, and their ratings are public
         ComparisonCriteriaScoreFactory(
@@ -264,10 +263,13 @@ class TestMlTrain(TransactionTestCase):
         )
         ContributorRating.objects.filter(user=user2).update(is_public=False)
 
-        self.assertEqual(video1.tournesol_score, None)
-        self.assertEqual(video2.tournesol_score, None)
-        call_command("ml_train")
-        video1.refresh_from_db()
-        video2.refresh_from_db()
+        rating1 = video1.all_poll_ratings.get()
+        rating2 = video2.all_poll_ratings.get()
 
-        self.assertGreater(video1.tournesol_score, video2.tournesol_score + 1)
+        self.assertEqual(rating1.tournesol_score, None)
+        self.assertEqual(rating2.tournesol_score, None)
+        call_command("ml_train")
+        rating1.refresh_from_db()
+        rating2.refresh_from_db()
+
+        self.assertGreater(rating1.tournesol_score, rating2.tournesol_score + 1)
