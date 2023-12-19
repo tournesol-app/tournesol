@@ -24,6 +24,7 @@ export const generateImportWrappers = async (manifest) => {
           await mkdir(dirname(path), { recursive: true });
           await writeFile(path, content);
           contentScript.js[i] = newJs;
+          manifest['web_accessible_resources'].push(js);
         })
       );
     })

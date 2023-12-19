@@ -18,6 +18,11 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Prepare extension
+        working-directory: browser-extension
+        run: |
+          node prepareExtension.js
+
       - uses: cypress-io/github-action@v5
         with:
           working-directory: tests

@@ -93,6 +93,7 @@ const manifest = {
     'images/*',
     'utils.js',
     'models/*',
+    'config.js',
   ],
 };
 
