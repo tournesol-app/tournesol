@@ -44,6 +44,9 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
   },
+  "entityContextChip": {
+    "context": "context"
+  },
   "entityIndividualScores": {
     "inYourOpinion": "your score <1></1>"
   },
