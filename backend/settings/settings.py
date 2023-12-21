@@ -419,7 +419,7 @@ RECOMMENDATIONS_MIN_TOURNESOL_SCORE = 20.0
 RECOMMENDATIONS_MIN_TRUST_SCORES = 1.5
 
 UPDATE_MEHESTAN_SCORES_ON_COMPARISON = False
-MEHESTAN_KEEP_N_FREE_CPU = server_settings.get("MEHESTAN_KEEP_N_FREE_CPU", 3)
+MEHESTAN_KEEP_N_FREE_CPU = server_settings.get("MEHESTAN_KEEP_N_FREE_CPU", 2)
 
 # Configuration of the app `core`
 # See the documentation for the complete description.
