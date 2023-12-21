@@ -1,0 +1,31 @@
+# Grafana Alerting
+#
+# These tasks configure the Grafana alerts using file provisioning.
+#
+# [REQUIREMENTS]
+#
+# They depend on the following tasks:
+#
+#   - monitoring
+#   - logging
+#
+
+- name: Set up Grafana alerts
+  template:
+    dest: /etc/grafana/provisioning/alerting/defaultEvaluationGroup.yaml
+    src: defaultEvaluationGroup.yaml.j2
+    mode: u=rw,g=r,o=
+    group: grafana
+  notify: Restart Grafana
+
+- name: Set up Grafana alerting policies
+  template:
+    dest: "/etc/grafana/provisioning/alerting/{{ item }}"
+    src: "{{ item }}.j2"
+    mode: u=rw,g=r,o=
+    group: grafana
+  with_items:
+    - contactPoints.yaml
+    - policies.yaml
+  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
+  notify: Restart Grafana

@@ -1,0 +1,16 @@
+apiVersion: 1
+policies:
+    - orgId: 1
+      receiver: Tournesol Discord
+      group_by:
+        - grafana_folder
+        - alertname
+      routes:
+        - receiver: Tournesol Discord
+          object_matchers:
+            - - __contacts__
+              - =~
+              - .*"Tournesol Discord".*
+          continue: true
+          repeat_interval: 5m
+      repeat_interval: 5m

@@ -1,0 +1,11 @@
+apiVersion: 1
+contactPoints:
+    - orgId: 1
+      name: Tournesol Discord
+      receivers:
+        - uid: discord
+          type: discord
+          settings:
+            uploadImage: true
+            url: {{discord_infra_alert_webhook}}
+          disableResolveMessage: false

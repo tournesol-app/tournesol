@@ -99,8 +99,8 @@ class ContributorRecommendationsApiTestCase(TestCase):
 
         # The collective metadata `n_comparisons` and `n_contributors` must
         # be present in the response of the public personal reco. endpoint.
-        self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 0)
-        self.assertEqual(results[0]["collective_rating"]["n_contributors"], 0)
+        self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 2)
+        self.assertEqual(results[0]["collective_rating"]["n_contributors"], 2)
 
         response = self.client.get(
             f"/users/{self.user2.username}/recommendations/{self.poll.name}",
@@ -116,8 +116,8 @@ class ContributorRecommendationsApiTestCase(TestCase):
 
         # The collective metadata `n_comparisons` and `n_contributors` must
         # be present in the response of the public personal reco. endpoint.
-        self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 0)
-        self.assertEqual(results[0]["collective_rating"]["n_contributors"], 0)
+        self.assertEqual(results[0]["collective_rating"]["n_comparisons"], 2)
+        self.assertEqual(results[0]["collective_rating"]["n_contributors"], 2)
 
     def test_recommendations_privacy_anon(self):
         """

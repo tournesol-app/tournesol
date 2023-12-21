@@ -18,7 +18,7 @@ from rest_framework.viewsets import GenericViewSet
 from tournesol.entities import VideoEntity
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
-from tournesol.models import Entity
+from tournesol.models import Entity, Poll
 from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.serializers.entity import VideoSerializer, VideoSerializerWithCriteria
@@ -178,11 +178,8 @@ class VideoViewSet(
         show_unsafe = request.query_params.get("unsafe") == "true"
 
         if not show_unsafe:
-            queryset = queryset.filter(
-                all_poll_ratings__poll__name=DEFAULT_POLL_NAME,
-                all_poll_ratings__sum_trust_scores__gte=settings.RECOMMENDATIONS_MIN_TRUST_SCORES,
-                tournesol_score__gt=0,
-            )
+            queryset = queryset.filter_safe_for_poll(Poll.default_poll())
+
         return (
             queryset
             .with_prefetched_scores(poll_name=DEFAULT_POLL_NAME)
