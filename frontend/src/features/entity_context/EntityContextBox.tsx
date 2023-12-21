@@ -143,7 +143,7 @@ const EntityContextList = ({
 
         {collapsible && (
           <IconButton
-            aria-label="Show question's answer"
+            aria-label="Show context"
             onClick={() => {
               toggleDisplayText(displayText ? true : false);
             }}
