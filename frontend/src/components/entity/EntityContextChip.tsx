@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
-import { Box, Chip } from '@mui/material';
+import { Chip } from '@mui/material';
 
 import { EntityContext, OriginEnum } from 'src/services/openapi';
 
@@ -25,20 +25,18 @@ export const EntityContextChip = ({
     (context) => context.unsafe && context.origin === OriginEnum.ASSOCIATION
   );
 
-  if (!unsafeContext) {
+  if (unsafeContext == undefined) {
     return <></>;
   }
 
   return (
-    <Box pr={1} display="flex" justifyContent="flex-end">
-      <Chip
-        size="small"
-        color="warning"
-        variant="outlined"
-        label={t('entityContextChip.context')}
-        onClick={handleClick}
-      />
-    </Box>
+    <Chip
+      size="small"
+      color="warning"
+      variant="outlined"
+      label={t('entityContextChip.context')}
+      onClick={handleClick}
+    />
   );
 };
 

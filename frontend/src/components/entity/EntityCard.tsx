@@ -285,15 +285,18 @@ export const RowEntityCard = ({
             withLinks={false}
           />
         )}
-        {displayEntityContextChip && 'entity_contexts' in result && (
-          <EntityContextChip
-            uid={result.entity.uid}
-            entityContexts={result.entity_contexts}
-          />
-        )}
-        {individualScores && (
-          <EntityIndividualScores scores={individualScores} />
-        )}
+
+        <Box pr={1} display="flex" justifyContent="flex-end" gap={1}>
+          {displayEntityContextChip && 'entity_contexts' in result && (
+            <EntityContextChip
+              uid={result.entity.uid}
+              entityContexts={result.entity_contexts}
+            />
+          )}
+          {individualScores && (
+            <EntityIndividualScores scores={individualScores} />
+          )}
+        </Box>
       </Stack>
     </Box>
   );
