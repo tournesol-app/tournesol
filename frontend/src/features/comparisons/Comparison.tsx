@@ -87,7 +87,6 @@ const Comparison = ({
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
 
-  const initializing = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const [initialComparison, setInitialComparison] =
@@ -148,12 +147,10 @@ const Comparison = ({
         .then((comparison) => {
           setInitialComparison(comparison);
           setIsLoading(false);
-          initializing.current = false;
         })
         .catch(() => {
           setInitialComparison(null);
           setIsLoading(false);
-          initializing.current = false;
         });
   }, [pollName, uidA, uidB, selectorA.uid, selectorB.uid]);
 
@@ -162,7 +159,7 @@ const Comparison = ({
    * corresponding localized entity contexts.
    */
   useEffect(() => {
-    if (initializing.current || isLoading) {
+    if (isLoading) {
       return;
     }
 
