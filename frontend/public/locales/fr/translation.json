@@ -98,6 +98,12 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
     "comparisonCriteria": "Critères de comparaison"
   },
+  "entityContext": {
+    "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - L'association Tournesol souhaite vous apporter du contexte.",
+    "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - L'association Tournesol souhaite vous apporter du contexte.",
+    "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément.",
+    "about": "A propos de"
+  },
   "comparisonHelper": {
     "hideHelp": "Cacher l'aide",
     "showHelp": "Montrer l'aide pour les comparaisons"
@@ -115,9 +121,6 @@
   },
   "entityContextTextList": {
     "whyThisMessage": "Pourquoi ce message ?"
-  },
-  "contextsFromOrigin": {
-    "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément."
   },
   "entitySelector": {
     "newVideo": "Sélectionner une nouvelle vidéo automatiquement",
