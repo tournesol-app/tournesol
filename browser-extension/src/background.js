@@ -10,7 +10,7 @@ import {
   getSingleSetting,
 } from './utils.js';
 
-import { frontendHostEquals } from './config.js';
+import { frontendHost } from './config.js';
 
 const oversamplingRatioForRecentVideos = 3;
 const oversamplingRatioForOldVideos = 50;
@@ -365,6 +365,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
     chrome.tabs.sendMessage(event.tabId, 'historyStateUpdated');
   },
   {
-    url: [{ hostEquals: frontendHostEquals }],
+    url: [{ hostEquals: frontendHost }],
   }
 );

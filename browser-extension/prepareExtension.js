@@ -103,12 +103,12 @@ const config = getForEnv(
   {
     production: {
       frontendUrl: 'https://tournesol.app',
-      frontendHostEquals: 'tournesol.app',
+      frontendHost: 'tournesol.app',
       apiUrl: 'https://api.tournesol.app',
     },
     'dev-env': {
       frontendUrl: 'http://localhost:3000',
-      frontendHostEquals: 'localhost:3000',
+      frontendHost: 'localhost:3000',
       apiUrl: 'http://localhost:8000',
     },
   },
