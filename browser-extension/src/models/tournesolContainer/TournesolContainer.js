@@ -71,7 +71,7 @@ export class TournesolContainer {
         'tournesol_mui_like_button view_more_link small';
       view_more_link.target = '_blank';
       view_more_link.rel = 'noopener';
-      view_more_link.href = `${frontendUrl}recommendations?search=${
+      view_more_link.href = `${frontendUrl}/recommendations?search=${
         this.recommendations.searchQuery
       }&language=${this.recommendations.recommandationsLanguages.replaceAll(
         ',',
@@ -93,7 +93,7 @@ export class TournesolContainer {
     // Tournesol icon
     const tournesolIcon = document.createElement('img');
     tournesolIcon.setAttribute('id', 'tournesol_icon');
-    tournesolIcon.setAttribute('src', `${frontendUrl}svg/tournesol.svg`);
+    tournesolIcon.setAttribute('src', `${frontendUrl}/svg/tournesol.svg`);
     tournesolIcon.setAttribute('width', '24');
     topActionBar.append(tournesolIcon);
 
@@ -106,7 +106,7 @@ export class TournesolContainer {
     // Learn more
     const learnMore = document.createElement('a');
     learnMore.id = 'tournesol_link';
-    learnMore.href = `${frontendUrl}utm_source=extension`;
+    learnMore.href = `${frontendUrl}?utm_source=extension`;
     learnMore.target = '_blank';
     learnMore.rel = 'noopener';
     learnMore.append(chrome.i18n.getMessage('learnMore'));

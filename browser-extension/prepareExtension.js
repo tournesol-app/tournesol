@@ -97,17 +97,19 @@ const manifest = {
   ],
 };
 
+// Please DO NOT add a trailing slash to front end URL, this prevents
+// creating duplicates in our web analytics tool
 const config = getForEnv(
   {
     production: {
-      frontendUrl: 'https://tournesol.app/',
+      frontendUrl: 'https://tournesol.app',
       frontendHostEquals: 'tournesol.app',
-      apiUrl: 'https://api.tournesol.app/',
+      apiUrl: 'https://api.tournesol.app',
     },
     'dev-env': {
-      frontendUrl: 'http://localhost:3000/',
+      frontendUrl: 'http://localhost:3000',
       frontendHostEquals: 'localhost:3000',
-      apiUrl: 'http://localhost:8000/',
+      apiUrl: 'http://localhost:8000',
     },
   },
   env

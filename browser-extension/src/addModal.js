@@ -17,7 +17,7 @@ const EXT_MODAL_INVISIBLE_STATE = 'none';
 // unique HTML id of the Tournesol iframe
 const IFRAME_TOURNESOL_ID = 'x-tournesol-iframe';
 // URL of the Tournesol login page
-const IFRAME_TOURNESOL_LOGIN_URL = `${frontendUrl}login?embed=1&dnt=1`;
+const IFRAME_TOURNESOL_LOGIN_URL = `${frontendUrl}/login?embed=1&dnt=1`;
 
 /**
  * YouTube doesnt completely load a page, so content script doesn't

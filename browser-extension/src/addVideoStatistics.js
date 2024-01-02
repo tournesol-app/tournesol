@@ -89,7 +89,7 @@ function process() {
 
           // On click
           statisticsButton.onclick = () => {
-            open(`${frontendUrl}entities/yt:${videoId}?utm_source=extension`);
+            open(`${frontendUrl}/entities/yt:${videoId}?utm_source=extension`);
           };
 
           var div =

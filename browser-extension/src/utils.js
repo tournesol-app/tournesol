@@ -45,7 +45,7 @@ export const fetchTournesolApi = async (path, options = {}) => {
     }
   }
 
-  return fetch(`${apiUrl}${path}`, fetchOptions).catch(console.error);
+  return fetch(`${apiUrl}/${path}`, fetchOptions).catch(console.error);
 };
 
 export const addRateLater = async (video_id) => {

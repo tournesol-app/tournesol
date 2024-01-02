@@ -37,7 +37,7 @@ function rateNowAction(event) {
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
-        url: `${frontendUrl}comparison?uidA=yt:${videoId}&utm_source=extension&utm_medium=menu`,
+        url: `${frontendUrl}/comparison?uidA=yt:${videoId}&utm_source=extension&utm_medium=menu`,
       });
     },
     () => {
@@ -94,7 +94,7 @@ function openAnalysisPageAction(event) {
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
-        url: `${frontendUrl}entities/yt:${videoId}?utm_source=extension&utm_medium=menu`,
+        url: `${frontendUrl}/entities/yt:${videoId}?utm_source=extension&utm_medium=menu`,
       });
     },
     () => {

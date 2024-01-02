@@ -116,7 +116,7 @@ function addRateButtons() {
         chrome.runtime.sendMessage({
           message: 'displayModal',
           modalOptions: {
-            src: `${frontendUrl}comparison?embed=1&utm_source=extension&utm_medium=frame&uidA=yt%3A${videoId}`,
+            src: `${frontendUrl}/comparison?embed=1&utm_source=extension&utm_medium=frame&uidA=yt%3A${videoId}`,
             height: '90vh',
           },
         });
