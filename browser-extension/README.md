@@ -42,13 +42,9 @@ yarn install
 
 ### Prepare the extension
 
-Before loading the extension into your browser, you need to run `node prepareExtension.js`. It will generate `manifest.json`, `config.js` and the import wrappers (small scripts that allow us to use ECMAScript modules in content scripts).
+Before loading the extension into your browser, you need to run `yarn prepare`. It will generate `manifest.json`, `config.js` and the import wrappers (small scripts that allow us to use ECMAScript modules in content scripts).
 
-By default, `prepareExtension.js` creates an extension that connects to the production Tournesol website. If you want to connect to your development servers instead, you can specify a `TOURNESOL_ENV` environment variable. For example:
-
-```
-TOURNESOL_ENV=dev-env node prepareExtension.js
-```
+By default, the script creates an extension that connects to the production Tournesol website. If you want to connect to your development servers, you can run `yarn prepare:dev` instead.
 
 ### Code Quality
 
