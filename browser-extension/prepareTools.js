@@ -1,6 +1,4 @@
-/* eslint-env node */
-
-import { writeFile, mkdir } from 'node:fs/promises';
+import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 export const getForEnv = (object, env) => {
@@ -42,4 +40,9 @@ export const writeConfig = async (config, outputPath) => {
     content += `export const ${key} = ${JSON.stringify(value)};\n`;
   }
   await writeFile(outputPath, content);
+};
+
+export const readPackage = async () => {
+  const packageContent = await readFile('package.json');
+  return JSON.parse(packageContent);
 };

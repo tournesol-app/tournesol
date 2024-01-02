@@ -1,17 +1,18 @@
-/* eslint-env node */
-
 import {
   getForEnv,
   generateImportWrappers,
   writeManifest,
   writeConfig,
+  readPackage,
 } from './prepareTools.js';
 
 const env = process.env.TOURNESOL_ENV || 'production';
 
+const { version } = await readPackage();
+
 const manifest = {
   name: 'Tournesol Extension',
-  version: '3.4.0',
+  version,
   description: 'Open Tournesol directly from YouTube',
   permissions: [
     ...getForEnv(

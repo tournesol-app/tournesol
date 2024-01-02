@@ -25,8 +25,7 @@ jobs:
 
       - name: Check extension version in the manifest
         run: |      
-          node prepareExtension.js
-          ext_version=$(python -c 'import json; print(json.load(open("src/manifest.json"))["version"])')
+          ext_version=$(python -c 'import json; print(json.load(open("package.json"))["version"])')
           tag_exist=$(git tag -l "browser-extension-v$ext_version" | wc -l)
           echo "ext_version=$ext_version" >> $GITHUB_ENV
           echo "tag_exist=$tag_exist" >> $GITHUB_ENV

@@ -1,11 +1,15 @@
 {
   "env": {
-    "node": true,
-    "es6": true
+    "browser": true,
+    "es6": true,
+    "webextensions": true
   },
   "parserOptions": {
-    "ecmaVersion": 13,
-    "sourceType": "module"
+    "ecmaVersion": 11,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
   },
   "plugins": [],
   "extends": ["eslint:recommended", "plugin:prettier/recommended"],
