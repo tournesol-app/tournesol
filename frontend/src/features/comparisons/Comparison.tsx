@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
@@ -17,6 +23,7 @@ import EntitySelector, {
 } from 'src/features/entity_selector/EntitySelector';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
@@ -72,11 +79,14 @@ const Comparison = ({
   autoFillSelectorA = false,
   autoFillSelectorB = false,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.resolvedLanguage;
+
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
+
   const [isLoading, setIsLoading] = useState(true);
 
   const [initialComparison, setInitialComparison] =
@@ -143,6 +153,25 @@ const Comparison = ({
           setIsLoading(false);
         });
   }, [pollName, uidA, uidB, selectorA.uid, selectorB.uid]);
+
+  /**
+   * When the UI language changes, refresh the ratings to retrieve the
+   * corresponding localized entity contexts.
+   */
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
+    if (selectorA.uid) {
+      setSelectorA((value) => ({ ...value, ratingIsExpired: true }));
+    }
+
+    if (selectorB.uid) {
+      setSelectorB((value) => ({ ...value, ratingIsExpired: true }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLang]);
 
   const onSubmitComparison = async (c: ComparisonRequest) => {
     try {
@@ -249,6 +278,9 @@ const Comparison = ({
         elevation={2}
       >
         <ComparisonHelper />
+      </Grid>
+      <Grid item xs={12}>
+        <ComparisonEntityContexts selectorA={selectorA} selectorB={selectorB} />
       </Grid>
       <Grid
         item

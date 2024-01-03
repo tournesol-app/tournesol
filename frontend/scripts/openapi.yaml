@@ -3096,13 +3096,6 @@ components:
           type: object
           additionalProperties: {}
           readOnly: true
-        tournesol_score:
-          type: number
-          format: double
-          readOnly: true
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
         polls:
           type: array
           items:
@@ -3111,7 +3104,6 @@ components:
       required:
       - metadata
       - polls
-      - tournesol_score
       - type
       - uid
     EntityContext:
@@ -3174,13 +3166,6 @@ components:
           type: object
           additionalProperties: {}
           readOnly: true
-        tournesol_score:
-          type: number
-          format: double
-          readOnly: true
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
         criteria_scores_distributions:
           type: array
           items:
@@ -3189,7 +3174,6 @@ components:
       required:
       - criteria_scores_distributions
       - metadata
-      - tournesol_score
       - type
       - uid
     EntityCriteriaScore:

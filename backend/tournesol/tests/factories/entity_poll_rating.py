@@ -10,4 +10,3 @@ class EntityPollRatingFactory(factory.django.DjangoModelFactory):
 
     poll = factory.LazyAttribute(lambda n: Poll.default_poll())
     entity = factory.SubFactory(VideoFactory)
-    tournesol_score = factory.LazyAttribute(lambda epr: epr.entity.tournesol_score)

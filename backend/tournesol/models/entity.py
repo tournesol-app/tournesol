@@ -201,15 +201,6 @@ class Entity(models.Model):
         null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
     )
 
-    # TODO
-    # the following fields should be moved in a n-n relation with Poll
-    tournesol_score = models.FloatField(
-        null=True,
-        blank=True,
-        default=None,
-        help_text="The aggregated of all criteria for all users in a specific poll.",
-    )
-
     search_config_name = models.CharField(
         blank=True,
         default=DEFAULT_SEARCH_CONFIG,
@@ -245,13 +236,8 @@ class Entity(models.Model):
         """
         Update the related `EntityPollRating` object.
 
-        The new ratings can be provided directly by passing `ratings` as
-        argument, or automatically computed by reading the database instead.
-
         Keyword arguments:
         poll -- the poll inside which the ratings will be saved
-        ratings -- the first item is the nbr of comparisons, the second the
-                   nbr of contributors
         """
         from .entity_poll_rating import EntityPollRating  # pylint: disable=import-outside-toplevel
         entity_rating, _ = EntityPollRating.objects.get_or_create(

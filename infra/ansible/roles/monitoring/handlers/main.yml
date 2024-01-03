@@ -54,18 +54,3 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-
-- name: Create Grafana Prometheus datasource
-  community.grafana.grafana_datasource:
-    url: "http://127.0.0.1:3000"
-    url_username: admin
-    url_password: "{{grafana_admin_password}}"
-    validate_certs: no
-    name: Prometheus
-    ds_type: "prometheus"
-    ds_url: "http://127.0.0.1:9090"
-    is_default: yes
-  register: prometheus_ds
-  retries: 3
-  delay: 10
-  until: prometheus_ds is not failed

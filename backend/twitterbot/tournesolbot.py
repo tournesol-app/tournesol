@@ -112,6 +112,7 @@ def get_video_recommendations(language):
         Entity
         .objects
         .filter_safe_for_poll(Poll.default_poll())
+        .with_prefetched_poll_ratings(poll_name=DEFAULT_POLL_NAME)
         .filter(
             add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
             metadata__publication_date__gte=time_ago(days=settings.DAYS_TOO_OLD).isoformat(),
@@ -137,10 +138,12 @@ def get_video_recommendations(language):
 def select_a_video(tweetable_videos):
     """Select a video to tweet."""
 
-    tournesol_score_list = [v.tournesol_score for v in tweetable_videos]
+    tournesol_score_list = [
+        v.single_poll_rating.tournesol_score
+        for v in tweetable_videos
+    ]
 
     # Chose a random video weighted by tournesol score
-
     selected_video = random.choices(  # not a cryptographic use # nosec B311
         tweetable_videos, weights=tournesol_score_list
     )[0]

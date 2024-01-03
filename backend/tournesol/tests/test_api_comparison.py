@@ -303,16 +303,13 @@ class ComparisonApiTestCase(TestCase):
         data = deepcopy(self.non_existing_comparison)
         self.client.force_authenticate(user=self.user)
 
-        # The `EntityPollRating`s don't exist yet.
-        with self.assertRaises(EntityPollRating.DoesNotExist):
-            EntityPollRating.objects.get(
-                entity__uid=self.non_existing_comparison["entity_a"]["uid"]
-            )
-
-        with self.assertRaises(EntityPollRating.DoesNotExist):
-            EntityPollRating.objects.get(
-                entity__uid=self.non_existing_comparison["entity_b"]["uid"]
-            )
+        # Make sure `EntityPollRating`s don't exist yet.
+        EntityPollRating.objects.filter(
+            entity__uid__in=[
+                self.non_existing_comparison["entity_a"]["uid"],
+                self.non_existing_comparison["entity_b"]["uid"],
+            ]
+        ).delete()
 
         self.client.post(
             self.comparisons_base_url,
