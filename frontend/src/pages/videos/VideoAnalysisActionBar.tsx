@@ -62,7 +62,12 @@ const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
         <Button onClick={() => openTwitterPopup(getTweet())}>
           <Twitter />
         </Button>
-        <ShareMenuButton shareMessage={shareMessage} />
+        <ShareMenuButton
+          shareMessage={shareMessage}
+          youtubeLink={
+            'https://www.youtube.com/watch?v=' + video.entity.metadata.video_id
+          }
+        />
       </ButtonGroup>
       {isLoggedIn && (
         <Tooltip title={`${t('actions.rateLater')}`} placement="bottom">

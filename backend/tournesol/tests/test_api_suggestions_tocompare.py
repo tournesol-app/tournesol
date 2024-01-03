@@ -32,7 +32,7 @@ def create_comparisons(poll: Poll, user: User, entities):
         )
 
 
-def create_entity_poll_rating(poll, entities, recommended, **kwargs):
+def update_entity_poll_rating(poll, entities, recommended, **kwargs):
     scores = {
         "tournesol_score": settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1,
         "sum_trust_scores": settings.RECOMMENDATIONS_MIN_TRUST_SCORES + 1,
@@ -43,12 +43,7 @@ def create_entity_poll_rating(poll, entities, recommended, **kwargs):
         scores["sum_trust_scores"] = settings.RECOMMENDATIONS_MIN_TRUST_SCORES - 1
 
     for entity in entities:
-        EntityPollRatingFactory.create(
-            poll=poll,
-            entity=entity,
-            **scores,
-            **kwargs,
-        )
+        entity.all_poll_ratings.filter(poll=poll).update(**scores, **kwargs)
 
 
 class SuggestionsToCompareTestCase(TestCase):
@@ -93,7 +88,7 @@ class SuggestionsToCompareTestCase(TestCase):
         create_comparisons(self.poll2, self.user1, compared_videos_user1_poll2)
         create_comparisons(self.poll1, self.user2, compared_videos_user2_poll1)
 
-        create_entity_poll_rating(
+        update_entity_poll_rating(
             self.poll1,
             compared_videos_user1_poll1,
             recommended=False,
@@ -101,7 +96,7 @@ class SuggestionsToCompareTestCase(TestCase):
             n_contributors=33,
         )
 
-        create_entity_poll_rating(
+        update_entity_poll_rating(
             self.poll2,
             compared_videos_user1_poll1,
             recommended=False,
@@ -126,24 +121,16 @@ class SuggestionsToCompareTestCase(TestCase):
 
         today = timezone.now().date()
         recommendations_new = VideoFactory.create_batch(
-            4, metadata__publication_date=today.isoformat()
+            4,
+            metadata__publication_date=today.isoformat(),
+            make_safe_for_poll=self.poll1,
         )
 
         long_time_ago = timezone.now() - timedelta(days=120)
         recommendations_past = VideoFactory.create_batch(
-            4, metadata__publication_date=long_time_ago.isoformat()
-        )
-
-        create_entity_poll_rating(
-            self.poll1,
-            recommendations_new,
-            recommended=True,
-        )
-
-        create_entity_poll_rating(
-            self.poll1,
-            recommendations_past,
-            recommended=True,
+            4,
+            metadata__publication_date=long_time_ago.isoformat(),
+            make_safe_for_poll=self.poll1
         )
 
         self.client.force_authenticate(self.user1)

@@ -40,7 +40,7 @@ def get_best_criteria(video, nb_criteria):
     return [(crit.criteria, crit.score) for crit in criteria_list]
 
 
-def prepare_tweet(video):
+def prepare_tweet(video: Entity):
     """Create the tweet text from the video."""
 
     uploader = video.metadata["uploader"]
@@ -66,11 +66,12 @@ def prepare_tweet(video):
     video_title = re.sub(r"\b(?:\.)\b", "․", video_title)
 
     # Generate the text of the tweet
+    poll_rating = video.all_poll_ratings.get(poll__name=DEFAULT_POLL_NAME)
     tweet_text = settings.tweet_text_template[language].format(
         title=video_title,
         twitter_account=twitter_account,
-        n_comparison=video.rating_n_ratings,
-        n_contributor=video.rating_n_contributors,
+        n_comparison=poll_rating.n_comparisons,
+        n_contributor=poll_rating.n_contributors,
         crit1=crit_dict[crit1[0]],
         crit2=crit_dict[crit2[0]],
         video_id=video_id,
@@ -86,8 +87,8 @@ def prepare_tweet(video):
         tweet_text = settings.tweet_text_template[language].format(
             title=video_title,
             twitter_account=twitter_account,
-            n_comparison=video.rating_n_ratings,
-            n_contributor=video.rating_n_contributors,
+            n_comparison=poll_rating.n_comparisons,
+            n_contributor=poll_rating.n_contributors,
             crit1=crit_dict[crit1[0]],
             crit2=crit_dict[crit2[0]],
             video_id=video_id,
@@ -111,6 +112,7 @@ def get_video_recommendations(language):
         Entity
         .objects
         .filter_safe_for_poll(Poll.default_poll())
+        .with_prefetched_poll_ratings(poll_name=DEFAULT_POLL_NAME)
         .filter(
             add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
             metadata__publication_date__gte=time_ago(days=settings.DAYS_TOO_OLD).isoformat(),
@@ -136,10 +138,12 @@ def get_video_recommendations(language):
 def select_a_video(tweetable_videos):
     """Select a video to tweet."""
 
-    tournesol_score_list = [v.tournesol_score for v in tweetable_videos]
+    tournesol_score_list = [
+        v.single_poll_rating.tournesol_score
+        for v in tweetable_videos
+    ]
 
     # Chose a random video weighted by tournesol score
-
     selected_video = random.choices(  # not a cryptographic use # nosec B311
         tweetable_videos, weights=tournesol_score_list
     )[0]

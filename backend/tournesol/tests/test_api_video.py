@@ -29,22 +29,22 @@ class VideoApi(TestCase):
         self.video_1 = VideoFactory(
             metadata__publication_date="2021-01-01T19:44:24.686532",
             metadata__uploader="uploader1",
-            tournesol_score=1.1,
+            tournesol_score=21.1,
         )
         self.video_2 = VideoFactory(
             metadata__publication_date="2021-01-02T19:44:24.686532",
             metadata__uploader="uploader2",
-            tournesol_score=2.2,
+            tournesol_score=22.2,
         )
         self.video_3 = VideoFactory(
             metadata__publication_date="2021-01-03T19:44:24.686532",
             metadata__uploader="uploader2",
-            tournesol_score=3.3,
+            tournesol_score=23.3,
         )
         self.video_4 = VideoFactory(
             metadata__publication_date="2021-01-04T19:44:24.686532",
             metadata__uploader="uploader3",
-            tournesol_score=4.4,
+            tournesol_score=24.4,
         )
         self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
         VideoCriteriaScoreFactory(
@@ -70,7 +70,10 @@ class VideoApi(TestCase):
         returned_tournesol_scores = [video["tournesol_score"] for video in response.data["results"]]
 
         existing_video_ids = [video.video_id for video in self._list_of_videos]
-        existing_tournesol_scores = [video.tournesol_score for video in self._list_of_videos]
+        existing_tournesol_scores = [
+            video.all_poll_ratings.get().tournesol_score
+            for video in self._list_of_videos
+        ]
 
         self.assertEqual(set(returned_video_ids), set(existing_video_ids))
         self.assertEqual(set(returned_tournesol_scores), set(existing_tournesol_scores))
@@ -226,12 +229,12 @@ class VideoApi(TestCase):
         response = client.get(f"/video/{self.video_1.video_id}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], self.video_1.video_id)
-        self.assertEqual(response.json()["tournesol_score"], self.video_1.tournesol_score)
+        self.assertEqual(response.json()["tournesol_score"], self.video_1.all_poll_ratings.get().tournesol_score)
 
-    def test_anonymous_can_get_video_with_score_zero(self):
+    def test_anonymous_can_get_video_without_score(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
         client = APIClient()
-        VideoFactory(metadata__video_id="vid_score_0")
+        VideoFactory(metadata__video_id="vid_score_0", make_safe_for_poll=False)
         response = client.get("/video/vid_score_0/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], "vid_score_0")
@@ -267,7 +270,7 @@ class VideoApi(TestCase):
 
     def test_no_negative_tournesol_score_video(self):
         client = APIClient()
-        video = VideoFactory(rating_n_contributors=2, tournesol_score=-10)
+        video = VideoFactory(n_contributors=2, tournesol_score=-10)
         VideoCriteriaScoreFactory(entity=video, criteria="engaging", score=-1)
         VideoCriteriaScoreFactory(entity=video, criteria="importance", score=1)
         safe_response = client.get("/video/?importance=50&engaging=0")
@@ -281,9 +284,9 @@ class VideoApi(TestCase):
         client = APIClient()
 
         # Add 1 video in French and 2 videos in English
-        video1 = VideoFactory(metadata__language="fr", rating_n_contributors=2, tournesol_score=10)
-        video2 = VideoFactory(metadata__language="en", rating_n_contributors=2, tournesol_score=10)
-        video3 = VideoFactory(metadata__language="en", rating_n_contributors=2, tournesol_score=10)
+        video1 = VideoFactory(metadata__language="fr", n_contributors=2)
+        video2 = VideoFactory(metadata__language="en", n_contributors=2)
+        video3 = VideoFactory(metadata__language="en", n_contributors=2)
         VideoCriteriaScoreFactory(entity=video1)
         VideoCriteriaScoreFactory(entity=video2)
         VideoCriteriaScoreFactory(entity=video3)

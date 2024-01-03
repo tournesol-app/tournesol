@@ -7,6 +7,7 @@ from typing import Optional
 
 import pandas as pd
 from django import db
+from django.conf import settings
 from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_deviation
 from solidago.comparisons_to_scores import ContinuousBradleyTerry
 
@@ -272,7 +273,9 @@ def run_mehestan(
 
     # compute each criterion in parallel
     cpu_count = os.cpu_count() or 1
-    with Pool(processes=max(1, cpu_count - 1)) as pool:
+    cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
+
+    with Pool(processes=max(1, cpu_count)) as pool:
         for _ in pool.imap_unordered(
             partial(
                 run_mehestan_for_criterion,

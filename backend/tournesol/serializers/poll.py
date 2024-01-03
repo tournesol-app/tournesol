@@ -1,10 +1,10 @@
-from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.serializers import IntegerField, ModelSerializer
 
 from tournesol.models import ContributorRating, CriteriaRank, Entity, EntityPollRating, Poll
 from tournesol.models.entity_poll_rating import UNSAFE_REASONS
 from tournesol.serializers.entity import EntityCriteriaScoreSerializer, RelatedEntitySerializer
+from tournesol.serializers.entity_context import EntityContextSerializer
 
 
 class PollCriteriaSerializer(ModelSerializer):
@@ -78,54 +78,26 @@ class RecommendationMetadataSerializer(serializers.Serializer):
     total_score = serializers.FloatField(read_only=True, allow_null=True)
 
 
-@extend_schema_serializer(
-    exclude_fields=[
-        # legacy fields have been moved to "entity", "collective_rating", etc.
-        "uid",
-        "type",
-        "n_comparisons",
-        "n_contributors",
-        "metadata",
-        "total_score",
-        "tournesol_score",
-        "criteria_scores",
-        "unsafe",
-    ]
-)
 class RecommendationSerializer(ModelSerializer):
-    # pylint: disable=duplicate-code
-    n_comparisons = serializers.IntegerField(source="rating_n_ratings")
-    n_contributors = serializers.IntegerField(source="rating_n_contributors")
-    criteria_scores = EntityCriteriaScoreSerializer(many=True)
-    # TODO: the field total_score is the only field in this serializer that
-    # on the parameters of an api request. Should it be treated differently?
-    total_score = serializers.FloatField()
-    unsafe = UnsafeStatusSerializer(
-        source="single_poll_rating", allow_null=True, default=None, read_only=True
-    )
-
     entity = RelatedEntitySerializer(source="*", read_only=True)
     collective_rating = ExtendedCollectiveRatingSerializer(
         source="single_poll_rating",
         read_only=True,
         allow_null=True,
     )
+    entity_contexts = EntityContextSerializer(
+        source="single_poll_entity_contexts",
+        read_only=True,
+        many=True
+    )
     recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
 
     class Meta:
         model = Entity
         fields = [
-            "uid",
-            "type",
-            "n_comparisons",
-            "n_contributors",
-            "metadata",
-            "total_score",
-            "tournesol_score",
-            "criteria_scores",
-            "unsafe",
             "entity",
             "collective_rating",
+            "entity_contexts",
             "recommendation_metadata",
         ]
         read_only_fields = fields

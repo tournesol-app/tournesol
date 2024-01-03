@@ -1,0 +1,5 @@
+- name: Restart Grafana
+  systemd:
+    name: grafana-server
+    state: restarted
+    daemon_reload: yes

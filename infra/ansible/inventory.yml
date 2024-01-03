@@ -26,7 +26,12 @@ all:
           django_api_throttle_email: "5/min"
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
-          loki_version: "v2.2.1"
+          loki_version: "v2.9.2"
+          grafana:
+            dashboard_alerting_uid: kemHo2Mnz
+            datasource_loki_uid: j1so19VIz
+            datasource_prometheus_uid: tRVp1rVIk
+
           nvm_version: "v0.38.0"
           npm_lts_version: "hydrogen"  # codename for Node.js 18 (LTS)
           frontend_scheme: http
@@ -85,7 +90,12 @@ all:
           django_api_throttle_email: "5/min"
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
-          loki_version: "v2.2.1"
+          loki_version: "v2.9.2"
+          grafana:
+            dashboard_alerting_uid: kemHo2Mnz
+            datasource_loki_uid: j1so19VIz
+            datasource_prometheus_uid: tRVp1rVIk
+
           nvm_version: "v0.38.0"
           npm_lts_version: "hydrogen"  # codename for Node.js 18 (LTS)
           frontend_scheme: https
@@ -155,7 +165,12 @@ all:
           django_api_throttle_email: "12/min"
           chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
 
-          loki_version: "v2.2.1"
+          loki_version: "v2.9.2"
+          grafana:
+            dashboard_alerting_uid: kemHo2Mnz
+            datasource_loki_uid: dFiJRjVSz
+            datasource_prometheus_uid: EjLpRC4Sk
+
           nvm_version: "v0.38.0"
           npm_lts_version: "hydrogen"  # codename for Node.js 18 (LTS)
           frontend_scheme: https

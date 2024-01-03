@@ -74,7 +74,10 @@ const EntityCardScores = ({
         return t('video.unsafeNotEnoughContributor');
       }
       if (reason === 'moderation_by_association') {
-        return t('video.moderationByAssociation');
+        return t('video.discardedByAssociation');
+      }
+      if (reason === 'moderation_by_contributors') {
+        return t('video.discardedByContributors');
       }
       return '';
     })

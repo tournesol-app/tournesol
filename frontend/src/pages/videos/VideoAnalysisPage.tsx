@@ -8,8 +8,9 @@ import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
+import EntityContextBox from 'src/features/entity_context/EntityContextBox';
 import VideoCard from 'src/features/videos/VideoCard';
-import { useLoginState } from 'src/hooks';
+import { useLoginState, useScrollToLocation } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
@@ -25,6 +26,8 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
   const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
 
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
+
+  useScrollToLocation();
 
   const entity = video.entity;
   const criteriaScores = video.collective_rating?.criteria_scores ?? [];
@@ -61,6 +64,14 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
+          {video.entity_contexts && (
+            <Grid item xs={12}>
+              <EntityContextBox
+                uid={video.entity.uid}
+                contexts={video.entity_contexts}
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <CollapseButton
               expanded={descriptionCollapsed}
@@ -71,7 +82,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
               {t('entityAnalysisPage.video.description')}
             </CollapseButton>
             <Collapse in={descriptionCollapsed} timeout="auto" unmountOnExit>
-              <Typography paragraph component="div">
+              <Typography paragraph component="div" mt={2}>
                 <Box
                   style={
                     descriptionCollapsed

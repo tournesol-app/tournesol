@@ -1,3 +1,4 @@
+import logging
 from itertools import islice
 from typing import Iterable, Optional, Union
 
@@ -18,6 +19,8 @@ from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 
 from .inputs import MlInputFromDb
+
+logger = logging.getLogger(__name__)
 
 
 def save_entity_scores(
@@ -81,11 +84,16 @@ def save_tournesol_scores(poll):
                     criterion.score for criterion in entity.criteria_scores
                 )
 
-            entity.tournesol_score = tournesol_score
+            poll_rating = entity.single_poll_rating
+            if poll_rating is None:
+                logger.warning(
+                    "Entity had not EntityPollRating to save tournesol_score. "
+                    "It will be created now."
+                )
+                poll_rating = EntityPollRating.objects.create(poll=poll, entity=entity)
+                entity.single_poll_ratings = [poll_rating]
 
-            if entity.single_poll_ratings:
-                entity.single_poll_ratings[0].tournesol_score = tournesol_score
-
+            poll_rating.tournesol_score = tournesol_score
             yield entity
 
     # Updating all entities at once increases the risk of a database deadlock.
@@ -93,13 +101,8 @@ def save_tournesol_scores(poll):
     # locking all entities in a large transaction.
     entities_it = entities_iterator()
     while batch := list(islice(entities_it, 1000)):
-        Entity.objects.bulk_update(batch, fields=["tournesol_score"])
-        # Both Entity.tournesol_score and EntityPollRating coexist at the
-        # moment. When all serializers will be updated to use the new
-        # EntityPollRating model, the uses of the legacy
-        # Entity.tournesol_score system should be replaced everywhere.
         EntityPollRating.objects.bulk_update(
-            [ent.single_poll_ratings[0] for ent in batch if ent.single_poll_ratings],
+            [ent.single_poll_rating for ent in batch],
             fields=["tournesol_score"],
         )
 

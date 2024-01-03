@@ -115,7 +115,6 @@ class Command(BaseCommand):
             print(f"Created {nb_comparisons} comparisons")
 
             for entity in Entity.objects.iterator():
-                entity.update_n_ratings()
                 entity.update_entity_poll_rating(poll=poll)
 
             self.create_test_user()

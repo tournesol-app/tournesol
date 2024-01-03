@@ -9,6 +9,7 @@ from rest_framework.test import APIClient
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago, time_ahead
 from tournesol.models import Comparison, ContributorRating, Poll
+from tournesol.models.entity_context import EntityContext, EntityContextLocale
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
@@ -35,9 +36,9 @@ class RatingApi(TestCase):
         self.user1 = UserFactory()
         self.user2 = UserFactory()
 
-        self.video1 = VideoFactory(make_safe_for_poll=False)
-        self.video2 = VideoFactory(make_safe_for_poll=False)
-        self.video3 = VideoFactory(make_safe_for_poll=False)
+        self.video1 = VideoFactory(tournesol_score=6)
+        self.video2 = VideoFactory(tournesol_score=1)
+        self.video3 = VideoFactory(tournesol_score=-10)
 
         ComparisonFactory(
             user=self.user1,
@@ -102,6 +103,7 @@ class RatingApi(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["entity_contexts"], [])
 
         rating = ContributorRating.objects.select_related("poll", "user", "entity").get(
             poll=self.poll_videos,
@@ -146,9 +148,7 @@ class RatingApi(TestCase):
         """
         An authenticated user can create a public rating.
         """
-        EntityPollRatingFactory(
-            poll=self.poll_videos,
-            entity=self.video3,
+        self.video3.all_poll_ratings.update(
             tournesol_score=50,
             n_contributors=20,
             n_comparisons=30,
@@ -240,6 +240,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["entity"]["uid"], video.uid)
+        self.assertEqual(response.data["entity_contexts"], [])
         self.assertEqual(response.data["individual_rating"]["is_public"], False)
         self.assertEqual(
             response.data["individual_rating"]["criteria_scores"],
@@ -268,11 +269,14 @@ class RatingApi(TestCase):
         An authenticated user can list its ratings related to a poll.
         """
         self.client.force_authenticate(user=self.user1)
+
         response = self.client.get(self.ratings_base_url, format="json")
+        rating = response.data["results"][0]
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
-        rating = response.data["results"][0]
         self.assertEqual(rating["entity"]["uid"], self.video2.uid)
+        self.assertEqual(rating["entity_contexts"], [])
         self.assertEqual(
             rating["individual_rating"],
             {
@@ -281,6 +285,44 @@ class RatingApi(TestCase):
                 "criteria_scores": [],
                 "last_compared_at": (
                     self.user1.comparisons.last().datetime_lastedit.isoformat().replace("+00:00", "Z")
+                ),
+            }
+        )
+
+    def test_authenticated_can_list_with_contexts(self):
+        """
+        The list of ratings should include the contexts of each entity.
+        """
+        self.client.force_authenticate(user=self.user1)
+
+        entity_context = EntityContext.objects.create(
+            name="context_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": self.video1.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll_videos,
+        )
+
+        entity_context_locale = EntityContextLocale.objects.create(
+            context=entity_context,
+            language="en",
+            text="Hello context",
+        )
+
+        response = self.client.get(self.ratings_base_url, format="json")
+        rating1 = response.data["results"][1]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(rating1["entity_contexts"]), 1)
+        self.assertDictEqual(
+            rating1["entity_contexts"][0],
+            {
+                "origin": "ASSOCIATION",
+                "unsafe": False,
+                "text": entity_context_locale.text,
+                "created_at": entity_context.created_at.strftime(
+                    "%Y-%m-%dT%H:%M:%S.%fZ"
                 ),
             }
         )
@@ -432,10 +474,6 @@ class RatingApi(TestCase):
         An authenticated user can list his/her ratings related to the `videos`
         poll by the entities' collective score.
         """
-
-        EntityPollRatingFactory(poll=self.poll_videos, entity=self.video1, tournesol_score=6)
-        EntityPollRatingFactory(poll=self.poll_videos, entity=self.video2, tournesol_score=1)
-
         self.client.force_authenticate(user=self.user1)
 
         response = self.client.get(
@@ -630,6 +668,7 @@ class RatingApi(TestCase):
         )
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["entity_contexts"], [])
         self.assertEqual(response_data["individual_rating"]["is_public"], True)
         self.assertEqual(
             response_data["individual_rating"]["criteria_scores"],

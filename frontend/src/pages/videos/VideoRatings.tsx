@@ -115,6 +115,7 @@ const VideoRatingsPage = () => {
             entities={ratings.results}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
             cardProps={{ showRatingControl: true }}
+            displayContextAlert={true}
           />
         </LoaderWrapper>
         {!isLoading && videoCount > 0 && videoCount > limit && (

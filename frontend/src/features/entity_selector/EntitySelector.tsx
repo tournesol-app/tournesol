@@ -307,6 +307,7 @@ const EntitySelectorInnerAuth = ({
           <Typography
             variant="h6"
             color="secondary"
+            fontWeight="bold"
             sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
           >
             {title}

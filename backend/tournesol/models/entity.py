@@ -79,7 +79,9 @@ class EntityQueryset(models.QuerySet):
         return self.prefetch_related(
             Prefetch(
                 "all_poll_ratings",
-                queryset=EntityPollRating.objects.select_related("poll").filter(
+                queryset=EntityPollRating.objects.prefetch_related(
+                    "poll__all_entity_contexts__texts"
+                ).filter(
                     poll__name=poll_name,
                 ),
                 to_attr="single_poll_ratings",
@@ -89,23 +91,24 @@ class EntityQueryset(models.QuerySet):
     def filter_safe_for_poll(self, poll):
         exclude_condition = None
 
-        # Do not fail if `poll.moderation` is not a list.
-        if isinstance(poll.moderation, list):
-            for predicate in poll.moderation:
-                expression = None
+        for entity_context in poll.all_entity_contexts.all():
+            if not entity_context.enabled or not entity_context.unsafe:
+                continue
 
-                for field, value in predicate.items():
-                    kwargs = {f'metadata__{field}': value}
-                    if expression:
-                        expression = expression & Q(**kwargs)
-                    else:
-                        expression = Q(**kwargs)
+            expression = None
 
-                if exclude_condition:
-                    # pylint: disable-next=unsupported-binary-operation
-                    exclude_condition = exclude_condition | expression
+            for field, value in entity_context.predicate.items():
+                kwargs = {f"metadata__{field}": value}
+                if expression:
+                    expression = expression & Q(**kwargs)
                 else:
-                    exclude_condition = expression
+                    expression = Q(**kwargs)
+
+            if exclude_condition:
+                # pylint: disable-next=unsupported-binary-operation
+                exclude_condition = exclude_condition | expression
+            else:
+                exclude_condition = expression
 
         qst = self.filter(
             all_poll_ratings__poll=poll,
@@ -198,32 +201,6 @@ class Entity(models.Model):
         null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
     )
 
-    # TODO
-    # the following fields should be moved in a n-n relation with Poll
-    tournesol_score = models.FloatField(
-        null=True,
-        blank=True,
-        default=None,
-        help_text="The aggregated of all criteria for all users in a specific poll.",
-    )
-
-    # TODO
-    # the following fields should be moved in a n-n relation with Poll
-    rating_n_ratings = models.IntegerField(
-        null=False,
-        default=0,
-        help_text="Total number of pairwise comparisons for this video"
-        "from certified contributors",
-    )
-
-    # TODO
-    # the following fields should be moved in a n-n relation with Poll
-    rating_n_contributors = models.IntegerField(
-        null=False,
-        default=0,
-        help_text="Total number of certified contributors who rated the video",
-    )
-
     search_config_name = models.CharField(
         blank=True,
         default=DEFAULT_SEARCH_CONFIG,
@@ -255,49 +232,18 @@ class Entity(models.Model):
             if self.type in ENTITY_TYPE_NAME_TO_CLASS:
                 self.entity_cls.update_search_vector(self)
 
-    def update_n_ratings(self):
-        from .comparisons import Comparison  # pylint: disable=import-outside-toplevel
-
-        self.rating_n_ratings = Comparison.objects.filter(
-            Q(entity_1=self) | Q(entity_2=self)
-        ).count()
-
-        self.rating_n_contributors = (
-            Comparison.objects.filter(Q(entity_1=self) | Q(entity_2=self))
-            .distinct("user")
-            .count()
-        )
-
-        self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
-
-    def update_entity_poll_rating(self, poll, ratings: tuple = None):
+    def update_entity_poll_rating(self, poll):
         """
         Update the related `EntityPollRating` object.
 
-        The new ratings can be provided directly by passing `ratings` as
-        argument, or automatically computed by reading the database instead.
-
-        TODO: the `ratings` parameter won't be needed anymore when the ratings
-              fields will be removed from the `Entity` model. Don't forget to
-              delete it.
-
         Keyword arguments:
         poll -- the poll inside which the ratings will be saved
-        ratings -- the first item is the nbr of comparisons, the second the
-                   nbr of contributors
         """
         from .entity_poll_rating import EntityPollRating  # pylint: disable=import-outside-toplevel
-
         entity_rating, _ = EntityPollRating.objects.get_or_create(
             poll=poll, entity=self
         )
-
-        if ratings:
-            entity_rating.n_comparisons = ratings[0]
-            entity_rating.n_contributors = ratings[1]
-            entity_rating.save(update_fields=["n_comparisons", "n_contributors"])
-        else:
-            entity_rating.update_n_ratings()
+        entity_rating.update_n_ratings()
 
     def auto_remove_from_rate_later(self, poll, user) -> None:
         """
@@ -493,6 +439,14 @@ class Entity(models.Model):
                 "Accessing 'single_contributor_rating' requires to initialize a "
                 "queryset with `with_prefetched_contributor_ratings()"
             ) from exc
+
+    @property
+    def single_poll_entity_contexts(self):
+        if self.single_poll_rating is None:
+            return []
+
+        poll = self.single_poll_rating.poll
+        return poll.get_entity_contexts(self.metadata)
 
 
 class CriteriaDistributionScore:

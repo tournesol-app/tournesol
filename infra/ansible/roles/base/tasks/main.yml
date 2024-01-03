@@ -2,10 +2,16 @@
   hostname:
     name: "{{machine_name}}"
 
-- name: Copy hosts file
-  template:
-    src: hosts
-    dest: /etc/hosts
+- name: Configure hosts file
+  blockinfile:
+    path: "{{ item }}"
+    create: true
+    block: |
+    
+      127.0.1.1    {{machine_name}} {{domain_name}} {{api_domain_name}}
+  loop:
+    - /etc/hosts
+    - /etc/cloud/templates/hosts.debian.tmpl  # Template used by cloud-init on startup
 
 - name: Install minimal set of packages
   apt:

@@ -68,6 +68,9 @@ const EntityAnalysisPage = () => {
   const { uid } = useParams<{ uid: string }>();
   const { name: pollName } = useCurrentPoll();
 
+  const { i18n } = useTranslation();
+  const currentLang = i18n.resolvedLanguage;
+
   const [entity, setEntity] = useState<Recommendation>();
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<ApiError>();
@@ -90,7 +93,7 @@ const EntityAnalysisPage = () => {
         setApiError(reason);
         setIsLoading(false);
       });
-  }, [pollName, uid]);
+  }, [currentLang, pollName, uid]);
 
   return (
     <LoaderWrapper isLoading={isLoading}>

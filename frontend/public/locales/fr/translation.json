@@ -21,7 +21,8 @@
     "labelShowSettings": "Voir les paramètres de cette video",
     "insufficientScore": "Le score de cette vidéo est inférieur au seuil de recommendabilité défini par Tournesol.",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
-    "moderationByAssociation": "L'Association Tournesol a temporairement écarté cette vidéo des recommandations. Consultez la FAQ pour plus de détails.",
+    "discardedByAssociation": "L'Association Tournesol a temporairement écarté cette vidéo des recommandations. Consultez la FAQ pour plus de détails.",
+    "discardedByContributors": "Les contributeur·rices ont écarté cette vidéo des recommandations.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
     "nbComparisonsBy_many": "{{count}} comparaisons par",
     "nbComparisonsBy_other": "{{count}} comparaisons par",
@@ -94,6 +95,12 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
     "comparisonCriteria": "Critères de comparaison"
   },
+  "entityContext": {
+    "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - L'association Tournesol souhaite vous apporter du contexte.",
+    "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - L'association Tournesol souhaite vous apporter du contexte.",
+    "theAssociationWouldLikeToGiveYouContext": "L'association Tournesol souhaite vous apporter du contexte sur cet élément.",
+    "about": "A propos de"
+  },
   "comparisonHelper": {
     "hideHelp": "Cacher l'aide",
     "showHelp": "Montrer l'aide pour les comparaisons"
@@ -104,6 +111,13 @@
   "submit": "enregistrer",
   "comparisonSeries": {
     "skipTheSeries": "Passer la série"
+  },
+  "entityCardContextAlert": {
+    "contextHasBeenAddedToThisElement": "Du contexte a été ajouté à cet élément.",
+    "see": "Voir"
+  },
+  "entityContextTextList": {
+    "whyThisMessage": "Pourquoi ce message ?"
   },
   "entitySelector": {
     "newVideo": "Sélectionner une nouvelle vidéo automatiquement",
@@ -325,9 +339,12 @@
   "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
   "shareMenu": {
-    "copyAddress": "Copier l'adresse de la page",
+    "shareAddress": "Partager un lien vers cette page",
+    "copyAddress": "Copier un lien vers cette page",
+    "shareAsMessage": "Partager sous forme de message",
     "copyShareMessage": "Copier le message de partage",
-    "shareOnTwitter": "Partager sur Twitter"
+    "shareOnTwitter": "Partager sur Twitter",
+    "shareYoutubeLink": "Partager le lien YouTube"
   },
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",

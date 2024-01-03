@@ -5,7 +5,7 @@ from typing import Optional
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Exists, OuterRef, Q, Subquery, Sum
+from django.db.models import Count, Exists, OuterRef, Q, Subquery, Sum
 from django.db.models.functions import Coalesce
 from django.utils.functional import cached_property
 
@@ -16,12 +16,15 @@ from tournesol.models.ratings import ContributorRating, ContributorRatingCriteri
 
 UNSAFE_REASON_INSUFFICIENT_SCORE = "insufficient_tournesol_score"
 UNSAFE_REASON_INSUFFICIENT_TRUST = "insufficient_trust"
-UNSAFE_REASON_MODERATION = "moderation_by_association"
+
+UNSAFE_REASON_MODERATION_ASSOCIATION = "moderation_by_association"
+UNSAFE_REASON_MODERATION_CONTRIBUTORS = "moderation_by_contributors"
 
 UNSAFE_REASONS = [
     UNSAFE_REASON_INSUFFICIENT_TRUST,
     UNSAFE_REASON_INSUFFICIENT_SCORE,
-    UNSAFE_REASON_MODERATION
+    UNSAFE_REASON_MODERATION_ASSOCIATION,
+    UNSAFE_REASON_MODERATION_CONTRIBUTORS,
 ]
 
 
@@ -68,7 +71,7 @@ class EntityPollRating(models.Model):
 
     sum_trust_scores = models.FloatField(
         null=False,
-        default=0.,
+        default=0.0,
         help_text="Sum of trust scores of the contributors who rated the entity",
     )
 
@@ -76,19 +79,17 @@ class EntityPollRating(models.Model):
         """
         Refresh the number of comparisons and contributors.
         """
-        self.n_comparisons = (
-            Comparison.objects.filter(Q(entity_1=self.entity) | Q(entity_2=self.entity))
-            .filter(Q(poll=self.poll))
-            .count()
+        counts = (
+            Comparison.objects
+            .filter(Q(entity_1=self.entity) | Q(entity_2=self.entity))
+            .filter(poll=self.poll)
+            .aggregate(
+                n_comparisons=Count("*"),
+                n_contributors=Count("user", distinct=True),
+            )
         )
-
-        self.n_contributors = (
-            Comparison.objects.filter(Q(entity_1=self.entity) | Q(entity_2=self.entity))
-            .filter(Q(poll=self.poll))
-            .distinct("user")
-            .count()
-        )
-
+        self.n_comparisons = counts["n_comparisons"]
+        self.n_contributors = counts["n_contributors"]
         self.save(update_fields=["n_comparisons", "n_contributors"])
 
     @staticmethod
@@ -145,6 +146,9 @@ class EntityPollRating(models.Model):
 
     @cached_property
     def unsafe_recommendation_reasons(self):
+        # pylint: disable-next=import-outside-toplevel
+        from tournesol.models.entity_context import EntityContext
+
         reasons = []
 
         if (
@@ -158,7 +162,11 @@ class EntityPollRating(models.Model):
         ):
             reasons.append(UNSAFE_REASON_INSUFFICIENT_TRUST)
 
-        if self.poll.entity_in_moderation(self.entity.metadata):
-            reasons.append(UNSAFE_REASON_MODERATION)
+        unsafe, origin = self.poll.entity_has_unsafe_context(self.entity.metadata)
+        if unsafe:
+            if origin == EntityContext.CONTRIBUTORS:
+                reasons.append(UNSAFE_REASON_MODERATION_CONTRIBUTORS)
+            else:
+                reasons.append(UNSAFE_REASON_MODERATION_ASSOCIATION)
 
         return reasons

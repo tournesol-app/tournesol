@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from core.models import User
 from core.utils.time import time_ago
-from tournesol.models import Comparison, Entity, Poll
+from tournesol.models import Comparison, EntityPollRating, Poll
 from tournesol.serializers.stats import StatisticsSerializer
 
 
@@ -153,11 +153,14 @@ class StatisticsView(generics.GenericAPIView):
         return Response(StatisticsSerializer(statistics).data)
 
     def _get_compared_entities_statistics(self, poll):
-        entities = Entity.objects.filter(type=poll.entity_type)
-        compared_entities = entities.filter(rating_n_ratings__gt=0)
-        compared_entity_count = compared_entities.count()
-        last_30_days_compared_entity_count = compared_entities.filter(
-            add_time__gte=time_ago(days=self._days_delta),
+        compared_entity_ratings = EntityPollRating.objects.filter(
+            poll=poll,
+            entity__type=poll.entity_type,
+            n_comparisons__gt=0
+        )
+        compared_entity_count = compared_entity_ratings.count()
+        last_30_days_compared_entity_count = compared_entity_ratings.filter(
+            entity__add_time__gte=time_ago(days=self._days_delta),
         ).count()
 
         compared_entities_statistics = ComparedEntitiesStatistics(

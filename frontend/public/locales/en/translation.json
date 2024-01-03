@@ -21,7 +21,8 @@
     "labelShowSettings": "Show settings related to this video",
     "insufficientScore": "The score of this video is below the recommendability threshold defined by Tournesol.",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
-    "moderationByAssociation": "The Tournesol Assocition has temporarily discarded this video from the recomendations. Learn more in the FAQ.",
+    "discardedByAssociation": "The Tournesol Assocition has temporarily discarded this video from the recomendations. Learn more in the FAQ.",
+    "discardedByContributors": "The contributors have discarded this video from the recommendations.",
     "nbComparisonsBy_one": "{{count}} comparison by",
     "nbComparisonsBy_other": "{{count}} comparisons by",
     "nbContributors_one": "{{count}} contributor",
@@ -90,6 +91,12 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
     "comparisonCriteria": "Comparison criteria"
   },
+  "entityContext": {
+    "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - The Tournesol association would like to give you some context.",
+    "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - The Tournesol association would like to give you some context.",
+    "theAssociationWouldLikeToGiveYouContext": "The Tournesol association would like to give you some context on this element.",
+    "about": "About"
+  },
   "comparisonHelper": {
     "hideHelp": "Hide the help",
     "showHelp": "Show help for comparisons"
@@ -100,6 +107,13 @@
   "submit": "submit",
   "comparisonSeries": {
     "skipTheSeries": "Skip the series"
+  },
+  "entityCardContextAlert": {
+    "contextHasBeenAddedToThisElement": "Context has been added to this element.",
+    "see": "See"
+  },
+  "entityContextTextList": {
+    "whyThisMessage": "Why this message?"
   },
   "entitySelector": {
     "newVideo": "Select a new video automatically",
@@ -319,9 +333,12 @@
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
   "shareMenu": {
-    "copyAddress": "Copy the page address",
+    "shareAddress": "Share page link",
+    "copyAddress": "Copy page link",
+    "shareAsMessage": "Share as a message",
     "copyShareMessage": "Copy the share message",
-    "shareOnTwitter": "Share on Twitter"
+    "shareOnTwitter": "Share on Twitter",
+    "shareYoutubeLink": "Share YouTube Link"
   },
   "ratelater": {
     "videoIdOrURL": "Video ID or URL",
