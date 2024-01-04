@@ -26,23 +26,21 @@
       displayCriteria: true,
     });
 
-    searchRecommendations = new TournesolSearchRecommendations(options);
+    return new TournesolSearchRecommendations(options);
   };
 
   const processSearchRecommendations = async () => {
     if (searchRecommendations === undefined) {
-      await initializeSearchRecommendations();
+      searchRecommendations = initializeSearchRecommendations();
     }
-
-    searchRecommendations.process();
+    (await searchRecommendations).process();
   };
 
-  const clearSearchRecommendations = () => {
+  const clearSearchRecommendations = async () => {
     if (searchRecommendations === undefined) {
       return;
     }
-
-    searchRecommendations.clear();
+    (await searchRecommendations).clear();
   };
 
   // Allow to display the Tournesol search results without modifying the
