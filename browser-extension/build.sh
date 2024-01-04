@@ -15,6 +15,8 @@ TARGET_BASENAME='tournesol_extension.zip'
 
 pushd ${SCRIPT_PATH} > /dev/null
 
+node prepareExtension.js
+
 # zip the sources
 pushd ${SOURCE_DIR} > /dev/null
 zip -r -FS ../${TARGET_BASENAME} *
@@ -23,4 +25,3 @@ popd > /dev/null
 # zip the license
 zip ${TARGET_BASENAME} LICENSE
 popd > /dev/null
-
