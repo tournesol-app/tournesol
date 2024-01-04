@@ -47,6 +47,9 @@
   "score": {
     "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement sélectionnés"
   },
+  "entityContextChip": {
+    "context": "contexte"
+  },
   "entityIndividualScores": {
     "inYourOpinion": "selon vous <1></1>"
   },

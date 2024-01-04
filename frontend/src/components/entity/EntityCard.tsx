@@ -34,6 +34,7 @@ import { RatingControl } from 'src/features/ratings/RatingControl';
 
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
+import EntityContextChip from './EntityContextChip';
 import EntityImagery from './EntityImagery';
 import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import EntityIndividualScores from './EntityIndividualScores';
@@ -241,10 +242,12 @@ export const RowEntityCard = ({
   result,
   withLink = false,
   individualScores,
+  displayEntityContextChip = true,
 }: {
   result: EntityResult;
   withLink?: boolean;
   individualScores?: ContributorCriteriaScore[];
+  displayEntityContextChip?: boolean;
 }) => {
   const entity = result.entity;
   return (
@@ -283,9 +286,18 @@ export const RowEntityCard = ({
             withLinks={false}
           />
         )}
-        {individualScores && (
-          <EntityIndividualScores scores={individualScores} />
-        )}
+
+        <Box pr={1} display="flex" justifyContent="flex-end" gap={1}>
+          {displayEntityContextChip && 'entity_contexts' in result && (
+            <EntityContextChip
+              uid={result.entity.uid}
+              entityContexts={result.entity_contexts}
+            />
+          )}
+          {individualScores && (
+            <EntityIndividualScores scores={individualScores} />
+          )}
+        </Box>
       </Stack>
     </Box>
   );
