@@ -28,26 +28,26 @@ export const EntityIndividualScores = ({
     )?.score;
   }
 
+  if (mainCriterionScore == undefined) {
+    return <></>;
+  }
+
   return (
-    <Box pr={1} display="flex" justifyContent="flex-end">
-      {mainCriterionScore != null && (
-        <Chip
-          size="small"
-          variant="outlined"
-          label={
-            <Box display="flex" columnGap="2px">
-              <Trans t={t} i18nKey="entityIndividualScores.inYourOpinion">
-                in your opinion
-                <TournesolScore
-                  score={mainCriterionScore}
-                  tooltip={getCriteriaLabel(mainCriterionName)}
-                />
-              </Trans>
-            </Box>
-          }
-        />
-      )}
-    </Box>
+    <Chip
+      size="small"
+      variant="outlined"
+      label={
+        <Box display="flex" columnGap="2px">
+          <Trans t={t} i18nKey="entityIndividualScores.inYourOpinion">
+            in your opinion
+            <TournesolScore
+              score={mainCriterionScore}
+              tooltip={getCriteriaLabel(mainCriterionName)}
+            />
+          </Trans>
+        </Box>
+      }
+    />
   );
 };
 

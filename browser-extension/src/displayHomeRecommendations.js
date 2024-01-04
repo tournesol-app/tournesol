@@ -23,22 +23,21 @@
       parentComponentQuery: '#primary > ytd-rich-grid-renderer',
       displayCriteria: false,
     });
-    homeRecommendations = new TournesolRecommendations(options);
+    return new TournesolRecommendations(options);
   };
 
   const processHomeRecommendations = async () => {
     if (homeRecommendations === undefined) {
-      await initializeHomeRecommendations();
+      homeRecommendations = initializeHomeRecommendations();
     }
-
-    homeRecommendations.process();
+    (await homeRecommendations).process();
   };
 
-  const clearHomeRecommendations = () => {
+  const clearHomeRecommendations = async () => {
     if (homeRecommendations === undefined) {
       return;
     }
-    homeRecommendations.clear();
+    (await homeRecommendations).clear();
   };
 
   const process = () => {
