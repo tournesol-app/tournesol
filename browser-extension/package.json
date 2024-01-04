@@ -4,8 +4,8 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "prepare": "node prepareExtension.js",
-    "prepare:dev": "TOURNESOL_ENV=dev-env node prepareExtension.js",
+    "configure": "node prepareExtension.js",
+    "configure:dev": "TOURNESOL_ENV=dev-env node prepareExtension.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
