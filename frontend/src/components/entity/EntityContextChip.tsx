@@ -36,6 +36,9 @@ export const EntityContextChip = ({
       variant="outlined"
       label={t('entityContextChip.context')}
       onClick={handleClick}
+      sx={{
+        fontSize: '0.8125em',
+      }}
     />
   );
 };
