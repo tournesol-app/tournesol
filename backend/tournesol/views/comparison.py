@@ -23,6 +23,19 @@ class InactivePollError(exceptions.PermissionDenied):
 class ComparisonApiMixin:
     """A mixin used to factorize behaviours common to all API views."""
 
+    entity_contexts = None
+
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+        self.entity_contexts = self.poll_from_url.all_entity_contexts.prefetch_related(
+            "texts"
+        ).all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["entity_contexts"] = self.entity_contexts
+        return context
+
     def comparison_already_exists(self, poll_id, request):
         """Return True if the comparison already exist, False instead."""
         try:
@@ -63,6 +76,7 @@ class ComparisonListBaseApi(
         Keyword arguments:
         uid -- the entity uid used to filter the results (default None)
         """
+
         queryset = (
             Comparison.objects.select_related("entity_1", "entity_2")
             .prefetch_related("criteria_scores")
@@ -82,6 +96,7 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.
     """
+
     def get(self, request, *args, **kwargs):
         """
         Retrieve all comparisons made by the logged user, in a given poll.
@@ -109,15 +124,11 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
 
         comparison.entity_1.update_entity_poll_rating(poll=poll)
         comparison.entity_1.inner.refresh_metadata()
-        comparison.entity_1.auto_remove_from_rate_later(
-            poll=poll, user=self.request.user
-        )
+        comparison.entity_1.auto_remove_from_rate_later(poll=poll, user=self.request.user)
 
         comparison.entity_2.update_entity_poll_rating(poll=poll)
         comparison.entity_2.inner.refresh_metadata()
-        comparison.entity_2.auto_remove_from_rate_later(
-            poll=poll, user=self.request.user
-        )
+        comparison.entity_2.auto_remove_from_rate_later(poll=poll, user=self.request.user)
 
         if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:
             update_user_scores(poll, user=self.request.user)
@@ -152,7 +163,6 @@ class ComparisonDetailApi(
 
     DEFAULT_SERIALIZER = ComparisonSerializer
     UPDATE_SERIALIZER = ComparisonUpdateSerializer
-
     currently_reversed = False
 
     def _select_serialization(self, straight=True):
