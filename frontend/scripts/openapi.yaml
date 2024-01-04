@@ -2624,11 +2624,13 @@ components:
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
         entity_b_contexts:
           type: array
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
         criteria_scores:
           type: array
           items:
@@ -2756,11 +2758,13 @@ components:
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
         entity_b_contexts:
           type: array
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
       required:
       - criteria_scores
       - entity_a
