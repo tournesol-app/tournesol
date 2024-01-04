@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
+from tournesol.models import Poll
 from tournesol.models.entity_context import EntityContext, EntityContextLocale
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
