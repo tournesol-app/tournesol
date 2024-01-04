@@ -89,7 +89,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         poll = self.context.get("poll")
         ent_contexts = self.context.get("entity_contexts")
 
-        if poll is not None:
+        if poll is not None and ent_contexts is not None:
             ret["entity_a_contexts"] = self.format_entity_contexts(
                 poll, ent_contexts, ret["entity_a"]["metadata"]
             )
@@ -164,7 +164,7 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         poll = self.context.get("poll")
         ent_contexts = self.context.get("entity_contexts")
 
-        if poll is not None:
+        if poll is not None and ent_contexts is not None:
             ret["entity_a_contexts"] = self.format_entity_contexts(
                 poll, ent_contexts, ret["entity_a"]["metadata"]
             )
