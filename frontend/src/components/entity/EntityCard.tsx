@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Collapse,
-  Grid,
   IconButton,
   useTheme,
   useMediaQuery,
   Stack,
   Typography,
 } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
@@ -34,6 +34,7 @@ import { RatingControl } from 'src/features/ratings/RatingControl';
 
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
+import EntityContextChip from './EntityContextChip';
 import EntityImagery from './EntityImagery';
 import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import EntityIndividualScores from './EntityIndividualScores';
@@ -106,17 +107,26 @@ const EntityCard = ({
   };
 
   return (
-    <Grid container sx={entityCardMainSx}>
+    <Grid
+      container
+      sx={entityCardMainSx}
+      direction={compact ? 'column' : 'row'}
+    >
       {!isAvailable && (
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item pl={1} py={2}>
+        <Grid
+          xs={12}
+          container
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid pl={1} py={2}>
             <Typography>
               {entity.type == TypeEnum.VIDEO
                 ? t('video.notAvailableAnymore')
                 : t('entityCard.thisElementIsNotAvailable')}
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             <IconButton onClick={toggleEntityVisibility}>
               {contentDisplayed ? (
                 <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
@@ -130,15 +140,12 @@ const EntityCard = ({
       {contentDisplayed && (
         <>
           <Grid
-            item
             xs={12}
             sm={compact ? 12 : 'auto'}
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              ...(compact
-                ? {}
-                : { minWidth: '240px', maxWidth: { sm: '240px' } }),
+              ...(compact ? {} : { maxWidth: { sm: '240px' } }),
             }}
           >
             <EntityImagery
@@ -148,12 +155,8 @@ const EntityCard = ({
             />
           </Grid>
           <Grid
-            item
-            xs={12}
-            sm={compact ? 12 : true}
-            sx={{
-              padding: 1,
-            }}
+            xs={true} // Grow and fill the container height when two cards are side by side
+            p={1}
             data-testid="video-card-info"
             container
             direction="column"
@@ -167,7 +170,6 @@ const EntityCard = ({
             {displayEntityCardScores()}
           </Grid>
           <Grid
-            item
             xs={12}
             sm={compact ? 12 : 1}
             sx={{
@@ -202,13 +204,13 @@ const EntityCard = ({
           </Grid>
 
           {displayContextAlert && unsafeContext && (
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <EntityCardContextAlert uid={entity.uid} />
             </Grid>
           )}
 
           {showRatingControl && (
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Collapse in={ratingVisible || !isSmallScreen}>
                 <Box
                   paddingY={1}
@@ -240,10 +242,12 @@ export const RowEntityCard = ({
   result,
   withLink = false,
   individualScores,
+  displayEntityContextChip = true,
 }: {
   result: EntityResult;
   withLink?: boolean;
   individualScores?: ContributorCriteriaScore[];
+  displayEntityContextChip?: boolean;
 }) => {
   const entity = result.entity;
   return (
@@ -282,9 +286,18 @@ export const RowEntityCard = ({
             withLinks={false}
           />
         )}
-        {individualScores && (
-          <EntityIndividualScores scores={individualScores} />
-        )}
+
+        <Box pr={1} display="flex" justifyContent="flex-end" gap={1}>
+          {displayEntityContextChip && 'entity_contexts' in result && (
+            <EntityContextChip
+              uid={result.entity.uid}
+              entityContexts={result.entity_contexts}
+            />
+          )}
+          {individualScores && (
+            <EntityIndividualScores scores={individualScores} />
+          )}
+        </Box>
       </Stack>
     </Box>
   );

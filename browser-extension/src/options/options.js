@@ -7,6 +7,8 @@
  * It also manage the loading and saving the local preferences.
  */
 
+import { frontendUrl } from '../config.js';
+
 const DEFAULT_RECO_LANG = ['en'];
 // This delay is designed to be few miliseconds slower than our CSS fadeOut
 // animation to let the success message disappear before re-enabling the
@@ -266,3 +268,9 @@ document
   .addEventListener('submit', (event) => {
     event.preventDefault();
   });
+
+document.getElementById('account-link').href = `${frontendUrl}/signup`;
+
+document
+  .getElementById('iframe-tournesol-preferences')
+  .setAttribute('src', `${frontendUrl}/settings/preferences?embed=1`);

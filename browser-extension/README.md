@@ -40,6 +40,12 @@ available here:
 yarn install
 ```
 
+### Prepare the extension
+
+Before loading the extension into your browser, you need to run `yarn configure`. It will generate `manifest.json`, `config.js` and the import wrappers (small scripts that allow us to use ECMAScript modules in content scripts).
+
+By default, the script creates an extension that connects to the production Tournesol website. If you want to connect to your development servers, you can run `yarn configure:dev` instead.
+
 ### Code Quality
 
 We use `ESLint` to find and fix problems in the JavaScript code.

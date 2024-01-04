@@ -15,27 +15,26 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
 
   return (
     <Box
-      sx={{
-        marginBottom: '16px',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'stretch',
-        gap: '16px',
-      }}
+      mb={2}
+      display="flex"
+      justifyContent="space-between"
+      alignItems="stretch"
+      gap={2}
     >
       <EntityCard
         compact
-        result={{ entity: entity_a }}
+        result={{
+          entity: entity_a,
+          entity_contexts: comparison.entity_a_contexts,
+        }}
         entityTypeConfig={{ video: { displayPlayer: false } }}
+        displayContextAlert={true}
       />
       <Box
-        sx={{
-          position: 'relative',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        position="relative"
       >
         <div
           style={{
@@ -58,8 +57,12 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
       </Box>
       <EntityCard
         compact
-        result={{ entity: entity_b }}
+        result={{
+          entity: entity_b,
+          entity_contexts: comparison.entity_b_contexts,
+        }}
         entityTypeConfig={{ video: { displayPlayer: false } }}
+        displayContextAlert={true}
       />
     </Box>
   );
