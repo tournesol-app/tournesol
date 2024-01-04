@@ -52,23 +52,32 @@ export const StatsLazyProvider = ({
   /**
    * Initialize the stats if they are empty or refresh them if they are
    * outdated.
+   *
+   * Note that the getStats implementation assumes that only the stats of a
+   * single poll are displayed per page.
    */
   const getStats = useCallback(
     (poll: string | undefined) => {
       const currentTime = Date.now();
 
       if (loading.current) {
-        return stats;
-      }
-
-      if (
-        stats.polls.length === 0 ||
-        currentTime - lastRefreshAt.current >= EXPIRATION_TIME ||
-        poll !== lastPoll.current
-      ) {
-        loading.current = true;
-        lastPoll.current = poll;
-        refreshStats(poll);
+        if (poll === lastPoll.current) {
+          return stats;
+        } else {
+          loading.current = true;
+          lastPoll.current = poll;
+          refreshStats(poll);
+        }
+      } else {
+        if (
+          stats.polls.length === 0 ||
+          poll !== lastPoll.current ||
+          currentTime - lastRefreshAt.current >= EXPIRATION_TIME
+        ) {
+          loading.current = true;
+          lastPoll.current = poll;
+          refreshStats(poll);
+        }
       }
 
       return stats;
