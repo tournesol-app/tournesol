@@ -156,7 +156,7 @@ const VideoInput = ({
             limit: 20,
             strict: false,
           });
-          return (response.results ?? []).map((entity) => ({ entity }));
+          return response.results ?? [];
         },
         disabled: !isLoggedIn || !otherUid,
       },

@@ -2231,7 +2231,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedEntityNoExtraFieldList'
+                $ref: '#/components/schemas/PaginatedUnconnectedEntityList'
           description: ''
   /users/me/vouchers/:
     post:
@@ -3680,6 +3680,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TalkEntry'
+    PaginatedUnconnectedEntityList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnconnectedEntity'
     PaginatedVideoSerializerWithCriteriaList:
       type: object
       properties:
@@ -4338,6 +4358,20 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    UnconnectedEntity:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/EntityNoExtraField'
+        entity_contexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityContext'
+          readOnly: true
+          default: []
+      required:
+      - entity
+      - entity_contexts
     UnsafeStatus:
       type: object
       properties:
