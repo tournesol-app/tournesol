@@ -104,6 +104,12 @@ class RecommendationSerializer(ModelSerializer):
 
 
 class RecommendationsFilterSerializer(serializers.Serializer):
+    random = serializers.IntegerField(
+        default=None,
+        help_text="If defined, the entities will be randomized instead of sorted by score."
+        " Because the API results are cached, using the same digit will return the same set of"
+        " entities. To get new entities, use a different digit."
+    )
     date_lte = serializers.DateTimeField(default=None)
     date_gte = serializers.DateTimeField(default=None)
     search = serializers.CharField(default=None, help_text="A search query to filter entities")

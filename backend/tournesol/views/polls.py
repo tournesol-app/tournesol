@@ -183,6 +183,9 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             If set to 0, total_score is ignored.
             Set it to a higher value to take more into account the total score.
         """
+        if filters["random"]:
+            return queryset.order_by("?")
+
         if filters["search"] and self.poll_from_url.algorithm == ALGORITHM_MEHESTAN:
             max_absolute_score = MEHESTAN_MAX_SCALED_SCORE * self._weights_sum
             if max_absolute_score > 0:
