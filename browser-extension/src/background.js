@@ -204,13 +204,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const recentParams = new URLSearchParams([
           ['date_gte', threeWeeksAgo],
           ['limit', recentToLoadRow1 + recentToLoadExtra],
-          ['random', 1],
+          ['random', request.queryParamRandom],
         ]);
 
         const oldParams = new URLSearchParams([
           ['date_lte', threeWeeksAgo],
           ['limit', oldToLoadRow1 + oldToLoadExtra],
-          ['random', 1],
+          ['random', request.queryParamRandom],
         ]);
 
         recommendationsLangs.forEach((lang) => {
