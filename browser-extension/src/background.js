@@ -12,8 +12,9 @@ import {
 
 import { frontendHost } from './config.js';
 
-const recentVideoRatio = 0.75;
-const recentVideoExtraRatio = 0.5;
+const RECENT_VIDEOS_RATIO = 0.75;
+const RECENT_VIDEOS_EXTRA_RATIO = 0.5;
+const BUNDLE_SIZE_F = 3;
 
 /**
  * Build the extension context menu.
@@ -190,11 +191,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const nbrPerRow = request.videosNumber;
       const extraNbr = request.additionalVideosNumber;
 
-      const recentToLoadRow1 = Math.round(nbrPerRow * recentVideoRatio);
-      const oldToLoadRow1 = Math.round(nbrPerRow * (1 - recentVideoRatio));
+      const recentToLoadRow1 = Math.round(nbrPerRow * RECENT_VIDEOS_RATIO);
+      const oldToLoadRow1 = Math.round(nbrPerRow * (1 - RECENT_VIDEOS_RATIO));
 
-      const recentToLoadExtra = Math.round(extraNbr * recentVideoExtraRatio);
-      const oldToLoadExtra = Math.round(extraNbr * (1 - recentVideoExtraRatio));
+      const recentToLoadExtra = Math.round(
+        extraNbr * RECENT_VIDEOS_EXTRA_RATIO
+      );
+      const oldToLoadExtra = Math.round(
+        extraNbr * (1 - RECENT_VIDEOS_EXTRA_RATIO)
+      );
 
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
@@ -203,13 +208,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         const recentParams = new URLSearchParams([
           ['date_gte', threeWeeksAgo],
-          ['limit', recentToLoadRow1 + recentToLoadExtra],
+          ['limit', (recentToLoadRow1 + recentToLoadExtra) * BUNDLE_SIZE_F],
           ['random', request.queryParamRandom],
         ]);
 
         const oldParams = new URLSearchParams([
           ['date_lte', threeWeeksAgo],
-          ['limit', oldToLoadRow1 + oldToLoadExtra],
+          ['limit', (oldToLoadRow1 + oldToLoadExtra) * BUNDLE_SIZE_F],
           ['random', request.queryParamRandom],
         ]);
 
@@ -232,14 +237,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         // Compute the actual number of videos from each category that will appear in the feed.
         // If there is not enough recent videos, use old ones of the same category instead.
-        let recentRow1Nbr = Math.round(nbrPerRow * recentVideoRatio);
+        let recentRow1Nbr = Math.round(nbrPerRow * RECENT_VIDEOS_RATIO);
         if (recentRow1Nbr > videosRecent.length) {
           recentRow1Nbr = videosRecent.length;
         }
 
         const oldRow1Nbr = nbrPerRow - recentRow1Nbr;
 
-        let recentExtraNbr = Math.round(extraNbr * recentVideoExtraRatio);
+        let recentExtraNbr = Math.round(extraNbr * RECENT_VIDEOS_EXTRA_RATIO);
         if (recentExtraNbr > videosRecentExtra.length) {
           recentExtraNbr = videosRecentExtra.length;
         }

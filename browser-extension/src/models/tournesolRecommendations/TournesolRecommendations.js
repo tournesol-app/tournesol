@@ -20,7 +20,7 @@ export class TournesolRecommendations {
     this.handleResponse = this.handleResponse.bind(this);
     this.displayRecommendations = this.displayRecommendations.bind(this);
 
-    // The value of the query parameter `random` of the /recommendations/ API.
+    // The value of the query parameter `random` of the API /recommendations/.
     // Vary this paramater from a request to another to avoid fetching the
     // same cached recommendation results.
     this.queryParamRandom = this.initializeQueryParamRandom();
