@@ -145,7 +145,7 @@ class RecommendationsFilterSerializer(serializers.Serializer):
 class RecommendationsRandomFilterSerializer(serializers.Serializer):
     random = serializers.IntegerField(
         default=None,
-        help_text="Successive calls will produce the same cached results. Vary"
+        help_text="Successive calls can return the same cached results. Vary"
         " this parameter to request new results."
     )
     date_lte = serializers.DateTimeField(default=None)
