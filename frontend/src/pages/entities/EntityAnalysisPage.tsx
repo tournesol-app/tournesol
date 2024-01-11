@@ -5,12 +5,18 @@ import { Link, useParams } from 'react-router-dom';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { ApiError, PollsService, Recommendation } from 'src/services/openapi';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
+import {
+  ApiError,
+  PollsService,
+  Recommendation,
+  VideoService,
+} from 'src/services/openapi';
 import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
+import { extractVideoId } from 'src/utils/video';
 
 const CandidateAnalysisPage = React.lazy(
   () => import('src/pages/entities/CandidateAnalysisPage')
@@ -67,6 +73,7 @@ const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
 const EntityAnalysisPage = () => {
   const { uid } = useParams<{ uid: string }>();
   const { name: pollName } = useCurrentPoll();
+  const { isLoggedIn } = useLoginState();
 
   const { i18n } = useTranslation();
   const currentLang = i18n.resolvedLanguage;
@@ -75,7 +82,33 @@ const EntityAnalysisPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<ApiError>();
 
+  const tryToCreateVideo = async () => {
+    if (pollName !== YOUTUBE_POLL_NAME) {
+      return false;
+    }
+    if (!isLoggedIn) {
+      return false;
+    }
+    const videoId = extractVideoId(uid);
+    if (!videoId) {
+      return false;
+    }
+    try {
+      await VideoService.videoCreate({
+        requestBody: {
+          video_id: videoId,
+        },
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
   useEffect(() => {
+    setIsLoading(true);
+
     async function getEntityWithPollStats(): Promise<Recommendation> {
       const entity = await PollsService.pollsEntitiesRetrieve({
         name: pollName,
@@ -84,15 +117,26 @@ const EntityAnalysisPage = () => {
       return entity;
     }
 
-    getEntityWithPollStats()
-      .then((entity) => {
+    async function getEntity(createVideo = true) {
+      try {
+        const entity = await getEntityWithPollStats();
         setEntity(entity);
-        setIsLoading(false);
-      })
-      .catch((reason: ApiError) => {
+      } catch (error) {
+        const reason: ApiError = error;
+        if (reason.status === 404 && createVideo) {
+          const created = await tryToCreateVideo();
+          if (created) {
+            return getEntity(false);
+          }
+        }
         setApiError(reason);
-        setIsLoading(false);
-      });
+      }
+    }
+
+    getEntity().finally(() => {
+      setIsLoading(false);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLang, pollName, uid]);
 
   return (
