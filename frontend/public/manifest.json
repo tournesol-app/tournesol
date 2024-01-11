@@ -29,7 +29,7 @@
   "start_url": "/?utm_source=pwa",
   "display": "standalone",
   "theme_color": "#ffc800",
-  "background_color": "#ffc800",
+  "background_color": "#a09b87",
   "share_target": {
     "action": "/shared-content",
     "method": "GET",
