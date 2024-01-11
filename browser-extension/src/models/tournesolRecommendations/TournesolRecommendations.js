@@ -35,18 +35,18 @@ export class TournesolRecommendations {
    *
    * A random number prevents the users from seeing the same cached
    * recommendation results each time they refresh the YT page. Be careful,
-   * increasing the range of generated numbers will also increase the number
-   * of cached results by the API.
+   * increasing the range of generated numbers will also increase the
+   * theoretical maximum number of cached results by the API.
    *
-   * 20 means if 1000 users press F5 at the same time, at most 20 results will
-   * be cached.
+   * 20 means if 1000 users press F5 at the same time, at most 40 results will
+   * be cached (20 for recent reco. and 20 for older reco.).
    */
   initializeQueryParamRandom() {
     return this.getRandomInt(20);
   }
 
   varyQueryParamRandom() {
-    this.queryParamRandom += 1 + this.getRandomInt(3);
+    this.queryParamRandom += 1 + this.getRandomInt(2);
     return this.queryParamRandom;
   }
 
