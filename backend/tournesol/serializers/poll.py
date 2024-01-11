@@ -123,3 +123,9 @@ class RecommendationsFilterSerializer(serializers.Serializer):
         help_text="If true and a user is authenticated, then entities compared by the"
         " user will be removed from the response",
     )
+
+
+class RecommendationsRandomFilterSerializer(serializers.Serializer):
+    random = serializers.IntegerField(default=None)
+    date_lte = serializers.DateTimeField(default=None)
+    date_gte = serializers.DateTimeField(default=None)

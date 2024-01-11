@@ -298,6 +298,13 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         criteria_weight = self._build_criteria_weight_condition(
             request, poll, when="all_criteria_scores__criteria"
         )
+
+        # FIXME: we can significantly improve the performance of the queryset
+        # by filtering the criteria on their names, to remove those that are
+        # not present in the request.
+        #
+        #   ex:
+        #       all_criteria_scores__criteria__in=[...]
         queryset = queryset.filter(
             all_criteria_scores__poll=poll,
             all_criteria_scores__score_mode=score_mode,
