@@ -174,9 +174,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   ) {
     const poll_name = 'videos';
 
-    const api_path = `polls/${poll_name}/recommendations/`;
-
-    const request_recommendations = async (options) => {
+    const request_recommendations = async (api_path, options) => {
       const resp = await fetchTournesolApi(
         `${api_path}${options ? '?' : ''}${options}`
       );
@@ -188,6 +186,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     };
 
     if (request.message === 'getTournesolRecommendations') {
+      const api_path = `polls/${poll_name}/recommendations/random/`;
+
       const nbrPerRow = request.videosNumber;
       const extraNbr = request.additionalVideosNumber;
 
@@ -226,8 +226,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
 
         const [poolRecent, poolOld] = await Promise.all([
-          request_recommendations(recentParams),
-          request_recommendations(oldParams),
+          request_recommendations(api_path, recentParams),
+          request_recommendations(api_path, oldParams),
         ]);
 
         const videosRecent = poolRecent.slice(0, recentToLoadRow1);
@@ -286,6 +286,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return true;
     } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
+        const api_path = `polls/${poll_name}/recommendations/`;
+
         const videosNumber = request.videosNumber;
         const recommendationsLangs =
           await getRecommendationsLanguagesAuthenticated();
@@ -305,7 +307,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
 
         const [videosList] = await Promise.all([
-          request_recommendations(params),
+          request_recommendations(api_path, params),
         ]);
 
         return {

@@ -103,6 +103,29 @@ class RecommendationSerializer(ModelSerializer):
         read_only_fields = fields
 
 
+class RecommendationRandomSerializer(serializers.Serializer):
+    entity = RelatedEntitySerializer(source="*", read_only=True)
+    collective_rating = ExtendedCollectiveRatingSerializer(
+        source="single_poll_rating",
+        read_only=True,
+        allow_null=True,
+    )
+    entity_contexts = EntityContextSerializer(
+        source="single_poll_entity_contexts",
+        read_only=True,
+        many=True
+    )
+
+    class Meta:
+        model = Entity
+        fields = [
+            "entity",
+            "collective_rating",
+            "entity_contexts",
+        ]
+        read_only_fields = fields
+
+
 class RecommendationsFilterSerializer(serializers.Serializer):
     random = serializers.IntegerField(
         default=None,

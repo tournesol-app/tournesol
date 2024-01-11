@@ -1,3 +1,4 @@
+from django.utils.cache import patch_vary_headers
 from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -8,8 +9,10 @@ from drf_spectacular.utils import (
 )
 
 from tournesol.models import Entity
-from tournesol.serializers.entity import EntityNoExtraFieldSerializer
-from tournesol.serializers.poll import RecommendationsRandomFilterSerializer
+from tournesol.serializers.poll import (
+    RecommendationRandomSerializer,
+    RecommendationsRandomFilterSerializer,
+)
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.views import PollRecommendationsBaseAPIView
 
@@ -72,10 +75,14 @@ class RandomRecommendationList(RandomRecommendationBaseAPIView):
     """
     Return a random list of recommended entities.
     """
+
     permission_classes = []
-    serializer_class = EntityNoExtraFieldSerializer
+    serializer_class = RecommendationRandomSerializer
     poll_parameter = "name"
 
-    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
+    @method_decorator(cache_page_no_i18n(60 * 10))
     def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        response = self.list(self, request, *args, **kwargs)
+        if request.query_params.get("exclude_compared_entities") == "true":
+            patch_vary_headers(response, ["Authorization"])
+        return response
