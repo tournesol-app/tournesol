@@ -3,19 +3,25 @@
   "name": "Tournesol",
   "icons": [
     {
-      "src": "/favicon-128x128.png",
+      "src": "/icons/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icons/favicon-128x128.png",
       "type": "image/png",
       "sizes": "128x128"
     },
     {
-      "src": "/favicon-512x512.png",
+      "src": "/icons/favicon-512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "/favicon.ico",
-      "sizes": "48x48",
-      "type": "image/x-icon"
+      "src": "/icons/maskable-icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "id": "/",
@@ -26,11 +32,29 @@
   "shortcuts": [
     {
       "name": "Compare",
-      "url": "/comparison?utm_source=pwa"
+      "url": "/comparison?utm_source=pwa",
+      "icons": [{ "src": "/icons/compare.png", "sizes": "96x96" }]
     },
     {
       "name": "Recommendations",
-      "url": "/recommendations?utm_source=pwa"
+      "url": "/recommendations?utm_source=pwa",
+      "icons": [{ "src": "/icons/recommendations.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "/images/screenshot_comparison_desktop.png",
+      "sizes": "1300x850",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tournesol comparison page on Desktop"
+    },
+    {
+      "src": "/images/screenshot_comparison_mobile.png",
+      "sizes": "1290x2796",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tournesol comparison page on Mobile"
     }
   ]
 }
