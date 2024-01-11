@@ -1,6 +1,7 @@
 {
   "short_name": "Tournesol",
   "name": "Tournesol",
+  "description": "Compare online content and contribute to the development of responsible content recommendations.",
   "icons": [
     {
       "src": "/icons/favicon.ico",
@@ -29,6 +30,13 @@
   "display": "standalone",
   "theme_color": "#ffc800",
   "background_color": "#ffc800",
+  "share_target": {
+    "action": "/shared-content",
+    "method": "GET",
+    "params": {
+      "url": "url"
+    }
+  },
   "shortcuts": [
     {
       "name": "Compare",
