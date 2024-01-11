@@ -117,7 +117,7 @@ const EntityAnalysisPage = () => {
       return entity;
     }
 
-    async function getEntity(createVideo = true) {
+    async function getEntity(createVideo = true): Promise<void> {
       try {
         const entity = await getEntityWithPollStats();
         setEntity(entity);
