@@ -4,9 +4,9 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from numba import njit
+from solidago.pipeline import TournesolInput
 from solidago.resilient_primitives import BrMean, QrDev, QrMed, QrUnc
 
-from ml.inputs import MlInput
 
 # This limit allows to index pairs of entity_id into a usual Index with dtype 'uint64'.
 # We originally used a MultiIndex that consumed significantly more memory, due to how
@@ -14,7 +14,7 @@ from ml.inputs import MlInput
 ENTITY_ID_MAX = 2**32 - 1
 
 
-def get_user_scaling_weights(ml_input: MlInput, W: float):
+def get_user_scaling_weights(ml_input: TournesolInput, W: float):
     ratings_properties = ml_input.ratings_properties[
         ["user_id", "trust_score", "is_scaling_calibration_user"]
     ].copy()
@@ -74,7 +74,7 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
 
 def compute_scaling(
     df: pd.DataFrame,
-    ml_input: MlInput,
+    ml_input: TournesolInput,
     W: float,
     users_to_compute=None,
     reference_users=None,
@@ -221,7 +221,7 @@ def compute_scaling(
     )
 
 
-def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame, W: float):
+def get_scaling_for_calibration(ml_input: TournesolInput, individual_scores: pd.DataFrame, W: float):
     rp = ml_input.ratings_properties
     rp = rp[rp.is_scaling_calibration_user].set_index(["user_id", "entity_id"])
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
@@ -231,7 +231,7 @@ def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFra
 
 
 def compute_scaled_scores(
-    ml_input: MlInput,
+    ml_input: TournesolInput,
     individual_scores: pd.DataFrame,
     W: float,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:

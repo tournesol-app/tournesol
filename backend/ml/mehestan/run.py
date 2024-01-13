@@ -10,9 +10,10 @@ from django import db
 from django.conf import settings
 from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_deviation
 from solidago.comparisons_to_scores import ContinuousBradleyTerry
+from solidago.pipeline import TournesolInput
 
 from core.models import User
-from ml.inputs import MlInput, MlInputFromDb
+from ml.inputs import MlInputFromDb
 from ml.outputs import (
     save_contributor_scalings,
     save_contributor_scores,
@@ -46,7 +47,7 @@ class MehestanParameters:
 
 
 def get_individual_scores(
-    ml_input: MlInput,
+    ml_input: TournesolInput,
     criteria: str,
     parameters: MehestanParameters,
     single_user_id: Optional[int] = None,
@@ -143,7 +144,7 @@ def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.
 
 def run_mehestan_for_criterion(
     criteria: str,
-    ml_input: MlInput,
+    ml_input: TournesolInput,
     poll_pk: int,
     parameters: MehestanParameters
 ):
@@ -232,7 +233,7 @@ def run_mehestan_for_criterion(
 
 
 def run_mehestan(
-    ml_input: MlInput,
+    ml_input: TournesolInput,
     poll: Poll,
     parameters: MehestanParameters,
     main_criterion_only=False

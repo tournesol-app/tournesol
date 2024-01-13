@@ -17,11 +17,11 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
+from solidago.pipeline.inputs import TournesolInputFromPublicDataset
 
 from core.models import User
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago, time_ahead
-from ml.inputs import MlInputFromPublicDataset
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -541,7 +541,7 @@ class ExportTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         zip_content = io.BytesIO(response.content)
 
-        ml_input = MlInputFromPublicDataset(zip_content)
+        ml_input = TournesolInputFromPublicDataset(zip_content)
         comparisons_df = ml_input.get_comparisons()
         rating_properties = ml_input.ratings_properties
 

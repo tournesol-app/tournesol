@@ -6,10 +6,10 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from solidago.pipeline.inputs import TournesolInputFromPublicDataset
 
 from core.models import User
 from core.models.user import EmailDomain
-from ml.inputs import MlInputFromPublicDataset
 from tournesol.models import Comparison, ComparisonCriteriaScore, ContributorRating, Entity, Poll
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 
@@ -25,9 +25,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--user-sampling", type=float, default=None)
-        parser.add_argument("--comparisons-url", type=str, default=PUBLIC_DATASET_URL)
+        parser.add_argument("--dataset-url", type=str, default=PUBLIC_DATASET_URL)
 
-    def create_user(self, username: str, ml_input: MlInputFromPublicDataset):
+    def create_user(self, username: str, ml_input: TournesolInputFromPublicDataset):
         user = ml_input.users.loc[ml_input.users.public_username == username].iloc[0]
         is_pretrusted = user.trust_score > 0.5
         email = f"{username}@trusted.example" if is_pretrusted else f"{username}@example.com"
@@ -66,7 +66,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        public_dataset = MlInputFromPublicDataset(options["comparisons_url"])
+        public_dataset = TournesolInputFromPublicDataset(options["dataset_url"])
         nb_comparisons = 0
 
         with transaction.atomic():
