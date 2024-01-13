@@ -16,7 +16,6 @@ from tournesol.models import (
 )
 
 
-
 class MlInputFromDb(TournesolInput):
     def __init__(self, poll_name: str):
         self.poll_name = poll_name

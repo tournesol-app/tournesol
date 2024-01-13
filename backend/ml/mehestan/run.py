@@ -8,7 +8,7 @@ from typing import Optional
 import pandas as pd
 from django import db
 from django.conf import settings
-from solidago.collaborative_scaling import estimate_positive_score_shift, estimate_score_deviation
+from solidago import collaborative_scaling
 from solidago.comparisons_to_scores import ContinuousBradleyTerry
 from solidago.pipeline import TournesolInput
 
@@ -25,7 +25,7 @@ from tournesol.models.entity_score import ScoreMode
 from tournesol.utils.constants import COMPARISON_MAX
 from vouch.voting_rights import compute_voting_rights
 
-from .global_scores import compute_scaled_scores, get_global_scores
+from .global_scores import get_global_scores
 
 logger = logging.getLogger(__name__)
 
@@ -132,10 +132,10 @@ def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.
     if score_mode == ScoreMode.ALL_EQUAL:
         ratings_df["voting_right"] = 1
     if score_mode == ScoreMode.DEFAULT:
+        # trust score would be possibly None (NULL) when new users are created and when
+        # computation of trust scores fail for any reason (e.g. no user pre-trusted)
+        ratings_df.trust_score.fillna(0.0, inplace=True)
         for (_, ratings_group) in ratings_df.groupby("entity_id"):
-            # trust score would be possibly None (NULL) when new users are created and when
-            # computation of trust scores fail for any reason (e.g. no user pre-trusted)
-            ratings_group.trust_score.fillna(0.0, inplace=True)
             ratings_df.loc[ratings_group.index, "voting_right"] = compute_voting_rights(
                 ratings_group.trust_score.to_numpy(), ratings_group.privacy_penalty.to_numpy()
             )
@@ -163,19 +163,23 @@ def run_mehestan_for_criterion(
     indiv_scores = get_individual_scores(ml_input, criteria=criteria, parameters=parameters)
 
     logger.info("Individual scores computed for crit '%s'", criteria)
-    scaled_scores, scalings = compute_scaled_scores(
-        ml_input,
+    scalings = collaborative_scaling.compute_individual_scalings(
         individual_scores=indiv_scores,
-        W=parameters.W
+        tournesol_input=ml_input,
+        W=parameters.W,
+    )
+    scaled_scores = collaborative_scaling.apply_scalings(
+        individual_scores=indiv_scores,
+        scalings=scalings
     )
 
     if len(scaled_scores) > 0:
-        score_shift = estimate_positive_score_shift(
+        score_shift = collaborative_scaling.estimate_positive_score_shift(
             scaled_scores,
             W=parameters.score_shift_W,
             quantile=parameters.score_shift_quantile,
         )
-        score_std = estimate_score_deviation(
+        score_std = collaborative_scaling.estimate_score_deviation(
             scaled_scores,
             W=parameters.score_shift_W,
             quantile=parameters.score_deviation_quantile,
@@ -186,6 +190,13 @@ def run_mehestan_for_criterion(
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
+
+    # Join ratings columns ("is_public", "trust_score", etc.)
+    ratings = ml_input.ratings_properties.set_index(["user_id", "entity_id"])
+    scaled_scores = scaled_scores.join(
+        ratings,
+        on=["user_id", "entity_id"],
+    )
 
     scaled_scores_with_voting_rights_per_score_mode = {
         mode: add_voting_rights(scaled_scores, score_mode=mode) for mode in ScoreMode
