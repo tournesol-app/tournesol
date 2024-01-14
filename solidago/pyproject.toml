@@ -41,3 +41,4 @@ filterwarnings = [
     # Will be removed in Numba 0.58. See https://github.com/numba/numba/issues/8936
     "ignore:Use of isinstance():numba.NumbaExperimentalFeatureWarning",
 ]
+pythonpath = "src"
