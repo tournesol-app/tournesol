@@ -17,6 +17,8 @@ from tournesol.models import (
 
 
 class MlInputFromDb(TournesolInput):
+    SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE = 20
+
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 

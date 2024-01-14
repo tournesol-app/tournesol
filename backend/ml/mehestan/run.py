@@ -1,16 +1,14 @@
 import logging
 import os
-from dataclasses import dataclass
-from functools import cached_property, partial
+from functools import partial
 from multiprocessing import Pool
-from typing import Optional
 
 import pandas as pd
 from django import db
 from django.conf import settings
 from solidago import collaborative_scaling
-from solidago.comparisons_to_scores import ContinuousBradleyTerry
-from solidago.pipeline import TournesolInput
+from solidago.pipeline import TournesolInput, PipelineParameters
+from solidago.pipeline.individual_scores import get_individual_scores
 
 from core.models import User
 from ml.inputs import MlInputFromDb
@@ -33,58 +31,9 @@ VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 
-@dataclass
-class MehestanParameters:
-    alpha: float = 0.02
-    W: float = 10.0
-    score_shift_W: float = 1.
-    score_shift_quantile: float = 0.15
-    score_deviation_quantile: float = 0.9
+class MehestanParameters(PipelineParameters):
+    r_max = COMPARISON_MAX
 
-    @cached_property
-    def indiv_algo(self):
-        return ContinuousBradleyTerry(r_max=COMPARISON_MAX, alpha=self.alpha)
-
-
-def get_individual_scores(
-    ml_input: TournesolInput,
-    criteria: str,
-    parameters: MehestanParameters,
-    single_user_id: Optional[int] = None,
-) -> pd.DataFrame:
-    comparisons_df = ml_input.get_comparisons(criteria=criteria, user_id=single_user_id)
-    initial_contributor_scores = ml_input.get_individual_scores(
-        criteria=criteria, user_id=single_user_id
-    )
-    if initial_contributor_scores is not None:
-        initial_contributor_scores = initial_contributor_scores.groupby("user_id")
-
-    individual_scores = []
-    for (user_id, user_comparisons) in comparisons_df.groupby("user_id"):
-        if initial_contributor_scores is None:
-            initial_entity_scores = None
-        else:
-            try:
-                contributor_score_df = initial_contributor_scores.get_group(user_id)
-                initial_entity_scores = pd.Series(
-                    data=contributor_score_df.raw_score,
-                    index=contributor_score_df.entity
-                )
-            except KeyError:
-                initial_entity_scores = None
-        scores = parameters.indiv_algo.compute_individual_scores(
-            user_comparisons, initial_entity_scores=initial_entity_scores
-        )
-        if scores is None:
-            continue
-        scores["user_id"] = user_id
-        individual_scores.append(scores.reset_index())
-
-    if len(individual_scores) == 0:
-        return pd.DataFrame(columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"])
-
-    result = pd.concat(individual_scores, ignore_index=True, copy=False)
-    return result.reindex(columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"])
 
 
 def update_user_scores(poll: Poll, user: User):
