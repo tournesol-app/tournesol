@@ -18,6 +18,8 @@ class PipelineParameters:
     W: float = 10.0
 
     # voting rights
+    over_trust_bias: float = 2
+    over_trust_scale: float = 0.1
     vote_weight_public_ratings: float = 1.0
     vote_weight_private_ratings: float = 0.5
 

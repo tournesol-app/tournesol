@@ -45,7 +45,10 @@ def add_voting_rights(
         ratings_df.trust_score.fillna(0.0, inplace=True)
         for (_, ratings_group) in ratings_df.groupby("entity_id"):
             ratings_df.loc[ratings_group.index, "voting_right"] = compute_voting_rights(
-                ratings_group.trust_score.to_numpy(), ratings_group.privacy_penalty.to_numpy()
+                ratings_group.trust_score.to_numpy(),
+                ratings_group.privacy_penalty.to_numpy(),
+                over_trust_bias=params.over_trust_bias,
+                over_trust_scale=params.over_trust_scale,
             )
     else:
         raise ValueError(f"Unknown score mode '{score_mode}'")

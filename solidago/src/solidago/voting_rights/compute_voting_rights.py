@@ -1,17 +1,18 @@
 import numpy as np
 
-# On a given entity, an amount of extra voting right is given to users with lowest trust scores.
-# This amount is call overtrust and we want it to be low compared to regular trusted voting rights
-# such that untrusted users can only have a limited influence on the total voting right.
-# overtrust is computed as OVER_TRUST_BIAS + OVER_TRUST_SCALE * total_trust
-OVER_TRUST_BIAS = 2
-OVER_TRUST_SCALE = 0.1
-
 
 def compute_voting_rights(
-    trust_scores: np.ndarray, privacy_penalties: np.ndarray
+    trust_scores: np.ndarray,
+    privacy_penalties: np.ndarray,
+    over_trust_bias: float,
+    over_trust_scale: float,
 ) -> np.ndarray:
-    """Assign voting rights for all users who have ratings
+    """Assign voting rights for all users who have ratings.
+
+    On a given entity, an amount of extra voting right is given to users with lowest trust scores.
+    This amount is call overtrust and we want it to be low compared to regular trusted voting rights
+    such that untrusted users can only have a limited influence on the total voting right.
+    overtrust is computed as `over_trust_bias` + `over_trust_scale` * `total_trust`
 
     Parameters
     ----------
@@ -19,6 +20,8 @@ def compute_voting_rights(
         trust scores obtained from email certification and vouching.
     - privacy_penalty:
         percentage of the voting right given to users based on privacy status of their rating.
+    - over_trust_bias
+    - over_trust_scale
     """
     if len(trust_scores) == 0:
         return trust_scores
@@ -30,7 +33,7 @@ def compute_voting_rights(
         raise ValueError("trust_scores must be between 0 and 1.")
 
     total_trust = (trust_scores * privacy_penalties).sum()
-    over_trust = OVER_TRUST_BIAS + OVER_TRUST_SCALE * total_trust
+    over_trust = over_trust_bias + over_trust_scale * total_trust
 
     trust_score_ordering = np.argsort(trust_scores)
     sorted_trust_score = trust_scores[trust_score_ordering]
