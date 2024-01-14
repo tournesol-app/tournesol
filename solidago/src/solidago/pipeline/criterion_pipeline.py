@@ -104,3 +104,5 @@ def run_pipeline_for_criterion(
         "Solidago pipeline for criterion '%s' DONE.",
         criterion,
     )
+
+    return output

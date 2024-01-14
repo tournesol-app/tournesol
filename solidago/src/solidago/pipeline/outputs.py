@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Dict, Literal
 
 import pandas as pd
 
@@ -12,7 +12,7 @@ class PipelineOutput(ABC):
             * columns: `s`, `delta_s`, `tau`, `delta_tau`
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def save_individual_scores(self, scores: pd.DataFrame, criterion: str):
         """
@@ -41,3 +41,25 @@ class PipelineOutput(ABC):
             * `uncertainty`
         """
         raise NotImplementedError
+
+
+class PipelineOutputInMemory(PipelineOutput):
+    individual_scalings: Dict[str, pd.DataFrame]
+    individual_scores: Dict[str, pd.DataFrame]
+    entity_scores: Dict[str, pd.DataFrame]
+
+    def __init__(self):
+        self.individual_scalings = {}
+        self.individual_scores = {}
+        self.entity_scores = {}
+
+    def save_individual_scalings(self, scalings, criterion):
+        self.individual_scalings[criterion] = scalings
+
+    def save_entity_scores(self, scores, criterion, score_mode):
+        if score_mode != "default":
+            return
+        self.entity_scores[criterion] = scores
+
+    def save_individual_scores(self, scores, criterion):
+        self.individual_scores[criterion] = scores

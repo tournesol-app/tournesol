@@ -66,9 +66,17 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.comparisons = pd.read_csv(comparison_file, keep_default_na=False)
-                self.comparisons.rename(
-                    {"video_a": "entity_a", "video_b": "entity_b"}, axis=1, inplace=True
+                self.entity_id_to_video_id = pd.Series(
+                    list(set(self.comparisons.video_a) | set(self.comparisons.video_b)),
+                    name="video_id"
                 )
+                video_id_to_entity_id = {
+                    video_id: entity_id
+                    for (entity_id, video_id) in self.entity_id_to_video_id.items()
+                }
+                self.comparisons["entity_a"] = self.comparisons["video_a"].map(video_id_to_entity_id)
+                self.comparisons["entity_b"] = self.comparisons["video_b"].map(video_id_to_entity_id)
+                self.comparisons.drop(columns=["video_a", "video_b"], inplace=True)
 
             with (zipfile.Path(zip_file) / "users.csv").open(mode="rb") as users_file:
                 # keep_default_na=False is required otherwise some public usernames
@@ -80,6 +88,10 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 data=self.users.index, index=self.users["public_username"]
             )
             self.comparisons = self.comparisons.join(username_to_user_id, on="public_username")
+
+    @classmethod
+    def download(cls) -> "TournesolInputFromPublicDataset":
+        return cls(dataset_zip="https://api.tournesol.app/exports/all")
 
     def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
         dtf = self.comparisons.copy(deep=False)
