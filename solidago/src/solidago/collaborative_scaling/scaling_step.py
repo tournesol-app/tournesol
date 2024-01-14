@@ -1,31 +1,15 @@
-import logging
-from typing import Tuple
-
 import numpy as np
 import pandas as pd
 from numba import njit
-from solidago.resilient_primitives import BrMean, QrDev, QrMed, QrUnc
 
-from ml.inputs import MlInput
+from solidago.pipeline import TournesolInput
+from solidago.resilient_primitives import BrMean, QrMed, QrUnc
+
 
 # This limit allows to index pairs of entity_id into a usual Index with dtype 'uint64'.
 # We originally used a MultiIndex that consumed significantly more memory, due to how
 # pandas may cache MultiIndex values as an array of Python tuples.
 ENTITY_ID_MAX = 2**32 - 1
-
-
-def get_user_scaling_weights(ml_input: MlInput, W: float):
-    ratings_properties = ml_input.ratings_properties[
-        ["user_id", "trust_score", "is_scaling_calibration_user"]
-    ].copy()
-    df = ratings_properties.groupby("user_id").first()
-    df["scaling_weight"] = df["trust_score"]
-    df["scaling_weight"].mask(
-        df.is_scaling_calibration_user,
-        W,
-        inplace=True,
-    )
-    return df["scaling_weight"].to_dict()
 
 
 @njit
@@ -41,6 +25,21 @@ def get_significantly_different_pairs_indices(scores, uncertainties):
     if len(indices) == 0:
         return np.empty((0, 2), dtype=np.int64)
     return np.array(indices)
+
+
+
+def get_user_scaling_weights(input: TournesolInput, W: float):
+    ratings_properties = input.ratings_properties[
+        ["user_id", "trust_score", "is_scaling_calibration_user"]
+    ].copy()
+    df = ratings_properties.groupby("user_id").first()
+    df["scaling_weight"] = df["trust_score"]
+    df["scaling_weight"].mask(
+        df.is_scaling_calibration_user,
+        W,
+        inplace=True,
+    )
+    return df["scaling_weight"].to_dict()
 
 
 def get_significantly_different_pairs(scores: pd.DataFrame):
@@ -74,13 +73,13 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
 
 def compute_scaling(
     df: pd.DataFrame,
-    ml_input: MlInput,
+    tournesol_input: TournesolInput,
     W: float,
     users_to_compute=None,
     reference_users=None,
     calibration=False,
 ):
-    scaling_weights = get_user_scaling_weights(ml_input, W=W)
+    scaling_weights = get_user_scaling_weights(tournesol_input, W=W)
 
     if users_to_compute is None:
         users_to_compute = set(df.user_id.unique())
@@ -219,135 +218,3 @@ def compute_scaling(
             "delta_tau": delta_tau_dict,
         }
     )
-
-
-def get_scaling_for_calibration(ml_input: MlInput, individual_scores: pd.DataFrame, W: float):
-    rp = ml_input.ratings_properties
-    rp = rp[rp.is_scaling_calibration_user].set_index(["user_id", "entity_id"])
-    df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
-    df["score"] = df["raw_score"]
-    df["uncertainty"] = df["raw_uncertainty"]
-    return compute_scaling(df, ml_input=ml_input, calibration=True, W=W)
-
-
-def compute_scaled_scores(
-    ml_input: MlInput,
-    individual_scores: pd.DataFrame,
-    W: float,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Returns:
-        - scaled individual scores: Dataframe with columns
-            * `user_id`
-            * `entity_id`
-            * `raw_score`
-            * `raw_uncertainty`
-            * `score`
-            * `uncertainty`
-            * `is_public`
-            * `is_scaling_calibration_user`
-        - scalings: DataFrame with index `user_id` and columns:
-            * `s`: scaling factor
-            * `tau`: translation value
-            * `delta_s`: uncertainty on `s`
-            * `delta_tau`: uncertainty on `tau`
-    """
-    if len(individual_scores) == 0:
-        scores = pd.DataFrame(
-            columns=[
-                "user_id",
-                "entity_id",
-                "raw_score",
-                "raw_uncertainty",
-                "score",
-                "uncertainty",
-                "is_public",
-                "is_scaling_calibration_user",
-                "trust_score",
-            ]
-        )
-        scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
-        return scores, scalings
-    calibration_scaling = get_scaling_for_calibration(ml_input, individual_scores, W=W)
-    rp = ml_input.ratings_properties
-
-    non_calibration_users = rp["user_id"][~rp.is_scaling_calibration_user].unique()
-    calibration_users = rp["user_id"][rp.is_scaling_calibration_user].unique()
-    rp = rp.set_index(["user_id", "entity_id"])
-    df = individual_scores.join(rp, on=["user_id", "entity_id"], how="left")
-    df["is_public"].fillna(False, inplace=True)
-    df["is_scaling_calibration_user"].fillna(False, inplace=True)
-
-    # Apply scaling for calibration users
-    df = df.join(calibration_scaling, on="user_id")
-    df["s"].fillna(1, inplace=True)
-    df["tau"].fillna(0, inplace=True)
-    df["delta_s"].fillna(0, inplace=True)
-    df["delta_tau"].fillna(0, inplace=True)
-    df["score"] = df["s"] * df["raw_score"] + df["tau"]
-    df["uncertainty"] = (
-        df["s"] * df["raw_uncertainty"] + df["delta_s"] * df["raw_score"].abs() + df["delta_tau"]
-    )
-    df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
-
-    # Apply scaling for non-calibration users
-    logging.info(
-        "Computing scaling for %s non-calibration users, based on %s calibration users",
-        len(non_calibration_users),
-        len(calibration_users),
-    )
-    non_calibration_scaling = compute_scaling(
-        df,
-        ml_input=ml_input,
-        users_to_compute=non_calibration_users,
-        reference_users=calibration_users,
-        calibration=False,
-        W=W,
-    )
-
-    df = df.join(non_calibration_scaling, on="user_id")
-    df["is_scaling_calibration_user"].fillna(False, inplace=True)
-
-    df["s"].fillna(1, inplace=True)
-    df["tau"].fillna(0, inplace=True)
-    df["delta_s"].fillna(0, inplace=True)
-    df["delta_tau"].fillna(0, inplace=True)
-    df.loc[~df["is_scaling_calibration_user"], "uncertainty"] = (
-        df["s"] * df["raw_uncertainty"] + df["delta_s"] * df["raw_score"].abs() + df["delta_tau"]
-    )
-    df.loc[~df["is_scaling_calibration_user"], "score"] = df["raw_score"] * df["s"] + df["tau"]
-    df.drop(
-        ["s", "tau", "delta_s", "delta_tau"],
-        axis=1,
-        inplace=True,
-    )
-    all_scalings = pd.concat(
-        f
-        for f in [calibration_scaling, non_calibration_scaling]
-        if not f.empty
-    )
-    return df, all_scalings
-
-
-def get_global_scores(scaled_scores: pd.DataFrame, W: float):
-    if len(scaled_scores) == 0:
-        return pd.DataFrame(
-            columns=["entity_id", "score", "uncertainty", "deviation", "n_contributors"]
-        )
-
-    global_scores = {}
-    for (entity_id, scores) in scaled_scores.groupby("entity_id"):
-        w = scores.voting_right
-        theta = scores.score
-        delta = scores.uncertainty
-        rho = QrMed(W, w, theta, delta)
-        rho_uncertainty = QrDev(W, 1, w, theta, delta, qr_med=rho)
-        global_scores[entity_id] = {
-            "score": rho,
-            "uncertainty": rho_uncertainty,
-            "n_contributors": len(scores),
-        }
-
-    result = pd.DataFrame.from_dict(global_scores, orient="index")
-    result.index.name = "entity_id"
-    return result.reset_index()

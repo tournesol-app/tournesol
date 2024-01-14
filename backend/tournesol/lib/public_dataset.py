@@ -12,16 +12,11 @@ from typing import Optional
 from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
+from solidago.voting_rights.compute_voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
-from ml.mehestan.run import (
-    VOTE_WEIGHT_PRIVATE_RATINGS,
-    VOTE_WEIGHT_PUBLIC_RATINGS,
-    MehestanParameters,
-)
+from ml.mehestan.run import MehestanParameters
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 from vouch.trust_algo import SINK_VOUCH, TRUSTED_EMAIL_PRETRUST, VOUCH_DECAY
-from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
 # The standard decimal precision of floating point numbers appearing in the
 # dataset. Very small numbers can use a higher precision.
@@ -248,7 +243,7 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
     Write the metadata as JSON in `write_target`, an
     object supporting the Python file API.
     """
-    default_parameters = MehestanParameters()
+    mehestan_params = MehestanParameters()
 
     metadata_dict = {
         "data_included_until": data_until.isoformat(),
@@ -261,14 +256,14 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
                 "TRUSTED_EMAIL_PRETRUST": TRUSTED_EMAIL_PRETRUST,
                 "VOUCH_DECAY": VOUCH_DECAY,
             },
-            "individual_scores": default_parameters.indiv_algo.get_metadata(),
+            "individual_scores": mehestan_params.indiv_algo.get_metadata(),
             "mehestan": {
-                "W": default_parameters.W,
-                "VOTE_WEIGHT_PUBLIC_RATINGS": VOTE_WEIGHT_PUBLIC_RATINGS,
-                "VOTE_WEIGHT_PRIVATE_RATINGS": VOTE_WEIGHT_PRIVATE_RATINGS,
+                "W": mehestan_params.W,
+                "VOTE_WEIGHT_PUBLIC_RATINGS": mehestan_params.vote_weight_public_ratings,
+                "VOTE_WEIGHT_PRIVATE_RATINGS": mehestan_params.vote_weight_private_ratings,
                 "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
                 "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
-                "MAX_SCALED_SCORE": MEHESTAN_MAX_SCALED_SCORE,
+                "MAX_SCALED_SCORE": mehestan_params.max_squashed_score,
             },
         },
     }

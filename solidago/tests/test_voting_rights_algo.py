@@ -1,7 +1,11 @@
 import numpy as np
 import pytest
 
-from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE, compute_voting_rights
+from solidago.voting_rights.compute_voting_rights import (
+    OVER_TRUST_BIAS,
+    OVER_TRUST_SCALE,
+    compute_voting_rights
+)
 
 
 def test_empty_input():
