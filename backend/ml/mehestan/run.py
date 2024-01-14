@@ -7,23 +7,18 @@ import pandas as pd
 from django import db
 from django.conf import settings
 from solidago import collaborative_scaling
-from solidago.pipeline import TournesolInput, PipelineParameters
+from solidago.pipeline import PipelineOutput, PipelineParameters, TournesolInput
+from solidago.pipeline.global_scores import aggregate_scores, get_squash_function
 from solidago.pipeline.individual_scores import get_individual_scores
 
 from core.models import User
 from ml.inputs import MlInputFromDb
-from ml.outputs import (
-    save_contributor_scalings,
-    save_contributor_scores,
-    save_entity_scores,
-    save_tournesol_scores,
-)
+from ml.outputs import TournesolPollOutput, save_tournesol_scores
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
-from tournesol.utils.constants import COMPARISON_MAX
 from vouch.voting_rights import compute_voting_rights
 
-from .global_scores import get_global_scores
+from .parameters import MehestanParameters
 
 logger = logging.getLogger(__name__)
 
@@ -31,14 +26,10 @@ VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 
-class MehestanParameters(PipelineParameters):
-    r_max = COMPARISON_MAX
-
-
-
 def update_user_scores(poll: Poll, user: User):
     params = MehestanParameters()
     ml_input = MlInputFromDb(poll_name=poll.name)
+    output = TournesolPollOutput(poll_name=poll.name)
     for criteria in poll.criterias_list:
         scores = get_individual_scores(
             ml_input,
@@ -54,7 +45,11 @@ def update_user_scores(poll: Poll, user: User):
             },
             inplace=True,
         )
-        save_contributor_scores(poll, scores, single_criteria=criteria, single_user_id=user.pk)
+        output.save_individual_scores(
+            scores,
+            criterion=criteria,
+            single_user_id=user.pk
+        )
 
 
 def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.DEFAULT):
@@ -92,26 +87,21 @@ def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.
 
 
 def run_mehestan_for_criterion(
-    criteria: str,
+    criterion: str,
     ml_input: TournesolInput,
-    poll_pk: int,
-    parameters: MehestanParameters
+    output: PipelineOutput,
+    parameters: PipelineParameters,
 ):
     """
     Run Mehestan for the given criterion, in the given poll.
     """
-    # Retrieving the poll instance here allows this function to be run in a
-    # forked process. See the function `run_mehestan`.
-    poll = Poll.objects.get(pk=poll_pk)
     logger.info(
-        "Mehestan for poll '%s': computing scores for crit '%s'",
-        poll.name,
-        criteria,
+        "Mehestan computing scores for crit '%s'",
+        criterion,
     )
+    indiv_scores = get_individual_scores(ml_input, criteria=criterion, parameters=parameters)
 
-    indiv_scores = get_individual_scores(ml_input, criteria=criteria, parameters=parameters)
-
-    logger.info("Individual scores computed for crit '%s'", criteria)
+    logger.info("Individual scores computed for crit '%s'", criterion)
     scalings = collaborative_scaling.compute_individual_scalings(
         individual_scores=indiv_scores,
         tournesol_input=ml_input,
@@ -137,8 +127,8 @@ def run_mehestan_for_criterion(
         scaled_scores.score /= score_std
         scaled_scores.uncertainty /= score_std
 
-    indiv_scores["criteria"] = criteria
-    save_contributor_scalings(poll, criteria, scalings)
+    indiv_scores["criteria"] = criterion
+    output.save_individual_scalings(scalings, criterion=criterion)
 
     # Join ratings columns ("is_public", "trust_score", etc.)
     ratings = ml_input.ratings_properties.set_index(["user_id", "entity_id"])
@@ -152,43 +142,38 @@ def run_mehestan_for_criterion(
     }
     for mode in ScoreMode:
         scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
-        global_scores = get_global_scores(scaled_scores_with_voting_rights, W=parameters.W)
-        global_scores["criteria"] = criteria
+        global_scores = aggregate_scores(scaled_scores_with_voting_rights, W=parameters.W)
+        global_scores["criteria"] = criterion
 
-        # Apply poll scaling
-        scale_function = poll.scale_function
+        # Apply squashing
+        squash_function = get_squash_function(parameters)
         global_scores["uncertainty"] = 0.5 * (
-            scale_function(global_scores["score"] + global_scores["uncertainty"])
-            - scale_function(global_scores["score"] - global_scores["uncertainty"])
+            squash_function(global_scores["score"] + global_scores["uncertainty"])
+            - squash_function(global_scores["score"] - global_scores["uncertainty"])
         )
-        global_scores["score"] = scale_function(global_scores["score"])
-
-        # 2023-05-20: deviation is no longer computed by Mehestan
-        global_scores["deviation"] = None
+        global_scores["score"] = squash_function(global_scores["score"])
 
         logger.info(
-            "Mehestan for poll '%s': scores computed for crit '%s' and mode '%s'",
-            poll.name,
-            criteria,
+            "Mehestan: scores computed for crit '%s' and mode '%s'",
+            criterion,
             mode,
         )
-        save_entity_scores(poll, global_scores, single_criteria=criteria, score_mode=mode)
+        output.save_entity_scores(global_scores, criterion=criterion, score_mode=mode.as_str())
 
-    scale_function = poll.scale_function
+    squash_function = get_squash_function(parameters)
     scaled_scores = scaled_scores_with_voting_rights_per_score_mode[ScoreMode.DEFAULT]
     scaled_scores["uncertainty"] = 0.5 * (
-        scale_function(scaled_scores["score"] + scaled_scores["uncertainty"])
-        - scale_function(scaled_scores["score"] - scaled_scores["uncertainty"])
+        squash_function(scaled_scores["score"] + scaled_scores["uncertainty"])
+        - squash_function(scaled_scores["score"] - scaled_scores["uncertainty"])
     )
-    scaled_scores["score"] = scale_function(scaled_scores["score"])
-    scaled_scores["criteria"] = criteria
+    scaled_scores["score"] = squash_function(scaled_scores["score"])
+    scaled_scores["criteria"] = criterion
 
-    save_contributor_scores(poll, scaled_scores, single_criteria=criteria)
+    output.save_individual_scores(scaled_scores, criterion=criterion)
 
     logger.info(
-        "Mehestan for poll '%s': done with crit '%s'",
-        poll.name,
-        criteria,
+        "Mehestan: done with crit '%s'",
+        criterion,
     )
 
 
@@ -221,9 +206,6 @@ def run_mehestan(
     """
     logger.info("Mehestan for poll '%s': Start", poll.name)
 
-    # Avoid passing model's instances as arguments to the function run by the
-    # child processes. See this method docstring.
-    poll_pk = poll.pk
     criteria = poll.criterias_list
 
     os.register_at_fork(before=db.connections.close_all)
@@ -236,12 +218,14 @@ def run_mehestan(
     cpu_count = os.cpu_count() or 1
     cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
 
+    output = TournesolPollOutput(poll_name=poll.name)
+
     with Pool(processes=max(1, cpu_count)) as pool:
         for _ in pool.imap_unordered(
             partial(
                 run_mehestan_for_criterion,
                 ml_input=ml_input,
-                poll_pk=poll_pk,
+                output=output,
                 parameters=parameters
             ),
             criteria_to_run,

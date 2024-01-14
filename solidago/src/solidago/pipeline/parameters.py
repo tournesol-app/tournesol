@@ -11,6 +11,7 @@ class PipelineParameters:
     r_max: float = 10.0
 
     # collaborative scaling and aggregation
+    max_squashed_score: float = 100.0
     score_shift_W: float = 1.
     score_shift_quantile: float = 0.15
     score_deviation_quantile: float = 0.9

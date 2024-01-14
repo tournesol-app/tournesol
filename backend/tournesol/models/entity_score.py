@@ -1,3 +1,5 @@
+from typing import Literal
+
 from django.db import models
 
 from .poll import Poll
@@ -7,6 +9,9 @@ class ScoreMode(models.TextChoices):
     DEFAULT = "default"
     ALL_EQUAL = "all_equal"
     TRUSTED_ONLY = "trusted_only"
+
+    def as_str(self) -> Literal["default", "all_equal", "trusted_only"]:
+        return str(self)  # type: ignore
 
 
 class EntityCriteriaScore(models.Model):
