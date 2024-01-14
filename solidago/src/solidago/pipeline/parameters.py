@@ -18,8 +18,8 @@ class PipelineParameters:
     W: float = 10.0
 
     # voting rights
-    vote_weight_public_ratings = 1.0
-    vote_weight_private_ratings = 0.5
+    vote_weight_public_ratings: float = 1.0
+    vote_weight_private_ratings: float = 0.5
 
     @cached_property
     def indiv_algo(self):

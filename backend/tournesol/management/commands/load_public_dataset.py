@@ -43,10 +43,10 @@ class Command(BaseCommand):
             user.save()
         return user
 
-    def create_videos(self, video_ids):
+    def create_videos(self, video_ids: pd.Series):
         videos = {}
-        for video_id in video_ids:
-            videos[video_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
+        for (entity_id, video_id) in video_ids.items():
+            videos[entity_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
         return videos
 
     def fetch_video_metadata(self, videos):
@@ -93,17 +93,17 @@ class Command(BaseCommand):
             }
             print(f"Created {len(users)} users")
 
-            videos = self.create_videos(set(comparisons.entity_a) | set(comparisons.entity_b))
+            videos = self.create_videos(video_ids=public_dataset.entity_id_to_video_id)
             print(f"Created {len(videos)} video entities")
 
-            for ((username, video_a, video_b), rows) in comparisons.groupby(
+            for ((username, entity_a, entity_b), rows) in comparisons.groupby(
                 ["public_username", "entity_a", "entity_b"]
             ):
                 comparison = Comparison.objects.create(
                     user=users[username],
                     poll=poll,
-                    entity_1=videos[video_a],
-                    entity_2=videos[video_b],
+                    entity_1=videos[entity_a],
+                    entity_2=videos[entity_b],
                 )
                 for _, values in rows.iterrows():
                     ComparisonCriteriaScore.objects.create(
