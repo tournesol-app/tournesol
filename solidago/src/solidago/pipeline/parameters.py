@@ -17,6 +17,10 @@ class PipelineParameters:
     score_deviation_quantile: float = 0.9
     W: float = 10.0
 
+    # voting rights
+    vote_weight_public_ratings = 1.0
+    vote_weight_private_ratings = 0.5
+
     @cached_property
     def indiv_algo(self):
         return ContinuousBradleyTerry(r_max=self.r_max, alpha=self.alpha)
