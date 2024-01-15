@@ -90,7 +90,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
 
     It doesn't define any serializer, queryset nor permission.
     """
-
+    query_params_serializer = RecommendationsFilterSerializer
     search_score_coef = 2
     _weights_sum = None
 
@@ -119,7 +119,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         user = self.request.user
 
-        filter_serializer = RecommendationsFilterSerializer(data=request.query_params)
+        filter_serializer = self.query_params_serializer(data=request.query_params)
         filter_serializer.is_valid(raise_exception=True)
         filters = filter_serializer.validated_data
 
@@ -140,13 +140,14 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         if metadata_filters:
             queryset = poll.entity_cls.filter_metadata(queryset, metadata_filters)
 
-        search = filters["search"]
+        search = filters.get("search")
         if search:
             languages = request.query_params.getlist("metadata[language]")
             queryset = poll.entity_cls.filter_search(queryset, search, languages)
 
-        exclude_compared = filters["exclude_compared_entities"]
-        queryset = self._exclude_compared_entities(queryset, exclude_compared, poll, user)
+        exclude_compared = filters.get("exclude_compared_entities")
+        if exclude_compared:
+            queryset = self._exclude_compared_entities(queryset, exclude_compared, poll, user)
 
         return queryset, filters
 
@@ -295,6 +296,13 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         criteria_weight = self._build_criteria_weight_condition(
             request, poll, when="all_criteria_scores__criteria"
         )
+
+        # FIXME: we can significantly improve the performance of the queryset
+        # by filtering the criteria on their names, to remove those that are
+        # not present in the request.
+        #
+        #   ex:
+        #       all_criteria_scores__criteria__in=[...]
         queryset = queryset.filter(
             all_criteria_scores__poll=poll,
             all_criteria_scores__score_mode=score_mode,

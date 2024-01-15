@@ -19,6 +19,35 @@ export class TournesolRecommendations {
 
     this.handleResponse = this.handleResponse.bind(this);
     this.displayRecommendations = this.displayRecommendations.bind(this);
+
+    // The value of the query parameter `bundle` of the API /recommendations/.
+    // Vary this paramater from a request to another to avoid fetching the
+    // same cached recommendation results.
+    this.queryParamBundle = this.initializeQueryParamBundle();
+  }
+
+  getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  /**
+   * Initialize `queryParamBundle` with a random number.
+   *
+   * A random number prevents the users from seeing the same cached
+   * recommendation results each time they refresh the YT page. Be careful,
+   * increasing the range of generated numbers will also increase the
+   * theoretical maximum number of cached results by the API.
+   *
+   * 20 means if 1000 users press F5 at the same time, at most 40 results will
+   * be cached (20 for recent reco. and 20 for older reco.).
+   */
+  initializeQueryParamBundle() {
+    return this.getRandomInt(20);
+  }
+
+  varyQueryParamBundle() {
+    this.queryParamBundle += 1 + this.getRandomInt(2);
+    return this.queryParamBundle;
   }
 
   /**
@@ -103,6 +132,7 @@ export class TournesolRecommendations {
         message: 'getTournesolRecommendations',
         videosNumber: this.videosPerRow,
         additionalVideosNumber: this.videosPerRow * (this.rowsWhenExpanded - 1),
+        queryParamBundle: this.varyQueryParamBundle(),
       },
       this.handleResponse
     );

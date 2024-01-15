@@ -28,6 +28,7 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
+from .views.polls_reco_random import RandomRecommendationList
 from .views.previews import (
     DynamicWebsitePreviewComparison,
     DynamicWebsitePreviewDefault,
@@ -195,6 +196,11 @@ urlpatterns = [
         "polls/<str:name>/recommendations/",
         PollsRecommendationsView.as_view(),
         name="polls_recommendations",
+    ),
+    path(
+        "polls/<str:name>/recommendations/random/",
+        RandomRecommendationList.as_view(),
+        name="polls_recommendations_random",
     ),
     path(
         "polls/<str:name>/entities/<str:uid>",
