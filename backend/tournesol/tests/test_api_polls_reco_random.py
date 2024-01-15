@@ -31,7 +31,6 @@ class RandomRecommendationTestCase(TestCase):
             metadata__language="fr",
             metadata__duration=10,
             tournesol_score=22,
-            make_safe_for_poll=False,
         )
         self.video_3 = VideoFactory(
             metadata__name="safe__33",
@@ -40,7 +39,6 @@ class RandomRecommendationTestCase(TestCase):
             metadata__language="pt",
             metadata__duration=120,
             tournesol_score=33,
-            make_safe_for_poll=False,
         )
         self.video_4 = VideoFactory(
             metadata__name="safe__44",
@@ -49,7 +47,6 @@ class RandomRecommendationTestCase(TestCase):
             metadata__language="it",
             metadata__duration=240,
             tournesol_score=44,
-            make_safe_for_poll=False,
         )
 
     def test_anon_can_list(self):
@@ -84,6 +81,58 @@ class RandomRecommendationTestCase(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(results), 3)
         self.assertNotIn(video_5.uid, uids)
+
+    def test_list_is_random(self):
+        """
+        Two consecutive requests with different `random` query parameter
+        should return two bundles of different videos.
+
+        Still, it's possible for the bundles to share some videos. In very
+        rare cases, the bundle could be equal.
+        """
+        other_poll = Poll.objects.create(name="other")
+        other_path = "/polls/other/recommendations/random/"
+
+        for i in range(100):
+            VideoFactory(
+                metadata__name=f"tmpsafe__{i}",
+                tournesol_score=88,
+                make_safe_for_poll=other_poll,
+            )
+
+        resp = self.client.get(f"{other_path}?random=1")
+        bundle1 = [res["entity"]["uid"] for res in resp.data["results"]]
+
+        resp = self.client.get(f"{other_path}?random=2")
+        bundle2 = [res["entity"]["uid"] for res in resp.data["results"]]
+        self.assertNotEqual(set(bundle1), set(bundle2))
+
+    def test_list_is_not_ordered(self):
+        """
+        Two consecutive requests with different `random` query parameter
+        should return randomly ordered bundles of videos, even when the
+        bundles contain exactly the same videos.
+        """
+        other_poll = Poll.objects.create(name="other")
+        other_path = "/polls/other/recommendations/random/"
+
+        db_size = 40
+
+        for i in range(db_size):
+            VideoFactory(
+                metadata__name=f"other_safe__{i}",
+                tournesol_score=88,
+                make_safe_for_poll=other_poll,
+            )
+
+        resp = self.client.get(f"{other_path}?random=1&limit={db_size}")
+        bundle1 = [res["entity"]["uid"] for res in resp.data["results"]]
+
+        resp = self.client.get(f"{other_path}?random=2&limit={db_size}")
+        bundle2 = [res["entity"]["uid"] for res in resp.data["results"]]
+
+        self.assertSetEqual(set(bundle1), set(bundle2))
+        self.assertNotEqual(bundle1, bundle2)
 
     def test_anon_can_list_with_limit(self):
         """
