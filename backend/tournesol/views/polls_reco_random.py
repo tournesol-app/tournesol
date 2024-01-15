@@ -1,4 +1,3 @@
-from django.utils.cache import patch_vary_headers
 from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
