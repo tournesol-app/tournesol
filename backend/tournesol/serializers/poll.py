@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import IntegerField, ModelSerializer
 
-from tournesol.models import ContributorRating, CriteriaRank, Entity, EntityPollRating, Poll
+from tournesol.models import ContributorRating, CriteriaRank, EntityPollRating, Poll
 from tournesol.models.entity_poll_rating import UNSAFE_REASONS
 from tournesol.serializers.entity import EntityCriteriaScoreSerializer, RelatedEntitySerializer
 from tournesol.serializers.entity_context import EntityContextSerializer
@@ -74,54 +74,50 @@ class IndividualRatingSerializer(ModelSerializer):
         read_only_fields = fields
 
 
-class RecommendationMetadataSerializer(serializers.Serializer):
-    total_score = serializers.FloatField(read_only=True, allow_null=True)
+class RecommendationBaseSerializer(serializers.Serializer):
+    """
+    A base serializer for all recommendations.
 
-
-class RecommendationSerializer(ModelSerializer):
+    The recommendations of a poll should always be provided with
+    the fields defined in this serializer.
+    """
     entity = RelatedEntitySerializer(source="*", read_only=True)
-    collective_rating = ExtendedCollectiveRatingSerializer(
-        source="single_poll_rating",
-        read_only=True,
-        allow_null=True,
-    )
     entity_contexts = EntityContextSerializer(
         source="single_poll_entity_contexts",
         read_only=True,
         many=True
     )
-    recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
+    collective_rating = ExtendedCollectiveRatingSerializer(
+        source="single_poll_rating",
+        read_only=True,
+        allow_null=True,
+    )
 
     class Meta:
-        model = Entity
         fields = [
             "entity",
-            "collective_rating",
             "entity_contexts",
-            "recommendation_metadata",
+            "collective_rating",
         ]
         read_only_fields = fields
 
 
-class RecommendationRandomSerializer(serializers.Serializer):
-    entity = RelatedEntitySerializer(source="*", read_only=True)
-    entity_contexts = EntityContextSerializer(
-        source="single_poll_entity_contexts",
-        read_only=True,
-        many=True
-    )
-    collective_rating = ExtendedCollectiveRatingSerializer(
-        source="single_poll_rating",
-        read_only=True,
-        allow_null=True,
-    )
+class RecommendationMetadataSerializer(serializers.Serializer):
+    total_score = serializers.FloatField(read_only=True, allow_null=True)
+
+
+class RecommendationSerializer(RecommendationBaseSerializer):
+    """
+    An entity recommended in a poll.
+    """
+    recommendation_metadata = RecommendationMetadataSerializer(source="*", read_only=True)
 
     class Meta:
-        model = Entity
         fields = [
             "entity",
             "entity_contexts",
             "collective_rating",
+            "recommendation_metadata",
         ]
         read_only_fields = fields
 

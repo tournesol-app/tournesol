@@ -10,7 +10,7 @@ from drf_spectacular.utils import (
 
 from tournesol.models import Entity
 from tournesol.serializers.poll import (
-    RecommendationRandomSerializer,
+    RecommendationBaseSerializer,
     RecommendationsRandomFilterSerializer,
 )
 from tournesol.utils.cache import cache_page_no_i18n
@@ -77,7 +77,7 @@ class RandomRecommendationList(RandomRecommendationBaseAPIView):
     """
 
     permission_classes = []
-    serializer_class = RecommendationRandomSerializer
+    serializer_class = RecommendationBaseSerializer
     poll_parameter = "name"
 
     @method_decorator(cache_page_no_i18n(60 * 10))
