@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -95,8 +96,8 @@ class RandomRecommendationTestCase(TestCase):
 
         for i in range(100):
             VideoFactory(
-                metadata__name=f"tmpsafe__{i}",
-                tournesol_score=88,
+                metadata__name=f"other_safe__{i}",
+                tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1 + i,
                 make_safe_for_poll=other_poll,
             )
 
@@ -121,7 +122,7 @@ class RandomRecommendationTestCase(TestCase):
         for i in range(db_size):
             VideoFactory(
                 metadata__name=f"other_safe__{i}",
-                tournesol_score=88,
+                tournesol_score=settings.RECOMMENDATIONS_MIN_TOURNESOL_SCORE + 1 + i,
                 make_safe_for_poll=other_poll,
             )
 
