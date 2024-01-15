@@ -6,24 +6,25 @@ import numpy as np
 import pandas as pd
 
 from solidago.pipeline.inputs import TournesolInput
-from .user_model import UserModel
-from .vouch_model import VouchModel
-from .entity_model import EntityModel
-from .true_score_model import TrueScoreModel
-from .engagement_model import EngagementModel
-from .comparison_model import ComparisonModel
+
+from .user_model import UserModel, SvdUserModel
+from .vouch_model import VouchModel, ErdosRenyiVouchModel
+from .entity_model import EntityModel, SvdEntityModel
+from .true_score_model import TrueScoreModel, SvdTrueScoreModel
+from .engagement_model import EngagementModel, SimpleEngagementModel
+from .comparison_model import ComparisonModel, KnaryGBT
 
 class GenerativeModel(TournesolInput):
     def __init__(
         self,
         n_users: int,
         n_entities: int,
-        user_model: UserModel,
-        vouch_model: VouchModel,
-        entity_model: EntityModel,
-        true_score_model: TrueScoreModel,
-        engagement_model: EngagementModel,
-        comparison_model: ComparisonModel,
+        user_model: UserModel = SvdUserModel(),
+        vouch_model: VouchModel = ErdosRenyiVouchModel(),
+        entity_model: EntityModel = SvdEntityModel(),
+        true_score_model: TrueScoreModel = SvdTrueScoreModel(),
+        engagement_model: EngagementModel = SimpleEngagementModel(),
+        comparison_model: ComparisonModel = KnaryGBT(21, 10),
         random_seed: Optional[int] = None,
     ):
         """ Generate a random dataset

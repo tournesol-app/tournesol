@@ -41,16 +41,19 @@ class SimpleEngagementModel(EngagementModel):
         n_entities = len(true_scores.columns)
         comparisons = list()
         
-        for user, user_row in users.iterrows():
-            n_compared_entities = 2 * user_row["n_comparisons"]
-            n_compared_entities /= user_row["n_comparisons_per_entity"]
+        for user, row in users.iterrows():
+            n_compared_entities = 2 * row["n_comparisons"]
+            n_compared_entities /= row["n_comparisons_per_entity"]
             compared = list()
             for entity in range(n_entities):
                 if np.random.random() <= n_compared_entities / n_entities:
                     compared.append(entity)
+            if len(compared) <= 1:
+                continue
+            p_compare_ab = 2 * row["n_comparisons"] / len(compared)  / (len(compared) - 1)
             for a in range(len(compared)):
                 for b in range(a + 1, len(compared)):
-                    if np.random.random() <= user_row["n_comparisons"] / (len(compared) - 1):
+                    if np.random.random() <= p_compare_ab:
                         comparisons.append((user, a, b))
 
         c = np.array(comparisons).T

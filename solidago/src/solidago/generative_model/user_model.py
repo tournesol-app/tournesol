@@ -24,8 +24,8 @@ class SvdUserModel(UserModel):
         p_pretrusted: float = 0.2,
         zipf_vouch: float = 2.0,
         zipf_compare: float = 1.5,
-        poisson_compare: float = 10.0,
-        n_comparisons_per_entity: float = 4.0,
+        poisson_compare: float = 30.0,
+        n_comparisons_per_entity: float = 3.0,
         svd_dimension: int = 5,
         svd_distribution: callable = lambda dim: np.random.normal(1, 1, dim)
     ):

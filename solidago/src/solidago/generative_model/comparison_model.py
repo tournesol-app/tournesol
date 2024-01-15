@@ -6,23 +6,21 @@ import numpy as np
 
 class ComparisonModel(ABC):
     @abstractmethod
-    def __call__(self, true_scores: pd.DataFrame, comparisons: pd.DataFrame) -> pd.DataFrame:
+    def __call__(self, scores: pd.DataFrame, comparisons: pd.DataFrame) -> pd.DataFrame:
         """ Assigns a score to each entity, by each user
         Inputs:
-        - true_scores[u][e] is the score given to entity e by user u
+        - scores.loc[u, e] is the score given to entity e by user u
         - comparisons: DataFrame with columns
             * `user_id`
-            * `criteria`
             * `entity_a`
             * `entity_b`
         
         Returns:
         - comparisons: DataFrame with columns
             * `user_id`
-            * `criteria`
-            * `score`
             * `entity_a`
             * `entity_b`
+            * `score`
         """
         raise NotImplementedError
 
@@ -33,13 +31,22 @@ class GeneralizedBradleyTerry(ComparisonModel):
     by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud,
     published at AAAI 2024.
     """
+    def __call__(self, scores: pd.DataFrame, comparisons: pd.DataFrame) -> pd.DataFrame:
+        comparison_values = list()
+        for _, row in comparisons.iterrows():
+            score_a = scores.loc[row["user_id"], row["entity_a"]]
+            score_b = scores.loc[row["user_id"], row["entity_b"]]
+            score_diff = score_b - score_a
+            comparison_values.append(self.sample_comparison(score_diff))
+        comparisons = comparisons.assign(score=comparison_values)
+        return comparisons
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:
         raise NotImplementedError
     
     @abstractmethod
-    def f(self, comparison: float) -> float:
+    def root_law(self, comparison: float) -> float:
         """ This is the function f in the paper.
         Depending on discrete/continuous, it may be the probability mass or density function.
         In our implementation, f does not need to correspond to a normalized probability.
@@ -47,7 +54,7 @@ class GeneralizedBradleyTerry(ComparisonModel):
         raise NotImplementedError
     
     def non_normalized_probability(self, score_diff: float, comparison: float) -> float:
-        return self.f(comparison) * np.exp(score_diff * comparison)
+        return self.root_law(comparison) * np.exp(score_diff * comparison)
         
     @abstractmethod
     def partition_function(self, score_diff: float) -> float:
@@ -61,18 +68,19 @@ class GeneralizedBradleyTerry(ComparisonModel):
     ) -> float:
         if partition_fn is None:
             partition_fn = self.partition_function(score_diff)
-        return self.non_normalized_probability(score_diff, value) / partition_fn
+        return self.non_normalized_probability(score_diff, comparison) / partition_fn
     
 class DiscreteGBT(GeneralizedBradleyTerry):
     def sample_comparison(self, score_diff: float) -> float:
-        pf = self.root_law.partition_function(score_diff)
+        pf = self.partition_function(score_diff)
+        rand = np.random.random()
         cumulative = 0
         for comparison in self.comparison_generator():
             cumulative += self.probability(score_diff, comparison, pf)
             if rand <= cumulative:
                 return comparison
-        # Returns first comparison in case of numerical error
-        return self.comparison_generator()
+        # Returns 0 in case of numerical error
+        return 0
     
     @abstractmethod
     def comparison_generator(self) -> float:
@@ -85,7 +93,7 @@ class DiscreteGBT(GeneralizedBradleyTerry):
         """
         total = 0
         for comparison in self.comparison_generator():
-            total += self.non_normalized_probability(score_difference, comparison)
+            total += self.non_normalized_probability(score_diff, comparison)
         return total
 
 class KnaryGBT(DiscreteGBT):
@@ -95,7 +103,7 @@ class KnaryGBT(DiscreteGBT):
         self.n_options = n_options
         self.comparison_max = comparison_max
 
-    def f(self, comparison: float) -> float:
+    def root_law(self, comparison: float) -> float:
         return 1
 
     def comparison_generator(self):
