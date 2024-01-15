@@ -10,14 +10,14 @@ class TrustPropagation:
 		    pass
 		    
     @abstractmethod
-    def compute_trusts(self,
+    def __call__(self,
         users: DataFrame,
         vouches: DataFrame
     ) -> dict[str, float]:
         """
 		    Inputs:
 		    - users: DataFrame with columns
-            * public_username (str, index)
+            * user_id (int, index)
             * is_pretrusted (bool)
 		    - vouches: DataFrame with columns
             * voucher (str)

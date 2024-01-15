@@ -128,3 +128,12 @@ class TournesolInputFromPublicDataset(TournesolInput):
     ) -> Optional[pd.DataFrame]:
         # TODO: read contributor scores from individual_scores.csv
         return None
+
+    def get_user_index(self, public_username: str) -> Optional[int]:
+        if self.users is None or "public_username" not in self.users:
+            return None
+        rows = self.users.loc[self.users["public_username"] == public_username]
+        assert len(rows) <= 1
+        if len(rows) == 0:
+            return None
+        return rows.index[0]
