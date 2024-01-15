@@ -18,6 +18,8 @@ from tournesol.views import PollRecommendationsBaseAPIView
 
 
 class RandomRecommendationBaseAPIView(PollRecommendationsBaseAPIView):
+    query_params_serializer = RecommendationsRandomFilterSerializer
+
     def get_queryset(self):
         """
         Return a queryset of random recommended entities.
@@ -82,7 +84,4 @@ class RandomRecommendationList(RandomRecommendationBaseAPIView):
 
     @method_decorator(cache_page_no_i18n(60 * 10))
     def get(self, request, *args, **kwargs):
-        response = self.list(self, request, *args, **kwargs)
-        if request.query_params.get("exclude_compared_entities") == "true":
-            patch_vary_headers(response, ["Authorization"])
-        return response
+        return self.list(self, request, *args, **kwargs)
