@@ -10,6 +10,7 @@ from .user_model import UserModel
 from .vouch_model import VouchModel
 from .entity_model import EntityModel
 from .true_score_model import TrueScoreModel
+from .engagement_model import EngagementModel
 from .comparison_model import ComparisonModel
 
 class GenerativeModel(TournesolInput):
@@ -21,6 +22,7 @@ class GenerativeModel(TournesolInput):
         vouch_model: VouchModel,
         entity_model: EntityModel,
         true_score_model: TrueScoreModel,
+        engagement_model: EngagementModel,
         comparison_model: ComparisonModel,
         random_seed: Optional[int] = None,
     ):
@@ -40,11 +42,8 @@ class GenerativeModel(TournesolInput):
         self.vouches = vouch_model(self.users)
         self.entities = entity_model(n_entities)
         self.true_scores = true_score_model(self.users, self.entities)
-        self.comparisons = comparison_model(
-            self.users, 
-            self.entities, 
-            self.true_scores
-        )
+        self.comparisons = engagement_model(self.users, self.true_scores)
+        self.comparisons = comparison_model(self.true_scores, self.comparisons)
  
     def get_comparisons(
         self,
