@@ -14,7 +14,7 @@ import { frontendHost } from './config.js';
 
 const RECENT_VIDEOS_RATIO = 0.75;
 const RECENT_VIDEOS_EXTRA_RATIO = 0.5;
-const BUNDLE_SIZE_F = 3;
+const BUNDLE_OVERFETCH_FACTOR = 3;
 
 /**
  * Build the extension context menu.
@@ -208,14 +208,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         const recentParams = new URLSearchParams([
           ['date_gte', threeWeeksAgo],
-          ['limit', (recentToLoadRow1 + recentToLoadExtra) * BUNDLE_SIZE_F],
-          ['random', request.queryParamRandom],
+          [
+            'limit',
+            (recentToLoadRow1 + recentToLoadExtra) * BUNDLE_OVERFETCH_FACTOR,
+          ],
+          ['bundle', request.queryParamBundle],
         ]);
 
         const oldParams = new URLSearchParams([
           ['date_lte', threeWeeksAgo],
-          ['limit', (oldToLoadRow1 + oldToLoadExtra) * BUNDLE_SIZE_F],
-          ['random', request.queryParamRandom],
+          ['limit', (oldToLoadRow1 + oldToLoadExtra) * BUNDLE_OVERFETCH_FACTOR],
+          ['bundle', request.queryParamBundle],
         ]);
 
         recommendationsLangs.forEach((lang) => {

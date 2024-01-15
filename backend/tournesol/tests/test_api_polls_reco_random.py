@@ -68,14 +68,14 @@ class RandomRecommendationTestCase(TestCase):
             self.assertEqual(result["entity_contexts"], [])
 
     def test_list_is_poll_specific(self):
-        resp = self.client.get(f"{self.url_path}?random=1")
+        resp = self.client.get(f"{self.url_path}?bundle=1")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(resp.data["results"]), 3)
 
         other_poll = Poll.objects.create(name="other")
         video_5 = VideoFactory.create(make_safe_for_poll=other_poll)
 
-        resp = self.client.get(f"{self.url_path}?random=2")
+        resp = self.client.get(f"{self.url_path}?bundle=2")
         results = resp.data["results"]
         uids = [res["entity"]["uid"] for res in results]
 
@@ -85,7 +85,7 @@ class RandomRecommendationTestCase(TestCase):
 
     def test_list_is_random(self):
         """
-        Two consecutive requests with different `random` query parameter
+        Two consecutive requests with different `bundle` query parameter
         should return two bundles of different videos.
 
         Still, it's possible for the bundles to share some videos. In very
@@ -101,16 +101,16 @@ class RandomRecommendationTestCase(TestCase):
                 make_safe_for_poll=other_poll,
             )
 
-        resp = self.client.get(f"{other_path}?random=1")
+        resp = self.client.get(f"{other_path}?bundle=1")
         bundle1 = [res["entity"]["uid"] for res in resp.data["results"]]
 
-        resp = self.client.get(f"{other_path}?random=2")
+        resp = self.client.get(f"{other_path}?bundle=2")
         bundle2 = [res["entity"]["uid"] for res in resp.data["results"]]
         self.assertNotEqual(set(bundle1), set(bundle2))
 
     def test_list_is_not_ordered(self):
         """
-        Two consecutive requests with different `random` query parameter
+        Two consecutive requests with different `bundle` query parameter
         should return randomly ordered bundles of videos, even when the
         bundles contain exactly the same videos.
         """
@@ -126,10 +126,10 @@ class RandomRecommendationTestCase(TestCase):
                 make_safe_for_poll=other_poll,
             )
 
-        resp = self.client.get(f"{other_path}?random=1&limit={db_size}")
+        resp = self.client.get(f"{other_path}?bundle=1&limit={db_size}")
         bundle1 = [res["entity"]["uid"] for res in resp.data["results"]]
 
-        resp = self.client.get(f"{other_path}?random=2&limit={db_size}")
+        resp = self.client.get(f"{other_path}?bundle=2&limit={db_size}")
         bundle2 = [res["entity"]["uid"] for res in resp.data["results"]]
 
         self.assertSetEqual(set(bundle1), set(bundle2))

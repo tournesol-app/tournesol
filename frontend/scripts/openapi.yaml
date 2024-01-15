@@ -772,7 +772,7 @@ paths:
         schema:
           type: integer
       - in: query
-        name: random
+        name: bundle
         schema:
           type: integer
         description: Successive calls can return the same cached results. Vary this
