@@ -12,7 +12,6 @@ from typing import Optional
 from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
-from solidago.voting_rights.compute_voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE
 
 from ml.mehestan.run import MehestanParameters
 from tournesol.entities.base import UID_DELIMITER
@@ -261,8 +260,8 @@ def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> 
                 "W": mehestan_params.W,
                 "VOTE_WEIGHT_PUBLIC_RATINGS": mehestan_params.vote_weight_public_ratings,
                 "VOTE_WEIGHT_PRIVATE_RATINGS": mehestan_params.vote_weight_private_ratings,
-                "OVER_TRUST_BIAS": OVER_TRUST_BIAS,
-                "OVER_TRUST_SCALE": OVER_TRUST_SCALE,
+                "OVER_TRUST_BIAS": mehestan_params.over_trust_bias,
+                "OVER_TRUST_SCALE": mehestan_params.over_trust_scale,
                 "MAX_SCALED_SCORE": mehestan_params.max_squashed_score,
             },
         },
