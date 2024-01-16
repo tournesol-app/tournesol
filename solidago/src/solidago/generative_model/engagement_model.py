@@ -18,8 +18,11 @@ class EngagementModel(ABC):
         - true_scores[u][e] is the true score assigned by user u to entity e
         
         Returns:
-        - assessments:
-            * assessments[u][e] says if u assessed e publicly
+        - user_scores: DataFrame with columns
+            * `user_id`
+            * `criteria`
+            * `entity_id`
+            * `is_public`
         - comparisons: DataFrame with columns
             * `user_id`
             * `criteria`
@@ -39,7 +42,7 @@ class SimpleEngagementModel(EngagementModel):
     ):
         self.p_per_criterion = p_per_criterion
         self.p_public = p_public
-            
+
     def __call__(
         self, 
         users: pd.DataFrame, 
@@ -54,8 +57,11 @@ class SimpleEngagementModel(EngagementModel):
         - true_scores[u][e] is the true score assigned by user u to entity e
         
         Returns:
-        - assessments:
-            * assessments[u][e] says if u assessed e publicly
+        - user_scores: DataFrame with columns
+            * `user_id`
+            * `criteria`
+            * `entity_id`
+            * `is_public`
         - comparisons: DataFrame with columns
             * `user_id`
             * `criteria`
@@ -63,11 +69,10 @@ class SimpleEngagementModel(EngagementModel):
             * `entity_b`
         """
         n_entities = len(true_scores.columns)
-        dct = dict(user_id=list(), criteria=list(), entity_a=list(), entity_b=list())
-        assessments = dict()
-        
+        comparison_dct = dict(user_id=list(), criteria=list(), entity_a=list(), entity_b=list())
+        score_dct = dict(user_id=list(), entity_id=list(), criteria=list(), is_public=list())
+
         for user, row in users.iterrows():
-            assessments[user] = dict()
             n_compared_entities = 2 * row["n_comparisons"]
             n_compared_entities /= row["n_comparisons_per_entity"]
             compared = list()
@@ -78,21 +83,27 @@ class SimpleEngagementModel(EngagementModel):
                 continue
             p_compare_ab = 2 * row["n_comparisons"] / len(compared)  / (len(compared) - 1)
             for a in range(len(compared)):
-                assessments[user][a] = (np.random.random() <= self.p_public)
+                is_public = (np.random.random() <= self.p_public)
+                for c in self.p_per_criterion:
+                    score_dct["user_id"].append(user)
+                    score_dct["entity_id"].append(a)
+                    score_dct["criteria"].append(c)
+                    score_dct["is_public"].append(is_public)
                 for b in range(a + 1, len(compared)):
-                    if np.random.random() <= p_compare_ab:
-                        for c in self.p_per_criterion:
-                            if np.random.random() <= self.p_per_criterion[c]:
-                                dct["user_id"].append(user)
-                                dct["criteria"].append(c)
-                                if np.random.random() <= 0.5:
-                                    dct["entity_a"].append(a)
-                                    dct["entity_b"].append(b)
-                                else:
-                                    dct["entity_a"].append(b)
-                                    dct["entity_b"].append(a)
-                                
-        return assessments, pd.DataFrame(dct)
+                    if np.random.random() >= p_compare_ab:
+                        continue
+                    for c in self.p_per_criterion:
+                        if np.random.random() <= self.p_per_criterion[c]:
+                            comparison_dct["user_id"].append(user)
+                            comparison_dct["criteria"].append(c)
+                            if np.random.random() <= 0.5:
+                                comparison_dct["entity_a"].append(a)
+                                comparison_dct["entity_b"].append(b)
+                            else:
+                                comparison_dct["entity_a"].append(b)
+                                comparison_dct["entity_b"].append(a)
+
+        return pd.DataFrame(score_dct), pd.DataFrame(comparison_dct)
 
     def __str__(self):
         properties = f"p_per_criterion={self.p_per_criterion}, p_public={self.p_public}"
