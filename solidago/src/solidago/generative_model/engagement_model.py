@@ -19,6 +19,7 @@ class EngagementModel(ABC):
             * `criteria`
             * `entity_a`
             * `entity_b`
+            * `is_public`
         """
         raise NotImplementedError
 
@@ -26,10 +27,14 @@ class EngagementModel(ABC):
         return type(self).__name__
         
 class SimpleEngagementModel(EngagementModel):
-    def __init__(self, n_criteria: int = 1, p_criteria: float = 1.0):
-        self.n_criteria = n_criteria
+    def __init__(
+        self, 
+        p_per_criterion: dict[str, float] = {"0": 1.0}, 
+        p_public: float = 0.8
+    ):
         self.p_criteria = p_criteria
-    
+        self.p_public = p_public
+            
     def __call__(self, users: pd.DataFrame, true_scores: pd.DataFrame) -> pd.DataFrame:
         """ Assigns a score to each entity, by each user
         Inputs:
@@ -45,6 +50,7 @@ class SimpleEngagementModel(EngagementModel):
             * `criteria`
             * `entity_a`
             * `entity_b`
+            * `is_public`
         """
         n_entities = len(true_scores.columns)
         dct = dict(user_id=list(), criteria=list(), entity_a=list(), entity_b=list())
@@ -62,12 +68,13 @@ class SimpleEngagementModel(EngagementModel):
             for a in range(len(compared)):
                 for b in range(a + 1, len(compared)):
                     if np.random.random() <= p_compare_ab:
-                        for c in range(self.n_criteria):
-                            if np.random.random() <= self.p_criteria:
+                        for c in self.p_per_criterion:
+                            if np.random.random() <= self.p_per_criterion[c]:
                                 dct["user_id"].append(user)
-                                dct["criteria"].append(str(c))
+                                dct["criteria"].append(c)
                                 dct["entity_a"].append(a)
                                 dct["entity_b"].append(b)
+                                dct["is_public"].append(np.random.random() <= self.p_public)
                                 
         return pd.DataFrame(dct)
 
