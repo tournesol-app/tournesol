@@ -72,8 +72,12 @@ class SimpleEngagementModel(EngagementModel):
                             if np.random.random() <= self.p_per_criterion[c]:
                                 dct["user_id"].append(user)
                                 dct["criteria"].append(c)
-                                dct["entity_a"].append(a)
-                                dct["entity_b"].append(b)
+                                if np.random().random() <= 0.5:
+                                    dct["entity_a"].append(a)
+                                    dct["entity_b"].append(b)
+                                else:
+                                    dct["entity_a"].append(b)
+                                    dct["entity_b"].append(a)
                                 dct["is_public"].append(np.random.random() <= self.p_public)
                                 
         return pd.DataFrame(dct)
