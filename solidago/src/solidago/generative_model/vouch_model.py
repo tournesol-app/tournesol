@@ -19,6 +19,9 @@ class VouchModel(ABC):
             * `vouch`: float
         """
         raise NotImplementedError
+    
+    def __str__(self):
+        return type(self).__name__
 
 class ErdosRenyiVouchModel(VouchModel):
     def __call__(self, users: pd.DataFrame):
@@ -55,3 +58,4 @@ class ErdosRenyiVouchModel(VouchModel):
                     vouches.append(1)
                     
         return pd.DataFrame(dict(voucher=vouchers, vouchee=vouchees, vouch=vouches))
+

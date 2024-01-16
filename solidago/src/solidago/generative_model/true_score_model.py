@@ -22,6 +22,9 @@ class TrueScoreModel(ABC):
         """
         raise NotImplementedError
 
+    def __str__(self):
+        return type(self).__name__
+        
 class SvdTrueScoreModel(TrueScoreModel):
     def __init__(self, noise_scale: float = 0.5):
         self.noise_scale = noise_scale
@@ -38,3 +41,7 @@ class SvdTrueScoreModel(TrueScoreModel):
         scores = users[svd_columns] @ entities[svd_columns].T / svd_dimension
         scores += np.random.normal(0, self.noise_scale, (len(users), len(entities)))
         return scores
+
+    def __str__(self):
+        return f"SvdTrueScoreModel(noise_scale={self.noise_scale})"
+        

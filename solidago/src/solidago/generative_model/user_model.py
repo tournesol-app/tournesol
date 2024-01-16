@@ -16,6 +16,9 @@ class UserModel(ABC):
             * And maybe more
         """
         raise NotImplementedError
+        
+    def __str__(self):
+        return type(self).__name__
 
 class SvdUserModel(UserModel):
     def __init__(
@@ -86,3 +89,9 @@ class SvdUserModel(UserModel):
             dct[f"svd{i}"] = [svd[u][i] for u in range(n_users)]
         
         return pd.DataFrame(dct)
+        
+    def __str__(self):
+        printed_properties = ["p_trustworthy", "p_pretrusted", "zipf_vouch",
+            "zipf_compare", "poisson_compare", "n_comparisons_per_entity","svd_dimension"]
+        properties = ", ".join([f"{p}={getattr(self,p)}" for p in printed_properties])
+        return f"SvdUserModel({properties})"

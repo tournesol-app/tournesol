@@ -24,6 +24,9 @@ class ComparisonModel(ABC):
         """
         raise NotImplementedError
 
+    def __str__(self):
+        return type(self).__name__
+        
 class GeneralizedBradleyTerry(ComparisonModel):
     """ The Generalized Bradley-Terry model is a score-to-comparison model
     with numerous desirable properties, which was introduced in the paper
@@ -110,4 +113,7 @@ class KnaryGBT(DiscreteGBT):
         delta = 2 * self.comparison_max / (self.n_options - 1)
         for k in range(self.n_options):
             yield k * delta - self.comparison_max
-
+ 
+    def __str__(self):
+        return f"K-naryGBT(K={self.n_options}, comparison_max={self.comparison_max})"
+        

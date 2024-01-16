@@ -15,6 +15,9 @@ class EntityModel(ABC):
         """
         raise NotImplementedError
 
+    def __str__(self):
+        return type(self).__name__
+
 class SvdEntityModel(EntityModel):
     def __init__(
         self, 
@@ -47,3 +50,5 @@ class SvdEntityModel(EntityModel):
             dct[f"svd{i}"] = [svd[e][i] for e in range(n_entities)]
         return pd.DataFrame(dct)
 
+    def __str__(self):
+        return f"SvdEntityModel(svd_dimension={self.svd_dimension})"

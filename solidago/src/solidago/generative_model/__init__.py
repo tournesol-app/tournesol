@@ -2,6 +2,7 @@ from abc import ABC
 from typing import Optional
 from functools import cached_property
 
+import logging
 import numpy as np
 import pandas as pd
 
@@ -13,6 +14,10 @@ from .entity_model import EntityModel, SvdEntityModel
 from .true_score_model import TrueScoreModel, SvdTrueScoreModel
 from .engagement_model import EngagementModel, SimpleEngagementModel
 from .comparison_model import ComparisonModel, KnaryGBT
+
+
+logger = logging.getLogger(__name__)
+
 
 class SyntheticData(TournesolInput):
     def __init__(
@@ -118,12 +123,17 @@ class GenerativeModel:
         if random_seed is not None:
             np.random.seed(random_seed)
         
+        logger.info(f"Generate {n_users} users using {self.user_model}")
         users = self.user_model(n_users)
+        logger.info(f"Generate vouches using {self.vouch_model}")
         vouches = self.vouch_model(users)
+        logger.info(f"Generate {n_entities} entities using {self.entity_model}")
         entities = self.entity_model(n_entities)
+        logger.info(f"Generate ground truth using {self.true_score_model}")
         true_scores = self.true_score_model(users, entities)
+        logger.info(f"Generate user engagement using {self.engagement_model}")
         comparisons = self.engagement_model(users, true_scores)
+        logger.info(f"Generate comparisons using {self.comparison_model}")
         comparisons = self.comparison_model(true_scores, comparisons)
         return SyntheticData(users, vouches, entities, true_scores, comparisons)
-
 

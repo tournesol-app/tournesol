@@ -14,16 +14,16 @@ class LipschiTrust(TrustPropagation):
         sink_vouch: float=5.0,
         error: float=1e-8
     ):
-        """
+        """ A robustified variant of PageRank
         Inputs:
         - pretrust_value is the pretrust of a pretrusted user
-            (Trust^{pre}_{\checkmark} in paper)
+            (Trust^{pre}_{checkmark} in paper)
         - decay is the decay of trusts in voucher's vouchees
-            (\beta in paper)
+            (beta in paper)
         - sink_vouch is the vouch to none, used to incentivize vouching
-            (V^{sink}_{\checkmark} in paper)
+            (V^{sink}_{checkmark} in paper)
         - error > 0 is an upper bound on error (in L1 norm)
-            (\epsilon_{LipschiTrust} in paper)
+            (epsilon_{LipschiTrust} in paper)
         """
         assert pretrust_value >= 0 and pretrust_value <= 1
         assert decay >= 0 and decay <= 1
