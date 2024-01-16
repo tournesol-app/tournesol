@@ -1,11 +1,21 @@
-from abc import ABC, abstractmethod
-
 import pandas as pd
+import numpy as np
 
-from .compute_voting_rights import compute_voting_rights
+from . import VotingRights
 
-class VotingRights(ABC):
-    @abstractmethod
+class VotingRightsWithLimitedOvertrust(VotingRights):
+    def __init__(
+        self, 
+        privacy_penalty: float = 0.5, 
+        min_overtrust: float = 2.0,
+        overtrust_ratio: float = 0.1,
+    ):
+        """ privately scored entities are given 
+        """
+        self.privacy_penalty = privacy_penalty
+        self.min_overtrust = min_overtrust
+        self.overtrust_ratio = overtrust_ratio
+    
     def __call__(
         users: pd.DataFrame,
         vouches: pd.DataFrame,
