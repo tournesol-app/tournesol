@@ -26,21 +26,22 @@ class SyntheticData(TournesolInput):
         vouches: pd.DataFrame = None,
         entities: pd.DataFrame = None,
         true_scores: pd.DataFrame = None,
+        assessments: pd.DataFrame = None,
         comparisons: pd.DataFrame = None
     ):
-        def df(**kwargs):
+        def df(x, **kwargs):
+            if x is not None:
+                return x
             dtypes = [(key, kwargs[key]) for key in kwargs]
             return pd.DataFrame(np.empty(0, np.dtype(list(dtypes))))
             
-        self.users = users if users is not None else df(
-            user_id=int, public_username=str, trust_score= float
-        ).set_index("user_id")
-        self.vouches = vouches if vouches is not None else df(
-            voucher=int, vouchee=int, vouch=float
-        )
+        self.users = df(users, user_id=int, public_username=str, trust_score= float)
+        self.users.index.name = "user_id"
+        self.vouches = df(vouches, voucher=int, vouchee=int, vouch=float)
         self.entities = entities
         self.true_scores = true_scores
-        self.comparisons = comparisons if comparisons is not None else df(
+        self.assessments = dict() if assessments is None else assessments
+        self.comparisons = df(comparisons,
             user_id=int, score=float, week_date=str, entity_a=int, entity_b=int
         )
  
@@ -132,8 +133,8 @@ class GenerativeModel:
         logger.info(f"Generate ground truth using {self.true_score_model}")
         true_scores = self.true_score_model(users, entities)
         logger.info(f"Generate user engagement using {self.engagement_model}")
-        comparisons = self.engagement_model(users, true_scores)
+        assessments, comparisons = self.engagement_model(users, true_scores)
         logger.info(f"Generate comparisons using {self.comparison_model}")
         comparisons = self.comparison_model(true_scores, comparisons)
-        return SyntheticData(users, vouches, entities, true_scores, comparisons)
+        return SyntheticData(users, vouches, entities, true_scores, assessments, comparisons)
 
