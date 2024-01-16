@@ -4,7 +4,8 @@
 """
 
 from solidago.trust_propagation import TrustPropagation
-from pandas import DataFrame
+
+import pandas as pd
 import numpy as np
 
 class LipschiTrust(TrustPropagation):
@@ -36,8 +37,8 @@ class LipschiTrust(TrustPropagation):
         self.error = error
     
     def __call__(self,
-        users: DataFrame,
-        vouches: DataFrame
+        users: pd.DataFrame,
+        vouches: pd.DataFrame
     ) -> dict[str, float]:
         """
         Inputs:
@@ -52,51 +53,24 @@ class LipschiTrust(TrustPropagation):
         Returns:
         - trusts: dict, where trusts[user] (float) is the trust in user
         """
-        rsv = self.received_scaled_vouches(vouches)
-        pretrusts = set(users.loc[users["is_pretrusted"]].index)
-        trusts = { u: self.pretrust_value for u in pretrusts }
+        total_vouches = dict(vouches["voucher"].value_counts())
+        for voucher in total_vouches:
+            total_vouches[voucher] += self.sink_vouch
+            
+        pretrusts = np.array(users["is_pretrusted"] * self.pretrust_value)
+        trusts = np.array(pretrusts)
 
         n_iterations = - np.log(len(users)/self.error) / np.log(self.decay)
         n_iterations = int(np.ceil( n_iterations ))
         for _ in range(n_iterations):
             # Initialize to pretrust
-            new_trusts = dict()
-            for user in pretrusts:
-                new_trusts[user] = self.pretrust_value
+            new_trusts = np.array(pretrusts)
             # Propagate trust through vouches
-            for vouchee in rsv:
-                if vouchee not in new_trusts:
-                    new_trusts[vouchee] = 0
-                for voucher in rsv[vouchee]:
-                    if voucher not in trusts: continue
-                    flow = trusts[voucher] * rsv[vouchee][voucher]
-                    new_trusts[vouchee] += self.decay * flow
+            for _, row in vouches.iterrows():
+                vouch = row["vouch"] / total_vouches[row["voucher"]]
+                new_trusts[row["vouchee"]] += self.decay * trusts[row["voucher"]] * vouch
             # Bound trusts for Lipschitz resilience
-            for user in new_trusts:
-                trusts[user] = min(new_trusts[user], 1.0)
-
-        return trusts
+            trusts = new_trusts.clip(max=1.0)
+        
+        return users.assign(trust_score=trusts)
       
-    def received_scaled_vouches(self,
-        vouches: DataFrame
-    ) -> dict[str, dict[str, float]]:
-        """
-        Inputs:
-        - vouches is a list of tuples (voucher, vouchee, scaled_vouch)
-        
-        Returns:
-        - v[vouchee][voucher] is the scaled vouch recevied by vouchee
-            from voucher
-        """
-        total_vouches = dict(vouches["voucher"].value_counts())
-        for voucher in total_vouches:
-            total_vouches[voucher] += self.sink_vouch
-        
-        rsv = dict()
-        for _, row in vouches.iterrows():
-            voucher, vouchee = row["voucher"], row["vouchee"]
-            scaled_vouch = row["vouch"] / total_vouches[voucher]
-            if vouchee not in rsv: rsv[vouchee] = dict()
-            rsv[vouchee][voucher] = scaled_vouch
-        return rsv
-    

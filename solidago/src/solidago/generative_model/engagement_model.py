@@ -47,7 +47,7 @@ class SimpleEngagementModel(EngagementModel):
             * `entity_b`
         """
         n_entities = len(true_scores.columns)
-        comparisons = list()
+        dct = dict(user_id=list(), criteria=list(), entity_a=list(), entity_b=list())
         
         for user, row in users.iterrows():
             n_compared_entities = 2 * row["n_comparisons"]
@@ -64,10 +64,12 @@ class SimpleEngagementModel(EngagementModel):
                     if np.random.random() <= p_compare_ab:
                         for c in range(self.n_criteria):
                             if np.random.random() <= self.p_criteria:
-                                comparisons.append((user, c, a, b))
-
-        c = np.array(comparisons).T
-        return pd.DataFrame(dict(user_id=c[0], criteria=c[1], entity_a=c[2], entity_b=c[3]))
+                                dct["user_id"].append(user)
+                                dct["criteria"].append(str(c))
+                                dct["entity_a"].append(a)
+                                dct["entity_b"].append(b)
+                                
+        return pd.DataFrame(dct)
 
     def __str__(self):
         properties = f"n_criteria={self.n_criteria}, p_criteria={self.p_criteria}"

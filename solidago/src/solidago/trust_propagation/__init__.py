@@ -3,12 +3,9 @@
 """
 
 from pandas import DataFrame
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
-class TrustPropagation:
-    def __init__(self):
-		    pass
-		    
+class TrustPropagation(ABC):
     @abstractmethod
     def __call__(self,
         users: DataFrame,
