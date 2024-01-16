@@ -30,8 +30,8 @@ score = QrMed(W=1, w=1, x=np.array([-1.0, 1.0, 2.0]), delta=np.array([1.0, 1.0, 
 
 To run tests, setup a virtual environment, activate it, install dependencies and run pytest.
 ```
-python -m venv tonnomdevenv
-source tonnomdevenv/bin/activate
+python -m venv devenv
+source devenv/bin/activate
 pip install -e .[test]
 pytest tests/
 ```
