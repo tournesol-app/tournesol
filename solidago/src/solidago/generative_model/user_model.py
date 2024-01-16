@@ -88,7 +88,9 @@ class SvdUserModel(UserModel):
         for i in range(self.svd_dimension):
             dct[f"svd{i}"] = [svd[u][i] for u in range(n_users)]
         
-        return pd.DataFrame(dct)
+        df = pd.DataFrame(dct)
+        df.index.name = "user_id"
+        return df
         
     def __str__(self):
         printed_properties = ["p_trustworthy", "p_pretrusted", "zipf_vouch",

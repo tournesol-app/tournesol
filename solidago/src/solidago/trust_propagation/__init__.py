@@ -21,8 +21,14 @@ class TrustPropagation(ABC):
             * vouchee (str)
             * vouch (float)
 		    
-		    Returns:
-				- trusts: dict, where trusts[user] (float) is the trust in user
+            Returns:
+            - users: DataFrame with columns
+                * user_id (int, index)
+                * is_pretrusted (bool)
+                * trust_score (float)
 		    """
-        pass
+        raise NotImplementedError
+        
+    def __str__(self):
+        return type(self).__name__
 		

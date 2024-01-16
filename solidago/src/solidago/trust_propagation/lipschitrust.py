@@ -39,7 +39,7 @@ class LipschiTrust(TrustPropagation):
     def __call__(self,
         users: pd.DataFrame,
         vouches: pd.DataFrame
-    ) -> dict[str, float]:
+    ) -> pd.DataFrame:
         """
         Inputs:
         - users: DataFrame with columns
@@ -51,7 +51,10 @@ class LipschiTrust(TrustPropagation):
             * vouch (float)
         
         Returns:
-        - trusts: dict, where trusts[user] (float) is the trust in user
+        - users: DataFrame with columns
+            * user_id (int, index)
+            * is_pretrusted (bool)
+            * trust_score (float)
         """
         total_vouches = dict(vouches["voucher"].value_counts())
         for voucher in total_vouches:
@@ -74,3 +77,7 @@ class LipschiTrust(TrustPropagation):
         
         return users.assign(trust_score=trusts)
       
+    def __str__(self):
+        prop_names = ["pretrust_value", "decay", "sink_vouch", "error"]
+        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
+        return f"LipschiTrust({prop})"
