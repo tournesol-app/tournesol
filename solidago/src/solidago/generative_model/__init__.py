@@ -6,7 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from solidago.dataset import SimpleDataset
+from solidago.pipeline.inputs import SimpleInput
 
 from .user_model import UserModel, SvdUserModel
 from .vouch_model import VouchModel, ErdosRenyiVouchModel
@@ -48,7 +48,7 @@ class GenerativeModel:
     def __call__(
         self, n_users: int, n_entities: int, 
         random_seed: Optional[int] = None
-    ) -> SimpleDataset:
+    ) -> SimpleInput:
         """ Generates a random dataset
         Inputs:
         - n_users
@@ -70,5 +70,5 @@ class GenerativeModel:
         scores, comparisons = self.engagement_model(users, true_scores)
         logger.info(f"Generate comparisons using {self.comparison_model}")
         comparisons = self.comparison_model(true_scores, comparisons)
-        return SimpleDataset(users, vouches, entities, true_scores, scores, comparisons)
+        return SimpleInput(users, vouches, entities, true_scores, scores, comparisons)
 
