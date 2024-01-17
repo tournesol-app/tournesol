@@ -29,14 +29,22 @@ class GenerativeModel:
         engagement_model: EngagementModel = SimpleEngagementModel(),
         comparison_model: ComparisonModel = KnaryGBT(21, 10)
     ):
-        """ Generate a random dataset
-        Inputs:
-        - user_model is a callable generator of users
-        - vouch_model is a callable generator of vouches
-        - entity_model is a callable generator of entities
-        - true_score_model is a callable generator of true scores
-        - comparison_model is a callable generator of comparisons
-        - random_seed (if int) allows reproducibility
+        """ Pipeline to generate a random dataset
+        
+        Parameters
+        ----------
+        user_model: UserModel
+            Generates users
+        vouch_model: VouchModel
+            Generates vouches
+        entity_model: EntityModel
+            Generates entities
+        true_score_model: TrueScoreModel
+            Generates true scores
+        engagement_model: EngagementModel
+            Generates private/public selection, and comparisons to be made
+        comparison_model: ComparisonModel
+            Generates comparisons values, given comparisons to be made and true scores
         """
         self.user_model = user_model
         self.vouch_model = vouch_model
@@ -50,12 +58,24 @@ class GenerativeModel:
         random_seed: Optional[int] = None
     ) -> SimpleInput:
         """ Generates a random dataset
-        Inputs:
-        - n_users
-        - n_entities
-        - random_seed (if int) allows reproducibility
+        
+        Parameters
+        ----------
+        n_users: int
+            Number of users to generate
+        n_entities: int
+            Number of entities to generate
+        random_seed: None or int
+            If int, sets numpy seed for reproducibility
+            
+        Returns
+        -------
+        out: solidago.pipeline.SimpleInput
+            Generated data, with attributes users, vouches, entities, true_scores, 
+            scores and comparisons, all of types DataFrame.
         """
         if random_seed is not None:
+            assert type(random_seed) == int
             np.random.seed(random_seed)
         
         logger.info(f"Generate {n_users} users using {self.user_model}")

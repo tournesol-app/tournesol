@@ -8,8 +8,14 @@ class UserModel(ABC):
     def __call__(self, n_users):
         """ Generates n_users users, with different characteristics
         
-        Returns:
-        - users: DataFrame with columns
+        Parameters
+        ----------
+        n_users: int
+            Number of users to generate.
+        
+        Returns
+        -------
+        users: DataFrame with columns
             * `user_id`: int
             * `is_pretrusted`: bool
             * `is_trustworthy`: bool
@@ -37,9 +43,12 @@ class SvdUserModel(UserModel):
         as well. To model the fact that users mostly agree, we assume that the center of
         the distribution equals the standard deviation.
         
-        Inputs:
-        - svd_dimension is the dimension of the vector representation
-        - svd_distribution inputs the svd_dimension, and generates a random vector
+        Parameters
+        ----------
+        svd_dimension: int
+            Dimension of the vector representation
+        svd_distribution: callable
+            Given svd_dimension as input, generates a random vector
         """
         assert p_trustworthy >= 0 and p_trustworthy <= 1
         assert p_pretrusted >= 0 and p_pretrusted <= 1
@@ -58,16 +67,22 @@ class SvdUserModel(UserModel):
     
     def __call__(self, n_users: int):
         """ Generates n_users users, with different characteristics
+                
+        Parameters
+        ----------
+        n_users: int
+            Number of users to generate.
         
-        Returns:
-        - users: DataFrame with columns
+        Returns
+        -------
+        users: DataFrame with columns
             * `user_id`: int
             * `is_trustworthy`: bool
             * `is_pretrusted`: bool
             * `n_expected_vouches`: int
             * `n_comparisons`: int
             * `n_comparisons_per_entity`: int
-            * `svd{i}`: float
+            * for all i in range(self.svd_dimension), `svd{i}`: float
             * And maybe more
         """
         dct = dict(

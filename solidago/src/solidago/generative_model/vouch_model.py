@@ -7,13 +7,16 @@ class VouchModel(ABC):
     @abstractmethod
     def __call__(self, users: pd.DataFrame):
         """ Generates vouches between users
-        Inputs:
-        - users: DataFrame with columns
+        
+        Parameters
+        ----------
+        users: DataFrame with columns
             * `user_id`: int
             * And maybe more
         
-        Returns:
-        - vouches: DataFrame with columns
+        Returns
+        -------
+        vouches: DataFrame with columns
             * `voucher`: int
             * `vouchee`: int
             * `vouch`: float
@@ -26,14 +29,17 @@ class VouchModel(ABC):
 class ErdosRenyiVouchModel(VouchModel):
     def __call__(self, users: pd.DataFrame):
         """ Generates vouches between users
-        Inputs:
-        - users: DataFrame with columns
+        
+        Parameters
+        ----------
+        users: DataFrame with columns
             * `user_id`: int
             * `is_trustworthy`: bool
             * `n_expected_vouches`: float
         
-        Returns:
-        - vouches: DataFrame with columns
+        Returns
+        -------
+        vouches: DataFrame with columns
             * `voucher`: int
             * `vouchee`: int
             * `vouch`: float

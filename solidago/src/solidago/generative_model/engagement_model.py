@@ -11,19 +11,22 @@ class EngagementModel(ABC):
         true_scores: pd.DataFrame
     ) -> tuple[dict[int, dict[int, bool]], pd.DataFrame]:
         """ Assigns a score to each entity, by each user
-        Inputs:
-        - users: DataFrame with columns
-            * `user_id`
-            * And maybe others
-        - true_scores[u][e] is the true score assigned by user u to entity e
         
-        Returns:
-        - user_scores: DataFrame with columns
+        Parameters
+        ----------
+        users: DataFrame
+            Must have an index column `user_id`. May have others.
+        true_scores: DataFrame
+            true_scores.loc[u, e] is the true score assigned by user u (int) to entity e (int).
+        
+        Returns
+        -------
+        user_scores: DataFrame with columns
             * `user_id`
             * `criteria`
             * `entity_id`
             * `is_public`
-        - comparisons: DataFrame with columns
+        comparisons: DataFrame with columns
             * `user_id`
             * `criteria`
             * `entity_a`
@@ -49,20 +52,23 @@ class SimpleEngagementModel(EngagementModel):
         true_scores: pd.DataFrame
     ) -> tuple[dict[int, dict[int, bool]], pd.DataFrame]:
         """ Assigns a score to each entity, by each user
-        Inputs:
-        - users: DataFrame with columns
+        Parameters
+        ----------
+        users: DataFrame with columns
             * `user_id`: int
             * `n_comparisons`: float
             * `n_comparisons_per_entity`: float
-        - true_scores[u][e] is the true score assigned by user u to entity e
+        true_scores: DataFrame
+            true_scores.loc[u, e] is the true score assigned by user u (int) to entity e (int).
         
-        Returns:
-        - user_scores: DataFrame with columns
+        Returns
+        -------
+        user_scores: DataFrame with columns
             * `user_id`
             * `criteria`
             * `entity_id`
             * `is_public`
-        - comparisons: DataFrame with columns
+        comparisons: DataFrame with columns
             * `user_id`
             * `criteria`
             * `entity_a`

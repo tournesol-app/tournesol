@@ -5,11 +5,17 @@ import numpy as np
 
 class EntityModel(ABC):
     @abstractmethod
-    def __call__(self, n_entities):
+    def __call__(self, n_entities: int) -> pd.DataFrame:
         """ Generates n_entities entities, with different characteristics
         
-        Returns:
-        - entities: DataFrame with columns
+        Parameters
+        ----------
+        n_entities: int
+            Number of entities to generate.
+        
+        Returns
+        -------
+        entities: DataFrame with columns
             * `entity_id`: int
             * And maybe more
         """
@@ -29,9 +35,12 @@ class SvdEntityModel(EntityModel):
         as well. To model the fact that users mostly agree, we assume that the center of
         the distribution equals the standard deviation.
         
-        Inputs:
-        - svd_dimension is the dimension of the vector representation
-        - svd_distribution inputs the svd_dimension, and generates a random vector
+        Parameters
+        ----------
+        svd_dimension: int 
+            Dimension of the vector representation
+        svd_distribution: callable
+            Given svd_dimension, generates a random vector
         """
         self.svd_dimension = svd_dimension
         self.svd_distribution = svd_distribution        
@@ -39,10 +48,16 @@ class SvdEntityModel(EntityModel):
     def __call__(self, n_entities: int):
         """ Generates n_users users, with different characteristics
         
-        Returns:
-        - entities: DataFrame with columns
+        Parameters
+        ----------
+        n_entities: int
+            Number of entities to generate.
+        
+        Returns
+        -------
+        entities: DataFrame with columns
             * `entity_id`: int
-            * `svd{i}`: float
+            * for each i in range(self.svd_dimension), `svd{i}`: float
         """
         dct = dict()
         svd = [self.svd_distribution(self.svd_dimension) for _ in range(n_entities)]

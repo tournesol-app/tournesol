@@ -7,16 +7,20 @@ import numpy as np
 class ComparisonModel(ABC):
     @abstractmethod
     def __call__(self, scores: pd.DataFrame, comparisons: pd.DataFrame) -> pd.DataFrame:
-        """ Assigns a score to each entity, by each user
-        Inputs:
-        - scores.loc[u, e] is the score given to entity e by user u
-        - comparisons: DataFrame with columns
+        """ Fills in the comparisons
+        
+        Parameters
+        ----------
+        scores: DataFrame
+            scores.loc[u, e] is the score given by user u to entity e
+        comparisons: DataFrame with columns
             * `user_id`
             * `entity_a`
             * `entity_b`
         
-        Returns:
-        - comparisons: DataFrame with columns
+        Returns
+        -------
+        comparisons: DataFrame with columns
             * `user_id`
             * `entity_a`
             * `entity_b`
@@ -35,6 +39,29 @@ class GeneralizedBradleyTerry(ComparisonModel):
     published at AAAI 2024.
     """
     def __call__(self, scores: pd.DataFrame, comparisons: pd.DataFrame) -> pd.DataFrame:
+        """ Fills in the comparisons, using the Generalized Bradley-Terry model, see
+        "Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons"
+        by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud,
+        published at AAAI 2024.
+        
+        
+        Parameters
+        ----------
+        scores: DataFrame
+            scores.loc[u, e] is the score given by user u to entity e
+        comparisons: DataFrame with columns
+            * `user_id`
+            * `entity_a`
+            * `entity_b`
+        
+        Returns
+        -------
+        comparisons: DataFrame with columns
+            * `user_id`
+            * `entity_a`
+            * `entity_b`
+            * `score`
+        """
         comparison_values = list()
         for _, row in comparisons.iterrows():
             score_a = scores.loc[row["user_id"], row["entity_a"]]
