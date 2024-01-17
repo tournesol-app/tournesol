@@ -12,13 +12,17 @@ class Pipeline:
         self,
         trust_propagation: TrustPropagation,
         voting_rights: VotingRights,
-        compute_scores: ComputeScores,
-        to_display: ToDisplay
+        comparisons_to_scores: ComparisonToScores,
+        collaborative_scaling: CollaborativeScaling,
+        score_aggregation: ScoreAggregation,
+        score_post_process: ScorePostProcess
     ):
         self.trust_propagation = trust_propagation
         self.voting_rights = voting_rights
-        self.compute_scores = compute_scores
-        self.to_display = to_display
+        self.comparisons_to_scores = comparisons_to_scores
+        self.collaborative_scaling = collaborative_scaling
+        self.score_aggregation = score_aggregation
+        self.score_post_process = score_post_process
         
     def __call__(
         self,
@@ -33,17 +37,25 @@ class Pipeline:
         
         logger.info("Starting Solidago pipeline for criterion '%s'", criterion)
         
-        logger.info(f"Solidago pipeline: Propagating trust with {self.trust_propagation}")
+        logger.info(f"Pipeline 1. Propagating trust with {self.trust_propagation}")
         data.users = self.trust_propagation(data.users, data.vouches)
         
-        logger.info(f"Solidago pipeline: Computing voting rights with {self.voting_rights}")
+        logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
         data.voting_rights = self.voting_rights(data.users, data.vouches, data.comparisons)
     
-        logger.info(f"Solidago pipeline: Computing scores with {self.compute_scores}")
-        data.scores = self.compute_scores(data.voting_rights, data.entities, data.comparisons)
+        logger.info(f"Pipeline 3. Computing user scores with {self.comparisons_to_scores}")
+        data.scores = self.comparisons_to_scores(
+            data.voting_rights, data.entities, data.comparisons, data.scores
+        )
         
-        logger.info(f"Solidago pipeline: Computing displayed scores with {self.to_display}")
-        data.scores = self.to_display(data.scores)
+        logger.info(f"Pipeline 4. Collaborative score scaling with {self.collaborative_scaling}")
+        data.scores = self.collaborative_scaling(data.voting_rights, data.scores)
+        
+        logger.info(f"Pipeline 5. Score aggregation with {self.score_aggregation}")
+        data.scores = self.score_aggregation(data.scores)
+                
+        logger.info(f"Pipeline 6. Post-processing scores {self.score_post_process}")
+        data.scores = self.score_post_process(data.scores)
 
 
 
