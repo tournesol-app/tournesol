@@ -36,6 +36,9 @@ export const EntityIndividualScores = ({
     <Chip
       size="small"
       variant="outlined"
+      sx={{
+        fontSize: '0.8125em',
+      }}
       label={
         <Box display="flex" columnGap="2px">
           <Trans t={t} i18nKey="entityIndividualScores.inYourOpinion">
