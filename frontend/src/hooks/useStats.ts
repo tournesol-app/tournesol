@@ -3,7 +3,7 @@ import StatsContext from 'src/features/statistics/StatsContext';
 import { Statistics } from 'src/services/openapi';
 
 interface Props {
-  poll?: string;
+  poll: string;
 }
 
 export const useStats = ({ poll }: Props) => {

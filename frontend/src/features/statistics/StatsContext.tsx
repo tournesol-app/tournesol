@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  CancelError,
   CancelablePromise,
   Statistics,
   StatsService,
@@ -16,8 +17,8 @@ const EXPIRATION_TIME = 4000;
 
 interface StatsContextValue {
   stats: Statistics;
-  getStats: (poll?: string) => Statistics;
-  refreshStats: (poll?: string) => void;
+  getStats: (poll: string) => Statistics;
+  refreshStats: (poll: string) => void;
 }
 
 const initialState: Statistics = {
@@ -46,15 +47,22 @@ export const StatsLazyProvider = ({
 
   const [stats, setStats] = useState(initialState);
 
-  const refreshStats = useCallback(async (poll: string | undefined) => {
+  const refreshStats = useCallback(async (poll: string) => {
     if (loading.current) {
       loading.current.cancel();
     }
     loading.current = StatsService.statsRetrieve({ poll });
-    const newStats = await loading.current;
-    loading.current = null;
-    lastRefreshAt.current = Date.now();
-    setStats(newStats);
+    try {
+      const newStats = await loading.current;
+      lastRefreshAt.current = Date.now();
+      loading.current = null;
+      setStats(newStats);
+    } catch (err) {
+      if (err instanceof CancelError) {
+        return;
+      }
+      console.error(err);
+    }
   }, []);
 
   /**
@@ -65,7 +73,7 @@ export const StatsLazyProvider = ({
    * single poll are displayed per page.
    */
   const getStats = useCallback(
-    (poll: string | undefined) => {
+    (poll: string) => {
       const currentTime = Date.now();
 
       if (loading.current) {
