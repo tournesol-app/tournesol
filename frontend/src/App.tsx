@@ -28,6 +28,7 @@ import About from './pages/about/About';
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
 import { polls } from './utils/constants';
+import SharedContent from './app/SharedContent';
 import PollRoutes from './app/PollRoutes';
 import { PollProvider } from './hooks/useCurrentPoll';
 import FAQ from './pages/faq/FAQ';
@@ -143,6 +144,9 @@ function App() {
             </PublicRoute>
             <PublicRoute path="/reset-password">
               <ResetPassword />
+            </PublicRoute>
+            <PublicRoute path="/shared-content">
+              <SharedContent />
             </PublicRoute>
             {/* Polls */}
             {polls.map(({ name, path }) => (
