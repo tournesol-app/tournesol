@@ -4,14 +4,14 @@ Notify active users who haven't contributed since their account was created.
 
 from smtplib import SMTPException
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count, Q
 from django.template.loader import render_to_string
-from django.utils import timezone
+from django.utils import timezone, translation
 
 from core.models.user import User
-from settings import settings
 
 
 class Command(BaseCommand):
@@ -20,14 +20,22 @@ class Command(BaseCommand):
     def notify_users(self, users):
         from_email = settings.REST_REGISTRATION["VERIFICATION_FROM_EMAIL"]
 
-        html_msg_no_comp = render_to_string("core/no_contrib_email/body_no_contrib.html")
-        html_msg_signup_comp = render_to_string("core/no_contrib_email/body_signup_contrib.html")
-
         fails = []
         successes = 0
         for user in users:
             if user.n_comp_after_signup > 0:
                 continue
+
+            try:
+                lang_code = user.settings["general"]["notifications__lang"]
+            except KeyError:
+                lang_code = "en"
+
+            translation.activate(lang_code)
+            html_msg_no_comp = render_to_string("core/no_contrib_email/body_no_contrib.html")
+            html_msg_signup_comp = render_to_string(
+                "core/no_contrib_email/body_signup_contrib.html"
+            )
 
             if user.n_comp_signup > 0:
                 html_message = html_msg_signup_comp

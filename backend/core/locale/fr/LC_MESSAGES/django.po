@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-16 14:45+0000\n"
+"POT-Creation-Date: 2024-01-18 16:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,3 +183,44 @@ msgstr ""
 #: core/templates/accounts/reset_password/subject.txt:2
 msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:6
+msgid "msg for users without comp"
+msgstr ""
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:9
+msgid "Hello 🌻"
+msgstr "Bonjour 🌻"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:12
+msgid ""
+"We would like to thank you for taking the time to contribute to the project. "
+"Your comparisons\n"
+"already improve the public dataset and impact the recommendations made to "
+"thousands of users."
+msgstr ""
+"Nous vous remercions d'avoir pris le temps de contribuer au projet. Vos "
+"comparaisons améliorent déjà la base de données publique et impactent les "
+"recommandations faites à des milliers d'utilisateur·rices."
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:16
+msgid ""
+"This participatory research project only works thanks to contributors like "
+"you, and we hope to\n"
+"see you back on the Tournesol platform from time to time. Every comparison "
+"you make will help advance scientific\n"
+"research on ethics and security of algorithms and recommender systems."
+msgstr ""
+"Ce projet de recherche participatif fonctionne grâce à des "
+"contributeur·rices comme vous, et nous espérons vous revoir de temps en "
+"temps sur la plateforme Tournesol. Chaque comparaison que vous faites "
+"contribue à faire avancer la recherche scientifique sur l'éthique et la "
+"sécurité des algorithmes et des systèmes de recommandation."
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:20
+msgid "Many thanks"
+msgstr "Merci beaucoup"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:20
+msgid "The Tournesol team"
+msgstr "L'équipe Tournesol"

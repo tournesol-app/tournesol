@@ -1,9 +1,22 @@
 {% load i18n %}
 <!DOCTYPE html>
 <html>
+  <head>
+     <meta charset="UTF-8">
+  </head>
   <body>
     <p>
-      {% blocktranslate %}msg for users with comp{% endblocktranslate %}
+      {% blocktranslate %}Hello 🌻{% endblocktranslate %}
     </p>
+    <p>
+      {% blocktranslate %}We would like to thank you for taking the time to contribute to the project. Your comparisons
+already improve the public dataset and impact the recommendations made to thousands of users.{% endblocktranslate %}
+    </p>
+    <p>
+      {% blocktranslate %}This participatory research project only works thanks to contributors like you, and we hope to
+see you back on the Tournesol platform from time to time. Every comparison you make will help advance scientific
+research on ethics and security of algorithms and recommender systems.{% endblocktranslate %}
+    </p>
+    <p>{% translate "Many thanks" %},<br>{% translate "The Tournesol team" %}</p>
   </body>
 </html>
