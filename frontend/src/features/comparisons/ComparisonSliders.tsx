@@ -145,7 +145,7 @@ const ComparisonSliders = ({
       await submit(comparison);
     } finally {
       setDisableSubmit(false);
-      refreshStats();
+      refreshStats(pollName);
     }
 
     // avoid a "memory leak" warning if the component is unmounted on submit.

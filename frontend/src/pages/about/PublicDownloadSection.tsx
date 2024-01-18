@@ -14,7 +14,7 @@ const PublicDownloadSection = () => {
 
   const api_url = import.meta.env.REACT_APP_API_URL;
 
-  const stats = useStats();
+  const stats = useStats({ poll: pollName });
   const pollStats = getPollStats(stats, pollName);
 
   const userCount = stats.active_users.total ?? 0;
