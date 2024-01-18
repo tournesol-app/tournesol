@@ -10,7 +10,7 @@ class TrustPropagation(ABC):
     def __call__(self,
         users: DataFrame,
         vouches: DataFrame
-    ) -> dict[str, float]:
+    ) -> pd.DataFrame:
         """
 		    Inputs:
 		    - users: DataFrame with columns
