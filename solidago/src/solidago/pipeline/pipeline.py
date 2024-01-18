@@ -49,15 +49,19 @@ class DefaultPipeline:
         Mehestan(
             lipschitz=0.1,
             min_comparison=10,
-            n_scalers_max=1000
+            n_scalers_max=1000,
+            error=1e-5
         ),
         QuantileZeroShift(
-            zero_quantile=0.15
+            zero_quantile=0.15,
+            lipschitz=0.1,
+            error=1e-5
         )
     )
     aggregation: Aggregation = QuantileStandardizedQrMed(
         qtl_std_dev=0.9,
-        lipschitz=0.1
+        lipschitz=0.1,
+        error=1e-5
     )
     post_process: PostProcess = Squash(
         score_max=100
@@ -160,7 +164,7 @@ class Pipeline:
             user_models[user] = self.preference_learning(judgments[user], entities)
         
         logger.info(f"Pipeline 4. Collaborative score scaling with {self.scaling}")
-        user_models = self.scaling(user_models, users, entities, privacy)
+        user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
         
         logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
         global_model = self.aggregation(voting_rights, user_models, users, entities)
