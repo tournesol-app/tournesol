@@ -1,55 +1,39 @@
 """
 Notify active users who haven't contributed since their account was created.
 """
-from datetime import datetime, timedelta
+
 from smtplib import SMTPException
 
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Q, Count
+from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 
 from core.models.user import User
-from tournesol.models import Comparison
 from settings import settings
 
 
 class Command(BaseCommand):
     help = "Notify active users who haven't contributed since their account was created."
 
-    def handle(self, *args, **options):
-        self.stdout.write(f"start command: {__name__}")
-
+    def notify_users(self, users):
         from_email = settings.REST_REGISTRATION["VERIFICATION_FROM_EMAIL"]
-        no_contrib_period = settings.APP_CORE["MGMT_NO_CONTRIBUTION_REMINDER_PERIOD"]
 
-        creation_date = timezone.now() - no_contrib_period
-        # creation_date = datetime(2022, 8, 22)
-
-        # display the configuration if more verbosity is asked
-        if options.get("verbosity", 1) > 1:
-            self.stdout.write(f"MGMT_NO_CONTRIBUTION_REMINDER_PERIOD: {no_contrib_period.days}")
-
-        users = (
-            User.objects.filter(
-                is_active=True,
-                date_joined__date=creation_date.date(),
-            )
-            .annotate(
-                n_comparisons=Count(
-                    "comparisons",
-                    filter=Q(comparisons__datetime_add__date__gt=creation_date.date()),
-                )
-            )
-            .filter(n_comparisons=0)
-        )
-
-        html_message = render_to_string("core/no_contrib_email/body.html")
+        html_msg_no_comp = render_to_string("core/no_contrib_email/body_no_contrib.html")
+        html_msg_signup_comp = render_to_string("core/no_contrib_email/body_signup_contrib.html")
 
         fails = []
         successes = 0
         for user in users:
+            if user.n_comp_after_signup > 0:
+                continue
+
+            if user.n_comp_signup > 0:
+                html_message = html_msg_signup_comp
+            else:
+                html_message = html_msg_no_comp
+
             try:
                 send_mail(
                     subject="Subject here",
@@ -64,9 +48,39 @@ class Command(BaseCommand):
             else:
                 successes += 1
 
+        return successes, fails
+
+    def get_queryset(self, creation_date):
+        return User.objects.filter(
+            is_active=True,
+            date_joined__date=creation_date.date(),
+        ).annotate(
+            n_comp_signup=Count(
+                "comparisons",
+                filter=Q(comparisons__datetime_add__date=creation_date.date()),
+            ),
+            n_comp_after_signup=Count(
+                "comparisons",
+                filter=Q(comparisons__datetime_add__date__gt=creation_date.date()),
+            ),
+        )
+
+    def handle(self, *args, **options):
+        self.stdout.write(f"start command: {__name__}")
+
+        no_contrib_period = settings.APP_CORE["MGMT_NO_CONTRIBUTION_REMINDER_PERIOD"]
+        creation_date = timezone.now() - no_contrib_period
+
+        # display the configuration if more verbosity is asked
+        if options.get("verbosity", 1) > 1:
+            self.stdout.write(f"MGMT_NO_CONTRIBUTION_REMINDER_PERIOD: {no_contrib_period.days}")
+
+        users = self.get_queryset(creation_date)
+        successes, fails = self.notify_users(users)
+
         self.stdout.write(self.style.SUCCESS(f"users notified: {successes}"))
 
-        if len(fails):
+        if fails:
             self.stdout.write("some users have not been notified...")
 
             for fail in fails:
