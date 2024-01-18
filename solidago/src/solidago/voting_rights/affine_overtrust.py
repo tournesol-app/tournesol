@@ -6,7 +6,7 @@ from . import VotingRights, VotingRightsAssignment
 from solidago.privacy_settings import PrivacySettings
 from solidago.solvers.dichotomy import solve
 
-class VotingRightsWithLimitedOvertrust(VotingRightsAssignment):
+class AffineOvertrust(VotingRightsAssignment):
     def __init__(
         self, 
         privacy_penalty: float = 0.5, 

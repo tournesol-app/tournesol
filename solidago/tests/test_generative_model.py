@@ -1,7 +1,6 @@
 from solidago.generative_model.user_model import SvdUserModel
 from solidago.generative_model.vouch_model import ErdosRenyiVouchModel
 from solidago.generative_model.entity_model import SvdEntityModel
-from solidago.generative_model.true_score_model import SvdTrueScoreModel
 from solidago.generative_model.engagement_model import SimpleEngagementModel
 from solidago.generative_model.comparison_model import KnaryGBT
 from solidago.generative_model import GenerativeModel

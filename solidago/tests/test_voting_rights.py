@@ -8,7 +8,7 @@ from solidago.voting_rights.compute_voting_rights import compute_voting_rights
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.voting_rights import VotingRights
-from solidago.voting_rights.limited_overtrust import VotingRightsWithLimitedOvertrust
+from solidago.voting_rights.affine_overtrust import AffineOvertrust
 
 # Params that will be used for tests
 OVER_TRUST_BIAS = 2
@@ -204,7 +204,7 @@ def test_limited_trust():
         5: { 0: False, 1: True }
     })
     
-    voting_rights_assignment = VotingRightsWithLimitedOvertrust(
+    voting_rights_assignment = AffineOvertrust(
         privacy_penalty=0.5, 
         min_overtrust=2.0,
         overtrust_ratio=0.1

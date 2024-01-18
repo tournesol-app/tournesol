@@ -9,7 +9,7 @@ from solidago.global_model import GlobalModel
 from solidago.trust_propagation import TrustPropagation
 from solidago.trust_propagation.lipschitrust import LipschiTrust
 from solidago.voting_rights_assignment import VotingRightsAssignment
-from solidago.voting_rights_assignment.limited_overtrust import VotingRightsWithLimitedOvertrust
+from solidago.voting_rights_assignment.affine_overtrust import AffineOvertrust
 from solidago.user_models_inference import UserModelInference
 from solidago.user_models_inference.generalized_bradley_terry import UniformGBT
 from solidago.scaling import Scaling, ScalingCompose

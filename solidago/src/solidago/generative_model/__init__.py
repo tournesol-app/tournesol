@@ -11,7 +11,6 @@ from solidago.pipeline.inputs import SimpleInput
 from .user_model import UserModel, SvdUserModel
 from .vouch_model import VouchModel, ErdosRenyiVouchModel
 from .entity_model import EntityModel, SvdEntityModel
-from .true_score_model import TrueScoreModel, SvdTrueScoreModel
 from .engagement_model import EngagementModel, SimpleEngagementModel
 from .comparison_model import ComparisonModel, KnaryGBT
 
