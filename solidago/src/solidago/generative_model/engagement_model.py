@@ -21,9 +21,8 @@ class EngagementModel(ABC):
         
         Returns
         -------
-        user_scores: DataFrame with columns
+        privacy: DataFrame with columns
             * `user_id`
-            * `criteria`
             * `entity_id`
             * `is_public`
         comparisons: DataFrame with columns
@@ -63,9 +62,8 @@ class SimpleEngagementModel(EngagementModel):
         
         Returns
         -------
-        user_scores: DataFrame with columns
-            * `user_id`
-            * `criteria`
+        privacy: DataFrame with columns
+            * `user_id``
             * `entity_id`
             * `is_public`
         comparisons: DataFrame with columns
@@ -76,7 +74,7 @@ class SimpleEngagementModel(EngagementModel):
         """
         n_entities = len(true_scores.columns)
         comparison_dct = dict(user_id=list(), criteria=list(), entity_a=list(), entity_b=list())
-        score_dct = dict(user_id=list(), entity_id=list(), criteria=list(), is_public=list())
+        privacy_dct = dict(user_id=list(), entity_id=list(), is_public=list())
 
         for user, row in users.iterrows():
             n_compared_entities = 2 * row["n_comparisons"]
@@ -90,11 +88,9 @@ class SimpleEngagementModel(EngagementModel):
             p_compare_ab = 2 * row["n_comparisons"] / len(compared)  / (len(compared) - 1)
             for a in range(len(compared)):
                 is_public = (np.random.random() <= self.p_public)
-                for c in self.p_per_criterion:
-                    score_dct["user_id"].append(user)
-                    score_dct["entity_id"].append(a)
-                    score_dct["criteria"].append(c)
-                    score_dct["is_public"].append(is_public)
+                privacy_dct["user_id"].append(user)
+                privacy_dct["entity_id"].append(a)
+                privacy_dct["is_public"].append(is_public)
                 for b in range(a + 1, len(compared)):
                     if np.random.random() >= p_compare_ab:
                         continue
@@ -109,7 +105,7 @@ class SimpleEngagementModel(EngagementModel):
                                 comparison_dct["entity_a"].append(b)
                                 comparison_dct["entity_b"].append(a)
 
-        return pd.DataFrame(score_dct), pd.DataFrame(comparison_dct)
+        return pd.DataFrame(privacy_dct), pd.DataFrame(comparison_dct)
 
     def __str__(self):
         properties = f"p_per_criterion={self.p_per_criterion}, p_public={self.p_public}"

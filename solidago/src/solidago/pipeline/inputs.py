@@ -144,7 +144,7 @@ class SimpleInput(TournesolInput):
         vouches: pd.DataFrame = None,
         entities: pd.DataFrame = None,
         true_scores: pd.DataFrame = None,
-        user_scores: pd.DataFrame = None,
+        privacy: pd.DataFrame = None,
         comparisons: pd.DataFrame = None
     ):
         def df(x, **kwargs):
@@ -158,7 +158,7 @@ class SimpleInput(TournesolInput):
         self.vouches = df(vouches, voucher=int, vouchee=int, vouch=float)
         self.entities = entities
         self.true_scores = true_scores
-        self.user_scores = df(user_scores, user_id=int, entity_id=int, is_public=bool)
+        self.privacy = df(privacy, user_id=int, entity_id=int, is_public=bool)
         self.comparisons = df(comparisons, 
             user_id=int, score=float, week_date=str, entity_a=int, entity_b=int)
  

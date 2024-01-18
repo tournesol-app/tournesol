@@ -3,7 +3,7 @@
     Governance with Security Guarantees", available on ArXiV.
 """
 
-from solidago.trust_propagation import TrustPropagation
+from . import TrustPropagation
 
 import pandas as pd
 import numpy as np

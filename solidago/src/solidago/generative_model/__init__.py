@@ -87,8 +87,8 @@ class GenerativeModel:
         logger.info(f"Generate ground truth using {self.true_score_model}")
         true_scores = self.true_score_model(users, entities)
         logger.info(f"Generate user engagement using {self.engagement_model}")
-        scores, comparisons = self.engagement_model(users, true_scores)
+        privacy, comparisons = self.engagement_model(users, true_scores)
         logger.info(f"Generate comparisons using {self.comparison_model}")
         comparisons = self.comparison_model(true_scores, comparisons)
-        return SimpleInput(users, vouches, entities, true_scores, scores, comparisons)
+        return SimpleInput(users, vouches, entities, true_scores, privacy, comparisons)
 

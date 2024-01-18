@@ -2,8 +2,8 @@ import pytest
 import pandas as pd
 
 from solidago.pipeline.inputs import TournesolInputFromPublicDataset
-from solidago.trust_propagation.lipschitrust import LipschiTrust
-from solidago.trust_propagation.trust_all import TrustAll
+from solidago.pipeline.trust_propagation.lipschitrust import LipschiTrust
+from solidago.pipeline.trust_propagation.trust_all import TrustAll
 
 from solidago.generative_model.user_model import SvdUserModel
 from solidago.generative_model.vouch_model import ErdosRenyiVouchModel
