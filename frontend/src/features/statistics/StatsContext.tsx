@@ -5,7 +5,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Statistics, StatsService } from 'src/services/openapi';
+import {
+  CancelablePromise,
+  Statistics,
+  StatsService,
+} from 'src/services/openapi';
 
 // Stats are considered outdated after this amount of miliseconds.
 const EXPIRATION_TIME = 4000;
@@ -36,15 +40,19 @@ export const StatsLazyProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const loading = useRef(false);
+  const loading = useRef<CancelablePromise<Statistics> | null>(null);
   const lastRefreshAt = useRef(0);
   const lastPoll = useRef<string | undefined>(undefined);
 
   const [stats, setStats] = useState(initialState);
 
   const refreshStats = useCallback(async (poll: string | undefined) => {
-    const newStats = await StatsService.statsRetrieve({ poll });
-    loading.current = false;
+    if (loading.current) {
+      loading.current.cancel();
+    }
+    loading.current = StatsService.statsRetrieve({ poll });
+    const newStats = await loading.current;
+    loading.current = null;
     lastRefreshAt.current = Date.now();
     setStats(newStats);
   }, []);
@@ -64,7 +72,6 @@ export const StatsLazyProvider = ({
         if (poll === lastPoll.current) {
           return stats;
         } else {
-          loading.current = true;
           lastPoll.current = poll;
           refreshStats(poll);
         }
@@ -74,7 +81,6 @@ export const StatsLazyProvider = ({
           poll !== lastPoll.current ||
           currentTime - lastRefreshAt.current >= EXPIRATION_TIME
         ) {
-          loading.current = true;
           lastPoll.current = poll;
           refreshStats(poll);
         }
