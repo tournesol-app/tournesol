@@ -33,7 +33,7 @@ const CollectiveGoalWeeklyProgress = () => {
       gap={1}
       mb={4}
     >
-      <Typography variant="h6">
+      <Typography variant="h6" textAlign="center">
         <Trans
           t={t}
           i18nKey="collectiveGoalWeeklyProgress.weeklyCollectiveGoal"
@@ -45,7 +45,8 @@ const CollectiveGoalWeeklyProgress = () => {
           }}
           %
         </Trans>
-        {` ${getWeeklyProgressionEmoji(collectiveComparisonsPercent)}`}
+        &nbsp;
+        {`${getWeeklyProgressionEmoji(collectiveComparisonsPercent)}`}
       </Typography>
       <Box
         width="100%"
