@@ -429,7 +429,10 @@ APP_CORE = {
         REST_REGISTRATION.get(
             "REGISTER_VERIFICATION_PERIOD",
             datetime.timedelta(days=7)
-        )
+        ),
+    # Active users who haven't contributed since their account was created will be
+    # notified after this number of days.
+    "MGMT_NO_CONTRIBUTION_REMINDER_PERIOD": datetime.timedelta(days=10)
 }
 
 # Configuration of the app `tournesol`
