@@ -2,31 +2,35 @@
     to derive trust scores for the different users
 """
 
-from pandas import DataFrame
 from abc import ABC, abstractmethod
+
+import pandas as pd
 
 class TrustPropagation(ABC):
     @abstractmethod
     def __call__(self,
-        users: DataFrame,
-        vouches: DataFrame
+        users: pd.DataFrame,
+        vouches: pd.DataFrame
     ) -> pd.DataFrame:
-        """
-		    Inputs:
-		    - users: DataFrame with columns
+        """ Propagates trust through vouch network
+        
+        Parameters
+        ----------
+        users: DataFrame with columns
             * user_id (int, index)
             * is_pretrusted (bool)
-		    - vouches: DataFrame with columns
+        vouches: DataFrame with columns
             * voucher (str)
             * vouchee (str)
             * vouch (float)
-		    
-            Returns:
-            - users: DataFrame with columns
-                * user_id (int, index)
-                * is_pretrusted (bool)
-                * trust_score (float)
-		    """
+        
+        Returns
+        -------
+        users: DataFrame with columns
+            * user_id (int, index)
+            * is_pretrusted (bool)
+            * trust_score (float)
+        """
         raise NotImplementedError
         
     def __str__(self):

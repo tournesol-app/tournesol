@@ -1,18 +1,18 @@
 import logging
 
-from .trust_propagation import TrustPropagation
-from .trust_propagation.lipschitrust import LipschiTrust
-from .voting_rights_assignment import VotingRightsAssignment
-from .voting_rights_assignment.limited_overtrust import VotingRightsWithLimitedOvertrust
-from .user_models_inference import UserModelInference
-from .user_models_inference.generalized_bradley_terry import UniformGBT
-from .scaling import Scaling, ScalingCompose
-from .scaling.mehestan import Mehestan
-from .scaling.quantile_zero_shift import QuantileZeroShift
-from .aggregation import Aggregation
-from .aggregation.standardized_qrmed import QuantileStandardizedQrMed
-from .post_process import PostProcess
-from .post_process.squash import Squash
+from solidago.trust_propagation import TrustPropagation
+from solidago.trust_propagation.lipschitrust import LipschiTrust
+from solidago.voting_rights_assignment import VotingRightsAssignment
+from solidago.voting_rights_assignment.limited_overtrust import VotingRightsWithLimitedOvertrust
+from solidago.user_models_inference import UserModelInference
+from solidago.user_models_inference.generalized_bradley_terry import UniformGBT
+from solidago.scaling import Scaling, ScalingCompose
+from solidago.scaling.mehestan import Mehestan
+from solidago.scaling.quantile_zero_shift import QuantileZeroShift
+from solidago.aggregation import Aggregation
+from solidago.aggregation.standardized_qrmed import QuantileStandardizedQrMed
+from solidago.post_process import PostProcess
+from solidago.post_process.squash import Squash
 
 logger = logging.getLogger(__name__)
 
