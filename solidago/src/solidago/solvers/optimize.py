@@ -159,3 +159,54 @@ def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: floa
         raise RuntimeError("Failed to converge")
 
     return root  # type: ignore
+
+
+def coordinate_descent(
+    loss_partial_derivative: callable,
+    initialization: np.array, 
+    error: float = 1e-5
+):
+    """ Minimize a loss function with coordinate descent,
+    by leveraging the partial derivatives of the loss
+    
+    Parameters
+    ----------
+    loss_partial_derivative: callable
+        (coordinate: int, coordinate_value: float, solution: np.array) -> float
+        Returns the partial derivative of a loss, along coordinate,
+        when the coordinate value is modified
+    initialization: np.array
+        Initialization point of the coordinate descent
+    error: float
+        Tolerated error
+        
+    Returns
+    -------
+    out: stationary point of the loss
+        For well behaved losses, there is a convergence guarantee
+    """
+    unchanged = set()
+    to_pick = []
+    solution = initialization
+
+    def pick_next_coordinate():
+        nonlocal to_pick
+        if len(to_pick) == 0:
+            to_pick = list(range(len(solution)))
+            np.random.shuffle(to_pick)
+        return to_pick.pop()
+
+    while len(unchanged) < len(solution):
+        coordinate = pick_next_coordinate()
+        if coordinate in unchanged:
+            continue
+        old_coordinate_value = solution[coordinate]
+        solution[coordinate] = brentq(
+            lambda x: self.partial_derivative(coordinate, x, solution),
+            xtol=error / 10
+        )
+        if abs(solution[coordinate] - old_coordinate_value) < EPSILON:
+            unchanged.add(coordinate)
+        else:
+            unchanged.clear()
+    return solution

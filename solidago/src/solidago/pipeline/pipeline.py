@@ -3,15 +3,14 @@ import logging
 from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import Judgments
 from solidago.voting_rights import VotingRights
-from solidago.user_model import UserModel
-from solidago.global_model import GlobalModel
+from solidago.scoring_model import ScoringModel
 
 from solidago.trust_propagation import TrustPropagation
 from solidago.trust_propagation.lipschitrust import LipschiTrust
 from solidago.voting_rights_assignment import VotingRightsAssignment
 from solidago.voting_rights_assignment.affine_overtrust import AffineOvertrust
-from solidago.user_models_inference import UserModelInference
-from solidago.user_models_inference.generalized_bradley_terry import UniformGBT
+from solidago.preference_learning import PreferenceLearning
+from solidago.preference_learning.generalized_bradley_terry import UniformGBT
 from solidago.scaling import Scaling, ScalingCompose
 from solidago.scaling.mehestan import Mehestan
 from solidago.scaling.quantile_zero_shift import QuantileZeroShift
@@ -39,8 +38,12 @@ class DefaultPipeline:
         min_overtrust=2.0,
         overtrust_ratio=0.1,
     )
-    user_model_inference: UserModelInference = UniformGBT(
-        comparison_max=10
+    preference_learning: PreferenceLearning = UniformGBT(
+        prior_std_dev=7,
+        comparison_max=10,
+        convergence_error=1e-5,
+        cumulant_generating_function_error=1e-5,
+        initialization=dict()
     )
     scaling: Scaling = ScalingCompose(
         Mehestan(
@@ -56,7 +59,9 @@ class DefaultPipeline:
         qtl_std_dev=0.9,
         lipschitz=0.1
     )
-    post_process: PostProcess = Squash()
+    post_process: PostProcess = Squash(
+        score_max=100
+    )
 
 
 class Pipeline:
@@ -64,7 +69,7 @@ class Pipeline:
         self,
         trust_propagation: TrustPropagation = DefaultPipeline.trust_propagation,
         voting_rights: VotingRights = DefaultPipeline.voting_rights,
-        user_model_inference: UserModelInference = DefaultPipeline.user_model_inference,
+        preference_learning: PreferenceLearning = DefaultPipeline.preference_learning,
         scaling: Scaling = DefaultPipeline.scaling,
         aggregation: Aggregation = DefaultPipeline.aggregation,
         post_process: PostProcess = DefaultPipeline.post_process
@@ -77,7 +82,7 @@ class Pipeline:
             Algorithm to spread trust based on pretrusts and vouches
         voting_rights: VotingRights
             Algorithm to assign voting rights to each user
-        user_model_inference: UserModelInference
+        preference_learning: PreferenceLearning
             Algorithm to learn a user model based on each user's data
         scaling: Scaling
             Algorithm to put user models on a common scale
@@ -89,7 +94,7 @@ class Pipeline:
         """
         self.trust_propagation = trust_propagation
         self.voting_rights = voting_rights
-        self.user_model_inference = user_model_inference
+        self.preference_learning = preference_learning
         self.scaling = scaling
         self.aggregation = aggregation
         self.post_process = post_process
@@ -101,7 +106,7 @@ class Pipeline:
         entities: pd.DataFrame,
         privacy: PrivacySettings,
         judgments: Judgments
-    ) -> tuple[pd.DataFrame, VotingRights, list[UserModel], GlobalModel]:
+    ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
         """ Run Pipeline 
         
         Parameters
@@ -148,17 +153,17 @@ class Pipeline:
         logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
         voting_rights = self.voting_rights(trusts, vouches, privacy, judgments)
     
-        logger.info(f"Pipeline 3. Computing user models with {self.user_models}")
+        logger.info(f"Pipeline 3. Computing user models with {self.preference_learning}")
         user_models = dict()
         for user, _ in users.iterrows():
-            logger.info(f"    Pipeline 3.{user}. Computing user {user}'s model")
-            user_models[user] = self.user_model_inference(judgments[user], entities)
+            logger.info(f"    Pipeline 3.{user}. Learning user {user}'s model")
+            user_models[user] = self.preference_learning(judgments[user], entities)
         
         logger.info(f"Pipeline 4. Collaborative score scaling with {self.scaling}")
-        user_models = self.scaling(user_models, users, privacy, entities)
+        user_models = self.scaling(user_models, users, entities, privacy)
         
         logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
-        global_model = self.aggregation(voting_rights, user_models, entities)
+        global_model = self.aggregation(voting_rights, user_models, users, entities)
                 
         logger.info(f"Pipeline 6. Post-processing scores {self.post_process}")
         user_models, global_model = self.post_process(user_models, global_model, entities)

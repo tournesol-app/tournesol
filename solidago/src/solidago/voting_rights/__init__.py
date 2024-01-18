@@ -27,7 +27,7 @@ class VotingRights:
         return self._dict[entity][user]
     
     def __setitem__(self, user_entity_tuple:tuple[int, int], value: float):
-        """ sets the the voting right of a user for an entity
+        """ sets the voting right of a user for an entity
                 
         Parameters
         ----------
@@ -58,10 +58,8 @@ class VotingRightsAssignment(ABC):
             * voucher (int)
             * vouchee (int)
             * vouch (float)
-        privacy: DataFrame with columns
-            * `user_id`
-            * `entity_id`
-            * `is_public`
+        privacy: PrivacySettings
+            privacy[user, entity] in { True, False, None }
         
         Returns
         -------
