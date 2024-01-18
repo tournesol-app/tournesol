@@ -1,5 +1,11 @@
 import logging
 
+from solidago.privacy_settings import PrivacySettings
+from solidago.judgments import Judgments
+from solidago.voting_rights import VotingRights
+from solidago.user_model import UserModel
+from solidago.global_model import GlobalModel
+
 from solidago.trust_propagation import TrustPropagation
 from solidago.trust_propagation.lipschitrust import LipschiTrust
 from solidago.voting_rights_assignment import VotingRightsAssignment
@@ -90,10 +96,45 @@ class Pipeline:
         
     def __call__(
         self,
-        dataset: TournesolInput,
-        criterion: Optional[Union[str, list[str]]] = None
-    ) -> tuple[list[UserModel], GlobalModel]:
-        """ Run Pipeline """
+        pretrusts: pd.DataFrame,
+        vouches: pd.DataFrame,
+        entities: pd.DataFrame,
+        privacy: PrivacySettings,
+        judgments: Judgments
+    ) -> tuple[pd.DataFrame, VotingRights, list[UserModel], GlobalModel]:
+        """ Run Pipeline 
+        
+        Parameters
+        ----------
+        pretrusts: DataFrame with columns
+            * user_id: int (index)
+            * is_pretrusted: bool
+        vouches: DataFrame with columns
+            * voucher (int)
+            * vouchee (int)
+            * vouch (float)
+        entities: DataFrame with columns
+            * entity_id: int (index)
+        privacy: DataFrame with columns
+            * `user_id`
+            * `entity_id`
+            * `is_public`
+        judgments: Jugdments
+            judgments[user] must yield the judgment data provided by the user
+            
+        Returns
+        -------
+        trusts: DataFrame with columns
+            * user_id: int (index)
+            * is_pretrusted: bool
+            * trust_score: float
+        voting_rights: VotingRights
+            voting_rights[user, entity] is the user's voting right for entity
+        user_models: list[UserModel]
+            user_models[user] is the user's model
+        global_model: GlobalModel
+            global model
+        """
         if criterion is None:
             criterion = set(data.comparisons["criteria"])
         if type(criterion) in (set, list, tuple):
@@ -102,110 +143,24 @@ class Pipeline:
         logger.info("Starting the full Solidago pipeline for criterion '%s'", criterion)
         
         logger.info(f"Pipeline 1. Propagating trust with {self.trust_propagation}")
-        data.users = self.trust_propagation(data.users, data.vouches)
+        trusts = self.trust_propagation(pretrusts, vouches)
         
         logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
-        data.voting_rights = self.voting_rights(data.users, data.vouches, data.comparisons)
+        voting_rights = self.voting_rights(trusts, vouches, privacy, judgments)
     
         logger.info(f"Pipeline 3. Computing user models with {self.user_models}")
-        data.user_models = self.user_model_inference(
-            data.entities, data.comparisons, data.scores
-        )
+        user_models = dict()
+        for user, _ in users.iterrows():
+            logger.info(f"    Pipeline 3.{user}. Computing user {user}'s model")
+            user_models[user] = self.user_model_inference(judgments[user], entities)
         
         logger.info(f"Pipeline 4. Collaborative score scaling with {self.scaling}")
-        data.user_models = self.scaling(data.user_models, data.users)
+        user_models = self.scaling(user_models, users, privacy, entities)
         
         logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
-        data.gloal_model = self.aggregation(data.user_models)
+        global_model = self.aggregation(voting_rights, user_models, entities)
                 
-        logger.info(f"Pipeline 6. Post-processing scores {self.score_post_process}")
-        data.scores = self.score_post_process(data.scores)
-
-
-
+        logger.info(f"Pipeline 6. Post-processing scores {self.post_process}")
+        user_models, global_model = self.post_process(user_models, global_model, entities)
         
-        indiv_scores = get_individual_scores(input, criteria=criterion, parameters=parameters)
-        logger.info("Computing individual scores for criterion '%s' DONE", criterion)
-    
-        logger.info("Computing individual scalings for criterion '%s'...", criterion)
-        scalings = collaborative_scaling.compute_individual_scalings(
-            individual_scores=indiv_scores,
-            tournesol_input=input,
-            W=parameters.W,
-        )
-        scaled_scores = collaborative_scaling.apply_scalings(
-            individual_scores=indiv_scores,
-            scalings=scalings
-        )
-    
-        if len(scaled_scores) > 0:
-            score_shift = collaborative_scaling.estimate_positive_score_shift(
-                scaled_scores,
-                W=parameters.score_shift_W,
-                quantile=parameters.score_shift_quantile,
-            )
-            score_std = collaborative_scaling.estimate_score_deviation(
-                scaled_scores,
-                W=parameters.score_shift_W,
-                quantile=parameters.score_deviation_quantile,
-            )
-            scaled_scores.score -= score_shift
-            scaled_scores.score /= score_std
-            scaled_scores.uncertainty /= score_std
-    
-        output.save_individual_scalings(scalings, criterion=criterion)
-        logger.info("Computing individual scalings for criterion '%s' DONE", criterion)
-    
-        logger.info("Computing aggregated scores for criterion '%s'...", criterion)
-        # Join ratings columns ("is_public", "trust_score", etc.)
-        ratings = input.ratings_properties.set_index(["user_id", "entity_id"])
-        scaled_scores = scaled_scores.join(
-            ratings,
-            on=["user_id", "entity_id"],
-        )
-    
-        scaled_scores_with_voting_rights_per_score_mode = {
-            mode: add_voting_rights(scaled_scores, params=parameters, score_mode=mode)
-            for mode in ALL_SCORE_MODES
-        }
-        for mode in ALL_SCORE_MODES:
-            scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
-            global_scores = aggregate_scores(scaled_scores_with_voting_rights, W=parameters.W)
-            global_scores["criteria"] = criterion
-    
-            # Apply squashing
-            squash_function = get_squash_function(parameters)
-            global_scores["uncertainty"] = 0.5 * (
-                squash_function(global_scores["score"] + global_scores["uncertainty"])
-                - squash_function(global_scores["score"] - global_scores["uncertainty"])
-            )
-            global_scores["score"] = squash_function(global_scores["score"])
-    
-            logger.info(
-                "Mehestan: scores computed for crit '%s' and mode '%s'",
-                criterion,
-                mode,
-            )
-            output.save_entity_scores(global_scores, criterion=criterion, score_mode=mode)
-        logger.info("Computing aggregated scores for criterion '%s' DONE", criterion)
-    
-        logger.info("Computing squashed individual scores for criterion '%s'...", criterion)
-        squash_function = get_squash_function(parameters)
-        scaled_scores = scaled_scores_with_voting_rights_per_score_mode["default"]
-        scaled_scores["uncertainty"] = 0.5 * (
-            squash_function(scaled_scores["score"] + scaled_scores["uncertainty"])
-            - squash_function(scaled_scores["score"] - scaled_scores["uncertainty"])
-        )
-        scaled_scores["score"] = squash_function(scaled_scores["score"])
-        scaled_scores["criteria"] = criterion
-        output.save_individual_scores(scaled_scores, criterion=criterion)
-        logger.info("Computing squashed individual scores for criterion '%s' DONE", criterion)
-    
-        logger.info(
-            "Solidago pipeline for criterion '%s' DONE.",
-            criterion,
-        )
-    
-        return output
-    
-
+        return trusts, voting_rights, user_models, global_model

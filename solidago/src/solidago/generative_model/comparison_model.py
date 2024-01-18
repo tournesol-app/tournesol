@@ -6,13 +6,21 @@ import numpy as np
 
 class ComparisonModel(ABC):
     @abstractmethod
-    def __call__(self, scores: pd.DataFrame, comparisons: pd.DataFrame) -> pd.DataFrame:
+    def __call__(
+        self, 
+        users: pd.DataFrame, 
+        entities: pd.DataFrame, 
+        comparisons: pd.DataFrame
+    ) -> pd.DataFrame:
         """ Fills in the comparisons
         
         Parameters
         ----------
-        scores: DataFrame
-            scores.loc[u, e] is the score given by user u to entity e
+        users: DataFrame
+            Must have an index column `user_id`. May have others.
+        entities: DataFrame with columns
+            * `entity_id`: int
+            * And maybe more
         comparisons: DataFrame with columns
             * `user_id`
             * `entity_a`
@@ -38,7 +46,12 @@ class GeneralizedBradleyTerry(ComparisonModel):
     by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud,
     published at AAAI 2024.
     """
-    def __call__(self, scores: pd.DataFrame, comparisons: pd.DataFrame) -> pd.DataFrame:
+    def __call__(
+        self, 
+        users: pd.DataFrame, 
+        entities: pd.DataFrame, 
+        comparisons: pd.DataFrame
+    ) -> pd.DataFrame:
         """ Fills in the comparisons, using the Generalized Bradley-Terry model, see
         "Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons"
         by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud,
@@ -47,8 +60,12 @@ class GeneralizedBradleyTerry(ComparisonModel):
         
         Parameters
         ----------
-        scores: DataFrame
-            scores.loc[u, e] is the score given by user u to entity e
+        users: DataFrame with columns
+            * `user_id`: int, index
+            * `n_comparisons`: float
+            * `n_comparisons_per_entity`: float
+        entities: DataFrame with columns
+            * `entity_id`: int, index
         comparisons: DataFrame with columns
             * `user_id`
             * `entity_a`
@@ -62,11 +79,23 @@ class GeneralizedBradleyTerry(ComparisonModel):
             * `entity_b`
             * `score`
         """
+        svd_dimension, svd_columns = 0, list()
+        while True:
+            column = f"svd{svd_dimension}"
+            if column not in users or column not in entities:
+                break
+            svd_columns.append(column)
+            svd_dimension += 1
+
+        scores = users[svd_columns] @ entities[svd_columns].T / svd_dimension
+
         comparison_values = list()
         for _, row in comparisons.iterrows():
-            score_a = scores.loc[row["user_id"], row["entity_a"]]
-            score_b = scores.loc[row["user_id"], row["entity_b"]]
-            score_diff = score_b - score_a
+            user_vector = users.loc[row["user_id"], svd_columns]
+            a_vector = entities.loc[row["entity_a"], svd_columns]
+            b_vector = entities.loc[row["entity_b"], svd_columns]
+            vector_diff = b_vector - a_vector
+            score_diff = user_vector @ vector_diff / svd_dimension
             comparison_values.append(self.sample_comparison(score_diff))
         comparisons = comparisons.assign(score=comparison_values)
         return comparisons

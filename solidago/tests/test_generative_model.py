@@ -21,13 +21,6 @@ def test_erdos_renyi_vouch():
         trusted_vouchee = users.loc[row["vouchee"], "is_trustworthy"]
         assert trusted_voucher == trusted_vouchee
     
-def test_true_score_model():
-    users = SvdUserModel(svd_dimension=5)(n_users=50)
-    entities = SvdEntityModel(svd_dimension=5)(n_entities=100)
-    scores = SvdTrueScoreModel(noise_scale=0.5)(users, entities)
-    assert len(scores) == len(users)
-    assert len(scores.columns) == len(entities)
-    
 def test_svd_entity_model():
     entity_model = SvdEntityModel(svd_dimension=5)
     entities = entity_model(n_entities=100)
@@ -36,16 +29,14 @@ def test_svd_entity_model():
 def test_engagement_model():
     users = SvdUserModel(svd_dimension=5)(n_users=50)
     entities = SvdEntityModel(svd_dimension=5)(n_entities=200)
-    scores = SvdTrueScoreModel(noise_scale=0.5)(users, entities)
-    assessments, comparisons = SimpleEngagementModel()(users, scores)
+    privacy, judgments = SimpleEngagementModel()(users, entities)
     
 def test_comparison_model():
     users = SvdUserModel(svd_dimension=5)(n_users=50)
     entities = SvdEntityModel(svd_dimension=5)(n_entities=200)
-    scores = SvdTrueScoreModel(noise_scale=0.5)(users, entities)
-    assessments, comparisons = SimpleEngagementModel()(users, scores)
-    comparisons = KnaryGBT(21, 10)(scores, comparisons)
+    privacy, judgments = SimpleEngagementModel()(users, entities)
+    judgments.comparisons = KnaryGBT(21, 10)(users, entities, judgments.comparisons)
 
 def test_generative_model():
-    data = GenerativeModel()(50, 200)
-    assert len(data.users) == 50
+    users, vouches, entities, privacy, judgments = GenerativeModel()(50, 200)
+    assert len(users) == 50

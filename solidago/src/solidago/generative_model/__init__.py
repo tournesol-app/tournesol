@@ -25,7 +25,6 @@ class GenerativeModel:
         user_model: UserModel = SvdUserModel(),
         vouch_model: VouchModel = ErdosRenyiVouchModel(),
         entity_model: EntityModel = SvdEntityModel(),
-        true_score_model: TrueScoreModel = SvdTrueScoreModel(),
         engagement_model: EngagementModel = SimpleEngagementModel(),
         comparison_model: ComparisonModel = KnaryGBT(21, 10)
     ):
@@ -39,8 +38,6 @@ class GenerativeModel:
             Generates vouches
         entity_model: EntityModel
             Generates entities
-        true_score_model: TrueScoreModel
-            Generates true scores
         engagement_model: EngagementModel
             Generates private/public selection, and comparisons to be made
         comparison_model: ComparisonModel
@@ -49,7 +46,6 @@ class GenerativeModel:
         self.user_model = user_model
         self.vouch_model = vouch_model
         self.entity_model = entity_model
-        self.true_score_model = true_score_model
         self.engagement_model = engagement_model
         self.comparison_model = comparison_model
  
@@ -84,11 +80,9 @@ class GenerativeModel:
         vouches = self.vouch_model(users)
         logger.info(f"Generate {n_entities} entities using {self.entity_model}")
         entities = self.entity_model(n_entities)
-        logger.info(f"Generate ground truth using {self.true_score_model}")
-        true_scores = self.true_score_model(users, entities)
         logger.info(f"Generate user engagement using {self.engagement_model}")
-        privacy, comparisons = self.engagement_model(users, true_scores)
+        privacy, judgments = self.engagement_model(users, entities)
         logger.info(f"Generate comparisons using {self.comparison_model}")
-        comparisons = self.comparison_model(true_scores, comparisons)
-        return SimpleInput(users, vouches, entities, true_scores, privacy, comparisons)
+        judgments.comparisons = self.comparison_model(users, entities, judgments.comparisons)
+        return users, vouches, entities, privacy, judgments
 

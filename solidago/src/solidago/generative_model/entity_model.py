@@ -16,7 +16,7 @@ class EntityModel(ABC):
         Returns
         -------
         entities: DataFrame with columns
-            * `entity_id`: int
+            * `entity_id`: int, index
             * And maybe more
         """
         raise NotImplementedError
@@ -63,7 +63,9 @@ class SvdEntityModel(EntityModel):
         svd = [self.svd_distribution(self.svd_dimension) for _ in range(n_entities)]
         for i in range(self.svd_dimension):
             dct[f"svd{i}"] = [svd[e][i] for e in range(n_entities)]
-        return pd.DataFrame(dct)
+        df = pd.DataFrame(dct)
+        df.index.name = "entity_id"
+        return df
 
     def __str__(self):
         return f"SvdEntityModel(svd_dimension={self.svd_dimension})"
