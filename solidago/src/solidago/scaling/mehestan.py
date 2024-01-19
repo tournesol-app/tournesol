@@ -91,7 +91,7 @@ class Mehestan(Scaling):
         activities = _compute_activities(user_models, users, entities, privacy)
         users.assign(is_scaler=self.compute_scalers(activities))
         scalers = users[users["is_scaler"]]
-        non_scalers = users[not users["is_scaler"]]
+        nonscalers = users[not users["is_scaler"]]
         
         logger.info("Mehestan 2. Collaborative scaling of scalers")
         model_norms = _model_norms(user_models, users, entities, privacy)
@@ -100,7 +100,10 @@ class Mehestan(Scaling):
             score_diffs, model_norms)
         
         logger.info("Mehestan 3. Scaling of non-scalers")
-        scaled_models = self.scale_non_scalers(user_models, non_scalers, entities, 
+        for scaler in scaled_models:
+            user_models[scaler] = scaled_models[scaler]
+        score_diffs = _compute_score_diffs(user_models, users, entities)
+        scaled_models |= self.scale_non_scalers(user_models, nonscalers, entities, 
             score_diffs, model_norms, scaled_models)
         
         return scaled_models
@@ -139,12 +142,12 @@ class Mehestan(Scaling):
         return is_scaler
     
     def scale_scalers(self, user_models, scalers, entities, score_diffs, model_norms):
-        entity_ratios = self.compute_entity_ratios(user_models, scalers, score_diffs)
+        entity_ratios = self.compute_entity_ratios(scalers, scalers, score_diffs)
         ratios = _aggregate_user_comparisons(scalers, entity_ratios, error=self.error)
         multiplicators = self.compute_multiplicators(ratios, model_norms)
         
         entity_diffs = self.compute_entity_diffs(
-            user_models, scalers, entities, multiplicators)
+            user_models, scalers, scalers, entities, multiplicators)
         diffs = _aggregate_user_comparisons(scalers, entity_diffs, error=self.error)
         translations = self.compute_translations(diffs)
         
@@ -160,12 +163,31 @@ class Mehestan(Scaling):
             ) for u in scalers.index
         }
         
-    def scale_non_scalers(self, user_models, non_scalers, entities, 
-            voting_rights, scaled_models, pairs):
-        scaled_models = dict()
+    def scale_non_scalers(self, user_models, nonscalers, entities, 
+            voting_rights, scaler_models, pairs):
+        entity_ratios = self.compute_entity_ratios(nonscalers, scalers, score_diffs)
+        ratios = _aggregate_user_comparisons(scalers, entity_ratios, error=self.error)
+        multiplicators = self.compute_multiplicators(ratios, model_norms)
+        
+        entity_diffs = self.compute_entity_diffs(
+            user_models, nonscalers, scalers, entities, multiplicators)
+        diffs = _aggregate_user_comparisons(scalers, entity_diffs, error=self.error)
+        translations = self.compute_translations(diffs)
+        
+        return { 
+            u: ScaledScoringModel(
+                base_model=user_models[u], 
+                multiplicator=multiplicators[u][0], 
+                translation=translations[u][0],
+                multiplicator_left_uncertainty=multiplicators[u][1], 
+                multiplicator_right_uncertainty=multiplicators[u][1], 
+                translation_left_uncertainty=translations[u][1],
+                translation_left_uncertainty=translations[u][1]
+            ) for u in nonscalers.index
+        }        
+        
         raise NotImplementedError
-        return scaled_models
-
+        
     
     ############################################
     ##  Methods to esimate the multiplicators ##
@@ -173,19 +195,20 @@ class Mehestan(Scaling):
     
     def compute_entity_ratios(
         self, 
-        user_models: dict[int, ScoringModel],
+        scalees: pd.DataFrame, 
         scalers: pd.DataFrame, 
         score_diffs: dict[int, dict[int, tuple[list[float], list[float], list[float]]]]
     ) -> dict[int, dict[int, tuple[list[float], list[float], list[float]]]]:
         """ Computes the ratios of score differences, with uncertainties,
-        for comparable entities of any pair of scalers (s_{uvef} in paper).
+        for comparable entities of any pair of scalers (s_{uvef} in paper),
+        for u in scalees and v in scalers.
         Note that the output rations[u][v] is given as a 1-dimensional np.ndarray
         without any reference to e and f.
         
         Parameters
         ----------
-        user_models: dict[int, ScoringModel]
-            user_models[user] is user's scoring model
+        scalees: DataFrame with columns
+            * user_id (int, index)
         scalers: DataFrame with columns
             * user_id (int, index)
         score_diffs: list[dict[int, dict[int, tuple[float, float, float]]]]
@@ -201,7 +224,7 @@ class Mehestan(Scaling):
         """
         user_entity_ratios = dict()
         
-        for u in scalers.index:
+        for u in scalees.index:
             user_entity_ratios[u] = dict()
             for v in scalers.index:
                 if u == v:
@@ -262,6 +285,7 @@ class Mehestan(Scaling):
     def compute_entity_diffs(
         self, 
         user_models: dict[int, ScoringModel],
+        scalees: pd.DataFrame, 
         scalers: pd.DataFrame, 
         entities: pd.DataFrame,
         multiplicators: dict[int, tuple[float, float]]
@@ -275,6 +299,8 @@ class Mehestan(Scaling):
         ----------
         user_models: dict[int, ScoringModel]
             user_models[user] is user's scoring model
+        scalees: DataFrame with columns
+            * user_id (int, index)
         scalers: DataFrame with columns
             * user_id (int, index)
         entities: DataFrame with columns
@@ -292,7 +318,7 @@ class Mehestan(Scaling):
         """
         differences = dict()
         
-        for u in scalers.index:
+        for u in scalees.index:
             u_entities = user_models[u].scored_entities(entities)
             differences[u] = dict()
             for v in scalers.index:
@@ -502,21 +528,21 @@ def _compute_score_diffs(
     return score_diffs
     
 def _aggregate_user_comparisons(
-    scalers: pd.DataFrame, 
-    scaler_comparions: dict[int, dict[int, tuple[list[float], list[float], list[float]]]],
+    users: pd.DataFrame, 
+    scaler_comparisons: dict[int, dict[int, tuple[list[float], list[float], list[float]]]],
     error: float=1e-5
 ) -> dict[int, tuple[list[float], list[float], list[float]]]:
-    """ For any two pairs of scalers, aggregates their comparative data.
+    """ For any two pairs (scalee, scaler), aggregates their comparative data.
     Typically used to transform s_{uvef}'s into s_{uv}, and tau_{uve}'s into tau_{uv}.
     The reference to v is also lost in the process, as it is then irrelevant.
     
     Parameters
     ----------
-    scalers: DataFrame with columns
+    users: DataFrame with columns
         * user_id (int, index)
         * trust_score (float)
-    scaler_comparions: dict[int, dict[int, tuple[list[float], list[float], list[float]]]]
-        scaler_comparions[user][user_bis] is a tuple (values, lefts, rights).
+    scaler_comparisons: dict[int, dict[int, tuple[list[float], list[float], list[float]]]]
+        scaler_comparisons[user][user_bis] is a tuple (values, lefts, rights).
         values, lefts and rights are lists of floats of the same lengths.
         
     Returns
@@ -528,29 +554,27 @@ def _aggregate_user_comparisons(
     """
     results = dict()
     
-    for u in scalers.index:
+    for u in scaler_comparisons:
         results[u] = list(), list(), list()
-        for v in scalers.index:
-            if v not in scaler_comparions[u]:
-                continue
-                
+        for v in scaler_comparisons[u]:
+                            
             results[u][0].append(
-                scalers.loc[v, "trust_score"] if "trust_score" in scalers else 1
+                users.loc[v, "trust_score"] if "trust_score" in users else 1
             )
             results[u][1].append(qr_median(
                 lipschitz=1, 
-                values=np.array(scaler_comparions[u][v][0]),
+                values=np.array(scaler_comparisons[u][v][0]),
                 voting_rights=1, 
-                left_uncertainties=np.array(scaler_comparions[u][v][1]),
-                right_uncertainties=np.array(scaler_comparions[u][v][2]),
+                left_uncertainties=np.array(scaler_comparisons[u][v][1]),
+                right_uncertainties=np.array(scaler_comparisons[u][v][2]),
                 error=error
             ))
             results[u][2].append(qr_uncertainty(
                 lipschitz=1, 
-                values=np.array(scaler_comparions[u][v][0]),
+                values=np.array(scaler_comparisons[u][v][0]),
                 voting_rights=1, 
-                left_uncertainties=np.array(scaler_comparions[u][v][1]),
-                right_uncertainties=np.array(scaler_comparions[u][v][2]),
+                left_uncertainties=np.array(scaler_comparisons[u][v][1]),
+                right_uncertainties=np.array(scaler_comparisons[u][v][2]),
                 default_uncertainty=1,
                 error=error,
                 median=results[u][0][-1]
