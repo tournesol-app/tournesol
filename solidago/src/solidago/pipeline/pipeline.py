@@ -15,7 +15,7 @@ from solidago.scaling import Scaling, ScalingCompose
 from solidago.scaling.mehestan import Mehestan
 from solidago.scaling.quantile_zero_shift import QuantileZeroShift
 from solidago.aggregation import Aggregation
-from solidago.aggregation.standardized_qrmed import QuantileStandardizedQrMed
+from solidago.aggregation.standardized_qrmed import QuantileStandardizedQrMedian
 from solidago.post_process import PostProcess
 from solidago.post_process.squash import Squash
 
@@ -58,8 +58,8 @@ class DefaultPipeline:
             error=1e-5
         )
     )
-    aggregation: Aggregation = QuantileStandardizedQrMed(
-        qtl_std_dev=0.9,
+    aggregation: Aggregation = QuantileStandardizedQrMedian(
+        dev_quantile=0.9,
         lipschitz=0.1,
         error=1e-5
     )
@@ -124,10 +124,8 @@ class Pipeline:
             * vouch (float)
         entities: DataFrame with columns
             * entity_id: int (index)
-        privacy: DataFrame with columns
-            * `user_id`
-            * `entity_id`
-            * `is_public`
+        privacy: PrivacySettings
+            privacy[user, entity] in { True, False, None }
         judgments: Jugdments
             judgments[user] must yield the judgment data provided by the user
             
@@ -167,7 +165,7 @@ class Pipeline:
         user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
         
         logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
-        global_model = self.aggregation(voting_rights, user_models, users, entities)
+        user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
                 
         logger.info(f"Pipeline 6. Post-processing scores {self.post_process}")
         user_models, global_model = self.post_process(user_models, global_model, entities)

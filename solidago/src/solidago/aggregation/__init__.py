@@ -2,6 +2,10 @@ from abc import ABC, abstractmethod
 
 import pandas as pd
 
+from solidago.voting_rights import VotingRights
+from solidago.scoring_model import ScoringModel
+
+
 class Aggregation:
     @abstractmethod
     def __call__(
@@ -10,7 +14,7 @@ class Aggregation:
         user_models: dict[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame
-    ) -> ScoringModel:
+    ) -> tuple[dict[int, ScoringModel], ScoringModel]:
         """ Returns scaled user models
         
         Parameters
@@ -27,7 +31,9 @@ class Aggregation:
 
         Returns
         -------
-        out: ScoringModel
+        updated_user_models[user]: ScoringModel
+            Returns a scaled user model
+        global_model: ScoringModel
             Returns a global scoring model
         """
         raise NotImplementedError

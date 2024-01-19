@@ -38,6 +38,9 @@ class VotingRights:
         if entity not in self._dict:
             self._dict[entity] = dict()
         self._dict[entity][user] = value
+        
+    def on_entity(self, entity: int) -> dict[int, float]:
+        return self._dict[entity]
 
 class VotingRightsAssignment(ABC):
     @abstractmethod

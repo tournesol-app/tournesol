@@ -4,7 +4,7 @@ from . import Scaling
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.scoring_model import ScoringModel
-from solidago.primitives import QrQuantile
+from solidago.primitives import qr_quantile
 
 
 class QuantileZeroShift(Scaling):
@@ -48,17 +48,18 @@ class QuantileZeroShift(Scaling):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        scores, lefts, rights = list(), list(), list()
+        votes, scores, lefts, rights = list(), list(), list(), list()
         for user in user_models:
             for entity, row in entities.iterrows():
                 output = user_models[user](entity, row)
                 if output is not None:
+                    votes.append(voting_rights[user, entity])
                     scores.append(output[0])
                     lefts.append(output[1])
                     rights.append(output[2])
         
-        shift = qr_quantile(self.lipschitz, self.zero_quantile, scores, 
-            voting_rights, lefts, rights, error=self.error)
+        shift = qr_quantile(self.lipschitz, self.zero_quantile, np.array(scores), 
+            np.array(votes), np.array(lefts), np.array(rights), error=self.error)
         
         return {
             user: ScaledScoringModel(user_models[user], translation=shift)
