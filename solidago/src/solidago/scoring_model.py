@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+import pandas as pd
+import numpy as np
+
+
 class ScoringModel:
     @abstractmethod
     def __call__(
@@ -65,7 +69,7 @@ def ScaledScoringModel(ScoringModel):
         multiplicator_left_uncertainty: float=0, 
         multiplicator_right_uncertainty: float=0, 
         translation_left_uncertainty: float=0,
-        translation_left_uncertainty: float=0
+        translation_right_uncertainty: float=0
     ):
         self.base_model = base_model
         self.multiplicator = multiplicator

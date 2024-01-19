@@ -87,7 +87,7 @@ class QuantileStandardizedQrMedian(Aggregation):
         }
         for column in ("scores", "left_uncertainties", "right_uncertainties"):
             df[column] /= std_dev
-)
+
         global_scores = DirectScoringModel()
         for entity, _ in entities.iterrows():
             dfe = df[df["entity_id"] == entity]

@@ -168,33 +168,10 @@ def test_voting_rights_abstraction():
     voting_rights[3, 46] = 0.4
     voting_rights[3, 46] *= 2
     assert voting_rights[3, 46] == 0.8
-    
+
+
 def test_limited_trust():
-    """ Compute voting rights
-    
-    Parameters
-    ----------
-    users: DataFrame with columns
-        * user_id (int, index)
-        * trust_score (float)
-    vouches: DataFrame
-        This is not used by VotingRightsWithLimitedOvertrust
-    privacy: DataFrame with columns
-        * `user_id`
-        * `entity_id`
-        * `is_public`
-    comparisons: DataFrame with columns
-        * user_id (int)
-        * entity_a (int)
-        * entity_b (int)
-        * score (float)
-    
-    Returns
-    -------
-    voting_rights[user, entity] is the voting right
-        of a user on entity for criterion
-    """
-    users = pd.DataFrame(dict(trust_score=[0.5, 0.6, 0.1, 0.4, 1]))
+    users = pd.DataFrame(dict(trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
     users.index.name = "user_id"
     vouches = None
     privacy = PrivacySettings({
@@ -210,3 +187,6 @@ def test_limited_trust():
         overtrust_ratio=0.1
     )
     voting_rights = voting_rights_assignment(users, vouches, privacy)
+    
+
+

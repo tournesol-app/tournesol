@@ -31,26 +31,26 @@ class DataFrameJudgments(Judgments):
         ----------
         comparisons: DataFrame with columns
             * `user_id`
-            * `criteria`
             * `entity_a`
             * `entity_b`
-            * `score`
+            * `comparison`
+            * `comparison_max`
         assessments: DataFrame with columns
             * `user_id`
-            * `criteria`
             * `entity_id`
-            * `score`
+            * `assessment`
+            * `assessment_type`
         """
         self.comparisons = comparisons
         if comparisons is None:
             self.comparisons = pd.DataFrame(columns=[
-                "user_id", "criteria", "entity_a", "entity_b", "score"
+                "user_id", "entity_a", "entity_b", "comparison", "comparison_max"
             ])
             
         self.assessments = assessments
         if assessments is None:
             self.assessments = pd.DataFrame(columns=[
-                "user_id", "criteria", "entity_id", "score"
+                "user_id", "entity_id", "assessment", "assessment_type"
             ])
         
     def __getitem__(self, user: int):

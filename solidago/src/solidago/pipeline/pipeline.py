@@ -40,7 +40,6 @@ class DefaultPipeline:
     )
     preference_learning: PreferenceLearning = UniformGBT(
         prior_std_dev=7,
-        comparison_max=10,
         convergence_error=1e-5,
         cumulant_generating_function_error=1e-5,
         initialization=dict()

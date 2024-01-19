@@ -9,7 +9,6 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
     def __init__(
         self, 
         prior_std_dev: float=7,
-        comparison_max: float=10,
         initialization: dict[int, float]=dict(),
         convergence_error: float=1e-5
     ):
@@ -23,7 +22,6 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             tolerated error
         """
         self.prior_std_dev = prior_std_dev
-        self.comparison_max = comparison_max
         self.initialization = initialization
         self.convergence_error = convergence_error
     
@@ -96,7 +94,8 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         comparisons: DataFrame with columns
             * entity_a: int
             * entity_b: int
-            * score: float
+            * comparison: float
+            * comparison_max: float
         entities: DataFrame
             This parameter is not used
         """
@@ -105,14 +104,20 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         
         coordinate_comparisons = dict()
         for _, rows in comparisons.iterrows():
+            
             a = entity_coordinate[row["entity_a"]], 
             b = entity_coordinate[row["entity_b"]]
             if a not in coordinate_comparisons:
                 coordinate_comparisons[a] = dict()
-            coordinate_comparisons[a][b] = - row["score"]
+            
+            comparison = row["comparison"]
+            if np.isfinite(row["comparison_max"]):
+                comparison /= row["comparison_max"]
+            
+            coordinate_comparisons[a][b] = - comparison
             if b not in coordinate_comparisons:
                 coordinate_comparisons[b] = dict()
-            coordinate_comparisons[b][a] = row["score"]
+            coordinate_comparisons[b][a] = comparison
         
         solution = np.zeros(len(entities))
         for entity in entity_coordinates:

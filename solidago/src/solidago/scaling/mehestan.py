@@ -94,7 +94,8 @@ class Mehestan(Scaling):
         nonscalers = users[not users["is_scaler"]]
         
         logger.info("Mehestan 2. Collaborative scaling of scalers")
-        model_norms = _model_norms(user_models, users, entities, privacy)
+        model_norms = _model_norms(user_models, users, entities, privacy, 
+            power=self.p_norm_for_multiplicative_resilience)
         score_diffs = _compute_score_diffs(user_models, scalers, entities)
         scaled_models = self.scale_scalers(user_models, scalers, entities, 
             score_diffs, model_norms)
@@ -391,8 +392,7 @@ def _compute_activities(
     entities: pd.DataFrame,
     privacy: PrivacySettings
 ) -> dict[int, float]:
-    """ Returns a dictionary, which maps users to their number of judged entities
-    where n_judged_entities[user] is the number of entities judged by user.
+    """ Returns a dictionary, which maps users to their trustworthy activeness.
     
     Parameters
     ----------
@@ -408,8 +408,8 @@ def _compute_activities(
 
     Returns
     -------
-    out: dict[int, float]
-        out[user]
+    activities: dict[int, float]
+        activities[user] is a measure of user's trustworthy activeness.
     """
     results = dict()
     for user in user_models:
@@ -432,10 +432,12 @@ def _model_norms(
     user_models: dict[int, ScoringModel],
     users: pd.DataFrame,
     entities: pd.DataFrame,
-    privacy: Privacy
+    privacy: Privacy,
+    power: float=5.0
 ) -> dict[int, float]:
-    """ Returns a dictionary, which maps users to their number of judged entities
-    where n_judged_entities[user] is the number of entities judged by user.
+    """ Estimator of the scale of scores of a user, with an emphasis on large scores.
+    The estimator uses a L_power norm, and weighs scores, depending on public/private status.
+    For each user u, it computes (sum_e w[ue] * score[u, e]**power / sum_e w[ue])**(1/power).
     
     Parameters
     ----------
@@ -443,7 +445,6 @@ def _model_norms(
         user_models[user] is user's scoring model
     users: DataFrame with columns
         * user_id (int, index)
-        * trust_score (float)
     entities: DataFrame with columns
         * entity_id (int, ind)
     privacy: PrivacySettings
@@ -455,11 +456,9 @@ def _model_norms(
         out[user]
     """
     results = dict()
-    power = self.p_norm_for_multiplicative_resilience
     for user in user_models:
         scored_entities = user_models.scored_entities(entities)
-        weight_sum = 0
-        weighted_sum = 0
+        weight_sum, weighted_sum = 0, 0
         for entity in scored_entities:
             output = user_models[user](entity, entities.loc[entity])
             if output is None:
@@ -468,8 +467,6 @@ def _model_norms(
             weight = 1
             if privacy is not None and privacy[user, entity]:
                 weight *= self.privacy_penalty
-            elif "trust_score" in users:
-                weight *= users.loc[user, "trust_score"]
             
             weight_sum += weight
             weighted_sum += weight * (output[0]**power)

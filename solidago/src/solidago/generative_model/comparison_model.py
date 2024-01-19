@@ -46,6 +46,10 @@ class GeneralizedBradleyTerry(ComparisonModel):
     by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud,
     published at AAAI 2024.
     """
+    def __init__(self, comparison_max: float=np.inf):
+        assert comparison_max > 0
+        self.comparison_max = comparison_max
+    
     def __call__(
         self, 
         users: pd.DataFrame, 
@@ -77,7 +81,8 @@ class GeneralizedBradleyTerry(ComparisonModel):
             * `user_id`
             * `entity_a`
             * `entity_b`
-            * `score`
+            * `comparison`
+            * `comparison_max`
         """
         svd_dimension, svd_columns = 0, list()
         while True:
@@ -97,7 +102,9 @@ class GeneralizedBradleyTerry(ComparisonModel):
             vector_diff = b_vector - a_vector
             score_diff = user_vector @ vector_diff / svd_dimension
             comparison_values.append(self.sample_comparison(score_diff))
-        comparisons = comparisons.assign(score=comparison_values)
+        comparisons = comparisons.assign(comparison=comparison_values)
+        comparison_max_list = [self.comparison_max] * len(comparisons)
+        comparisons = comparisons.assign(comparison_max=comparison_max_list)
         return comparisons
     
     @abstractmethod
@@ -114,11 +121,11 @@ class GeneralizedBradleyTerry(ComparisonModel):
     
     def non_normalized_probability(self, score_diff: float, comparison: float) -> float:
         return self.root_law(comparison) * np.exp(score_diff * comparison)
-        
+    
     @abstractmethod
     def partition_function(self, score_diff: float) -> float:
         raise NotImplementedError
-    
+        
     def probability(
         self, 
         score_diff: float, 
@@ -130,6 +137,9 @@ class GeneralizedBradleyTerry(ComparisonModel):
         return self.non_normalized_probability(score_diff, comparison) / partition_fn
     
 class DiscreteGBT(GeneralizedBradleyTerry):
+    def __init__(self, comparison_max: float=np.inf):
+        super().__init__(comparison_max)
+        
     def sample_comparison(self, score_diff: float) -> float:
         pf = self.partition_function(score_diff)
         rand = np.random.random()
@@ -158,9 +168,9 @@ class DiscreteGBT(GeneralizedBradleyTerry):
 class KnaryGBT(DiscreteGBT):
     def __init__(self, n_options: int = 2, comparison_max: float = 1):
         """ n_options is k in the paper """
-        assert (n_options >= 2) and (comparison_max > 0)
+        super().__init__(comparison_max)
+        assert (n_options >= 2)
         self.n_options = n_options
-        self.comparison_max = comparison_max
 
     def root_law(self, comparison: float) -> float:
         return 1
