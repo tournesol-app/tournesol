@@ -60,18 +60,33 @@ def ScaledScoringModel(ScoringModel):
     def __init__(
         self, 
         base_model: ScoringModel, 
-        multiplicative_scale: float=1, 
-        translation: float=0
+        multiplicator: float=1, 
+        translation: float=0,
+        multiplicator_left_uncertainty: float=0, 
+        multiplicator_right_uncertainty: float=0, 
+        translation_left_uncertainty: float=0,
+        translation_left_uncertainty: float=0
     ):
         self.base_model = base_model
-        self.multiplicative_scale = multiplicative_scale
+        self.multiplicator = multiplicator
         self.translation = translation
+        self.multiplicator_left_uncertainty = multiplicator_left_uncertainty
+        self.multiplicator_right_uncertainty = multiplicator_right_uncertainty
+        self.translation_left_uncertainty = translation_left_uncertainty
+        self.translation_right_uncertainty = translation_right_uncertainty
         
     def __call__(self, entity_id, entity_features):
         base_score, base_left, base_right = self.base_model(entity_id, entity_features)
-        score = self.multiplicative_scale * base_score + self.translation
-        left = self.multiplicative_scale * base_left
-        right = self.multiplicative_scale * base_right
+        score = self.multiplicator * base_score + self.translation
+        
+        left = self.multiplicator * base_left
+        left += np.abs(score) * self.multiplicator_left_uncertainty
+        left += self.translation_left_uncertainty
+        
+        right = self.multiplicator * base_right
+        right += np.abs(score) * self.multiplicator_right_uncertainty
+        right += self.translation_right_uncertainty
+        
         return score, left, right
         
     def scored_entities(self) -> set[int]:

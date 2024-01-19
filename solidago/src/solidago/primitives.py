@@ -92,6 +92,7 @@ def qr_median(
     voting_rights: Union[npt.ArrayLike, float] = 1, 
     left_uncertainties: Optional[npt.ArrayLike] = None,    
     right_uncertainties: Optional[npt.ArrayLike] = None,
+    default_value: float = 0,
     error: float = 1e-5
 ):
     """ The quadratically regularized median is a Lipschitz-resilient median estimator. 
@@ -123,7 +124,7 @@ def qr_median(
         Lipschitz-resilient estimator of the median
     """
     return qr_quantile(lipschitz, 0.5, voting_rights, values, 
-        left_uncertainties, right_uncertainties, error)
+        left_uncertainties, right_uncertainties, default_value, error)
 
 
 def qr_standard_deviation(
@@ -220,20 +221,53 @@ def clip(values: np.ndarray, center: float, radius: float):
     return values.clip(center - radius, center + radius)
 
 
-def clip_mean(voting_rights: np.ndarray, values: np.ndarray, center: float, radius: float):
+def clip_mean(
+    voting_rights: np.ndarray, 
+    values: np.ndarray, 
+    center: float=0, 
+    radius: float=1
+):
+    if len(values) == 0:
+        return default_value
     return np.sum(voting_rights * clip(values, center, radius)) / np.sum(voting_rights)
 
 
 def br_mean(
     lipschitz: float, 
-    voting_rights: Union[float, np.ndarray], 
-    values: np.ndarray, 
-    uncertainties: np.ndarray,
-    default_value: float,
+    values: npt.ArrayLike, 
+    voting_rights: Union[npt.ArrayLike, float] = 1, 
+    left_uncertainties: Optional[npt.ArrayLike] = None,    
+    right_uncertainties: Optional[npt.ArrayLike] = None,
+    default_value: float=0,
     error: float=1e-5
 ):
     """ Byzantine-robustified mean. Lipschitz-resilient mean estimator.
     It provably returns the mean, given sufficient participation and bounded values
+    
+    See "Robust Sparse Voting", by Youssef Allouah, Rachid Guerraoui, Lê Nguyên Hoang
+    and Oscar Villemaud, published at AISTATS 2024.
+    
+    Parameters
+    ----------
+    lipschitz: float
+        Resilience parameters. Larger values are more resilient, but less accurate. 
+    values: npt.ArrayLike
+        Values whose quantile is estimated
+    voting_rights: array or float
+        Larger voting rights can pull the output towards them with more strength
+    left_uncertainties: array or None
+        Left uncertainty on each value. Set to zero if None.
+    right_uncertainties: array or None
+        Right uncertainty. Set to left_uncertainties if None (symmetric uncertainty).
+    default_value: float
+        Default value in the absence of data
+    error: float
+        Approximation error
+    
+    Returns
+    --------
+    out: float
+        Lipschitz-resilient estimator of the mean
     """
     if len(values) == 0:
         return default_value
@@ -244,8 +278,16 @@ def br_mean(
     return clip_mean(
         voting_rights, 
         values, 
-        qr_median(lipschitz/4, voting_rights, values, uncertainties, error=error), 
-        np.sum(voting_rights) * lipschitz / 4
+        center=qr_median(
+            lipschitz=lipschitz/4, 
+            values=values, 
+            voting_rights=voting_rights, 
+            left_uncertainties=left_uncertainties,
+            right_uncertainties=right_uncertainties,
+            default_value=default_value,
+            error=error
+        ), 
+        radius=np.sum(voting_rights) * lipschitz / 4
     )
 
 

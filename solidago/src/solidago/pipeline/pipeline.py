@@ -49,7 +49,9 @@ class DefaultPipeline:
         Mehestan(
             lipschitz=0.1,
             min_n_judged_entities=10,
-            n_scalers_max=1000,
+            n_scalers_max=100,
+            privacy_penalty=0.5,
+            p_norm_for_multiplicative_resilience=4.0,
             error=1e-5
         ),
         QuantileZeroShift(
