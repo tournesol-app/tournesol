@@ -21,13 +21,13 @@ users = [
         svd1=[7, 2, 0, 1, 9]
     )),
     pd.DataFrame(dict(
-        is_pretrusted=np.random.random(100) < 0.20,
-        svd0=np.random.normal(0, 1, 100),
-        svd1=np.random.normal(0, 1, 100),
-        svd2=np.random.normal(0, 1, 100),
-        svd3=np.random.normal(0, 1, 100),
-        svd4=np.random.normal(0, 1, 100)
-    ), index=2 * np.arange(100) + 3)
+        is_pretrusted=np.random.random(20) < 0.20,
+        svd0=np.random.normal(0, 1, 20),
+        svd1=np.random.normal(0, 1, 20),
+        svd2=np.random.normal(0, 1, 20),
+        svd3=np.random.normal(0, 1, 20),
+        svd4=np.random.normal(0, 1, 20)
+    ), index=2 * np.arange(20) + 3)
 ]
 for u in users:
     u.index.name = "user_id"
@@ -50,12 +50,13 @@ vouches = [
         vouch=[1, 1, 1, 1]
     )),
     pd.DataFrame(dict(
-        voucher=np.random.randint(0, 100, 200),
-        vouchee=np.random.randint(0, 100, 200),
-        vouch=np.random.random(200)
+        voucher=np.random.randint(0, 20, 80),
+        vouchee=np.random.randint(0, 20, 80),
+        vouch=np.random.random(80)
     ))
 ]
-vouches[4]["vouchee"] = vouches[4]["vouchee"] + (vouches[4]["vouchee"] == vouches[4]["voucher"])
+vouches[4]["vouchee"] += (vouches[4]["vouchee"] == vouches[4]["voucher"])
+vouches[4]["vouchee"] %= 20
 
 entities = [
     pd.DataFrame(),
@@ -66,12 +67,12 @@ entities = [
         svd1=[0, 0, 6, 4, 2]
     )),
     pd.DataFrame(dict(
-        svd0=np.random.normal(0, 1, 300),
-        svd1=np.random.normal(0, 1, 300),
-        svd2=np.random.normal(0, 1, 300),
-        svd3=np.random.normal(0, 1, 300),
-        svd4=np.random.normal(0, 1, 300)
-    ), index=3*np.arange(300) + 5)
+        svd0=np.random.normal(0, 1, 50),
+        svd1=np.random.normal(0, 1, 50),
+        svd2=np.random.normal(0, 1, 50),
+        svd3=np.random.normal(0, 1, 50),
+        svd4=np.random.normal(0, 1, 50)
+    ), index=3*np.arange(50) + 5)
 ]
 for e in entities:
     e.index.name = "entity_id"
@@ -96,9 +97,9 @@ privacy = [
     }),
     PrivacySettings()
 ]
-for _ in range(100 * 50):
-    user = 2 * np.random.randint(100) + 3
-    entity = 3 * np.random.randint(300) + 5
+for _ in range(20 * 10):
+    user = 2 * np.random.randint(20) + 3
+    entity = 3 * np.random.randint(50) + 5
     privacy[4][user, entity] = (np.random.random() < 0.1)
 
 judgments = [
@@ -107,13 +108,41 @@ judgments = [
         user_id=[0, 1, 2, 3, 4],
         entity_a=[0, 0, 1, 0, 1],
         entity_b=[1, 1, 0, 1, 0],
-        score=[-5, 3, -4, -8, -10],
+        comparison=[-5, 3, -4, -8, -10],
         comparison_max=[10, 10, 10, 10, 10]
     ))),
-    DataFrameJudgments(),
-    DataFrameJudgments(),
+    DataFrameJudgments(pd.DataFrame(dict(
+        user_id=[0, 0, 0, 2, 2, 4, 6, 8],
+        entity_a=[1, 2, 1, 2, 6, 1, 6, 1],
+        entity_b=[6, 6, 2, 1, 1, 2, 2, 6],
+        comparison=[-5, 3, -4, -8, -10, 2, 4, -4],
+        comparison_max=[10, 10, 10, 10, 10, 10, 10, 10]
+    ))),
+    DataFrameJudgments(pd.DataFrame(dict(
+        user_id= [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4],
+        entity_a=[0, 2, 4, 0, 1, 4, 3, 4, 0, 2, 1, 0, 4, 0, 0, 0, 0, 2, 4, 0, 1, 2],
+        entity_b=[2, 3, 3, 2, 2, 3, 2, 1, 4, 3, 0, 4, 1, 1, 2, 3, 4, 3, 3, 1, 2, 3],
+        comparison=    [-5,3,-4,-3,-3, 2, 4,-4, 3, 2, 1, 3, 4, 1, 2, 1, 2, 0,-1, 2,-1,-2],
+        comparison_max=[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    ))),
     DataFrameJudgments(),
 ]
+for entity in privacy[4].entities():
+    for user in privacy[4].users(entity):
+        for entity_bis in privacy[4].entities():
+            if np.random.random() <= 0.8:
+                continue
+            comparison_max = np.random.random() * 10
+            comparison = (2 * np.random.random() - 1) * comparison_max
+            judgments[4].comparisons.loc[len(judgments[4].comparisons)] = [
+                user, entity, entity_bis,
+                comparison, comparison_max
+            ]
 
 def test_privacy():
     assert privacy[2][0, 1]
+    assert privacy[2][0, 0] is None
+
+def test_judgments():
+    assert len(judgments[1].assessments) == 0
+    assert judgments[1].comparisons.loc[1, "comparison"] == 3

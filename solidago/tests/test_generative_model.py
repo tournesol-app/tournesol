@@ -26,16 +26,16 @@ def test_svd_entity_model():
     assert len(entities) == 100
 
 def test_engagement_model():
-    users = SvdUserModel(svd_dimension=5)(n_users=50)
-    entities = SvdEntityModel(svd_dimension=5)(n_entities=200)
+    users = SvdUserModel(svd_dimension=5)(n_users=20)
+    entities = SvdEntityModel(svd_dimension=5)(n_entities=50)
     privacy, judgments = SimpleEngagementModel()(users, entities)
     
 def test_comparison_model():
-    users = SvdUserModel(svd_dimension=5)(n_users=50)
-    entities = SvdEntityModel(svd_dimension=5)(n_entities=200)
+    users = SvdUserModel(svd_dimension=5)(n_users=20)
+    entities = SvdEntityModel(svd_dimension=5)(n_entities=50)
     privacy, judgments = SimpleEngagementModel()(users, entities)
     judgments.comparisons = KnaryGBT(21, 10)(users, entities, judgments.comparisons)
 
 def test_generative_model():
-    users, vouches, entities, privacy, judgments = GenerativeModel()(50, 200)
-    assert len(users) == 50
+    users, vouches, entities, privacy, judgments = GenerativeModel()(20, 50)
+    assert len(users) == 20

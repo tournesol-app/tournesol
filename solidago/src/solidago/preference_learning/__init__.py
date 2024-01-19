@@ -10,15 +10,15 @@ class PreferenceLearning(ABC):
     @abstractmethod
     def __call__(
         self, 
-        user_judgements: dict[str, pd.DataFrame],
+        user_judgments: dict[str, pd.DataFrame],
         entities: pd.DataFrame
     ) -> ScoringModel:
-        """ Learns a scoring model, given user judgements of entities
+        """ Learns a scoring model, given user judgments of entities
         
         Parameters
         ----------
-        user_judgements: dict[str, pd.DataFrame]
-            May contain different forms of judgements, 
+        user_judgments: dict[str, pd.DataFrame]
+            May contain different forms of judgments, 
             but most likely will contain "comparisons" and/or "assessments"
         entities: DataFrame with columns
             * entity_id: int, index
@@ -46,9 +46,9 @@ class ComparisonBasedPreferenceLearning(PreferenceLearning):
     
     def __call__(
         self, 
-        user_judgements: dict[str, pd.DataFrame],
+        user_judgments: dict[str, pd.DataFrame],
         entities: pd.DataFrame
     ) -> ScoringModel:
-        return self.comparison_learning(user_judgements["comparisons"], entities)
+        return self.comparison_learning(user_judgments["comparisons"], entities)
     
     
