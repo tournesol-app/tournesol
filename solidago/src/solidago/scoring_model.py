@@ -21,17 +21,22 @@ class ScoringModel:
         out: (score, left_uncertainty, right_uncertainty) or None
         """
         raise NotImplementedError
+        
+    def scored_entities(self, entities) -> set[int]:
+        """ If not None, then the scoring model only scores a subset of entities. """
+        return set(range(len(entities)))
+
 
 def DirectScoringModel(ScoringModel):
     def __init__(self, dct: dict[int, tuple[float, float, float]]=dict()):
-        self.dct = dct
+        self._dct = dct
     
     def __call__(self, entity_id: int, entity_features=None) -> Optional[float]:
         """ Returns both score and uncertainty
         """
         if entity_id not in self.dct:
             return None
-        return self.dct[entity_id]
+        return self._dct[entity_id]
         
     def __getitem__(self, entity_id: int) -> Optional[tuple[float. float]]:
         return self(entity_id)
@@ -43,7 +48,13 @@ def DirectScoringModel(ScoringModel):
                 score_and_uncertainties[1], 
                 score_and_uncertainties[1]
             )
-        self.scores[entity_id] = score_and_uncertainties
+        self._dct[entity_id] = score_and_uncertainties
+
+    def scored_entities(self, entities=None) -> set[int]:
+        if entities is None:
+            return set(self._dct.keys())
+        return set(range(len(entities))).intersection(set(self._dct.keys()))
+
 
 def ScaledScoringModel(ScoringModel):
     def __init__(
@@ -62,6 +73,10 @@ def ScaledScoringModel(ScoringModel):
         left = self.multiplicative_scale * base_left
         right = self.multiplicative_scale * base_right
         return score, left, right
+        
+    def scored_entities(self) -> set[int]:
+        return self.base_model.scored_entities()
+
 
 def PostProcessedScoringModel(ScoringModel):
     def __init__(self, base_model: ScoringModel, post_process: callable):
@@ -88,3 +103,5 @@ def PostProcessedScoringModel(ScoringModel):
             right = - temp
         return score, left, right
         
+    def scored_entities(self) -> set[int]:
+        return self.base_model.scored_entities()

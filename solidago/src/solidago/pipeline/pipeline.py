@@ -48,7 +48,7 @@ class DefaultPipeline:
     scaling: Scaling = ScalingCompose(
         Mehestan(
             lipschitz=0.1,
-            min_comparison=10,
+            min_n_judged_entities=10,
             n_scalers_max=1000,
             error=1e-5
         ),
