@@ -24,6 +24,50 @@ class AffineOvertrust(VotingRightsAssignment):
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
     
+    def __call__(
+        self,
+        users: pd.DataFrame,
+        vouches: pd.DataFrame,
+        privacy: PrivacySettings,
+    ) -> VotingRights:
+        """ Compute voting rights
+        
+        Parameters
+        ----------
+        users: DataFrame with columns
+            * user_id (int, index)
+            * trust_score (float)
+        vouches: DataFrame
+            This is not used by VotingRightsWithLimitedOvertrust
+        privacy: PrivacySettings
+            privacy[user, entity] is the privacy setting of user for entity
+            May be True, False or None
+        
+        Returns
+        -------
+        voting_rights[user, entity] is the voting right
+            of a user on entity for criterion
+        """            
+        voting_rights = VotingRights()
+        if len(users) == 0:
+            return voting_rights
+        
+        for e in privacy.entities():
+        
+            privacy_weights = { 
+                u: self.privacy_penalty if privacy[u, e] else 1 for u in privacy.users(e) 
+            }
+        
+            cumulative_trust = self.cumulative_trust(users, privacy_weights)
+            max_overtrust = self.maximal_overtrust(cumulative_trust)
+            min_voting_right = self.min_voting_right(max_overtrust, users, privacy_weights)
+        
+            for u in privacy_weights:
+                voting_rights[u, e] = max(min_voting_right, users.loc[u, "trust_score"])
+                voting_rights[u, e] *= privacy_weights[u]
+        
+        return voting_rights
+    
     def cumulative_trust(
         self,
         users: pd.DataFrame,
@@ -122,45 +166,3 @@ class AffineOvertrust(VotingRightsAssignment):
             return 1.0
         
         return solve(overtrust, max_overtrust, 0, 1)
-    
-    def __call__(
-        self,
-        users: pd.DataFrame,
-        vouches: pd.DataFrame,
-        privacy: PrivacySettings,
-    ) -> VotingRights:
-        """ Compute voting rights
-        
-        Parameters
-        ----------
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
-        vouches: DataFrame
-            This is not used by VotingRightsWithLimitedOvertrust
-        privacy: PrivacySettings
-            privacy[user, entity] is the privacy setting of user for entity
-            May be True, False or None
-        
-        Returns
-        -------
-        voting_rights[user, entity] is the voting right
-            of a user on entity for criterion
-        """
-        voting_rights = VotingRights()
-        
-        for e in privacy.entities():
-        
-            privacy_weights = { 
-                u: self.privacy_penalty if privacy[u, e] else 1 for u in privacy.users(e) 
-            }
-        
-            cumulative_trust = self.cumulative_trust(users, privacy_weights)
-            max_overtrust = self.maximal_overtrust(cumulative_trust)
-            min_voting_right = self.min_voting_right(max_overtrust, users, privacy_weights)
-        
-            for u in privacy_weights:
-                voting_rights[u, e] = max(min_voting_right, users.loc[u, "trust_score"])
-                voting_rights[u, e] *= privacy_weights[u]
-        
-        return voting_rights

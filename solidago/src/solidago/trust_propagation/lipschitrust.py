@@ -56,24 +56,24 @@ class LipschiTrust(TrustPropagation):
             * is_pretrusted (bool)
             * trust_score (float)
         """
-        total_vouches = dict(vouches["voucher"].value_counts())
-        for voucher in total_vouches:
-            total_vouches[voucher] += self.sink_vouch
-            
-        pretrusts = np.array(users["is_pretrusted"] * self.pretrust_value)
-        trusts = np.array(pretrusts)
+        if len(users) == 0:
+            return
+
+        total_vouches = vouches["voucher"].value_counts() + self.sink_vouch            
+        pretrusts = users["is_pretrusted"] * self.pretrust_value
+        trusts = pretrusts.copy()
 
         n_iterations = - np.log(len(users)/self.error) / np.log(self.decay)
         n_iterations = int(np.ceil( n_iterations ))
         for _ in range(n_iterations):
             # Initialize to pretrust
-            new_trusts = np.array(pretrusts)
+            new_trusts = pretrusts.copy()
             # Propagate trust through vouches
             for _, row in vouches.iterrows():
-                vouch = row["vouch"] / total_vouches[row["voucher"]]
-                new_trusts[row["vouchee"]] += self.decay * trusts[row["voucher"]] * vouch
+                discount = self.decay * row["vouch"] / total_vouches[row["voucher"]]
+                new_trusts[row["vouchee"]] += discount * trusts[row["voucher"]]
             # Bound trusts for Lipschitz resilience
-            trusts = new_trusts.clip(max=1.0)
+            trusts = new_trusts.clip(upper=1.0)
         
         return users.assign(trust_score=trusts)
       

@@ -1,16 +1,20 @@
 from abc import ABC, abstractmethod
 
 import pandas as pd
+import numpy as np
+
+from solidago.scoring_model import ScoringModel
+from solidago.solvers.optimize import coordinate_descent
 
 from . import ComparisonBasedPreferenceLearning
-from optimize import coordinate_descent
+
 
 class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
     def __init__(
         self, 
         prior_std_dev: float=7,
         initialization: dict[int, float]=dict(),
-        convergence_error: float=1e-5
+        convergence_error: float=1e-5                    
     ):
         """
         
@@ -165,7 +169,8 @@ class UniformGBT(GeneralizedBradleyTerry):
         error: float
             tolerated error
         """
-        super.__init__(prior_std_dev, comparison_max, initialization, convergence_error)
+        super().__init__(prior_std_dev, initialization, convergence_error)
+        self.comparison_max = comparison_max
         self.cumulant_generating_function_error = cumulant_generating_function_error
     
     def cumulant_generating_function_derivative(self, score_diff: float) -> float:

@@ -2,12 +2,23 @@ from solidago.voting_rights import VotingRights
 from solidago.scoring_model import ScoringModel
 from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import DataFrameJudgments
+from solidago.pipeline import Pipeline
 
 import pandas as pd
 import numpy as np
 
+__all__ = ["users", "vouches", "entities", "privacy", "judgments"]
+
 
 np.random.seed(0)
+
+#######################################
+##                                   ##
+##   Basic Generation of Test Data   ##
+##                                   ##
+#######################################
+
+n_tests = 5
 
 users = [
     pd.DataFrame(columns=["is_pretrusted"]),
@@ -50,13 +61,13 @@ vouches = [
         vouch=[1, 1, 1, 1]
     )),
     pd.DataFrame(dict(
-        voucher=np.random.randint(0, 20, 80),
-        vouchee=np.random.randint(0, 20, 80),
+        voucher=2 * np.random.randint(0, 20, 80) + 3,
+        vouchee=2 * np.random.randint(0, 20, 80) + 3,
         vouch=np.random.random(80)
     ))
 ]
-vouches[4]["vouchee"] += (vouches[4]["vouchee"] == vouches[4]["voucher"])
-vouches[4]["vouchee"] %= 20
+vouches[4]["vouchee"] += 2 * (vouches[4]["vouchee"] == vouches[4]["voucher"])
+vouches[4]["vouchee"] = ((vouches[4]["vouchee"] - 3) % 40) + 3
 
 entities = [
     pd.DataFrame(),
@@ -139,10 +150,21 @@ for entity in privacy[4].entities():
                 comparison, comparison_max
             ]
 
-def test_privacy():
-    assert privacy[2][0, 1]
-    assert privacy[2][0, 0] is None
 
-def test_judgments():
-    assert len(judgments[1].assessments) == 0
-    assert judgments[1].comparisons.loc[1, "comparison"] == 3
+#######################################
+##                                   ##
+##      Learning Pipeline Data       ##
+##                                   ##
+#######################################
+
+pipeline = Pipeline()
+trusts = [
+    pipeline.trust_propagation(users[test], vouches[test])
+    for test in range(n_tests)
+]
+
+#voting_rights = [
+#   pipeline.voting_rights(trusts[test], vouches[test], privacy[test])
+#   for test in range(n_tests)
+#]
+

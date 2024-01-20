@@ -4,6 +4,7 @@ import pandas as pd
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.scoring_model import ScoringModel
+from solidago.voting_rights import VotingRights
 
 
 class Scaling:

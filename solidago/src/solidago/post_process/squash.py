@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 from . import PostProcess
-from solidago.scoring_model import ScoringModel, PostProcesedScoringModel
+from solidago.scoring_model import ScoringModel, PostProcessedScoringModel
 
 
 class Squash(PostProcess):
@@ -14,7 +14,7 @@ class Squash(PostProcess):
         self, 
         user_models: dict[int, ScoringModel],
         global_model: ScoringModel
-    ) -> tuple[dict[int, ScoringModel], ScoringModel]
+    ) -> tuple[dict[int, ScoringModel], ScoringModel]:
         """ Post-processes user models and global models,
         typically to yield human-readible scores
         

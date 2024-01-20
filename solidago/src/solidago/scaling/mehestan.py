@@ -7,6 +7,7 @@ from . import Scaling
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.scoring_model import ScoringModel
+from solidago.voting_rights import VotingRights
 from solidago.primitives import qr_median, qr_uncertainty, br_mean
 
 logger = logging.getLogger(__name__)
@@ -160,7 +161,7 @@ class Mehestan(Scaling):
                 multiplicator_left_uncertainty=multiplicators[u][1], 
                 multiplicator_right_uncertainty=multiplicators[u][1], 
                 translation_left_uncertainty=translations[u][1],
-                translation_left_uncertainty=translations[u][1]
+                translation_right_uncertainty=translations[u][1]
             ) for u in scalers.index
         }
         
@@ -183,7 +184,7 @@ class Mehestan(Scaling):
                 multiplicator_left_uncertainty=multiplicators[u][1], 
                 multiplicator_right_uncertainty=multiplicators[u][1], 
                 translation_left_uncertainty=translations[u][1],
-                translation_left_uncertainty=translations[u][1]
+                translation_right_uncertainty=translations[u][1]
             ) for u in nonscalers.index
         }        
         
@@ -432,7 +433,7 @@ def _model_norms(
     user_models: dict[int, ScoringModel],
     users: pd.DataFrame,
     entities: pd.DataFrame,
-    privacy: Privacy,
+    privacy: PrivacySettings,
     power: float=5.0
 ) -> dict[int, float]:
     """ Estimator of the scale of scores of a user, with an emphasis on large scores.
@@ -580,7 +581,7 @@ def _aggregate_user_comparisons(
     return results
         
 def _aggregate(
-    lipschitz: float
+    lipschitz: float,
     values: dict[int, tuple[list[float], list[float], list[float]]], 
     error: float=1e-5,
     aggregator: callable=qr_median

@@ -13,6 +13,7 @@ def test_lipschitrust_simple():
     users = pd.DataFrame({ 
         "is_pretrusted": [True, True, False, False, False]
     })
+    users.index.name = "user_id"
     vouches = pd.DataFrame({
         "voucher": [0, 0, 2, 3],
         "vouchee": [1, 2, 3, 4],
@@ -27,7 +28,7 @@ def test_lipschitrust_simple():
     users = trust_propagator(users, vouches)
     assert users.loc[0, "trust_score"] == 0.8
     assert users.loc[4, "trust_score"] > 0
-    assert users.loc[2, "trust_score"] == pytest.approx(0.8 * 0.8 / 7)
+    assert users.loc[2, "trust_score"] == pytest.approx(0.8 * 0.8 / 7), users
 
 def test_lipschitrust_generative():
     users = SvdUserModel(p_trustworthy=0.8, p_pretrusted=0.2, svd_dimension=5)(50)

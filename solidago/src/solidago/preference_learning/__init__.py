@@ -4,7 +4,9 @@ from typing import Optional
 import pandas as pd
 import numpy as np
 
+from solidago.scoring_model import ScoringModel
 from solidago.solvers.optimize import brentq
+
 
 class PreferenceLearning(ABC):
     @abstractmethod
