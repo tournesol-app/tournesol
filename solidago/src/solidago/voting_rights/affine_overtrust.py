@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from . import VotingRights, VotingRightsAssignment
+from .base import VotingRights, VotingRightsAssignment
 
-from solidago.privacy_settings import PrivacySettings
+from solidago import PrivacySettings
 from solidago.solvers.dichotomy import solve
 
 class AffineOvertrust(VotingRightsAssignment):

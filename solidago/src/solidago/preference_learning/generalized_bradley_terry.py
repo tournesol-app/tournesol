@@ -6,7 +6,7 @@ import numpy as np
 from solidago.scoring_model import ScoringModel, DirectScoringModel
 from solidago.solvers.optimize import coordinate_descent
 
-from . import ComparisonBasedPreferenceLearning
+from .base import ComparisonBasedPreferenceLearning
 
 
 class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from . import Aggregation
+from .base import Aggregation
 
 from solidago.voting_rights import VotingRights
 from solidago.scoring_model import ScoringModel

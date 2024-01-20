@@ -1,6 +1,7 @@
+from solidago import PrivacySettings
+
 from solidago.voting_rights import VotingRights
 from solidago.scoring_model import DirectScoringModel
-from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import DataFrameJudgments
 from solidago.pipeline import Pipeline
 

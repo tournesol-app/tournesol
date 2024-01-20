@@ -7,24 +7,14 @@ from dataclasses import dataclass
 import pandas as pd
 import logging
 
-from solidago.privacy_settings import PrivacySettings
-from solidago.judgments import Judgments
-from solidago.voting_rights import VotingRights
-from solidago.scoring_model import ScoringModel
+from solidago import PrivacySettings, Judgments, ScoringModel
 
-from solidago.trust_propagation import TrustPropagation
-from solidago.trust_propagation.lipschitrust import LipschiTrust
-from solidago.voting_rights import VotingRightsAssignment
-from solidago.voting_rights.affine_overtrust import AffineOvertrust
-from solidago.preference_learning import PreferenceLearning
-from solidago.preference_learning.generalized_bradley_terry import UniformGBT
-from solidago.scaling import Scaling, ScalingCompose
-from solidago.scaling.mehestan import Mehestan
-from solidago.scaling.quantile_zero_shift import QuantileZeroShift
-from solidago.aggregation import Aggregation
-from solidago.aggregation.standardized_qrmed import QuantileStandardizedQrMedian
-from solidago.post_process import PostProcess
-from solidago.post_process.squash import Squash
+from solidago.trust_propagation import TrustPropagation, LipschiTrust
+from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust
+from solidago.preference_learning import PreferenceLearning, UniformGBT
+from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift
+from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
+from solidago.post_process import PostProcess, Squash
 
 logger = logging.getLogger(__name__)
 

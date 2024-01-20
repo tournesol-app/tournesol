@@ -1,55 +1,11 @@
-from abc import ABC, abstractmethod
-from typing import Optional
-
-import pandas as pd
-import numpy as np
-
-from solidago.scoring_model import ScoringModel
-
-
-class PreferenceLearning(ABC):
-    @abstractmethod
-    def __call__(
-        self, 
-        user_judgments: dict[str, pd.DataFrame],
-        entities: pd.DataFrame
-    ) -> ScoringModel:
-        """ Learns a scoring model, given user judgments of entities
-        
-        Parameters
-        ----------
-        user_judgments: dict[str, pd.DataFrame]
-            May contain different forms of judgments, 
-            but most likely will contain "comparisons" and/or "assessments"
-        entities: DataFrame with columns
-            * entity_id: int, index
-            * May contain others, such as vector representation
-        """
-        raise NotImplementedError
-
-
-class ComparisonBasedPreferenceLearning(PreferenceLearning):
-    @abstractmethod
-    def comparison_learning(self, comparisons, entities) -> ScoringModel:
-        """ Learns only based on comparisons
-        
-        Parameters
-        ----------
-        comparisons: DataFrame with columns
-            * entity_a: int
-            * entity_b: int
-            * score: float
-        entities: DataFrame with columns
-            * entity_id: int, index
-            * May contain others, such as vector representation
-        """
-        raise NotImplementedError
+""" Step 3 of the pipeline.
     
-    def __call__(
-        self, 
-        user_judgments: dict[str, pd.DataFrame],
-        entities: pd.DataFrame
-    ) -> ScoringModel:
-        return self.comparison_learning(user_judgments["comparisons"], entities)
-    
-    
+Preference learning infers, for each user and based on their data,
+a model of the user's preferences.
+This corresponds to the idea of "algorithmic representatives", 
+which will participate in the digital democracy 
+to remedy users' lack of activity and reactivity.
+"""
+
+from .base import PreferenceLearning
+from .generalized_bradley_terry import UniformGBT

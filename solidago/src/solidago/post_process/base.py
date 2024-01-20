@@ -1,15 +1,9 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
+from solidago.scoring_model import ScoringModel
 
-from .base import PostProcess
-from solidago.scoring_model import ScoringModel, PostProcessedScoringModel
-
-
-class Squash(PostProcess):
-    def __init__(self, score_max: float = 100):
-        self.score_max = score_max
-    
+class PostProcess(ABC):
+    @abstractmethod
     def __call__(
         self, 
         user_models: dict[int, ScoringModel],
@@ -28,12 +22,4 @@ class Squash(PostProcess):
         user_models: post-processed user models
         global_model: post-processed global model
         """
-        squash = lambda x: self.score_max * x / np.sqrt( 1 + x**2 )
-        
-        squasheded_user_models = {
-            u: PostProcessedScoringModel(user_models[u], squash) 
-            for u in user_models
-        }
-        squashed_global_model = PostProcessedScoringModel(global_model, squash)
-        
-        return squash_user_models, squashed_global_model
+        raise NotImplementedError

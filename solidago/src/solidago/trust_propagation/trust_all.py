@@ -1,7 +1,7 @@
 """ TrustAll is a naive solution that assignes an equal amount of trust to all users
 """
 
-from . import TrustPropagation
+from .base import TrustPropagation
 
 import pandas as pd
 import numpy as np

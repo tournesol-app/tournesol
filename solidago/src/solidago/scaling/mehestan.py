@@ -3,7 +3,7 @@ import pandas as pd
 
 import logging
 
-from . import Scaling
+from .base import Scaling
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.scoring_model import ScoringModel, ScaledScoringModel

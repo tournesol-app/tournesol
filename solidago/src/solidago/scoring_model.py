@@ -30,7 +30,6 @@ class ScoringModel:
         """ If not None, then the scoring model only scores a subset of entities. """
         return set(range(len(entities)))
 
-
 class DirectScoringModel(ScoringModel):
     def __init__(
         self, 
@@ -105,7 +104,6 @@ class ScaledScoringModel(ScoringModel):
         
     def scored_entities(self, entities=None) -> set[int]:
         return self.base_model.scored_entities(entities)
-
 
 class PostProcessedScoringModel(ScoringModel):
     def __init__(self, base_model: ScoringModel, post_process: callable):
