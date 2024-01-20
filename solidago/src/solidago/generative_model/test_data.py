@@ -19,7 +19,7 @@ def print_user_models(models):
             ]) + "\n        })"
             for user in models[test]
         ]) + "\n    }"
-        for test in range(n_tests)
+        for _ in models
     ]) + "\n]")
 
 
