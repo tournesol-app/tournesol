@@ -10,6 +10,8 @@ from solidago.privacy_settings import PrivacySettings
 from solidago.voting_rights import VotingRights
 from solidago.voting_rights.affine_overtrust import AffineOvertrust
 
+import solidago.generative_model.test_data as td
+
 # Params that will be used for tests
 OVER_TRUST_BIAS = 2
 OVER_TRUST_SCALE = 0.1
@@ -170,7 +172,7 @@ def test_voting_rights_abstraction():
     assert voting_rights[3, 46] == 0.8
 
 
-def test_limited_trust():
+def test_affine_overtrust():
     users = pd.DataFrame(dict(trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
     users.index.name = "user_id"
     vouches = None
@@ -187,6 +189,15 @@ def test_limited_trust():
         overtrust_ratio=0.1
     )
     voting_rights = voting_rights_assignment(users, vouches, privacy)
-    
 
-
+@pytest.mark.parametrize("test", range(5))
+def test_affine_overtrust_test_data(test):
+    voting_rights_assignment = AffineOvertrust(
+        privacy_penalty=0.5, 
+        min_overtrust=2.0,
+        overtrust_ratio=0.1
+    )
+    rights = voting_rights_assignment(td.users[test], td.vouches[test], td.privacy[test])
+    for entity in td.voting_rights[test].entities():
+        for user in td.voting_rights[test].on_entity(entity):            
+            assert td.voting_rights[test][user, entity]  == rights[user, entity], (entity, user, td.voting_rights, rights)

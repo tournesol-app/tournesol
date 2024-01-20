@@ -31,18 +31,22 @@ class ScoringModel:
         return set(range(len(entities)))
 
 
-def DirectScoringModel(ScoringModel):
-    def __init__(self, dct: dict[int, tuple[float, float, float]]=dict()):
-        self._dct = dct
+class DirectScoringModel(ScoringModel):
+    def __init__(
+        self, 
+        dct: dict[int, tuple[float, float, float]]=dict()
+    ):
+        super().__init__()
+        self._dict = dct
     
     def __call__(self, entity_id: int, entity_features=None) -> Optional[float]:
         """ Returns both score and uncertainty
         """
-        if entity_id not in self.dct:
+        if entity_id not in self._dict:
             return None
-        return self._dct[entity_id]
+        return self._dict[entity_id]
         
-    def __getitem__(self, entity_id: int) -> Optional[tuple[float. float]]:
+    def __getitem__(self, entity_id: int) -> Optional[tuple[float, float]]:
         return self(entity_id)
         
     def __setitem__(self, entity_id: int, score_and_uncertainties: tuple[float, float, float]):
@@ -52,15 +56,17 @@ def DirectScoringModel(ScoringModel):
                 score_and_uncertainties[1], 
                 score_and_uncertainties[1]
             )
-        self._dct[entity_id] = score_and_uncertainties
+        self._dict[entity_id] = score_and_uncertainties
 
     def scored_entities(self, entities=None) -> set[int]:
         if entities is None:
-            return set(self._dct.keys())
-        return set(range(len(entities))).intersection(set(self._dct.keys()))
+            return set(self._dict.keys())
+        return set(range(len(entities))).intersection(set(self._dict.keys()))
 
+    def __str__(self):
+        return self._dict.__str__()
 
-def ScaledScoringModel(ScoringModel):
+class ScaledScoringModel(ScoringModel):
     def __init__(
         self, 
         base_model: ScoringModel, 
@@ -97,7 +103,7 @@ def ScaledScoringModel(ScoringModel):
         return self.base_model.scored_entities()
 
 
-def PostProcessedScoringModel(ScoringModel):
+class PostProcessedScoringModel(ScoringModel):
     def __init__(self, base_model: ScoringModel, post_process: callable):
         """ Defines a derived scoring model, based on a base model and a post process
         

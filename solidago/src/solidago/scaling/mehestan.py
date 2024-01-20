@@ -90,7 +90,7 @@ class Mehestan(Scaling):
         
         logger.info("Mehestan 1. Select scalers based on activity and trustworthiness")
         activities = _compute_activities(user_models, users, entities, privacy)
-        users.assign(is_scaler=self.compute_scalers(activities))
+        users = users.assign(is_scaler=self.compute_scalers(activities))
         scalers = users[users["is_scaler"]]
         nonscalers = users[not users["is_scaler"]]
         

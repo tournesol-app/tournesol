@@ -55,8 +55,11 @@ class AffineOvertrust(VotingRightsAssignment):
         for e in privacy.entities():
         
             privacy_weights = { 
-                u: self.privacy_penalty if privacy[u, e] else 1 for u in privacy.users(e) 
+                u: self.privacy_penalty if privacy[u, e] else 1 
+                for u in privacy.users(e) 
             }
+            for u in privacy_weights:
+                assert u in users.index, (u, e, privacy.users(e), users)
         
             cumulative_trust = self.cumulative_trust(users, privacy_weights)
             max_overtrust = self.maximal_overtrust(cumulative_trust)

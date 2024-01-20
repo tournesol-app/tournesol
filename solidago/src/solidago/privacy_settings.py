@@ -1,8 +1,8 @@
 from typing import Optional
 
 class PrivacySettings:
-    def __init__(self, dct=dict()):
-        self._dict = dct
+    def __init__(self, dct=None):
+        self._dict = dict() if dct is None else dct
         
     def __getitem__(self, user_entity_tuple: tuple[int, int]) -> Optional[bool]:
         """ Returns the user's privacy setting for a given entity
@@ -40,8 +40,10 @@ class PrivacySettings:
         elif is_private is not None:
             self._dict[entity][user] = is_private
 
-    def entities(self):
-        return set(self._dict.keys())
+    def entities(self, user: Optional[int] = None) -> set[int]:
+        if user is None:
+            return set(self._dict.keys())
+        return { e for e in self._dict if user in self._dict[e] }
 
     def users(self, entity: int=None):
         if entity is None:

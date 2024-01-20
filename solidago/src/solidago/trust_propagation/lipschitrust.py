@@ -57,7 +57,7 @@ class LipschiTrust(TrustPropagation):
             * trust_score (float)
         """
         if len(users) == 0:
-            return
+            return users.assign(trust_score=[])
 
         total_vouches = vouches["voucher"].value_counts() + self.sink_vouch            
         pretrusts = users["is_pretrusted"] * self.pretrust_value

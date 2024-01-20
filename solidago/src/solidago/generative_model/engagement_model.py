@@ -6,6 +6,8 @@ import numpy as np
 from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import Judgments, DataFrameJudgments
 
+import solidago.generative_model.test_data as td
+
 
 class EngagementModel(ABC):
     @abstractmethod
@@ -71,7 +73,7 @@ class SimpleEngagementModel(EngagementModel):
         """
         comparison_dct = dict(user_id=list(), criteria=list(), entity_a=list(), entity_b=list())
         privacy = PrivacySettings()
-
+        
         for user, row in users.iterrows():
             n_compared_entities = 2 * row["n_comparisons"]
             n_compared_entities /= row["n_comparisons_per_entity"]

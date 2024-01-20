@@ -8,6 +8,8 @@ from solidago.trust_propagation.trust_all import TrustAll
 from solidago.generative_model.user_model import SvdUserModel
 from solidago.generative_model.vouch_model import ErdosRenyiVouchModel
 
+import solidago.generative_model.test_data as td
+
 
 def test_lipschitrust_simple():
     users = pd.DataFrame({ 
@@ -44,6 +46,12 @@ def test_lipschitrust_generative():
     users = trust_propagator(users, vouches)
     for _, row in users.iterrows():
         assert row["is_trustworthy"] or (row["trust_score"] == 0)
+
+@pytest.mark.parametrize("test", range(5))
+def test_lipschitrust_test_data(test):
+    trusts = td.pipeline.trust_propagation(td.users[test], td.vouches[test])
+    for user, row in td.users[test].iterrows():
+        assert trusts.loc[user, "trust_score"] == row["trust_score"]
 
 def test_trust_all():
     users = pd.DataFrame({ 

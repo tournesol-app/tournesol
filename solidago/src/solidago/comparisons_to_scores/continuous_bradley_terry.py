@@ -10,7 +10,7 @@ import pandas as pd
 from numba import njit
 
 from solidago.comparisons_to_scores.base import ComparisonsToScoresAlgorithm
-from solidago.solvers.optimize import brentq
+from solidago.solvers.optimize import njit_brentq as brentq
 
 
 DEFAULT_ALPHA = 0.20  # Signal-to-noise hyperparameter

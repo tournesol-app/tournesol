@@ -164,10 +164,10 @@ class Pipeline:
         voting_rights = self.voting_rights(trusts, vouches, privacy)
     
         logger.info(f"Pipeline 3. Computing user models with {self.preference_learning}")
-        user_models = dict()
-        for user, _ in users.iterrows():
-            logger.info(f"    Pipeline 3.{user}. Learning user {user}'s model")
-            user_models[user] = self.preference_learning(judgments[user], entities)
+        user_models = {
+            user: self.preference_learning(judgments[user], entities)
+            for user, _ in users.iterrows()
+        }
         
         logger.info(f"Pipeline 4. Collaborative score scaling with {self.scaling}")
         user_models = self.scaling(user_models, users, entities, voting_rights, privacy)

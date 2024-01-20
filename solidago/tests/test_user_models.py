@@ -5,7 +5,6 @@ import pytest
 
 from solidago.comparisons_to_scores import ContinuousBradleyTerry, HookeIndividualScores
 
-
 matrix_inversion = HookeIndividualScores(r_max=10)
 continuous_bradley_terry = ContinuousBradleyTerry(r_max=10)
 
@@ -145,3 +144,4 @@ class TestIndividualScores:
         assert scores.loc["B"].raw_score == pytest.approx(scores.loc["F"].raw_score, abs=1e-4)
         assert scores.loc["C"].raw_score == pytest.approx(scores.loc["G"].raw_score, abs=1e-4)
         assert scores.loc["D"].raw_score == pytest.approx(scores.loc["H"].raw_score, abs=1e-4)
+

@@ -28,7 +28,7 @@ def test_svd_entity_model():
 def test_engagement_model():
     users = SvdUserModel(svd_dimension=5)(n_users=20)
     entities = SvdEntityModel(svd_dimension=5)(n_entities=50)
-    privacy, judgments = SimpleEngagementModel()(users, entities)
+    _, judgments = SimpleEngagementModel()(users, entities)
     
 def test_comparison_model():
     users = SvdUserModel(svd_dimension=5)(n_users=20)
@@ -39,3 +39,4 @@ def test_comparison_model():
 def test_generative_model():
     users, vouches, entities, privacy, judgments = GenerativeModel()(20, 50)
     assert len(users) == 20
+

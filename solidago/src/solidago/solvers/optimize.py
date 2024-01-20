@@ -39,18 +39,16 @@ def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
 
     return root, status
 
-
-@njit
 def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0) -> float:
     """
     Find a root of a function in a bracketing interval using Brent's method
     adapted from Scipy's brentq.
     Uses the classic Brent's method to find a zero of the function `f` on
     the sign changing interval [a , b].
-    `f` must be jitted via numba.
+    
     Parameters
     ----------
-    f : jitted and callable
+    f : callable
         Python function returning a number.  `f` must be continuous.
     a : number
         One end of the bracketing interval [a,b].
@@ -160,6 +158,104 @@ def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: floa
 
     return root  # type: ignore
 
+@njit
+def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0) -> float:
+    """ `Accelerated brentq. Requires f to be itself jitted via numba.
+    Essentially, numba optimizes the execution by running an optimized compilation
+    of the function when it is first called, and by then running the compiled function.
+    
+    
+    Parameters
+    ----------
+    f : jitted and callable
+        Python function returning a number.  `f` must be continuous.
+    """
+    while f(a, *args) > 0:
+        a = a - 2 * (b-a)
+    while f(b, *args) < 0:
+        b = b + 2 * (b-a)
+
+    if xtol <= 0:
+        raise ValueError("xtol is too small (<= 0)")
+    if maxiter < 1:
+        raise ValueError("maxiter must be greater than 0")
+
+    # Convert to float
+    xpre = a * 1.0
+    xcur = b * 1.0
+
+    fpre = f(xpre, *args)
+    fcur = f(xcur, *args)
+    funcalls = 2
+
+    root, status = _bisect_interval(xpre, xcur, fpre, fcur)
+
+    # Check for sign error and early termination
+    if status == _ECONVERGED:
+        itr = 0
+    else:
+        # Perform Brent's method
+        for itr in range(maxiter):
+
+            if fpre * fcur < 0:
+                xblk = xpre
+                fblk = fpre
+                spre = scur = xcur - xpre
+            if abs(fblk) < abs(fcur):
+                xpre = xcur
+                xcur = xblk
+                xblk = xpre
+
+                fpre = fcur
+                fcur = fblk
+                fblk = fpre
+
+            delta = (xtol + rtol * abs(xcur)) / 2
+            sbis = (xblk - xcur) / 2
+
+            # Root found
+            if fcur == 0 or abs(sbis) < delta:
+                status = _ECONVERGED
+                root = xcur
+                itr += 1
+                break
+
+            if abs(spre) > delta and abs(fcur) < abs(fpre):
+                if xpre == xblk:
+                    # interpolate
+                    stry = -fcur * (xcur - xpre) / (fcur - fpre)
+                else:
+                    # extrapolate
+                    dpre = (fpre - fcur) / (xpre - xcur)
+                    dblk = (fblk - fcur) / (xblk - xcur)
+                    stry = -fcur * (fblk * dblk - fpre * dpre) / (dblk * dpre * (fblk - fpre))
+
+                if 2 * abs(stry) < min(abs(spre), 3 * abs(sbis) - delta):
+                    # good short step
+                    spre = scur
+                    scur = stry
+                else:
+                    # bisect
+                    spre = sbis
+                    scur = sbis
+            else:
+                # bisect
+                spre = sbis
+                scur = sbis
+
+            xpre = xcur
+            fpre = fcur
+            if abs(scur) > delta:
+                xcur += scur
+            else:
+                xcur += delta if sbis > 0 else -delta
+            fcur = f(xcur, *args)
+            funcalls += 1
+
+    if disp and status == _ECONVERR:
+        raise RuntimeError("Failed to converge")
+
+    return root  # type: ignore
 
 def coordinate_descent(
     loss_partial_derivative: callable,
@@ -202,10 +298,12 @@ def coordinate_descent(
             continue
         old_coordinate_value = solution[coordinate]
         solution[coordinate] = brentq(
-            lambda x: self.partial_derivative(coordinate, x, solution),
-            xtol=error / 10
+            lambda x: loss_partial_derivative(coordinate, x, solution),
+            xtol=error / 10,
+            a=old_coordinate_value - 1,
+            b=old_coordinate_value + 1
         )
-        if abs(solution[coordinate] - old_coordinate_value) < EPSILON:
+        if abs(solution[coordinate] - old_coordinate_value) < error:
             unchanged.add(coordinate)
         else:
             unchanged.clear()

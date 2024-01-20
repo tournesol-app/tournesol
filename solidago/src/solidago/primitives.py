@@ -5,7 +5,7 @@ import numpy.typing as npt
 import pandas as pd
 from numba import njit
 
-from solidago.solvers.optimize import brentq
+from solidago.solvers.optimize import njit_brentq as brentq
 
 
 def qr_quantile(
