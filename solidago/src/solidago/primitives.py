@@ -190,7 +190,7 @@ def qr_uncertainty(
     voting_rights: Union[npt.ArrayLike, float] = 1, 
     left_uncertainties: Optional[npt.ArrayLike] = None,    
     right_uncertainties: Optional[npt.ArrayLike] = None,
-    default_uncertainty: float = 1,
+    default_dev: float = 1,
     error: float = 1e-5,
     median: float = None,
 ):
@@ -204,7 +204,6 @@ def qr_uncertainty(
     
     square_uncertainties = (left_uncertainties + right_uncertainties)**2 / 4
     
-    delta_2 = delta**2
     nonregularized_capped_second_derivative = np.sum(
         voting_rights * np.minimum(
             lipschitz, 

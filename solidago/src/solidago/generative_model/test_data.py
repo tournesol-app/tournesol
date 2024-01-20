@@ -950,9 +950,13 @@ def compute_preference_learned_models():
         for test in range(len(users))
     ]
 
-#user_models = [
-#    pipeline.scaling(user_models[test], users[test], entities[test], voting_rights[test], privacy[test])
-#    for test in range(n_tests)
-#]
+mehestan_scaled_models = [
+    pipeline.scaling.scalings[0](preference_learned_models[test], users[test], entities[test], voting_rights[test], privacy[test])
+    for test in range(len(users))
+]
+zero_shifted_models = [
+    pipeline.scaling.scalings[1](mehestan_scaled_models[test], users[test], entities[test], voting_rights[test], privacy[test])
+    for test in range(len(users))
+]
 
 

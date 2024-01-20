@@ -1,9 +1,10 @@
 import pandas as pd
+import numpy as np
 
 from . import Scaling
 
 from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel
+from solidago.scoring_model import ScoringModel, ScaledScoringModel
 from solidago.voting_rights import VotingRights
 from solidago.primitives import qr_quantile
 

@@ -86,7 +86,11 @@ class ScaledScoringModel(ScoringModel):
         self.translation_right_uncertainty = translation_right_uncertainty
         
     def __call__(self, entity_id, entity_features):
-        base_score, base_left, base_right = self.base_model(entity_id, entity_features)
+        base_output = self.base_model(entity_id, entity_features)
+        if base_output is None:
+            return None
+        
+        base_score, base_left, base_right = base_output
         score = self.multiplicator * base_score + self.translation
         
         left = self.multiplicator * base_left
@@ -99,8 +103,8 @@ class ScaledScoringModel(ScoringModel):
         
         return score, left, right
         
-    def scored_entities(self) -> set[int]:
-        return self.base_model.scored_entities()
+    def scored_entities(self, entities=None) -> set[int]:
+        return self.base_model.scored_entities(entities)
 
 
 class PostProcessedScoringModel(ScoringModel):

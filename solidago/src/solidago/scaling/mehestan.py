@@ -6,7 +6,7 @@ import logging
 from . import Scaling
 
 from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel
+from solidago.scoring_model import ScoringModel, ScaledScoringModel
 from solidago.voting_rights import VotingRights
 from solidago.primitives import qr_median, qr_uncertainty, br_mean
 
@@ -17,7 +17,7 @@ class Mehestan(Scaling):
     def __init__(
         self, 
         lipschitz=0.1, 
-        min_n_judged_entities=10, 
+        min_activity=10, 
         n_scalers_max=100, 
         privacy_penalty=0.5,
         p_norm_for_multiplicative_resilience=4.0,
@@ -52,9 +52,10 @@ class Mehestan(Scaling):
             Error bound
         """
         self.lipschitz = lipschitz
-        self.min_n_judged_entities = min_n_judged_entities
+        self.min_activity = min_activity
         self.n_scalers_max = n_scalers_max
         self.privacy_penalty = privacy_penalty
+        self.p_norm_for_multiplicative_resilience = p_norm_for_multiplicative_resilience
         self.error = error
     
     def __call__(
@@ -89,14 +90,16 @@ class Mehestan(Scaling):
         logger.info("Starting Mehestan's collaborative scaling")
         
         logger.info("Mehestan 1. Select scalers based on activity and trustworthiness")
-        activities = _compute_activities(user_models, users, entities, privacy)
-        users = users.assign(is_scaler=self.compute_scalers(activities))
+        activities = _compute_activities(user_models, users, entities, 
+            privacy, self.privacy_penalty)
+        users = users.assign(is_scaler=self.compute_scalers(activities, users))
         scalers = users[users["is_scaler"]]
-        nonscalers = users[not users["is_scaler"]]
+        nonscalers = users[users["is_scaler"] == False]
         
         logger.info("Mehestan 2. Collaborative scaling of scalers")
         model_norms = _model_norms(user_models, users, entities, privacy, 
-            power=self.p_norm_for_multiplicative_resilience)
+            power=self.p_norm_for_multiplicative_resilience,
+            privacy_penalty=self.privacy_penalty)
         score_diffs = _compute_score_diffs(user_models, scalers, entities)
         scaled_models = self.scale_scalers(user_models, scalers, entities, 
             score_diffs, model_norms)
@@ -105,8 +108,8 @@ class Mehestan(Scaling):
         for scaler in scaled_models:
             user_models[scaler] = scaled_models[scaler]
         score_diffs = _compute_score_diffs(user_models, users, entities)
-        scaled_models |= self.scale_non_scalers(user_models, nonscalers, entities, 
-            score_diffs, model_norms, scaled_models)
+        scaled_models |= self.scale_non_scalers(user_models, scalers, nonscalers, 
+            entities, score_diffs, model_norms, scaled_models)
         
         return scaled_models
     
@@ -117,7 +120,7 @@ class Mehestan(Scaling):
     ##  3. Fit the nonscalers to the scalers  ##
     ############################################
         
-    def compute_scalers(self, n_judged_entities: np.ndarray) -> np.ndarray:
+    def compute_scalers(self, activities: dict[int, float], users: pd.DataFrame) -> np.ndarray:
         """ Determines which users will be scalers.
         The set of scalers is restricted for two reasons.
         First, too inactive users are removed, because their lack of comparability
@@ -127,20 +130,26 @@ class Mehestan(Scaling):
         
         Parameters
         ----------
-        n_judged_entities: np.ndarray
-            n_judged_entities[user] is the number of entities judged by user
+        activities: np.ndarray
+            activities[user] is the activity of user, 
+            weighted by their trustworthiness and how public their activity is
             
         Returns
         -------
         is_scaler: np.ndarray
             is_scaler[user]: bool says whether user is a scaler
         """
-        argsort = np.argsort(n_judged_entities)
-        is_scaler = np.array([False] * len(n_judged_entities))
-        for user in range(min(self.n_scalers_max, len(n_judged_entities))):
-            if n_judged_entities[argsort[-user]] < self.min_n_judged_entities:
+        index_to_user = { index: user for index, user in enumerate(users.index) }
+        np_activities = np.array([
+            activities[index_to_user[index]]
+            for index in range(len(users))
+        ])
+        argsort = np.argsort(np_activities)
+        is_scaler = np.array([False] * len(np_activities))
+        for user in range(min(self.n_scalers_max, len(np_activities))):
+            if np_activities[argsort[-user-1]] < self.min_activity:
                 break
-            is_scaler[argsort[-user]] = True
+            is_scaler[argsort[-user-1]] = True
         return is_scaler
     
     def scale_scalers(self, user_models, scalers, entities, score_diffs, model_norms):
@@ -165,8 +174,8 @@ class Mehestan(Scaling):
             ) for u in scalers.index
         }
         
-    def scale_non_scalers(self, user_models, nonscalers, entities, 
-            voting_rights, scaler_models, pairs):
+    def scale_non_scalers(self, user_models, scalers, nonscalers, entities, 
+            score_diffs, model_norms, scaled_models):
         entity_ratios = self.compute_entity_ratios(nonscalers, scalers, score_diffs)
         ratios = _aggregate_user_comparisons(scalers, entity_ratios, error=self.error)
         multiplicators = self.compute_multiplicators(ratios, model_norms)
@@ -391,7 +400,8 @@ def _compute_activities(
     user_models: dict[int, ScoringModel],
     users: pd.DataFrame,
     entities: pd.DataFrame,
-    privacy: PrivacySettings
+    privacy: PrivacySettings,
+    privacy_penalty: float
 ) -> dict[int, float]:
     """ Returns a dictionary, which maps users to their trustworthy activeness.
     
@@ -406,6 +416,8 @@ def _compute_activities(
         * entity_id (int, ind)
     privacy: PrivacySettings
         privacy[user, entity] in { True, False, None }
+    privacy_penalty: float
+        Penalty for privacy
 
     Returns
     -------
@@ -415,14 +427,14 @@ def _compute_activities(
     results = dict()
     for user in user_models:
         results[user] = 0
-        scored_entities = user_models.scored_entities(entities)
+        scored_entities = user_models[user].scored_entities(entities)
         for entity in scored_entities:
             output = user_models[user](entity, entities.loc[entity])
             if output is None:
                 continue
             added_quantity = 1
             if privacy is not None and privacy[user, entity]:
-                added_quantity *= self.privacy_penalty
+                added_quantity *= privacy_penalty
             elif "trust_score" in users:
                 added_quantity *= users.loc[user, "trust_score"]
             results[user] += added_quantity
@@ -434,7 +446,8 @@ def _model_norms(
     users: pd.DataFrame,
     entities: pd.DataFrame,
     privacy: PrivacySettings,
-    power: float=5.0
+    power: float,
+    privacy_penalty: float
 ) -> dict[int, float]:
     """ Estimator of the scale of scores of a user, with an emphasis on large scores.
     The estimator uses a L_power norm, and weighs scores, depending on public/private status.
@@ -450,6 +463,8 @@ def _model_norms(
         * entity_id (int, ind)
     privacy: PrivacySettings
         privacy[user, entity] in { True, False, None }
+    privacy_penalty: float
+        Penalty for privacy
 
     Returns
     -------
@@ -458,7 +473,7 @@ def _model_norms(
     """
     results = dict()
     for user in user_models:
-        scored_entities = user_models.scored_entities(entities)
+        scored_entities = user_models[user].scored_entities(entities)
         weight_sum, weighted_sum = 0, 0
         for entity in scored_entities:
             output = user_models[user](entity, entities.loc[entity])
@@ -467,7 +482,7 @@ def _model_norms(
             
             weight = 1
             if privacy is not None and privacy[user, entity]:
-                weight *= self.privacy_penalty
+                weight *= privacy_penalty
             
             weight_sum += weight
             weighted_sum += weight * (output[0]**power)
@@ -500,9 +515,9 @@ def _compute_score_diffs(
         yields the score difference, along with the left and right uncertainties
     """
     score_diffs = dict()
-    for user in user_models.index:
+    for user in user_models:
         score_diffs[user] = dict()
-        scored_entities = user_models.scored_entities(entities)
+        scored_entities = list(user_models[user].scored_entities(entities))
         for index, a in enumerate(scored_entities):
             for b in scored_entities[index + 1:]:
                 score_a, left_a, right_a = user_models[user](a, entities.loc[a])
@@ -582,7 +597,7 @@ def _aggregate_user_comparisons(
         
 def _aggregate(
     lipschitz: float,
-    values: dict[int, tuple[list[float], list[float], list[float]]], 
+    values: tuple[list[float], list[float], list[float]], 
     error: float=1e-5,
     aggregator: callable=qr_median
 ) -> dict[int, tuple[float, float]]:
@@ -590,10 +605,10 @@ def _aggregate(
     
     Parameters
     ----------
-    ratios: dict[int, tuple[list[float], list[float], list[float]]]
-        ratios[u][0] is a list of voting rights
-        ratios[u][1] is a list of ratios
-        ratios[u][2] is a list of (symmetric) uncertainties
+    values: tuple[list[float], list[float], list[float]]
+        values[0] is a list of voting rights
+        values[1] is a list of ratios
+        values[2] is a list of (symmetric) uncertainties
     model_norms: dict[int, float]
         model_norms[u] estimates the norm of user u's score model
         
@@ -606,9 +621,9 @@ def _aggregate(
     value = aggregator(
         lipschitz=lipschitz, 
         values=np.array(values[0]),
-        voting_rights=np.array(values[u][1]), 
-        left_uncertainties=np.array(values[u][2]),
-        right_uncertainties=np.array(values[u][2]),
+        voting_rights=np.array(values[1]), 
+        left_uncertainties=np.array(values[2]),
+        right_uncertainties=np.array(values[2]),
         error=error
     )
     uncertainty = qr_uncertainty(
