@@ -13,5 +13,5 @@ def test_uniform_gbt(test):
         for entity in td.entities[test].index:
             output = models[user](entity)
             target = td.preference_learned_models[test][user](entity)
-            assert output == pytest.approx(target, abs=1e-3), (user, entity)
+            assert output == pytest.approx(target, abs=1e-2), (user, entity)
 

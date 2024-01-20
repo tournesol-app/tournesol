@@ -191,7 +191,7 @@ class UniformGBT(GeneralizedBradleyTerry):
         -------
         out: float
         """
-        if score_diff < self.cumulant_generating_function_error:
+        if np.abs(score_diff) < self.cumulant_generating_function_error:
             return score_diff / 3
         return 1 / np.tanh(score_diff) - 1 / score_diff
     
@@ -208,7 +208,7 @@ class UniformGBT(GeneralizedBradleyTerry):
         -------
         out: float
         """
-        if score_diff < self.cumulant_generating_function_error:
+        if np.abs(score_diff) < self.cumulant_generating_function_error:
             return (1/3) - (score_diff**2 / 15)
         return 1 - (1 / np.tanh(score_diff)**2) + (1 / score_diff**2)
     
