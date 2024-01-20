@@ -62,9 +62,10 @@ class VotingRightsAssignment(ABC):
     def __call__(
         self,
         users: pd.DataFrame,
+        entities: pd.DataFrame,
         vouches: pd.DataFrame,
-        privacy: pd.DataFrame,
-    ) -> VotingRights:
+        privacy: pd.DataFrame
+    ) -> tuple[VotingRights, pd.DataFrame]:
         """ Compute voting rights
         
         Parameters
@@ -72,6 +73,8 @@ class VotingRightsAssignment(ABC):
         users: DataFrame with columns
             * user_id (int, index)
             * trust_score (float)
+        entities: DataFrame with columns
+            * entity_id (int, index)
         vouches: DataFrame with columns
             * voucher (int)
             * vouchee (int)
@@ -83,6 +86,8 @@ class VotingRightsAssignment(ABC):
         -------
         voting_rights[user, entity] is the voting right
             of a user on entity for criterion
+        entities: DataFrame with columns
+            * entity_id (int, index)
         """
         raise NotImplementedError
     

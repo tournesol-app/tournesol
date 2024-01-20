@@ -161,7 +161,7 @@ class Pipeline:
         trusts = self.trust_propagation(pretrusts, vouches)
         
         logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
-        voting_rights = self.voting_rights(trusts, vouches, privacy)
+        voting_rights, entities = self.voting_rights(trusts, entities, vouches, privacy)
     
         logger.info(f"Pipeline 3. Computing user models with {self.preference_learning}")
         user_models = {

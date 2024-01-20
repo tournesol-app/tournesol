@@ -27,6 +27,7 @@ class AffineOvertrust(VotingRightsAssignment):
     def __call__(
         self,
         users: pd.DataFrame,
+        entities: pd.DataFrame,
         vouches: pd.DataFrame,
         privacy: PrivacySettings,
     ) -> VotingRights:
@@ -37,6 +38,8 @@ class AffineOvertrust(VotingRightsAssignment):
         users: DataFrame with columns
             * user_id (int, index)
             * trust_score (float)
+        entities: DataFrame with columns
+            * entity_id (int, index)
         vouches: DataFrame
             This is not used by VotingRightsWithLimitedOvertrust
         privacy: PrivacySettings
@@ -47,12 +50,18 @@ class AffineOvertrust(VotingRightsAssignment):
         -------
         voting_rights[user, entity] is the voting right
             of a user on entity for criterion
+        entities: DataFrame with columns
+            * entity_id (int, index)
+            * cumulative_trust (float)
+            * min_voting_right (float)
+            * overtrust (float)
         """            
         voting_rights = VotingRights()
         if len(users) == 0:
-            return voting_rights
+            return voting_rights, entities
         
-        for e in privacy.entities():
+        cumulative_trusts, min_voting_rights, overtrusts = list(), list(), list()
+        for e in entities.index:
         
             privacy_weights = { 
                 u: self.privacy_penalty if privacy[u, e] else 1 
@@ -64,12 +73,21 @@ class AffineOvertrust(VotingRightsAssignment):
             cumulative_trust = self.cumulative_trust(users, privacy_weights)
             max_overtrust = self.maximal_overtrust(cumulative_trust)
             min_voting_right = self.min_voting_right(max_overtrust, users, privacy_weights)
-        
+            
+            overtrust = 0
             for u in privacy_weights:
                 voting_rights[u, e] = max(min_voting_right, users.loc[u, "trust_score"])
                 voting_rights[u, e] *= privacy_weights[u]
+                overtrust += voting_rights[u, e]
+            
+            cumulative_trusts.append(cumulative_trust)
+            min_voting_rights.append(min_voting_right)
+            overtrusts.append(overtrust)
         
-        return voting_rights
+        entities = entities.assign(cumulative_trust=cumulative_trusts)
+        entities = entities.assign(min_voting_right=min_voting_rights)
+        entities = entities.assign(overtrust=overtrusts)
+        return voting_rights, entities
     
     def cumulative_trust(
         self,

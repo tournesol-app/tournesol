@@ -176,6 +176,8 @@ def test_affine_overtrust():
     users = pd.DataFrame(dict(trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
     users.index.name = "user_id"
     vouches = None
+    entities = pd.DataFrame(dict(entity_id=range(6)))
+    entities.set_index("entity_id")
     privacy = PrivacySettings({
         0: { 0: True, 2: False, 3: False },
         1: { 1: False, 2: True, 3: False },
@@ -188,7 +190,7 @@ def test_affine_overtrust():
         min_overtrust=2.0,
         overtrust_ratio=0.1
     )
-    voting_rights = voting_rights_assignment(users, vouches, privacy)
+    voting_rights, entities = voting_rights_assignment(users, entities, vouches, privacy)
 
 @pytest.mark.parametrize("test", range(5))
 def test_affine_overtrust_test_data(test):
@@ -197,7 +199,8 @@ def test_affine_overtrust_test_data(test):
         min_overtrust=2.0,
         overtrust_ratio=0.1
     )
-    rights = voting_rights_assignment(td.users[test], td.vouches[test], td.privacy[test])
+    rights, entities = voting_rights_assignment(
+        td.users[test], td.entities[test], td.vouches[test], td.privacy[test])
     for entity in td.voting_rights[test].entities():
         for user in td.voting_rights[test].on_entity(entity):            
             assert td.voting_rights[test][user, entity]  == rights[user, entity], (entity, user, td.voting_rights, rights)
