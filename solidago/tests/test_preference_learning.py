@@ -5,12 +5,13 @@ import solidago.generative_model.test_data as td
 
 @pytest.mark.parametrize("test", range(5))
 def test_uniform_gbt(test):
-    learned_user_models = [
-    {
+    models = {
         user: td.pipeline.preference_learning(td.judgments[test][user], td.entities[test])
         for user, _ in td.users[test].iterrows()
-    } 
-    # assert learned_user_models[4][23](8, pd.Series()) == user_models[4][23](8, pd.Series())
-]
-
+    }
+    for user in td.users[test].index:
+        for entity in td.entities[test].index:
+            output = models[user](entity)
+            target = td.preference_learned_models[test][user](entity)
+            assert output == pytest.approx(target, abs=1e-3), (user, entity)
 

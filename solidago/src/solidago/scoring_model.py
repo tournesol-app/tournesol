@@ -34,10 +34,10 @@ class ScoringModel:
 class DirectScoringModel(ScoringModel):
     def __init__(
         self, 
-        dct: dict[int, tuple[float, float, float]]=dict()
+        dct: Optional[dict[int, tuple[float, float, float]]]=None
     ):
         super().__init__()
-        self._dict = dct
+        self._dict = dict() if dct is None else dct
     
     def __call__(self, entity_id: int, entity_features=None) -> Optional[float]:
         """ Returns both score and uncertainty
@@ -61,7 +61,7 @@ class DirectScoringModel(ScoringModel):
     def scored_entities(self, entities=None) -> set[int]:
         if entities is None:
             return set(self._dict.keys())
-        return set(range(len(entities))).intersection(set(self._dict.keys()))
+        return set(entities.index).intersection(set(self._dict.keys()))
 
     def __str__(self):
         return self._dict.__str__()
