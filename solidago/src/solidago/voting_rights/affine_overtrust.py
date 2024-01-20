@@ -74,7 +74,7 @@ class AffineOvertrust(VotingRightsAssignment):
             max_overtrust = self.maximal_overtrust(cumulative_trust)
             min_voting_right = self.min_voting_right(max_overtrust, users, privacy_weights)
             
-            overtrust = 0
+            overtrust = - cumulative_trust
             for u in privacy_weights:
                 voting_rights[u, e] = max(min_voting_right, users.loc[u, "trust_score"])
                 voting_rights[u, e] *= privacy_weights[u]
