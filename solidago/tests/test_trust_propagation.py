@@ -1,4 +1,5 @@
 import pytest
+import importlib
 import pandas as pd
 
 from solidago.pipeline.inputs import TournesolInputFromPublicDataset
@@ -7,8 +8,6 @@ from solidago.trust_propagation.trust_all import TrustAll
 
 from solidago.generative_model.user_model import SvdUserModel
 from solidago.generative_model.vouch_model import ErdosRenyiVouchModel
-
-import solidago.generative_model.test_data as td
 
 
 def test_lipschitrust_simple():
@@ -49,8 +48,9 @@ def test_lipschitrust_generative():
 
 @pytest.mark.parametrize("test", range(5))
 def test_lipschitrust_test_data(test):
-    trusts = td.pipeline.trust_propagation(td.users[test], td.vouches[test])
-    for user, row in td.users[test].iterrows():
+    td = importlib.import_module(f"solidago.test.data_{test}")
+    trusts = td.pipeline.trust_propagation(td.users, td.vouches)
+    for user, row in td.users.iterrows():
         assert trusts.loc[user, "trust_score"] == row["trust_score"]
 
 def test_trust_all():

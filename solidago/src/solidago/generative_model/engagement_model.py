@@ -6,8 +6,6 @@ import numpy as np
 from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import Judgments, DataFrameJudgments
 
-import solidago.generative_model.test_data as td
-
 
 class EngagementModel(ABC):
     @abstractmethod

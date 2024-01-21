@@ -1,19 +1,16 @@
 import pytest
+import importlib
 
-from solidago.aggregation import Aggregation
-from solidago.aggregation.standardized_qrmed import QuantileStandardizedQrMedian
-
-from solidago.generative_model.test_data import users, entities
-
+from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
 
 aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=0.1, error=1e-5)
 
 @pytest.mark.parametrize( "test", list(range(5)) )
 def test_aggregation(test):
-    pass
-    # user_models, global_model = aggregation(
-    #     voting_rights[test],
-    #     user_models[test],
-    #     users[test],
-    #     entities[test]
-    # )
+    td = importlib.import_module(f"solidago.test.data_{test}")
+    user_models, global_model = td.pipeline.aggregation(
+        td.voting_rights,
+        td.standardized_models,
+        td.users,
+        td.entities
+    )

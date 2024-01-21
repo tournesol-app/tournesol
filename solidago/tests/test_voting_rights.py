@@ -1,8 +1,9 @@
-from functools import partial
-
+import pytest
+import importlib
 import numpy as np
 import pandas as pd
-import pytest
+
+from functools import partial
 
 from solidago.voting_rights.compute_voting_rights import compute_voting_rights
 
@@ -10,7 +11,6 @@ from solidago.privacy_settings import PrivacySettings
 from solidago.voting_rights import VotingRights
 from solidago.voting_rights.affine_overtrust import AffineOvertrust
 
-import solidago.generative_model.test_data as td
 
 # Params that will be used for tests
 OVER_TRUST_BIAS = 2
@@ -194,13 +194,9 @@ def test_affine_overtrust():
 
 @pytest.mark.parametrize("test", range(5))
 def test_affine_overtrust_test_data(test):
-    voting_rights_assignment = AffineOvertrust(
-        privacy_penalty=0.5, 
-        min_overtrust=2.0,
-        overtrust_ratio=0.1
-    )
-    rights, entities = voting_rights_assignment(
-        td.users[test], td.entities[test], td.vouches[test], td.privacy[test])
-    for entity in td.voting_rights[test].entities():
-        for user in td.voting_rights[test].on_entity(entity):            
-            assert td.voting_rights[test][user, entity]  == rights[user, entity], (entity, user, td.voting_rights, rights)
+    td = importlib.import_module(f"solidago.test.data_{test}")
+    voting_rights, entities = td.pipeline.voting_rights(
+        td.users, td.entities, td.vouches, td.privacy)
+    for entity in td.voting_rights.entities():
+        for user in td.voting_rights.on_entity(entity):            
+            assert td.voting_rights[user, entity] == voting_rights[user, entity]
