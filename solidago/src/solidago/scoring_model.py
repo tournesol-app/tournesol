@@ -64,7 +64,12 @@ class DirectScoringModel(ScoringModel):
         return set(entities.index).intersection(set(self._dict.keys()))
 
     def __str__(self):
-        return self._dict.__str__()
+        return "{\n    " + ",\n    ".join([
+            f"{entity}: {np.round(self[entity][0], 2)}   "
+                + f"[-{np.round(self[entity][1], 2)}, "
+                + f"+{np.round(self[entity][2], 2)}]"
+            for entity in self.scored_entities()
+        ]) + "\n}"
 
     def get_scaling_parameters(self):
         return 1, 0, 0, 0, 0, 0

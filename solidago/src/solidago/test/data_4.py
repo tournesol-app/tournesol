@@ -253,7 +253,7 @@ pipeline = Pipeline(
     scaling=ScalingCompose(
         Mehestan(
             lipschitz=0.1,
-            min_activity=10,
+            min_activity=1,
             n_scalers_max=100,
             privacy_penalty=0.5,
             p_norm_for_multiplicative_resilience=4.0,
@@ -498,7 +498,7 @@ voting_rights = VotingRights({
      125: {41: 1.0, 5: 0.5}
 })
 
-preference_learned_models = {
+learned_models = {
     3: DirectScoringModel({
         65: (0.2952849875176714, 3.478593907191462, 3.478593907191462),
         98: (-0.8748470584166946, 2.820620278174437, 2.820620278174437),

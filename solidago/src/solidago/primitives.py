@@ -73,14 +73,22 @@ def _qr_quantile_loss_derivative(
     values: npt.NDArray, 
     left_uncertainties: npt.NDArray, 
     right_uncertainties: npt.NDArray, 
-    default_value: float = 0
+    default_value: float = 0,
+    error: float=1e-6
 ):
     """ Computes the derivative of the loss associated to qr_quantile """
     regularization = (variable - default_value) / lipschitz
-    quantile_term = 0 if quantile == 0.5 else (1 - 2 * quantile) * np.sum(voting_rights)
+    
+    if quantile == 0.5:
+        quantile_term = 0.0
+    elif isinstance(voting_rights, (int, float)):
+        quantile_term = (1.0 - 2.0 * quantile) * voting_rights
+    else:
+        quantile_term = (1.0 - 2.0 * quantile) * np.sum(voting_rights)
     
     deltas = variable - values
-    uncertainties = left_uncertainties * (deltas < 0) + right_uncertainties * (deltas > 0)
+    uncertainties = left_uncertainties * (deltas < 0) + \
+        right_uncertainties * (deltas > 0) + error
     forces = np.sum( voting_rights * deltas / np.sqrt(uncertainties**2 + deltas**2) )
     
     return regularization + quantile_term + forces
@@ -123,7 +131,7 @@ def qr_median(
     out: float
         Lipschitz-resilient estimator of the median
     """
-    return qr_quantile(lipschitz, 0.5, voting_rights, values, 
+    return qr_quantile(lipschitz, 0.5, values, voting_rights, 
         left_uncertainties, right_uncertainties, default_value, error)
 
 
@@ -273,7 +281,10 @@ def br_mean(
         
     if isinstance(voting_rights, float):
         voting_rights = np.full(values.shape, voting_rights)
-        
+    
+    if np.sum(voting_rights) == 0:
+        return default_value
+    
     return clip_mean(
         voting_rights, 
         values, 
@@ -286,7 +297,7 @@ def br_mean(
             default_value=default_value,
             error=error
         ), 
-        radius=np.sum(voting_rights) * lipschitz / 4
+        radius=total_voting_rights * lipschitz / 4
     )
 
 

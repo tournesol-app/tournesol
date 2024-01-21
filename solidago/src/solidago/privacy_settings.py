@@ -51,3 +51,13 @@ class PrivacySettings:
         if entity not in self._dict:
             return set()
         return set(self._dict[entity].keys())
+
+    def __str__(self):
+        return "{\n    " + ",\n    ".join([
+            "user " + str(user) + ": {\n        " + ",\n        ".join([
+                f"entity {entity}: {self[user, entity]}"
+                for entity in self.entities(user)
+            ]) + "\n    }"
+            for user in self.users()
+        ]) + "\n}"
+        

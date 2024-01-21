@@ -71,7 +71,7 @@ pipeline = Pipeline(
 
 voting_rights = VotingRights()
 
-preference_learned_models = dict()
+learned_models = dict()
 mehestan_scaled_models = dict()
 zero_shifted_models = dict()
 
