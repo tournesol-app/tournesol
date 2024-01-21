@@ -955,9 +955,19 @@ mehestan_scaled_models = [
     pipeline.scaling.scalings[0](preference_learned_models[test], users[test], entities[test], voting_rights[test], privacy[test])
     for test in range(len(users))
 ]
+
 zero_shifted_models = [
     pipeline.scaling.scalings[1](mehestan_scaled_models[test], users[test], entities[test], voting_rights[test], privacy[test])
     for test in range(len(users))
 ]
 
+standardized_models, global_model = list(zip(*[
+    pipeline.aggregation(voting_rights[test], zero_shifted_models[test], users[test], entities[test])
+    for test in range(len(users))
+]))
+
+displayed_models, displayed_global_model = list(zip(*[
+    pipeline.post_process(standardized_models[test], global_model[test], entities[test])
+    for test in range(len(users))
+]))
 

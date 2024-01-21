@@ -1,11 +1,12 @@
 import pandas as pd
+import numpy as np
 
 from .base import Aggregation
 
 from solidago.voting_rights import VotingRights
-from solidago.scoring_model import ScoringModel
+from solidago.scoring_model import ScoringModel, DirectScoringModel, ScaledScoringModel
 
-from solidago.primitives import qr_median, qr_standard_deviation
+from solidago.primitives import qr_median, qr_standard_deviation, qr_uncertainty
 
 
 class QuantileStandardizedQrMedian(Aggregation):
@@ -105,7 +106,7 @@ class QuantileStandardizedQrMedian(Aggregation):
                 np.array(dfe["voting_rights"]), 
                 np.array(dfe["left_uncertainties"]),
                 np.array(dfe["right_uncertainties"]),
-                default_uncertainty = 1,
+                default_dev = 1,
                 error = self.error,
                 median = score,
             )

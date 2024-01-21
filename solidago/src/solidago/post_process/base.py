@@ -1,13 +1,17 @@
 from abc import ABC, abstractmethod
 
+import pandas as pd
+
 from solidago.scoring_model import ScoringModel
+
 
 class PostProcess(ABC):
     @abstractmethod
     def __call__(
         self, 
         user_models: dict[int, ScoringModel],
-        global_model: ScoringModel
+        global_model: ScoringModel,
+        entities: pd.DataFrame
     ) -> tuple[dict[int, ScoringModel], ScoringModel]:
         """ Post-processes user models and global models,
         typically to yield human-readible scores
@@ -16,6 +20,8 @@ class PostProcess(ABC):
         ----------
         user_models: user_model[user] should be a ScoringModel to post-process
         global_model: ScoringModel to post-process
+        entities: DataFrame with columns
+            * entity_id (int, index)
         
         Returns
         -------

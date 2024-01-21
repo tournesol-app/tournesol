@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import numpy as np
+import pandas as pd
 
 from .base import PostProcess
 from solidago.scoring_model import ScoringModel, PostProcessedScoringModel
@@ -13,7 +15,8 @@ class Squash(PostProcess):
     def __call__(
         self, 
         user_models: dict[int, ScoringModel],
-        global_model: ScoringModel
+        global_model: ScoringModel,
+        entities: Optional[pd.DataFrame] = None
     ) -> tuple[dict[int, ScoringModel], ScoringModel]:
         """ Post-processes user models and global models,
         typically to yield human-readible scores
@@ -22,6 +25,8 @@ class Squash(PostProcess):
         ----------
         user_models: user_model[user] should be a ScoringModel to post-process
         global_model: ScoringModel to post-process
+        entities: DataFrame with columns
+            * entity_id (int, index)
         
         Returns
         -------
@@ -30,10 +35,10 @@ class Squash(PostProcess):
         """
         squash = lambda x: self.score_max * x / np.sqrt( 1 + x**2 )
         
-        squasheded_user_models = {
+        squashed_user_models = {
             u: PostProcessedScoringModel(user_models[u], squash) 
             for u in user_models
         }
         squashed_global_model = PostProcessedScoringModel(global_model, squash)
         
-        return squash_user_models, squashed_global_model
+        return squashed_user_models, squashed_global_model

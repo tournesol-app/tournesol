@@ -75,7 +75,7 @@ def _qr_quantile_loss_derivative(
     right_uncertainties: npt.NDArray, 
     default_value: float = 0
 ):
-    """ Computes the derivative of the loss associated to QrQuantile """
+    """ Computes the derivative of the loss associated to qr_quantile """
     regularization = (variable - default_value) / lipschitz
     quantile_term = 0 if quantile == 0.5 else (1 - 2 * quantile) * np.sum(voting_rights)
     
@@ -172,7 +172,7 @@ def qr_standard_deviation(
     assert quantile_dev > 0 and quantile_dev < 1
     
     if median is None:
-        median = QrMedian(lipschitz, values, voting_rights, 
+        median = qr_median(lipschitz, values, voting_rights, 
             left_uncertainties, right_uncertainties, error)
     
     deltas = values - median
@@ -196,10 +196,10 @@ def qr_uncertainty(
 ):
     """
     Quadratically regularized uncertainty
-    TODO : search for a better formula for QrUnc if possible
+    TODO : search for a better formula for qr_uncertainty if possible
     """    
     if median is None:
-        median = QrMedian(lipschitz, values, voting_rights, 
+        median = qr_median(lipschitz, values, voting_rights, 
             left_uncertainties, right_uncertainties, error)
     
     square_uncertainties = (left_uncertainties + right_uncertainties)**2 / 4
