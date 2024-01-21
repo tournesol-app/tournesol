@@ -6,13 +6,14 @@ import logging
 import numpy as np
 import pandas as pd
 
-from solidago.pipeline.inputs import SimpleInput
-
 from .user_model import UserModel, SvdUserModel
 from .vouch_model import VouchModel, ErdosRenyiVouchModel
 from .entity_model import EntityModel, SvdEntityModel
 from .engagement_model import EngagementModel, SimpleEngagementModel
 from .comparison_model import ComparisonModel, KnaryGBT
+
+from solidago.privacy_settings import PrivacySettings
+from solidago.judgments import DataFrameJudgments
 
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ class GenerativeModel:
     def __call__(
         self, n_users: int, n_entities: int, 
         random_seed: Optional[int] = None
-    ) -> SimpleInput:
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, PrivacySettings, DataFrameJudgments]:
         """ Generates a random dataset
         
         Parameters
@@ -65,9 +66,22 @@ class GenerativeModel:
             
         Returns
         -------
-        out: solidago.pipeline.SimpleInput
-            Generated data, with attributes users, vouches, entities, true_scores, 
-            scores and comparisons, all of types DataFrame.
+        users: DataFrame with columns
+            * user_id
+        vouches: DataFrame with columns
+            * voucher
+            * vouchee
+            * vouch
+        entities: DataFrame with columns
+            * entity_id
+        privacy: PrivacySettings
+            privacy[user, entity] in { True, False, None }
+        judgments: DataFrameJudgments
+            judgments[user]["comparisons"] is user's DataFrame with columns
+                * entity_a
+                * entity_b
+                * comparison
+                * comparison_max
         """
         if random_seed is not None:
             assert type(random_seed) == int

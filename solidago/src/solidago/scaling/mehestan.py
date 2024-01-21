@@ -295,7 +295,7 @@ class Mehestan(Scaling):
             multiplicators[user][1] is the uncertainty on the multiplicator
         """
         return {
-            u: _aggregate(self.lipschitz / (8 / model_norms[u]), ratios[u], self.error)
+            u: _aggregate(self.lipschitz / (8 / model_norms[u]), ratios[u], 1, self.error)
             for u in ratios
         }
             
@@ -399,7 +399,7 @@ class Mehestan(Scaling):
             translations[user][1] is the uncertainty on the multiplicator
         """
         return {
-            u: _aggregate(self.lipschitz / 8, diffs[u], self.error, br_mean)
+            u: _aggregate(self.lipschitz / 8, diffs[u], 0, self.error, br_mean)
             for u in diffs
         }    
     
@@ -613,6 +613,7 @@ def _aggregate_user_comparisons(
 def _aggregate(
     lipschitz: float,
     values: tuple[list[float], list[float], list[float]], 
+    default_value: float,
     error: float=1e-5,
     aggregator: callable=qr_median
 ) -> dict[int, tuple[float, float]]:
@@ -639,6 +640,7 @@ def _aggregate(
         voting_rights=np.array(values[1]), 
         left_uncertainties=np.array(values[2]),
         right_uncertainties=np.array(values[2]),
+        default_value=default_value,
         error=error
     )
     uncertainty = qr_uncertainty(

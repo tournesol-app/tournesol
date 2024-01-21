@@ -66,7 +66,7 @@ pipeline = Pipeline(
     ),
     scaling=ScalingCompose(
         Mehestan(
-            lipschitz=0.1,
+            lipschitz=10,
             min_activity=0.1,
             n_scalers_max=100,
             privacy_penalty=0.5,

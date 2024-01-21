@@ -180,9 +180,11 @@ class Pipeline:
             
         if 3 not in skip_steps:
             logger.info(f"Pipeline 3. Learning preference models with {self.preference_learning}")
-            init_user_models = dict() if init_user_models is None else init_user_models
+            user_models = dict() if init_user_models is None else init_user_models
             for user, _ in users.iterrows():
-                init_model = init_user_models[user] if user in init_user_models else None
+                init_model = None
+                if init_user_models is not None and user in init_user_models:
+                    init_model = init_user_models[user]
                 user_models[user] = self.preference_learning(judgments[user], entities, init_model)
         else:
             logger.info(f"Pipeline 3. Learning preference models is skipped")

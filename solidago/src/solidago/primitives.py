@@ -282,7 +282,8 @@ def br_mean(
     if isinstance(voting_rights, float):
         voting_rights = np.full(values.shape, voting_rights)
     
-    if np.sum(voting_rights) == 0:
+    total_voting_rights = np.sum(voting_rights)
+    if total_voting_rights == 0:
         return default_value
     
     return clip_mean(

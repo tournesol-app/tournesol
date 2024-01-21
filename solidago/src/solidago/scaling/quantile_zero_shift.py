@@ -60,7 +60,7 @@ class QuantileZeroShift(Scaling):
                     lefts.append(output[1])
                     rights.append(output[2])
         
-        shift = qr_quantile(self.lipschitz, self.zero_quantile, np.array(scores), 
+        shift = - qr_quantile(self.lipschitz, self.zero_quantile, np.array(scores), 
             np.array(votes), np.array(lefts), np.array(rights), error=self.error)
         
         return {

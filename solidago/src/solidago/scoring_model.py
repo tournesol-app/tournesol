@@ -63,13 +63,13 @@ class DirectScoringModel(ScoringModel):
             return set(self._dict.keys())
         return set(entities.index).intersection(set(self._dict.keys()))
 
-    def __str__(self):
-        return "{\n    " + ",\n    ".join([
+    def __str__(self, indent=""):
+        return "{" + f"\n{indent}    " + f",\n{indent}    ".join([
             f"{entity}: {np.round(self[entity][0], 2)}   "
                 + f"[-{np.round(self[entity][1], 2)}, "
                 + f"+{np.round(self[entity][2], 2)}]"
             for entity in self.scored_entities()
-        ]) + "\n}"
+        ]) + f"\n{indent}" + "}"
 
     def get_scaling_parameters(self):
         return 1, 0, 0, 0, 0, 0
@@ -86,31 +86,62 @@ class ScaledScoringModel(ScoringModel):
         translation_left_uncertainty: float=0,
         translation_right_uncertainty: float=0
     ):
-        self.base_model = base_model
-        self.multiplicator = multiplicator
-        self.translation = translation
-        self.multiplicator_left_uncertainty = multiplicator_left_uncertainty
-        self.multiplicator_right_uncertainty = multiplicator_right_uncertainty
-        self.translation_left_uncertainty = translation_left_uncertainty
-        self.translation_right_uncertainty = translation_right_uncertainty
+        """ When base_model is itself a scaled scoring model, 
+        the scalings are aggregated, so that the base model is actually
+        the scaled scoring model's base model.
+        Note that this requires aggregating the uncertainties in a heuristic manner.
+        At the core, this is because the uncertainties should grow quadratically
+        with the size of the scores. Put differently, because of uncertainties,
+        the composition of scaled scoring models is not an internal composition law
+        (but it is if uncertainties are not accounted for).        
+        """
+        if isinstance(base_model, ScaledScoringModel):
+            self.base_model = base_model.base_model
+            self.multiplicator = multiplicator * base_model.multiplicator
+            self.translation = translation + multiplicator * base_model.translation
+            self.multiplicator_left_uncertainty = multiplicator_left_uncertainty \
+                + multiplicator * base_model.multiplicator_left_uncertainty
+            self.multiplicator_right_uncertainty = multiplicator_right_uncertainty \
+                + multiplicator * base_model.multiplicator_right_uncertainty
+            self.translation_left_uncertainty = translation_left_uncertainty \
+                + multiplicator * base_model.translation_left_uncertainty
+            self.translation_right_uncertainty = translation_right_uncertainty \
+                + multiplicator * base_model.translation_right_uncertainty
+        else:
+            self.base_model = base_model
+            self.multiplicator = multiplicator
+            self.translation = translation
+            self.multiplicator_left_uncertainty = multiplicator_left_uncertainty
+            self.multiplicator_right_uncertainty = multiplicator_right_uncertainty
+            self.translation_left_uncertainty = translation_left_uncertainty
+            self.translation_right_uncertainty = translation_right_uncertainty
         
     def __call__(self, entity_id, entity_features):
         base_output = self.base_model(entity_id, entity_features)
         if base_output is None:
             return None
         
-        base_score, base_left, base_right = base_output
+        base_score, base_left_uncertainty, base_right_uncertainty = base_output
+        base_left = base_score - base_left_uncertainty
+        base_right = base_score + base_right_uncertainty
+        
         score = self.multiplicator * base_score + self.translation
         
-        left = self.multiplicator * base_left
-        left += np.abs(score) * self.multiplicator_left_uncertainty
-        left += self.translation_left_uncertainty
+        left_uncertainty = self.multiplicator * base_left_uncertainty
+        left_uncertainty += self.translation_left_uncertainty
+        if base_left > 0:
+            left_uncertainty += base_left * self.multiplicator_left_uncertainty
+        else:
+            left_uncertainty += (- base_left) * self.multiplicator_right_uncertainty
         
-        right = self.multiplicator * base_right
-        right += np.abs(score) * self.multiplicator_right_uncertainty
-        right += self.translation_right_uncertainty
-        
-        return score, left, right
+        right_uncertainty = self.multiplicator * base_right_uncertainty
+        right_uncertainty += self.translation_right_uncertainty
+        if base_right > 0:
+            right_uncertainty += base_right * self.multiplicator_right_uncertainty
+        else:
+            right_uncertainty += (- base_right) * self.multiplicator_left_uncertainty
+            
+        return score, left_uncertainty, right_uncertainty
         
     def scored_entities(self, entities=None) -> set[int]:
         return self.base_model.scored_entities(entities)
@@ -126,6 +157,18 @@ class ScaledScoringModel(ScoringModel):
             model = model.base_model
             parameters.append(model._direct_scaling_parameters())
         return ScaledScoringModel.compose_scaling_parameters(parameters)
+
+    def __str__(self, indent=""):
+        result = indent + "{\n" 
+        result += f"{indent}    multiplicator = {np.round(self.multiplicator, 2)}"
+        result += f"   [{np.round(self.multiplicator_left_uncertainty, 2)}, "
+        result += f"{np.round(self.multiplicator_right_uncertainty, 2)}]\n{indent}"
+        result += f"    translation = {np.round(self.translation, 2)}"
+        result += f"   [{np.round(self.translation_left_uncertainty, 2)}, "
+        result += f"{np.round(self.translation_right_uncertainty, 2)}]\n{indent}"
+        result += "    base_model = " + self.base_model.__str__(f"    {indent}")
+        result += "\n" + indent + "}"
+        return result
 
     @classmethod
     def compose_scaling_parameters(parameters):
