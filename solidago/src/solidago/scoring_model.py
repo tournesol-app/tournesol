@@ -30,6 +30,7 @@ class ScoringModel:
         """ If not None, then the scoring model only scores a subset of entities. """
         return set(range(len(entities)))
 
+
 class DirectScoringModel(ScoringModel):
     def __init__(
         self, 
@@ -64,6 +65,10 @@ class DirectScoringModel(ScoringModel):
 
     def __str__(self):
         return self._dict.__str__()
+
+    def get_scaling_parameters(self):
+        return 1, 0, 0, 0, 0, 0
+
 
 class ScaledScoringModel(ScoringModel):
     def __init__(
@@ -105,6 +110,32 @@ class ScaledScoringModel(ScoringModel):
     def scored_entities(self, entities=None) -> set[int]:
         return self.base_model.scored_entities(entities)
 
+    def _direct_scaling_parameters(self):
+        return (self.multiplicator, self.translation, 
+            self.multiplicator_left_uncertainty, self.multiplicator_right_uncertainty, 
+            self.translation_left_uncertainty, self.translation_right_uncertainty)
+
+    def get_scaling_parameters(self):
+        model, parameters = self, list()
+        while hasattr(model, "base_model"):
+            model = model.base_model
+            parameters.append(model._direct_scaling_parameters())
+        return ScaledScoringModel.compose_scaling_parameters(parameters)
+
+    @classmethod
+    def compose_scaling_parameters(parameters):
+        result = 1, 0, 0, 0, 0, 0
+        for m2, t2, m2_left, m2_right, t2_left, t2_right in parameters:
+            m1, t1, m1_left, m1_right, t1_left, t1_right = result
+            result[0] = m1 * m2
+            result[1] = t2 * m1 + t1
+            result[2] = m1_left  * m2 + m2_left  * m1
+            result[3] = m1_right * m2 + m2_right * m1
+            result[4] = t2_left  * m1 + t1_left
+            result[5] = t2_right * m1 + t1_right
+        return result
+
+
 class PostProcessedScoringModel(ScoringModel):
     def __init__(self, base_model: ScoringModel, post_process: callable):
         """ Defines a derived scoring model, based on a base model and a post process
@@ -132,3 +163,6 @@ class PostProcessedScoringModel(ScoringModel):
         
     def scored_entities(self) -> set[int]:
         return self.base_model.scored_entities()
+
+    def get_scaling_parameters(self):
+        return self.base_model.get_scaling_parameters()

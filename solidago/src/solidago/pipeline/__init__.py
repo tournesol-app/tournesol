@@ -8,7 +8,8 @@ from typing import Optional
 import pandas as pd
 import logging
 
-from solidago import PrivacySettings, Judgments, ScoringModel
+from solidago import PrivacySettings, Judgments
+from solidago.scoring_model import ScoringModel, DirectScoringModel, PostProcessedScoringModel
 
 from solidago.trust_propagation import TrustPropagation, LipschiTrust
 from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust
@@ -109,7 +110,7 @@ class Pipeline:
         entities: pd.DataFrame,
         privacy: PrivacySettings,
         judgments: Judgments,
-        user_models : Optional[dict[int, ScoringModel]] = None,
+        init_user_models : Optional[dict[int, ScoringModel]] = None,
         global_model: Optional[dict[int, ScoringModel]] = None,
         skip_steps: Optional[set[int]] = None
     ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
@@ -153,7 +154,7 @@ class Pipeline:
         if skip_steps is None:
             skip_steps = set()
         if 3 in skip_steps:
-            assert user_models is not None
+            assert init_user_models is not None
         if 5 in skip_steps:
             assert global_model is not None
             
@@ -168,29 +169,50 @@ class Pipeline:
         if 1 not in skip_steps:
             logger.info(f"Pipeline 1. Propagating trust with {self.trust_propagation}")
             users = self.trust_propagation(users, vouches)
-        
+        else:
+            logger.info(f"Pipeline 1. Trust propagation is skipped")
+            
         if 2 not in skip_steps:
             logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
             voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
+        else:
+            logger.info(f"Pipeline 2. Voting rights assignment is skipped")
             
         if 3 not in skip_steps:
-            logger.info(f"Pipeline 3. Computing user models with {self.preference_learning}")
-            user_models = dict() if user_models is None else user_models
+            logger.info(f"Pipeline 3. Learning preference models with {self.preference_learning}")
+            init_user_models = dict() if init_user_models is None else init_user_models
             for user, _ in users.iterrows():
-                user_model = user_models[user] if user in user_models else None
-                user_models[user] = self.preference_learning(judgments[user], entities, user_model)
+                init_model = init_user_models[user] if user in init_user_models else None
+                user_models[user] = self.preference_learning(judgments[user], entities, init_model)
+        else:
+            logger.info(f"Pipeline 3. Learning preference models is skipped")
+            user_models = {
+                init_user_models[user] if user in init_user_models else DirectScoringModel()
+                for user, _ in users.iterrows()
+            }
         
         if 4 not in skip_steps:
-            logger.info(f"Pipeline 4. Collaborative score scaling with {self.scaling}")
+            logger.info(f"Pipeline 4. Collaborative scaling with {self.scaling}")
             user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
-        
+        else:
+            logger.info(f"Pipeline 4. Reusing precomputed scales")
+            for user in user_models:
+                user_models[user] = ScaledScoringModel(user_models[user], 
+                    *init_user_models[user].get_scaling_parameters())
+                
         if 5 not in skip_steps:
             logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
             user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
-        
+        else:
+            logger.info(f"Pipeline 5. Score aggregation skipped")
+            if 6 not in skip_steps and isinstance(global_model, PostProcessedScoringModel):
+                global_model = global_model.base_model
+            
         if 6 not in skip_steps:
             logger.info(f"Pipeline 6. Post-processing scores {self.post_process}")
             user_models, global_model = self.post_process(user_models, global_model, entities)
+        else:
+            logger.info(f"Pipeline 6. Post-processing scores skipped")
         
         return users, voting_rights, user_models, global_model
         

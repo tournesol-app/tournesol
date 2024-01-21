@@ -51,3 +51,4 @@ class ScalingCompose:
         for scaling in self.scalings:
             scaled_models = scaling(scaled_models, users, entities, voting_rights, privacy)
         return scaled_models
+
