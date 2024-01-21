@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -26,7 +27,6 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             tolerated error
         """
         self.prior_std_dev = prior_std_dev
-        self.initialization = initialization
         self.convergence_error = convergence_error
     
     @abstractmethod
@@ -62,7 +62,12 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         """
         pass
 
-    def comparison_learning(self, comparisons: pd.DataFrame, entities=None) -> ScoringModel:
+    def comparison_learning(
+        self, 
+        comparisons: pd.DataFrame, 
+        entities=None, 
+        initialization: Optional[ScoringModel] = None
+    ) -> ScoringModel:
         """ Learns only based on comparisons
         
         Parameters
@@ -80,10 +85,10 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         
         comparisons_dict = self.comparisons_dict(comparisons, entity_coordinates)
         
-        solution = np.zeros(len(entities))
+        init_solution = np.zeros(len(entities))
         for entity in entity_coordinates:
-            if entity in self.initialization:
-                solution[entity_coordinates[entity]] = self.initialization[entity]
+            if initialization is not None and entity in initialization:
+                init_solution[entity_coordinates[entity]] = initialization[entity]        
         
         def loss_partial_derivative(coordinate, value, solution): 
             return self.partial_derivative(coordinate, value, solution, 
@@ -91,7 +96,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         
         solution = coordinate_descent(
             loss_partial_derivative = loss_partial_derivative,
-            initialization = solution,
+            initialization = init_solution,
             error = self.convergence_error
         )
         

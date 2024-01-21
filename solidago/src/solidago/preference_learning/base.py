@@ -12,7 +12,8 @@ class PreferenceLearning(ABC):
     def __call__(
         self, 
         user_judgments: dict[str, pd.DataFrame],
-        entities: pd.DataFrame
+        entities: pd.DataFrame,
+        initialization: Optional[ScoringModel] = None
     ) -> ScoringModel:
         """ Learns a scoring model, given user judgments of entities
         
@@ -24,6 +25,13 @@ class PreferenceLearning(ABC):
         entities: DataFrame with columns
             * entity_id: int, index
             * May contain others, such as vector representation
+        initialization: ScoringModel or None
+            Starting model, added to facilitate optimization
+            It is not supposed to affect the output of the training
+            
+        Returns
+        -------
+        model: ScoringModel
         """
         raise NotImplementedError
 
@@ -48,8 +56,9 @@ class ComparisonBasedPreferenceLearning(PreferenceLearning):
     def __call__(
         self, 
         user_judgments: dict[str, pd.DataFrame],
-        entities: pd.DataFrame
+        entities: pd.DataFrame,
+        initialization: Optional[ScoringModel] = None
     ) -> ScoringModel:
-        return self.comparison_learning(user_judgments["comparisons"], entities)
+        return self.comparison_learning(user_judgments["comparisons"], entities, initialization)
     
     

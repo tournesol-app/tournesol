@@ -3,6 +3,7 @@ from .outputs import PipelineOutput
 from .parameters import PipelineParameters
 
 from dataclasses import dataclass
+from typing import Optional
 
 import pandas as pd
 import logging
@@ -103,17 +104,20 @@ class Pipeline:
         
     def __call__(
         self,
-        pretrusts: pd.DataFrame,
+        users: pd.DataFrame,
         vouches: pd.DataFrame,
         entities: pd.DataFrame,
         privacy: PrivacySettings,
-        judgments: Judgments
+        judgments: Judgments,
+        user_models : Optional[dict[int, ScoringModel]] = None,
+        global_model: Optional[dict[int, ScoringModel]] = None,
+        skip_steps: Optional[set[int]] = None
     ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
         """ Run Pipeline 
         
         Parameters
         ----------
-        pretrusts: DataFrame with columns
+        users: DataFrame with columns
             * user_id: int (index)
             * is_pretrusted: bool
         vouches: DataFrame with columns
@@ -126,6 +130,12 @@ class Pipeline:
             privacy[user, entity] in { True, False, None }
         judgments: Jugdments
             judgments[user] must yield the judgment data provided by the user
+        user_models: dict[int, UserModel]
+            user_models[user] is the user's model
+        global_model: GlobalModel
+            global model
+        skip_set: set[int]
+            Steps that are skipped in the pipeline
             
         Returns
         -------
@@ -135,37 +145,52 @@ class Pipeline:
             * trust_score: float
         voting_rights: VotingRights
             voting_rights[user, entity] is the user's voting right for entity
-        user_models: list[UserModel]
+        user_models: dict[int, UserModel]
             user_models[user] is the user's model
         global_model: GlobalModel
             global model
-        """
-        if criterion is None:
-            criterion = set(data.comparisons["criteria"])
-        if type(criterion) in (set, list, tuple):
-            return { c: self(dataset, c) for c in criterion }
+        """   
+        if skip_steps is None:
+            skip_steps = set()
+        if 3 in skip_steps:
+            assert user_models is not None
+        if 5 in skip_steps:
+            assert global_model is not None
+            
+        if len(skip_steps) == 0:
+            logger.info("Starting the full Solidago pipeline")
+        else:
+            logger.info(
+                "Starting the Solidago pipeline, skipping " 
+                + ", ".join([f"Step {step}" for step in skip_steps])
+            )
         
-        logger.info("Starting the full Solidago pipeline for criterion '%s'", criterion)
+        if 1 not in skip_steps:
+            logger.info(f"Pipeline 1. Propagating trust with {self.trust_propagation}")
+            users = self.trust_propagation(users, vouches)
         
-        logger.info(f"Pipeline 1. Propagating trust with {self.trust_propagation}")
-        trusts = self.trust_propagation(pretrusts, vouches)
+        if 2 not in skip_steps:
+            logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
+            voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
+            
+        if 3 not in skip_steps:
+            logger.info(f"Pipeline 3. Computing user models with {self.preference_learning}")
+            user_models = dict() if user_models is None else user_models
+            for user, _ in users.iterrows():
+                user_model = user_models[user] if user in user_models else None
+                user_models[user] = self.preference_learning(judgments[user], entities, user_model)
         
-        logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
-        voting_rights, entities = self.voting_rights(trusts, entities, vouches, privacy)
-    
-        logger.info(f"Pipeline 3. Computing user models with {self.preference_learning}")
-        user_models = {
-            user: self.preference_learning(judgments[user], entities)
-            for user, _ in users.iterrows()
-        }
+        if 4 not in skip_steps:
+            logger.info(f"Pipeline 4. Collaborative score scaling with {self.scaling}")
+            user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
         
-        logger.info(f"Pipeline 4. Collaborative score scaling with {self.scaling}")
-        user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
+        if 5 not in skip_steps:
+            logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
+            user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
         
-        logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
-        user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
-                
-        logger.info(f"Pipeline 6. Post-processing scores {self.post_process}")
-        user_models, global_model = self.post_process(user_models, global_model, entities)
+        if 6 not in skip_steps:
+            logger.info(f"Pipeline 6. Post-processing scores {self.post_process}")
+            user_models, global_model = self.post_process(user_models, global_model, entities)
         
-        return trusts, voting_rights, user_models, global_model
+        return users, voting_rights, user_models, global_model
+        
