@@ -44,7 +44,7 @@ class ErdosRenyiVouchModel(VouchModel):
             * `vouchee`: int
             * `vouch`: float
         """
-        vouchers, vouchees, vouches = list(), list(), list()
+        vouch_list = list()
         n_trustworthy = len(users[users["is_trustworthy"]])
         
         for voucher, voucher_row in users.iterrows():
@@ -59,9 +59,8 @@ class ErdosRenyiVouchModel(VouchModel):
                     continue
                 can_vouch = (voucher_row["is_trustworthy"] == vouchee_row["is_trustworthy"])
                 if can_vouch and (np.random.random() < p_vouch):
-                    vouchers.append(voucher)
-                    vouchees.append(vouchee)
-                    vouches.append(1)
-                    
-        return pd.DataFrame(dict(voucher=vouchers, vouchee=vouchees, vouch=vouches))
+                    vouch_list.append((voucher, vouchee, 1 - np.random.random()**2))
+        
+        v = list(zip(*vouch_list))
+        return pd.DataFrame(dict(voucher=v[0], vouchee=v[1], vouch=v[2]))
 

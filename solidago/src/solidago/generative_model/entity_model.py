@@ -61,9 +61,10 @@ class SvdEntityModel(EntityModel):
         """
         dct = dict()
         svd = [self.svd_distribution(self.svd_dimension) for _ in range(n_entities)]
-        for i in range(self.svd_dimension):
-            dct[f"svd{i}"] = [svd[e][i] for e in range(n_entities)]
-        df = pd.DataFrame(dct)
+        df = pd.DataFrame({
+            f"svd{i}": [svd[e][i] for e in range(n_entities)]
+            for i in range(self.svd_dimension)
+        })
         df.index.name = "entity_id"
         return df
 

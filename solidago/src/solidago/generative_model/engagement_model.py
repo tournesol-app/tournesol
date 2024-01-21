@@ -71,7 +71,7 @@ class SimpleEngagementModel(EngagementModel):
             judgments[user]["comparisons"] yields the user's comparisons
             judgments[user]["assessments"] yields the user's assessments
         """
-        comparison_dct = dict(user_id=list(), criteria=list(), entity_a=list(), entity_b=list())
+        comparison_list = list()
         privacy = PrivacySettings()
         
         for user, row in users.iterrows():
@@ -89,18 +89,16 @@ class SimpleEngagementModel(EngagementModel):
                 for b in compared[a_index + 1:]:
                     if np.random.random() >= p_compare_ab:
                         continue
-                    for c in self.p_per_criterion:
-                        if np.random.random() <= self.p_per_criterion[c]:
-                            comparison_dct["user_id"].append(user)
-                            comparison_dct["criteria"].append(c)
+                    for criterion in self.p_per_criterion:
+                        if np.random.random() <= self.p_per_criterion[criterion]:
                             if np.random.random() <= 0.5:
-                                comparison_dct["entity_a"].append(a)
-                                comparison_dct["entity_b"].append(b)
+                                comparison_list.append((user, criterion, a, b))
                             else:
-                                comparison_dct["entity_a"].append(b)
-                                comparison_dct["entity_b"].append(a)
+                                comparison_list.append((user, criterion, b, a))
         
-        return privacy, DataFrameJudgments(pd.DataFrame(comparison_dct))
+        c = list(zip(*comparison_list))
+        return privacy, DataFrameJudgments(pd.DataFrame(dict(
+            user_id=c[0], criteria=c[1], entity_a=c[2], entity_b=c[3])))
 
     def __str__(self):
         properties = f"p_per_criterion={self.p_per_criterion}, p_private={self.p_private}"

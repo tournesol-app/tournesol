@@ -60,7 +60,7 @@ class AffineOvertrust(VotingRightsAssignment):
         if len(users) == 0:
             return voting_rights, entities
         
-        cumulative_trusts, min_voting_rights, overtrusts = list(), list(), list()
+        new_records = list()
         for e in entities.index:
         
             privacy_weights = { 
@@ -80,13 +80,10 @@ class AffineOvertrust(VotingRightsAssignment):
                 voting_rights[u, e] *= privacy_weights[u]
                 overtrust += voting_rights[u, e]
             
-            cumulative_trusts.append(cumulative_trust)
-            min_voting_rights.append(min_voting_right)
-            overtrusts.append(overtrust)
+            new_records.append((cumulative_trust, min_voting_right, overtrust))
         
-        entities = entities.assign(cumulative_trust=cumulative_trusts)
-        entities = entities.assign(min_voting_right=min_voting_rights)
-        entities = entities.assign(overtrust=overtrusts)
+        r = list(zip(*new_records))
+        entities = entities.assign(cumulative_trust=r[0], min_voting_right=r[1], overtrust=r[2])
         return voting_rights, entities
     
     def cumulative_trust(
