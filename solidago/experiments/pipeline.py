@@ -117,10 +117,12 @@ def sample_n_scores(n_users=50, n_entities=20, n_seeds=5):
     return list(sample_score(n_users, n_entities, seed) for seed in range(n_seeds))
      
 def vary_p_trustworthy(n_users=50, n_entities=20, n_seeds=5, ps=[0, .2, .5, .5, 1]):
+    default_value = generative_model.user_model.p_trustworthy
     results = list()
     for p in ps:
         generative_model.user_model.p_trustworthy = p
         results.append(sample_n_scores(n_users, n_entities, n_seeds))
+    generative_model.user_model.p_trustworthy = default_value
     return ps, results
     
-
+print(vary_p_trustworthy(50, 10))

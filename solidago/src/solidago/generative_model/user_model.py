@@ -26,17 +26,19 @@ class UserModel(ABC):
     def __str__(self):
         return type(self).__name__
 
-class SvdUserModel(UserModel):
+    def to_json(self):
+        return (type(self).__name__, )
+
+class NormalUserModel(UserModel):
     def __init__(
         self,
-        p_trustworthy: float = 0.8,
-        p_pretrusted: float = 0.2,
-        zipf_vouch: float = 2.0,
-        zipf_compare: float = 1.5,
-        poisson_compare: float = 30.0,
-        n_comparisons_per_entity: float = 3.0,
-        svd_dimension: int = 5,
-        svd_distribution: callable = lambda dim: np.random.normal(1, 1, dim)
+        p_trustworthy: float=0.8,
+        p_pretrusted: float=0.2,
+        zipf_vouch: float=2.0,
+        zipf_compare: float=1.5,
+        poisson_compare: float=30.0,
+        n_comparisons_per_entity: float=3.0,
+        svd_dimension: int=5,
     ):
         """ This model assumes each user's preferences can be represented by a vector in 
         a singular value decomposition. This assumes entities will have such a representation
@@ -54,7 +56,6 @@ class SvdUserModel(UserModel):
         assert p_pretrusted >= 0 and p_pretrusted <= 1
         assert zipf_vouch > 1.0 and zipf_compare > 1.0
         assert poisson_compare > 0 and n_comparisons_per_entity > 0
-        assert len(svd_distribution(svd_dimension)) == svd_dimension
         
         self.p_trustworthy = p_trustworthy
         self.p_pretrusted = p_pretrusted
@@ -63,7 +64,11 @@ class SvdUserModel(UserModel):
         self.poisson_compare = poisson_compare
         self.n_comparisons_per_entity = n_comparisons_per_entity
         self.svd_dimension = svd_dimension
-        self.svd_distribution = svd_distribution
+        self.mean = np.zeros(svd_dimension)
+        self.mean[0] = 1
+    
+    def svd_sample(self):
+        return np.random.normal(0, 1, self.svd_dimension) + self.mean
     
     def __call__(self, n_users: int):
         """ Generates n_users users, with different characteristics
@@ -99,7 +104,7 @@ class SvdUserModel(UserModel):
         dct["is_pretrusted"] = (np.random.random(n_users) < self.p_pretrusted)
         dct["is_pretrusted"] *= dct["is_trustworthy"]
         
-        svd = [self.svd_distribution(self.svd_dimension) for _ in range(n_users)]
+        svd = [self.svd_sample() for _ in range(n_users)]
         for i in range(self.svd_dimension):
             dct[f"svd{i}"] = [svd[u][i] for u in range(n_users)]
         
@@ -112,3 +117,14 @@ class SvdUserModel(UserModel):
             "zipf_compare", "poisson_compare", "n_comparisons_per_entity","svd_dimension"]
         properties = ", ".join([f"{p}={getattr(self,p)}" for p in printed_properties])
         return f"SvdUserModel({properties})"
+
+    def to_json(self):
+        return type(self).__name__, dict(
+            p_trustworthy=self.p_trustworthy,
+            p_pretrusted=self.p_pretrusted,
+            zipf_vouch=self.zipf_vouch,
+            zipf_compare=self.zipf_compare,
+            poisson_compare=self.poisson_compare,
+            n_comparisons_per_entity=self.n_comparisons_per_entity,
+            svd_dimension=self.svd_dimension,
+        )

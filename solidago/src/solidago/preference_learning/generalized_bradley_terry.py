@@ -167,9 +167,8 @@ class UniformGBT(GeneralizedBradleyTerry):
         self, 
         prior_std_dev: float=7,
         comparison_max: float=10,
-        initialization: dict[int, float]=dict(),
         convergence_error: float=1e-5,
-        cumulant_generating_function_error: float=1e-5
+        cumulant_generating_function_error: float=1e-5,
     ):
         """
         
@@ -180,7 +179,7 @@ class UniformGBT(GeneralizedBradleyTerry):
         error: float
             tolerated error
         """
-        super().__init__(prior_std_dev, initialization, convergence_error)
+        super().__init__(prior_std_dev, convergence_error)
         self.comparison_max = comparison_max
         self.cumulant_generating_function_error = cumulant_generating_function_error
     
@@ -217,4 +216,11 @@ class UniformGBT(GeneralizedBradleyTerry):
             return (1/3) - (score_diff**2 / 15)
         return 1 - (1 / np.tanh(score_diff)**2) + (1 / score_diff**2)
     
+    def to_json(self):
+        return type(self).__name__, dict(
+            prior_std_dev=self.prior_std_dev,
+            comparison_max=self.comparison_max,
+            convergence_error=self.convergence_error,
+            cumulant_generating_function_error=self.cumulant_generating_function_error,
+        )
     

@@ -28,4 +28,5 @@ class TrustAll(TrustPropagation):
             * trust_score (float)
         """
         return users.assign(trust_score=[1.0] * len(users))
+    
       

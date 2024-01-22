@@ -26,6 +26,10 @@ class VouchModel(ABC):
     def __str__(self):
         return type(self).__name__
 
+    def to_json(self):
+        return (type(self).__name__, )
+
+
 class ErdosRenyiVouchModel(VouchModel):
     def __call__(self, users: pd.DataFrame):
         """ Generates vouches between users

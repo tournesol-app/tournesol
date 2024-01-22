@@ -114,3 +114,7 @@ class QuantileStandardizedQrMedian(Aggregation):
                 
         return scaled_models, global_scores
         
+    def to_json(self):
+        return type(self).__name__, dict(
+            dev_quantile=self.dev_quantile, lipschitz=self.lipschitz, error=self.error
+        )

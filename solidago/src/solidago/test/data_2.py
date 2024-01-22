@@ -63,7 +63,6 @@ pipeline = Pipeline(
         prior_std_dev=7,
         convergence_error=1e-5,
         cumulant_generating_function_error=1e-5,
-        initialization=dict()
     ),
     scaling=ScalingCompose(
         Mehestan(

@@ -402,6 +402,17 @@ class Mehestan(Scaling):
             u: _aggregate(self.lipschitz / 8, diffs[u], 0, self.error, br_mean)
             for u in diffs
         }    
+
+    def to_json(self):
+        return type(self).__name__, dict(
+            lipschitz=self.lipschitz, 
+            min_activity=self.min_activity, 
+            n_scalers_max=self.n_scalers_max, 
+            privacy_penalty=self.privacy_penalty,
+            p_norm_for_multiplicative_resilience=self.p_norm_for_multiplicative_resilience,
+            error=self.error
+        )
+        
     
 ##############################################
 ## Preprocessing to facilitate computations ##

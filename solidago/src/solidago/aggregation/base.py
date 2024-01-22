@@ -38,3 +38,5 @@ class Aggregation:
         """
         raise NotImplementedError
         
+    def to_json(self):
+        return (type(self).__name__, )

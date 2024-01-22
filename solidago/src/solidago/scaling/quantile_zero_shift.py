@@ -67,3 +67,10 @@ class QuantileZeroShift(Scaling):
             user: ScaledScoringModel(user_models[user], translation=shift)
             for user in user_models
         }
+
+    def to_json(self):
+        return type(self).__name__, dict(
+            zero_quantile=self.zero_quantile,
+            lipschitz=self.lipschitz,
+            error=self.error
+        )

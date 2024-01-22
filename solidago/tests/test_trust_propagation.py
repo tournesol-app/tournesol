@@ -6,7 +6,7 @@ from solidago.pipeline.inputs import TournesolInputFromPublicDataset
 from solidago.trust_propagation.lipschitrust import LipschiTrust
 from solidago.trust_propagation.trust_all import TrustAll
 
-from solidago.generative_model.user_model import SvdUserModel
+from solidago.generative_model.user_model import NormalUserModel
 from solidago.generative_model.vouch_model import ErdosRenyiVouchModel
 
 
@@ -32,7 +32,7 @@ def test_lipschitrust_simple():
     assert users.loc[2, "trust_score"] == pytest.approx(0.8 * 0.8 / 7), users
 
 def test_lipschitrust_generative():
-    users = SvdUserModel(p_trustworthy=0.8, p_pretrusted=0.2, svd_dimension=5)(50)
+    users = NormalUserModel(p_trustworthy=0.8, p_pretrusted=0.2, svd_dimension=5)(50)
     vouches = ErdosRenyiVouchModel()(users)
     
     trust_propagator = LipschiTrust(

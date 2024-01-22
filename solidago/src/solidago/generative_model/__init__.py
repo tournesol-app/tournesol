@@ -6,9 +6,9 @@ import logging
 import numpy as np
 import pandas as pd
 
-from .user_model import UserModel, SvdUserModel
+from .user_model import UserModel, NormalUserModel
 from .vouch_model import VouchModel, ErdosRenyiVouchModel
-from .entity_model import EntityModel, SvdEntityModel
+from .entity_model import EntityModel, NormalEntityModel
 from .engagement_model import EngagementModel, SimpleEngagementModel
 from .comparison_model import ComparisonModel, KnaryGBT
 
@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 class GenerativeModel:
     def __init__(
         self,
-        user_model: UserModel = SvdUserModel(),
+        user_model: UserModel = NormalUserModel(svd_dimension=5),
         vouch_model: VouchModel = ErdosRenyiVouchModel(),
-        entity_model: EntityModel = SvdEntityModel(),
+        entity_model: EntityModel = NormalEntityModel(svd_dimension=5),
         engagement_model: EngagementModel = SimpleEngagementModel(),
         comparison_model: ComparisonModel = KnaryGBT(21, 10)
     ):
@@ -99,3 +99,13 @@ class GenerativeModel:
         judgments.comparisons = self.comparison_model(users, entities, judgments.comparisons)
         return users, vouches, entities, privacy, judgments
 
+
+    def to_json(self):
+        return dict(
+            user_model=self.user_model.to_json(),
+            vouch_model=self.vouch_model.to_json(),
+            entity_model=self.entity_model.to_json(),
+            engagement_model=self.engagement_model.to_json(),
+            comparison_model=self.comparison_model.to_json()
+        )
+        

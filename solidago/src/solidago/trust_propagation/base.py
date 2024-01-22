@@ -32,3 +32,5 @@ class TrustPropagation(ABC):
     def __str__(self):
         return type(self).__name__
 		
+    def to_json(self):
+        return (type(self).__name__, )

@@ -36,7 +36,11 @@ class EngagementModel(ABC):
 
     def __str__(self):
         return type(self).__name__
+
+    def to_json(self):
+        return (type(self).__name__, )
         
+                
 class SimpleEngagementModel(EngagementModel):
     def __init__(
         self, 
@@ -101,3 +105,10 @@ class SimpleEngagementModel(EngagementModel):
     def __str__(self):
         properties = f"p_per_criterion={self.p_per_criterion}, p_private={self.p_private}"
         return f"SimpleEngagementModel({properties})"
+
+    def to_json(self):
+        return type(self).__name__, dict(
+            p_per_criterion=self.p_per_criterion, 
+            p_private=self.p_private
+        )
+        

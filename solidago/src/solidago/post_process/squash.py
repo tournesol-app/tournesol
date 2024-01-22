@@ -42,3 +42,6 @@ class Squash(PostProcess):
         squashed_global_model = PostProcessedScoringModel(global_model, squash)
         
         return squashed_user_models, squashed_global_model
+
+    def to_json(self):
+        return (type(self).__name__, dict(score_max=self.score_max))

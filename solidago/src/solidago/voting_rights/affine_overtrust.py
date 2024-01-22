@@ -184,3 +184,10 @@ class AffineOvertrust(VotingRightsAssignment):
             return 1.0
         
         return solve(overtrust, max_overtrust, 0, 1)
+
+    def to_json(self):
+        return "AffineOvertrust", dict(
+            privacy_penalty=self.privacy_penalty, 
+            min_overtrust=self.min_overtrust,
+            overtrust_ratio=self.overtrust_ratio
+        )

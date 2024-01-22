@@ -29,3 +29,6 @@ class PostProcess(ABC):
         global_model: post-processed global model
         """
         raise NotImplementedError
+        
+    def to_json(self):
+        return (type(self).__name__, )

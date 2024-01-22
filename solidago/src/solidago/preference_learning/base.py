@@ -34,6 +34,9 @@ class PreferenceLearning(ABC):
         model: ScoringModel
         """
         raise NotImplementedError
+        
+    def to_json(self):
+        return (type(self).__name__, )
 
 
 class ComparisonBasedPreferenceLearning(PreferenceLearning):

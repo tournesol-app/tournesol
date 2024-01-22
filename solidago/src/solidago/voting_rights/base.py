@@ -4,7 +4,6 @@ from typing import Optional
 import pandas as pd
 import numpy as np
 
-from .compute_voting_rights import compute_voting_rights
 
 class VotingRights:
     def __init__(self, dct: Optional[dict[int, dict[int, float]]]=None):
@@ -90,4 +89,7 @@ class VotingRightsAssignment(ABC):
             * entity_id (int, index)
         """
         raise NotImplementedError
+    
+    def to_json(self):
+        return (type(self).__name__, )
     

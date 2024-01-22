@@ -38,6 +38,10 @@ class ComparisonModel(ABC):
 
     def __str__(self):
         return type(self).__name__
+
+    def to_json(self):
+        return (type(self).__name__, )
+
         
 class GeneralizedBradleyTerry(ComparisonModel):
     """ The Generalized Bradley-Terry model is a score-to-comparison model
@@ -183,3 +187,7 @@ class KnaryGBT(DiscreteGBT):
     def __str__(self):
         return f"K-naryGBT(K={self.n_options}, comparison_max={self.comparison_max})"
         
+    def to_json(self):
+        return type(self).__name__, dict(
+            n_options=self.n_options, comparison_max=self.comparison_max
+        )

@@ -40,6 +40,9 @@ class Scaling:
         """
         raise NotImplementedError
 
+    def to_json(self):
+        return (type(self).__name__, )
+        
 
 class ScalingCompose:
     """ Class used to compose any number of scaling solutions """    
@@ -52,3 +55,6 @@ class ScalingCompose:
             scaled_models = scaling(scaled_models, users, entities, voting_rights, privacy)
         return scaled_models
 
+    def to_json(self):
+        scalings_json = [scaling.to_json() for scaling in self.scalings]
+        return type(self).__name__, *scalings_json

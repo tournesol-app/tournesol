@@ -41,7 +41,6 @@ class DefaultPipeline:
         prior_std_dev=7,
         convergence_error=1e-5,
         cumulant_generating_function_error=1e-5,
-        initialization=dict()
     )
     scaling: Scaling = ScalingCompose(
         Mehestan(
@@ -217,4 +216,14 @@ class Pipeline:
             logger.info(f"Pipeline 6. Post-processing scores skipped")
         
         return users, voting_rights, user_models, global_model
+        
+    def to_json(self):
+        return dict(
+            trust_propagation=self.trust_propagation.to_json(),
+            voting_rights=self.voting_rights.to_json(),
+            preference_learning=self.preference_learning.to_json(),
+            scaling=self.scaling.to_json(),
+            aggregation=self.aggregation.to_json(),
+            post_process=self.post_process.to_json()
+        )
         
