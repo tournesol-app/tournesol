@@ -112,6 +112,15 @@ def sample_score(n_users=50, n_entities=20, seed=0):
      init_users, vouches, entities, privacy, judgments = data
      users, voting_rights, user_models, global_model = pipeline(*data)
      return score(entities, global_model)
-     
 
+def sample_n_scores(n_users=50, n_entities=20, n_seeds=5):
+    return list(sample_score(n_users, n_entities, seed) for seed in range(n_seeds))
+     
+def vary_p_trustworthy(n_users=50, n_entities=20, n_seeds=5, ps=[0, .2, .5, .5, 1]):
+    results = list()
+    for p in ps:
+        generative_model.user_model.p_trustworthy = p
+        results.append(sample_n_scores(n_users, n_entities, n_seeds))
+    return ps, results
+    
 

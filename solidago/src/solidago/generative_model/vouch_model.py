@@ -49,7 +49,7 @@ class ErdosRenyiVouchModel(VouchModel):
         
         for voucher, voucher_row in users.iterrows():
             # Determine the probability to vouch, depending on trustworthiness
-            if voucher_row["is_trustworthy"] and n_trustworthy == 0:
+            if voucher_row["is_trustworthy"]:
                 p_vouch = voucher_row["n_expected_vouches"] / n_trustworthy
             else:
                 p_vouch = voucher_row["n_expected_vouches"] / (len(users) - n_trustworthy)
