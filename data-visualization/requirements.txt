@@ -3,7 +3,7 @@ numpy==1.24.2
 pandas==1.5.3
 seaborn==0.11.1
 matplotlib==3.3.4
-pillow==10.0.1
+pillow==10.2.0
 plotly==5.5.0
 scikit-learn==0.24.2
 requests==2.31.0
