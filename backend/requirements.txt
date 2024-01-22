@@ -28,7 +28,7 @@ djangorestframework==3.14.0
 # See https://github.com/tfranzel/drf-spectacular
 drf-spectacular==0.26.5
 # Pillow is used to generate the Previews for links shared on social media
-Pillow==10.0.1
+Pillow==10.2.0
 # Needed for postgres database
 psycopg2-binary==2.9.9
 # PyYAML is used for reading the settings 
