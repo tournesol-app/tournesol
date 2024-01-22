@@ -5,15 +5,30 @@
   <head>
     <meta charset="UTF-8">
     <style>
+      body {
+        margin: 8px;
+        margin-top: 0;
+        padding: 0;
+      }
       .italic {
         font-style: italic;
+      }
+      .main-title {
+        padding: 16px 0;
+        background-color: #1282b2;
+      }
+      .main-title h2 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.2rem;
+        text-align: center;
       }
    </style>
   </head>
   <body>
-    <p>
-      {% blocktranslate %}Hello 🌻{% endblocktranslate %}
-    </p>
+    <div class="main-title">
+      <h2>{% translate "Hello 🌻" %}</h2>
+    </div>
     <p class="italic">
       {% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
     </p>
@@ -22,7 +37,7 @@
 already improve the public dataset and impact the recommendations made to thousands of users.{% endblocktranslate %}
     </p>
     <p>
-      {% blocktranslate %}This participatory research project only works thanks to contributors like you, and we hope to
+      {% blocktranslate %}This participatory research project only works thanks to contributors like you. We hope to
 see you back on the Tournesol platform from time to time. Every comparison you make will help advance scientific
 research on ethics and security of algorithms and recommender systems.{% endblocktranslate %}
     </p>
@@ -30,16 +45,16 @@ research on ethics and security of algorithms and recommender systems.{% endbloc
     <ul>
       <li>
         <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder"
-           target="_blank"
            rel="noopener"
+           target="_blank"
         >
           {% translate "Top videos of the past 30 days" %}
         </a>
       </li>
       <li>
         <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder"
-           target="_blank"
            rel="noopener"
+           target="_blank"
         >
           {% translate "Top short videos of the past year" %}
         </a>
