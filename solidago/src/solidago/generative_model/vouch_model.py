@@ -65,6 +65,9 @@ class ErdosRenyiVouchModel(VouchModel):
                 if can_vouch and (np.random.random() < p_vouch):
                     vouch_list.append((voucher, vouchee, 1 - np.random.random()**2))
         
+        if len(vouch_list) == 0:
+            return pd.DataFrame(columns=["voucher", "vouchee", "vouch"])
+        
         v = list(zip(*vouch_list))
         return pd.DataFrame(dict(voucher=v[0], vouchee=v[1], vouch=v[2]))
 
