@@ -1,0 +1,9 @@
+{
+    "n_users": 10, 
+    "n_entities": 20,
+    "n_seeds": 3, 
+    "x_parameter": "generative_model.user_model.p_trustworthy",
+    "x_values": [0.2, 0.8], 
+    "z_parameter": "pipeline.aggregation.lipschitz", 
+    "z_values": [0.1, 1]
+}
