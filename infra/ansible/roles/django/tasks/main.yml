@@ -316,7 +316,7 @@
 - name: Copy Tournesol API registration reminder service
   template:
     dest: /etc/systemd/system/tournesol-api-registration-reminder.service
-    src: tournesol-registration-reminder.service.j2
+    src: tournesol-api-registration-reminder.service.j2
 
 - name: Copy Tournesol API registration-reminder timer
   template:
