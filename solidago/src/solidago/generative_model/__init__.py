@@ -99,7 +99,16 @@ class GenerativeModel:
         judgments.comparisons = self.comparison_model(users, entities, judgments.comparisons)
         return users, vouches, entities, privacy, judgments
 
-
+    @classmethod
+    def from_json(cls, json) -> "GenerativeModel":
+        return GenerativeModel(
+            user_model=user_model_from_json(json["user_model"]),
+            vouch_model=vouch_model_from_json(json["vouch_model"]),
+            entity_model=entity_model_from_json(json["entity_model"]),
+            engagement_model=engagement_model_from_json(json["engagement_model"]),
+            comparison_model=comparison_model_from_json(json["comparison_model"]),
+        )
+        
     def to_json(self):
         return dict(
             user_model=self.user_model.to_json(),
@@ -109,3 +118,36 @@ class GenerativeModel:
             comparison_model=self.comparison_model.to_json()
         )
         
+
+def user_model_from_json(json):
+    match json[0]:
+        case "NormalUserModel": 
+            return NormalUserModel(**json[1])
+    raise ValueError(f"UserModel {json[0]} was not recognized")
+    
+def vouch_model_from_json(json):
+    match json[0]:
+        case "ErdosRenyiVouchModel": 
+            return ErdosRenyiVouchModel()
+    raise ValueError(f"VouchModel {json[0]} was not recognized")
+    
+def entity_model_from_json(json):
+    match json[0]:
+        case "NormalEntityModel": 
+            return NormalEntityModel(**json[1])
+    raise ValueError(f"EntityModel {json[0]} was not recognized")
+    
+def engagement_model_from_json(json):
+    match json[0]:
+        case "SimpleEngagementModel": 
+            return SimpleEngagementModel(**json[1])
+    raise ValueError(f"EngagementModel {json[0]} was not recognized")
+    
+def comparison_model_from_json(json):
+    match json[0]:
+        case "KnaryGBT": 
+            return KnaryGBT(**json[1])
+    raise ValueError(f"ComparisonModel {json[0]} was not recognized")
+    
+
+

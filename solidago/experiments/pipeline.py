@@ -92,7 +92,7 @@ pipeline = Pipeline(
     )
 )
 
-def sample_correlation(n_users: int, n_entities: int, seed: int) -> float:
+def sample_correlation(n_users, n_entities, seed, generative_model, pipeline) -> float:
     data = generative_model(n_users, n_entities, seed)
     init_users, vouches, entities, privacy, judgments = data
     users, voting_rights, user_models, global_model = pipeline(*data)
@@ -106,10 +106,13 @@ def sample_correlation(n_users: int, n_entities: int, seed: int) -> float:
     estimate = [global_model(e, row)[0] for e, row in entities.iterrows()]
     return np.corrcoef(truth, estimate)[0, 1]
     
-def sample_n_correlations(n_users: int, n_entities: int, n_seeds: int):
-    return [sample_correlation(n_users, n_entities, seed) for seed in range(n_seeds)]
+def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeline):
+    return [
+        sample_correlation(n_users, n_entities, seed, generative_model, pipeline) 
+        for seed in range(n_seeds)
+    ]
 
-def set_attr(x_parameter: str, x: float):
+def set_attr(x_parameter: str, x: float, generative_model, pipeline):
     x_list = x_parameter.split(".")
     
     match x_list[0]:
@@ -125,7 +128,7 @@ def set_attr(x_parameter: str, x: float):
     except:
         obj[x_list[-1]] = x
     
-def get_attr(x_parameter: str):
+def get_attr(x_parameter: str, generative_model, pipeline):
     x_list = x_parameter.split(".")
     
     match x_list[0]:
@@ -146,7 +149,9 @@ def run_experiment(
     x_parameter: str, 
     x_values: list[float], 
     z_parameter: str, 
-    z_values: list[float]
+    z_values: list[float],
+    generative_model, 
+    pipeline
 ):
     """ Run experiments with multiple seeds. Outputs results in json.
     
@@ -173,33 +178,17 @@ def run_experiment(
         json["results"][z_value][x_value][seed] is the score of the output.
     """
     results = list()
-    base_x = get_attr(x_parameter)
-    base_z = get_attr(z_parameter)
-    
     for z in z_values:
         z_results = list()
-        set_attr(z_parameter, z)
+        set_attr(z_parameter, z, generative_model, pipeline)
         logger.info(f"Running experiments for {z_parameter} = {z}")
         for x in x_values:
-            set_attr(x_parameter, x)
+            set_attr(x_parameter, x, generative_model, pipeline)
             logger.info(f"    {x_parameter} = {x}")
-            z_results.append(sample_n_correlations(n_users, n_entities, n_seeds))
+            c = sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeline)
+            z_results.append(c)
         results.append(z_results)
-    
-    set_attr(x_parameter, base_x)
-    set_attr(z_parameter, base_z)
-    
-    return { 
-        "n_users": n_users,
-        "n_entities": n_entities,
-        "generative_model": generative_model.to_json(), 
-        "pipeline": pipeline.to_json(), 
-        "x_parameter": x_parameter,
-        "x_values": x_values,
-        "z_parameter": z_parameter,
-        "z_values": z_values,
-        "results": results 
-    }
+    return results
 
 def run_from_hyperparameters_file(filename):
     
@@ -223,12 +212,14 @@ def run_from_hyperparameters_file(filename):
         hps = json.load(json_file)
     
     logger.info(f"Running experiment with hyperparameters {filename}")
-    results = run_experiment(hps["n_users"], hps["n_entities"], hps["n_seeds"],
-        hps["x_parameter"], hps["x_values"], hps["z_parameter"], hps["z_values"])
-    results |= hps
+    generative_model = GenerativeModel.from_json(hps["generative_model"])
+    pipeline = Pipeline.from_json(hps["pipeline"])
+    hps["results"] = run_experiment(hps["n_users"], hps["n_entities"], hps["n_seeds"],
+        hps["x_parameter"], hps["x_values"], hps["z_parameter"], hps["z_values"],
+        generative_model, pipeline)
     
     with open(results_filename, "w") as results_file:
-        json.dump(results, results_file)
+        json.dump(hps, results_file)
     logger.info(f"The experiment results were successfully exported in file {filename}")
 
 

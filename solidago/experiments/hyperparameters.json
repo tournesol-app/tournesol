@@ -6,7 +6,7 @@
     "x_values": [0.2, 0.8], 
     "z_parameter": "pipeline.aggregation.lipschitz", 
     "z_values": [0.1, 1],
-    "z_labels": ["Lipschitz = 0.1", "Lipschitz = 1"]
+    "z_labels": ["Lipschitz = 0.1", "Lipschitz = 1"],
     "n_users": 10, 
     "n_entities": 20,
     "n_seeds": 3, 
