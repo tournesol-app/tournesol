@@ -1,12 +1,21 @@
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html>
+<html lang="{{ LANGUAGE_CODE }}">
   <head>
-     <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <style>
+      .italic {
+        font-style: italic;
+      }
+   </style>
   </head>
   <body>
     <p>
       {% blocktranslate %}Hello 🌻{% endblocktranslate %}
+    </p>
+    <p class="italic">
+      {% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
     </p>
     <p>
       {% blocktranslate %}We would like to thank you for taking the time to contribute to the project. Your comparisons
@@ -17,6 +26,25 @@ already improve the public dataset and impact the recommendations made to thousa
 see you back on the Tournesol platform from time to time. Every comparison you make will help advance scientific
 research on ethics and security of algorithms and recommender systems.{% endblocktranslate %}
     </p>
+    <p>{% translate "Here are some videos you could compare:" %}</p>
+    <ul>
+      <li>
+        <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder"
+           target="_blank"
+           rel="noopener"
+        >
+          {% translate "Top videos of the past 30 days" %}
+        </a>
+      </li>
+      <li>
+        <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder"
+           target="_blank"
+           rel="noopener"
+        >
+          {% translate "Top short videos of the past year" %}
+        </a>
+      </li>
+    </ul>
     <p>{% translate "Many thanks" %},<br>{% translate "The Tournesol team" %}</p>
   </body>
 </html>

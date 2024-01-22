@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-18 16:20+0000\n"
+"POT-Creation-Date: 2024-01-22 11:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -188,11 +188,15 @@ msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 msgid "msg for users without comp"
 msgstr ""
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:9
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:15
 msgid "Hello 🌻"
 msgstr "Bonjour 🌻"
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:12
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:18
+msgid "(This email is an automatic reminder sent to new Tournesol users.)"
+msgstr "(Ce courriel est un rappel automatique envoyé aux nouveaux utilisateurs et utilisatrices.)"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:21
 msgid ""
 "We would like to thank you for taking the time to contribute to the project. "
 "Your comparisons\n"
@@ -203,7 +207,7 @@ msgstr ""
 "comparaisons améliorent déjà la base de données publique et impactent les "
 "recommandations faites à des milliers d'utilisateur·rices."
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:16
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:25
 msgid ""
 "This participatory research project only works thanks to contributors like "
 "you, and we hope to\n"
@@ -217,10 +221,22 @@ msgstr ""
 "contribue à faire avancer la recherche scientifique sur l'éthique et la "
 "sécurité des algorithmes et des systèmes de recommandation."
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:20
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:29
+msgid "Here are some videos you could compare:"
+msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:33
+msgid "Top videos of the past 30 days"
+msgstr "Top des vidéos du mois dernier"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:38
+msgid "Top short videos of the past year"
+msgstr "Top des vidéos courtes de l'année passée"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:42
 msgid "Many thanks"
 msgstr "Merci beaucoup"
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:20
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:42
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
