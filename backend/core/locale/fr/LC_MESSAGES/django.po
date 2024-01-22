@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-22 14:38+0000\n"
+"POT-Creation-Date: 2024-01-22 15:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,19 +209,20 @@ msgstr ""
 "utilisatrices.)"
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:33
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:5
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:61
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:20
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:8
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:83
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:29
 msgid "Many thanks"
 msgstr "Merci beaucoup"
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:33
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:6
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:61
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:21
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:9
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:83
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:30
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
 
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:5
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:34
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:5
 msgid ""
@@ -263,3 +264,24 @@ msgstr "Top des vidéos du mois dernier"
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:17
 msgid "Top short videos of the past year"
 msgstr "Top des vidéos courtes de l'année passée"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:62
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:20
+msgid ""
+"You can also install the Tournesol browser extension to easily compare "
+"videos directly from\n"
+"YouTube, or to add them to your rate-later list."
+msgstr ""
+"Vous pouvez aussi installer l'extension navigateur Tournesol pour comparer "
+"des vidéos directement depuis YouTube, ou pour les ajouter à votre liste à "
+"comparer plus tard."
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:71
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:23
+msgid "Install on Firefox"
+msgstr "Installer sur Firefox"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:79
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:26
+msgid "Install on Chrome"
+msgstr "Installer sur Chrome"
