@@ -311,6 +311,25 @@
     enabled: yes
     daemon_reload: yes
 
+# scheduled task: reminder for users without contributions
+
+- name: Copy Tournesol API registration reminder service
+  template:
+    dest: /etc/systemd/system/tournesol-api-registration-reminder.service
+    src: tournesol-registration-reminder.service.j2
+
+- name: Copy Tournesol API registration-reminder timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-registration-reminder.timer
+    src: tournesol-api-registration-reminder.timer.j2
+
+- name: Enable and start Tournesol API registration-reminder timer
+  systemd:
+    name: tournesol-api-registration-reminder.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
 # scheduled task: watch account creation hourly
 
 - name: Copy Tournesol API watch-account-creation-1h service

@@ -1,5 +1,6 @@
 """
-Notify active users who haven't contributed since their account was created.
+Notify by email active users who haven't contributed since their account was
+created.
 """
 
 from smtplib import SMTPException
@@ -16,7 +17,8 @@ from core.models.user import User
 
 
 class Command(BaseCommand):
-    help = "Notify active users who haven't contributed since their account was created."
+    help = "Notify by email active users who haven't contributed since their"\
+           " account was created."
 
     def notify_users(self, users):
         from_email = settings.REST_REGISTRATION["VERIFICATION_FROM_EMAIL"]
