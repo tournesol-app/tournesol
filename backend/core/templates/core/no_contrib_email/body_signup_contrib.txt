@@ -1,0 +1,21 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% translate "Hello 🌻" %}
+
+{% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
+
+{% blocktranslate %}We would like to thank you for taking the time to contribute to the project. Your comparisons
+already improve the public dataset and impact the recommendations made to thousands of users.{% endblocktranslate %}
+
+{% blocktranslate %}This participatory research project only works thanks to contributors like you. We hope to
+see you back on the Tournesol platform from time to time. Every comparison you make will help advance scientific
+research on ethics and security of algorithms and recommender systems.{% endblocktranslate %}
+
+{% translate "Here are examples of videos you could compare:" %}
+
+{% translate "Top videos of the past 30 days" %}:
+https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder
+
+{% translate "Top short videos of the past year" %}:
+https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder
+
+{% translate "Many thanks" %},
+{% translate "The Tournesol team" %}

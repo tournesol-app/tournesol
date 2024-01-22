@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils import timezone, translation
+from django.utils.translation import gettext_lazy as _
 
 from core.models.user import User
 
@@ -22,6 +23,10 @@ class Command(BaseCommand):
 
         fails = []
         successes = 0
+
+        subject_no_comp = _("Thank you for your registration")
+        subject_signup_comp = _("Thank you for your contributions")
+
         for user in users:
             if user.n_comp_after_signup > 0:
                 continue
@@ -32,20 +37,27 @@ class Command(BaseCommand):
                 lang_code = "en"
 
             translation.activate(lang_code)
+
+            msg_no_comp = render_to_string("core/no_contrib_email/body_no_contrib.txt")
+            msg_signup_comp = render_to_string("core/no_contrib_email/body_signup_contrib.txt")
             html_msg_no_comp = render_to_string("core/no_contrib_email/body_no_contrib.html")
             html_msg_signup_comp = render_to_string(
                 "core/no_contrib_email/body_signup_contrib.html"
             )
 
             if user.n_comp_signup > 0:
+                subject = subject_signup_comp
+                message = msg_signup_comp
                 html_message = html_msg_signup_comp
             else:
+                subject = subject_no_comp
+                message = msg_no_comp
                 html_message = html_msg_no_comp
 
             try:
                 send_mail(
-                    subject="Subject here",
-                    message="Here is the message.",
+                    subject=subject,
+                    message=message,
                     html_message=html_message,
                     from_email=from_email,
                     recipient_list=[user.email],

@@ -1,9 +1,35 @@
-{% load i18n %}
-<!DOCTYPE html>
-<html>
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body {
+        margin: 8px;
+        margin-top: 0;
+        padding: 0;
+      }
+      .italic {
+        font-style: italic;
+      }
+      .main-title {
+        padding: 16px 0;
+        background-color: #1282b2;
+      }
+      .main-title h2 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.2rem;
+        text-align: center;
+      }
+   </style>
+  </head>
   <body>
-    <p>
-      {% blocktranslate %}msg for users without comp{% endblocktranslate %}
+    <div class="main-title">
+      <h2>{% translate "Hello 🌻" %}</h2>
+    </div>
+    <p class="italic">
+      {% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
     </p>
+    <p>{% translate "Many thanks" %},<br>{% translate "The Tournesol team" %}</p>
   </body>
 </html>

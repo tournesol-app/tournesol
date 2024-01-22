@@ -1,0 +1,6 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% translate "Hello 🌻" %}
+
+{% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
+
+{% translate "Many thanks" %},
+{% translate "The Tournesol team" %}

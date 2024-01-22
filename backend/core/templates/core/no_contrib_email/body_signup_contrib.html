@@ -1,6 +1,4 @@
-{% load i18n %}
-{% get_current_language as LANGUAGE_CODE %}
-<!DOCTYPE html>
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
   <head>
     <meta charset="UTF-8">
@@ -41,7 +39,7 @@ already improve the public dataset and impact the recommendations made to thousa
 see you back on the Tournesol platform from time to time. Every comparison you make will help advance scientific
 research on ethics and security of algorithms and recommender systems.{% endblocktranslate %}
     </p>
-    <p>{% translate "Here are some videos you could compare:" %}</p>
+    <p>{% translate "Here are examples of videos you could compare:" %}</p>
     <ul>
       <li>
         <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder"
