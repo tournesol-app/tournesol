@@ -57,4 +57,4 @@ class ScalingCompose:
 
     def to_json(self):
         scalings_json = [scaling.to_json() for scaling in self.scalings]
-        return type(self).__name__, *scalings_json
+        return type(self).__name__, scalings_json

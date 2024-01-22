@@ -225,6 +225,7 @@ def run_from_hyperparameters_file(filename):
     logger.info(f"Running experiment with hyperparameters {filename}")
     results = run_experiment(hps["n_users"], hps["n_entities"], hps["n_seeds"],
         hps["x_parameter"], hps["x_values"], hps["z_parameter"], hps["z_values"])
+    results |= hps
     
     with open(results_filename, "w") as results_file:
         json.dump(results, results_file)
