@@ -306,6 +306,7 @@
     "FAQAriaLabel": "Lien vers la page FAQ",
     "about": "À propos",
     "aboutAriaLabel": "Lien vers la page à propos",
+    "installTheApp": "Installer l'appli",
     "donate": "Faire un don"
   },
   "frame": {
@@ -326,6 +327,11 @@
     "vouching": "Me porter garant"
   },
   "logoutButton": "Se déconnecter",
+  "pwaBanner": {
+    "message": "En installant l'appli Tournesol, vous pourrez plus facilement comparer les vidéos que vous regardez, en les partageant depuis d'autres applications telles que YouTube.",
+    "ignore": "Ignorer",
+    "install": "Installer"
+  },
   "topbar": {
     "search": "Rechercher"
   },
