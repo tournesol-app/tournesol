@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-22 15:06+0000\n"
+"POT-Creation-Date: 2024-01-23 14:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,11 +84,11 @@ msgstr "Tournesol - confiance"
 msgid "Tournesol - preferences"
 msgstr "Tournesol - préférences"
 
-#: core/management/commands/notify_nocontrib_users.py:28
+#: core/management/commands/registration_reminder.py:30
 msgid "Thank you for your registration"
 msgstr "Merci pour votre inscription 🌻"
 
-#: core/management/commands/notify_nocontrib_users.py:29
+#: core/management/commands/registration_reminder.py:31
 msgid "Thank you for your contributions"
 msgstr "Merci pour vos contributions 🌻"
 
@@ -208,21 +208,60 @@ msgstr ""
 "(Ce courriel est un rappel automatique envoyé aux nouveaux utilisateurs et "
 "utilisatrices.)"
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:33
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:8
+#: core/templates/core/no_contrib_email/body_no_contrib.html:34
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:5
+msgid ""
+"Thank you for creating an account on the Tournesol collaborative platform. "
+"This participatory\n"
+"research project works thanks to the contributions of many people who "
+"volunteer their time to compare the videos they\n"
+"have seen on YouTube."
+msgstr ""
+"Merci d'avoir créé un compte sur la plateforme collaborative Tournesol. Ce "
+"projet de recherche participatif fonctionne grâce aux contributions de "
+"nombreuses personnes qui, bénévolement, prennent un peu de leur temps pour "
+"comparer les vidéos qu'ils et elles ont vues sur YouTube."
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:39
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:9
+msgid ""
+"We look forward to your contributions, if you have the time of course. Every "
+"comparison you\n"
+"make improves the recommendations made by the platform to thousands of "
+"users. It also helps advance scientific research\n"
+"on ethics and security of algorithms and recommender systems."
+msgstr ""
+"On espère pouvoir bénéficier bientôt de vos contributions. Si vous avez le "
+"temps bien entendu. Chaque comparaison que vous faites améliore les "
+"recomandations que la plateforme fait à des miliers de personnes. Elles "
+"aident également à faire avancer la recherche en éthique et en sécurité des "
+"algorithmes et systèmes de recommandation."
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:44
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:13
+msgid ""
+"If every registered user made at least 10 comparisons, the quality of the "
+"public database\n"
+"would double! This would be a huge step forward for the project."
+msgstr ""
+"Si chaque personne inscrite effectuait au moins 10 comparaisons, alors la "
+"qualité de la base de données publique doublerait ! Ce serait un énorme pas "
+"en avant pour le projet."
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:47
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:16
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:83
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:29
 msgid "Many thanks"
 msgstr "Merci beaucoup"
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:33
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:9
+#: core/templates/core/no_contrib_email/body_no_contrib.html:47
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:17
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:83
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:30
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
 
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:5
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:34
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:5
 msgid ""
