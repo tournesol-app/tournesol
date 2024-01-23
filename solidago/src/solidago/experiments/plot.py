@@ -15,7 +15,7 @@ def plot_file(results_filename):
     with open(results_filename) as results_file:
         results = json.load(results_file)
     
-    plot_filename = results_filename[:f-5] + ".pdf"
+    plot_filename = results_filename[:-5] + ".pdf"
     plot(results, plot_filename)
 
 def plot(results, plot_filename):

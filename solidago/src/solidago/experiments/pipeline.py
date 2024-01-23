@@ -1,10 +1,11 @@
 import sys
 import json
 import os
-
 import logging
 import numpy as np
 import pandas as pd
+
+from threading import Thread
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import Judgments, DataFrameJudgments
@@ -46,11 +47,22 @@ def sample_correlation(n_users, n_entities, seed, generative_model, pipeline) ->
     estimate = [global_model(e, row)[0] for e, row in entities.iterrows()]
     return np.corrcoef(truth, estimate)[0, 1]
     
-def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeline):
-    return [
-        sample_correlation(n_users, n_entities, seed, generative_model, pipeline) 
-        for seed in range(n_seeds)
-    ]
+def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeline, thread=True):
+    if not thread:
+        return [
+            sample_correlation(n_users, n_entities, seed, generative_model, pipeline) 
+            for seed in range(n_seeds)
+        ]
+    threads = list()
+    results = [None] * n_seeds
+    def r(seed):
+        results[seed] = sample_correlation(n_users, n_entities, seed, generative_model, pipeline)
+    threads = [Thread(target=r, args=(seed,)) for seed in range(n_seeds)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    return results
 
 def set_attr(x_parameter: str, x: float, generative_model, pipeline):
     x_list = x_parameter.split(".")
@@ -135,7 +147,9 @@ def run_from_hyperparameters_file(filename):
     assert os.path.exists(filename), f"File {filename} does not exist"
     
     filename_list = filename.split("/")
-    results_directory = "/".join(filename_list[:-1]) + "/results"
+    results_directory = filename_list[:-1]
+    results_directory.append("results")
+    results_directory = "/".join(results_directory)
     if not os.path.exists(results_directory):
         os.mkdir(results_directory)
     results_filename = results_directory + f"/{filename_list[-1]}"
