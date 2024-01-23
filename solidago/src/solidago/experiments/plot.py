@@ -14,8 +14,8 @@ def plot_file(results_filename):
     
     with open(results_filename) as results_file:
         results = json.load(results_file)
-    plot_filename = results_filename[-5:] + ".pdf"
     
+    plot_filename = results_filename[:f-5] + ".pdf"
     plot(results, plot_filename)
 
 def plot(results, plot_filename):
@@ -53,23 +53,23 @@ def plot(results, plot_filename):
     plot_filename: str
         Save file name
     """
-    plt.figure(figsize=results["figsize"])
     colors = [ "blue", "red", "green", "orange" , "purple", "black", "darkgreen"]
     linestyles = ["-", "--", "-.", ":", "-", "--", ":"]
-    assert len(z_values) < min(len(colors) and len(z_values) < len(linestyles))
+    assert len(results["zvalues"]) < min(len(colors), len(linestyles))
     
-    defaults = dict(title="", y_legend="", x_legend="", y_logscale=False, offset=0, 
+    defaults = dict(title="", y_legend="", x_legend="", ylogscale=False, offset=0, 
         vlines=[], hlines=[], fontsize=11, ranges=(None, None), figsize=(5, 5), confidence=True)
     for key in defaults:
         if key not in results:
             results[key] = defaults[key]
     
+    plt.figure(figsize=results["figsize"])
     has_defined_window = "window" in results
     if not has_defined_window:
-        results["window"] = { xmin: np.inf, ymin: np.inf, xmax: -np.inf, ymax: -np.inf }
+        results["window"] = dict(xmin=np.inf, ymin=np.inf, xmax=-np.inf, ymax=-np.inf)
     for index, z in enumerate(results["zvalues"]):
         legend, color, linestyle = results["zlegends"][index], colors[index], linestyles[index]
-        _, window = _seeds_plot(results["yvalues"][z], results, legend, color, linestyle)
+        _, window = _seeds_plot(results["yvalues"][index], results, legend, color, linestyle)
         if not has_defined_window:
             results["window"]["xmin"] = min(results["window"]["xmin"], window["xmin"])
             results["window"]["ymin"] = min(results["window"]["ymin"], window["ymin"])
@@ -88,7 +88,7 @@ def plot(results, plot_filename):
     plt.ylabel(results["ylegend"], size=results["fontsize"])
     plt.savefig(plot_filename, format="pdf", bbox_inches="tight")
     plt.close()
-    logger.info(f"The results were plotted in file {filename}")
+    logger.info(f"The results were plotted in file {plot_filename}")
 
 def _seeds_plot(yvalues, results, legend, color, linestyle, alpha_confidence=0.1):
     """ Plot a curve, given multiple runs for different seeds
@@ -104,12 +104,13 @@ def _seeds_plot(yvalues, results, legend, color, linestyle, alpha_confidence=0.1
     
     line = _plot(xvalues, ymeans, legend, linestyle, color, results["ylogscale"])
     if results["confidence"]:
-        confs = [1.96 * np.std(y) / len(y)**0.5 for y in yvalues[offset:]]]
-        plt.fill_between(xvalues, yvalues - confs, yvalues + confs, 
+        std_devs = np.array([1.96 * np.std(y) / len(y)**0.5 for y in yvalues[offset:]])
+        plt.fill_between(xvalues, ymeans - std_devs, ymeans + std_devs, 
             alpha=alpha_confidence, color=color)
     else:
         confs = [0] * len(x_values)
-    window = np.min(x_values), np.min(y_values - confs), np.max(x_values), np.max(y_values + confs)
+    window = dict(xmin=xvalues.min(), ymin=(ymeans - std_devs).min(), 
+        xmax=xvalues.max(), ymax=(ymeans + std_devs).max())
     return line, window
 
 def _plot(xvalues, yvalues, legend, linestyle, color, ylogscale):
