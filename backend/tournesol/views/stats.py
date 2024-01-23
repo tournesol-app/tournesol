@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, time, timezone
 from typing import List
 
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -94,14 +94,39 @@ class Statistics:
 
 
 @extend_schema_view(
-    get=extend_schema(description="Fetch all Tournesol's public statistics.")
+    get=extend_schema(
+        description="Fetch all Tournesol's public statistics.",
+        parameters=[
+            OpenApiParameter(
+                name="poll",
+                required=False,
+                description="Only get stats related to this poll.",
+            ),
+        ],
+    )
 )
 class StatisticsView(generics.GenericAPIView):
-    """Return popularity statistics about Tournesol"""
+    """
+    This view returns the contribution stats for all polls.
+    """
     permission_classes = [AllowAny]
     serializer_class = StatisticsSerializer
 
     _days_delta = 30
+
+    def _get_poll_stats(self, poll: Poll):
+        comparisons = self._get_comparisons_statistics(poll)
+        compared_entities = self._get_compared_entities_statistics(poll)
+        return {"comparisons": comparisons, "compared_entities": compared_entities}
+
+    def _build_stats_for_all_poll(self, polls: list[Poll], stats: Statistics):
+        for poll in polls:
+            poll_stats = self._get_poll_stats(poll)
+            stats.append_poll(
+                poll.name,
+                poll_stats["compared_entities"],
+                poll_stats["comparisons"],
+            )
 
     def get(self, request):
         statistics = Statistics()
@@ -112,15 +137,19 @@ class StatisticsView(generics.GenericAPIView):
         ).count()
         statistics.set_active_users(active_users, last_month_active_users)
 
-        for poll in Poll.objects.iterator():
-            compared_entities_statistics = self._get_compared_entities_statistics(poll)
-            comparisons_statistics = self._get_comparisons_statistics(poll)
-            statistics.append_poll(
-                poll.name,
-                compared_entities_statistics,
-                comparisons_statistics,
-            )
+        selected_poll = request.query_params.get("poll")
 
+        if selected_poll:
+            try:
+                poll = Poll.objects.get(name=selected_poll)
+            except Poll.DoesNotExist:
+                polls = []
+            else:
+                polls = [poll]
+        else:
+            polls = Poll.objects.iterator()
+
+        self._build_stats_for_all_poll(polls, statistics)
         return Response(StatisticsSerializer(statistics).data)
 
     def _get_compared_entities_statistics(self, poll):

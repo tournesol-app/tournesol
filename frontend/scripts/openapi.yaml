@@ -1083,6 +1083,12 @@ paths:
     get:
       operationId: stats_retrieve
       description: Fetch all Tournesol's public statistics.
+      parameters:
+      - in: query
+        name: poll
+        schema:
+          type: string
+        description: Only get stats related to this poll.
       tags:
       - stats
       security:
@@ -2700,11 +2706,13 @@ components:
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
         entity_b_contexts:
           type: array
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
         criteria_scores:
           type: array
           items:
@@ -2832,11 +2840,13 @@ components:
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
         entity_b_contexts:
           type: array
           items:
             $ref: '#/components/schemas/EntityContext'
           readOnly: true
+          default: []
       required:
       - criteria_scores
       - entity_a
@@ -4358,6 +4368,12 @@ components:
       properties:
         entity:
           $ref: '#/components/schemas/RelatedEntity'
+        entity_contexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityContext'
+          readOnly: true
+          default: []
         individual_rating:
           allOf:
           - $ref: '#/components/schemas/ExtendedInvididualRating'
@@ -4373,6 +4389,7 @@ components:
       required:
       - collective_rating
       - entity
+      - entity_contexts
       - individual_rating
       - subsample_metadata
     SubSampleMetadata:

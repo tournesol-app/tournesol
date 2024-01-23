@@ -33,6 +33,7 @@ class RandomRecommendationBaseAPIView(PollRecommendationsBaseAPIView):
         poll = self.poll_from_url
         queryset = Entity.objects.all()
         queryset, _ = self.filter_by_parameters(self.request, queryset, poll)
+        queryset = queryset.with_prefetched_scores(poll_name=poll.name)
         queryset = queryset.with_prefetched_poll_ratings(poll_name=poll.name)
         queryset = queryset.filter_safe_for_poll(poll)
         queryset = queryset.order_by("?")

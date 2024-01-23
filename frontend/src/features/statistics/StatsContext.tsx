@@ -5,15 +5,20 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Statistics, StatsService } from 'src/services/openapi';
+import {
+  CancelError,
+  CancelablePromise,
+  Statistics,
+  StatsService,
+} from 'src/services/openapi';
 
 // Stats are considered outdated after this amount of miliseconds.
 const EXPIRATION_TIME = 4000;
 
 interface StatsContextValue {
   stats: Statistics;
-  getStats: () => Statistics;
-  refreshStats: () => void;
+  getStats: (poll: string) => Statistics;
+  refreshStats: (poll: string) => void;
 }
 
 const initialState: Statistics = {
@@ -36,39 +41,63 @@ export const StatsLazyProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const loading = useRef(false);
+  const loading = useRef<CancelablePromise<Statistics> | null>(null);
   const lastRefreshAt = useRef(0);
+  const lastPoll = useRef<string | undefined>(undefined);
 
   const [stats, setStats] = useState(initialState);
 
-  const refreshStats = useCallback(async () => {
-    const newStats = await StatsService.statsRetrieve();
-    loading.current = false;
-    lastRefreshAt.current = Date.now();
-    setStats(newStats);
+  const refreshStats = useCallback(async (poll: string) => {
+    if (loading.current) {
+      loading.current.cancel();
+    }
+    loading.current = StatsService.statsRetrieve({ poll });
+    try {
+      const newStats = await loading.current;
+      lastRefreshAt.current = Date.now();
+      loading.current = null;
+      setStats(newStats);
+    } catch (err) {
+      if (err instanceof CancelError) {
+        return;
+      }
+      console.error(err);
+    }
   }, []);
 
   /**
    * Initialize the stats if they are empty or refresh them if they are
    * outdated.
+   *
+   * Note that the getStats implementation assumes that only the stats of a
+   * single poll are displayed per page.
    */
-  const getStats = useCallback(() => {
-    const currentTime = Date.now();
+  const getStats = useCallback(
+    (poll: string) => {
+      const currentTime = Date.now();
 
-    if (loading.current) {
+      if (loading.current) {
+        if (poll === lastPoll.current) {
+          return stats;
+        } else {
+          lastPoll.current = poll;
+          refreshStats(poll);
+        }
+      } else {
+        if (
+          stats.polls.length === 0 ||
+          poll !== lastPoll.current ||
+          currentTime - lastRefreshAt.current >= EXPIRATION_TIME
+        ) {
+          lastPoll.current = poll;
+          refreshStats(poll);
+        }
+      }
+
       return stats;
-    }
-
-    if (
-      stats.polls.length === 0 ||
-      currentTime - lastRefreshAt.current >= EXPIRATION_TIME
-    ) {
-      loading.current = true;
-      refreshStats();
-    }
-
-    return stats;
-  }, [stats, refreshStats]);
+    },
+    [stats, refreshStats]
+  );
 
   const contextValue = useMemo(
     () => ({

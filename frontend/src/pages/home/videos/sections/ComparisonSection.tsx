@@ -14,7 +14,7 @@ const ComparisonSection = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const stats = useStats();
+  const stats = useStats({ poll: pollName });
   const pollStats = getPollStats(stats, pollName);
 
   const color = '#fff';
