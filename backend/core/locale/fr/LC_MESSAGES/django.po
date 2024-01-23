@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-23 14:13+0000\n"
+"POT-Creation-Date: 2024-01-23 14:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -239,6 +239,8 @@ msgstr ""
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:44
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:13
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:85
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:30
 msgid ""
 "If every registered user made at least 10 comparisons, the quality of the "
 "public database\n"
@@ -250,15 +252,15 @@ msgstr ""
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:47
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:16
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:83
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:29
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:88
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:33
 msgid "Many thanks"
 msgstr "Merci beaucoup"
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:47
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:17
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:83
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:30
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:88
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:34
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
 
@@ -267,45 +269,48 @@ msgstr "L'équipe Tournesol"
 msgid ""
 "We would like to thank you for taking the time to contribute to the project. "
 "Your comparisons\n"
-"already improve the public dataset and impact the recommendations made to "
-"thousands of users."
+"already improve the public dataset and the recommendations made to thousands "
+"of users."
 msgstr ""
 "Nous vous remercions d'avoir pris le temps de contribuer au projet. Vos "
-"comparaisons améliorent déjà la base de données publique et impactent les "
+"comparaisons améliorent déjà la base de données publique et les "
 "recommandations faites à des milliers d'utilisateur·rices."
 
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:38
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:8
 msgid ""
-"This participatory research project only works thanks to contributors like "
-"you. We hope to\n"
-"see you back on the Tournesol platform from time to time. Every comparison "
-"you make will help advance scientific\n"
-"research on ethics and security of algorithms and recommender systems."
+"This participatory research project works thanks to contributors who, like "
+"you, volunteer\n"
+"their time to compare videos. If you have time, we hope to see you again on "
+"the Tournesol platform. Every comparison you\n"
+"make will help advance scientific research on ethics and security of "
+"algorithms and recommender\n"
+"systems."
 msgstr ""
-"Ce projet de recherche participatif fonctionne grâce à des "
-"contributeur·rices comme vous, et nous espérons vous revoir de temps en "
-"temps sur la plateforme Tournesol. Chaque comparaison que vous faites "
-"contribue à faire avancer la recherche scientifique sur l'éthique et la "
-"sécurité des algorithmes et des systèmes de recommandation."
+"Ce projet de recherche participatif fonctionne grâce à des personnes qui, "
+"comme vous, donnent de leur temps pour comparer des videos. Si vous avez le "
+"temps, nous espérons vous revoir sur la plateforme Tournesol. Chaque "
+"comparaison que vous faites contribue à faire avancer la recherche "
+"scientifique sur l'éthique et la sécurité des algorithmes et des systèmes de "
+"recommandation."
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:42
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:12
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:43
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:13
 msgid "Here are examples of videos you could compare:"
 msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:49
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:14
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:50
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:15
 msgid "Top videos of the past 30 days"
 msgstr "Top des vidéos du mois dernier"
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:57
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:17
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:58
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:18
 msgid "Top short videos of the past year"
 msgstr "Top des vidéos courtes de l'année passée"
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:62
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:20
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:63
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:21
 msgid ""
 "You can also install the Tournesol browser extension to easily compare "
 "videos directly from\n"
@@ -315,12 +320,12 @@ msgstr ""
 "des vidéos directement depuis YouTube, ou pour les ajouter à votre liste à "
 "comparer plus tard."
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:71
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:23
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:72
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:24
 msgid "Install on Firefox"
 msgstr "Installer sur Firefox"
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:79
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:26
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:80
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:27
 msgid "Install on Chrome"
 msgstr "Installer sur Chrome"
