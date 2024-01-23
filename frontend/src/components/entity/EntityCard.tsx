@@ -160,6 +160,7 @@ const EntityCard = ({
             data-testid="video-card-info"
             container
             direction="column"
+            flexWrap="nowrap"
           >
             <EntityCardTitle
               uid={entity.uid}

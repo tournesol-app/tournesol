@@ -1,15 +1,75 @@
 {
   "short_name": "Tournesol",
   "name": "Tournesol",
+  "description": "Compare online content and contribute to the development of responsible content recommendations.",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "src": "/icons/favicon.ico",
+      "sizes": "48x48",
       "type": "image/x-icon"
+    },
+    {
+      "src": "/icons/favicon-128x128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "/icons/favicon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/favicon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icons/maskable-icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
-  "start_url": ".",
+  "id": "/",
+  "start_url": "/?utm_source=pwa",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#ffc800",
+  "background_color": "#a09b87",
+  "share_target": {
+    "action": "/shared-content",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Compare",
+      "url": "/comparison?utm_source=pwa",
+      "icons": [{ "src": "/icons/compare.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Recommendations",
+      "url": "/recommendations?utm_source=pwa",
+      "icons": [{ "src": "/icons/recommendations.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "/images/screenshot_comparison_desktop.png",
+      "sizes": "1300x850",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tournesol comparison page on Desktop"
+    },
+    {
+      "src": "/images/screenshot_comparison_mobile.png",
+      "sizes": "1290x2796",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tournesol comparison page on Mobile"
+    }
+  ]
 }

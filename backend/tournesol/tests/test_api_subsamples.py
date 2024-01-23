@@ -5,7 +5,9 @@ from rest_framework.test import APIClient
 from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models import Poll
+from tournesol.models.entity_context import EntityContext, EntityContextLocale
 from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFactory
 
@@ -82,7 +84,6 @@ class SubSamplesListTestCase(TestCase):
         # different buckets.
         self.assertEqual(len(results), 20)
 
-
         score_step = 100 / self.user1_ratings_nb
 
         # The results:
@@ -94,6 +95,7 @@ class SubSamplesListTestCase(TestCase):
             self.assertIn(
                 item["entity"]["uid"], [video.uid for video in self.poll1_videos1[from_:to]]
             )
+            self.assertEqual(item["entity_contexts"], [])
             self.assertIn("individual_rating", item)
             self.assertIn("collective_rating", item)
             self.assertEqual(item["subsample_metadata"]["bucket"], idx)
@@ -126,6 +128,7 @@ class SubSamplesListTestCase(TestCase):
         #  - only contain entities rated by the logged-in user
         for idx, item in enumerate(results):
             self.assertEqual(item["entity"]["uid"], self.poll1_videos2[idx].uid)
+            self.assertEqual(item["entity_contexts"], [])
             self.assertIn("individual_rating", item)
             self.assertIn("collective_rating", item)
             self.assertEqual(item["subsample_metadata"]["bucket"], idx)
@@ -133,7 +136,40 @@ class SubSamplesListTestCase(TestCase):
             idv_score = next(filter(lambda x: x["criteria"] == self.poll1.main_criteria,
                         item["individual_rating"]["criteria_scores"]))["score"]
 
-            self.assertEqual(idv_score, 100 - score_step *  (idx + 1))
+            self.assertEqual(idv_score, 100 - score_step * (idx + 1))
+
+    def test_support_entity_contexts(self):
+        user3 = UserFactory(username="username3")
+        video = self._create_contributor_ratings(self.poll1, user3, 1)[0]
+
+        EntityPollRatingFactory.create(
+            poll=self.poll1,
+            entity=video,
+        )
+
+        entity_context = EntityContext.objects.create(
+            name="context_safe",
+            origin=EntityContext.ASSOCIATION,
+            predicate={"video_id": video.metadata["video_id"]},
+            unsafe=False,
+            enabled=True,
+            poll=self.poll1,
+        )
+
+        entity_context_text = EntityContextLocale.objects.create(
+            context=entity_context,
+            language="en",
+            text="Hello context",
+        )
+
+        self.client.force_authenticate(user3)
+        response = self.client.get(self.base_subsamples_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        result = response.data["results"][0]
+        self.assertEqual(result["entity"]["uid"], video.uid)
+        self.assertEqual(len(result["entity_contexts"]), 1)
+        self.assertEqual(result["entity_contexts"][0]["text"], entity_context_text.text)
 
     def test_param_ntile_lt_rated_entities(self):
         """

@@ -12,13 +12,9 @@ import {
 
 import { frontendHost } from './config.js';
 
-const oversamplingRatioForRecentVideos = 3;
-const oversamplingRatioForOldVideos = 50;
-// Higher means videos recommended can come from further down the recommandation list
-// and returns videos that are more diverse on reload
-
-const recentVideoProportion = 0.75;
-const recentVideoProportionForAdditionalVideos = 0.5;
+const RECENT_VIDEOS_RATIO = 0.75;
+const RECENT_VIDEOS_EXTRA_RATIO = 0.5;
+const BUNDLE_OVERFETCH_FACTOR = 3;
 
 /**
  * Build the extension context menu.
@@ -178,9 +174,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   ) {
     const poll_name = 'videos';
 
-    const api_path = `polls/${poll_name}/recommendations/`;
-
-    const request_recommendations = async (options) => {
+    const request_recommendations = async (api_path, options) => {
       const resp = await fetchTournesolApi(
         `${api_path}${options ? '?' : ''}${options}`
       );
@@ -192,26 +186,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     };
 
     if (request.message === 'getTournesolRecommendations') {
-      // Compute the number of videos to load in each category
-      const recentVideoToLoad = Math.round(
-        request.videosNumber *
-          oversamplingRatioForRecentVideos *
-          recentVideoProportion
+      const api_path = `polls/${poll_name}/recommendations/random/`;
+
+      const nbrPerRow = request.videosNumber;
+      const extraNbr = request.additionalVideosNumber;
+
+      const recentToLoadRow1 = Math.round(nbrPerRow * RECENT_VIDEOS_RATIO);
+      const oldToLoadRow1 = Math.round(nbrPerRow * (1 - RECENT_VIDEOS_RATIO));
+
+      const recentToLoadExtra = Math.round(
+        extraNbr * RECENT_VIDEOS_EXTRA_RATIO
       );
-      const oldVideoToLoad = Math.round(
-        request.videosNumber *
-          oversamplingRatioForOldVideos *
-          (1 - recentVideoProportion)
-      );
-      const recentAdditionalVideoToLoad = Math.round(
-        request.additionalVideosNumber *
-          oversamplingRatioForRecentVideos *
-          recentVideoProportionForAdditionalVideos
-      );
-      const oldAdditionalVideoToLoad = Math.round(
-        request.additionalVideosNumber *
-          oversamplingRatioForOldVideos *
-          (1 - recentVideoProportionForAdditionalVideos)
+      const oldToLoadExtra = Math.round(
+        extraNbr * (1 - RECENT_VIDEOS_EXTRA_RATIO)
       );
 
       const process = async () => {
@@ -219,15 +206,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const recommendationsLangs =
           await getRecommendationsLanguagesAuthenticated();
 
-        // Only one request for both videos and additional videos
         const recentParams = new URLSearchParams([
           ['date_gte', threeWeeksAgo],
-          ['limit', recentVideoToLoad + recentAdditionalVideoToLoad],
+          [
+            'limit',
+            (recentToLoadRow1 + recentToLoadExtra) * BUNDLE_OVERFETCH_FACTOR,
+          ],
+          ['bundle', request.queryParamBundle],
         ]);
 
         const oldParams = new URLSearchParams([
           ['date_lte', threeWeeksAgo],
-          ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
+          ['limit', (oldToLoadRow1 + oldToLoadExtra) * BUNDLE_OVERFETCH_FACTOR],
+          ['bundle', request.queryParamBundle],
         ]);
 
         recommendationsLangs.forEach((lang) => {
@@ -237,80 +228,69 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           }
         });
 
-        const [recent, old] = await Promise.all([
-          request_recommendations(recentParams),
-          request_recommendations(oldParams),
+        const [poolRecent, poolOld] = await Promise.all([
+          request_recommendations(api_path, recentParams),
+          request_recommendations(api_path, oldParams),
         ]);
 
-        // Cut the response into the part for the videos and the one for the additional videos
-        const videoRecent = recent.slice(0, recentVideoToLoad);
-        const videoOld = old.slice(0, oldVideoToLoad);
-        const additionalVideoRecent = recent.slice(recentVideoToLoad);
-        const additionalVideoOld = old.slice(oldVideoToLoad);
+        const videosRecent = poolRecent.slice(0, recentToLoadRow1);
+        const videosRecentExtra = poolRecent.slice(recentToLoadRow1);
+        const videosOld = poolOld.slice(0, oldToLoadRow1);
+        const videosOldExtra = poolOld.slice(oldToLoadRow1);
 
-        // Compute the actual number of videos from each category that will appear in the feed
-        // If there is not enough recent videos, use old ones of the same category instead
-        let numberOfRecentVideoToRespond = Math.round(
-          request.videosNumber * recentVideoProportion
-        );
-        if (numberOfRecentVideoToRespond > videoRecent.length) {
-          numberOfRecentVideoToRespond = videoRecent.length;
+        // Compute the actual number of videos from each category that will appear in the feed.
+        // If there is not enough recent videos, use old ones of the same category instead.
+        let recentRow1Nbr = Math.round(nbrPerRow * RECENT_VIDEOS_RATIO);
+        if (recentRow1Nbr > videosRecent.length) {
+          recentRow1Nbr = videosRecent.length;
         }
-        const numberOfOldVideoToRespond =
-          request.videosNumber - numberOfRecentVideoToRespond;
 
-        let numberOfRecentAdditionalVideoToRespond = Math.round(
-          request.additionalVideosNumber *
-            recentVideoProportionForAdditionalVideos
-        );
-        if (
-          numberOfRecentAdditionalVideoToRespond > additionalVideoRecent.length
-        ) {
-          numberOfRecentAdditionalVideoToRespond = additionalVideoRecent.length;
+        const oldRow1Nbr = nbrPerRow - recentRow1Nbr;
+
+        let recentExtraNbr = Math.round(extraNbr * RECENT_VIDEOS_EXTRA_RATIO);
+        if (recentExtraNbr > videosRecentExtra.length) {
+          recentExtraNbr = videosRecentExtra.length;
         }
-        const numberOfOldAdditionalVideoToRespond =
-          request.additionalVideosNumber -
-          numberOfRecentAdditionalVideoToRespond;
 
-        // Select randomly which videos are selected, merge them, and shuffle them
-        // (separely for videos and additional videos)
-        const recentVideos = getRandomSubarray(
-          videoRecent,
-          numberOfRecentVideoToRespond
+        const oldExtraNbr = extraNbr - recentExtraNbr;
+
+        // Select randomly which videos are displayed, merge them, and shuffle them
+        // (separely for videos and extra videos).
+        const selectedRecentRow1 = getRandomSubarray(
+          videosRecent,
+          recentRow1Nbr
         );
-        const oldVideos = getRandomSubarray(
-          videoOld,
-          numberOfOldVideoToRespond
-        );
-        const videos = getRandomSubarray(
-          [...oldVideos, ...recentVideos],
-          request.videosNumber
+        const selectedOldRow1 = getRandomSubarray(videosOld, oldRow1Nbr);
+
+        const row1 = getRandomSubarray(
+          [...selectedRecentRow1, ...selectedOldRow1],
+          nbrPerRow
         );
 
-        const additionalRecentVideos = getRandomSubarray(
-          additionalVideoRecent,
-          numberOfRecentAdditionalVideoToRespond
+        const selectedRecentExtra = getRandomSubarray(
+          videosRecentExtra,
+          recentExtraNbr
         );
-        const additionalOldVideos = getRandomSubarray(
-          additionalVideoOld,
-          numberOfOldAdditionalVideoToRespond
-        );
-        const additionalVideos = getRandomSubarray(
-          [...additionalRecentVideos, ...additionalOldVideos],
-          request.additionalVideosNumber
+        const selectedOldExtra = getRandomSubarray(videosOldExtra, oldExtraNbr);
+
+        const extraRows = getRandomSubarray(
+          [...selectedRecentExtra, ...selectedOldExtra],
+          extraNbr
         );
 
         return {
-          data: [...videos, ...additionalVideos],
+          data: [...row1, ...extraRows],
           recommandationsLanguages: recommendationsLangs.join(','),
-          loadVideos: request.videosNumber > 0,
-          loadAdditionalVideos: request.additionalVideosNumber > 0,
+          loadVideos: nbrPerRow > 0,
+          loadAdditionalVideos: extraNbr > 0,
         };
       };
       process().then(sendResponse);
       return true;
     } else if (request.message === 'getTournesolSearchRecommendations') {
       const process = async () => {
+        const api_path = `polls/${poll_name}/recommendations/`;
+
         const videosNumber = request.videosNumber;
         const recommendationsLangs =
           await getRecommendationsLanguagesAuthenticated();
@@ -330,7 +310,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
 
         const [videosList] = await Promise.all([
-          request_recommendations(params),
+          request_recommendations(api_path, params),
         ]);
 
         return {
