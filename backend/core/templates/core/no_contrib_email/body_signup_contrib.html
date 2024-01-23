@@ -5,7 +5,6 @@
     <style>
       body {
         margin: 8px;
-        margin-top: 0;
         padding: 0;
       }
       .italic {
@@ -40,51 +39,12 @@ their time to compare videos. If you have time, we hope to see you again on the 
 make will help advance scientific research on ethics and security of algorithms and recommender
 systems.{% endblocktranslate %}
     </p>
-    <p>{% translate "Here are examples of videos you could compare:" %}</p>
-    <ul>
-      <li>
-        <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder"
-           rel="noopener"
-           target="_blank"
-        >
-          {% translate "Top videos of the past 30 days" %}
-        </a>
-      </li>
-      <li>
-        <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder"
-           rel="noopener"
-           target="_blank"
-        >
-          {% translate "Top short videos of the past year" %}
-        </a>
-      </li>
-    </ul>
-    <p>
-      {% blocktranslate %}You can also install the Tournesol browser extension to easily compare videos directly from
-YouTube, or to add them to your rate-later list.{% endblocktranslate %}
-    </p>
-        <ul>
-      <li>
-        <a href="https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/"
-           rel="noopener"
-           target="_blank"
-        >
-          {% translate "Install on Firefox" %}
-        </a>
-      </li>
-      <li>
-        <a href="https://chromewebstore.google.com/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla"
-           rel="noopener"
-           target="_blank"
-        >
-          {% translate "Install on Chrome" %}
-        </a>
-      </li>
-    </ul>
     <p>
       {% blocktranslate %}If every registered user made at least 10 comparisons, the quality of the public database
 would double! This would be a huge step forward for the project.{% endblocktranslate %}
     </p>
+    <p>{% translate "Here are examples of videos you could compare:" %}</p>
+    {% include "core/no_contrib_email/comparisons_example.inc.html" %}
     <p>{% translate "Many thanks" %},<br>{% translate "The Tournesol team" %}</p>
   </body>
 </html>
