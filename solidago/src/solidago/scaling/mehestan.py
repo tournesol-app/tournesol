@@ -8,7 +8,7 @@ from .base import Scaling
 from solidago.privacy_settings import PrivacySettings
 from solidago.scoring_model import ScoringModel, ScaledScoringModel
 from solidago.voting_rights import VotingRights
-from solidago.primitives import qr_median, qr_uncertainty, br_mean
+from solidago.primitives import qr_median, qr_uncertainty, lipschitz_resilient_mean
 
 logger = logging.getLogger(__name__)
 
@@ -399,7 +399,7 @@ class Mehestan(Scaling):
             translations[user][1] is the uncertainty on the multiplicator
         """
         return {
-            u: _aggregate(self.lipschitz / 8, diffs[u], 0, self.error, br_mean)
+            u: _aggregate(self.lipschitz / 8, diffs[u], 0, self.error, lipschitz_resilient_mean)
             for u in diffs
         }    
 

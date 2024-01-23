@@ -239,7 +239,7 @@ def clip_mean(
     return np.sum(voting_rights * clip(values, center, radius)) / np.sum(voting_rights)
 
 
-def br_mean(
+def lipschitz_resilient_mean(
     lipschitz: float, 
     values: npt.ArrayLike, 
     voting_rights: Union[npt.ArrayLike, float] = 1, 
@@ -248,7 +248,7 @@ def br_mean(
     default_value: float=0,
     error: float=1e-5
 ):
-    """ Byzantine-robustified mean. Lipschitz-resilient mean estimator.
+    """ Lipschitz-robustified mean. Lipschitz-resilient mean estimator.
     It provably returns the mean, given sufficient participation and bounded values
     
     See "Robust Sparse Voting", by Youssef Allouah, Rachid Guerraoui, Lê Nguyên Hoang
