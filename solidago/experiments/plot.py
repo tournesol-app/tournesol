@@ -1,128 +1,127 @@
 import json
+import os
+import logging
 
 from matplotlib import pyplot as plt
-from numpy import sort, mean, std
 import numpy as np
 
-def plot_file(data_id):
-	with open(f"results/{data_id}.json") as f:
-		plot(json.load(f), data_id)	
+logger = logging.getLogger(__name__)
 
-def plot(data, data_id):
-	xlabel = data["hyperparameters"]["xlabel"]
-	zlabel = data["hyperparameters"]["zlabel"]
-	
-	if xlabel == "learn_model_size": xlegend = "Dimension d of the trained model"
-	else: xlegend = xlabel
-	
-	# We collect the x and z values, from the different experiments
-	x_values, z_values = set(), set()
-	for r in data["results"]:
-		for h in r["hyperparameters"]:
-			if h == xlabel:
-				x_values.add(r["hyperparameters"][h])
-			elif zlabel is not None and h == zlabel:
-				z_values.add(r["hyperparameters"][h])
-	x_values, z_values = list(x_values), list(z_values)
-	
-	# Finally, we consider different y values, and plot a curve for each of them
-	ylabels = ("gradient_norm", "honest_loss", "value")
-	ylegends = ("Norm of estimated gradient", "Value of honest loss", "Statistical error")
-	titles = ("Convergence of gradient descent", "Loss over honest data", "")
-	y_logscales = (False, False, False)
-	
-	for ylabel, ylegend, title, y_logscale in zip(ylabels, ylegends, titles, y_logscales):
-		plot_data = { z: dict() for z in z_values } if zlabel is not None else { 0: dict() }
-		for r in data["results"]:	
-			x = r["hyperparameters"][xlabel]
-			z = r["hyperparameters"][zlabel] if zlabel is not None else 0
-			plot_data[z][x] = list()
-			for seed_result in r["results"]:
-				plot_data[z][x].append(seed_result[ylabel])
-		seeds_plot_together(plot_data, title, xlegend, ylegend, zlabel,
-			f"results/{data_id}_{ylabel}.pdf", y_logscale)
-	
-	print("Sucessful plotting")
 
-def seeds_plot_together(data, title="", 
-	xlegend=None, ylegend=None, zlabel=None, 
-	save_name=None, y_logscale=False, legend=None,
-	offset=0, vlines=[], hlines=[], 
-	fsize=11, ranges=(None, None), figsize=(5, 5), confidence=True
-):
+def plot_file(results_filename):
+    assert results_filename[-5:] == ".json", "json files only"
+    assert os.path.exists(results_filename), f"File {results_filename} does not exist"
+    
+	with open(results_filename) as results_file:
+		results = json.load(results_file)
+    
+    plot_filename = results_filename[-5:] + ".pdf"
+    plot(results, plot_filename)
+
+def plot(results, plot_filename):
 	""" Plots multiple curves, each given by multiple random seeds.
-	Args:
-		data (dict) 				data[z_value][seed][x_value] yields a y_value
-		legends (list[str])	One legend per seeds_curve
-		x_values (list[floats])		list of x-coordinates for each curve point
-		title (str)					Title of the plot
-		xlabel (str)				x-axis label
-		ylabel (str)				y-axis label
-		save_name (str)			Save file name
-		log (bool)					Y-scale in log-scale?
-		offset (int)				Do not plot the first offset values
-		vlines (list[float])	x-coordinate lines to be drawn
-		hlines (list[float])	y-coordinate lines to be drawn
-		fsize (int)					Font size
-		figsize							Figure size
-		confidence					Plot confidence intervals given by different seeds
+	
+    Parameters
+    ----------
+    results: dict
+        results["xvalues"]: list[float] 
+        results["zvalues"]: list[float]
+        results["zlegends"]: list[str]
+            One legend per seeds_curve
+        results["yvalues"]: list[list[float]] or list[list[list[float]]]
+            results["yvalues"][z][i] either the y-value, 
+            or a list of y-values obtained from different random seeds.
+        Optionally, we may have the entries
+            results["title"]: str
+            results["ylegend"]: str
+            results["xlegend"]: str
+            results["ylogscale"]: bool
+                Y-scale in log-scale?
+            results["offset"]: int
+                Do not plot the first offset values
+            results["vlines"]: list[float]
+                x-coordinate lines to be drawn
+            results["hlines"]: list[float]
+                y-coordinate lines to be drawn
+            results["fontsize"]: int
+                Font size
+            results["figsize"]: int
+                Figure size
+            results["confidence"]: bool
+                Plot confidence intervals given by different seeds
+            results["window"]: { "xmin": float, "ymin": float, "xmax": float, "ymax": float }
+    plot_filename: str
+        Save file name
 	"""
-	plt.figure(figsize = figsize)
+	plt.figure(figsize=results["figsize"])
 	colors = [ "blue", "red", "green", "orange" , "purple", "black", "darkgreen"]
 	linestyles = ["-", "--", "-.", ":", "-", "--", ":"]
-	windows = list()
-	lines = []
-	data_keys = list(data.keys())
-	data_keys.sort()
-	for z, color, linestyle in zip(data_keys, colors, linestyles):
-		if zlabel == "n_poisons": zlegend = f"{z} poisons"
-		else: zlegend = z
-		line, window = _seeds_plot(data[z], zlegend, color, linestyle, y_logscale, offset, confidence)
-		lines.append(line)
-		windows.append(window)
-	xmin, ymin = min([w[0] for w in windows]), min([w[1] for w in windows])
-	xmax, ymax = max([w[2] for w in windows]), max([w[3] for w in windows])
-	plt.gca().set_xlim([xmin, xmax])
-	plt.gca().set_ylim([ymin, ymax])
-	for x in vlines:
-		plt.axvline(x)
-	for y in hlines:
-		plt.axhline(y, color = "red")
-	plt.legend(prop={'size': fsize})
-	plt.title(title)
-	plt.xlabel(xlegend, size=fsize)
-	plt.ylabel(ylegend, size=fsize)
-	if save_name:
-		plt.savefig(save_name, format="pdf", bbox_inches="tight")
+    assert len(z_values) < min(len(colors) and len(z_values) < len(linestyles))
+    
+    defaults = dict(title="", y_legend="", x_legend="", y_logscale=False, offset=0, 
+        vlines=[], hlines=[], fontsize=11, ranges=(None, None), figsize=(5, 5), confidence=True)
+    for key in defaults:
+        if key not in results:
+            results[key] = defaults[key]
+    
+    has_defined_window = "window" in results
+    if not has_defined_window:
+        results["window"] = { xmin: np.inf, ymin: np.inf, xmax: -np.inf, ymax: -np.inf }
+	for index, z in enumerate(results["zvalues"]):
+        legend, color, linestyle = results["zlegends"][index], colors[index], linestyles[index]
+		_, window = _seeds_plot(results["yvalues"][z], results, legend, color, linestyle)
+		if not has_defined_window:
+            results["window"]["xmin"] = min(results["window"]["xmin"], window["xmin"])
+            results["window"]["ymin"] = min(results["window"]["ymin"], window["ymin"])
+            results["window"]["xmax"] = max(results["window"]["xmax"], window["xmax"])
+            results["window"]["ymax"] = max(results["window"]["ymax"], window["ymax"])
+    
+	plt.gca().set_xlim([results["window"]["xmin"], results["window"]["xmax"]])
+	plt.gca().set_ylim([results["window"]["ymin"], results["window"]["ymax"]])
+	for vline in results["vlines"]:
+		plt.axvline(vline)
+	for hline in results["hlines"]:
+		plt.axhline(hline, color = "red")
+	plt.legend(prop={'size': results["fontsize"]})
+	plt.title(results["title"])
+	plt.xlabel(results["xlegend"], size=results["fontsize"])
+	plt.ylabel(results["ylegend"], size=results["fontsize"])
+    plt.savefig(plot_filename, format="pdf", bbox_inches="tight")
 	plt.close()
+    logger.info(f"The results were plotted in file {filename}")
 
-def _seeds_plot(data, z=None, color=None, 
-		linestyle=None, y_logscale=False, offset=0, confidence=True):
+def _seeds_plot(yvalues, results, legend, color, linestyle, alpha_confidence=0.1):
 	""" Plot a curve, given multiple runs for different seeds
-	Args:
-		data (dict)		data[x_value] is a list of y_values
+	
+    Parameters
+    ----------
+    yvalues: list[float] or list[list[float]]
+        Either a list of yvalues, or a list of list of yvalues obtained from different random seeds.
 	"""
-	x_values = sort(list(data))[offset:]
-	y_values = np.array([mean(data[x]) for x in x_values])
-	line = _plot(x_values, y_values, z, linestyle, color, y_logscale)
-	if confidence:
-		confs = [1.96 * std(data[x]) / len(data[x])**0.5 for x in x_values]
-		plt.fill_between(list(x_values), y_values - confs, y_values + confs, alpha=0.1, color=color)
+    offset = results["offset"]
+	xvalues = np.array(results["xvalues"][offset:])
+    ymeans = np.array([np.mean(y) for y in yvalues[offset:]])
+    
+	line = _plot(xvalues, ymeans, legend, linestyle, color, results["ylogscale"])
+	if results["confidence"]:
+		confs = [1.96 * np.std(y) / len(y)**0.5 for y in yvalues[offset:]]]
+		plt.fill_between(xvalues, yvalues - confs, yvalues + confs, 
+            alpha=alpha_confidence, color=color)
 	else:
 		confs = [0] * len(x_values)
 	window = np.min(x_values), np.min(y_values - confs), np.max(x_values), np.max(y_values + confs)
 	return line, window
 
-def _plot(x_values, y_values, z, linestyle, color, y_logscale):
-	if z is not None and z != 0:
-		if y_logscale:
-			return plt.semilogy(x_values, y_values, label=z, linestyle=linestyle, color=color)
+def _plot(xvalues, yvalues, legend, linestyle, color, ylogscale):
+	if legend is not None and legend != 0:
+		if ylogscale:
+			return plt.semilogy(xvalues, yvalues, label=legend, linestyle=linestyle, color=color)
 		else:
-			return plt.plot(x_values, y_values, label=z, linestyle=linestyle, color=color)
+			return plt.plot(xvalues, yvalues, label=legend, linestyle=linestyle, color=color)
 	else:
-		if y_logscale:
-			return plt.semilogy(x_values, y_values, linestyle=linestyle, color=color)
+		if ylogscale:
+			return plt.semilogy(xvalues, yvalues, linestyle=linestyle, color=color)
 		else:
-			return plt.plot(x_values, y_values, linestyle=linestyle, color=color)
+			return plt.plot(xvalues, yvalues, linestyle=linestyle, color=color)
 
 

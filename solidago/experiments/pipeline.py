@@ -27,70 +27,10 @@ from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShif
 from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
 from solidago.post_process import PostProcess, Squash
 
+from .plot import plot, plot_file
+
 logger = logging.getLogger(__name__)
 
-    
-generative_model = GenerativeModel(
-    user_model=NormalUserModel(
-        p_trustworthy= 0.8,
-        p_pretrusted= 0.2,
-        zipf_vouch= 2.0,
-        zipf_compare= 1.5,
-        poisson_compare= 30.0,
-        n_comparisons_per_entity=3.0,
-        svd_dimension=5,
-    ),
-    vouch_model=ErdosRenyiVouchModel(),
-    entity_model=NormalEntityModel(
-        svd_dimension=5,
-    ),
-    engagement_model=SimpleEngagementModel(
-        p_per_criterion={"0": 1.0}, 
-        p_private=0.2
-    ),
-    comparison_model=KnaryGBT(n_options=21, comparison_max=10)
-)
-pipeline = Pipeline(
-    trust_propagation=LipschiTrust(
-        pretrust_value=0.8,
-        decay=0.8,
-        sink_vouch=5.0,
-        error=1e-8
-    ),
-    voting_rights=AffineOvertrust(
-        privacy_penalty=0.5, 
-        min_overtrust=2.0,
-        overtrust_ratio=0.1,
-    ),
-    preference_learning=UniformGBT(
-        prior_std_dev=7,
-        convergence_error=1e-5,
-        cumulant_generating_function_error=1e-5,
-    ),
-    scaling=ScalingCompose(
-        Mehestan(
-            lipschitz=1,
-            min_activity=1,
-            n_scalers_max=100,
-            privacy_penalty=0.5,
-            p_norm_for_multiplicative_resilience=4.0,
-            error=1e-5
-        ),
-        QuantileZeroShift(
-            zero_quantile=0.15,
-            lipschitz=0.1,
-            error=1e-5
-        )
-    ),
-    aggregation=QuantileStandardizedQrMedian(
-        dev_quantile=0.9,
-        lipschitz=0.1,
-        error=1e-5
-    ),
-    post_process=Squash(
-        score_max=100
-    )
-)
 
 def sample_correlation(n_users, n_entities, seed, generative_model, pipeline) -> float:
     data = generative_model(n_users, n_entities, seed)
@@ -191,10 +131,7 @@ def run_experiment(
     return results
 
 def run_from_hyperparameters_file(filename):
-    
-    if filename[-5:] != ".json":
-        filename += ".json"
-    
+    assert experiment_results_file[-5:] == ".json", "json files only"
     assert os.path.exists(filename), f"File {filename} does not exist"
     
     filename_list = filename.split("/")
@@ -214,13 +151,17 @@ def run_from_hyperparameters_file(filename):
     logger.info(f"Running experiment with hyperparameters {filename}")
     generative_model = GenerativeModel.from_json(hps["generative_model"])
     pipeline = Pipeline.from_json(hps["pipeline"])
-    hps["results"] = run_experiment(hps["n_users"], hps["n_entities"], hps["n_seeds"],
-        hps["x_parameter"], hps["x_values"], hps["z_parameter"], hps["z_values"],
+    hps["yvalues"] = run_experiment(hps["n_users"], hps["n_entities"], hps["n_seeds"],
+        hps["xparameter"], hps["xvalues"], hps["zparameter"], hps["zvalues"],
         generative_model, pipeline)
     
     with open(results_filename, "w") as results_file:
         json.dump(hps, results_file)
     logger.info(f"The experiment results were successfully exported in file {filename}")
+    
+    plot_filename = results_file[:-5] + ".pdf"
+    plot(hps, plot_filename)
+    logger.info(f"The results were plotted in file {filename}")
 
 
 if len(sys.argv) == 1:
