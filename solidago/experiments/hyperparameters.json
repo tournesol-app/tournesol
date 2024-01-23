@@ -3,13 +3,13 @@
     "ylegend": "Correlation between learned global and ground truth",
     "xlegend": "Fraction of trustworthy users",
     "xparameter": "generative_model.user_model.p_trustworthy",
-    "xvalues": [0.2, 0.8], 
+    "xvalues": [0.01, 0.2, 0.5, 0.8, 1.0], 
     "zparameter": "pipeline.aggregation.lipschitz", 
-    "zvalues": [0.1, 1],
-    "zlegends": ["Lipschitz = 0.1", "Lipschitz = 1"],
+    "zvalues": [0.01, 10],
+    "zlegends": ["Lipschitz = 0.01", "Lipschitz = 10"],
     "n_users": 10, 
     "n_entities": 20,
-    "n_seeds": 3, 
+    "n_seeds": 10, 
     "generative_model": {
         "user_model": ["NormalUserModel", {
             "p_trustworthy": 0.8, 

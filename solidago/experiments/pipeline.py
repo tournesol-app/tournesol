@@ -28,7 +28,7 @@ from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShif
 from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
 from solidago.post_process import PostProcess, Squash
 
-from .plot import plot, plot_file
+from plot import plot, plot_file
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeli
     results = [None] * n_seeds
     def r(seed):
         results[seed] = sample_correlation(n_users, n_entities, seed, generative_model, pipeline)
-    threads = [Thread(target=r, args(seed,) for seed in range(n_seeds)]
+    threads = [Thread(target=r, args=(seed,)) for seed in range(n_seeds)]
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -143,19 +143,21 @@ def run_experiment(
     return results
 
 def run_from_hyperparameters_file(filename):
-    assert experiment_results_file[-5:] == ".json", "json files only"
+    assert filename[-5:] == ".json", "json files only"
     assert os.path.exists(filename), f"File {filename} does not exist"
     
     filename_list = filename.split("/")
-    results_directory = "/".join(filename_list[:-1]) + "/results"
+    results_directory = filename_list[:-1]
+    results_directory.append("results")
+    results_directory = "/".join(results_directory)
     if not os.path.exists(results_directory):
         os.mkdir(results_directory)
     results_filename = results_directory + f"/{filename_list[-1]}"
     
-    experiment_number = 0
+    experiment_number, base_results_filename = 0, results_filename
     while os.path.exists(results_filename):
         experiment_number += 1
-        results_filename = results_filename[:-5] + f"_{experiment_number}.json"
+        results_filename = base_results_filename[:-5] + f"_{experiment_number}.json"
     
     with open(filename) as json_file:
         hps = json.load(json_file)
@@ -171,7 +173,7 @@ def run_from_hyperparameters_file(filename):
         json.dump(hps, results_file)
     logger.info(f"The experiment results were successfully exported in file {filename}")
     
-    plot_filename = results_file[:-5] + ".pdf"
+    plot_filename = results_filename[:-5] + ".pdf"
     plot(hps, plot_filename)
     logger.info(f"The results were plotted in file {filename}")
 
