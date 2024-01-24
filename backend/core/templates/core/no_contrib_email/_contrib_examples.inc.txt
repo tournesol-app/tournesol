@@ -1,0 +1,15 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}
+* {% translate "Top videos of the past 30 days" %}:
+  https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder
+
+* {% translate "Top short videos of the past year" %}:
+  https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder
+
+{% blocktranslate %}You can also install the Tournesol browser extension to easily compare videos directly from
+YouTube, or to add them to your rate-later list.{% endblocktranslate %}
+
+* {% translate "Install on Firefox" %}
+  https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/
+
+* {% translate "Install on Chrome" %}
+  https://chromewebstore.google.com/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla
