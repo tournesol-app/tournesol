@@ -62,7 +62,7 @@ all:
           tournesol_api_watch_account_number_yesterday_schedule: "*-*-* 00:01:20"
 
           # Registration reminder
-          tournesol_api_registrationreminder_schedule: "*-*-* 17:00:00 Europe/Zurich"
+          tournesol_api_remindregistrations_schedule: "*-*-* 17:00:00 Europe/Zurich"
 
           ml_train_schedule: "*-*-* 00/3:20:00" # every 3 hours
           tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
@@ -136,7 +136,7 @@ all:
           tournesol_api_watch_account_number_yesterday_schedule: "*-*-* 00:01:20"
 
           # Registration reminder
-          tournesol_api_registrationreminder_schedule: "*-*-* 17:00:00 Europe/Zurich"
+          tournesol_api_remindregistrations_schedule: "*-*-* 17:00:00 Europe/Zurich"
 
           ml_train_schedule: "*-*-* 00/3:20:00" # every 3 hours
           tournesol_api_createdataset_schedule: "Mon 00:02" # weekly, before the new week
@@ -214,7 +214,7 @@ all:
           tournesol_api_watch_account_number_yesterday_schedule: "*-*-* 00:01:20"
 
           # Registration reminder
-          tournesol_api_registrationreminder_schedule: "*-*-* 17:00:00 Europe/Zurich"
+          tournesol_api_remindregistrations_schedule: "*-*-* 17:00:00 Europe/Zurich"
 
           # twitterbot: the service script is responsible for running the bot in
           # different languages depending on the day of the week.

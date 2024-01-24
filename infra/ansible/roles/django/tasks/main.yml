@@ -313,19 +313,19 @@
 
 # scheduled task: reminder for users without contributions
 
-- name: Copy Tournesol API registration reminder service
+- name: Copy Tournesol API remind registrations service
   template:
-    dest: /etc/systemd/system/tournesol-api-registration-reminder.service
-    src: tournesol-api-registration-reminder.service.j2
+    dest: /etc/systemd/system/tournesol-api-remind-registrations.service
+    src: tournesol-api-remind-registrations.service.j2
 
-- name: Copy Tournesol API registration-reminder timer
+- name: Copy Tournesol API remind-registrations timer
   template:
-    dest: /etc/systemd/system/tournesol-api-registration-reminder.timer
-    src: tournesol-api-registration-reminder.timer.j2
+    dest: /etc/systemd/system/tournesol-api-remind-registrations.timer
+    src: tournesol-api-remind-registrations.timer.j2
 
-- name: Enable and start Tournesol API registration-reminder timer
+- name: Enable and start Tournesol API remind-registrations timer
   systemd:
-    name: tournesol-api-registration-reminder.timer
+    name: tournesol-api-remind-registrations.timer
     state: started
     enabled: yes
     daemon_reload: yes
