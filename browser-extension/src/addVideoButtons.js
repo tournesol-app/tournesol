@@ -165,7 +165,7 @@ function addVideoButtons() {
       label: 'Watch on Tournesol',
       iconSrc: chrome.runtime.getURL('images/watch.svg'),
       onClick: () => {
-        window.open(`${frontendUrl}/video/${videoId}`, '_blank');
+        window.open(`${frontendUrl}/entities/yt:${videoId}?utm_source=extension&utm_medium=video_button`, '_blank');
       },
     });
   }
