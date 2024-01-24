@@ -2,33 +2,10 @@
 <html lang="{{ LANGUAGE_CODE }}">
   <head>
     <meta charset="UTF-8">
-    <style>
-      body {
-        margin: 8px;
-        padding: 0;
-      }
-      .italic {
-        font-style: italic;
-      }
-      .main-title {
-        padding: 16px 0;
-        background-color: #1282b2;
-      }
-      .main-title h2 {
-        color: #fff;
-        margin: 0;
-        font-size: 1.2rem;
-        text-align: center;
-      }
-   </style>
+    {% include "core/no_contrib_email/_body_style.inc.html" %}
   </head>
   <body>
-    <div class="main-title">
-      <h2>{% translate "Hello 🌻" %}</h2>
-    </div>
-    <p class="italic">
-      {% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
-    </p>
+    {% include "core/no_contrib_email/_body_header.inc.html" %}
     <p>
       {% blocktranslate %}We would like to thank you for taking the time to contribute to the project. Your comparisons
 already improve the public dataset and the recommendations made to thousands of users.{% endblocktranslate %}
@@ -44,7 +21,7 @@ systems.{% endblocktranslate %}
 would double! This would be a huge step forward for the project.{% endblocktranslate %}
     </p>
     <p>{% translate "Here are examples of videos you could compare:" %}</p>
-    {% include "core/no_contrib_email/comparisons_example.inc.html" %}
-    <p>{% translate "Many thanks" %},<br>{% translate "The Tournesol team" %}</p>
+    {% include "core/no_contrib_email/_contrib_examples.inc.html" %}
+    {% include "core/no_contrib_email/_body_footer.inc.html" %}
   </body>
 </html>

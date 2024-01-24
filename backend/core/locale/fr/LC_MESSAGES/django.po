@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-23 16:37+0000\n"
+"POT-Creation-Date: 2024-01-24 14:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -192,23 +192,64 @@ msgstr ""
 msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:27
+#: core/templates/core/no_contrib_email/_body_footer.inc.html:3
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:18
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:18
+msgid "Many thanks"
+msgstr "Merci beaucoup"
+
+#: core/templates/core/no_contrib_email/_body_footer.inc.html:3
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:19
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:19
+msgid "The Tournesol team"
+msgstr "L'équipe Tournesol"
+
+#: core/templates/core/no_contrib_email/_body_header.inc.html:4
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:1
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:27
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:1
 msgid "Hello 🌻"
 msgstr "Bonjour 🌻"
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:30
+#: core/templates/core/no_contrib_email/_body_header.inc.html:7
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:3
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:30
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:3
 msgid "(This email is an automatic reminder sent to new Tournesol users.)"
 msgstr ""
 "(Ce courriel est un rappel automatique envoyé aux nouveaux utilisateurs et "
 "utilisatrices.)"
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:33
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:8
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:2
+msgid "Top videos of the past 30 days"
+msgstr "Top des vidéos du mois dernier"
+
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:16
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:5
+msgid "Top short videos of the past year"
+msgstr "Top des vidéos courtes de l'année passée"
+
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:21
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
+msgid ""
+"You can also install the Tournesol browser extension to easily compare "
+"videos directly from\n"
+"YouTube, or to add them to your rate-later list."
+msgstr ""
+"Vous pouvez aussi installer l'extension navigateur Tournesol pour comparer "
+"des vidéos directement depuis YouTube, ou pour les ajouter à votre liste à "
+"comparer plus tard."
+
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:30
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:11
+msgid "Install on Firefox"
+msgstr "Installer sur Firefox"
+
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:38
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:14
+msgid "Install on Chrome"
+msgstr "Installer sur Chrome"
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:10
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:5
 msgid ""
 "Thank you for creating an account on the Tournesol collaborative platform. "
@@ -222,7 +263,7 @@ msgstr ""
 "nombreuses personnes qui, bénévolement, prennent un peu de leur temps pour "
 "comparer les vidéos qu'ils et elles ont vues sur YouTube."
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:38
+#: core/templates/core/no_contrib_email/body_no_contrib.html:15
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:9
 msgid ""
 "We look forward to your contributions, if you have the time of course. Every "
@@ -237,9 +278,9 @@ msgstr ""
 "aident également à faire avancer la recherche en éthique et en sécurité des "
 "algorithmes et systèmes de recommandation."
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:43
+#: core/templates/core/no_contrib_email/body_no_contrib.html:20
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:13
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:43
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:20
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:13
 msgid ""
 "If every registered user made at least 10 comparisons, the quality of the "
@@ -250,63 +291,13 @@ msgstr ""
 "qualité de la base de données publique doublerait ! Ce serait un énorme pas "
 "en avant pour le projet."
 
-#: core/templates/core/no_contrib_email/body_no_contrib.html:47
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:33
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:48
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:33
-msgid "Many thanks"
-msgstr "Merci beaucoup"
-
-#: core/templates/core/no_contrib_email/body_no_contrib.html:47
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:34
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:48
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:34
-msgid "The Tournesol team"
-msgstr "L'équipe Tournesol"
-
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:16
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:46
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:23
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:16
 msgid "Here are examples of videos you could compare:"
 msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
 
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:18
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:18
-#: core/templates/core/no_contrib_email/comparisons_example.inc.html:8
-msgid "Top videos of the past 30 days"
-msgstr "Top des vidéos du mois dernier"
-
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:21
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:21
-#: core/templates/core/no_contrib_email/comparisons_example.inc.html:16
-msgid "Top short videos of the past year"
-msgstr "Top des vidéos courtes de l'année passée"
-
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:24
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:24
-#: core/templates/core/no_contrib_email/comparisons_example.inc.html:21
-msgid ""
-"You can also install the Tournesol browser extension to easily compare "
-"videos directly from\n"
-"YouTube, or to add them to your rate-later list."
-msgstr ""
-"Vous pouvez aussi installer l'extension navigateur Tournesol pour comparer "
-"des vidéos directement depuis YouTube, ou pour les ajouter à votre liste à "
-"comparer plus tard."
-
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:27
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:27
-#: core/templates/core/no_contrib_email/comparisons_example.inc.html:30
-msgid "Install on Firefox"
-msgstr "Installer sur Firefox"
-
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:30
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:30
-#: core/templates/core/no_contrib_email/comparisons_example.inc.html:38
-msgid "Install on Chrome"
-msgstr "Installer sur Chrome"
-
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:33
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:10
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:5
 msgid ""
 "We would like to thank you for taking the time to contribute to the project. "
@@ -318,7 +309,7 @@ msgstr ""
 "comparaisons améliorent déjà la base de données publique et les "
 "recommandations faites à des milliers d'utilisateur·rices."
 
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:37
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:14
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:8
 msgid ""
 "This participatory research project works thanks to contributors who, like "
