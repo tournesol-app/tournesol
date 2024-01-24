@@ -1,5 +1,5 @@
 /**
- * Create the Rate Later and the Rate Now buttons.
+ * Create the Rate Later, the Rate Now and the Wacth on Tournesol buttons.
  *
  * This content script is meant to be run on each YouTube video page.
  */
@@ -65,7 +65,7 @@ function addVideoButtons() {
   const timer = window.setInterval(createButtonIsReady, 300);
 
   /**
-   * Create the Rate Later and the Rate Now buttons.
+   * Create the Rate Later, the Rate Now and the Wacth on Tournesol buttons.
    */
   function createButtonIsReady() {
     const buttonsContainer = createVideoActionsRowParent();
@@ -157,6 +157,15 @@ function addVideoButtons() {
         }).catch(() => {
           chrome.runtime.sendMessage({ message: 'displayModal' });
         });
+      },
+    });
+
+    addVideoButton({
+      id: 'tournseol-watch-button',
+      label: 'Watch on Tournesol',
+      iconSrc: chrome.runtime.getURL('images/watch.svg'),
+      onClick: () => {
+        window.open(`${frontendUrl}/video/${videoId}`, '_blank');
       },
     });
   }
