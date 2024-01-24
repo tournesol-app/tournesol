@@ -39,23 +39,26 @@ class EngagementModel(ABC):
 
     def to_json(self):
         return (type(self).__name__, )
-        
+
                 
 class SimpleEngagementModel(EngagementModel):
     def __init__(
         self, 
-        p_per_criterion: dict[str, float] = {"0": 1.0}, 
-        p_private: float = 0.2
+        p_per_criterion: dict[str, float]={"0": 1.0}, 
+        entity_bias_noise: float=1.0,
+        p_private: float=0.2
     ):
         self.p_per_criterion = p_per_criterion
         self.p_private = p_private
+        self.entity_bias_noise = entity_bias_noise
 
     def __call__(
         self, 
         users: pd.DataFrame, 
         entities: pd.DataFrame
     ) -> tuple[PrivacySettings, DataFrameJudgments]:
-        """ Assigns a score to each entity, by each user
+        """ Assigns a list of comparisons to be made to each entity, by each user
+        
         Parameters
         ----------
         users: DataFrame with columns
@@ -79,16 +82,16 @@ class SimpleEngagementModel(EngagementModel):
         for user, row in users.iterrows():
             n_compared_entities = 2 * row["n_comparisons"]
             n_compared_entities /= row["n_comparisons_per_entity"]
-            compared = list()
-            for entity, _ in entities.iterrows():
-                if np.random.random() <= n_compared_entities / len(entities):
-                    compared.append(entity)
-            if len(compared) <= 1:
-                continue
-            p_compare_ab = 2 * row["n_comparisons"] / len(compared)  / (len(compared) - 1)
-            for a_index, a in enumerate(compared):
+            n_compared_entities = int(n_compared_entities)
+            p_compare_ab = 2 * row["n_comparisons"] 
+            p_compare_ab /= (n_compared_entities * (n_compared_entities - 1))
+            
+            scores = _svd_scores(user, users, entities)
+            compared_list = _random_biased_order(scores, self.entity_bias_noise)
+            compared_list = compared_list[:n_compared_entities]
+            for a_index, a in enumerate(compared_list):
                 privacy[user, a] = (np.random.random() <= self.p_private)
-                for b in compared[a_index + 1:]:
+                for b in compared_list[a_index + 1:]:
                     if np.random.random() >= p_compare_ab:
                         continue
                     for criterion in self.p_per_criterion:
@@ -112,3 +115,23 @@ class SimpleEngagementModel(EngagementModel):
             p_private=self.p_private
         )
         
+def _svd_scores(user, users, entities):
+    svd_cols, svd_dim = list(), 0
+    while f"svd{svd_dim}" in users and f"svd{svd_dim}" in entities:
+        svd_cols.append(f"svd{svd_dim}")
+        svd_dim += 1
+        
+    if svd_dim == 0:
+        return { e: 0 for e in entities.index }
+        
+    user_svd = users[svd_cols].loc[user]
+    return {
+        entity: (user_svd @ entities[svd_cols].loc[entity]) / svd_dim
+        for entity, _ in entities.iterrows()
+    }
+
+def _random_biased_order(scores, noise):
+    keys = list(scores.keys())
+    noisy_scores = np.array([- scores[k] + noise * np.random.normal() for k in keys])
+    argsort = np.argsort(noisy_scores)
+    return [keys[argsort[k]] for k in range(len(keys))]

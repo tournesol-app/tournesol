@@ -41,7 +41,6 @@ class ComparisonModel(ABC):
 
     def to_json(self):
         return (type(self).__name__, )
-
         
 class GeneralizedBradleyTerry(ComparisonModel):
     """ The Generalized Bradley-Terry model is a score-to-comparison model
@@ -105,6 +104,8 @@ class GeneralizedBradleyTerry(ComparisonModel):
             b_vector = entities.loc[row["entity_b"], svd_columns]
             vector_diff = b_vector - a_vector
             score_diff = user_vector @ vector_diff / svd_dimension
+            if "mutliplicator" in users and np.isfinite(users.loc[row["user_id"], "multiplicator"]):
+                score_diff *= users.loc[row["user_id"], "multiplicator"]
             if not users.loc[row["user_id"], "is_trustworthy"]:
                 score_diff *= -1
             comparison_values.append(self.sample_comparison(score_diff))

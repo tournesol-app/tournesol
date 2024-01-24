@@ -31,6 +31,10 @@ from solidago.post_process import PostProcess, Squash
 from plot import plot, plot_file
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+logger.addHandler(ch)
 
 
 def sample_correlation(n_users, n_entities, seed, generative_model, pipeline) -> float:
@@ -175,7 +179,7 @@ def run_from_hyperparameters_file(filename):
     
     plot_filename = results_filename[:-5] + ".pdf"
     plot(hps, plot_filename)
-    logger.info(f"The results were plotted in file {filename}")
+    logger.info(f"The results were plotted in file {plot_filename}")
 
 
 if len(sys.argv) == 1:

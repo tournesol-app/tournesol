@@ -39,6 +39,8 @@ class NormalUserModel(UserModel):
         poisson_compare: float=30.0,
         n_comparisons_per_entity: float=3.0,
         svd_dimension: int=5,
+        multiplicator_std_dev: float=0,
+        engagement_bias_std_dev: float=0,
     ):
         """ This model assumes each user's preferences can be represented by a vector in 
         a singular value decomposition. This assumes entities will have such a representation
@@ -66,6 +68,8 @@ class NormalUserModel(UserModel):
         self.svd_dimension = svd_dimension
         self.mean = np.zeros(svd_dimension)
         self.mean[0] = 1
+        self.multiplicator_std_dev = multiplicator_std_dev
+        self.engagement_bias_std_dev = engagement_bias_std_dev
     
     def svd_sample(self):
         return np.random.normal(0, 1, self.svd_dimension) + self.mean
@@ -104,6 +108,16 @@ class NormalUserModel(UserModel):
         dct["is_pretrusted"] = (np.random.random(n_users) < self.p_pretrusted)
         dct["is_pretrusted"] *= dct["is_trustworthy"]
         
+        if self.multiplicator_std_dev == 0:
+            dct["multiplicator"] = 1 + np.zeros(n_users)
+        else:
+            dct["multiplicator"] = np.random.gamma(
+                shape=self.multiplicator_std_dev ** -2,
+                scale=self.multiplicator_std_dev ** 2,
+                size=n_users
+            )
+        dct["engagement_bias"] = np.random.normal(0, self.engagement_bias_std_dev, n_users)
+        
         svd = [self.svd_sample() for _ in range(n_users)]
         for i in range(self.svd_dimension):
             dct[f"svd{i}"] = [svd[u][i] for u in range(n_users)]
@@ -113,8 +127,9 @@ class NormalUserModel(UserModel):
         return df
         
     def __str__(self):
-        printed_properties = ["p_trustworthy", "p_pretrusted", "zipf_vouch",
-            "zipf_compare", "poisson_compare", "n_comparisons_per_entity","svd_dimension"]
+        printed_properties = ["p_trustworthy", "p_pretrusted", "zipf_vouch", "zipf_compare", 
+            "poisson_compare", "n_comparisons_per_entity","svd_dimension", 
+            "multiplicator_std_dev", "engagement_bias_std_dev"]
         properties = ", ".join([f"{p}={getattr(self,p)}" for p in printed_properties])
         return f"SvdUserModel({properties})"
 
