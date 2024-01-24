@@ -15,12 +15,12 @@ const TS_ACTIONS_ROW_BEFORE_REF = 'bottom-row';
  *
  * This part is called on connection for the first time on youtube.com/*
  */
-document.addEventListener('yt-navigate-finish', addRateButtons);
+document.addEventListener('yt-navigate-finish', addVideoButtons);
 
 if (document.body) {
-  addRateButtons();
+  addVideoButtons();
 } else {
-  document.addEventListener('DOMContentLoaded', addRateButtons);
+  document.addEventListener('DOMContentLoaded', addVideoButtons);
 }
 
 /**
@@ -55,7 +55,7 @@ function createVideoActionsRowParent() {
   return document.getElementById(beforeRef.parentElement.id);
 }
 
-function addRateButtons() {
+function addVideoButtons() {
   const videoId = new URL(location.href).searchParams.get('v');
 
   // Only enable on youtube.com/watch?v=* pages
@@ -76,11 +76,11 @@ function addRateButtons() {
     window.clearInterval(timer);
     const videoActions = createVideoActionsRow();
 
-    const addRateButton = ({ id, label, iconSrc, iconClass, onClick }) => {
+    const addVideoButton = ({ id, label, iconSrc, iconClass, onClick }) => {
       // Create Button
       const button = document.createElement('button');
       button.setAttribute('id', id);
-      button.setAttribute('class', 'tournesol-rate-button');
+      button.setAttribute('class', 'tournesol-video-button');
 
       // Icon
       const image = document.createElement('img');
@@ -108,7 +108,7 @@ function addRateButtons() {
       return { button, setLabel, setIcon };
     };
 
-    addRateButton({
+    addVideoButton({
       id: 'tournesol-rate-now-button',
       label: 'Rate Now',
       iconSrc: chrome.runtime.getURL('images/compare.svg'),
@@ -127,7 +127,7 @@ function addRateButtons() {
       button: rateLaterButton,
       setLabel: setRateLaterButtonLabel,
       setIcon: setRateLaterButtonIcon,
-    } = addRateButton({
+    } = addVideoButton({
       id: 'tournesol-rate-later-button',
       label: 'Rate Later',
       iconSrc: chrome.runtime.getURL('images/add.svg'),
