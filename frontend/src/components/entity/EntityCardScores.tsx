@@ -133,6 +133,7 @@ const EntityCardScores = ({
         columnGap="12px"
         lineHeight="1.3"
         py={1}
+        marginTop={1}
       >
         {showTournesolScore &&
           result.collective_rating?.tournesol_score != null && (
