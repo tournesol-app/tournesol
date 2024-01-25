@@ -2,11 +2,11 @@ import pytest
 import importlib
 
 from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
-
-aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=0.1, error=1e-5)
+from solidago.scoring_model import ScaledScoringModel
 
 @pytest.mark.parametrize( "test", list(range(5)) )
 def test_aggregation(test):
+    """ Basic run of pipelines on test data """
     td = importlib.import_module(f"data.data_{test}")
     user_models, global_model = td.pipeline.aggregation(
         td.voting_rights,
@@ -14,3 +14,38 @@ def test_aggregation(test):
         td.users,
         td.entities
     )
+
+@pytest.mark.parametrize( "test", list(range(5)) )
+def test_qtlstd_qrmed_invariance(test):
+    """ The output of QuantileStandardizedQrMedian should be independent from
+    the multiplicative scales of input user models, as long as it is the same for all users.
+    """
+    td = importlib.import_module(f"data.data_{test}")
+    aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=0.1, error=1e-5)
+    user_models, global_model = aggregation(
+        td.voting_rights,
+        td.standardized_models,
+        td.users,
+        td.entities
+    )
+    user_models2, global_model2 = aggregation(
+        td.voting_rights,
+        { 
+            u: ScaledScoringModel(base_model=td.standardized_models[u], multiplicator=2)
+            for u in td.standardized_models
+        },
+        td.users,
+        td.entities
+    )
+    for u in user_models:
+        for e in user_models[u].scored_entities(td.entities):
+            score = user_models[u](e, td.entities.loc[e])
+            score2 = user_models2[u](e, td.entities.loc[e])
+            assert score == pytest.approx(score2, abs=1e-4)
+    
+    for e in global_model.scored_entities(td.entities):
+        score = global_model(e, td.entities.loc[e])
+        score2 = global_model2(e, td.entities.loc[e])
+        assert score == pytest.approx(score2, abs=1e-4)
+    
+
