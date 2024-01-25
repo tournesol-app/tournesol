@@ -78,7 +78,9 @@ def set_attr(x_parameter: str, x: float, generative_model, pipeline):
         
     for attr in x_list[1:-1]:
         try:    obj = getattr(obj, attr)
-        except: obj = obj[attr]
+        except: 
+            try: obj = obj[attr]
+            except: obj = obj[int(attr)]
     try:
         setattr(obj, x_list[-1], x)
     except:
@@ -94,7 +96,9 @@ def get_attr(x_parameter: str, generative_model, pipeline):
     
     for attr in x_list[1:]:
         try:    obj = getattr(obj, attr)
-        except: obj = obj[attr]
+        except: 
+            try: obj = obj[attr]
+            except: obj = obj[int(attr)]
         
     return obj
         
