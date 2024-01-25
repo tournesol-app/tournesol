@@ -41,7 +41,7 @@ class RemindRegistrationTestCase(TestCase):
 
         # Those users should not be notified.
         user4 = UserFactory(
-            username="contrib_since_singup",
+            username="contrib_after_signup",
             is_active=True,
             date_joined=signup_date
         )

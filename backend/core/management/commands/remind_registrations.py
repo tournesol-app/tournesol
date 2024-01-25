@@ -92,7 +92,6 @@ class Command(BaseCommand):
         no_contrib_period = settings.APP_CORE["MGMT_NO_CONTRIBUTION_REMINDER_PERIOD"]
         creation_date = timezone.now() - no_contrib_period
 
-        # display the configuration if more verbosity is asked
         if options.get("verbosity", 1) > 1:
             self.stdout.write(f"MGMT_NO_CONTRIBUTION_REMINDER_PERIOD: {no_contrib_period.days}")
 
