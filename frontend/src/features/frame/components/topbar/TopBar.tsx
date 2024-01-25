@@ -10,12 +10,18 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 import TopBarDesktop from './TopBarDesktop';
 import TopBarMobile from './TopBarMobile';
+import PwaBanner from './PwaBanner';
+import { BeforeInstallPromptEvent } from '../../pwaPrompt';
 
 // Allow to position contents like the footer relatively to the top of the
 // page.
 export const topBarHeight = 80;
 
-const TopBar = () => {
+interface Props {
+  beforeInstallPromptEvent?: BeforeInstallPromptEvent;
+}
+
+const TopBar = ({ beforeInstallPromptEvent }: Props) => {
   const theme = useTheme();
   const { options } = useCurrentPoll();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -43,6 +49,9 @@ const TopBar = () => {
           {isSmallScreen ? <TopBarMobile /> : <TopBarDesktop />}
         </Grid>
       </Toolbar>
+      {isSmallScreen && (
+        <PwaBanner beforeInstallPromptEvent={beforeInstallPromptEvent} />
+      )}
     </AppBar>
   );
 };
