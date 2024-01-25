@@ -155,7 +155,7 @@ const EntityCardScores = ({
               <Trans t={t} i18nKey="video.nbComparisonsBy" count={nbRatings}>
                 {{ count: nbRatings }} comparisons by
               </Trans>
-            </span>
+            </span>{' '}
             <span className={classes.contributors}>
               <Trans
                 t={t}
