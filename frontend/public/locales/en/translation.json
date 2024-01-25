@@ -300,6 +300,7 @@
     "FAQAriaLabel": "Link to the FAQ page",
     "about": "About",
     "aboutAriaLabel": "Link to the about page",
+    "installTheApp": "Install the app",
     "donate": "Donate"
   },
   "frame": {
@@ -320,6 +321,11 @@
     "vouching": "Vouch for other users"
   },
   "logoutButton": "Logout",
+  "pwaBanner": {
+    "message": "By installing the Tournesol app, you can effortlessly compare the videos you watch and share them seamlessly from other applications like YouTube.",
+    "ignore": "Ignore",
+    "install": "Install"
+  },
   "topbar": {
     "search": "Search"
   },

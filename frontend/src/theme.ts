@@ -30,6 +30,7 @@ export const theme = responsiveFontSizes(
         main: '#506AD4',
       },
       neutral: {
+        light: '#C6BFA5',
         main: '#A09B87',
         dark: '#806300',
       },
