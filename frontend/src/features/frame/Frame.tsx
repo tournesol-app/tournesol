@@ -90,6 +90,11 @@ const Frame = ({ children }: Props) => {
   useEffect(() => {
     const handler = (event: BeforeInstallPromptEvent) => {
       setBeforePromptEvent(event);
+      event.userChoice?.then(({ outcome }) => {
+        if (outcome === 'accepted') {
+          setBeforePromptEvent(undefined);
+        }
+      });
     };
     window.addEventListener('beforeinstallprompt', handler);
     return () => {
