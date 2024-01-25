@@ -20,10 +20,8 @@ class Command(BaseCommand):
     help = "Notify by email active users who haven't contributed since their"\
            " account was created."
 
-    def get_subject(self, n_comparisons):
-        if n_comparisons > 0:
-            return _("Thank you for your contributions")
-        return _("Thank you for your registration")
+    def get_subject(self):
+        return "🌻 " + _("Want to help responsible scientific research?")
 
     def get_message(self, n_comparisons):
         if n_comparisons > 0:
@@ -54,7 +52,7 @@ class Command(BaseCommand):
 
             try:
                 send_mail(
-                    subject=self.get_subject(user.n_comp_signup),
+                    subject=self.get_subject(),
                     message=self.get_message(user.n_comp_signup),
                     html_message=self.get_html_message(user.n_comp_signup),
                     from_email=from_email,
