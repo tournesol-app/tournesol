@@ -251,7 +251,7 @@
       },
       "p": {
         "youConsentToReceiveEmails": "You (i) consent to receive communications from us in an electronic form via the email address you have submitted or via the Service; and (ii) agree that all Terms of Service, agreements, notices, disclosures, and other communications that we provide to you electronically satisfy any legal requirement that those communications would satisfy if they were on paper. This section does not affect your non-waivable rights.",
-        "necessaryEmails": "You acknowledge that some parts of the Service, like the Account activation process, or the password reset process, require emails to operate correctly, and consent to receive them.",
+        "necessaryEmails": "You acknowledge that some parts of the Service, like the Account activation process, the password reset process, or the registration reminder process require emails to operate correctly, and consent to receive them.",
         "additionalNecessaryEmails": "We also consider security notices, and impacting updates of this Agreement as necessary emails."
       }
     },
