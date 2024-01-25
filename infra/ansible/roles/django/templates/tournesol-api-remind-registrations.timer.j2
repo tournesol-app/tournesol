@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol API registration reminder
+
+[Timer]
+OnCalendar={{tournesol_api_remindregistrations_schedule}}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target
