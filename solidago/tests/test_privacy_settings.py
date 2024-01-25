@@ -11,7 +11,7 @@ def test_privacy_io():
 
 def test_tournesol_import():
     inputs = TournesolInputFromPublicDataset("tests/data/tiny_tournesol.zip")
-    privacy = PrivacySettings.from_tournesol(inputs)
+    privacy = inputs.get_pipeline_objects()[3]
     aidjango_id = inputs.users[inputs.users["public_username"] == "aidjango"].index[0]
     video_id_to_entity_id = {
         video_id: entity_id

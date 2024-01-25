@@ -19,12 +19,6 @@ class Judgments(ABC):
         """
         raise NotImplementedError
 
-    @classmethod
-    def from_tournesol(cls, inputs: "TournesolInputs", criterion: str):
-        comparisons = inputs.comparisons[inputs.comparisons["criteria"] == criterion]
-        comparisons = comparisons.rename(columns={"score": "comparison"})
-        comparisons = comparisons.assign(comparison_max=[10] * len(comparisons))
-        return DataFrameJudgments(comparisons=comparisons)
 
 class DataFrameJudgments(Judgments):
     def __init__(

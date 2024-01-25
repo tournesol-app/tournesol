@@ -6,6 +6,9 @@ from urllib.request import urlretrieve
 
 import pandas as pd
 
+from solidago.privacy_settings import PrivacySettings
+from solidago.judgments import DataFrameJudgments
+
 
 class TournesolInput(ABC):
     SCALING_CALIBRATION_MIN_TRUST_SCORE = 0.1
@@ -128,3 +131,24 @@ class TournesolInputFromPublicDataset(TournesolInput):
     ) -> Optional[pd.DataFrame]:
         # TODO: read contributor scores from individual_scores.csv
         return None
+        
+    def get_pipeline_objects(self):
+        users = self.users
+        users = users.assign(is_pretrusted=(users["trust_score"] >= 0.8))
+        vouches = pd.DataFrame(columns=["voucher", "vouchee", "vouch"])
+        entities_indices = set(self.comparisons["entity_a"]) | set(self.comparisons["entity_b"])
+        entities = pd.DataFrame(index=list(entities_indices))
+        entities.index.name = "entity_id"
+        privacy = PrivacySettings()
+        for _, row in self.comparisons.iterrows():
+            privacy[row["user_id"], row["entity_a"]] = True
+            privacy[row["user_id"], row["entity_b"]] = True
+        return users, vouches, entities, privacy
+    
+    def get_judgments(self, criterion):
+        comparisons = self.comparisons
+        if criterion is not None:
+            comparisons = comparisons[comparisons["criteria"] == criterion]
+        comparisons = comparisons.rename(columns={"score": "comparison"})
+        comparisons = comparisons.assign(comparison_max=[10] * len(comparisons))
+        return DataFrameJudgments(comparisons=comparisons)

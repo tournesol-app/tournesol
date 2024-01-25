@@ -61,10 +61,3 @@ class PrivacySettings:
             for user in self.users()
         ]) + "\n}"
         
-    @classmethod
-    def from_tournesol(cls, inputs: "TournesolInputs"):
-        privacy = PrivacySettings()
-        for _, row in inputs.comparisons.iterrows():
-            privacy[row["user_id"], row["entity_a"]] = True
-            privacy[row["user_id"], row["entity_b"]] = True
-        return privacy

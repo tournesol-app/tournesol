@@ -18,12 +18,7 @@ logger.info("Retrieve public dataset")
 inputs = TournesolInputFromPublicDataset.download()
 
 logger.info("Preprocessing data for the pipeline")
-users = inputs.users
-users = users.assign(is_pretrusted=(users["trust_score"] >= 0.8))
-vouches = pd.DataFrame(columns=["voucher", "vouchee", "vouch"])
-entities_indices = set(inputs.comparisons["entity_a"]) | set(inputs.comparisons["entity_b"])
-entities = pd.DataFrame(index=list(entities_indices))
-privacy = PrivacySettings.from_tournesol(inputs)
+users, vouches, entities, privacy = inputs.get_pipeline_objects()
 
 criteria = set(data.comparisons["criteria"])
 for criterion in criteria:

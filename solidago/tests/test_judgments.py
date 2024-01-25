@@ -3,5 +3,5 @@ from solidago.judgments import Judgments, DataFrameJudgments
 
 def test_tournesol_import():
     inputs = TournesolInputFromPublicDataset("tests/data/tiny_tournesol.zip")
-    judgments = Judgments.from_tournesol(inputs, "largely_recommended")
+    judgments = inputs.get_judgments("largely_recommended")
     assert "aidjango" in set(judgments.comparisons["public_username"])
