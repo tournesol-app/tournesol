@@ -4,12 +4,13 @@
 
 * {% translate "Top short videos of the past year" %}:
   https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder
-
+{% if ext_url_firefox or ext_url_chrome %}
 {% blocktranslate %}You can also install the Tournesol browser extension to easily compare videos directly from
 YouTube, or to add them to your rate-later list.{% endblocktranslate %}
-
+  {% if ext_url_firefox %}
 * {% translate "Install on Firefox" %}
-  https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/
-
+  {{ ext_url_firefox }}
+  {% endif %}{% if ext_url_chrome %}
 * {% translate "Install on Chrome" %}
-  https://chromewebstore.google.com/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla
+  {{ ext_url_chrome }}
+{% endif %}{% endif %}

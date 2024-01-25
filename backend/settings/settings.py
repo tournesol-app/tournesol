@@ -421,6 +421,11 @@ RECOMMENDATIONS_MIN_TRUST_SCORES = 1.5
 UPDATE_MEHESTAN_SCORES_ON_COMPARISON = False
 MEHESTAN_KEEP_N_FREE_CPU = server_settings.get("MEHESTAN_KEEP_N_FREE_CPU", 2)
 
+# Those URLs are also configured in the front end.
+# They should be considered optional.
+BROWSER_EXT_URL_FIREFOX = "https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/"
+BROWSER_EXT_URL_CHROME = "https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla"
+
 # Configuration of the app `core`
 # See the documentation for the complete description.
 APP_CORE = {

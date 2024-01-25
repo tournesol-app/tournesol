@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-25 10:09+0000\n"
+"POT-Creation-Date: 2024-01-25 11:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -227,7 +227,7 @@ msgstr "Top des vidéos du mois dernier"
 msgid "Top short videos of the past year"
 msgstr "Top des vidéos courtes de l'année passée"
 
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:21
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:22
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
 msgid ""
 "You can also install the Tournesol browser extension to easily compare "
@@ -238,12 +238,12 @@ msgstr ""
 "des vidéos directement depuis YouTube, ou pour les ajouter à votre liste à "
 "comparer plus tard."
 
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:30
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:29
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:11
 msgid "Install on Firefox"
 msgstr "Installer sur Firefox"
 
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:38
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:36
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:14
 msgid "Install on Chrome"
 msgstr "Installer sur Chrome"
@@ -290,6 +290,7 @@ msgstr ""
 "qualité de la base de données publique doublerait ! Ce serait un énorme pas "
 "en avant pour le projet."
 
+#: core/templates/core/no_contrib_email/body_no_contrib.html:23
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:18
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:23
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:18
