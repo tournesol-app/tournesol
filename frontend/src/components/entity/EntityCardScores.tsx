@@ -19,7 +19,6 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
   ratings: {
-    fontWeight: 600,
     marginRight: '4px',
     fontSize: '0.9rem',
     color: theme.palette.neutral.main,

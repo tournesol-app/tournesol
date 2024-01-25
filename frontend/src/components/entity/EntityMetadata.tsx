@@ -72,6 +72,7 @@ export const VideoMetadata = ({
               to={`/recommendations?language=&uploader=${encodeURIComponent(
                 uploader
               )}`}
+              fontWeight={600}
             >
               {uploader}
             </Link>
