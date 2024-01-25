@@ -194,7 +194,7 @@ def test_affine_overtrust():
 
 @pytest.mark.parametrize("test", range(5))
 def test_affine_overtrust_test_data(test):
-    td = importlib.import_module(f"solidago.test.data_{test}")
+    td = importlib.import_module(f"data.data_{test}")
     voting_rights, entities = td.pipeline.voting_rights(
         td.users, td.entities, td.vouches, td.privacy)
     for entity in td.voting_rights.entities():

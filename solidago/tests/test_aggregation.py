@@ -7,7 +7,7 @@ aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=0.1, erro
 
 @pytest.mark.parametrize( "test", list(range(5)) )
 def test_aggregation(test):
-    td = importlib.import_module(f"solidago.test.data_{test}")
+    td = importlib.import_module(f"data.data_{test}")
     user_models, global_model = td.pipeline.aggregation(
         td.voting_rights,
         td.standardized_models,

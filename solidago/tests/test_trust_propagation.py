@@ -48,7 +48,7 @@ def test_lipschitrust_generative():
 
 @pytest.mark.parametrize("test", range(5))
 def test_lipschitrust_test_data(test):
-    td = importlib.import_module(f"solidago.test.data_{test}")
+    td = importlib.import_module(f"data.data_{test}")
     trusts = td.pipeline.trust_propagation(td.users, td.vouches)
     for user, row in td.users.iterrows():
         assert trusts.loc[user, "trust_score"] == row["trust_score"]
