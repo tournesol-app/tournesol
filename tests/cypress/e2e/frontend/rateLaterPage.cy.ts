@@ -36,7 +36,7 @@ describe('Rate-later page', () => {
     cy.get('input[placeholder="Video ID or URL"]').type('F1Hq8eVOMHs').type('{enter}');
 
     const videoCard = cy.get('div[data-testid=video-card-info]').first();
-    videoCard.find('h6').click();
+    videoCard.find('h5').click();
     cy.location('pathname').should('match', /^\/entities\//);
   });
 });
