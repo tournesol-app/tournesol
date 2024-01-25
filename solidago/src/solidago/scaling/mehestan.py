@@ -550,9 +550,6 @@ def _model_norms(
 
     for user in user_models:
         scored_entities = user_models[user].scored_entities(entities)
-        if len(scored_entities) == 0:
-            results[user] = 1
-            continue
         
         weight_sum, weighted_sum = 0, 0
         for entity in scored_entities:
@@ -567,7 +564,10 @@ def _model_norms(
             weight_sum += weight
             weighted_sum += weight * (output[0]**power)
         
-        results[user] = np.power(weighted_sum / weight_sum, 1 / power)
+        if weight_sum == 0:
+            results[user] = 1
+        else:
+            results[user] = np.power(weighted_sum / weight_sum, 1 / power)
             
     return results       
     

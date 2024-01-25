@@ -29,7 +29,7 @@ def plot(results, plot_filename):
         results["zlegends"]: list[str]
             One legend per seeds_curve
         results["yvalues"]: list[list[float]] or list[list[list[float]]]
-            results["yvalues"][z][i] either the y-value, 
+            results["yvalues"][z_index][x_index] either the y-value, 
             or a list of y-values obtained from different random seeds.
         Optionally, we may have the entries
             results["title"]: str
