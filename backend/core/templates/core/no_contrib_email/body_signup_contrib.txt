@@ -1,4 +1,6 @@
-{% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% translate "Hello 🌻" %}
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}----==== {% translate "Want to help responsible scientific research?" %} ====----
+
+{% translate "Hello 🌻" %}
 
 {% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
 

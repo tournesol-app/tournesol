@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-24 16:24+0000\n"
+"POT-Creation-Date: 2024-01-25 09:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -193,26 +193,32 @@ msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:18
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:18
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:20
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:20
 msgid "Many thanks"
 msgstr "Merci beaucoup"
 
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:19
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:19
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:21
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:21
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
 
 #: core/templates/core/no_contrib_email/_body_header.inc.html:4
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:1
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:1
+msgid "Want to help responsible scientific research?"
+msgstr "Vous souhaitez aider la recherche scientifique responsable?"
+
+#: core/templates/core/no_contrib_email/_body_header.inc.html:6
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:3
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:3
 msgid "Hello 🌻"
 msgstr "Bonjour 🌻"
 
-#: core/templates/core/no_contrib_email/_body_header.inc.html:7
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:3
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:3
+#: core/templates/core/no_contrib_email/_body_header.inc.html:8
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:5
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:5
 msgid "(This email is an automatic reminder sent to new Tournesol users.)"
 msgstr ""
 "(Ce courriel est un rappel automatique envoyé aux nouveaux utilisateurs et "
@@ -250,7 +256,7 @@ msgid "Install on Chrome"
 msgstr "Installer sur Chrome"
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:10
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:5
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:7
 msgid ""
 "Thank you for creating an account on the Tournesol collaborative platform. "
 "This participatory\n"
@@ -264,7 +270,7 @@ msgstr ""
 "comparer les vidéos qu'ils et elles ont vues sur YouTube."
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:15
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:9
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:11
 msgid ""
 "We look forward to your contributions, if you have time of course. Every "
 "comparison you make\n"
@@ -279,9 +285,9 @@ msgstr ""
 "algorithmes et systèmes de recommandation."
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:20
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:13
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:15
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:20
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:13
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:15
 msgid ""
 "If every registered user made at least 10 comparisons, the quality of the "
 "public database\n"
@@ -291,14 +297,14 @@ msgstr ""
 "qualité de la base de données publique doublerait ! Ce serait un énorme pas "
 "en avant pour le projet."
 
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:16
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:18
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:23
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:16
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:18
 msgid "Here are examples of videos you could compare:"
 msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
 
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:10
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:5
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:7
 msgid ""
 "We would like to thank you for taking the time to contribute to the project. "
 "Your comparisons\n"
@@ -310,7 +316,7 @@ msgstr ""
 "recommandations faites à des milliers d'utilisateur·rices."
 
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:14
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:8
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:10
 msgid ""
 "This participatory research project works thanks to contributors who, like "
 "you, volunteer\n"
