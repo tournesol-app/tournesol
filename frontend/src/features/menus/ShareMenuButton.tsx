@@ -63,7 +63,11 @@ const ShareMenuButton = ({
   return (
     <>
       {isIcon ? (
-        <IconButton aria-label="Share button" onClick={handleShareMenuClick}>
+        <IconButton
+          aria-label="Share button"
+          color="inherit"
+          onClick={handleShareMenuClick}
+        >
           {feedback ? <Done /> : <Share />}
         </IconButton>
       ) : (

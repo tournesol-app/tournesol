@@ -169,24 +169,17 @@ function RecommendationsPage() {
         <Box px={{ xs: 2, sm: 0 }}>
           <Grid container>
             {/* Filters section. */}
-            <Grid item xs={12} sm={12} md={11}>
+            <Grid item xs={12}>
               {/* Unsafe filter is not available when fetching personal recommendations */}
               <SearchFilter
                 showAdvancedFilter={!displayPersonalRecommendations}
+                extraActions={
+                  <>
+                    <ShareMenuButton isIcon />
+                    <PreferencesIconButtonLink hash="#recommendations_page" />
+                  </>
+                }
               />
-            </Grid>
-            {/* Contextual page menu. */}
-            <Grid item xs={12} sm={12} md={1}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="flex-end"
-                justifyContent="flex-start"
-                gap={1}
-              >
-                <ShareMenuButton isIcon={true} />
-                <PreferencesIconButtonLink hash="#recommendations_page" />
-              </Box>
             </Grid>
           </Grid>
         </Box>

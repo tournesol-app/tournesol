@@ -16,7 +16,7 @@ const TitledSection = ({ title, titleComponent, children }: Props) => {
         component={titleComponent ?? 'h6'}
         sx={{
           borderBottom: '1px solid #E7E5DB',
-          marginBottom: '0.3em',
+          marginBottom: '4px',
         }}
       >
         {title}
