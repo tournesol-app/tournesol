@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BeforeInstallPromptEvent } from '../../pwaPrompt';
 import { Avatar, Button, Grid, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +20,19 @@ interface Props {
 
 const PwaBanner = ({ beforeInstallPromptEvent }: Props) => {
   const { t } = useTranslation();
-  const [pwaBannerIgnored, setPwaBannerIgnored] = useState(
-    hasPwaBannerBeenIgnored
+  const [pwaBannerVisible, setPwaBannerVisible] = useState(
+    () => !hasPwaBannerBeenIgnored()
   );
 
-  if (!beforeInstallPromptEvent || pwaBannerIgnored) {
+  useEffect(() => {
+    beforeInstallPromptEvent?.userChoice?.then(({ outcome }) => {
+      if (outcome === 'accepted') {
+        setPwaBannerVisible(false);
+      }
+    });
+  }, [beforeInstallPromptEvent]);
+
+  if (!beforeInstallPromptEvent || !pwaBannerVisible) {
     return null;
   }
 
@@ -52,7 +60,7 @@ const PwaBanner = ({ beforeInstallPromptEvent }: Props) => {
           variant="text"
           color="inherit"
           onClick={() => {
-            setPwaBannerIgnored(true);
+            setPwaBannerVisible(false);
             localStorage.setItem(pwaBannerIgnoredKey, new Date().toISOString());
           }}
         >
