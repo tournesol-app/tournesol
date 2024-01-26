@@ -3,7 +3,7 @@ import numpy as np
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import DataFrameJudgments
-from solidago.scoring_model import DirectScoringModel
+from solidago.scoring_model import DirectScoringModel, ScaledScoringModel
 
 from solidago.trust_propagation import LipschiTrust
 from solidago.voting_rights import VotingRights, AffineOvertrust
@@ -116,8 +116,102 @@ learned_models = {
     })
 }
 
-mehestan_scaled_models = dict()
-zero_shifted_models = dict()
+mehestan_scaled_models = {
+    0: ScaledScoringModel(
+        base_model=learned_models[0],
+        multiplicator=1,
+        translation=-0.03468579367348186,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.036163155262318135,
+        translation_right_uncertainty=0.036163155262318135,
+    ),
+    3: ScaledScoringModel(
+        base_model=learned_models[3],
+        multiplicator=1,
+        translation=0.017706130481562745,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.07757147389225401,
+        translation_right_uncertainty=0.07757147389225401,
+    ),
+    4: ScaledScoringModel(
+        base_model=learned_models[4],
+        multiplicator=1,
+        translation=0.016677228572662375,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.03018889076138863,
+        translation_right_uncertainty=0.03018889076138863,
+    ),
+    1: ScaledScoringModel(
+        base_model=learned_models[1],
+        multiplicator=1,
+        translation=-0.48392198001455006,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.25472139651232334,
+        translation_right_uncertainty=0.25472139651232334,
+    ),
+    2: ScaledScoringModel(
+        base_model=learned_models[2],
+        multiplicator=1,
+        translation=-0.43024928594487194,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.3058947623607349,
+        translation_right_uncertainty=0.3058947623607349,
+    ),
+}
+
+zero_shifted_models = {
+    0: ScaledScoringModel(
+        base_model=learned_models[0],
+        multiplicator=1,
+        translation=-0.03468579367348186,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.036163155262318135,
+        translation_right_uncertainty=0.036163155262318135,
+    ),
+    3: ScaledScoringModel(
+        base_model=learned_models[3],
+        multiplicator=1,
+        translation=0.017706130481562745,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.07757147389225401,
+        translation_right_uncertainty=0.07757147389225401,
+    ),
+    4: ScaledScoringModel(
+        base_model=learned_models[4],
+        multiplicator=1,
+        translation=0.016677228572662375,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.03018889076138863,
+        translation_right_uncertainty=0.03018889076138863,
+    ),
+    1: ScaledScoringModel(
+        base_model=learned_models[1],
+        multiplicator=1,
+        translation=-0.48392198001455006,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.25472139651232334,
+        translation_right_uncertainty=0.25472139651232334,
+    ),
+    2: ScaledScoringModel(
+        base_model=learned_models[2],
+        multiplicator=1,
+        translation=-0.43024928594487194,
+        multiplicator_left_uncertainty=1,
+        multiplicator_right_uncertainty=1,
+        translation_left_uncertainty=0.3058947623607349,
+        translation_right_uncertainty=0.3058947623607349,
+    ),
+}
+
 
 standardized_models, global_model = dict(), DirectScoringModel()
 displayed_models, displayed_global_model = dict(), DirectScoringModel()

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -38,9 +39,10 @@ class NormalUserModel(UserModel):
         zipf_compare: float=1.5,
         poisson_compare: float=30.0,
         n_comparisons_per_entity: float=3.0,
-        svd_dimension: int=5,
         multiplicator_std_dev: float=0,
         engagement_bias_std_dev: float=0,
+        svd_mean: Optional[np.ndarray]=np.array([3, 0, 0]), 
+        svd_dimension: Optional[int]=None,
     ):
         """ This model assumes each user's preferences can be represented by a vector in 
         a singular value decomposition. This assumes entities will have such a representation
@@ -49,15 +51,24 @@ class NormalUserModel(UserModel):
         
         Parameters
         ----------
-        svd_dimension: int
-            Dimension of the vector representation
-        svd_distribution: callable
-            Given svd_dimension as input, generates a random vector
+        p_trustworthy: float=0.8,
+        p_pretrusted: float=0.5,
+        zipf_vouch: float=2.0,
+        zipf_compare: float=1.5,
+        poisson_compare: float=30.0,
+        n_comparisons_per_entity: float=3.0,
+        multiplicator_std_dev: float=0,
+        engagement_bias_std_dev: float=0,
+        svd_mean: mean of the svd representation,
+        svd_dimension: int or None (default),
         """
         assert p_trustworthy >= 0 and p_trustworthy <= 1
         assert p_pretrusted >= 0 and p_pretrusted <= 1
         assert zipf_vouch > 1.0 and zipf_compare > 1.0
         assert poisson_compare > 0 and n_comparisons_per_entity > 0
+        assert svd_mean is not None or svd_dimension is not None
+        if svd_mean is None and svd_dimension is None:
+            assert len(mean) == svd_dimension
         
         self.p_trustworthy = p_trustworthy
         self.p_pretrusted = p_pretrusted
@@ -65,14 +76,12 @@ class NormalUserModel(UserModel):
         self.zipf_compare = zipf_compare
         self.poisson_compare = poisson_compare
         self.n_comparisons_per_entity = n_comparisons_per_entity
-        self.svd_dimension = svd_dimension
-        self.mean = np.zeros(svd_dimension)
-        self.mean[0] = 1
         self.multiplicator_std_dev = multiplicator_std_dev
         self.engagement_bias_std_dev = engagement_bias_std_dev
+        self.svd_mean = np.zeros(svd_dimension) if svd_mean is None else np.array(svd_mean)
     
     def svd_sample(self):
-        return np.random.normal(0, 1, self.svd_dimension) + self.mean
+        return np.random.normal(0, 1, len(self.svd_mean)) + self.svd_mean
     
     def __call__(self, n_users: int):
         """ Generates n_users users, with different characteristics
@@ -119,7 +128,7 @@ class NormalUserModel(UserModel):
         dct["engagement_bias"] = np.random.normal(0, self.engagement_bias_std_dev, n_users)
         
         svd = [self.svd_sample() for _ in range(n_users)]
-        for i in range(self.svd_dimension):
+        for i in range(len(self.svd_mean)):
             dct[f"svd{i}"] = [svd[u][i] for u in range(n_users)]
         
         df = pd.DataFrame(dct)
@@ -128,7 +137,7 @@ class NormalUserModel(UserModel):
         
     def __str__(self):
         printed_properties = ["p_trustworthy", "p_pretrusted", "zipf_vouch", "zipf_compare", 
-            "poisson_compare", "n_comparisons_per_entity","svd_dimension", 
+            "poisson_compare", "n_comparisons_per_entity", "svd_mean", 
             "multiplicator_std_dev", "engagement_bias_std_dev"]
         properties = ", ".join([f"{p}={getattr(self,p)}" for p in printed_properties])
         return f"SvdUserModel({properties})"
@@ -141,5 +150,5 @@ class NormalUserModel(UserModel):
             zipf_compare=self.zipf_compare,
             poisson_compare=self.poisson_compare,
             n_comparisons_per_entity=self.n_comparisons_per_entity,
-            svd_dimension=self.svd_dimension,
+            svd_mean=list(self.svd_mean),
         )

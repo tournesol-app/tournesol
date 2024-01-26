@@ -14,16 +14,18 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 logger.addHandler(ch)
 
+pipeline = Pipeline()
+
 logger.info("Retrieve public dataset")
 inputs = TournesolInputFromPublicDataset.download()
 
 logger.info("Preprocessing data for the pipeline")
 users, vouches, entities, privacy = inputs.get_pipeline_objects()
 
-criteria = set(data.comparisons["criteria"])
+criteria = set(inputs.comparisons["criteria"])
 for criterion in criteria:
     logger.info(f"Running the pipeline for criterion `{criterion}`")
-    judgments = Judgments.from_tournesol(inputs, criterion)
-    output = Pipeline()(users, vouches, entities, privacy, judgments)
+    judgments = inputs.get_judgments(criterion)
+    output = pipeline(users, vouches, entities, privacy, judgments)
     users, voting_rights, user_models, global_model = output
 logger.info(f"Successful pipeline run.")

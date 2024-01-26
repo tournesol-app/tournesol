@@ -141,8 +141,8 @@ class TournesolInputFromPublicDataset(TournesolInput):
         entities.index.name = "entity_id"
         privacy = PrivacySettings()
         for _, row in self.comparisons.iterrows():
-            privacy[row["user_id"], row["entity_a"]] = True
-            privacy[row["user_id"], row["entity_b"]] = True
+            privacy[row["user_id"], row["entity_a"]] = False
+            privacy[row["user_id"], row["entity_b"]] = False
         return users, vouches, entities, privacy
     
     def get_judgments(self, criterion):

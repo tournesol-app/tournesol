@@ -209,8 +209,8 @@ class PostProcessedScoringModel(ScoringModel):
             right = - temp
         return score, left, right
         
-    def scored_entities(self) -> set[int]:
-        return self.base_model.scored_entities()
+    def scored_entities(self, entities) -> set[int]:
+        return self.base_model.scored_entities(entities)
 
     def get_scaling_parameters(self):
         return self.base_model.get_scaling_parameters()

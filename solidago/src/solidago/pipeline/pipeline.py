@@ -195,7 +195,8 @@ class Pipeline:
         else:
             logger.info(f"Pipeline 3. Learning preference models is skipped")
             user_models = {
-                init_user_models[user] if user in init_user_models else DirectScoringModel()
+                user: init_user_models[user] 
+                if user in init_user_models else DirectScoringModel()
                 for user, _ in users.iterrows()
             }
         

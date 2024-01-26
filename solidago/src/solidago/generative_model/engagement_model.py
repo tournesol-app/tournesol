@@ -80,11 +80,15 @@ class SimpleEngagementModel(EngagementModel):
         privacy = PrivacySettings()
         
         for user, row in users.iterrows():
+            if row["n_comparisons"] <= 0:
+                continue
+                
             n_compared_entities = 2 * row["n_comparisons"]
             n_compared_entities /= row["n_comparisons_per_entity"]
             n_compared_entities = int(n_compared_entities)
+            
             p_compare_ab = 2 * row["n_comparisons"] 
-            p_compare_ab /= (n_compared_entities * (n_compared_entities - 1))
+            p_compare_ab /= n_compared_entities**2
             
             scores = _svd_scores(user, users, entities)
             compared_list = _random_biased_order(scores, self.entity_bias_noise)

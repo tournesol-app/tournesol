@@ -4,6 +4,7 @@ from typing import Optional
 import pandas as pd
 import numpy as np
 
+from solidago.judgments import Judgments
 from solidago.scoring_model import ScoringModel
 
 
@@ -62,6 +63,24 @@ class ComparisonBasedPreferenceLearning(PreferenceLearning):
         entities: pd.DataFrame,
         initialization: Optional[ScoringModel] = None
     ) -> ScoringModel:
+        """ Learns a scoring model, given user judgments of entities
+        
+        Parameters
+        ----------
+        user_judgments: dict[str, pd.DataFrame]
+            May contain different forms of judgments, 
+            but most likely will contain "comparisons" and/or "assessments"
+        entities: DataFrame with columns
+            * entity_id: int, index
+            * May contain others, such as vector representation
+        initialization: ScoringModel or None
+            Starting model, added to facilitate optimization
+            It is not supposed to affect the output of the training
+            
+        Returns
+        -------
+        model: ScoringModel
+        """
         return self.comparison_learning(user_judgments["comparisons"], entities, initialization)
     
     
