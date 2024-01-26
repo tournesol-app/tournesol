@@ -12,11 +12,11 @@ def qr_quantile(
     lipschitz: float, 
     quantile: float,
     values: npt.ArrayLike, 
-    voting_rights: Union[npt.ArrayLike, float] = 1, 
-    left_uncertainties: Optional[npt.ArrayLike] = None,    
-    right_uncertainties: Optional[npt.ArrayLike] = None,
-    default_value: float = 0,
-    error: float = 1e-5
+    voting_rights: Union[npt.ArrayLike, float]=1, 
+    left_uncertainties: Optional[npt.ArrayLike]=None,
+    right_uncertainties: Optional[npt.ArrayLike]=None,
+    default_value: float=0,
+    error: float=1e-5
 ) -> float:
     """ Computes the quadratically regularized quantile, an estimate of 
     the quantile of values,weighted by voting_rights, given left and right 
@@ -52,46 +52,48 @@ def qr_quantile(
     
     if len(values) == 0:
         return default_value
-    
-    if left_uncertainties is None:
-        left_uncertainties = np.zeros(len(values))
-    if right_uncertainties is None:
-        right_uncertainties = left_uncertainties
 
     # Brent’s method is used as a faster alternative to usual bisection
     return brentq(_qr_quantile_loss_derivative, xtol=error, args=(
-        quantile, lipschitz, voting_rights, values, 
+        lipschitz, quantile, values, voting_rights, 
         left_uncertainties, right_uncertainties, default_value
     ))
 
 @njit
 def _qr_quantile_loss_derivative(
-    variable: float, 
+    variable: float,
+    lipschitz: float,  
     quantile: float,
-    lipschitz: float, 
-    voting_rights: Union[npt.NDArray, float],
     values: npt.NDArray, 
-    left_uncertainties: npt.NDArray, 
-    right_uncertainties: npt.NDArray, 
+    voting_rights: Union[npt.NDArray, float]=1,
+    left_uncertainties: Optional[npt.ArrayLike]=None,
+    right_uncertainties: Optional[npt.ArrayLike]=None, 
     default_value: float = 0,
     error: float=1e-6
 ):
     """ Computes the derivative of the loss associated to qr_quantile """
+    if left_uncertainties is None:
+        left_uncertainties = np.zeros(len(values))
+    if right_uncertainties is None:
+        right_uncertainties = left_uncertainties
+        
     regularization = (variable - default_value) / lipschitz
     
     if quantile == 0.5:
         quantile_term = 0.0
     elif isinstance(voting_rights, (int, float)):
-        quantile_term = (1.0 - 2.0 * quantile) * voting_rights
+        quantile_term = (1.0 - 2.0 * quantile) * voting_rights * len(values)
     else:
         quantile_term = (1.0 - 2.0 * quantile) * np.sum(voting_rights)
     
     deltas = variable - values
-    uncertainties = left_uncertainties * (deltas < 0) + \
-        right_uncertainties * (deltas > 0) + error
-    forces = np.sum( voting_rights * deltas / np.sqrt(uncertainties**2 + deltas**2) )
+    uncertainties = left_uncertainties * (deltas < 0) 
+    uncertainties += right_uncertainties * (deltas > 0)
+    uncertainties += error
     
-    return regularization + quantile_term + forces
+    forces = voting_rights * deltas / np.sqrt(uncertainties**2 + deltas**2)
+    
+    return regularization + quantile_term + forces.sum()
 
    
 def qr_median(
