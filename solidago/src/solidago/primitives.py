@@ -144,7 +144,7 @@ def qr_standard_deviation(
     voting_rights: Union[npt.ArrayLike, float] = 1, 
     left_uncertainties: Optional[npt.ArrayLike] = None,    
     right_uncertainties: Optional[npt.ArrayLike] = None,
-    default_dev: float = 0,
+    default_dev: float = 1,
     error: float = 1e-5,
     median: float = None,
 ):
@@ -181,6 +181,11 @@ def qr_standard_deviation(
     """
     assert quantile_dev > 0 and quantile_dev < 1
     
+    if left_uncertainties is None:
+        left_uncertainties = np.zeros(len(values))
+    if right_uncertainties is None:
+        right_uncertainties = left_uncertainties
+        
     if median is None:
         median = qr_median(lipschitz, values, voting_rights, 
             left_uncertainties, right_uncertainties, error)
@@ -208,22 +213,8 @@ def qr_uncertainty(
     Quadratically regularized uncertainty
     TODO : search for a better formula for qr_uncertainty if possible
     """    
-    if median is None:
-        median = qr_median(lipschitz, values, voting_rights, 
-            left_uncertainties, right_uncertainties, error)
-    
-    square_uncertainties = (left_uncertainties + right_uncertainties)**2 / 4
-    
-    nonregularized_capped_second_derivative = np.sum(
-        voting_rights * np.minimum(
-            lipschitz, 
-            square_uncertainties * (square_uncertainties + (values - median) ** 2) ** (-3 / 2)
-        )
-    )
-    return (
-        (default_dev**-2) 
-        + 2 * default_dev**-3 * nonregularized_capped_second_derivative
-    ) ** (-1 / 2)
+    return qr_standard_deviation(lipschitz, values, 0.5, voting_rights, left_uncertainties,
+        right_uncertainties, default_dev, error, median)
 
 
 def clip(values: np.ndarray, center: float, radius: float):

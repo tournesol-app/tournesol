@@ -28,7 +28,7 @@ def test_qr_quantile_zero_uncertainty_correct_prior():
         default_value=1.,
         error=1e-5
     )
-    assert 1 == pytest.approx(quantile, abs=1e-3)
+    assert quantile == pytest.approx(1, abs=1e-3)
 
 def test_qr_quantile_zero_uncertainty_incorrect_prior():
     quantile = qr_quantile(
@@ -41,7 +41,7 @@ def test_qr_quantile_zero_uncertainty_incorrect_prior():
         default_value=0.,
         error=1e-5
     )
-    assert 2 == pytest.approx(quantile, abs=1e-3)
+    assert quantile == pytest.approx(2, abs=1e-3)
      
 def test_qr_quantile_high_uncertainty():
     quantile = qr_quantile(
@@ -55,4 +55,25 @@ def test_qr_quantile_high_uncertainty():
         error=1e-5
     )
     assert quantile == pytest.approx(0, abs=1e-1)
+    
+def test_qr_standard_deviation():
+    standard_deviation = qr_standard_deviation(
+        lipschitz=1, 
+        values=np.array([-4, -2, 0, 2, 4]), 
+        quantile_dev=0.5,
+    )
+    assert standard_deviation == pytest.approx(2, abs=1e-3)
+
+def test_lipschitz_resilient_mean():
+    values = np.random.normal(0, 1, 20)
+    mean = lipschitz_resilient_mean(
+        lipschitz=1e3,
+        voting_rights=1., 
+        values=values, 
+        left_uncertainties=np.array([1e-6] * 20),
+        right_uncertainties=np.array([1e-4] * 20),
+        default_value=0.,
+        error=1e-5
+    )
+    assert mean == pytest.approx(values.mean(), abs=1e-3)
     
