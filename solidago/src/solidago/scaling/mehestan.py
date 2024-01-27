@@ -97,6 +97,7 @@ class Mehestan(Scaling):
         scalers = users[users["is_scaler"]]
         nonscalers = users[users["is_scaler"] == False]
         if len(scalers) == 0:
+            logger.warn("    No user qualifies as a scaler. No scaling performed.")
             return user_models
         
         logger.info("Mehestan 2. Collaborative scaling of scalers")
@@ -157,13 +158,20 @@ class Mehestan(Scaling):
     
     def scale_scalers(self, user_models, scalers, entities, score_diffs, model_norms):
         entity_ratios = self.compute_entity_ratios(scalers, scalers, score_diffs)
-        ratios = _aggregate_user_comparisons(scalers, entity_ratios, error=self.error)
-        multiplicators = self.compute_multiplicators(ratios, model_norms)
+        ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
+            scalers, entity_ratios, error=self.error
+        )
+        multiplicators = self.compute_multiplicators(
+            ratio_voting_rights, ratios, ratio_uncertainties, model_norms
+        )
         
         entity_diffs = self.compute_entity_diffs(
-            user_models, scalers, scalers, entities, multiplicators)
-        diffs = _aggregate_user_comparisons(scalers, entity_diffs, error=self.error)
-        translations = self.compute_translations(diffs)
+            user_models, scalers, scalers, entities, multiplicators
+        )
+        diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
+            scalers, entity_diffs, error=self.error
+        )
+        translations = self.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
         
         return multiplicators, translations, { 
             u: ScaledScoringModel(
@@ -180,13 +188,19 @@ class Mehestan(Scaling):
     def scale_non_scalers(self, user_models, scalers, nonscalers, entities, 
             score_diffs, model_norms, multiplicators, translations, scaled_models):
         entity_ratios = self.compute_entity_ratios(nonscalers, scalers, score_diffs)
-        ratios = _aggregate_user_comparisons(scalers, entity_ratios, error=self.error)
-        multiplicators |= self.compute_multiplicators(ratios, model_norms)
+        ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
+            scalers, entity_ratios, error=self.error
+        )
+        multiplicators |= self.compute_multiplicators(
+            ratio_voting_rights, ratios, ratio_uncertainties, model_norms
+        )
         
         entity_diffs = self.compute_entity_diffs(
             user_models, nonscalers, scalers, entities, multiplicators)
-        diffs = _aggregate_user_comparisons(scalers, entity_diffs, error=self.error)
-        translations |= self.compute_translations(diffs)
+        diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
+            scalers, entity_diffs, error=self.error
+        )
+        translations |= self.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
         
         return scaled_models | { 
             u: ScaledScoringModel(
@@ -238,25 +252,22 @@ class Mehestan(Scaling):
         
         for u in scalees.index:
             user_entity_ratios[u] = dict()
-            if len(score_diffs[u]):
+            if len(score_diffs[u]) == 0:
                 continue
             
             for v in scalers.index:
                 if u == v:
                     continue
                 
-                entities = list(set(score_diffs[u].keys()) | set(score_diffs[v].keys()))
+                entities = list(set(score_diffs[u].keys()) & set(score_diffs[v].keys()))
                 if len(entities) <= 1:
                     continue
                     
                 user_entity_ratios[u][v] = list(), list(), list()
                 for e_index, e in enumerate(entities):
-                    if e not in score_diffs[u] or e not in score_diffs[v]:
-                        logger.warn(f"WARN {e} not in {u} or {v}, given score_diffs = {score_diffs}\n")
-                        continue
-                    
-                    for f in list(entities)[e_index + 1:]:
-                        if f not in score_diffs[u][e] or e not in score_diffs[v][e]:
+                    assert e in score_diffs[u] and e in score_diffs[v]                    
+                    for f in entities[e_index + 1:]:
+                        if f not in score_diffs[u][e] or f not in score_diffs[v][e]:
                             continue
                         
                         ratio = np.abs(score_diffs[v][e][f][0] / score_diffs[u][e][f][0])
@@ -274,7 +285,9 @@ class Mehestan(Scaling):
 
     def compute_multiplicators(
         self, 
-        ratios: dict[int, tuple[list[float], list[float], list[float]]], 
+        voting_rights: dict[int, list[float]], 
+        ratios: dict[int, list[float]], 
+        uncertainties: dict[int, list[float]],
         model_norms: dict[int, float]
     ) -> dict[int, tuple[float, float]]:
         """ Computes the multiplicators of users with given user_ratios
@@ -295,8 +308,10 @@ class Mehestan(Scaling):
             multiplicators[user][1] is the uncertainty on the multiplicator
         """
         return {
-            u: _aggregate(self.lipschitz / (8 / model_norms[u]), ratios[u], 1, self.error)
-            for u in ratios
+            u: _aggregate(self.lipschitz / (8 * (1e-9 + model_norms[u])), 
+                voting_rights[u], ratios[u], uncertainties[u], 
+                default_value=1, error=self.error)
+            for u in voting_rights
         }
             
     ############################################
@@ -381,7 +396,9 @@ class Mehestan(Scaling):
 
     def compute_translations(
         self, 
-        diffs: dict[int, tuple[list[float], list[float], list[float]]]
+        voting_rights: dict[int, list[float]], 
+        diffs: dict[int, list[float]], 
+        uncertainties: dict[int, list[float]]
     ) -> dict[int, tuple[float, float]]:
         """ Computes the multiplicators of users with given user_ratios
         
@@ -399,8 +416,9 @@ class Mehestan(Scaling):
             translations[user][1] is the uncertainty on the multiplicator
         """
         return {
-            u: _aggregate(self.lipschitz / 8, diffs[u], 0, self.error, lipschitz_resilient_mean)
-            for u in diffs
+            u: _aggregate(self.lipschitz / 8, voting_rights[u], diffs[u], uncertainties[u], 
+                default_value=0, error=self.error, aggregator=lipschitz_resilient_mean)
+            for u in voting_rights
         }    
 
     def to_json(self):
@@ -446,26 +464,26 @@ def _compute_score_diffs(
         score_diffs[user] = dict()
         scored_entities = list(user_models[user].scored_entities(entities))
         for a in scored_entities:
+            if a not in score_diffs[user]:
+                score_diffs[user][a] = dict()
             for b in scored_entities:
                 if a == b:
                     continue
                 score_a, left_a, right_a = user_models[user](a, entities.loc[a])
                 score_b, left_b, right_b = user_models[user](b, entities.loc[b])
                 if score_a - score_b >=  2 * left_a + 2 * right_b:
-                    if a not in score_diffs[user]:
-                        score_diffs[user][a] = dict()
                     score_diffs[user][a][b] = (
                         score_a - score_b, 
-                        score_a - score_b - left_a - right_b,
-                        score_a - score_b + right_a + left_b
+                        left_a + right_b,
+                        right_a + left_b
                     )
                 if score_b - score_a >= 2 * left_b + 2 * right_a:
                     if a not in score_diffs[user]:
                         score_diffs[user][a] = dict()
                     score_diffs[user][a][b] = (
                         score_b - score_a, 
-                        score_b - score_a - left_b - right_a,
-                        score_b - score_a + right_b + left_a
+                        left_b + right_a,
+                        right_b + left_a
                     )
     return score_diffs
     
@@ -591,44 +609,45 @@ def _aggregate_user_comparisons(
         
     Returns
     -------
-    out: dict[int, tuple[list[float], list[float], list[float]]]
-        out[u][0] is a list of voting rights
-        out[u][1] is a list of values
-        out[u][2] is a list of (symmetric) uncertainties
+    voting_rights: dict[int, list[float]]
+    comparisons: dict[int, list[float]]
+    uncertainties: dict[int, list[float]
     """
-    results = dict()
+    voting_rights, comparisons, uncertainties = dict(), dict(), dict()
     
     for u in scaler_comparisons:
-        results[u] = list(), list(), list()
+        voting_rights[u], comparisons[u], uncertainties[u] = list(), list(), list()
         for v in scaler_comparisons[u]:
                             
-            results[u][0].append(
+            voting_rights[u].append(
                 users.loc[v, "trust_score"] if "trust_score" in users else 1
             )
-            results[u][1].append(qr_median(
-                lipschitz=1, 
+            comparisons[u].append(qr_median(
+                lipschitz=1.0, 
                 values=np.array(scaler_comparisons[u][v][0]),
-                voting_rights=1, 
+                voting_rights=1.0, 
                 left_uncertainties=np.array(scaler_comparisons[u][v][1]),
                 right_uncertainties=np.array(scaler_comparisons[u][v][2]),
                 error=error
             ))
-            results[u][2].append(qr_uncertainty(
-                lipschitz=1, 
+            uncertainties[u].append(qr_uncertainty(
+                lipschitz=1.0, 
                 values=np.array(scaler_comparisons[u][v][0]),
-                voting_rights=1, 
+                voting_rights=1.0, 
                 left_uncertainties=np.array(scaler_comparisons[u][v][1]),
                 right_uncertainties=np.array(scaler_comparisons[u][v][2]),
-                default_dev=1,
+                default_dev=1.0,
                 error=error,
-                median=results[u][0][-1]
+                median=comparisons[u][-1]
             ))
             
-    return results
+    return voting_rights, comparisons, uncertainties
         
 def _aggregate(
     lipschitz: float,
-    values: tuple[list[float], list[float], list[float]], 
+    voting_rights: list[float],
+    values: list[float],
+    uncertainties: list[float],
     default_value: float,
     error: float=1e-5,
     aggregator: callable=qr_median
@@ -652,19 +671,19 @@ def _aggregate(
     """
     value = aggregator(
         lipschitz=lipschitz, 
-        values=np.array(values[0]),
-        voting_rights=np.array(values[1]), 
-        left_uncertainties=np.array(values[2]),
-        right_uncertainties=np.array(values[2]),
+        values=np.array(values),
+        voting_rights=np.array(voting_rights), 
+        left_uncertainties=np.array(uncertainties),
+        right_uncertainties=np.array(uncertainties),
         default_value=default_value,
         error=error
     )
     uncertainty = qr_uncertainty(
         lipschitz=lipschitz, 
-        values=np.array(values[1]),
-        voting_rights=np.array(values[0]), 
-        left_uncertainties=np.array(values[2]),
-        right_uncertainties=np.array(values[2]),
+        values=np.array(voting_rights),
+        voting_rights=np.array(values), 
+        left_uncertainties=np.array(uncertainties),
+        right_uncertainties=np.array(uncertainties),
         error=error,
         median=value
     )

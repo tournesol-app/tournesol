@@ -14,7 +14,9 @@ from solidago.scaling import ScalingCompose, Mehestan, QuantileZeroShift
 from solidago.aggregation import QuantileStandardizedQrMedian
 from solidago.post_process import Squash
 
-from solidago.scaling import Mehestan
+from solidago.scaling.mehestan import (Mehestan, _compute_activities, _model_norms, 
+    _compute_score_diffs, _aggregate_user_comparisons, _aggregate)
+
 
 
 @pytest.mark.parametrize("test", range(5))
@@ -53,29 +55,70 @@ voting_rights = VotingRights({
     4: {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0},
 })
 
-user_models = {
+learned_models = {
     0: DirectScoringModel({
-        0: (0, 0, 0),
-        1: (1, 0, 0),
-        2: (2, 0, 0),
-        3: (3, 0, 0),
-        4: (4, 0, 0),
+        0: (0., 0., 0.),
+        1: (1., 0., 0.),
+        2: (2., 0., 0.),
+        3: (3., 0., 0.),
+        4: (4., 0., 0.),
     }),
     1: DirectScoringModel({
-        0: (-0.45987485219302987, 0.3040980645995397, 0.3040980645995397),
-        1: (0.46000589337922315, 0.3040980645995397, 0.3040980645995397)
+        0: (0., 0., 0.),
+        1: (5., 0., 0.),
+        2: (10., 0., 0),
     }),
     2: DirectScoringModel({
-        0: (-0.6411620404227717, 0.26730021787214453, 0.26730021787214453),
-        1: (0.6412670367706607, 0.26730021787214453, 0.26730021787214453)
+        0: (-5., 0., 0.),
+        1: (-6., 0., 0.),
+        2: (-7., 0., 0.),
     }),
     3: DirectScoringModel({
-        0: (2.0611090358800523, 0.07820614406839796, 0.07820614406839796),
-        1: (-2.061088795104216, 0.07820614406839796, 0.07820614406839796)
+        0: (0., 0., 0.),
+        1: (4., 0., 0.),
     }),
     4: DirectScoringModel({
-        0: (-4.949746148097695, 0.030612236968599268, 0.030612236968599268),
-        1: (4.949747745198173, 0.030612236968599268, 0.030612236968599268)
+        0: (0., 0., 0.),
+        2: (2., 0., 0.),
     })
 }
 
+mehestan = Mehestan(
+    lipschitz=100, 
+    min_activity=1, 
+    n_scalers_max=3, 
+    privacy_penalty=0.5,
+    p_norm_for_multiplicative_resilience=4.0,
+    error=1e-5
+)
+
+score_diffs = _compute_score_diffs(learned_models, users, entities)
+activities = _compute_activities(learned_models, users, entities, 
+    privacy, score_diffs, mehestan.privacy_penalty)
+is_scaler = mehestan.compute_scalers(activities, users)
+users = users.assign(is_scaler=is_scaler)
+scalers = users[users["is_scaler"]]
+nonscalers = users[users["is_scaler"] == False]
+        
+model_norms = _model_norms(learned_models, users, entities, privacy, 
+    power=mehestan.p_norm_for_multiplicative_resilience,
+    privacy_penalty=mehestan.privacy_penalty
+)
+entity_ratios = mehestan.compute_entity_ratios(scalers, scalers, score_diffs)
+ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
+    scalers, entity_ratios, error=mehestan.error
+)
+multiplicators = mehestan.compute_multiplicators(
+    ratio_voting_rights, ratios, ratio_uncertainties, model_norms
+)
+entity_diffs = mehestan.compute_entity_diffs(
+    learned_models, scalers, scalers, entities, multiplicators
+)
+diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
+    scalers, entity_diffs, error=mehestan.error
+)
+translations = mehestan.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
+
+_, _, scaled_models = mehestan.scale_scalers(
+    learned_models, scalers, entities, score_diffs, model_norms)
+            

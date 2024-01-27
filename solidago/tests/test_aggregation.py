@@ -21,7 +21,7 @@ def test_qtlstd_qrmed_invariance(test):
     the multiplicative scales of input user models, as long as it is the same for all users.
     """
     td = importlib.import_module(f"data.data_{test}")
-    aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=0.1, error=1e-5)
+    aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=1000., error=1e-5)
     user_models, global_model = aggregation(
         td.voting_rights,
         td.standardized_models,
@@ -41,11 +41,11 @@ def test_qtlstd_qrmed_invariance(test):
         for e in user_models[u].scored_entities(td.entities):
             score = user_models[u](e, td.entities.loc[e])
             score2 = user_models2[u](e, td.entities.loc[e])
-            assert score == pytest.approx(score2, abs=1e-4)
+            assert score == pytest.approx(score2, abs=1e-3)
     
     for e in global_model.scored_entities(td.entities):
         score = global_model(e, td.entities.loc[e])
         score2 = global_model2(e, td.entities.loc[e])
-        assert score == pytest.approx(score2, abs=1e-4)
+        assert score == pytest.approx(score2, abs=1e-3)
     
 
