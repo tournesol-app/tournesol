@@ -137,7 +137,7 @@ class Pipeline:
             privacy[user, entity] in { True, False, None }
         judgments: Jugdments
             judgments[user] must yield the judgment data provided by the user
-        user_models: dict[int, UserModel]
+        init_user_models: dict[int, UserModel]
             user_models[user] is the user's model
         global_model: GlobalModel
             global model
@@ -186,17 +186,11 @@ class Pipeline:
             
         if 3 not in skip_steps:
             logger.info(f"Pipeline 3. Learning preference models with {self.preference_learning}")
-            user_models = dict() if init_user_models is None else init_user_models
-            for user, _ in users.iterrows():
-                init_model = None
-                if init_user_models is not None and user in init_user_models:
-                    init_model = init_user_models[user]
-                user_models[user] = self.preference_learning(judgments[user], entities, init_model)
+            user_models = self.preference_learning(judgments, users, entities, init_user_models)
         else:
             logger.info(f"Pipeline 3. Learning preference models is skipped")
             user_models = {
-                user: init_user_models[user] 
-                if user in init_user_models else DirectScoringModel()
+                user: init_user_models[user] if user in init_user_models else DirectScoringModel()
                 for user, _ in users.iterrows()
             }
         
@@ -211,7 +205,8 @@ class Pipeline:
                 
         if 5 not in skip_steps:
             logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
-            user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
+            user_models, global_model = self.aggregation(voting_rights, 
+                user_models, users, entities)
         else:
             logger.info(f"Pipeline 5. Score aggregation skipped")
             if 6 not in skip_steps and isinstance(global_model, PostProcessedScoringModel):

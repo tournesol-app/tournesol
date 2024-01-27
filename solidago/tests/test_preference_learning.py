@@ -5,10 +5,7 @@ import pandas as pd
 @pytest.mark.parametrize("test", range(5))
 def test_uniform_gbt(test):
     td = importlib.import_module(f"data.data_{test}")
-    models = {
-        user: td.pipeline.preference_learning(td.judgments[user], td.entities)
-        for user, _ in td.users.iterrows()
-    }
+    models = td.pipeline.preference_learning(td.judgments, td.users, td.entities)
     for user in td.users.index:
         for entity in td.entities.index:
             output = models[user](entity)
