@@ -57,7 +57,6 @@ def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeli
             sample_correlation(n_users, n_entities, seed, generative_model, pipeline) 
             for seed in range(n_seeds)
         ]
-    threads = list()
     results = [None] * n_seeds
     def r(seed):
         results[seed] = sample_correlation(n_users, n_entities, seed, generative_model, pipeline)

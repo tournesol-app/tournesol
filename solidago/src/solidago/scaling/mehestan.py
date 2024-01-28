@@ -111,8 +111,7 @@ class Mehestan(Scaling):
         
         logger.info("Mehestan 3. Scaling of non-scalers")
         for scaler in scaled_models:
-            user_models[scaler] = scaled_models[scaler]
-            score_diffs[scaler] = _compute_user_score_diffs(user_models[scaler], entities)
+            score_diffs[scaler] = _compute_user_score_diffs(scaled_models[scaler], entities)
         scaled_models = self.scale_non_scalers(
             user_models, scalers, nonscalers, entities, score_diffs, model_norms, 
             multiplicators, translations, scaled_models)
