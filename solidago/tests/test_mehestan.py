@@ -15,22 +15,23 @@ from solidago.aggregation import QuantileStandardizedQrMedian
 from solidago.post_process import Squash
 
 from solidago.scaling.mehestan import (Mehestan, _compute_activities, _model_norms, 
-    _compute_score_diffs, _aggregate_user_comparisons, _aggregate)
+    _compute_score_diffs, _compute_user_score_diffs, _aggregate_user_comparisons, _aggregate)
 
 
-@pytest.mark.parametrize("test", range(5))
-def test_learned_models(test):
-    td = importlib.import_module(f"data.data_{test}")
-    m_models = m(td.learned_models, td.users, td.entities, td.voting_rights, td.privacy)
-
-m = Mehestan(
-    lipschitz=1, 
+mehestan = Mehestan(
+    lipschitz=1000, 
     min_activity=1, 
-    n_scalers_max=10, 
+    n_scalers_max=3, 
     privacy_penalty=0.5,
     p_norm_for_multiplicative_resilience=4.0,
     error=1e-5
 )
+
+@pytest.mark.parametrize("test", range(5))
+def test_learned_models(test):
+    td = importlib.import_module(f"data.data_{test}")
+    m_models = mehestan(td.learned_models, td.users, td.entities, td.voting_rights, td.privacy)
+
 
 users = pd.DataFrame(dict(
     is_pretrusted=[True] * 5,
@@ -81,15 +82,6 @@ learned_models = {
         2: (2., 0., 0.),
     })
 } 
- 
-mehestan = Mehestan(
-    lipschitz=100, 
-    min_activity=1, 
-    n_scalers_max=3, 
-    privacy_penalty=0.5,
-    p_norm_for_multiplicative_resilience=4.0,
-    error=1e-5
-)
 
 score_diffs = _compute_score_diffs(learned_models, users, entities)
 activities = _compute_activities(learned_models, users, entities, 
@@ -118,6 +110,17 @@ diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
 )
 translations = mehestan.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
 
-_, _, scaled_models = mehestan.scale_scalers(
-    learned_models, scalers, entities, score_diffs, model_norms)
+scaled_models = dict()
+for scaler in scalers.index:
+    scaled_models[scaler] = ScaledScoringModel(
+        base_model=learned_models[scaler], 
+        multiplicator=multiplicators[scaler][0], 
+        translation=translations[scaler][0],
+        multiplicator_left_uncertainty=multiplicators[scaler][1], 
+        multiplicator_right_uncertainty=multiplicators[scaler][1], 
+        translation_left_uncertainty=translations[scaler][1],
+        translation_right_uncertainty=translations[scaler][1]
+    )
+    score_diffs[scaler] = _compute_user_score_diffs(scaled_models[scaler], entities)
+
             

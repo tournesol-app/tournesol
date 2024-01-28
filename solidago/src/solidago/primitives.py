@@ -53,6 +53,11 @@ def qr_quantile(
     if len(values) == 0:
         return default_value
 
+    if left_uncertainties is None:
+        left_uncertainties = np.zeros(len(values))
+    if right_uncertainties is None:
+        right_uncertainties = left_uncertainties
+        
     # Brent’s method is used as a faster alternative to usual bisection
     return brentq(_qr_quantile_loss_derivative, xtol=error, args=(
         lipschitz, quantile, values, voting_rights, 
@@ -65,18 +70,13 @@ def _qr_quantile_loss_derivative(
     lipschitz: float,  
     quantile: float,
     values: npt.NDArray, 
-    voting_rights: Union[npt.NDArray, float]=1,
-    left_uncertainties: Optional[npt.ArrayLike]=None,
-    right_uncertainties: Optional[npt.ArrayLike]=None, 
+    voting_rights: Union[npt.NDArray, float],
+    left_uncertainties: npt.ArrayLike,
+    right_uncertainties: npt.ArrayLike, 
     default_value: float = 0,
     error: float=1e-6
 ):
     """ Computes the derivative of the loss associated to qr_quantile """
-    if left_uncertainties is None:
-        left_uncertainties = np.zeros(len(values))
-    if right_uncertainties is None:
-        right_uncertainties = left_uncertainties
-        
     regularization = (variable - default_value) / lipschitz
     
     if quantile == 0.5:
