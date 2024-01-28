@@ -130,7 +130,8 @@ class ScaledScoringModel(ScoringModel):
         left_uncertainty = self.multiplicator * base_left_uncertainty
         left_uncertainty += self.translation_left_uncertainty
         if base_left > 0:
-            left_uncertainty += base_left * self.multiplicator_left_uncertainty
+            left_uncertainty += base_left * min(
+                self.multiplicator_left_uncertainty, self.multiplicator)
         else:
             left_uncertainty += (- base_left) * self.multiplicator_right_uncertainty
         
@@ -139,7 +140,8 @@ class ScaledScoringModel(ScoringModel):
         if base_right > 0:
             right_uncertainty += base_right * self.multiplicator_right_uncertainty
         else:
-            right_uncertainty += (- base_right) * self.multiplicator_left_uncertainty
+            right_uncertainty += (- base_right) * min(
+                self.multiplicator_left_uncertainty, self.multiplicator)
             
         return score, left_uncertainty, right_uncertainty
         
