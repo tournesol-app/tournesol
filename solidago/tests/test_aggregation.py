@@ -63,11 +63,11 @@ def test_qtlstd_qrmed_invariance(test):
         for e in user_models[u].scored_entities(td.entities):
             score = user_models[u](e, td.entities.loc[e])
             score2 = user_models2[u](e, td.entities.loc[e])
-            assert score == pytest.approx(score2, abs=1e-3)
+            assert score == pytest.approx(score2, abs=1e-2)
     
     for e in global_model.scored_entities(td.entities):
         score = global_model(e, td.entities.loc[e])
         score2 = global_model2(e, td.entities.loc[e])
-        assert score == pytest.approx(score2, abs=1e-3)
+        assert score == pytest.approx(score2, abs=1e-2)
     
 

@@ -97,7 +97,7 @@ class Mehestan(Scaling):
         scalers = users[users["is_scaler"]]
         nonscalers = users[users["is_scaler"] == False]
         if len(scalers) == 0:
-            logger.warn("    No user qualifies as a scaler. No scaling performed.")
+            logger.warning("    No user qualifies as a scaler. No scaling performed.")
             return user_models
         
         logger.info("Mehestan 2. Collaborative scaling of scalers")
