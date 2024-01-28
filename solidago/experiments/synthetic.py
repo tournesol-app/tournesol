@@ -42,12 +42,7 @@ def sample_correlation(n_users, n_entities, seed, generative_model, pipeline) ->
     init_users, vouches, entities, privacy, judgments = data
     users, voting_rights, user_models, global_model = pipeline(*data)
     
-    svd_dim, svd_cols = 0, list()
-    while f"svd{svd_dim}" in entities:
-        svd_cols.append(f"svd{svd_dim}")
-        svd_dim += 1
-    
-    truth = entities[svd_cols].sum(axis=1)
+    truth = entities["svd0"]
     estimate = [global_model(e, row)[0] for e, row in entities.iterrows()]
     return np.corrcoef(truth, estimate)[0, 1]
     
