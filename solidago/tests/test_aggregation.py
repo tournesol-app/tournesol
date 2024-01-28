@@ -4,6 +4,9 @@ import importlib
 from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
 from solidago.scoring_model import ScaledScoringModel
 
+from solidago.aggregation.standardized_qrmed import _get_user_scores
+
+
 @pytest.mark.parametrize( "test", list(range(5)) )
 def test_aggregation(test):
     """ Basic run of pipelines on test data """
@@ -14,6 +17,25 @@ def test_aggregation(test):
         td.users,
         td.entities
     )
+
+@pytest.mark.parametrize( "test", list(range(1, 5)) )
+def test_qtlstd(test):
+    """ The output of QuantileStandardizedQrMedian should be independent from
+    the multiplicative scales of input user models, as long as it is the same for all users.
+    """
+    td = importlib.import_module(f"data.data_{test}")
+    df = _get_user_scores(td.voting_rights, td.standardized_models, td.entities)
+    aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=1e20, error=1e-6)
+    std_dev = aggregation._compute_std_dev(df)
+    scaled_models = { 
+        u: ScaledScoringModel(base_model=td.standardized_models[u], multiplicator=2)
+        for u in td.standardized_models
+    }
+    df2 = _get_user_scores(td.voting_rights, scaled_models, td.entities)
+    std_dev2 = aggregation._compute_std_dev(df2)
+    assert 2 * std_dev == pytest.approx(std_dev2, abs=1e-4)
+    
+
 
 @pytest.mark.parametrize( "test", list(range(5)) )
 def test_qtlstd_qrmed_invariance(test):

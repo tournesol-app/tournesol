@@ -53,34 +53,8 @@ class QuantileStandardizedQrMedian(Aggregation):
         global_model: ScoringModel
             Returns a global scoring model
         """
-        user_list, entity_list, voting_right_list = list(), list(), list()
-        scores, lefts, rights = list(), list(), list()
-        for entity, row in entities.iterrows():
-            for user in user_models:
-                output = user_models[user](entity, row)
-                if output is not None:
-                    user_list.append(user)
-                    entity_list.append(entity)
-                    voting_right_list.append(voting_rights[user, entity])
-                    scores.append(output[0])
-                    lefts.append(output[1])
-                    rights.append(output[2])
-                    
-        df = pd.DataFrame(dict(
-            user_id=user_list, entity_id=entity_list, voting_rights=voting_right_list, 
-            scores=scores, left_uncertainties=lefts, right_uncertainties=rights
-        ))        
-        
-        std_dev = qr_standard_deviation(
-            self.lipschitz, 
-            np.array(df["scores"]), 
-            self.dev_quantile,
-            np.array(df["voting_rights"]), 
-            np.array(df["left_uncertainties"]), 
-            np.array(df["right_uncertainties"]), 
-            default_dev=1, 
-            error=self.error
-        )
+        df = _get_user_scores(voting_rights, user_models, entities)
+        std_dev = self._compute_std_dev(df)
             
         scaled_models = {
             user: ScaledScoringModel(user_models[user], 1/std_dev)
@@ -113,8 +87,46 @@ class QuantileStandardizedQrMedian(Aggregation):
             global_scores[entity] = score, uncertainty
                 
         return scaled_models, global_scores
+    
+    def _compute_std_dev(self, df):
+        return qr_standard_deviation(
+            lipschitz=self.lipschitz, 
+            values=np.array(df["scores"]), 
+            quantile_dev=self.dev_quantile,
+            voting_rights=np.array(df["voting_rights"]), 
+            left_uncertainties=np.array(df["left_uncertainties"]), 
+            right_uncertainties=np.array(df["right_uncertainties"]), 
+            default_dev=1, 
+            error=self.error
+        )
         
+    
     def to_json(self):
         return type(self).__name__, dict(
             dev_quantile=self.dev_quantile, lipschitz=self.lipschitz, error=self.error
         )
+
+
+def _get_user_scores(
+    voting_rights: VotingRights,
+    user_models: dict[int, ScoringModel],
+    entities: pd.DataFrame
+):
+    user_list, entity_list, voting_right_list = list(), list(), list()
+    scores, lefts, rights = list(), list(), list()
+    for entity, row in entities.iterrows():
+        for user in user_models:
+            output = user_models[user](entity, row)
+            if output is not None:
+                user_list.append(user)
+                entity_list.append(entity)
+                voting_right_list.append(voting_rights[user, entity])
+                scores.append(output[0])
+                lefts.append(output[1])
+                rights.append(output[2])
+                
+    return pd.DataFrame(dict(
+        user_id=user_list, entity_id=entity_list, voting_rights=voting_right_list, 
+        scores=scores, left_uncertainties=lefts, right_uncertainties=rights
+    ))    
+    
