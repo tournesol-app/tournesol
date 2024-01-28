@@ -109,7 +109,7 @@ const ShareMenu = ({
             <ListItemText>{t('shareMenu.shareOnTwitter')}</ListItemText>
           </MenuItem>
         )}
-        {navigatorCanShare && (
+        {navigatorCanShare && !!youtubeLink && (
           <MenuItem onClick={shareYoutubeLink}>
             <ListItemIcon>
               <Link fontSize="small" />
