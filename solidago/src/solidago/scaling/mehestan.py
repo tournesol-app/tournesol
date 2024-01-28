@@ -160,7 +160,8 @@ class Mehestan(Scaling):
     def scale_scalers(self, user_models, scalers, entities, score_diffs, model_norms):
         entity_ratios = self.compute_entity_ratios(scalers, scalers, score_diffs)
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
-            scalers, entity_ratios, error=self.error, lipschitz=self.user_comparison_lipschitz
+            scalers, entity_ratios, 
+            error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         multiplicators = self.compute_multiplicators(
             ratio_voting_rights, ratios, ratio_uncertainties, model_norms
@@ -170,7 +171,8 @@ class Mehestan(Scaling):
             user_models, scalers, scalers, entities, multiplicators
         )
         diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
-            scalers, entity_diffs, error=self.error, lipschitz=self.user_comparison_lipschitz
+            scalers, entity_diffs, 
+            error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         translations = self.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
         
