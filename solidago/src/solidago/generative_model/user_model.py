@@ -41,7 +41,7 @@ class NormalUserModel(UserModel):
         n_comparisons_per_entity: float=3.0,
         multiplicator_std_dev: float=0,
         engagement_bias_std_dev: float=0,
-        svd_mean: Optional[np.ndarray]=np.array([3, 0, 0]), 
+        svd_mean: list[float]=[3, 0, 0], 
         svd_dimension: Optional[int]=None,
     ):
         """ This model assumes each user's preferences can be represented by a vector in 

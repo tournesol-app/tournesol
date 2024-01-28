@@ -20,7 +20,7 @@ class Mehestan(Scaling):
         min_activity=10, 
         n_scalers_max=100, 
         privacy_penalty=0.5,
-        user_comparison_lipschitz=1.0,
+        user_comparison_lipschitz=10.0,
         p_norm_for_multiplicative_resilience=4.0,
         error=1e-5
     ):
@@ -312,7 +312,7 @@ class Mehestan(Scaling):
         """
         return {
             u: _aggregate(self.lipschitz / (8 * (1e-9 + model_norms[u])), 
-                voting_rights[u], ratios[u], uncertainties[u], 
+                voting_rights[u] + [1.], ratios[u] + [1.], uncertainties[u] + [0.], 
                 default_value=1, error=self.error)
             for u in voting_rights
         }
@@ -419,7 +419,8 @@ class Mehestan(Scaling):
             translations[user][1] is the uncertainty on the multiplicator
         """
         return {
-            u: _aggregate(self.lipschitz / 8, voting_rights[u], diffs[u], uncertainties[u], 
+            u: _aggregate(self.lipschitz / 8, 
+                voting_rights[u] + [1.], diffs[u] + [0.], uncertainties[u] + [0.], 
                 default_value=0, error=self.error, aggregator=lipschitz_resilient_mean)
             for u in voting_rights
         }    
