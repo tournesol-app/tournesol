@@ -181,7 +181,7 @@
   - find:
       paths: /etc/nginx/snippets
       patterns: block_tor.conf
-      age: -30d
+      age: -4d
     register: find_snippet
 
   - name: Generate block_tor snippet
