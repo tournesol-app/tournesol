@@ -9,32 +9,33 @@
 </a>
 
 
-## Usage
-
-> **Warning**  
-> This library is WIP; its API may change in the near future.
-
-```py
-import numpy as np
-from solidago.resilient_primitives import QrMed
-
-score = QrMed(W=1, w=1, x=np.array([-1.0, 1.0, 2.0]), delta=np.array([1.0, 1.0, 1.0]))
-```
-
 ## Publish a new release
 
 1. In a Pull Request, update the version number in [`./src/solidago/__version__.py`](./src/solidago/__version__.py)
 2. The package will be published automatically when the new version is merged into "main", by [this Github Action](../.github/workflows/solidago-publish.yml).
 
-## Run tests
+## Tests
 
 To run tests, setup a virtual environment, activate it, install dependencies and run pytest.
 ```
-python -m venv tonnomdevenv
-source tonnomdevenv/bin/activate
+python3 -m venv devenv
+source devenv/bin/activate
 pip install -e .[test]
-pytest tests/
+pytest
 ```
+Depending on the platform, you may need to replace ```source devenv/bin/activate``` by another call.
+See the [venv doc](https://docs.python.org/3/library/venv.html#how-venvs-work) for more information.
+
+## Synthetic experiments
+
+To run experiments, once the virtual environement setup, you may run the experiments on synthetic data using.
+```
+python3 experiments/synthetic.py experiments/resilience.json
+```
+The results will be exported in ```experiments/results```.
+You may modify the experiments by editing ```experiments/resilience.json```, 
+or by creating a new ```.json``` file.
+
 
 ## Copyright & License
 
