@@ -5,5 +5,6 @@ to derive trust scores for the different users.
 """
 
 from .base import TrustPropagation
+from .no_trust_propagation import NoTrustPropagation
 from .lipschitrust import LipschiTrust
 from .trust_all import TrustAll

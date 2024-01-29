@@ -4,5 +4,8 @@ Voting rights are assigned per user and per entity,
 based on users' trust scores and privacy settings.
 """
 
-from .base import VotingRights, VotingRightsAssignment
+from .voting_rights import VotingRights
+
+from .base import VotingRightsAssignment
+from .is_trust import IsTrust
 from .affine_overtrust import AffineOvertrust

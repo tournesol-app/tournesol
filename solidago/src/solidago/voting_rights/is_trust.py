@@ -1,13 +1,14 @@
-from abc import ABC, abstractmethod
-
 import pandas as pd
 import numpy as np
 
 from .voting_rights import VotingRights
+from .base import VotingRightsAssignment
 
 
-class VotingRightsAssignment(ABC):
-    @abstractmethod
+class IsTrust(VotingRightsAssignment):
+    def __init__(self, privacy_penalty: float=0.5):
+        self.privacy_penalty = privacy_penalty
+    
     def __call__(
         self,
         users: pd.DataFrame,
@@ -38,7 +39,16 @@ class VotingRightsAssignment(ABC):
         entities: DataFrame with columns
             * entity_id (int, index)
         """
-        raise NotImplementedError
+        voting_rights = VotingRights()
+        
+        for user in users.index:
+            for entity in entities.index:
+                if privacy[user, entity] is None:
+                    continue
+                voting_rights[user, entity] = privacy[user, entity] * self.privacy_penalty
+                voting_rights[user, entity] *= users.loc[user, "trust_score"]
+                
+        return voting_rights
     
     def to_json(self):
         return (type(self).__name__, )

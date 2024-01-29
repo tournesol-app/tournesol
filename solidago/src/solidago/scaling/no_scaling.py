@@ -1,14 +1,12 @@
-from abc import ABC, abstractmethod
-
 import pandas as pd
 
+from solidago.voting_rights import VotingRights
 from solidago.privacy_settings import PrivacySettings
 from solidago.scoring_model import ScoringModel
-from solidago.voting_rights import VotingRights
 
+from .base import Scaling
 
-class Scaling:
-    @abstractmethod
+class NoScaling(Scaling):
     def __call__(
         self, 
         user_models: dict[int, ScoringModel],
@@ -38,7 +36,4 @@ class Scaling:
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        raise NotImplementedError
-
-    def to_json(self):
-        return (type(self).__name__, )        
+        return user_models

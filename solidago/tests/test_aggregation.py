@@ -1,7 +1,7 @@
 import pytest
 import importlib
 
-from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
+from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian, Mean
 from solidago.scoring_model import ScaledScoringModel
 
 from solidago.aggregation.standardized_qrmed import _get_user_scores
@@ -34,8 +34,6 @@ def test_qtlstd(test):
     df2 = _get_user_scores(td.voting_rights, scaled_models, td.entities)
     std_dev2 = aggregation._compute_std_dev(df2)
     assert 2 * std_dev == pytest.approx(std_dev2, abs=1e-4)
-    
-
 
 @pytest.mark.parametrize( "test", list(range(5)) )
 def test_qtlstd_qrmed_invariance(test):
@@ -71,3 +69,34 @@ def test_qtlstd_qrmed_invariance(test):
         assert score == pytest.approx(score2, abs=1e-2)
     
 
+@pytest.mark.parametrize( "test", list(range(5)) )
+def test_mean(test):
+    td = importlib.import_module(f"data.data_{test}")
+    aggregation = Mean()
+    user_models, global_model = aggregation(
+        td.voting_rights,
+        td.standardized_models,
+        td.users,
+        td.entities
+    )
+    user_models2, global_model2 = aggregation(
+        td.voting_rights,
+        { 
+            u: ScaledScoringModel(base_model=td.standardized_models[u], multiplicator=2)
+            for u in td.standardized_models
+        },
+        td.users,
+        td.entities
+    )
+    for u in user_models:
+        for e in user_models[u].scored_entities(td.entities):
+            score = user_models[u](e, td.entities.loc[e])
+            score2 = td.standardized_models[u](e, td.entities.loc[e])
+            assert score == pytest.approx(score2, abs=1e-2)
+    
+    for e in global_model.scored_entities(td.entities):
+        score = global_model(e, td.entities.loc[e])
+        score2 = global_model2(e, td.entities.loc[e])
+        for i in range(3):
+            assert 2 * score[i] == pytest.approx(score2[i], abs=1e-2)
+    
