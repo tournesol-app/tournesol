@@ -78,7 +78,7 @@ const VideosPollUserSettingsForm = ({
   return (
     <Grid container spacing={4} direction="column" alignItems="stretch">
       <Grid item>
-        <Typography id="comparison_page" variant="h6">
+        <Typography id="comparison_page" variant="h5">
           {t('pollUserSettingsForm.comparisonPage')}
         </Typography>
       </Grid>
@@ -113,7 +113,7 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
-        <Typography id="extension_youtube" variant="h6">
+        <Typography id="extension_youtube" variant="h5">
           {t('pollUserSettingsForm.extensionYoutube')}
         </Typography>
       </Grid>
@@ -125,7 +125,7 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
-        <Typography id="rate_later" variant="h6">
+        <Typography id="rate_later" variant="h5">
           {t('pollUserSettingsForm.rateLater')}
         </Typography>
       </Grid>
@@ -138,7 +138,7 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
-        <Typography id="recommendations" variant="h6">
+        <Typography id="recommendations" variant="h5">
           {t('pollUserSettingsForm.recommendations')}
         </Typography>
       </Grid>
@@ -149,7 +149,7 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
-        <Typography id="recommendations_page" variant="h6">
+        <Typography id="recommendations_page" variant="h5">
           {t('pollUserSettingsForm.recommendationsPage')}
         </Typography>
       </Grid>

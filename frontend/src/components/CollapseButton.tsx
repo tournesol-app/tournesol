@@ -8,6 +8,7 @@ interface CollapseButtonProps {
   expanded: boolean;
   showBadge?: boolean;
   onClick?: (event: React.ChangeEvent<EventTarget>) => void;
+  variant?: 'default' | 'mainOptions';
 }
 
 const DefaultText = () => {
@@ -24,6 +25,7 @@ const CollapseButton = ({
   expanded,
   showBadge = false,
   onClick,
+  variant = 'default',
 }: CollapseButtonProps) => {
   const theme = useTheme();
   return (
@@ -36,9 +38,11 @@ const CollapseButton = ({
         onClick={onClick}
         sx={{
           padding: '0 8px',
-          color: expanded
-            ? theme.palette.secondary.main
-            : theme.palette.action.active,
+          fontSize: variant === 'mainOptions' ? '1.1rem' : undefined,
+          color:
+            expanded || variant == 'mainOptions'
+              ? theme.palette.secondary.main
+              : theme.palette.action.active,
         }}
       >
         {children}

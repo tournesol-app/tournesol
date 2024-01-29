@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
-import { Collapse, Grid, Box } from '@mui/material';
+import { Collapse, Grid, Box, Divider } from '@mui/material';
 
 import { CollapseButton } from 'src/components';
 import { useCurrentPoll, useListFilter } from 'src/hooks';
@@ -30,8 +30,10 @@ import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages
  */
 function SearchFilter({
   showAdvancedFilter = true,
+  extraActions,
 }: {
   showAdvancedFilter?: boolean;
+  extraActions?: React.ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
@@ -62,12 +64,16 @@ function SearchFilter({
   );
 
   return (
-    <Box color="text.secondary">
-      <CollapseButton
-        expanded={expanded}
-        onClick={handleExpandClick}
-        showBadge={isFilterActive()}
-      />
+    <Box color="text.secondary" marginBottom={2}>
+      <Box display="flex" justifyContent="space-between">
+        <CollapseButton
+          expanded={expanded}
+          onClick={handleExpandClick}
+          showBadge={isFilterActive()}
+          variant="mainOptions"
+        />
+        <Box color="secondary.main">{extraActions}</Box>
+      </Box>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         {filterParams.get(recommendationFilters.uploader) && (
           <Box marginBottom={1}>
@@ -77,7 +83,7 @@ function SearchFilter({
             />
           </Box>
         )}
-        <Grid container spacing={4} sx={{ marginBottom: '8px' }}>
+        <Grid container spacing={4}>
           {pollName === YOUTUBE_POLL_NAME && (
             <>
               <Grid
@@ -135,6 +141,7 @@ function SearchFilter({
             </Grid>
           )}
         </Grid>
+        <Divider sx={{ marginTop: 2 }} />
       </Collapse>
     </Box>
   );
