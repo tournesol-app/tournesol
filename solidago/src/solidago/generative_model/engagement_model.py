@@ -45,12 +45,10 @@ class SimpleEngagementModel(EngagementModel):
     def __init__(
         self, 
         p_per_criterion: dict[str, float]={"0": 1.0}, 
-        entity_bias_noise: float=1.0,
         p_private: float=0.2
     ):
         self.p_per_criterion = p_per_criterion
         self.p_private = p_private
-        self.entity_bias_noise = entity_bias_noise
 
     def __call__(
         self, 
@@ -91,7 +89,7 @@ class SimpleEngagementModel(EngagementModel):
             p_compare_ab /= n_compared_entities**2
             
             scores = _svd_scores(user, users, entities)
-            compared_list = _random_biased_order(scores, self.entity_bias_noise)
+            compared_list = _random_biased_order(scores, row["engagement_bias"])
             compared_list = compared_list[:n_compared_entities]
             for a_index, a in enumerate(compared_list):
                 privacy[user, a] = (np.random.random() <= self.p_private)
@@ -134,8 +132,16 @@ def _svd_scores(user, users, entities):
         for entity, _ in entities.iterrows()
     }
 
-def _random_biased_order(scores, noise):
+def _random_biased_order(scores: dict[int, float], score_bias: float) -> list[int]:
+    """
+    Parameters
+    ----------
+    scores: dict
+        scores[entity] is the score of the entity
+    bias: float
+        Larger biases must imply a more deterministic order
+    """
     keys = list(scores.keys())
-    noisy_scores = np.array([- scores[k] + noise * np.random.normal() for k in keys])
+    noisy_scores = np.array([- score_bias * scores[k] + np.random.normal() for k in keys])
     argsort = np.argsort(noisy_scores)
     return [keys[argsort[k]] for k in range(len(keys))]

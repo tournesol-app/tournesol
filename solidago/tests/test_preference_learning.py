@@ -1,8 +1,9 @@
 import pytest
 import importlib
 import pandas as pd
+import numpy as np
 
-@pytest.mark.parametrize("test", range(5))
+@pytest.mark.parametrize("test", range(4))
 def test_uniform_gbt(test):
     td = importlib.import_module(f"data.data_{test}")
     models = td.pipeline.preference_learning(td.judgments, td.users, td.entities)

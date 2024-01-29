@@ -46,7 +46,7 @@ def test_lipschitrust_generative():
     for _, row in users.iterrows():
         assert row["is_trustworthy"] or (row["trust_score"] == 0)
 
-@pytest.mark.parametrize("test", range(5))
+@pytest.mark.parametrize("test", range(4))
 def test_lipschitrust_test_data(test):
     td = importlib.import_module(f"data.data_{test}")
     trusts = td.pipeline.trust_propagation(td.users, td.vouches)

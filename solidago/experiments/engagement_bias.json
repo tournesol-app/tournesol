@@ -13,14 +13,14 @@
     "generative_model": {
         "user_model": ["NormalUserModel", {
             "p_trustworthy": 0.8, 
-            "p_pretrusted": 0.2, 
-            "zipf_vouch": 2.0, 
+            "p_pretrusted": 0.5, 
+            "zipf_vouch": 1.5, 
             "zipf_compare": 1.5, 
             "poisson_compare": 30.0, 
             "n_comparisons_per_entity": 3.0, 
             "multiplicator_std_dev": 1.0,
             "svd_mean": [3.0, 0.0],
-            "engagement_bias_std_dev": 1.0
+            "engagement_bias_std_dev": 10.0
         }], 
         "vouch_model": ["ErdosRenyiVouchModel"], 
         "entity_model": ["NormalEntityModel", {
@@ -28,8 +28,7 @@
         }], 
         "engagement_model": ["SimpleEngagementModel", {
             "p_per_criterion": {"0": 1.0}, 
-            "p_private": 0.2,
-            "entity_bias_noise": 1.0
+            "p_private": 0.2
         }], 
         "comparison_model": ["KnaryGBT", {
             "n_options": 21, 

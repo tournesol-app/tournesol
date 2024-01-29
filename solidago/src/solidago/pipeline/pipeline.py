@@ -173,29 +173,29 @@ class Pipeline:
             )
         
         if 1 not in skip_steps:
-            logger.info(f"Pipeline 1. Propagating trust with {self.trust_propagation}")
+            logger.info(f"Pipeline 1. Propagating trust with {str(self.trust_propagation)}")
             users = self.trust_propagation(users, vouches)
         else:
             logger.info(f"Pipeline 1. Trust propagation is skipped")
             
         if 2 not in skip_steps:
-            logger.info(f"Pipeline 2. Computing voting rights with {self.voting_rights}")
+            logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
             voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
         else:
             logger.info(f"Pipeline 2. Voting rights assignment is skipped")
             
         if 3 not in skip_steps:
-            logger.info(f"Pipeline 3. Learning preference models with {self.preference_learning}")
+            logger.info(f"Pipeline 3. Learning preferences with {str(self.preference_learning)}")
             user_models = self.preference_learning(judgments, users, entities, init_user_models)
         else:
-            logger.info(f"Pipeline 3. Learning preference models is skipped")
+            logger.info(f"Pipeline 3. Learning preferences is skipped")
             user_models = {
                 user: init_user_models[user] if user in init_user_models else DirectScoringModel()
                 for user, _ in users.iterrows()
             }
         
         if 4 not in skip_steps:
-            logger.info(f"Pipeline 4. Collaborative scaling with {self.scaling}")
+            logger.info(f"Pipeline 4. Collaborative scaling with {str(self.scaling)}")
             user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
         else:
             logger.info(f"Pipeline 4. Reusing precomputed scales")
@@ -204,7 +204,7 @@ class Pipeline:
                     *init_user_models[user].get_scaling_parameters())
                 
         if 5 not in skip_steps:
-            logger.info(f"Pipeline 5. Score aggregation with {self.aggregation}")
+            logger.info(f"Pipeline 5. Score aggregation with {str(self.aggregation)}")
             user_models, global_model = self.aggregation(voting_rights, 
                 user_models, users, entities)
         else:
@@ -213,7 +213,7 @@ class Pipeline:
                 global_model = global_model.base_model
             
         if 6 not in skip_steps:
-            logger.info(f"Pipeline 6. Post-processing scores {self.post_process}")
+            logger.info(f"Pipeline 6. Post-processing scores {str(self.post_process)}")
             user_models, global_model = self.post_process(user_models, global_model, entities)
         else:
             logger.info(f"Pipeline 6. Post-processing scores skipped")

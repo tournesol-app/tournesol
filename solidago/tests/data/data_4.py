@@ -26,14 +26,13 @@ users, vouches, entities, privacy, judgments = GenerativeModel(
         poisson_compare=10,
         n_comparisons_per_entity=4.0,
         svd_mean=np.array([3, 0, 0]),
-        multiplicator_std_dev=0,
+        multiplicator_std_dev=0.2,
         engagement_bias_std_dev=1,
     ),
     vouch_model=ErdosRenyiVouchModel(),
     entity_model=NormalEntityModel(svd_dimension=3),
     engagement_model=SimpleEngagementModel(
         p_per_criterion={"0": 1.0}, 
-        entity_bias_noise=1.0,
         p_private=0.2
     ),
     comparison_model=KnaryGBT(21, 10)

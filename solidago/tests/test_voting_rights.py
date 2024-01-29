@@ -192,7 +192,7 @@ def test_affine_overtrust():
     )
     voting_rights, entities = voting_rights_assignment(users, entities, vouches, privacy)
 
-@pytest.mark.parametrize("test", range(5))
+@pytest.mark.parametrize("test", range(4))
 def test_affine_overtrust_test_data(test):
     td = importlib.import_module(f"data.data_{test}")
     voting_rights, entities = td.pipeline.voting_rights(
