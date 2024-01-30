@@ -120,33 +120,28 @@ class GenerativeModel:
         
 
 def user_model_from_json(json):
-    match json[0]:
-        case "NormalUserModel": 
-            return NormalUserModel(**json[1])
+    if json[0] == "NormalUserModel": 
+        return NormalUserModel(**json[1])
     raise ValueError(f"UserModel {json[0]} was not recognized")
     
 def vouch_model_from_json(json):
-    match json[0]:
-        case "ErdosRenyiVouchModel": 
-            return ErdosRenyiVouchModel()
+    if json[0] == "ErdosRenyiVouchModel": 
+        return ErdosRenyiVouchModel()
     raise ValueError(f"VouchModel {json[0]} was not recognized")
     
 def entity_model_from_json(json):
-    match json[0]:
-        case "NormalEntityModel": 
-            return NormalEntityModel(**json[1])
+    if json[0] == "NormalEntityModel": 
+        return NormalEntityModel(**json[1])
     raise ValueError(f"EntityModel {json[0]} was not recognized")
     
 def engagement_model_from_json(json):
-    match json[0]:
-        case "SimpleEngagementModel": 
-            return SimpleEngagementModel(**json[1])
+    if json[0] == "SimpleEngagementModel": 
+        return SimpleEngagementModel(**json[1])
     raise ValueError(f"EngagementModel {json[0]} was not recognized")
     
 def comparison_model_from_json(json):
-    match json[0]:
-        case "KnaryGBT": 
-            return KnaryGBT(**json[1])
+    if json[0] == "KnaryGBT": 
+        return KnaryGBT(**json[1])
     raise ValueError(f"ComparisonModel {json[0]} was not recognized")
     
 

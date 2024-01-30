@@ -7,12 +7,12 @@ import logging
 from solidago import PrivacySettings, Judgments
 from solidago.scoring_model import ScoringModel, DirectScoringModel, PostProcessedScoringModel
 
-from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust
-from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust
+from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust, NoTrustPropagation
+from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
 from solidago.preference_learning import PreferenceLearning, UniformGBT
-from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift
-from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian
-from solidago.post_process import PostProcess, Squash
+from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, NoScaling
+from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian, Average
+from solidago.post_process import PostProcess, Squash, NoPostProcess
 
 logger = logging.getLogger(__name__)
 
@@ -232,45 +232,49 @@ class Pipeline:
         
 
 def trust_propagation_from_json(json):
-    match json[0]:
-        case "TrustAll": 
-            return TrustAll()
-        case "LipschiTrust": 
-            return LipschiTrust(**json[1])
+    if json[0] == "TrustAll": 
+        return TrustAll()
+    if json[0] == "LipschiTrust": 
+        return LipschiTrust(**json[1])
+    if json[0] == "NoTrustPropagation":
+        return NoTrustPropagation(**json[1])
     raise ValueError(f"TrustPropagation {json[0]} was not recognized")
 
 def voting_rights_from_json(json):
-    match json[0]:
-        case "AffineOvertrust": 
-            return AffineOvertrust(**json[1])
+    if json[0] == "AffineOvertrust": 
+        return AffineOvertrust(**json[1])
+    if json[0] == "IsTrust":
+        return IsTrust(**json[1])
     raise ValueError(f"VotingRightsAssignment {json[0]} was not recognized")
 
 def preference_learning_from_json(json):
-    match json[0]:
-        case "UniformGBT": 
-            return UniformGBT(**json[1])
+    if json[0] == "UniformGBT": 
+        return UniformGBT(**json[1])
     raise ValueError(f"PreferenceLearning {json[0]} was not recognized")
 
 def scaling_from_json(json):
-    match json[0]:
-        case "ScalingCompose": 
-            return ScalingCompose(*[scaling_from_json(j) for j in json[1]])
-        case "Mehestan": 
-            return Mehestan(**json[1])
-        case "QuantileZeroShift": 
-            return QuantileZeroShift(**json[1])
+    if json[0] == "ScalingCompose": 
+        return ScalingCompose(*[scaling_from_json(j) for j in json[1]])
+    if json[0] == "Mehestan": 
+        return Mehestan(**json[1])
+    if json[0] == "QuantileZeroShift": 
+        return QuantileZeroShift(**json[1])
+    if json[0] == "NoScaling":
+        return NoScaling()
     raise ValueError(f"Scaling {json[0]} was not recognized")
 
 def aggregation_from_json(json):
-    match json[0]:
-        case "QuantileStandardizedQrMedian": 
-            return QuantileStandardizedQrMedian(**json[1])
+    if json[0] == "QuantileStandardizedQrMedian": 
+        return QuantileStandardizedQrMedian(**json[1])
+    if json[0] == "Average":
+        return Average()
     raise ValueError(f"QuantileStandardizedQrMedian {json[0]} was not recognized")
 
 def post_process_from_json(json):
-    match json[0]:
-        case "Squash": 
-            return Squash(**json[1])
+    if json[0] == "Squash": 
+        return Squash(**json[1])
+    if json[0] == "NoPostProcess":
+        return NoPostProcess()
     raise ValueError(f"PostProcess {json[0]} was not recognized")
     
 
