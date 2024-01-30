@@ -160,16 +160,24 @@ function addVideoButtons() {
       },
     });
 
-    addVideoButton({
-      id: 'tournseol-watch-button',
-      label: 'Watch on Tournesol',
-      iconSrc: chrome.runtime.getURL('images/watch.svg'),
-      onClick: () => {
-        window.open(
-          `${frontendUrl}/entities/yt:${videoId}?utm_source=extension&utm_medium=video_button`,
-          '_blank'
-        );
-      },
+    // This button doesn't work when: the user is not authenticated, and the
+    // video is not in the database.
+    // See: https://github.com/tournesol-app/tournesol/issues/1904
+    chrome.storage.local.get(['access_token'], (items) => {
+      if (items.access_token) {
+
+        addVideoButton({
+          id: 'tournseol-watch-button',
+          label: 'Watch on Tournesol',
+          iconSrc: chrome.runtime.getURL('images/watch.svg'),
+          onClick: () => {
+            window.open(
+              `${frontendUrl}/entities/yt:${videoId}?utm_source=extension&utm_medium=video_button`,
+              '_blank'
+            );
+          },
+        });
+      }
     });
   }
 }
