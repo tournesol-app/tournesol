@@ -232,11 +232,10 @@ class Pipeline:
         
 
 def trust_propagation_from_json(json):
-    match json[0]:
-        case "TrustAll": 
-            return TrustAll()
-        case "LipschiTrust": 
-            return LipschiTrust(**json[1])
+    if json[0] == "TrustAll": 
+        return TrustAll()
+    elif json[0] == "LipschiTrust": 
+        return LipschiTrust(**json[1])
     raise ValueError(f"TrustPropagation {json[0]} was not recognized")
 
 def voting_rights_from_json(json):

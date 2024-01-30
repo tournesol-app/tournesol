@@ -57,6 +57,7 @@
                     "min_activity": 1, 
                     "n_scalers_max": 100, 
                     "privacy_penalty": 0.5, 
+                    "user_comparison_lipschitz": 10, 
                     "p_norm_for_multiplicative_resilience": 4.0, 
                     "error": 1e-05
                 }], 
