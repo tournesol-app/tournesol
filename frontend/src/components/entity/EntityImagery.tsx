@@ -42,7 +42,7 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
           bgcolor="rgba(0,0,0,0.5)"
           px={1}
           fontFamily="system-ui, arial, sans-serif"
-          fontSize="0.8em"
+          fontSize="0.8rem"
           fontWeight="bold"
           lineHeight={1.5}
           // Prevent the duration to be hidden by an additional layer

@@ -13,9 +13,16 @@ class PollScopedViewMixin:
     view or a subclass of it.
     """
 
+    entity_contexts = None
+    enable_entity_contexts = False
+
     poll_parameter = "poll_name"
     # used to avoid multiple similar database queries in a single HTTP request
     poll_from_url: Poll
+
+    @staticmethod
+    def get_entity_contexts(poll: Poll):
+        return poll.all_entity_contexts.prefetch_related("texts").all()
 
     def poll_from_kwargs_or_404(self, request_kwargs):
         poll_name = request_kwargs[self.poll_parameter]
@@ -33,7 +40,11 @@ class PollScopedViewMixin:
         # make the requested poll available at any time in the view
         self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
 
+        if self.enable_entity_contexts:
+            self.entity_contexts = self.get_entity_contexts(self.poll_from_url)
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["poll"] = self.poll_from_url
+        context["entity_contexts"] = self.entity_contexts
         return context

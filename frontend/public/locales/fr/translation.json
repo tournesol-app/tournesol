@@ -29,8 +29,8 @@
     "nbContributors_one": "{{count}} contributeur",
     "nbContributors_many": "{{count}} contributeurs",
     "nbContributors_other": "{{count}} contributeurs",
-    "criteriaRatedHigh": "Noté fortement :",
-    "criteriaRatedLow": "Noté faiblement :",
+    "criteriaRatedHigh": "Noté haut:",
+    "criteriaRatedLow": "Noté bas:",
     "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
@@ -257,7 +257,7 @@
       },
       "p": {
         "youConsentToReceiveEmails": "Vous (i) consentez à recevoir des communications de notre part sous forme électronique par l'intermédiaire de l'adresse électronique que vous avez fournie ou par le biais du Service\u00a0; et (ii) vous acceptez que l'ensemble des Conditions Générales d'Utilisation, accords, avis, divulgations et autres communications que nous vous fournissons par voie électronique satisfassent à toute exigence légale que ces communications satisferaient si elles étaient sur papier. La présente section ne porte pas atteinte à vos droits inaliénables.",
-        "necessaryEmails": "Vous reconnaissez que certaines parties du Service, comme la procédure d'activation du Compte ou la procédure de réinitialisation de mot de passe, nécessitent des courriels pour fonctionner correctement, et vous consentez à les recevoir.",
+        "necessaryEmails": "Vous reconnaissez que certaines parties du Service, comme la procédure d'activation du Compte, la procédure de réinitialisation de mot de passe, ou la procédure de rappel d'inscription nécessitent des courriels pour fonctionner correctement, et vous consentez à les recevoir.",
         "additionalNecessaryEmails": "Nous considérons également les avis de sécurité et les mises à jour du présent Accord comme des courriels nécessaires."
       }
     },
@@ -306,6 +306,7 @@
     "FAQAriaLabel": "Lien vers la page FAQ",
     "about": "À propos",
     "aboutAriaLabel": "Lien vers la page à propos",
+    "installTheApp": "Installer l'appli",
     "donate": "Faire un don"
   },
   "frame": {
@@ -326,6 +327,11 @@
     "vouching": "Me porter garant"
   },
   "logoutButton": "Se déconnecter",
+  "pwaBanner": {
+    "message": "En installant l'appli Tournesol, vous pourrez plus facilement comparer les vidéos que vous regardez, en les partageant depuis d'autres applications telles que YouTube.",
+    "ignore": "Ignorer",
+    "install": "Installer"
+  },
   "topbar": {
     "search": "Rechercher"
   },

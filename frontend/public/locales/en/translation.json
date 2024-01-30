@@ -251,7 +251,7 @@
       },
       "p": {
         "youConsentToReceiveEmails": "You (i) consent to receive communications from us in an electronic form via the email address you have submitted or via the Service; and (ii) agree that all Terms of Service, agreements, notices, disclosures, and other communications that we provide to you electronically satisfy any legal requirement that those communications would satisfy if they were on paper. This section does not affect your non-waivable rights.",
-        "necessaryEmails": "You acknowledge that some parts of the Service, like the Account activation process, or the password reset process, require emails to operate correctly, and consent to receive them.",
+        "necessaryEmails": "You acknowledge that some parts of the Service, like the Account activation process, the password reset process, or the registration reminder process require emails to operate correctly, and consent to receive them.",
         "additionalNecessaryEmails": "We also consider security notices, and impacting updates of this Agreement as necessary emails."
       }
     },
@@ -300,6 +300,7 @@
     "FAQAriaLabel": "Link to the FAQ page",
     "about": "About",
     "aboutAriaLabel": "Link to the about page",
+    "installTheApp": "Install the app",
     "donate": "Donate"
   },
   "frame": {
@@ -320,6 +321,11 @@
     "vouching": "Vouch for other users"
   },
   "logoutButton": "Logout",
+  "pwaBanner": {
+    "message": "By installing the Tournesol app, you can effortlessly compare the videos you watch and share them seamlessly from other applications like YouTube.",
+    "ignore": "Ignore",
+    "install": "Install"
+  },
   "topbar": {
     "search": "Search"
   },
@@ -418,7 +424,7 @@
     "updateVisibility": "Update visibility",
     "markAllAsPublic": "Mark all as <1>public</1>",
     "markAllAsPrivate": "Mark all as <1>private</1>",
-    "noVideoCorrespondsToFilter": "No video corresponds to your filter.",
+    "noVideoCorrespondsToFilter": "No video matches your filter.",
     "noVideoComparedYet": "You haven't compared any video yet",
     "compareVideosButton": "Compare videos"
   },
@@ -916,7 +922,7 @@
       "recommendations": "Recommendations"
     }
   },
-  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
+  "noVideoCorrespondsToSearchCriterias": "No video matches your search criteria.",
   "profile": "Profile",
   "signup": {
     "oneLastStep": "One last step",

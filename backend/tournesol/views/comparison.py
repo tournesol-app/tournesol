@@ -23,18 +23,7 @@ class InactivePollError(exceptions.PermissionDenied):
 class ComparisonApiMixin:
     """A mixin used to factorize behaviours common to all API views."""
 
-    entity_contexts = None
-
-    def initial(self, request, *args, **kwargs):
-        super().initial(request, *args, **kwargs)
-        self.entity_contexts = self.poll_from_url.all_entity_contexts.prefetch_related(
-            "texts"
-        ).all()
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["entity_contexts"] = self.entity_contexts
-        return context
+    enable_entity_contexts = True
 
     def comparison_already_exists(self, poll_id, request):
         """Return True if the comparison already exist, False instead."""

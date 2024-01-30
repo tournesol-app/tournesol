@@ -12,6 +12,7 @@ import {
   Theme,
   Divider,
   Tooltip,
+  Avatar,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -44,6 +45,7 @@ import { RouteID } from 'src/utils/types';
 import { getDefaultRecommendationsSearchParams } from 'src/utils/userSettings';
 
 import { closeDrawer } from '../../drawerOpenSlice';
+import { BeforeInstallPromptEvent } from '../../pwaPrompt';
 
 export const sideBarWidth = 264;
 
@@ -87,21 +89,16 @@ const useStyles = makeStyles((theme: Theme) => ({
       minWidth: `${sideBarWidth}px`,
     },
   },
-  listItemIcon: {
-    color: '#CDCABC',
-  },
   listItemIconSelected: {
     color: theme.palette.neutral.dark,
   },
-  listItemText: {
-    fontWeight: 'bold',
-    '&:first-letter': {
-      textTransform: 'capitalize',
-    },
-  },
 }));
 
-const SideBar = () => {
+interface Props {
+  beforeInstallPromptEvent?: BeforeInstallPromptEvent;
+}
+
+const SideBar = ({ beforeInstallPromptEvent }: Props) => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -215,7 +212,23 @@ const SideBar = () => {
       <List
         disablePadding
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
-        sx={{ flexGrow: 1, wordBreak: 'break-word' }}
+        sx={{
+          flexGrow: 1,
+          wordBreak: 'break-word',
+          '& > .MuiListItemButton-root': {
+            minHeight: '56px',
+          },
+          '& .MuiListItemIcon-root': {
+            color: theme.palette.grey[400],
+            minWidth: '40px',
+          },
+          '& .MuiListItemText-primary': {
+            fontWeight: 'bold',
+            '&:first-letter': {
+              textTransform: 'capitalize',
+            },
+          },
+        }}
       >
         {menuItems.map(
           ({ id, targetUrl, IconComponent, displayText, ariaLabel }) => {
@@ -234,7 +247,6 @@ const SideBar = () => {
                 component={Link}
                 to={targetUrl}
                 sx={{
-                  minHeight: '56px',
                   '&.Mui-selected': {
                     bgcolor: 'action.selected',
                   },
@@ -248,22 +260,35 @@ const SideBar = () => {
                   placement="right"
                   arrow
                 >
-                  <ListItemIcon sx={{ minWidth: '40px' }}>
+                  <ListItemIcon>
                     <IconComponent
                       className={clsx({
-                        [classes.listItemIcon]: !selected,
                         [classes.listItemIconSelected]: selected,
                       })}
                     />
                   </ListItemIcon>
                 </Tooltip>
-                <ListItemText
-                  primary={displayText}
-                  primaryTypographyProps={{ className: classes.listItemText }}
-                />
+                <ListItemText primary={displayText} />
               </ListItemButton>
             );
           }
+        )}
+        {beforeInstallPromptEvent && (
+          <>
+            <Divider />
+            <ListItemButton onClick={() => beforeInstallPromptEvent.prompt()}>
+              <ListItemIcon>
+                <Avatar
+                  src="/icons/maskable-icon-512x512.png"
+                  sx={{ width: '24px', height: '24px' }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={t('menu.installTheApp')}
+                primaryTypographyProps={{ color: theme.palette.neutral.dark }}
+              />
+            </ListItemButton>
+          </>
         )}
       </List>
       <Divider />

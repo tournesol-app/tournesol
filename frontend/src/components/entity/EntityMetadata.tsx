@@ -42,7 +42,7 @@ export const VideoMetadata = ({
         flexWrap: 'wrap',
         alignContent: 'space-between',
         fontFamily: 'Poppins',
-        fontSize: '0.8em',
+        fontSize: '0.8rem',
         color: 'neutral.main',
         columnGap: '12px',
         lineHeight: '1.3',
@@ -72,6 +72,7 @@ export const VideoMetadata = ({
               to={`/recommendations?language=&uploader=${encodeURIComponent(
                 uploader
               )}`}
+              fontWeight={600}
             >
               {uploader}
             </Link>

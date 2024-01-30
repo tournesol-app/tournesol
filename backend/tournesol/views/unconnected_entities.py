@@ -12,7 +12,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 
 from tournesol.models import Comparison, Entity
-from tournesol.serializers.entity import EntityNoExtraFieldSerializer
+from tournesol.serializers.unconnected_entities import UnconnectedEntitySerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
@@ -56,9 +56,11 @@ class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
     List unconnected entities.
     """
 
-    serializer_class = EntityNoExtraFieldSerializer
+    serializer_class = UnconnectedEntitySerializer
     permission_classes = [IsAuthenticated]
     pagination_class = SortedEntityIdLimitOffsetPagination
+
+    enable_entity_contexts = True
 
     def get_queryset(self):
         # Get related entities from source entity

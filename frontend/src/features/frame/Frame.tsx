@@ -6,6 +6,7 @@ import TopBar, { topBarHeight } from './components/topbar/TopBar';
 import Footer from './components/footer/Footer';
 import SideBar from './components/sidebar/SideBar';
 import StorageError from './components/StorageError';
+import { BeforeInstallPromptEvent } from './pwaPrompt';
 
 const isEmbedded = Boolean(new URLSearchParams(location.search).get('embed'));
 
@@ -70,6 +71,9 @@ interface Props {
 const Frame = ({ children }: Props) => {
   const classes = useStyles();
   const [hasStorageError, setHasStorageError] = useState(false);
+  const [beforePromptEvent, setBeforePromptEvent] = useState<
+    BeforeInstallPromptEvent | undefined
+  >(undefined);
 
   useEffect(() => {
     const checkStorage = async () => {
@@ -83,11 +87,32 @@ const Frame = ({ children }: Props) => {
     }
   }, []);
 
+  useEffect(() => {
+    const handler = (event: BeforeInstallPromptEvent) => {
+      setBeforePromptEvent(event);
+      event.userChoice?.then(({ outcome }) => {
+        if (outcome === 'accepted') {
+          setBeforePromptEvent(undefined);
+        }
+      });
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
+  }, []);
+
   return (
     <>
-      {isEmbedded ? <EmbeddedTopBar /> : <TopBar />}
+      {isEmbedded ? (
+        <EmbeddedTopBar />
+      ) : (
+        <TopBar beforeInstallPromptEvent={beforePromptEvent} />
+      )}
       <div className={clsx({ [classes.sideBarContainer]: !isEmbedded })}>
-        {!isEmbedded && <SideBar />}
+        {!isEmbedded && (
+          <SideBar beforeInstallPromptEvent={beforePromptEvent} />
+        )}
         <main className={classes.main}>
           {hasStorageError ? <StorageError /> : children}
           {!isEmbedded && <Footer />}

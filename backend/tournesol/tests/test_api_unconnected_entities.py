@@ -264,13 +264,15 @@ class ConnectGraphNonReducibleDistanceTestCase(TestCase):
             format="json",
         )
 
+        results = response.data["results"]
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         # video 2 and 4 are both at distance 2 and should appear first, video 3 and 5 should
         # not appear because it has already been compared with the source entity. video 4 should
         # be first because it has a single comparison by the user against video 2 which has two.
-        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
-        self.assertEqual(response.data["results"][1]["uid"], self.video_2.uid)
+        self.assertEqual(results[0]["entity"]["uid"], self.video_4.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video_2.uid)
 
 
 class ConnectedGraphReducibleDistanceTestCase(TestCase):
@@ -331,11 +333,12 @@ class ConnectedGraphReducibleDistanceTestCase(TestCase):
             f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
+        results = response.data["results"]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            {entity["uid"] for entity in response.data["results"]},
+            {res["entity"]["uid"] for res in results},
             {entity.uid for entity in self.unrelated_video},
         )
 
@@ -346,15 +349,16 @@ class ConnectedGraphReducibleDistanceTestCase(TestCase):
             f"{self.user_base_url}/{self.video_source.uid}/?strict=false",
             format="json",
         )
+        results = response.data["results"]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # The response must contain firstly the two unconnected entities, and
-        # and then the 4 other entities sorted by decreasing distance to the
-        # source entity
+        # The response must contain firstly the two unconnected entities, and
+        # the 4 other entities sorted by decreasing distance to the source
+        # entity.
         self.assertEqual(response.data["count"], 5)
-        entities = [entity["uid"] for entity in response.data["results"]]
-        self.assertEqual(set(entities[:2]), {entity.uid for entity in self.unrelated_video})
-        self.assertEqual([self.video_5.uid,self.video_4.uid,self.video_2.uid], entities[2:])
+        uids = [res["entity"]["uid"] for res in results]
+        self.assertEqual(set(uids[:2]), {entity.uid for entity in self.unrelated_video})
+        self.assertEqual([self.video_5.uid,self.video_4.uid,self.video_2.uid], uids[2:])
 
     def test_non_connected_entities_ordering(self):
         """
@@ -387,18 +391,18 @@ class ConnectedGraphReducibleDistanceTestCase(TestCase):
             f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
-
         results = response.data["results"]
+
         # The first entity must be `video_a`, as it has 1 comparison.
-        self.assertEqual(results[0]["uid"], video_a.uid)
+        self.assertEqual(results[0]["entity"]["uid"], video_a.uid)
 
         # The 2nd and 3rd entities must be in the list of entities having 2
         # comparisons.
-        self.assertIn(results[1]["uid"], [video_b.uid, self.unrelated_video[1].uid])
-        self.assertIn(results[2]["uid"], [video_b.uid, self.unrelated_video[1].uid])
+        self.assertIn(results[1]["entity"]["uid"], [video_b.uid, self.unrelated_video[1].uid])
+        self.assertIn(results[2]["entity"]["uid"], [video_b.uid, self.unrelated_video[1].uid])
 
         # The fourth entity must be `self.unrelated_video[0]` with 3 comparisons.
-        self.assertEqual(results[3]["uid"], self.unrelated_video[0].uid)
+        self.assertEqual(results[3]["entity"]["uid"], self.unrelated_video[0].uid)
 
 
 class TwoIsolatedGraphComponentsTestCase(TestCase):
@@ -455,12 +459,13 @@ class TwoIsolatedGraphComponentsTestCase(TestCase):
             f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
+        results = response.data["results"]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            {x["uid"] for x in response.data["results"]},
-            {x.uid for x in self.unrelated_video},
+            {res["entity"]["uid"] for res in results},
+            {entity.uid for entity in self.unrelated_video},
         )
 
 
@@ -469,7 +474,7 @@ class TwoIsolatedGraphComponentsTestCase(TestCase):
     100,
     1000,
     2000,
-    # Disabling the large test cases because they take a few minutes to run, but are useful for
+    # Disabling the large test cases because they take a few minutes to run, but are useful for
     # checking the performance of the api call.
     # 5000,
     # 10000,

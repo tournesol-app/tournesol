@@ -47,7 +47,16 @@ function EntityList({
     <>
       {entities && entities.length ? (
         entities.map((res: EntityResult) => (
-          <Box key={res.entity.uid} mx={1} my={2}>
+          <Box
+            key={res.entity.uid}
+            mx={1}
+            my={2}
+            sx={{
+              '&:first-of-type': {
+                marginTop: 0,
+              },
+            }}
+          >
             <AvailableEntity
               uid={res.entity.uid}
               actionsIfUnavailable={actionsIfUnavailable}
