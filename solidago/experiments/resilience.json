@@ -5,8 +5,8 @@
     "xparameter": "generative_model.user_model.p_trustworthy",
     "xvalues": [0.01, 0.2, 0.5, 0.8, 1.0], 
     "zparameter": "pipeline.aggregation.lipschitz", 
-    "zvalues": [0.01, 1, 100],
-    "zlegends": ["Lipschitz = 0.01", "Lipschitz = 1", "Lipschitz = 100"],
+    "zvalues": [0.1, 0.2, 0.5, 1],
+    "zlegends": ["Lipschitz = 0.1", "Lipschitz = 0.2", "Lipschitz = 0.5", "Lipschitz = 1"],
     "n_users": 30, 
     "n_entities": 50,
     "n_seeds": 100, 
@@ -18,11 +18,13 @@
             "zipf_compare": 1.5, 
             "poisson_compare": 30.0, 
             "n_comparisons_per_entity": 3.0, 
-            "svd_dimension": 5
+            "multiplicator_std_dev": 1.0,
+            "svd_mean": [3.0, 0.0],
+            "engagement_bias_std_dev": 0.0
         }], 
         "vouch_model": ["ErdosRenyiVouchModel"], 
         "entity_model": ["NormalEntityModel", {
-            "mean": [0.0, 0.0, 0.0, 0.0, 0.0]
+            "mean": [0.0, 0.0]
         }], 
         "engagement_model": ["SimpleEngagementModel", {
             "p_per_criterion": {"0": 1.0}, 
