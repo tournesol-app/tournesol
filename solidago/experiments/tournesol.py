@@ -18,16 +18,14 @@ from solidago.pipeline import Pipeline
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-logger.addHandler(ch)
 
-pipeline_logger = logging.getLogger("solidago.pipeline.pipeline")
-pipeline_logger.setLevel(logging.INFO)
-pipeline_ch = logging.StreamHandler()
-pipeline_ch.setLevel(logging.INFO)
-pipeline_logger.addHandler(pipeline_ch)
+info_loggers = [__name__, "solidago.pipeline.pipeline", "solidago.scaling.mehestan"]
+for module in info_loggers:
+    info_logger = logging.getLogger(module)
+    info_logger.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    info_logger.addHandler(ch)
 
 
 pipeline = Pipeline(

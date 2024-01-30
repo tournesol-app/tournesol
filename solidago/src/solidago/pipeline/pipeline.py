@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import logging
+import timeit
 
 from solidago import PrivacySettings, Judgments
 from solidago.scoring_model import ScoringModel, DirectScoringModel, PostProcessedScoringModel
@@ -118,7 +120,6 @@ class Pipeline:
         judgments: Judgments,
         init_user_models : Optional[dict[int, ScoringModel]] = None,
         global_model: Optional[dict[int, ScoringModel]] = None,
-        skip_steps: Optional[set[int]] = None
     ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
         """ Run Pipeline 
         
@@ -157,67 +158,41 @@ class Pipeline:
         global_model: GlobalModel
             global model
         """   
-        if skip_steps is None:
-            skip_steps = set()
-        if 3 in skip_steps:
-            assert init_user_models is not None
-        if 5 in skip_steps:
-            assert global_model is not None
             
-        if len(skip_steps) == 0:
-            logger.info("Starting the full Solidago pipeline")
-        else:
-            logger.info(
-                "Starting the Solidago pipeline, skipping " 
-                + ", ".join([f"Step {step}" for step in skip_steps])
-            )
+        logger.info("Starting the full Solidago pipeline")
+        start_step1 = timeit.default_timer()
+    
+        logger.info(f"Pipeline 1. Propagating trust with {str(self.trust_propagation)}")
+        users = self.trust_propagation(users, vouches)
+        start_step2 = timeit.default_timer()
+        logger.info(f"Pipeline 1. Terminated in {np.round(start_step2 - start_step1, 2)} seconds")
+            
+        logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
+        voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
+        start_step3 = timeit.default_timer()
+        logger.info(f"Pipeline 2. Terminated in {np.round(start_step3 - start_step2, 2)} seconds")
         
-        if 1 not in skip_steps:
-            logger.info(f"Pipeline 1. Propagating trust with {str(self.trust_propagation)}")
-            users = self.trust_propagation(users, vouches)
-        else:
-            logger.info(f"Pipeline 1. Trust propagation is skipped")
-            
-        if 2 not in skip_steps:
-            logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
-            voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
-        else:
-            logger.info(f"Pipeline 2. Voting rights assignment is skipped")
-            
-        if 3 not in skip_steps:
-            logger.info(f"Pipeline 3. Learning preferences with {str(self.preference_learning)}")
-            user_models = self.preference_learning(judgments, users, entities, init_user_models)
-        else:
-            logger.info(f"Pipeline 3. Learning preferences is skipped")
-            user_models = {
-                user: init_user_models[user] if user in init_user_models else DirectScoringModel()
-                for user, _ in users.iterrows()
-            }
+        logger.info(f"Pipeline 3. Learning preferences with {str(self.preference_learning)}")
+        user_models = self.preference_learning(judgments, users, entities, init_user_models)
+        start_step4 = timeit.default_timer()
+        logger.info(f"Pipeline 3. Terminated in {np.round(start_step4 - start_step3, 2)} seconds")
         
-        if 4 not in skip_steps:
-            logger.info(f"Pipeline 4. Collaborative scaling with {str(self.scaling)}")
-            user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
-        else:
-            logger.info(f"Pipeline 4. Reusing precomputed scales")
-            for user in user_models:
-                user_models[user] = ScaledScoringModel(user_models[user], 
-                    *init_user_models[user].get_scaling_parameters())
+        logger.info(f"Pipeline 4. Collaborative scaling with {str(self.scaling)}")
+        user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
+        start_step5 = timeit.default_timer()
+        logger.info(f"Pipeline 4. Terminated in {np.round(start_step5 - start_step4, 2)} seconds")
                 
-        if 5 not in skip_steps:
-            logger.info(f"Pipeline 5. Score aggregation with {str(self.aggregation)}")
-            user_models, global_model = self.aggregation(voting_rights, 
-                user_models, users, entities)
-        else:
-            logger.info(f"Pipeline 5. Score aggregation skipped")
-            if 6 not in skip_steps and isinstance(global_model, PostProcessedScoringModel):
-                global_model = global_model.base_model
-            
-        if 6 not in skip_steps:
-            logger.info(f"Pipeline 6. Post-processing scores {str(self.post_process)}")
-            user_models, global_model = self.post_process(user_models, global_model, entities)
-        else:
-            logger.info(f"Pipeline 6. Post-processing scores skipped")
+        logger.info(f"Pipeline 5. Score aggregation with {str(self.aggregation)}")
+        user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
+        start_step6 = timeit.default_timer()
+        logger.info(f"Pipeline 5. Terminated in {np.round(start_step6 - start_step5, 2)} seconds")
         
+        logger.info(f"Pipeline 6. Post-processing scores {str(self.post_process)}")
+        user_models, global_model = self.post_process(user_models, global_model, entities)
+        end = timeit.default_timer()
+        logger.info(f"Pipeline 6. Terminated in {np.round(end - start_step6, 2)} seconds")
+        
+        logger.info(f"Successful pipeline run, in {np.round(end - start_step1, 2)} seconds")
         return users, voting_rights, user_models, global_model
         
     def to_json(self):

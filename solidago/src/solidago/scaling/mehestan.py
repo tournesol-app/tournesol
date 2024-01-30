@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 import logging
+import timeit
 
 from .base import Scaling
 
@@ -91,6 +92,7 @@ class Mehestan(Scaling):
         """
         logger.info("Starting Mehestan's collaborative scaling")
         
+        start = timeit.default_timer()
         logger.info("Mehestan 1. Select scalers based on activity and trustworthiness")
         score_diffs = _compute_score_diffs(user_models, users, entities)
         activities = _compute_activities(user_models, users, entities, 
@@ -101,6 +103,8 @@ class Mehestan(Scaling):
         if len(scalers) == 0:
             logger.warning("    No user qualifies as a scaler. No scaling performed.")
             return user_models
+        end_step1 = timeit.default_timer()
+        logger.info(f"Mehestan 1. Terminated in {np.round(end_step1 - start, 2)} seconds")
         
         logger.info("Mehestan 2. Collaborative scaling of scalers")
         model_norms = _model_norms(user_models, users, entities, privacy, 
@@ -108,6 +112,8 @@ class Mehestan(Scaling):
             privacy_penalty=self.privacy_penalty)
         multiplicators, translations, scaled_models = self.scale_scalers(
             user_models, scalers, entities, score_diffs, model_norms)
+        end_step2 = timeit.default_timer()
+        logger.info(f"Mehestan 2. Terminated in {np.round(end_step2 - end_step1)} seconds")
         
         logger.info("Mehestan 3. Scaling of non-scalers")
         for scaler in scaled_models:
@@ -115,7 +121,10 @@ class Mehestan(Scaling):
         scaled_models = self.scale_non_scalers(
             user_models, scalers, nonscalers, entities, score_diffs, model_norms, 
             multiplicators, translations, scaled_models)
+        end = timeit.default_timer()
+        logger.info(f"Mehestan 3. Terminated in {end - end_step2} seconds")
         
+        logger.info(f"Succesful Mehestan normalization, in {np.round(end - start)} seconds")
         return scaled_models
     
     ############################################
