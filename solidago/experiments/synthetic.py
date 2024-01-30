@@ -65,10 +65,12 @@ def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeli
 def set_attr(x_parameter: str, x: float, generative_model, pipeline):
     x_list = x_parameter.split(".")
     
-    match x_list[0]:
-        case "generative_model": obj = generative_model
-        case "pipeline":         obj = pipeline
-        case _: raise ValueError(f"No match for {x_parameter[0]}")
+    if x_list[0] == "generative_model": 
+        obj = generative_model
+    elif x_list[0] == "pipeline":
+        obj = pipeline
+    else: 
+        raise ValueError(f"No match for {x_parameter[0]}")
         
     for attr in x_list[1:-1]:
         try:    obj = getattr(obj, attr)
@@ -83,10 +85,12 @@ def set_attr(x_parameter: str, x: float, generative_model, pipeline):
 def get_attr(x_parameter: str, generative_model, pipeline):
     x_list = x_parameter.split(".")
     
-    match x_list[0]:
-        case "generative_model": obj = generative_model
-        case "pipeline":         obj = pipeline
-        case _: raise ValueError(f"No match for {x_parameter[0]}")
+    if x_list[0] == "generative_model": 
+        obj = generative_model
+    elif x_list[0] == "pipeline":
+        obj = pipeline
+    else: 
+        raise ValueError(f"No match for {x_parameter[0]}")
     
     for attr in x_list[1:]:
         try:    obj = getattr(obj, attr)
