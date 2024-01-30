@@ -98,8 +98,10 @@ export class Banner {
     // The second flex item is the text.
     const bannerTextContainer = document.createElement('div');
     const bannerTitle = document.createElement('h2');
+    bannerTitle.id = 'tournesol_banner_title';
     bannerTitle.textContent = this.title;
     bannerTextContainer.append(bannerTitle);
+
     const bannerText = document.createElement('p');
     bannerText.textContent = this.text;
     bannerTextContainer.append(bannerText);
