@@ -1,7 +1,7 @@
 import pytest
 import importlib
 
-from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian, Mean
+from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian, Average
 from solidago.scoring_model import ScaledScoringModel
 
 from solidago.aggregation.standardized_qrmed import _get_user_scores
@@ -70,9 +70,9 @@ def test_qtlstd_qrmed_invariance(test):
     
 
 @pytest.mark.parametrize( "test", list(range(5)) )
-def test_mean(test):
+def test_average(test):
     td = importlib.import_module(f"data.data_{test}")
-    aggregation = Mean()
+    aggregation = Average()
     user_models, global_model = aggregation(
         td.voting_rights,
         td.standardized_models,

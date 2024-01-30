@@ -6,7 +6,7 @@ from solidago.scoring_model import ScoringModel, DirectScoringModel
 from .base import Aggregation
 
 
-class Mean(Aggregation):
+class Average(Aggregation):
     def __call__(
         self, 
         voting_rights: VotingRights,
