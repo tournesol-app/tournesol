@@ -165,7 +165,6 @@ function addVideoButtons() {
     // See: https://github.com/tournesol-app/tournesol/issues/1904
     chrome.storage.local.get(['access_token'], (items) => {
       if (items.access_token) {
-
         addVideoButton({
           id: 'tournseol-watch-button',
           label: 'Watch on Tournesol',
