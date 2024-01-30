@@ -434,7 +434,12 @@ class Mehestan(Scaling):
             p_norm_for_multiplicative_resilience=self.p_norm_for_multiplicative_resilience,
             error=self.error
         )
-        
+
+    def __str__(self):
+        prop_names = ["lipschitz", "min_activity", "n_scalers_max", "privacy_penalty",
+            "user_comparison_lipschitz", "p_norm_for_multiplicative_resilience", "error"]
+        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
+        return f"{type(self).__name__}({prop})"
     
 ##############################################
 ## Preprocessing to facilitate computations ##

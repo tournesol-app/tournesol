@@ -7,15 +7,14 @@ import numpy as np
 from solidago.scoring_model import ScoringModel, DirectScoringModel
 from solidago.solvers.optimize import coordinate_descent
 
-from .base import ComparisonBasedPreferenceLearning
+from .comparison_learning import ComparisonBasedPreferenceLearning
 
 
 class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
     def __init__(
         self, 
         prior_std_dev: float=7,
-        initialization: dict[int, float]=dict(),
-        convergence_error: float=1e-5                    
+        convergence_error: float=1e-5,
     ):
         """
         
@@ -224,3 +223,8 @@ class UniformGBT(GeneralizedBradleyTerry):
             cumulant_generating_function_error=self.cumulant_generating_function_error,
         )
     
+    def __str__(self):
+        prop_names = ["prior_std_dev", "convergence_error", "comparison_max", 
+            "cumulant_generating_function_error"]
+        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
+        return f"{type(self).__name__}({prop})"

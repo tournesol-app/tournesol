@@ -19,7 +19,6 @@ class Judgments(ABC):
         """
         raise NotImplementedError
 
-
 class DataFrameJudgments(Judgments):
     def __init__(
         self, 

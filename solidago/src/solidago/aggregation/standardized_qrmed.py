@@ -99,12 +99,16 @@ class QuantileStandardizedQrMedian(Aggregation):
             default_dev=1, 
             error=self.error
         )
-        
     
     def to_json(self):
         return type(self).__name__, dict(
             dev_quantile=self.dev_quantile, lipschitz=self.lipschitz, error=self.error
         )
+
+    def __str__(self):
+        prop_names = ["dev_quantile", "lipschitz", "error"]
+        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
+        return f"{type(self).__name__}({prop})"
 
 
 def _get_user_scores(

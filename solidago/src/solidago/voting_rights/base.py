@@ -43,3 +43,5 @@ class VotingRightsAssignment(ABC):
     def to_json(self):
         return (type(self).__name__, )
     
+    def __str__(self):
+        return type(self).__name__

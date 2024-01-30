@@ -17,3 +17,8 @@ class ScalingCompose(Scaling):
     def to_json(self):
         scalings_json = [scaling.to_json() for scaling in self.scalings]
         return type(self).__name__, scalings_json
+
+    def __str__(self):
+        prop = ", ".join([str(s) for s in self.scalings])
+        return f"{type(self).__name__}({prop})"
+        

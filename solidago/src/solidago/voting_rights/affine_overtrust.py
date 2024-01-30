@@ -191,3 +191,8 @@ class AffineOvertrust(VotingRightsAssignment):
             min_overtrust=self.min_overtrust,
             overtrust_ratio=self.overtrust_ratio
         )
+
+    def __str__(self):
+        prop_names = ["privacy_penalty", "min_overtrust", "overtrust_ratio"]
+        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
+        return f"{type(self).__name__}({prop})"

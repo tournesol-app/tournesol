@@ -1,4 +1,5 @@
 import logging
+import timeit
 import numpy as np
 import pandas as pd
 from threading import Thread
@@ -21,6 +22,13 @@ logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 logger.addHandler(ch)
+
+pipeline_logger = logging.getLogger("solidago.pipeline.pipeline")
+pipeline_logger.setLevel(logging.INFO)
+pipeline_ch = logging.StreamHandler()
+pipeline_ch.setLevel(logging.INFO)
+pipeline_logger.addHandler(pipeline_ch)
+
 
 pipeline = Pipeline(
     trust_propagation=LipschiTrust(
@@ -70,16 +78,19 @@ inputs = TournesolInputFromPublicDataset.download()
 logger.info("Preprocessing data for the pipeline")
 users, vouches, entities, privacy = inputs.get_pipeline_objects()
 
-criteria = set(inputs.comparisons["criteria"])
+# criteria = set(inputs.comparisons["criteria"])
+criteria = { "largely_recommended" }
 
-users, voting_rights, user_models, global_model = dict(), dict(), dict(), dict()
+user_outputs, voting_rights, user_models, global_model = dict(), dict(), dict(), dict()
 def run_pipeline(criterion):
     logger.info(f"Running the pipeline for criterion `{criterion}`")
+    start = timeit.default_timer()
     judgments = inputs.get_judgments(criterion)
     output = pipeline(users, vouches, entities, privacy, judgments)
-    users[criterion], voting_rights[criterion] = output[0], output[1]
+    user_outputs[criterion], voting_rights[criterion] = output[0], output[1]
     user_models[criterion], global_model[criterion] = output[2], output[3]
-    logger.info(f"Pipeline run for criterion `{criterion}` terminated successfully")
+    end = timeit.default_timer()
+    logger.info(f"Pipeline run for criterion `{criterion}` terminated in {start - end} seconds")
 
 threads = [Thread(target=run_pipeline, args=(criterion,)) for criterion in criteria]
 for thread in threads:

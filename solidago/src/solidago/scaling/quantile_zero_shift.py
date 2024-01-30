@@ -74,3 +74,9 @@ class QuantileZeroShift(Scaling):
             lipschitz=self.lipschitz,
             error=self.error
         )
+
+    def __str__(self):
+        prop_names = ["zero_quantile", "lipschitz", "error"]
+        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
+        return f"{type(self).__name__}({prop})"
+    
