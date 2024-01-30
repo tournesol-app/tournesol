@@ -9,3 +9,5 @@ from .voting_rights import VotingRights
 from .base import VotingRightsAssignment
 from .is_trust import IsTrust
 from .affine_overtrust import AffineOvertrust
+
+from .compute_voting_rights import compute_voting_rights
