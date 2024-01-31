@@ -67,11 +67,9 @@ const Search = () => {
     searchParams.append('search', search);
     searchParams.delete('offset');
 
-    const videoId = extractVideoId(search);
+    const videoId = extractVideoId(search, true);
 
-    // TODO: we should pass an argument to `extractVideoId` so that raw YouTube
-    // ids are ignored.
-    if (videoId && search.length !== 11) {
+    if (videoId) {
       history.push('/entities/yt:' + videoId.toString());
     } else {
       history.push('/recommendations?' + searchParams.toString());
