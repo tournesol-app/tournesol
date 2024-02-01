@@ -19,7 +19,7 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
   ratings: {
-    color: theme.palette.neutral.main,
+    color: theme.palette.text.secondary,
   },
   contributors: {
     color: theme.palette.neutral.dark,
@@ -176,7 +176,7 @@ const EntityCardScores = ({
               borderColor: 'divider',
               paddingLeft: 1,
               fontSize: '0.9rem',
-              color: 'text.secondary',
+              color: 'neutral.main',
             }}
           >
             {max_score > 0 && (
