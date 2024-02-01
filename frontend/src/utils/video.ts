@@ -14,7 +14,7 @@ export function extractVideoId(idOrUrl: string, ignoreVideoId = false) {
   const tournesolEntityUrl = /(?:[.\w]+\/entities\/)/;
 
   const videoId = /([A-Za-z0-9-_]{11})/;
-  const youtubeId = /(?:yt:)?([A-Za-z0-9-_]{11})/;
+  const videoIdOrUid = new RegExp(`(?:yt:)?${videoId.source}`);
 
   if (ignoreVideoId) {
     const matchVideoId = idOrUrl.match(new RegExp(`^${videoId.source}`));
@@ -27,7 +27,7 @@ export function extractVideoId(idOrUrl: string, ignoreVideoId = false) {
     new RegExp(
       `^${protocol.source}${subdomain.source}` +
         `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})?` +
-        `${youtubeId.source}`
+        `${videoIdOrUid.source}`
     )
   );
   const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
