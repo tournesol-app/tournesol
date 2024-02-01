@@ -6,18 +6,31 @@ import {
   isAutoSuggestionsEmpty,
 } from 'src/features/rateLater/autoSuggestions';
 
-export function extractVideoId(idOrUrl: string) {
+export function extractVideoId(
+  idOrUrl: string,
+  { ignoreVideoId = false } = {}
+) {
   const protocol = /(?:https?:\/\/)?/;
   const subdomain = /(?:www\.|m\.)?/;
   const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/))/;
   const youtubeShortUrl = /(?:youtu\.be\/)/;
   const tournesolEntityUrl = /(?:[.\w]+\/entities\/)/;
-  const youtubeId = /(?:yt:)?([A-Za-z0-9-_]{11})/;
+
+  const videoId = /([A-Za-z0-9-_]{11})/;
+  const videoIdOrUid = new RegExp(`(?:yt:)?${videoId.source}`);
+
+  if (ignoreVideoId) {
+    const matchVideoId = idOrUrl.match(new RegExp(`^${videoId.source}`));
+    if (matchVideoId != null) {
+      return null;
+    }
+  }
+
   const matchUrl = idOrUrl.match(
     new RegExp(
       `^${protocol.source}${subdomain.source}` +
         `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})?` +
-        `${youtubeId.source}`
+        `${videoIdOrUid.source}`
     )
   );
   const id = matchUrl ? matchUrl[1] : idOrUrl.trim();

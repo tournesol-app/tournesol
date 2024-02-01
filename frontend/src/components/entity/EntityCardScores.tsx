@@ -19,12 +19,9 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
   ratings: {
-    marginRight: '4px',
-    fontSize: '0.9rem',
-    color: theme.palette.neutral.main,
+    color: theme.palette.text.secondary,
   },
   contributors: {
-    fontSize: '0.9rem',
     color: theme.palette.neutral.dark,
   },
 }));
@@ -130,17 +127,15 @@ const EntityCardScores = ({
         display="flex"
         flexWrap="wrap"
         alignItems="center"
-        columnGap="12px"
-        lineHeight="1.3"
-        py={1}
-        marginTop={1}
+        columnGap="10px"
+        paddingTop={1.5}
       >
         {showTournesolScore &&
           result.collective_rating?.tournesol_score != null && (
             <TournesolScore
               score={result.collective_rating.tournesol_score}
               tooltip={tournesolScoreTitle}
-              fontSize={32}
+              fontSize="2rem"
               unsafe={isUnsafe}
               data-testid="video-card-overall-score"
             />
@@ -151,6 +146,7 @@ const EntityCardScores = ({
             data-testid="video-card-ratings"
             display="flex"
             flexDirection="column"
+            fontSize="0.9rem"
           >
             <span className={classes.ratings}>
               <Trans t={t} i18nKey="video.nbComparisonsBy" count={nbRatings}>
@@ -174,12 +170,13 @@ const EntityCardScores = ({
             data-testid="video-card-minmax-criterias"
             display="flex"
             flexDirection="column"
+            rowGap="2px"
             sx={{
               borderLeft: '1px solid',
               borderColor: 'divider',
               paddingLeft: 1,
               fontSize: '0.9rem',
-              color: 'text.secondary',
+              color: 'neutral.main',
             }}
           >
             {max_score > 0 && (
@@ -187,8 +184,8 @@ const EntityCardScores = ({
                 {t('video.criteriaRatedHigh')}
                 <CriteriaIcon
                   criteriaName={max_criteria}
-                  emojiSize="12px"
-                  imgWidth="18px"
+                  emojiSize="14px"
+                  imgWidth="16px"
                   tooltip={`${getCriteriaLabel(
                     max_criteria
                   )}: ${max_score.toFixed(0)}`}
@@ -201,8 +198,8 @@ const EntityCardScores = ({
                 {t('video.criteriaRatedLow')}
                 <CriteriaIcon
                   criteriaName={min_criteria}
-                  emojiSize="12px"
-                  imgWidth="18px"
+                  emojiSize="14px"
+                  imgWidth="16px"
                   tooltip={`${getCriteriaLabel(
                     min_criteria
                   )}: ${min_score.toFixed(0)}`}

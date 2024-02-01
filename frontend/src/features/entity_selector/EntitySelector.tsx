@@ -1,8 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Theme, useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/material/styles';
 import { Box, Grid, Typography } from '@mui/material';
 
 import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
@@ -22,23 +21,6 @@ import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    margin: 0,
-  },
-  controls: {
-    margin: 4,
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-  },
-  input: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '0.7rem',
-    },
-  },
-}));
 
 interface Props {
   title: string;
@@ -68,11 +50,10 @@ const EntitySelector = ({
   variant = 'regular',
   autoFill = false,
 }: Props) => {
-  const classes = useStyles();
   const { isLoggedIn } = useLoginState();
 
   return (
-    <div className={classes.root}>
+    <>
       {isLoggedIn ? (
         <EntitySelectorInnerAuth
           title={title}
@@ -86,7 +67,7 @@ const EntitySelector = ({
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
       )}
-    </div>
+    </>
   );
 };
 
@@ -314,7 +295,7 @@ const EntitySelectorInnerAuth = ({
           </Typography>
         </Box>
       )}
-      <Box position="relative">
+      <>
         {rating ? (
           <EntityCard
             compact
@@ -408,7 +389,7 @@ const EntitySelectorInnerAuth = ({
             </Grid>
           </>
         )}
-      </Box>
+      </>
     </>
   );
 };
