@@ -15,7 +15,7 @@ describe('video module', () => {
       expect(id1).toEqual(videoId);
 
       // When ignoreVideoId is true, raw video id should not be extracted.
-      const id2 = extractVideoId(videoId, true);
+      const id2 = extractVideoId(videoId, { ignoreVideoId: true });
       expect(id2).toEqual(null);
     });
 
@@ -23,7 +23,7 @@ describe('video module', () => {
       const id1 = extractVideoId(`yt:${videoId}`);
       expect(id1).toEqual(videoId);
 
-      const id2 = extractVideoId(`yt:${videoId}`, true);
+      const id2 = extractVideoId(`yt:${videoId}`, { ignoreVideoId: true });
       expect(id2).toEqual(videoId);
     });
 
@@ -34,7 +34,7 @@ describe('video module', () => {
       const id2 = extractVideoId(ytUrlPatternLive.replace('://www.', '://'));
       expect(id2).toEqual(videoId);
 
-      const id3 = extractVideoId(ytUrlPatternLive, true);
+      const id3 = extractVideoId(ytUrlPatternLive, { ignoreVideoId: true });
       expect(id3).toEqual(videoId);
     });
 
@@ -42,7 +42,7 @@ describe('video module', () => {
       const id = extractVideoId(ytUrlPatternMobile);
       expect(id).toEqual(videoId);
 
-      const id2 = extractVideoId(ytUrlPatternMobile, true);
+      const id2 = extractVideoId(ytUrlPatternMobile, { ignoreVideoId: true });
       expect(id2).toEqual(videoId);
     });
 
@@ -53,7 +53,7 @@ describe('video module', () => {
       const id2 = extractVideoId(ytUrlPatternWatch.replace('://www.', '://'));
       expect(id2).toEqual(videoId);
 
-      const id3 = extractVideoId(ytUrlPatternWatch, true);
+      const id3 = extractVideoId(ytUrlPatternWatch, { ignoreVideoId: true });
       expect(id3).toEqual(videoId);
     });
 
@@ -61,7 +61,7 @@ describe('video module', () => {
       const id = extractVideoId(ytUrlPatternShort);
       expect(id).toEqual(videoId);
 
-      const id2 = extractVideoId(ytUrlPatternShort, true);
+      const id2 = extractVideoId(ytUrlPatternShort, { ignoreVideoId: true });
       expect(id2).toEqual(videoId);
     });
   });

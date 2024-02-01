@@ -67,7 +67,7 @@ const Search = () => {
     searchParams.append('search', search);
     searchParams.delete('offset');
 
-    const videoId = extractVideoId(search, true);
+    const videoId = extractVideoId(search, { ignoreVideoId: true });
 
     if (videoId) {
       history.push('/entities/yt:' + videoId.toString());

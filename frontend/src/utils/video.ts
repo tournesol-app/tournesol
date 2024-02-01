@@ -6,7 +6,10 @@ import {
   isAutoSuggestionsEmpty,
 } from 'src/features/rateLater/autoSuggestions';
 
-export function extractVideoId(idOrUrl: string, ignoreVideoId = false) {
+export function extractVideoId(
+  idOrUrl: string,
+  { ignoreVideoId = false } = {}
+) {
   const protocol = /(?:https?:\/\/)?/;
   const subdomain = /(?:www\.|m\.)?/;
   const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/))/;
