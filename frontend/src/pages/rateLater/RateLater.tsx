@@ -252,7 +252,9 @@ const RateLaterPage = () => {
           {entityCount !== null && (
             <Typography
               variant="subtitle1"
-              mb={0}
+              m={2}
+              textAlign="center"
+              lineHeight="1.5em"
               sx={{
                 '& strong': {
                   color: 'secondary.main',
@@ -272,7 +274,7 @@ const RateLaterPage = () => {
             </Typography>
           )}
 
-          <Box width="100%" textAlign="center">
+          <Box width="100%">
             <LoaderWrapper isLoading={isLoading}>
               <EntityList
                 entities={rateLaterList}
@@ -283,6 +285,7 @@ const RateLaterPage = () => {
               />
             </LoaderWrapper>
           </Box>
+
           {!!entityCount && entityCount > limit && (
             <Pagination
               offset={offset}

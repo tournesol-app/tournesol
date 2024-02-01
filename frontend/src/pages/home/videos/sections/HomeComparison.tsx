@@ -141,9 +141,9 @@ const HomeComparison = () => {
         item
         xs
         component={Card}
-        sx={{
-          alignSelf: 'start',
-        }}
+        display="flex"
+        flexDirection="column"
+        alignSelf="stretch"
       >
         <EntitySelector
           variant="noControl"
@@ -157,9 +157,9 @@ const HomeComparison = () => {
         item
         xs
         component={Card}
-        sx={{
-          alignSelf: 'start',
-        }}
+        display="flex"
+        flexDirection="column"
+        alignSelf="stretch"
       >
         <EntitySelector
           variant="noControl"

@@ -226,9 +226,9 @@ const Comparison = ({
         item
         xs
         component={Card}
-        sx={{
-          alignSelf: 'start',
-        }}
+        display="flex"
+        flexDirection="column"
+        alignSelf="stretch"
       >
         <EntitySelector
           title="A"
@@ -243,9 +243,9 @@ const Comparison = ({
         item
         xs
         component={Card}
-        sx={{
-          alignSelf: 'start',
-        }}
+        display="flex"
+        flexDirection="column"
+        alignSelf="stretch"
       >
         <EntitySelector
           title="B"
