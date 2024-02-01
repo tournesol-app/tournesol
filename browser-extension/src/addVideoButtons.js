@@ -108,60 +108,11 @@ function addVideoButtons() {
       return { button, setLabel, setIcon };
     };
 
-    addVideoButton({
-      id: 'tournesol-rate-now-button',
-      label: 'Rate Now',
-      iconSrc: chrome.runtime.getURL('images/compare.svg'),
-      onClick: () => {
-        chrome.runtime.sendMessage({
-          message: 'displayModal',
-          modalOptions: {
-            src: `${frontendUrl}/comparison?embed=1&utm_source=extension&utm_medium=frame&uidA=yt%3A${videoId}`,
-            height: '90vh',
-          },
-        });
-      },
-    });
-
-    const {
-      button: rateLaterButton,
-      setLabel: setRateLaterButtonLabel,
-      setIcon: setRateLaterButtonIcon,
-    } = addVideoButton({
-      id: 'tournesol-rate-later-button',
-      label: 'Rate Later',
-      iconSrc: chrome.runtime.getURL('images/add.svg'),
-      iconClass: 'tournesol-rate-later',
-      onClick: () => {
-        rateLaterButton.disabled = true;
-
-        new Promise((resolve, reject) => {
-          chrome.runtime.sendMessage(
-            {
-              message: 'addRateLater',
-              video_id: videoId,
-            },
-            (data) => {
-              if (data.success) {
-                setRateLaterButtonLabel('Done!');
-                setRateLaterButtonIcon(
-                  chrome.runtime.getURL('images/checkmark.svg')
-                );
-                resolve();
-              } else {
-                rateLaterButton.disabled = false;
-                reject();
-              }
-            }
-          );
-        }).catch(() => {
-          chrome.runtime.sendMessage({ message: 'displayModal' });
-        });
-      },
-    });
-
     // This button doesn't work when: the user is not authenticated, and the
     // video is not in the database.
+    //
+    // For now, it is displayed only for authenticated users.
+    //
     // See: https://github.com/tournesol-app/tournesol/issues/1904
     chrome.storage.local.get(['access_token'], (items) => {
       if (items.access_token) {
@@ -177,6 +128,58 @@ function addVideoButtons() {
           },
         });
       }
+
+      addVideoButton({
+        id: 'tournesol-rate-now-button',
+        label: 'Rate Now',
+        iconSrc: chrome.runtime.getURL('images/compare.svg'),
+        onClick: () => {
+          chrome.runtime.sendMessage({
+            message: 'displayModal',
+            modalOptions: {
+              src: `${frontendUrl}/comparison?embed=1&utm_source=extension&utm_medium=frame&uidA=yt%3A${videoId}`,
+              height: '90vh',
+            },
+          });
+        },
+      });
+
+      const {
+        button: rateLaterButton,
+        setLabel: setRateLaterButtonLabel,
+        setIcon: setRateLaterButtonIcon,
+      } = addVideoButton({
+        id: 'tournesol-rate-later-button',
+        label: 'Rate Later',
+        iconSrc: chrome.runtime.getURL('images/add.svg'),
+        iconClass: 'tournesol-rate-later',
+        onClick: () => {
+          rateLaterButton.disabled = true;
+
+          new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage(
+              {
+                message: 'addRateLater',
+                video_id: videoId,
+              },
+              (data) => {
+                if (data.success) {
+                  setRateLaterButtonLabel('Done!');
+                  setRateLaterButtonIcon(
+                    chrome.runtime.getURL('images/checkmark.svg')
+                  );
+                  resolve();
+                } else {
+                  rateLaterButton.disabled = false;
+                  reject();
+                }
+              }
+            );
+          }).catch(() => {
+            chrome.runtime.sendMessage({ message: 'displayModal' });
+          });
+        },
+      });
     });
   }
 }
