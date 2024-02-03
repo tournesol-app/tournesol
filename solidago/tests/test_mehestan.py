@@ -85,14 +85,13 @@ learned_models = {
 } 
 
 score_diffs = _compute_score_diffs(learned_models, users, entities)
-activities = _compute_activities(learned_models, users, entities, 
-    privacy, score_diffs, mehestan.privacy_penalty)
+activities = _compute_activities(score_diffs, users, privacy, mehestan.privacy_penalty)
 is_scaler = mehestan.compute_scalers(activities, users)
 users = users.assign(is_scaler=is_scaler)
 scalers = users[users["is_scaler"]]
 nonscalers = users[users["is_scaler"] == False]
         
-model_norms = _model_norms(learned_models, users, entities, privacy, 
+model_norms = _model_norms(learned_models, entities, privacy, 
     power=mehestan.p_norm_for_multiplicative_resilience,
     privacy_penalty=mehestan.privacy_penalty
 )
