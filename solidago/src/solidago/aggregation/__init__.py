@@ -5,5 +5,6 @@ The aggregation may also adjust the user models to the learned global model.
 """
 
 from .base import Aggregation
-from .standardized_qrmed import QuantileStandardizedQrMedian
 from .average import Average
+from .standardized_qr_quantile import StandardizedQrQuantile
+from .standardized_qr_median import StandardizedQrMedian

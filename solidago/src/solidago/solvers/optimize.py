@@ -260,6 +260,7 @@ def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a:
 def coordinate_descent(
     loss_partial_derivative: callable,
     initialization: np.array, 
+    updated_coordinates: list[int],
     error: float = 1e-5
 ):
     """ Minimize a loss function with coordinate descent,
@@ -282,7 +283,7 @@ def coordinate_descent(
         For well behaved losses, there is a convergence guarantee
     """
     unchanged = set()
-    to_pick = []
+    to_pick = updated_coordinates
     solution = initialization
 
     def pick_next_coordinate():

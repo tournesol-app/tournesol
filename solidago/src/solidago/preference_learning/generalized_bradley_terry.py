@@ -65,7 +65,8 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         self, 
         comparisons: pd.DataFrame, 
         entities=None, 
-        initialization: Optional[ScoringModel] = None
+        initialization: Optional[ScoringModel]=None,
+        updated_entities: Optional[set[int]]=None,
     ) -> ScoringModel:
         """ Learns only based on comparisons
         
@@ -89,14 +90,19 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             if initialization is not None and entity in initialization:
                 init_solution[entity_coordinates[entity]] = initialization[entity]        
         
+        updated_coordinates = list() if updated_entities is None else [
+            entity_coordinates[entity] for entity in updated_entities
+        ]
+        
         def loss_partial_derivative(coordinate, value, solution): 
             return self.partial_derivative(coordinate, value, solution, 
                 comparisons_dict[coordinate])
         
         solution = coordinate_descent(
-            loss_partial_derivative = loss_partial_derivative,
-            initialization = init_solution,
-            error = self.convergence_error
+            loss_partial_derivative=loss_partial_derivative,
+            initialization=init_solution,
+            updated_coordinates=updated_coordinates,
+            error=self.convergence_error,
         )
         
         uncertainties = [ 

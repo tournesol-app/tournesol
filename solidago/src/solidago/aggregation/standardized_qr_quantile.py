@@ -6,11 +6,11 @@ from .base import Aggregation
 from solidago.voting_rights import VotingRights
 from solidago.scoring_model import ScoringModel, DirectScoringModel, ScaledScoringModel
 
-from solidago.primitives import qr_median, qr_standard_deviation, qr_uncertainty
+from solidago.primitives import qr_quantile, qr_standard_deviation, qr_uncertainty
 
 
-class QuantileStandardizedQrMedian(Aggregation):
-    def __init__(self, dev_quantile=0.9, lipschitz=0.1, error=1e-5):
+class StandardizedQrQuantile(Aggregation):
+    def __init__(self, quantile=0.2, dev_quantile=0.9, lipschitz=0.1, error=1e-5):
         """ Standardize scores so that only a fraction 1 - dev_quantile
         of the scores is further than 1 away from the median,
         and then run qr_median to aggregate the scores.
@@ -21,6 +21,7 @@ class QuantileStandardizedQrMedian(Aggregation):
         lipschitz: float
         error: float
         """
+        self.quantile = quantile
         self.dev_quantile = dev_quantile
         self.lipschitz = lipschitz
         self.error = error
@@ -66,8 +67,9 @@ class QuantileStandardizedQrMedian(Aggregation):
         global_scores = DirectScoringModel()
         for entity, _ in entities.iterrows():
             dfe = df[df["entity_id"] == entity]
-            score = qr_median(
+            score = qr_quantile(
                 self.lipschitz, 
+                self.quantile, 
                 np.array(dfe["scores"]), 
                 np.array(dfe["voting_rights"]), 
                 np.array(dfe["left_uncertainties"]),
@@ -102,11 +104,12 @@ class QuantileStandardizedQrMedian(Aggregation):
     
     def to_json(self):
         return type(self).__name__, dict(
-            dev_quantile=self.dev_quantile, lipschitz=self.lipschitz, error=self.error
+            quantile=self.quantile, dev_quantile=self.dev_quantile, 
+            lipschitz=self.lipschitz, error=self.error
         )
 
     def __str__(self):
-        prop_names = ["dev_quantile", "lipschitz", "error"]
+        prop_names = ["quantile", "dev_quantile", "lipschitz", "error"]
         prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
         return f"{type(self).__name__}({prop})"
 
@@ -134,3 +137,4 @@ def _get_user_scores(
         scores=scores, left_uncertainties=lefts, right_uncertainties=rights
     ))    
     
+

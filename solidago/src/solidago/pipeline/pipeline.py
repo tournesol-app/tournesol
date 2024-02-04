@@ -13,7 +13,7 @@ from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust,
 from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
 from solidago.preference_learning import PreferenceLearning, UniformGBT
 from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, NoScaling
-from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian, Average
+from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average
 from solidago.post_process import PostProcess, Squash, NoPostProcess
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,8 @@ class DefaultPipeline:
             error=1e-5
         )
     )
-    aggregation: Aggregation = QuantileStandardizedQrMedian(
+    aggregation: Aggregation = StandardizedQrQuantile(
+        quantile=0.2,
         dev_quantile=0.9,
         lipschitz=0.1,
         error=1e-5
@@ -239,11 +240,13 @@ def scaling_from_json(json):
     raise ValueError(f"Scaling {json[0]} was not recognized")
 
 def aggregation_from_json(json):
-    if json[0] == "QuantileStandardizedQrMedian": 
-        return QuantileStandardizedQrMedian(**json[1])
+    if json[0] == "StandardizedQrMedian": 
+        return StandardizedQrMedian(**json[1])
+    if json[0] == "StandardizedQrQuantile": 
+        return StandardizedQrQuantile(**json[1])
     if json[0] == "Average":
         return Average()
-    raise ValueError(f"QuantileStandardizedQrMedian {json[0]} was not recognized")
+    raise ValueError(f"Aggregation {json[0]} was not recognized")
 
 def post_process_from_json(json):
     if json[0] == "Squash": 

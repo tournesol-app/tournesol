@@ -9,7 +9,13 @@ from .base import PreferenceLearning
 
 class ComparisonBasedPreferenceLearning(PreferenceLearning):
     @abstractmethod
-    def comparison_learning(self, comparisons, entities) -> ScoringModel:
+    def comparison_learning(
+        self, 
+        comparisons: pd.DataFrame, 
+        entities: pd.DataFrame, 
+        initialization: Optional[ScoringModel]=None, 
+        updated_entities: Optional[set[int]]=None,
+    ) -> ScoringModel:
         """ Learns only based on comparisons
         
         Parameters
@@ -21,6 +27,11 @@ class ComparisonBasedPreferenceLearning(PreferenceLearning):
         entities: DataFrame with columns
             * entity_id: int, index
             * May contain others, such as vector representation
+        initialization: ScoringModel or None
+            Starting model, added to facilitate optimization
+            It is not supposed to affect the output of the training
+        updated_entities: set of entities (int)
+           This allows to prioritize coordinate descent, starting with newly evaluated entities
         """
         raise NotImplementedError
     
@@ -28,7 +39,8 @@ class ComparisonBasedPreferenceLearning(PreferenceLearning):
         self, 
         user_judgments: dict[str, pd.DataFrame],
         entities: pd.DataFrame,
-        initialization: Optional[ScoringModel] = None
+        initialization: Optional[ScoringModel] = None,
+        new_judgments: Optional[dict[str, pd.DataFrame]]=None,
     ) -> ScoringModel:
         """ Learns a scoring model, given user judgments of entities
         
@@ -43,9 +55,15 @@ class ComparisonBasedPreferenceLearning(PreferenceLearning):
         initialization: ScoringModel or None
             Starting model, added to facilitate optimization
             It is not supposed to affect the output of the training
+        new_judgments: New judgments
+           This allows to prioritize coordinate descent, starting with newly evaluated entities
             
         Returns
         -------
         model: ScoringModel
         """
-        return self.comparison_learning(user_judgments["comparisons"], entities, initialization)
+        comparisons, updated_entities = user_judgments["comparisons"], None
+        if new_judgments is not None:
+            new_comparisons = new_judgments["comparisons"]
+            updated_entities = set(new_comparisons["entity_a"]) | set(new_comparisons["entity_b"])
+        return self.comparison_learning(comparisons, entities, initialization, updated_entities)
