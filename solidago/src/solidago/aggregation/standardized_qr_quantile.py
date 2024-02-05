@@ -122,10 +122,11 @@ def _get_user_scores(
     user_list, entity_list, voting_right_list = list(), list(), list()
     scores, lefts, rights = list(), list(), list()
     for user in user_models:
-        for entity in user_models[user]:
+        for entity in user_models[user].scored_entities(entities):
             user_list.append(user)
             entity_list.append(entity)
             voting_right_list.append(voting_rights[user, entity])
+            output = user_models[user](entity, entities.loc[entity])
             scores.append(output[0])
             lefts.append(output[1])
             rights.append(output[2])
