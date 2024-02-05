@@ -121,16 +121,14 @@ def _get_user_scores(
 ):
     user_list, entity_list, voting_right_list = list(), list(), list()
     scores, lefts, rights = list(), list(), list()
-    for entity, row in entities.iterrows():
-        for user in user_models:
-            output = user_models[user](entity, row)
-            if output is not None:
-                user_list.append(user)
-                entity_list.append(entity)
-                voting_right_list.append(voting_rights[user, entity])
-                scores.append(output[0])
-                lefts.append(output[1])
-                rights.append(output[2])
+    for user in user_models:
+        for entity in user_models[user]:
+            user_list.append(user)
+            entity_list.append(entity)
+            voting_right_list.append(voting_rights[user, entity])
+            scores.append(output[0])
+            lefts.append(output[1])
+            rights.append(output[2])
                 
     return pd.DataFrame(dict(
         user_id=user_list, entity_id=entity_list, voting_rights=voting_right_list, 
