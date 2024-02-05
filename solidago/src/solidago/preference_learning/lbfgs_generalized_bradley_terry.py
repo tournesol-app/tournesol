@@ -3,6 +3,7 @@ from typing import Optional
 
 import pandas as pd
 import numpy as np
+import torch
 
 from solidago.scoring_model import ScoringModel, DirectScoringModel
 from solidago.solvers.optimize import coordinate_descent
@@ -10,11 +11,12 @@ from solidago.solvers.optimize import coordinate_descent
 from .comparison_learning import ComparisonBasedPreferenceLearning
 
 
-class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
+class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
     def __init__(
         self, 
         prior_std_dev: float=7,
         convergence_error: float=1e-5,
+        n_steps: int=5,
     ):
         """
         
@@ -27,9 +29,11 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         """
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
+        self.n_steps = n_steps
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     @abstractmethod
-    def cumulant_generating_function_derivative(self, score_diff: float) -> float:
+    def cumulant_generating_function(self, score_diff: float) -> float:
         """ The beauty of the generalized Bradley-Terry model is that it suffices
         to specify its cumulant generating function derivative to fully define it,
         and to allow a fast computation of its corresponding maximum a posterior.
@@ -44,7 +48,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         out: float
         """
         pass
-    
+        
     @abstractmethod
     def cumulant_generating_function_second_derivative(self, score_diff: float) -> float:
         """ We estimate uncertainty by the flatness of the negative log likelihood,
@@ -85,34 +89,34 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         
         comparisons_dict = self.comparisons_dict(comparisons, entity_coordinates)
         
-        init_solution = np.zeros(len(entities))
+        solution = torch.normal(0, 1, (len(entities),), requires_grad=True, dtype=float, 
+            device=self.device)
         for entity in entity_coordinates:
             if initialization is not None and entity in initialization:
-                init_solution[entity_coordinates[entity]] = initialization[entity]        
+                solution[entity_coordinates[entity]] = initialization[entity]        
         
-        updated_coordinates = list() if updated_entities is None else [
-            entity_coordinates[entity] for entity in updated_entities
-        ]
+        lbfgs = torch.optim.LBFGS((solution,))
+        def closure():
+            lbfgs.zero_grad()
+            loss = self.loss(solution, comparisons, entity_coordinates)
+            loss.backward()
+            return loss
         
-        def loss_partial_derivative(coordinate, value, solution): 
-            return self.partial_derivative(coordinate, value, solution, 
-                comparisons_dict[coordinate])
-        
-        solution = coordinate_descent(
-            loss_partial_derivative=loss_partial_derivative,
-            initialization=init_solution,
-            updated_coordinates=updated_coordinates,
-            error=self.convergence_error,
-        )
+        for step in range(self.n_steps):
+            loss = self.loss(solution, comparisons, entity_coordinates)
+            lbfgs.step(closure)
         
         uncertainties = [ 
-            self.hessian_diagonal_element(coordinate, solution, comparisons_dict[coordinate]) 
-            for coordinate in range(len(entities))
+            self.hessian_diagonal_element(entity, solution, comparisons, entity_coordinates) 
+            for entity in entities
         ]
         
         model = DirectScoringModel()
         for coordinate in range(len(solution)):
-            model[entities[coordinate]] = solution[coordinate], uncertainties[coordinate]
+            model[entities[coordinate]] = (
+                solution[coordinate].detach().numpy(), 
+                uncertainties[coordinate]
+            )
         
         return model
         
@@ -132,42 +136,34 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             comparisons_dict[b][a] = comparison
             
         return comparisons_dict
-            
-    def partial_derivative(
-        self, 
-        coordinate: int, 
-        value: float,
-        solution: np.array, 
-        comparisons_dict: dict[int, float]
-    ) -> float:
-        """ Computes the partial derivative along a coordinate, 
-        for a given value along the coordinate,
-        when other coordinates' values are given by the solution.
-        The computation evidently depends on the dataset,
-        which is given by coordinate_comparisons.
-        """
-        result = value / self.prior_std_dev ** 2
-        for coordinate_bis in comparisons_dict:
-            score_diff = value - solution[coordinate_bis]
-            result += self.cumulant_generating_function_derivative(score_diff)
-            result -= comparisons_dict[coordinate_bis]
-        return result
+        
+    def loss(self, solution, comparisons, entity_coordinates):
+        loss = torch.sum(solution**2) / (2 * self.prior_std_dev**2)
+        for _, row in comparisons.iterrows():
+            score_diff = solution[entity_coordinates[row["entity_b"]]] \
+                - solution[entity_coordinates[row["entity_a"]]]
+            loss += self.cumulant_generating_function(score_diff) 
+            loss -= row["comparison"] * score_diff / row["comparison_max"]
+        return loss
     
     def hessian_diagonal_element(
         self, 
-        coordinate: int, 
+        entity: int, 
         solution: np.array, 
-        comparisons_dict: dict[int, float]
+        comparisons: pd.DataFrame, 
+        entity_coordinates: dict[int, int],
     ) -> float:
         """ Computes the second partial derivative """
         result = 1 / self.prior_std_dev ** 2
-        for coordinate_bis in comparisons_dict:
-            score_diff = solution[coordinate] - solution[coordinate_bis]
-            result += self.cumulant_generating_function_second_derivative(score_diff)
-        return result
+        c = comparisons[(comparisons["entity_a"] == entity) | (comparisons["entity_b"] == entity)]
+        for _, row in c.iterrows():
+            score_diff = solution[entity_coordinates[row["entity_b"]]] \
+                - solution[entity_coordinates[row["entity_a"]]]
+            result += self.cumulant_generating_function_second_derivative(score_diff.detach())
+        return result.detach().numpy()
     
         
-class UniformGBT(GeneralizedBradleyTerry):
+class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
     def __init__(
         self, 
         prior_std_dev: float=7,
@@ -187,6 +183,22 @@ class UniformGBT(GeneralizedBradleyTerry):
         super().__init__(prior_std_dev, convergence_error)
         self.comparison_max = comparison_max
         self.cumulant_generating_function_error = cumulant_generating_function_error
+    
+    def cumulant_generating_function(self, score_diff: float) -> float:
+        """ For.
+        
+        Parameters
+        ----------
+        score_diff: float
+            Score difference
+            
+        Returns
+        -------
+        out: float
+        """
+        if score_diff == 0:
+            return 0
+        return torch.log(torch.sinh(score_diff) / score_diff)
     
     def cumulant_generating_function_derivative(self, score_diff: float) -> float:
         """ For.

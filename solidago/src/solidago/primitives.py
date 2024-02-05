@@ -73,7 +73,7 @@ def _qr_quantile_loss_derivative(
     voting_rights: Union[npt.NDArray, float],
     left_uncertainties: npt.ArrayLike,
     right_uncertainties: npt.ArrayLike, 
-    default_value: float = 0,
+    default_value: float = 0.,
     error: float=1e-6
 ):
     """ Computes the derivative of the loss associated to qr_quantile """
@@ -87,9 +87,8 @@ def _qr_quantile_loss_derivative(
         quantile_term = (1.0 - 2.0 * quantile) * np.sum(voting_rights)
     
     deltas = variable - values
-    uncertainties = left_uncertainties * (deltas < 0) 
+    uncertainties = error + left_uncertainties * (deltas < 0) 
     uncertainties += right_uncertainties * (deltas > 0)
-    uncertainties += error
     
     forces = voting_rights * deltas / np.sqrt(uncertainties**2 + deltas**2)
     

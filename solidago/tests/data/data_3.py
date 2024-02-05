@@ -9,7 +9,7 @@ from solidago.trust_propagation import LipschiTrust
 from solidago.voting_rights import VotingRights, AffineOvertrust
 from solidago.preference_learning import UniformGBT
 from solidago.scaling import ScalingCompose, Mehestan, QuantileZeroShift
-from solidago.aggregation import QuantileStandardizedQrMedian
+from solidago.aggregation import StandardizedQrMedian
 from solidago.post_process import Squash
 from solidago.pipeline import Pipeline
 
@@ -95,7 +95,7 @@ pipeline = Pipeline(
             error=1e-5
         )
     ),
-    aggregation=QuantileStandardizedQrMedian(
+    aggregation=StandardizedQrMedian(
         dev_quantile=0.9,
         lipschitz=0.1,
         error=1e-5

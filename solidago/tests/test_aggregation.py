@@ -1,10 +1,10 @@
 import pytest
 import importlib
 
-from solidago.aggregation import Aggregation, QuantileStandardizedQrMedian, Average
+from solidago.aggregation import Aggregation, StandardizedQrMedian, Average
 from solidago.scoring_model import ScaledScoringModel
 
-from solidago.aggregation.standardized_qrmed import _get_user_scores
+from solidago.aggregation.standardized_qr_quantile import _get_user_scores
 
 
 @pytest.mark.parametrize( "test", list(range(5)) )
@@ -20,12 +20,12 @@ def test_aggregation(test):
 
 @pytest.mark.parametrize( "test", list(range(1, 5)) )
 def test_qtlstd(test):
-    """ The output of QuantileStandardizedQrMedian should be independent from
+    """ The output of StandardizedQrMedian should be independent from
     the multiplicative scales of input user models, as long as it is the same for all users.
     """
     td = importlib.import_module(f"data.data_{test}")
     df = _get_user_scores(td.voting_rights, td.standardized_models, td.entities)
-    aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=1e20, error=1e-6)
+    aggregation = StandardizedQrMedian(dev_quantile=0.9, lipschitz=1e20, error=1e-6)
     std_dev = aggregation._compute_std_dev(df)
     scaled_models = { 
         u: ScaledScoringModel(base_model=td.standardized_models[u], multiplicator=2)
@@ -37,11 +37,11 @@ def test_qtlstd(test):
 
 @pytest.mark.parametrize( "test", list(range(5)) )
 def test_qtlstd_qrmed_invariance(test):
-    """ The output of QuantileStandardizedQrMedian should be independent from
+    """ The output of StandardizedQrMedian should be independent from
     the multiplicative scales of input user models, as long as it is the same for all users.
     """
     td = importlib.import_module(f"data.data_{test}")
-    aggregation = QuantileStandardizedQrMedian(dev_quantile=0.9, lipschitz=1000., error=1e-5)
+    aggregation = StandardizedQrMedian(dev_quantile=0.9, lipschitz=1000., error=1e-5)
     user_models, global_model = aggregation(
         td.voting_rights,
         td.standardized_models,

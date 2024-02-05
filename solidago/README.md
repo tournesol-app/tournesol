@@ -31,6 +31,7 @@ See the [venv doc](https://docs.python.org/3/library/venv.html#how-venvs-work) f
 To run experiments, once the virtual environement setup, you may run the experiments on synthetic data using.
 ```
 python3 experiments/synthetic.py experiments/resilience.json
+python3 experiments/synthetic.py experiments/engagement_bias.json
 ```
 The results will be exported in ```experiments/results```.
 You may modify the experiments by editing ```experiments/resilience.json```, 

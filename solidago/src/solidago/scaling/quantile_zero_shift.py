@@ -52,13 +52,12 @@ class QuantileZeroShift(Scaling):
         """
         votes, scores, lefts, rights = list(), list(), list(), list()
         for user in user_models:
-            for entity, row in entities.iterrows():
-                output = user_models[user](entity, row)
-                if output is not None:
-                    votes.append(voting_rights[user, entity])
-                    scores.append(output[0])
-                    lefts.append(output[1])
-                    rights.append(output[2])
+            for entity in user_models[user].scored_entities(entities):
+                output = user_models[user](entity, entities.loc[entity])
+                votes.append(voting_rights[user, entity])
+                scores.append(output[0])
+                lefts.append(output[1])
+                rights.append(output[2])
         
         shift = - qr_quantile(self.lipschitz, self.zero_quantile, np.array(scores), 
             np.array(votes), np.array(lefts), np.array(rights), error=self.error)

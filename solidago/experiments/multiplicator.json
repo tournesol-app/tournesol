@@ -70,7 +70,8 @@
                 }]
             ]
         ], 
-        "aggregation": ["QuantileStandardizedQrMedian", {
+        "aggregation": ["StandardizedQrQuantile", {
+            "quantile": 0.2, 
             "dev_quantile": 0.9, 
             "lipschitz": 0.1, 
             "error": 1e-05

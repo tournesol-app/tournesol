@@ -9,3 +9,4 @@ to remedy users' lack of activity and reactivity.
 
 from .base import PreferenceLearning
 from .generalized_bradley_terry import UniformGBT
+from .lbfgs_generalized_bradley_terry import LBFGSUniformGBT
