@@ -16,7 +16,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         self, 
         prior_std_dev: float=7,
         convergence_error: float=1e-5,
-        n_steps: int=5,
+        n_steps: int=3,
     ):
         """
         
@@ -84,6 +84,9 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         entities: DataFrame
             This parameter is not used
         """
+        if len(comparisons) == 0:
+            return DirectScoringModel()
+            
         entities = list(set(comparisons["entity_a"]) | set(comparisons["entity_b"]))
         entity_coordinates = { entity: c for c, entity in enumerate(entities) }
         
@@ -170,7 +173,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         comparison_max: float=10,
         convergence_error: float=1e-5,
         cumulant_generating_function_error: float=1e-5,
-        n_steps: int=5,
+        n_steps: int=3,
     ):
         """
         

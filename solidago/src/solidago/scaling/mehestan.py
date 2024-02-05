@@ -96,13 +96,13 @@ class Mehestan(Scaling):
         logger.info("Mehestan 1. Select scalers based on activity and trustworthiness")
         score_diffs = _compute_score_diffs(user_models, users, entities)
         end1a = timeit.default_timer()
-        logger.info(f" Mehestan 1a. Score diffs in {int(end1a - start)} seconds")
+        logger.info(f"    Mehestan 1a. Score diffs in {int(end1a - start)} seconds")
         activities = _compute_activities(score_diffs, users, privacy, self.privacy_penalty)
         end1b = timeit.default_timer()
-        logger.info(f" Mehestan 1b. Activities in {int(end1b - end1a)} seconds")
+        logger.info(f"    Mehestan 1b. Activities in {int(end1b - end1a)} seconds")
         users = users.assign(is_scaler=self.compute_scalers(activities, users))
         end1c = timeit.default_timer()
-        logger.info(f" Mehestan 1c. Scalers in {int(end1c - end1b)} seconds")
+        logger.info(f"    Mehestan 1c. Scalers in {int(end1c - end1b)} seconds")
         scalers = users[users["is_scaler"]]
         nonscalers = users[users["is_scaler"] == False]
         if len(scalers) == 0:
@@ -117,7 +117,7 @@ class Mehestan(Scaling):
             privacy_penalty=self.privacy_penalty
         )
         end2a = timeit.default_timer()
-        logger.info(f" Mehestan 2a. Model norms in {int(end2a - end_step1)} seconds")
+        logger.info(f"    Mehestan 2a. Model norms in {int(end2a - end_step1)} seconds")
         multiplicators, translations, scaled_models = self.scale_scalers(
             user_models, scalers, entities, score_diffs, model_norms)
         end_step2 = timeit.default_timer()
@@ -127,7 +127,7 @@ class Mehestan(Scaling):
         for scaler in scaled_models:
             score_diffs[scaler] = _compute_user_score_diffs(scaled_models[scaler], entities)
         end3a = timeit.default_timer()
-        logger.info(f" Mehestan 3a. Score diffs in {int(end3a - end_step2)} seconds")
+        logger.info(f"    Mehestan 3a. Score diffs in {int(end3a - end_step2)} seconds")
         scaled_models = self.scale_non_scalers(
             user_models, scalers, nonscalers, entities, score_diffs, model_norms, 
             multiplicators, translations, scaled_models)
@@ -180,33 +180,33 @@ class Mehestan(Scaling):
         end2a = timeit.default_timer()
         entity_ratios = self.compute_entity_ratios(scalers, scalers, score_diffs)
         end2b = timeit.default_timer()
-        logger.info(f" Mehestan 2b. Entity ratios in {int(end2b - end2a)} seconds")
+        logger.info(f"    Mehestan 2b. Entity ratios in {int(end2b - end2a)} seconds")
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
             scalers, entity_ratios, 
             error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         end2c = timeit.default_timer()
-        logger.info(f" Mehestan 2c. Aggregate ratios in {int(end2c - end2b)} seconds")
+        logger.info(f"    Mehestan 2c. Aggregate ratios in {int(end2c - end2b)} seconds")
         multiplicators = self.compute_multiplicators(
             ratio_voting_rights, ratios, ratio_uncertainties, model_norms
         )
         end2d = timeit.default_timer()
-        logger.info(f" Mehestan 2d. Multiplicators in {int(end2d - end2c)} seconds")
+        logger.info(f"    Mehestan 2d. Multiplicators in {int(end2d - end2c)} seconds")
         
         entity_diffs = self.compute_entity_diffs(
             user_models, scalers, scalers, entities, multiplicators
         )
         end2e = timeit.default_timer()
-        logger.info(f" Mehestan 2e. Entity diffs in {int(end2e - end2d)} seconds")
+        logger.info(f"    Mehestan 2e. Entity diffs in {int(end2e - end2d)} seconds")
         diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
             scalers, entity_diffs, 
             error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         end2f = timeit.default_timer()
-        logger.info(f" Mehestan 2f. Aggregate diffs in {int(end2f - end2e)} seconds")
+        logger.info(f"    Mehestan 2f. Aggregate diffs in {int(end2f - end2e)} seconds")
         translations = self.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
         end2g = timeit.default_timer()
-        logger.info(f" Mehestan 2g. Translations in {int(end2g - end2f)} seconds")
+        logger.info(f"    Mehestan 2g. Translations in {int(end2g - end2f)} seconds")
         
         return multiplicators, translations, { 
             u: ScaledScoringModel(
@@ -225,30 +225,30 @@ class Mehestan(Scaling):
         end3a = timeit.default_timer()
         entity_ratios = self.compute_entity_ratios(nonscalers, scalers, score_diffs)
         end3b = timeit.default_timer()
-        logger.info(f" Mehestan 3b. Entity ratios in {int(end3b - end3a)} seconds")
+        logger.info(f"    Mehestan 3b. Entity ratios in {int(end3b - end3a)} seconds")
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
             scalers, entity_ratios, error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         end3c = timeit.default_timer()
-        logger.info(f" Mehestan 3c. Aggregate ratios in {int(end3c - end3b)} seconds")
+        logger.info(f"    Mehestan 3c. Aggregate ratios in {int(end3c - end3b)} seconds")
         multiplicators |= self.compute_multiplicators(
             ratio_voting_rights, ratios, ratio_uncertainties, model_norms
         )
         end3d = timeit.default_timer()
-        logger.info(f" Mehestan 3d. Multiplicators in {int(end3d - end3c)} seconds")
+        logger.info(f"    Mehestan 3d. Multiplicators in {int(end3d - end3c)} seconds")
         
         entity_diffs = self.compute_entity_diffs(
             user_models, nonscalers, scalers, entities, multiplicators)
         end3e = timeit.default_timer()
-        logger.info(f" Mehestan 3e. Entity diffs in {int(end3e - end3d)} seconds")
+        logger.info(f"    Mehestan 3e. Entity diffs in {int(end3e - end3d)} seconds")
         diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
             scalers, entity_diffs, error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         end3f = timeit.default_timer()
-        logger.info(f" Mehestan 3f. Aggregate diffs in {int(end3f - end3e)} seconds")
+        logger.info(f"    Mehestan 3f. Aggregate diffs in {int(end3f - end3e)} seconds")
         translations |= self.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
         end3g = timeit.default_timer()
-        logger.info(f" Mehestan 3g. Translations in {int(end3g - end3f)} seconds")
+        logger.info(f"    Mehestan 3g. Translations in {int(end3g - end3f)} seconds")
         
         return scaled_models | { 
             u: ScaledScoringModel(

@@ -19,7 +19,12 @@ from solidago.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 
-info_loggers = [__name__, "solidago.pipeline.pipeline", "solidago.scaling.mehestan"]
+info_loggers = [
+    __name__, 
+    "solidago.pipeline.pipeline", 
+    "solidago.scaling.mehestan",
+    "solidago.preference_learning.base"
+]
 for module in info_loggers:
     info_logger = logging.getLogger(module)
     info_logger.setLevel(logging.INFO)
@@ -45,7 +50,7 @@ pipeline = Pipeline(
         comparison_max=10,
         convergence_error=1e-5,
         cumulant_generating_function_error=1e-5,
-        n_steps=5,
+        n_steps=3,
     ),
     scaling=ScalingCompose(
         Mehestan(
