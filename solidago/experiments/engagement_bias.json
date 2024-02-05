@@ -3,7 +3,7 @@
     "ylegend": "Correlation between learned global and ground truth",
     "xlegend": "Amount of engagement bias",
     "xparameter": "generative_model.user_model.engagement_bias_std_dev",
-    "xvalues": [0.01, 1.0, 4.0, 10.0], 
+    "xvalues": [0.0, 1.0, 4.0, 10.0], 
     "zparameter": "pipeline.scaling.scalings.0.lipschitz", 
     "zvalues": [1.0, 3.0, 10.0, 30.0, 100.0],
     "zlegends": ["Lipschitz = 1", "Lipschitz = 3", "Lipschitz = 10", "Lipschitz = 30", "Lipschitz = 100"],

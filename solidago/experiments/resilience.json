@@ -3,7 +3,7 @@
     "ylegend": "Correlation between learned global and ground truth",
     "xlegend": "Fraction of trustworthy users",
     "xparameter": "generative_model.user_model.p_trustworthy",
-    "xvalues": [0.01, 0.2, 0.5, 0.8, 1.0], 
+    "xvalues": [0.4, 0.6, 0.8, 1.0], 
     "zparameter": "pipeline.aggregation.lipschitz", 
     "zvalues": [0.1, 0.3, 1, 3],
     "zlegends": ["Lipschitz = 0.1", "Lipschitz = 0.3", "Lipschitz = 1", "Lipschitz = 3"],
