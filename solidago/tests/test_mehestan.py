@@ -11,7 +11,7 @@ from solidago.scoring_model import DirectScoringModel, ScaledScoringModel
 from solidago.scaling import ScalingCompose, Mehestan, QuantileZeroShift
 
 from solidago.scaling.mehestan import (Mehestan, _compute_activities, _model_norms, 
-    _compute_score_diffs, _compute_user_score_diffs, _aggregate_user_comparisons, _aggregate)
+    _compute_score_diffs, _ScoreDiffs, _aggregate_user_comparisons, _aggregate)
 
 
 mehestan = Mehestan(
@@ -81,7 +81,7 @@ learned_models = {
 } 
 
 score_diffs = _compute_score_diffs(learned_models, users, entities)
-activities = _compute_activities(score_diffs, users, privacy, mehestan.privacy_penalty)
+activities = _compute_activities(learned_models, entities, users, privacy, mehestan.privacy_penalty)
 is_scaler = mehestan.compute_scalers(activities, users)
 users = users.assign(is_scaler=is_scaler)
 scalers = users[users["is_scaler"]]
@@ -121,7 +121,7 @@ for scaler in scalers.index:
         translation_left_uncertainty=scaler_translations[scaler][1],
         translation_right_uncertainty=scaler_translations[scaler][1]
     )
-    score_diffs[scaler] = _compute_user_score_diffs(scaled_models[scaler], entities)
+    score_diffs[scaler] = _ScoreDiffs(scaled_models[scaler], entities)
 
 scalee_entity_ratios = mehestan.compute_entity_ratios(nonscalers, scalers, score_diffs)
 scalee_ratio_voting_rights, scalee_ratios, scalee_ratio_uncertainties = _aggregate_user_comparisons(

@@ -10,7 +10,7 @@ from solidago.privacy_settings import PrivacySettings
 
 from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust
 from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust
-from solidago.preference_learning import PreferenceLearning, UniformGBT
+from solidago.preference_learning import PreferenceLearning, LBFGSUniformGBT
 from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift
 from solidago.aggregation import Aggregation, StandardizedQrQuantile
 from solidago.post_process import PostProcess, Squash
@@ -19,7 +19,12 @@ from solidago.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 
-info_loggers = [__name__, "solidago.pipeline.pipeline", "solidago.scaling.mehestan"]
+info_loggers = [
+    __name__, 
+    "solidago.pipeline.pipeline", 
+    "solidago.scaling.mehestan",
+    "solidago.preference_learning.base"
+]
 for module in info_loggers:
     info_logger = logging.getLogger(module)
     info_logger.setLevel(logging.INFO)
@@ -40,10 +45,12 @@ pipeline = Pipeline(
         min_overtrust=2.0,
         overtrust_ratio=0.1,
     ),
-    preference_learning=UniformGBT(
+    preference_learning=LBFGSUniformGBT(
         prior_std_dev=7,
+        comparison_max=10,
         convergence_error=1e-5,
         cumulant_generating_function_error=1e-5,
+        n_steps=3,
     ),
     scaling=ScalingCompose(
         Mehestan(

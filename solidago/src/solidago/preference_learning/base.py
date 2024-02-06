@@ -3,10 +3,14 @@ from typing import Optional, Union
 
 import pandas as pd
 import numpy as np
+import logging
+import sys
 
 from solidago.judgments import Judgments
 from solidago.scoring_model import ScoringModel
 
+
+logger = logging.getLogger(__name__)
 
 class PreferenceLearning(ABC):
     def __call__(
@@ -42,7 +46,8 @@ class PreferenceLearning(ABC):
         assert isinstance(judgments, Judgments)
         
         user_models = dict() if initialization is None else initialization
-        for user, _ in users.iterrows():
+        for n_user, user in enumerate(users.index):
+            logger.info(f"  Preference learning for user {n_user} out of {len(users)}")
             init_model = None
             if initialization is not None and user in initialization:
                 init_model = initialization[user]
