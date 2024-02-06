@@ -25,6 +25,7 @@ class Mehestan(Scaling):
         privacy_penalty=0.5,
         user_comparison_lipschitz=10.0,
         p_norm_for_multiplicative_resilience=4.0,
+        n_diffs_sample_max=1000,
         error=1e-5
     ):
         """ Mehestan performs Lipschitz-resilient ollaborative scaling.
@@ -61,6 +62,7 @@ class Mehestan(Scaling):
         self.privacy_penalty = privacy_penalty
         self.user_comparison_lipschitz = user_comparison_lipschitz
         self.p_norm_for_multiplicative_resilience = p_norm_for_multiplicative_resilience
+        self.n_diffs_sample_max = n_diffs_sample_max
         self.error = error
     
     def __call__(
@@ -96,12 +98,7 @@ class Mehestan(Scaling):
         
         start = timeit.default_timer()
         logger.info("Mehestan 1. Select scalers based on activity and trustworthiness")
-        activities = _compute_activities(user_models, entities, users, privacy, self.privacy_penalty)
-        end1b = timeit.default_timer()
-        logger.info(f"    Mehestan 1a. Activities in {int(end1b - start)} seconds")
-        users = users.assign(is_scaler=self.compute_scalers(activities, users))
-        end1c = timeit.default_timer()
-        logger.info(f"    Mehestan 1b. Scalers in {int(end1c - end1b)} seconds")
+        users = users.assign(is_scaler=self.compute_scalers(user_models, entities, users, privacy))
         scalers = users[users["is_scaler"]]
         nonscalers = users[users["is_scaler"] == False]
         if len(scalers) == 0:
@@ -111,28 +108,13 @@ class Mehestan(Scaling):
         logger.info(f"Mehestan 1. Terminated in {int(end_step1 - start)} seconds")
         
         logger.info("Mehestan 2. Collaborative scaling of scalers")
-        score_diffs = _compute_score_diffs(user_models, users, entities)
-        end1a = timeit.default_timer()
-        logger.info(f"    Mehestan 2a. Score diffs in {int(end1a - start)} seconds")
-        model_norms = _model_norms(user_models, entities, privacy, 
-            power=self.p_norm_for_multiplicative_resilience,
-            privacy_penalty=self.privacy_penalty
-        )
-        end2a = timeit.default_timer()
-        logger.info(f"    Mehestan 2b. Model norms in {int(end2a - end_step1)} seconds")
-        multiplicators, translations, scaled_models = self.scale_scalers(
-            user_models, scalers, entities, score_diffs, model_norms)
+        scaled_models = self.scale_scalers(user_models, scalers, entities, privacy)
         end_step2 = timeit.default_timer()
         logger.info(f"Mehestan 2. Terminated in {int(end_step2 - end_step1)} seconds")
         
         logger.info("Mehestan 3. Scaling of non-scalers")
-        for scaler in scaled_models:
-            score_diffs[scaler] = _ScoreDiffs(scaled_models[scaler], entities)
-        end3a = timeit.default_timer()
-        logger.info(f"    Mehestan 3a. Score diffs in {int(end3a - end_step2)} seconds")
-        scaled_models = self.scale_non_scalers(
-            user_models, scalers, nonscalers, entities, score_diffs, model_norms, 
-            multiplicators, translations, scaled_models)
+        scaled_models = self.scale_non_scalers(user_models, nonscalers, entities, scalers, 
+            scaled_models, privacy)
         end = timeit.default_timer()
         logger.info(f"Mehestan 3. Terminated in {int(end - end_step2)} seconds")
         
@@ -146,7 +128,13 @@ class Mehestan(Scaling):
     ##  3. Fit the nonscalers to the scalers  ##
     ############################################
         
-    def compute_scalers(self, activities: dict[int, float], users: pd.DataFrame) -> np.ndarray:
+    def compute_scalers(
+        self,
+        user_models: dict[int, ScoringModel],
+        entities: pd.DataFrame,
+        users: pd.DataFrame,
+        privacy: PrivacySettings
+    ) -> np.ndarray:
         """ Determines which users will be scalers.
         The set of scalers is restricted for two reasons.
         First, too inactive users are removed, because their lack of comparability
@@ -165,6 +153,7 @@ class Mehestan(Scaling):
         is_scaler: np.ndarray
             is_scaler[user]: bool says whether user is a scaler
         """
+        activities = self.compute_activities(user_models, entities, users, privacy)
         index_to_user = { index: user for index, user in enumerate(users.index) }
         np_activities = np.array([
             activities[index_to_user[index]]
@@ -178,9 +167,14 @@ class Mehestan(Scaling):
             is_scaler[argsort[-user-1]] = True
         return is_scaler
     
-    def scale_scalers(self, user_models, scalers, entities, score_diffs, model_norms):
+    def scale_scalers(self, user_models, scalers, entities, privacy):
+        start = timeit.default_timer()
+        model_norms = self.compute_model_norms(user_models, scalers, entities, privacy)
         end2a = timeit.default_timer()
-        entity_ratios = self.compute_entity_ratios(scalers, scalers, score_diffs)
+        logger.info(f"    Mehestan 2a. Model norms in {int(end2a - start)} seconds")
+        
+        entity_ratios = self.compute_entity_ratios(user_models, user_models, 
+             entities, scalers, scalers, privacy)
         end2b = timeit.default_timer()
         logger.info(f"    Mehestan 2b. Entity ratios in {int(end2b - end2a)} seconds")
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
@@ -195,9 +189,8 @@ class Mehestan(Scaling):
         end2d = timeit.default_timer()
         logger.info(f"    Mehestan 2d. Multiplicators in {int(end2d - end2c)} seconds")
         
-        entity_diffs = self.compute_entity_diffs(
-            user_models, scalers, scalers, entities, multiplicators
-        )
+        entity_diffs = self.compute_entity_diffs(user_models, user_models, scalers, scalers, 
+            entities, privacy, multiplicators)
         end2e = timeit.default_timer()
         logger.info(f"    Mehestan 2e. Entity diffs in {int(end2e - end2d)} seconds")
         diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
@@ -210,7 +203,7 @@ class Mehestan(Scaling):
         end2g = timeit.default_timer()
         logger.info(f"    Mehestan 2g. Translations in {int(end2g - end2f)} seconds")
         
-        return multiplicators, translations, { 
+        return { 
             u: ScaledScoringModel(
                 base_model=user_models[u], 
                 multiplicator=multiplicators[u][0], 
@@ -222,25 +215,31 @@ class Mehestan(Scaling):
             ) for u in scalers.index
         }
         
-    def scale_non_scalers(self, user_models, scalers, nonscalers, entities, 
-            score_diffs, model_norms, multiplicators, translations, scaled_models):
+    def scale_non_scalers(self, user_models, nonscalers, entities, scalers, scaled_models, privacy):
+        start = timeit.default_timer()
+        model_norms = self.compute_model_norms(user_models, nonscalers, entities, privacy)
+        end2a = timeit.default_timer()
+        logger.info(f"    Mehestan 3a. Model norms in {int(end2a - start)} seconds")
+        
         end3a = timeit.default_timer()
-        entity_ratios = self.compute_entity_ratios(nonscalers, scalers, score_diffs)
+        entity_ratios = self.compute_entity_ratios(user_models, scaled_models, entities,
+            nonscalers, scalers, privacy)
         end3b = timeit.default_timer()
         logger.info(f"    Mehestan 3b. Entity ratios in {int(end3b - end3a)} seconds")
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
-            scalers, entity_ratios, error=self.error, lipschitz=self.user_comparison_lipschitz
+            scalers, entity_ratios, 
+            error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         end3c = timeit.default_timer()
         logger.info(f"    Mehestan 3c. Aggregate ratios in {int(end3c - end3b)} seconds")
-        multiplicators |= self.compute_multiplicators(
+        multiplicators = self.compute_multiplicators(
             ratio_voting_rights, ratios, ratio_uncertainties, model_norms
         )
         end3d = timeit.default_timer()
         logger.info(f"    Mehestan 3d. Multiplicators in {int(end3d - end3c)} seconds")
         
-        entity_diffs = self.compute_entity_diffs(
-            user_models, nonscalers, scalers, entities, multiplicators)
+        entity_diffs = self.compute_entity_diffs(user_models, scaled_models, nonscalers, scalers, 
+            entities, privacy, multiplicators)
         end3e = timeit.default_timer()
         logger.info(f"    Mehestan 3e. Entity diffs in {int(end3e - end3d)} seconds")
         diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
@@ -248,7 +247,7 @@ class Mehestan(Scaling):
         )
         end3f = timeit.default_timer()
         logger.info(f"    Mehestan 3f. Aggregate diffs in {int(end3f - end3e)} seconds")
-        translations |= self.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
+        translations = self.compute_translations(diff_voting_rights, diffs, diff_uncertainties)
         end3g = timeit.default_timer()
         logger.info(f"    Mehestan 3g. Translations in {int(end3g - end3f)} seconds")
         
@@ -266,15 +265,99 @@ class Mehestan(Scaling):
         
     
     ############################################
+    ##     Methods to esimate the scalers     ##
+    ############################################
+    
+    def compute_activities(
+        self,
+        user_models: dict[int, ScoringModel],
+        entities: pd.DataFrame,
+        users: pd.DataFrame,
+        privacy: PrivacySettings
+    ) -> dict[int, float]:
+        """ Returns a dictionary, which maps users to their trustworthy activeness.
+        
+        Parameters
+        ----------
+        users: DataFrame with columns
+            * user_id (int, index)
+            * trust_score (float)
+        privacy: PrivacySettings
+            privacy[user, entity] in { True, False, None }
+        privacy_penalty: float
+            Penalty for privacy
+    
+        Returns
+        -------
+        activities: dict[int, float]
+            activities[user] is a measure of user's trustworthy activeness.
+        """
+        return { 
+            user: _computer_user_activities(
+                user,
+                user_models[user], 
+                entities,
+                users.loc[user, "trust_score"] if "trust_score" in users else 1,
+                privacy, 
+                self.privacy_penalty
+            )
+            for user in users.index
+        }
+    
+    
+    ############################################
     ##  Methods to esimate the multiplicators ##
     ############################################
     
+    def compute_model_norms(
+        self,
+        user_models: dict[int, ScoringModel],
+        users: pd.DataFrame,
+        entities: pd.DataFrame,
+        privacy: PrivacySettings,
+    ) -> dict[int, float]:
+        """ Estimator of the scale of scores of a user, with an emphasis on large scores.
+        The estimator uses a L_power norm, and weighs scores, depending on public/private status.
+        For each user u, it computes (sum_e w[ue] * score[u, e]**power / sum_e w[ue])**(1/power).
+        
+        Parameters
+        ----------
+        user_models: dict[int, ScoringModel]
+            user_models[user] is user's scoring model
+        users: DataFrame with columns
+            * user_id (int, index)
+        entities: DataFrame with columns
+            * entity_id (int, ind)
+        privacy: PrivacySettings
+            privacy[user, entity] in { True, False, None }
+        privacy_penalty: float
+            Penalty for privacy
+    
+        Returns
+        -------
+        out: dict[int, float]
+            out[user]
+        """
+        return {
+            user: _user_model_norms(
+                user, 
+                user_models[user], 
+                entities, privacy, 
+                self.p_norm_for_multiplicative_resilience, 
+                self.privacy_penalty
+            )
+            for user in users.index
+        }
+        
     def compute_entity_ratios(
         self, 
+        scalee_models: dict[int, ScoringModel],
+        scaler_models: dict[int, ScoringModel],
+        entities: pd.DataFrame,
         scalees: pd.DataFrame, 
-        scalers: pd.DataFrame, 
-        score_diffs: dict[int, "_ScoreDiffs"]
-    ) -> dict[int, dict[int, tuple[list[float], list[float], list[float]]]]:
+        scalers: pd.DataFrame,
+        privacy: PrivacySettings
+    ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
         """ Computes the ratios of score differences, with uncertainties,
         for comparable entities of any pair of scalers (s_{uvef} in paper),
         for u in scalees and v in scalers.
@@ -283,18 +366,20 @@ class Mehestan(Scaling):
         
         Parameters
         ----------
+        user_models: dict[int, ScoringModel]
+            user_models[user] is a scoring model
+        entities: DataFrame with columns
+            * entity_id (int, index)
         scalees: DataFrame with columns
             * user_id (int, index)
         scalers: DataFrame with columns
             * user_id (int, index)
-        score_diffs: dict[int, _ScoreDiffs]
-            score_diff, left, right = score_diffs[user][entity_a, entity_b]
-            yields the score difference, along with the left and right uncertainties
+        privacy: PrivacySettings
         
         Returns
         -------
-        out: dict[int, dict[int, tuple[list[float], list[float], list[float]]]]
-            out[user][user_bis] is a tuple (ratios, lefts, rights),
+        out: dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]
+            out[user][user_bis] is a tuple (ratios, voting_rights, lefts, rights),
             where ratios is a list of ratios of score differences,
             and left and right are the left and right ratio uncertainties.
         """
@@ -302,43 +387,111 @@ class Mehestan(Scaling):
         
         for u in scalees.index:
             user_entity_ratios[u] = dict()
-            if len(score_diffs[u].entities) == 0:
+            u_entities = scalee_models[u].scored_entities(entities)
+            if len(u_entities) == 0:
                 continue
             
             for v in scalers.index:
                 if u == v:
-                    user_entity_ratios[u][v] = [1], [0], [0]
+                    user_entity_ratios[u][v] = [1], [1], [0], [0]
                     continue
                 
-                entities = list(score_diffs[u].entities & score_diffs[v].entities)
+                uv_entities = list(u_entities & scaler_models[v].scored_entities(entities))
                 if len(entities) <= 1:
                     continue
-                
-                user_entity_ratios[u][v] = list(), list(), list()
-                for e_index, e in enumerate(entities):
-                    for f in entities[e_index + 1:]:
-                        output_u = score_diffs[u][e, f]
-                        if output_u is None:
-                            continue
-                        output_v = score_diffs[v][e, f]
-                        if output_v is None:
-                            continue
-                            
-                        diff_u, left_u, right_u = output_u
-                        diff_v, left_v, right_v = output_v
-                        ratio = np.abs(diff_v / diff_u)
-                        user_entity_ratios[u][v][0].append(ratio)
-                        user_entity_ratios[u][v][1].append(ratio - np.abs(
-                            (diff_v - left_v) / (diff_u + right_u)
-                        ))
-                        user_entity_ratios[u][v][2].append(np.abs(
-                            (diff_v + right_v) / (diff_u - left_u)
-                        ) - ratio)
-
-                if len(user_entity_ratios[u][v][0]) == 0:
-                    del user_entity_ratios[u][v]
+                elif len(entities) <= 100:
+                    ratios = self.load_all_ratios(u, v, uv_entities, entities, 
+                        scalee_models[u], scaler_models[v], privacy)
+                    if ratios is not None:
+                        user_entity_ratios[u][v] = ratios
+                else:
+                    ratios = self.sample_ratios(u, v, uv_entities, entities, 
+                        scalee_models[u], scaler_models[v], privacy)
+                    if ratios is not None:
+                        user_entity_ratios[u][v] = ratios
                 
         return user_entity_ratios
+    
+    def load_all_ratios(
+        self, 
+        u: int, 
+        v: int, 
+        uv_entities: list[int], 
+        entities: pd.DataFrame,
+        u_model: ScoringModel, 
+        v_model: ScoringModel, 
+        privacy: Optional[PrivacySettings]
+    ) -> tuple[list[float], list[float], list[float], list[float]]:
+        ratios, voting_rights, lefts, rights = list(), list(), list(), list()
+        for e_index, e in enumerate(uv_entities):
+            for f in uv_entities[e_index + 1:]:
+                output_u = _compute_abs_diff(u_model, e, f, entities)
+                if output_u is None:
+                    continue
+                output_v = _compute_abs_diff(v_model, e, f, entities)
+                if output_v is None:
+                    continue
+                    
+                voting_right = 1
+                if privacy is not None:
+                    if privacy[u, f]:
+                        voting_right *= self.privacy_penalty
+                    if privacy[v, f]:
+                        voting_right *= self.privacy_penalty
+                voting_rights.append(voting_right)
+                
+                diff_u, left_u, right_u = output_u
+                diff_v, left_v, right_v = output_v
+                ratio = np.abs(diff_v / diff_u)
+                ratios.append(ratio)
+                lefts.append(ratio - np.abs((diff_v - left_v) / (diff_u + right_u)))
+                rights.append(np.abs((diff_v + right_v) / (diff_u - left_u)) - ratio)
+        
+        if len(voting_rights) == 0:
+            return None
+            
+        return ratios, voting_rights, lefts, rights
+    
+    def sample_ratios(
+        self, 
+        u: int, 
+        v: int, 
+        uv_entities: list[int], 
+        entities: pd.DataFrame,
+        u_model: ScoringModel, 
+        v_model: ScoringModel, 
+        privacy: Optional[PrivacySettings]
+    ) -> tuple[list[float], list[float], list[float], list[float]]:
+        ratios, voting_rights, lefts, rights = list(), list(), list(), list()
+        
+        for _ in range(self.n_diffs_sample_max):
+            e = uv_entities[np.randint(len(uv_entities))]
+            f = uv_entities[np.randint(len(uv_entities))]
+            if e == f:
+                continue
+            
+            output_u = _compute_abs_diff(u_model, e, f, entities)
+            if output_u is None:
+                continue
+            output_v = _compute_abs_diff(v_model, e, f, entities)
+            if output_v is None:
+                continue
+                        
+            voting_right = 1
+            if privacy is not None:
+                if privacy[u, f]:
+                    voting_right *= self.privacy_penalty
+                if privacy[v, f]:
+                    voting_right *= self.privacy_penalty
+            voting_rights.append(voting_right)
+            
+            diff_u, left_u, right_u = output_u
+            diff_v, left_v, right_v = output_v
+            ratio = np.abs(diff_v / diff_u)
+            ratios.append(ratio)
+            lefts.append(ratio - np.abs((diff_v - left_v) / (diff_u + right_u)))
+            rights.append(np.abs((diff_v + right_v) / (diff_u - left_u)) - ratio)
+        return ratios, voting_rights, lefts, rights
 
     def compute_multiplicators(
         self, 
@@ -377,12 +530,14 @@ class Mehestan(Scaling):
     
     def compute_entity_diffs(
         self, 
-        user_models: dict[int, ScoringModel],
+        scalee_models: dict[int, ScoringModel],
+        scaler_models: dict[int, ScoringModel],
         scalees: pd.DataFrame, 
         scalers: pd.DataFrame, 
         entities: pd.DataFrame,
+        privacy: PrivacySettings,
         multiplicators: dict[int, tuple[float, float]]
-    ) -> dict[int, dict[int, tuple[list[float], list[float], list[float]]]]:
+    ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
         """ Computes the ratios of score differences, with uncertainties,
         for comparable entities of any pair of scalers (s_{uvef} in paper).
         Note that the output rations[u][v] is given as a 1-dimensional np.ndarray
@@ -412,41 +567,50 @@ class Mehestan(Scaling):
         differences = dict()
         
         for u in scalees.index:
-            u_entities = user_models[u].scored_entities(entities)
+            u_entities = scalee_models[u].scored_entities(entities)
             differences[u] = dict()
             for v in scalers.index:
                 if u == v:
+                    differences[u][v] = [0], [1], [0], [0]
                     continue
                 
-                v_entities = user_models[v].scored_entities(entities)
-                uv_entities = u_entities.intersection(v_entities)
-                if len(uv_entities) == 0:
+                uv_entities = list(u_entities & scaler_models[v].scored_entities(entities))
+                if len(entities) == 0:
                     continue
                     
-                differences[u][v] = list(), list(), list()                
+                differences[u][v] = list(), list(), list(), list()              
                 for e in uv_entities:
-                    score_u, left_u, right_u = user_models[u](e, entities.loc[e])
-                    score_v, left_v, right_v = user_models[v](e, entities.loc[e])
+                    score_u, left_u, right_u = scalee_models[u](e, entities.loc[e])
+                    score_v, left_v, right_v = scaler_models[v](e, entities.loc[e])
+                    
+                    uve_voting_right = 1
+                    if privacy is not None and privacy[u, e]:
+                        uve_voting_right *= self.privacy_penalty
+                    if privacy is not None and privacy[v, e]:
+                        uve_voting_right *= self.privacy_penalty
+                    
+                    u_multiplicator = (1, 0, 0) if u not in multiplicators else multiplicators[u]
+                    v_multiplicator = (1, 0, 0) if v not in multiplicators else multiplicators[v]
                     
                     differences[u][v][0].append(
-                        multiplicators[v][0] * score_v 
-                        - multiplicators[u][0] * score_u
+                        v_multiplicator[0] * score_v - u_multiplicator[0] * score_u
                     )
-                    differences[u][v][1].append(
-                        multiplicators[u][0] * left_u
-                        + multiplicators[u][1] * score_u * (score_u > 0)
-                        - multiplicators[u][1] * score_u * (score_u < 0)
-                        + multiplicators[v][0] * left_v
-                        + multiplicators[v][1] * score_v * (score_v > 0)
-                        - multiplicators[v][1] * score_v * (score_v < 0)
-                    )
+                    differences[u][v][1].append(uve_voting_right)
                     differences[u][v][2].append(
-                        multiplicators[u][0] * right_u
-                        - multiplicators[u][1] * score_u * (score_u < 0)
-                        + multiplicators[u][1] * score_u * (score_u > 0)
-                        + multiplicators[v][0] * right_v
-                        - multiplicators[v][1] * score_v * (score_v < 0)
-                        + multiplicators[v][1] * score_v * (score_v > 0)
+                        u_multiplicator[0] * left_u
+                        + u_multiplicator[1] * score_u * (score_u > 0)
+                        - u_multiplicator[1] * score_u * (score_u < 0)
+                        + v_multiplicator[0] * left_v
+                        + v_multiplicator[1] * score_v * (score_v > 0)
+                        - v_multiplicator[1] * score_v * (score_v < 0)
+                    )
+                    differences[u][v][3].append(
+                        u_multiplicator[0] * right_u
+                        - u_multiplicator[1] * score_u * (score_u < 0)
+                        + u_multiplicator[1] * score_u * (score_u > 0)
+                        + v_multiplicator[0] * right_v
+                        - v_multiplicator[1] * score_v * (score_v < 0)
+                        + v_multiplicator[1] * score_v * (score_v > 0)
                     )
                                     
         return differences
@@ -499,131 +663,27 @@ class Mehestan(Scaling):
 ## Preprocessing to facilitate computations ##
 ##############################################
 
-class _ScoreDiffs:
-    def __init__(
-        self,
-        user_model: ScoringModel, 
-        entities: pd.DataFrame
-    ):
-        """
-        self.diffs: dict[int, dict[int, tuple[float, float, float]]]
-            self.diffs[entity_a][entity_b] is a tuple (diff, left, right)
-        """
-        self.user_model, self.entities = user_model, entities
-        self.diffs, self.entities = dict(), set()
-        scored_entities = list(user_model.scored_entities(entities))
-        for a_index, a in enumerate(scored_entities):
-            score_a, left_a, right_a = user_model(a, entities.loc[a])
-            for b in scored_entities[a_index + 1:]:
-                score_b, left_b, right_b = user_model(b, entities.loc[b])
-                if score_a - score_b >=  2 * left_a + 2 * right_b:
-                    self.entities.add(a)
-                    self.entities.add(b)
-                    self[a, b] = (score_a - score_b, left_a + right_b, right_a + left_b)
-                if score_b - score_a >= 2 * left_b + 2 * right_a:
-                    self.entities.add(a)
-                    self.entities.add(b)
-                    self[a, b] = (score_b - score_a, left_b + right_a, right_b + left_a)
-    
-    def __getitem__(self, entities: tuple[int, int]) -> Optional[tuple[float, float, float]]:
-        entity_a, entity_b = entities
-        try:
-            return self.diffs[entity_a][entity_b]
-        except:
-            try:
-                output = self.diffs[entity_b][entity_a]
-                return - output[0], output[2], output[1]
-            except:
-                return None
-
-    def __setitem__(self, entities: tuple[int, int], diffs: tuple[float, float, float]):
-        entity_a, entity_b = entities
-        assert entity_a != entity_b
-        if entity_a < entity_b:
-            if entity_a not in self.diffs:
-                self.diffs[entity_a] = dict()
-            self.diffs[entity_a][entity_b] = diffs[0], diffs[1], diffs[2]
-        else:
-            self.__setitem__((entity_b, entity_a), (- diffs[0], diffs[2], diffs[1]))
-
-class _ImplicitScoreDiffs:
-    def __init__(
-        self,
-        user_model: ScoringModel, 
-        entities: pd.DataFrame
-    ):
-        self.user_model, self.entities = user_model, entities
-        
-    def __getitem__(self, entities: tuple[int, int]) -> Optional[tuple[float, float, float]]:
-        entity_a, entity_b = entities
-        score_a, left_a, right_a = user_model(entity_a, entities.loc[entity_a])
-        score_b, left_b, right_b = user_model
-        if score_a - score_b >=  2 * left_a + 2 * right_b:
-            return score_a - score_b, left_a + right_b, right_a + left_b
-        if score_b - score_a >= 2 * left_b + 2 * right_a:
-            return score_b - score_a, left_b + right_a, right_b + left_a
-        return None
-
-
-def _compute_score_diffs(
-    user_models: dict[int, ScoringModel],
-    users: pd.DataFrame,
+def _compute_abs_diff(
+    user_model: ScoringModel, 
+    entity_a: int, 
+    entity_b: int, 
     entities: pd.DataFrame
-) -> dict[int, _ScoreDiffs]:
-    """ Computes, for each user, the score difference 
-    between pairs of judged entities (theta_{uef} in paper).
-    
-    Parameters
-    ----------
-    user_models: dict[int, ScoringModel]
-        user_models[user] is user's scoring model
-    users: DataFrame with columns
-        * user_id (int, index)
-    entities: DataFrame with columns
-        * entity_id (int, ind)
+) -> Optional[tuple[float, float, float]]:
+    output_a = user_model(entity_a, 
+    entities.loc[entity_a])
+    if output_a is None:
+        return None
+    output_b = user_model(entity_b, entities.loc[entity_b])
+    if output_b is None:
+        return None
         
-    Returns
-    -------
-    score_diffs: dict[int, dict[int, dict[int, tuple[float, float, float]]]]
-        score_diff, left, right = score_diffs[user][entity_a][entity_b]
-        yields the score difference, along with the left and right uncertainties
-    """
-    return { user: _ScoreDiffs(user_models[user], entities) for user in users.index }
-
-def _compute_activities(
-    user_models: dict[int, ScoringModel],
-    entities: pd.DataFrame,
-    users: pd.DataFrame,
-    privacy: PrivacySettings,
-    privacy_penalty: float
-) -> dict[int, float]:
-    """ Returns a dictionary, which maps users to their trustworthy activeness.
-    
-    Parameters
-    ----------
-    users: DataFrame with columns
-        * user_id (int, index)
-        * trust_score (float)
-    privacy: PrivacySettings
-        privacy[user, entity] in { True, False, None }
-    privacy_penalty: float
-        Penalty for privacy
-
-    Returns
-    -------
-    activities: dict[int, float]
-        activities[user] is a measure of user's trustworthy activeness.
-    """
-    return { 
-        user: _computer_user_activities(
-            user,
-            user_models[user], 
-            entities,
-            users.loc[user, "trust_score"] if "trust_score" in users else 1,
-            privacy, privacy_penalty
-        )
-        for user in users.index
-    }
+    score_a, left_a, right_a = output_a
+    score_b, left_b, right_b = output_b
+    if score_a - score_b >=  2 * left_a + 2 * right_b:
+        return score_a - score_b, left_a + right_b, right_a + left_b
+    if score_b - score_a >= 2 * left_b + 2 * right_a:
+        return score_b - score_a, left_b + right_a, right_b + left_a
+    return None
 
 def _computer_user_activities(
     user: int,
@@ -665,40 +725,6 @@ def _computer_user_activities(
         results += added_quantity
     
     return results * trust_score
-
-def _model_norms(
-    user_models: dict[int, ScoringModel],
-    entities: pd.DataFrame,
-    privacy: PrivacySettings,
-    power: float,
-    privacy_penalty: float
-) -> dict[int, float]:
-    """ Estimator of the scale of scores of a user, with an emphasis on large scores.
-    The estimator uses a L_power norm, and weighs scores, depending on public/private status.
-    For each user u, it computes (sum_e w[ue] * score[u, e]**power / sum_e w[ue])**(1/power).
-    
-    Parameters
-    ----------
-    user_models: dict[int, ScoringModel]
-        user_models[user] is user's scoring model
-    users: DataFrame with columns
-        * user_id (int, index)
-    entities: DataFrame with columns
-        * entity_id (int, ind)
-    privacy: PrivacySettings
-        privacy[user, entity] in { True, False, None }
-    privacy_penalty: float
-        Penalty for privacy
-
-    Returns
-    -------
-    out: dict[int, float]
-        out[user]
-    """
-    return {
-        user: _user_model_norms(user, user_models[user], entities, privacy, power, privacy_penalty)
-        for user in user_models
-    }
 
 def _user_model_norms(
     user: int,
@@ -750,8 +776,8 @@ def _user_model_norms(
     return np.power(weighted_sum / weight_sum, 1 / power)
 
 def _aggregate_user_comparisons(
-    users: pd.DataFrame, 
-    scaler_comparisons: dict[int, dict[int, tuple[list[float], list[float], list[float]]]],
+    scalers: pd.DataFrame, 
+    scaler_comparisons,
     error: float=1e-5,
     lipschitz: float=1.0
 ) -> dict[int, tuple[list[float], list[float], list[float]]]:
@@ -761,11 +787,11 @@ def _aggregate_user_comparisons(
     
     Parameters
     ----------
-    users: DataFrame with columns
+    scalers: DataFrame with columns
         * user_id (int, index)
         * trust_score (float)
     scaler_comparisons: dict[int, dict[int, tuple[list[float], list[float], list[float]]]]
-        scaler_comparisons[user][user_bis] is a tuple (values, lefts, rights).
+        scaler_comparisons[user][user_bis] is a tuple (voting_rights, values, lefts, rights).
         values, lefts and rights are lists of floats of the same lengths.
         
     Returns
@@ -781,22 +807,22 @@ def _aggregate_user_comparisons(
         for v in scaler_comparisons[u]:
                             
             voting_rights[u].append(
-                users.loc[v, "trust_score"] if "trust_score" in users else 1
+                scalers.loc[v, "trust_score"] if "trust_score" in scalers else 1
             )
             comparisons[u].append(qr_median(
                 lipschitz=lipschitz, 
                 values=np.array(scaler_comparisons[u][v][0]),
-                voting_rights=1.0, 
-                left_uncertainties=np.array(scaler_comparisons[u][v][1]),
-                right_uncertainties=np.array(scaler_comparisons[u][v][2]),
+                voting_rights=np.array(scaler_comparisons[u][v][1]), 
+                left_uncertainties=np.array(scaler_comparisons[u][v][2]),
+                right_uncertainties=np.array(scaler_comparisons[u][v][3]),
                 error=error
             ))
             uncertainties[u].append(qr_uncertainty(
                 lipschitz=lipschitz, 
                 values=np.array(scaler_comparisons[u][v][0]),
-                voting_rights=1.0, 
-                left_uncertainties=np.array(scaler_comparisons[u][v][1]),
-                right_uncertainties=np.array(scaler_comparisons[u][v][2]),
+                voting_rights=np.array(scaler_comparisons[u][v][1]), 
+                left_uncertainties=np.array(scaler_comparisons[u][v][2]),
+                right_uncertainties=np.array(scaler_comparisons[u][v][3]),
                 default_dev=1.0,
                 error=error,
                 median=comparisons[u][-1]
