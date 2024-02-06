@@ -19,7 +19,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
       display="flex"
       justifyContent="space-between"
       alignItems="stretch"
-      gap={2}
+      gap={1}
     >
       <EntityCard
         compact
@@ -51,7 +51,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
             sx={{ backgroundColor: '#F1EFE7' }}
             size="small"
           >
-            <CompareIcon sx={{ color: '#B6B1A1' }} />
+            <CompareIcon sx={{ color: 'neutral.main' }} />
           </Fab>
         </Tooltip>
       </Box>

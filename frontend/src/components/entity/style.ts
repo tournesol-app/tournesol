@@ -8,8 +8,9 @@ export const entityCardMainSx: SxProps = {
   alignContent: 'flex-start',
   overflow: 'hidden',
   /*
-    Allow the card to grow on the comparison page
-    to match the height of the second entity card
+    Set flex property to 1 to allow the card to expand as a flex item
+    when placed side-by-side with another card, ensuring they remain
+    equal in size.
   */
-  flexGrow: 1,
+  flex: 1,
 };
