@@ -516,8 +516,8 @@ class Mehestan(Scaling):
         """
         return {
             u: _aggregate(self.lipschitz / (8 * (1e-9 + model_norms[u])), 
-                voting_rights[u] + [1.], ratios[u] + [1.], uncertainties[u] + [0.], 
-                default_value=1, error=self.error)
+                voting_rights[u], ratios[u], uncertainties[u], 
+                default_value=1, default_dev=0.8, error=self.error)
             for u in voting_rights
         }
             
@@ -635,8 +635,9 @@ class Mehestan(Scaling):
         """
         return {
             u: _aggregate(self.lipschitz / 8, 
-                voting_rights[u] + [1.], diffs[u] + [0.], uncertainties[u] + [0.], 
-                default_value=0, error=self.error, aggregator=lipschitz_resilient_mean)
+                voting_rights[u], diffs[u], uncertainties[u], 
+                default_value=0, default_dev=1, 
+                error=self.error, aggregator=lipschitz_resilient_mean)
             for u in voting_rights
         }    
 
@@ -834,7 +835,8 @@ def _aggregate(
     uncertainties: list[float],
     default_value: float,
     error: float=1e-5,
-    aggregator: callable=qr_median
+    aggregator: callable=qr_median,
+    default_dev: float=1,
 ) -> dict[int, tuple[float, float]]:
     """ Computes the multiplicators of users with given user_ratios
     
@@ -868,6 +870,7 @@ def _aggregate(
         values=np.array(values), 
         left_uncertainties=np.array(uncertainties),
         right_uncertainties=np.array(uncertainties),
+        default_dev=default_dev,
         error=error,
         median=value
     )

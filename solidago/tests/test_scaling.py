@@ -32,8 +32,6 @@ def test_all_users_equal_voting_right_for_score_shift():
     )
     assert tau == pytest.approx(0, abs=1e-4)
 
-
-
 def test_5_percent_percentile_score_shift_has_expected_value():
     scaled_individual_scores = pd.DataFrame(dict(
         user_id=["user_{i}" for i in range(1000)],
@@ -47,8 +45,6 @@ def test_5_percent_percentile_score_shift_has_expected_value():
         quantile=0.05
     )
     assert tau == pytest.approx(50, abs=1e-4)
-
-
 
 def test_large_W_pulls_score_shift_towards_zero():
     scaled_individual_scores = pd.DataFrame(dict(
