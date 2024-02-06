@@ -176,24 +176,24 @@ class Pipeline:
         logger.info(f"Pipeline 3. Learning preferences with {str(self.preference_learning)}")
         user_models = self.preference_learning(judgments, users, entities, init_user_models)
         start_step4 = timeit.default_timer()
-        logger.info(f"Pipeline 3. Terminated in {np.round(start_step4 - start_step3, 2)} seconds")
+        logger.info(f"Pipeline 3. Terminated in {int(start_step4 - start_step3)} seconds")
         
         logger.info(f"Pipeline 4. Collaborative scaling with {str(self.scaling)}")
         user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
         start_step5 = timeit.default_timer()
-        logger.info(f"Pipeline 4. Terminated in {np.round(start_step5 - start_step4, 2)} seconds")
+        logger.info(f"Pipeline 4. Terminated in {int(start_step5 - start_step4)} seconds")
                 
         logger.info(f"Pipeline 5. Score aggregation with {str(self.aggregation)}")
         user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
         start_step6 = timeit.default_timer()
-        logger.info(f"Pipeline 5. Terminated in {np.round(start_step6 - start_step5, 2)} seconds")
+        logger.info(f"Pipeline 5. Terminated in {int(start_step6 - start_step5)} seconds")
         
         logger.info(f"Pipeline 6. Post-processing scores {str(self.post_process)}")
         user_models, global_model = self.post_process(user_models, global_model, entities)
         end = timeit.default_timer()
         logger.info(f"Pipeline 6. Terminated in {np.round(end - start_step6, 2)} seconds")
         
-        logger.info(f"Successful pipeline run, in {np.round(end - start_step1, 2)} seconds")
+        logger.info(f"Successful pipeline run, in {int(end - start_step1)} seconds")
         return users, voting_rights, user_models, global_model
         
     def to_json(self):

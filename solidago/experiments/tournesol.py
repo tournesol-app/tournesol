@@ -1,5 +1,4 @@
 import logging
-import timeit
 import numpy as np
 import pandas as pd
 from threading import Thread
@@ -50,13 +49,13 @@ pipeline = Pipeline(
         comparison_max=10,
         convergence_error=1e-5,
         cumulant_generating_function_error=1e-5,
-        n_steps=3,
+        n_steps=2,
     ),
     scaling=ScalingCompose(
         Mehestan(
             lipschitz=0.1,
             min_activity=10,
-            n_scalers_max=100,
+            n_scalers_max=500,
             privacy_penalty=0.5,
             p_norm_for_multiplicative_resilience=4.0,
             error=1e-5
@@ -90,13 +89,10 @@ criteria = { "largely_recommended" }
 user_outputs, voting_rights, user_models, global_model = dict(), dict(), dict(), dict()
 def run_pipeline(criterion):
     logger.info(f"Running the pipeline for criterion `{criterion}`")
-    start = timeit.default_timer()
     judgments = inputs.get_judgments(criterion)
     output = pipeline(users, vouches, entities, privacy, judgments)
     user_outputs[criterion], voting_rights[criterion] = output[0], output[1]
     user_models[criterion], global_model[criterion] = output[2], output[3]
-    end = timeit.default_timer()
-    logger.info(f"Pipeline run for criterion `{criterion}` terminated in {start - end} seconds")
 
 threads = [Thread(target=run_pipeline, args=(criterion,)) for criterion in criteria]
 for thread in threads:
