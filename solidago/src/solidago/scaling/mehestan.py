@@ -13,6 +13,9 @@ from solidago.scoring_model import ScoringModel, ScaledScoringModel
 from solidago.voting_rights import VotingRights
 from solidago.primitives import qr_median, qr_uncertainty, lipschitz_resilient_mean
 
+from solidago.utils.pairs import UnorderedPairs
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -423,29 +426,28 @@ class Mehestan(Scaling):
         privacy: Optional[PrivacySettings]
     ) -> tuple[list[float], list[float], list[float], list[float]]:
         ratios, voting_rights, lefts, rights = list(), list(), list(), list()
-        for e_index, e in enumerate(uv_entities):
-            for f in uv_entities[e_index + 1:]:
-                output_u = _compute_abs_diff(u_model, e, f, entities)
-                if output_u is None:
-                    continue
-                output_v = _compute_abs_diff(v_model, e, f, entities)
-                if output_v is None:
-                    continue
-                    
-                voting_right = 1
-                if privacy is not None:
-                    if privacy[u, f]:
-                        voting_right *= self.privacy_penalty
-                    if privacy[v, f]:
-                        voting_right *= self.privacy_penalty
-                voting_rights.append(voting_right)
+        for e, f in UnorderedPairs(uv_entities):
+            output_u = _compute_abs_diff(u_model, e, f, entities)
+            if output_u is None:
+                continue
+            output_v = _compute_abs_diff(v_model, e, f, entities)
+            if output_v is None:
+                continue
                 
-                diff_u, left_u, right_u = output_u
-                diff_v, left_v, right_v = output_v
-                ratio = np.abs(diff_v / diff_u)
-                ratios.append(ratio)
-                lefts.append(ratio - np.abs((diff_v - left_v) / (diff_u + right_u)))
-                rights.append(np.abs((diff_v + right_v) / (diff_u - left_u)) - ratio)
+            voting_right = 1
+            if privacy is not None:
+                if privacy[u, f]:
+                    voting_right *= self.privacy_penalty
+                if privacy[v, f]:
+                    voting_right *= self.privacy_penalty
+            voting_rights.append(voting_right)
+            
+            diff_u, left_u, right_u = output_u
+            diff_v, left_v, right_v = output_v
+            ratio = np.abs(diff_v / diff_u)
+            ratios.append(ratio)
+            lefts.append(ratio - np.abs((diff_v - left_v) / (diff_u + right_u)))
+            rights.append(np.abs((diff_v + right_v) / (diff_u - left_u)) - ratio)
         
         if len(voting_rights) == 0:
             return None
@@ -464,12 +466,7 @@ class Mehestan(Scaling):
     ) -> tuple[list[float], list[float], list[float], list[float]]:
         ratios, voting_rights, lefts, rights = list(), list(), list(), list()
         
-        for _ in range(self.n_diffs_sample_max):
-            e = uv_entities[np.randint(len(uv_entities))]
-            f = uv_entities[np.randint(len(uv_entities))]
-            if e == f:
-                continue
-            
+        for e, f in UnorderedPairs(uv_entities).n_samples(self.n_diffs_sample_max):
             output_u = _compute_abs_diff(u_model, e, f, entities)
             if output_u is None:
                 continue
