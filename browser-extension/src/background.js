@@ -31,10 +31,10 @@ const createContextMenu = function createContextMenu() {
     });
   });
 
-  chrome.contextMenus.onClicked.addListener(function (e) {
+  chrome.contextMenus.onClicked.addListener(function (e, tab) {
     var videoId = new URL(e.linkUrl).searchParams.get('v');
     if (!videoId) {
-      alertUseOnLinkToYoutube();
+      alertUseOnLinkToYoutube(tab);
     } else {
       addRateLater(videoId).then((response) => {
         if (!response.success) {
@@ -47,7 +47,8 @@ const createContextMenu = function createContextMenu() {
                 function (response) {
                   if (!response.success) {
                     alertOnCurrentTab(
-                      'Sorry, an error occured while opening the Tournesol login form.'
+                      'Sorry, an error occured while opening the Tournesol login form.',
+                      tab
                     );
                   }
                 }

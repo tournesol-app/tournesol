@@ -1,4 +1,4 @@
-import { apiUrl } from './config.js';
+import { apiUrl, manifestVersion } from './config.js';
 
 export const getAccessToken = async () => {
   return new Promise((resolve) => {
@@ -8,14 +8,32 @@ export const getAccessToken = async () => {
   });
 };
 
-export const alertOnCurrentTab = async (msg) => {
-  chrome.tabs.executeScript({
-    code: `alert("${msg}", 'ok')`,
-  });
+const getCurrentTab = async () => {
+  const queryOptions = { active: true, lastFocusedWindow: true };
+  const [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
 };
 
-export const alertUseOnLinkToYoutube = () => {
-  alertOnCurrentTab('This must be used on a link to a youtube video');
+export const alertOnCurrentTab = async (msg, tab) => {
+  if (manifestVersion === 2) {
+    chrome.tabs.executeScript({
+      code: `alert("${msg}", 'ok')`,
+    });
+  } else {
+    tab ??= await getCurrentTab();
+    const windowAlert = (msg, btn) => {
+      window.alert(msg, btn);
+    };
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: windowAlert,
+      args: [msg, 'ok'],
+    });
+  }
+};
+
+export const alertUseOnLinkToYoutube = (tab) => {
+  alertOnCurrentTab('This must be used on a link to a youtube video', tab);
 };
 
 export const fetchTournesolApi = async (path, options = {}) => {
