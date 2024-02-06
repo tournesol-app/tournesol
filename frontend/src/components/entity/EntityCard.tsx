@@ -161,6 +161,7 @@ const EntityCard = ({
             container
             direction="column"
             flexWrap="nowrap"
+            lineHeight="1.2"
           >
             <EntityCardTitle
               uid={entity.uid}

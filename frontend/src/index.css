@@ -5,6 +5,12 @@ html, body, #root {
   background-color: #fafafa;
 }
 
+@media not (min-width: 600px) {
+  html {
+    font-size: 95%;
+  }
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
