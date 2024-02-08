@@ -20,7 +20,7 @@ class PreferenceLearning(ABC):
         entities: pd.DataFrame,
         initialization: Optional[Union[dict[int, ScoringModel], ScoringModel]]=None,
         new_judgments: Optional[Judgments]=None,
-    ) -> ScoringModel:
+    ) -> dict[int, ScoringModel]:
         """ Learns a scoring model, given user judgments of entities
         
         Parameters
@@ -39,7 +39,8 @@ class PreferenceLearning(ABC):
             
         Returns
         -------
-        model: ScoringModel
+        user_models: dict[int, ScoringModel]
+            user_models[user] is the learned scoring model for user
         """
         if isinstance(judgments, dict):
             return self.user_learn(judgments, entities, initialization)

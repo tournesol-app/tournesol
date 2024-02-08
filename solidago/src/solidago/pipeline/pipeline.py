@@ -30,7 +30,7 @@ class DefaultPipeline:
         sink_vouch=5.0,
         error=1e-8
     )
-    voting_rights: VotingRights = AffineOvertrust(
+    voting_rights: VotingRightsAssignment = AffineOvertrust(
         privacy_penalty=0.5, 
         min_overtrust=2.0,
         overtrust_ratio=0.1,
@@ -70,7 +70,7 @@ class Pipeline:
     def __init__(
         self,
         trust_propagation: TrustPropagation = DefaultPipeline.trust_propagation,
-        voting_rights: VotingRights = DefaultPipeline.voting_rights,
+        voting_rights: VotingRightsAssignment = DefaultPipeline.voting_rights,
         preference_learning: PreferenceLearning = DefaultPipeline.preference_learning,
         scaling: Scaling = DefaultPipeline.scaling,
         aggregation: Aggregation = DefaultPipeline.aggregation,
@@ -120,7 +120,6 @@ class Pipeline:
         privacy: PrivacySettings,
         judgments: Judgments,
         init_user_models : Optional[dict[int, ScoringModel]] = None,
-        global_model: Optional[dict[int, ScoringModel]] = None,
     ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
         """ Run Pipeline 
         
@@ -141,8 +140,6 @@ class Pipeline:
             judgments[user] must yield the judgment data provided by the user
         init_user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        global_model: ScoringModel
-            global model
         skip_set: set[int]
             Steps that are skipped in the pipeline
             
