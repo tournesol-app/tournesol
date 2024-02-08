@@ -139,24 +139,24 @@ class Pipeline:
             privacy[user, entity] in { True, False, None }
         judgments: Jugdments
             judgments[user] must yield the judgment data provided by the user
-        init_user_models: dict[int, UserModel]
+        init_user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        global_model: GlobalModel
+        global_model: ScoringModel
             global model
         skip_set: set[int]
             Steps that are skipped in the pipeline
             
         Returns
         -------
-        trusts: DataFrame with columns
+        users: DataFrame with columns
             * user_id: int (index)
             * is_pretrusted: bool
             * trust_score: float
         voting_rights: VotingRights
             voting_rights[user, entity] is the user's voting right for entity
-        user_models: dict[int, UserModel]
+        user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        global_model: GlobalModel
+        global_model: ScoringModel
             global model
         """   
             

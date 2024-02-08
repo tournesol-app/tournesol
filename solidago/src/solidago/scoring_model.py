@@ -30,6 +30,8 @@ class ScoringModel:
         """ If not None, then the scoring model only scores a subset of entities. """
         return set(range(len(entities)))
 
+    def get_scaling_parameters(self):
+        return 1, 0, 0, 0, 0, 0
 
 class DirectScoringModel(ScoringModel):
     def __init__(
@@ -70,9 +72,6 @@ class DirectScoringModel(ScoringModel):
                 + f"+{np.round(self[entity][2], 2)}]"
             for entity in self.scored_entities()
         ]) + f"\n{indent}" + "}"
-
-    def get_scaling_parameters(self):
-        return 1, 0, 0, 0, 0, 0
 
 
 class ScaledScoringModel(ScoringModel):
