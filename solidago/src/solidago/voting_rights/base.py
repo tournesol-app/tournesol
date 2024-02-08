@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 from .voting_rights import VotingRights
-from .privacy_settings import PrivacySettings
+from solidago.privacy_settings import PrivacySettings
 
 
 class VotingRightsAssignment(ABC):
