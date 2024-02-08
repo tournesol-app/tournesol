@@ -7,7 +7,7 @@ import logging
 import timeit
 
 from solidago import PrivacySettings, Judgments
-from solidago.scoring_model import ScoringModel, DirectScoringModel, PostProcessedScoringModel
+from solidago.scoring_model import ScoringModel
 
 from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust, NoTrustPropagation
 from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
@@ -15,6 +15,8 @@ from solidago.preference_learning import PreferenceLearning, UniformGBT
 from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, Standardize, NoScaling
 from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
+
+from solidago.pipeline.outputs import PipelineOutput, DummyPipelineOutput
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +80,9 @@ class Pipeline:
         preference_learning: PreferenceLearning = DefaultPipeline.preference_learning,
         scaling: Scaling = DefaultPipeline.scaling,
         aggregation: Aggregation = DefaultPipeline.aggregation,
-        post_process: PostProcess = DefaultPipeline.post_process
+        post_process: PostProcess = DefaultPipeline.post_process,
+
+        pipeline_output: Optional[PipelineOutput] = None
     ):
         """ Instantiates the pipeline components.
         
@@ -104,6 +108,10 @@ class Pipeline:
         self.scaling = scaling
         self.aggregation = aggregation
         self.post_process = post_process
+
+        if pipeline_output is None:
+            self.pipeline_output = DummyPipelineOutput()
+
 
     @classmethod
     def from_json(cls, json) -> "Pipeline":
@@ -168,6 +176,7 @@ class Pipeline:
         users = self.trust_propagation(users, vouches)
         start_step2 = timeit.default_timer()
         logger.info(f"Pipeline 1. Terminated in {np.round(start_step2 - start_step1, 2)} seconds")
+        self.pipeline_output.save_trust_scores(trusts=users)
             
         logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
@@ -188,12 +197,19 @@ class Pipeline:
         user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
         start_step6 = timeit.default_timer()
         logger.info(f"Pipeline 5. Terminated in {int(start_step6 - start_step5)} seconds")
-        
+        # TODO: transform user_models into Dataframe
+        # self.pipeline_output.save_individual_scalings()
+
+
+
         logger.info(f"Pipeline 6. Post-processing scores {str(self.post_process)}")
         user_models, global_model = self.post_process(user_models, global_model, entities)
         end = timeit.default_timer()
         logger.info(f"Pipeline 6. Terminated in {np.round(end - start_step6, 2)} seconds")
-        
+        # TODO:
+        # self.pipeline_output.save_individual_scores(user_models, voting_rights)
+        # self.pipeline_output.save_entity_scores(global_model)
+
         logger.info(f"Successful pipeline run, in {int(end - start_step1)} seconds")
         return users, voting_rights, user_models, global_model
         

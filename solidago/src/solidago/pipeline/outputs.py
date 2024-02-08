@@ -5,6 +5,15 @@ import pandas as pd
 
 class PipelineOutput(ABC):
     @abstractmethod
+    def save_trust_scores(self, trusts: pd.DataFrame):
+        """
+        `trusts`: DataFrame with
+            * index:  `user_id`  
+            * columns: `trust_score`
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def save_individual_scalings(self, scalings: pd.DataFrame, criterion: str):
         """
         `scalings`: DataFrame with
@@ -41,6 +50,20 @@ class PipelineOutput(ABC):
             * `uncertainty`
         """
         raise NotImplementedError
+
+
+class DummyPipelineOutput(PipelineOutput):
+    def save_trust_scores(self, trusts: pd.DataFrame):
+        return
+
+    def save_individual_scalings(self, scalings: pd.DataFrame, criterion: str):
+        return
+
+    def save_entity_scores(self, scores: pd.DataFrame, criterion: str, score_mode: Literal['default', 'all_equal', 'trusted_only']):
+        return
+    
+    def save_individual_scores(self, scores: pd.DataFrame, criterion: str):
+        return
 
 
 class PipelineOutputInMemory(PipelineOutput):

@@ -140,9 +140,11 @@ class TournesolInputFromPublicDataset(TournesolInput):
         entities = pd.DataFrame(index=list(entities_indices))
         entities.index.name = "entity_id"
         privacy = PrivacySettings()
+        print("Fill privacy settings...")
         for _, row in self.comparisons.iterrows():
             privacy[row["user_id"], row["entity_a"]] = False
             privacy[row["user_id"], row["entity_b"]] = False
+        print("Fill privacy settings done.")
         return users, vouches, entities, privacy
     
     def get_judgments(self, criterion):
