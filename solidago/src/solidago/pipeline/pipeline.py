@@ -12,8 +12,8 @@ from solidago.scoring_model import ScoringModel, DirectScoringModel, PostProcess
 from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust, NoTrustPropagation
 from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
 from solidago.preference_learning import PreferenceLearning, UniformGBT
-from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, NoScaling
-from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average
+from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, Standardize, NoScaling
+from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
 
 logger = logging.getLogger(__name__)
@@ -53,11 +53,15 @@ class DefaultPipeline:
             zero_quantile=0.15,
             lipschitz=0.1,
             error=1e-5
+        ),
+        Standardize(
+            dev_quantile=0.9,
+            lipschitz=0.1,
+            error=1e-5
         )
     )
-    aggregation: Aggregation = StandardizedQrQuantile(
+    aggregation: Aggregation = EntitywiseQrQuantile(
         quantile=0.2,
-        dev_quantile=0.9,
         lipschitz=0.1,
         error=1e-5
     )
