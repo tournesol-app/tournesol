@@ -7,7 +7,7 @@ import logging
 import timeit
 
 from solidago import PrivacySettings, Judgments
-from solidago.scoring_model import ScoringModel
+from solidago.scoring_model import ScoringModel, ScaledScoringModel
 
 from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust, NoTrustPropagation
 from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
@@ -16,7 +16,7 @@ from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShif
 from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
 
-from solidago.pipeline.outputs import PipelineOutput, DummyPipelineOutput
+from solidago.pipeline.outputs import PipelineOutput
 
 logger = logging.getLogger(__name__)
 
@@ -81,8 +81,6 @@ class Pipeline:
         scaling: Scaling = DefaultPipeline.scaling,
         aggregation: Aggregation = DefaultPipeline.aggregation,
         post_process: PostProcess = DefaultPipeline.post_process,
-
-        pipeline_output: Optional[PipelineOutput] = None
     ):
         """ Instantiates the pipeline components.
         
@@ -109,9 +107,6 @@ class Pipeline:
         self.aggregation = aggregation
         self.post_process = post_process
 
-        if pipeline_output is None:
-            self.pipeline_output = DummyPipelineOutput()
-
 
     @classmethod
     def from_json(cls, json) -> "Pipeline":
@@ -132,6 +127,7 @@ class Pipeline:
         privacy: PrivacySettings,
         judgments: Judgments,
         init_user_models : Optional[dict[int, ScoringModel]] = None,
+        output: Optional[PipelineOutput] = None,
     ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
         """ Run Pipeline 
         
@@ -176,7 +172,8 @@ class Pipeline:
         users = self.trust_propagation(users, vouches)
         start_step2 = timeit.default_timer()
         logger.info(f"Pipeline 1. Terminated in {np.round(start_step2 - start_step1, 2)} seconds")
-        self.pipeline_output.save_trust_scores(trusts=users)
+        if output is not None:
+            output.save_trust_scores(trusts=users)
             
         logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
@@ -192,15 +189,13 @@ class Pipeline:
         user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
         start_step5 = timeit.default_timer()
         logger.info(f"Pipeline 4. Terminated in {int(start_step5 - start_step4)} seconds")
+        if output is not None:
+            self.save_individual_scalings(user_models, output)
                 
         logger.info(f"Pipeline 5. Score aggregation with {str(self.aggregation)}")
         user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
         start_step6 = timeit.default_timer()
         logger.info(f"Pipeline 5. Terminated in {int(start_step6 - start_step5)} seconds")
-        # TODO: transform user_models into Dataframe
-        # self.pipeline_output.save_individual_scalings()
-
-
 
         logger.info(f"Pipeline 6. Post-processing scores {str(self.post_process)}")
         user_models, global_model = self.post_process(user_models, global_model, entities)
@@ -223,6 +218,27 @@ class Pipeline:
             post_process=self.post_process.to_json()
         )
         
+    def save_individual_scalings(
+        self,
+        user_models: dict[int, ScaledScoringModel],
+        output: PipelineOutput,
+    ):
+        scalings_df = pd.DataFrame(
+            index=np.array(user_models.keys()),
+            data={
+                "s": map(lambda u: u.multiplicator, user_models.values()),
+                "delta_s": map(
+                    lambda u: u.multiplicator_left_uncertainty + u.multiplicator_right_uncertainty,
+                    user_models.values(),
+                ),
+                "tau": map(lambda u: u.translation, user_models.values()),
+                "delta_tau": map(
+                    lambda u: u.translation_left_uncertainty + u.translation_right_uncertainty,
+                    user_models.values()
+                )
+            }
+        )
+        output.save_individual_scalings(scalings_df)
 
 def trust_propagation_from_json(json):
     if json[0] == "TrustAll": 

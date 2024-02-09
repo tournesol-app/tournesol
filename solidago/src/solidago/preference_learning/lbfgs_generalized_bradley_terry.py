@@ -6,7 +6,6 @@ import numpy as np
 import torch
 
 from solidago.scoring_model import ScoringModel, DirectScoringModel
-from solidago.solvers.optimize import coordinate_descent
 
 from .comparison_learning import ComparisonBasedPreferenceLearning
 

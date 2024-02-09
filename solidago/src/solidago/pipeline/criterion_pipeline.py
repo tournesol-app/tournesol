@@ -21,6 +21,8 @@ def run_pipeline_for_criterion(
     Run Pipepeline for a single criterion
     """
     logger.info("Starting Solidago pipeline for criterion '%s'", criterion)
+    if hasattr(output, "criterion"):
+        output.criterion = criterion
 
     logger.info("Computing individual scores for criterion '%s'...", criterion)
     indiv_scores = get_individual_scores(input, criteria=criterion, parameters=parameters)
@@ -52,7 +54,7 @@ def run_pipeline_for_criterion(
         scaled_scores.score /= score_std
         scaled_scores.uncertainty /= score_std
 
-    output.save_individual_scalings(scalings, criterion=criterion)
+    output.save_individual_scalings(scalings)
     logger.info("Computing individual scalings for criterion '%s' DONE", criterion)
 
     logger.info("Computing aggregated scores for criterion '%s'...", criterion)
@@ -85,7 +87,7 @@ def run_pipeline_for_criterion(
             criterion,
             mode,
         )
-        output.save_entity_scores(global_scores, criterion=criterion, score_mode=mode)
+        output.save_entity_scores(global_scores, score_mode=mode)
     logger.info("Computing aggregated scores for criterion '%s' DONE", criterion)
 
     logger.info("Computing squashed individual scores for criterion '%s'...", criterion)
@@ -97,7 +99,7 @@ def run_pipeline_for_criterion(
     )
     scaled_scores["score"] = squash_function(scaled_scores["score"])
     scaled_scores["criteria"] = criterion
-    output.save_individual_scores(scaled_scores, criterion=criterion)
+    output.save_individual_scores(scaled_scores)
     logger.info("Computing squashed individual scores for criterion '%s' DONE", criterion)
 
     logger.info(

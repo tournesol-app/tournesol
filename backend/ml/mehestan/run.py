@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 def update_user_scores(poll: Poll, user: User):
     params = MehestanParameters()
     ml_input = MlInputFromDb(poll_name=poll.name)
-    output = TournesolPollOutput(poll_name=poll.name)
     for criteria in poll.criterias_list:
+        output = TournesolPollOutput(poll_name=poll.name, criterion=criteria)
         scores = get_individual_scores(
             ml_input,
             criteria,
@@ -40,7 +40,6 @@ def update_user_scores(poll: Poll, user: User):
         )
         output.save_individual_scores(
             scores,
-            criterion=criteria,
             single_user_id=user.pk
         )
 
@@ -86,15 +85,13 @@ def run_mehestan(
     cpu_count = os.cpu_count() or 1
     cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
 
-    output = TournesolPollOutput(poll_name=poll.name)
-
     with Pool(processes=max(1, cpu_count)) as pool:
         for _ in pool.imap_unordered(
             partial(
                 run_pipeline_for_criterion,
                 input=ml_input,
                 parameters=parameters,
-                output=output,
+                output=TournesolPollOutput(poll_name=poll.name),
             ),
             criteria_to_run,
         ):

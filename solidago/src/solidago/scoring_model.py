@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Union
 
 import pandas as pd
 import numpy as np
@@ -51,7 +51,11 @@ class DirectScoringModel(ScoringModel):
     def __getitem__(self, entity_id: int) -> Optional[tuple[float, float]]:
         return self(entity_id)
         
-    def __setitem__(self, entity_id: int, score_and_uncertainties: tuple[float, float, float]):
+    def __setitem__(
+        self,
+        entity_id: int,
+        score_and_uncertainties: Union[tuple[float, float, float], tuple[float, float]]
+    ):
         if len(score_and_uncertainties) == 2:
             score_and_uncertainties = (
                 score_and_uncertainties[0], 

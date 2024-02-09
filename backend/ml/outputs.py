@@ -27,8 +27,9 @@ logger = logging.getLogger(__name__)
 
 
 class TournesolPollOutput(PipelineOutput):
-    def __init__(self, poll_name: str):
+    def __init__(self, poll_name: str, criterion: Optional[str] = None):
         self.poll_name = poll_name
+        self.criterion = criterion
 
     @cached_property
     def poll(self) -> Poll:
@@ -36,7 +37,15 @@ class TournesolPollOutput(PipelineOutput):
         # in a forked process. See the function `run_mehestan()`.
         return Poll.objects.get(name=self.poll_name)
 
-    def save_individual_scalings(self, scalings: pd.DataFrame, criterion: str):
+    def save_trust_scores(self, trusts: pd.DataFrame):
+        """
+        `trusts`: DataFrame with
+            * index:  `user_id`
+            * columns: `trust_score`
+        """
+        raise NotImplementedError
+
+    def save_individual_scalings(self, scalings: pd.DataFrame):
         scalings_iterator = (
             scalings[["s", "delta_s", "tau", "delta_tau"]]
             .replace({np.nan: None})
@@ -44,12 +53,12 @@ class TournesolPollOutput(PipelineOutput):
         )
 
         with transaction.atomic():
-            ContributorScaling.objects.filter(poll=self.poll, criteria=criterion).delete()
+            ContributorScaling.objects.filter(poll=self.poll, criteria=self.criterion).delete()
             ContributorScaling.objects.bulk_create(
                 (
                     ContributorScaling(
                         poll=self.poll,
-                        criteria=criterion,
+                        criteria=self.criterion,
                         user_id=user_id,
                         scale=s,
                         scale_uncertainty=delta_s,
@@ -64,7 +73,6 @@ class TournesolPollOutput(PipelineOutput):
     def save_individual_scores(
         self,
         scores: pd.DataFrame,
-        criterion: str,
         single_user_id: Optional[int] = None,
     ):
         if "score" not in scores:
@@ -120,7 +128,7 @@ class TournesolPollOutput(PipelineOutput):
 
         scores_to_delete = ContributorRatingCriteriaScore.objects.filter(
             contributor_rating__poll=self.poll,
-            criteria=criterion
+            criteria=self.criterion
         )
 
         if single_user_id is not None:
@@ -134,7 +142,7 @@ class TournesolPollOutput(PipelineOutput):
                 (
                     ContributorRatingCriteriaScore(
                         contributor_rating_id=rating_ids[(row.user_id, row.entity_id)],
-                        criteria=row.criteria,
+                        criteria=self.criterion,
                         score=row.score,
                         uncertainty=row.uncertainty,
                         raw_score=row.raw_score,
@@ -149,30 +157,29 @@ class TournesolPollOutput(PipelineOutput):
     def save_entity_scores(
         self,
         scores: pd.DataFrame,
-        criterion: str,
         score_mode,
     ):
         scores_iterator = scores[
-            ["entity_id", "criteria", "score", "uncertainty"]
+            ["entity_id", "score", "uncertainty"]
         ].itertuples(index=False)
 
         with transaction.atomic():
             EntityCriteriaScore.objects.filter(
                 poll=self.poll,
                 score_mode=score_mode,
-                criteria=criterion,
+                criteria=self.criterion,
             ).delete()
             EntityCriteriaScore.objects.bulk_create(
                 (
                     EntityCriteriaScore(
                         poll=self.poll,
                         entity_id=entity_id,
-                        criteria=criteria,
+                        criteria=self.criterion,
                         score=score,
                         uncertainty=uncertainty,
                         score_mode=score_mode,
                     )
-                    for entity_id, criteria, score, uncertainty in scores_iterator
+                    for entity_id, score, uncertainty in scores_iterator
                 ),
                 batch_size=10000,
             )

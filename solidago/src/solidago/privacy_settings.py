@@ -38,7 +38,6 @@ class PrivacySettings:
             except KeyError:
                 pass
             return
-
         self._dict.setdefault(entity, {})[user] = is_private
 
     def entities(self, user: Optional[int] = None) -> set[int]:
@@ -46,12 +45,10 @@ class PrivacySettings:
             return set(self._dict.keys())
         return { e for e in self._dict if user in self._dict[e] }
 
-    def users(self, entity: int=None):
+    def users(self, entity: Optional[int] = None) -> set[int]:
         if entity is None:
-            return set().union(*[ self.users(e) for e in self.entities() ])
-        if entity not in self._dict:
-            return set()
-        return set(self._dict[entity].keys())
+            return set().union(*(self.users(e) for e in self.entities()))
+        return set(self._dict.get(entity, {}).keys())
 
     def __str__(self):
         return "{\n    " + ",\n    ".join([

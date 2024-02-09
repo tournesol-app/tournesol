@@ -14,7 +14,7 @@ class PipelineOutput(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def save_individual_scalings(self, scalings: pd.DataFrame, criterion: str):
+    def save_individual_scalings(self, scalings: pd.DataFrame):
         """
         `scalings`: DataFrame with
             * index:  `user_id`  
@@ -23,7 +23,7 @@ class PipelineOutput(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def save_individual_scores(self, scores: pd.DataFrame, criterion: str):
+    def save_individual_scores(self, scores: pd.DataFrame):
         """
         `scores`: DataFrame with columns
             * `user_id`
@@ -39,7 +39,6 @@ class PipelineOutput(ABC):
     def save_entity_scores(
         self,
         scores: pd.DataFrame,
-        criterion: str,
         score_mode: Literal["default", "all_equal", "trusted_only"]
     ):
         """
@@ -52,37 +51,22 @@ class PipelineOutput(ABC):
         raise NotImplementedError
 
 
-class DummyPipelineOutput(PipelineOutput):
+
+class PipelineOutputInMemory(PipelineOutput):
+    individual_scalings: pd.DataFrame
+    individual_scores: pd.DataFrame
+    entity_scores: pd.DataFrame
+
     def save_trust_scores(self, trusts: pd.DataFrame):
         return
 
-    def save_individual_scalings(self, scalings: pd.DataFrame, criterion: str):
-        return
+    def save_individual_scalings(self, scalings):
+        self.individual_scalings = scalings
 
-    def save_entity_scores(self, scores: pd.DataFrame, criterion: str, score_mode: Literal['default', 'all_equal', 'trusted_only']):
-        return
-    
-    def save_individual_scores(self, scores: pd.DataFrame, criterion: str):
-        return
-
-
-class PipelineOutputInMemory(PipelineOutput):
-    individual_scalings: Dict[str, pd.DataFrame]
-    individual_scores: Dict[str, pd.DataFrame]
-    entity_scores: Dict[str, pd.DataFrame]
-
-    def __init__(self):
-        self.individual_scalings = {}
-        self.individual_scores = {}
-        self.entity_scores = {}
-
-    def save_individual_scalings(self, scalings, criterion):
-        self.individual_scalings[criterion] = scalings
-
-    def save_entity_scores(self, scores, criterion, score_mode):
+    def save_entity_scores(self, scores, score_mode):
         if score_mode != "default":
             return
-        self.entity_scores[criterion] = scores
+        self.entity_scores = scores
 
-    def save_individual_scores(self, scores, criterion):
-        self.individual_scores[criterion] = scores
+    def save_individual_scores(self, scores):
+        self.individual_scores = scores
