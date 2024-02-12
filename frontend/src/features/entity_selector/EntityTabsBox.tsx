@@ -13,7 +13,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { EntityResult } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import EntityTextInput from './EntityTextInput';
+import EntitySearchInput from './EntityTextInput';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import { InfoOutlined } from '@mui/icons-material';
 
@@ -188,12 +188,8 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
-      {entityTextInput && (
-        <EntityTextInput
-          value={entityTextInput.value}
-          onChange={entityTextInput.onChange}
-        />
-      )}
+      {/* XXX: rename var */}
+      {entityTextInput && <EntitySearchInput />}
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"

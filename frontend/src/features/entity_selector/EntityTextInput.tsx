@@ -1,15 +1,26 @@
-import React from 'react';
-
-import { Box, InputAdornment, Link, TextField } from '@mui/material';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface Props {
-  value: string;
-  onChange: (value: string) => void;
-}
+import { Box, InputAdornment, IconButton, TextField } from '@mui/material';
+import { Search } from '@mui/icons-material';
 
-const EntityTextInput = ({ value, onChange }: Props) => {
+import { useCurrentPoll } from 'src/hooks';
+import { PollsService } from 'src/services/openapi';
+
+const EntitySearchInput = () => {
   const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
+
+  const [search, setSearch] = useState('');
+
+  const searchEntity = async () => {
+    const entities = await PollsService.pollsRecommendationsList({
+      name: pollName,
+      search: search,
+      // XXX: add control to toggle between true/false
+      unsafe: true,
+    });
+  };
 
   return (
     <Box
@@ -20,31 +31,32 @@ const EntityTextInput = ({ value, onChange }: Props) => {
       pt={2}
     >
       <TextField
-        label={t('entitySelector.pasteUrlOrVideoId')}
-        color="secondary"
         fullWidth
         size="small"
-        value={value}
-        onChange={(e) => {
-          onChange(e.target.value);
-        }}
+        color="secondary"
+        label={t('entitySelector.search')}
         onFocus={(e) => {
           e.target.select();
         }}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <Link />
+              <IconButton aria-label="search" onClick={searchEntity}>
+                <Search />
+              </IconButton>
             </InputAdornment>
           ),
         }}
         sx={{
           bgcolor: 'white',
         }}
+        // XXX: change the id
         data-testid="paste-video-url"
       />
     </Box>
   );
 };
 
-export default EntityTextInput;
+export default EntitySearchInput;
