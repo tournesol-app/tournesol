@@ -24,7 +24,7 @@ interface Props {
   elevation?: number;
   maxHeight?: string | number;
   withLink?: boolean;
-  entityTextInput?: { value: string; onChange: (value: string) => void };
+  entitySearchInput?: boolean;
   displayDescription?: boolean;
 }
 
@@ -110,7 +110,7 @@ const EntityTabsBox = ({
   elevation = 1,
   maxHeight = '40vh',
   withLink = false,
-  entityTextInput,
+  entitySearchInput = false,
   displayDescription = true,
 }: Props) => {
   const { t } = useTranslation();
@@ -189,7 +189,7 @@ const EntityTabsBox = ({
       }}
     >
       {/* XXX: rename var */}
-      {entityTextInput && <EntitySearchInput />}
+      {entitySearchInput && <EntitySearchInput />}
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"
