@@ -7,7 +7,6 @@ import {
   IconButton,
   TextField,
   Paper,
-  Button,
   useTheme,
   Typography,
 } from '@mui/material';
@@ -70,7 +69,10 @@ const EntitySearchInput = ({
   onResultSelect,
 }: EntitySearchInputProps) => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { name: pollName } = useCurrentPoll();
+
+  const [loading, setLoading] = useState(false);
 
   const [search, setSearch] = useState('');
   const [lastSearch, setLastSearch] = useState('');
@@ -81,6 +83,7 @@ const EntitySearchInput = ({
     setSearch('');
     setLastSearch('');
     setEntities([]);
+    setLoading(false);
     onClear && onClear();
   };
 
@@ -89,15 +92,26 @@ const EntitySearchInput = ({
       return;
     }
 
-    const entities = await PollsService.pollsRecommendationsList({
-      name: pollName,
-      search: search,
-      limit: 20,
-      // XXX: add control to toggle between true/false
-      unsafe: true,
-    });
+    setLoading(true);
+
+    let entities;
+    try {
+      entities = await PollsService.pollsRecommendationsList({
+        name: pollName,
+        search: search,
+        limit: 20,
+        // XXX: add control to toggle between true/false
+        unsafe: true,
+      });
+    } catch (err) {
+      setLoading(false);
+      console.error(err);
+      return;
+    }
 
     const results = entities.results ?? [];
+
+    setLoading(false);
     setEntities(results);
     setLastSearch(search);
     onResults && onResults();
@@ -152,16 +166,20 @@ const EntitySearchInput = ({
           // XXX: change the id
           data-testid="paste-video-url"
         />
-        <Button
+        <IconButton
           color="primary"
-          variant="contained"
           onClick={searchEntity}
-          startIcon={<Search />}
-          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-          disableElevation
+          sx={{
+            color: theme.palette.neutral.dark,
+            backgroundColor: theme.palette.primary.main,
+            borderRadius: '4px',
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+          }}
+          disabled={loading}
         >
-          Search
-        </Button>
+          <Search />
+        </IconButton>
       </Box>
       {displayResults() && (
         <>
