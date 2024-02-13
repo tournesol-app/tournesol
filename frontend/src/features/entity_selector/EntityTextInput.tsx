@@ -79,6 +79,7 @@ const EntitySearchInput = ({
 
   const clearSearch = () => {
     setSearch('');
+    setLastSearch('');
     setEntities([]);
     onClear && onClear();
   };
@@ -99,12 +100,19 @@ const EntitySearchInput = ({
     const results = entities.results ?? [];
     setEntities(results);
     setLastSearch(search);
+    onResults && onResults();
+  };
 
-    if (results.length > 0) {
-      onResults && onResults();
-    } else {
-      onClear && onClear();
+  const displayResults = () => {
+    if (entities.length > 0) {
+      return true;
     }
+
+    if (lastSearch !== '') {
+      return true;
+    }
+
+    return false;
   };
 
   return (
@@ -155,7 +163,7 @@ const EntitySearchInput = ({
           Search
         </Button>
       </Box>
-      {nResults > 0 && (
+      {displayResults() && (
         <>
           <Box px={1} mt={1} mb={2}>
             <Typography
@@ -177,7 +185,12 @@ const EntitySearchInput = ({
               </Trans>
             </Typography>
           </Box>
-          <EntitySearchResults entities={entities} onSelect={onResultSelect} />
+          {nResults > 0 && (
+            <EntitySearchResults
+              entities={entities}
+              onSelect={onResultSelect}
+            />
+          )}
         </>
       )}
     </Box>
