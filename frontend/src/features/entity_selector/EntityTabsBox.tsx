@@ -193,6 +193,7 @@ const EntityTabsBox = ({
         <EntitySearchInput
           onClear={() => setDisabled(false)}
           onResults={() => setDisabled(true)}
+          onResultSelect={onSelectEntity}
         />
       )}
       <Tabs

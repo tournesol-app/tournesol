@@ -20,9 +20,10 @@ import { EntityResult } from 'src/utils/types';
 interface Props {
   onClear?: () => void;
   onResults?: () => void;
+  onResultSelect?: (uid: string) => void;
 }
 
-const EntitySearchInput = ({ onClear, onResults }: Props) => {
+const EntitySearchInput = ({ onClear, onResults, onResultSelect }: Props) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { name: pollName } = useCurrentPoll();
@@ -119,9 +120,18 @@ const EntitySearchInput = ({ onClear, onResults }: Props) => {
             backgroundColor: 'white',
           }}
         >
-          {entities.map((entity) => (
-            <RowEntityCard key={entity.entity.uid} result={entity} />
-          ))}
+          <ul>
+            {entities.map((res) => (
+              <li
+                key={res.entity.uid}
+                onClick={
+                  onResultSelect && (() => onResultSelect(res.entity.uid))
+                }
+              >
+                <RowEntityCard key={res.entity.uid} result={res} />
+              </li>
+            ))}
+          </ul>
         </Paper>
       )}
     </Box>
