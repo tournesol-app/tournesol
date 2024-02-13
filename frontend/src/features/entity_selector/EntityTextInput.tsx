@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Box,
@@ -9,6 +9,7 @@ import {
   Paper,
   Button,
   useTheme,
+  Typography,
 } from '@mui/material';
 import { Close, Search } from '@mui/icons-material';
 
@@ -42,7 +43,7 @@ const EntitySearchResults = ({
         width: '100%',
         position: 'absolute',
         zIndex: theme.zIndex.entitySelectorSearchResults,
-        maxHeight: '40vh',
+        maxHeight: '47vh',
         overflow: 'auto',
         bgcolor: 'grey.100',
       }}
@@ -72,7 +73,9 @@ const EntitySearchInput = ({
   const { name: pollName } = useCurrentPoll();
 
   const [search, setSearch] = useState('');
+  const [lastSearch, setLastSearch] = useState('');
   const [entities, setEntities] = useState<Array<EntityResult>>([]);
+  const nResults = entities.length;
 
   const clearSearch = () => {
     setSearch('');
@@ -88,12 +91,14 @@ const EntitySearchInput = ({
     const entities = await PollsService.pollsRecommendationsList({
       name: pollName,
       search: search,
+      limit: 20,
       // XXX: add control to toggle between true/false
       unsafe: true,
     });
 
     const results = entities.results ?? [];
     setEntities(results);
+    setLastSearch(search);
 
     if (results.length > 0) {
       onResults && onResults();
@@ -150,8 +155,30 @@ const EntitySearchInput = ({
           Search
         </Button>
       </Box>
-      {entities.length > 0 && (
-        <EntitySearchResults entities={entities} onSelect={onResultSelect} />
+      {nResults > 0 && (
+        <>
+          <Box px={1} mt={1} mb={2}>
+            <Typography
+              variant="subtitle1"
+              textAlign="center"
+              sx={{
+                '& strong': {
+                  color: 'secondary.main',
+                  fontSize: '1.4em',
+                },
+              }}
+            >
+              <Trans
+                t={t}
+                i18nKey="entitySelector.searchResults"
+                count={nResults}
+              >
+                <strong>{{ nResults }}</strong> results for {{ lastSearch }}
+              </Trans>
+            </Typography>
+          </Box>
+          <EntitySearchResults entities={entities} onSelect={onResultSelect} />
+        </>
       )}
     </Box>
   );

@@ -133,6 +133,8 @@
     "select": "Select",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
     "search": "Search",
+    "searchResults_one": "<0>{{nResults}}</0> result for \"{{lastSearch}}\"",
+    "searchResults_other": "<0>{{nResults}}</0> results for \"{{lastSearch}}\"",
     "backButton": "Back"
   },
   "tabsBox": {
