@@ -116,7 +116,7 @@ const EntityTabsBox = ({
   const { t } = useTranslation();
 
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
-  const [disabled, setDisabled] = useState(false);
+  const [uiDisabled, setUiDisabled] = useState(false);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
   const [options, setOptions] = useState<EntityResult[]>([]);
   const [isDescriptionVisible, setIsDescriptionVisible] =
@@ -178,7 +178,7 @@ const EntityTabsBox = ({
           },
         },
         li: {
-          cursor: onSelectEntity && 'pointer',
+          cursor: onSelectEntity && !uiDisabled ? 'pointer' : 'default',
           '&:hover': {
             bgcolor: 'grey.100',
           },
@@ -191,69 +191,74 @@ const EntityTabsBox = ({
     >
       {entitySearchInput && (
         <EntitySearchInput
-          onClear={() => setDisabled(false)}
-          onResults={() => setDisabled(true)}
+          onClear={() => setUiDisabled(false)}
+          onResults={() => setUiDisabled(true)}
           onResultSelect={onSelectEntity}
         />
       )}
-      <Tabs
-        textColor="secondary"
-        indicatorColor="secondary"
-        value={tabValue}
-        onChange={(e, value) => {
-          handleToggleDescription;
-          setTabValue(value);
-        }}
-        variant="scrollable"
-        scrollButtons="auto"
-        sx={{
-          bgcolor: 'grey.100',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-          '& .MuiTabs-scrollButtons.Mui-disabled': {
-            opacity: 0.3,
-          },
-        }}
-      >
-        {tabs.map(({ label, name, disabled }) => (
-          <Tab key={name} value={name} label={label} disabled={disabled} />
-        ))}
-      </Tabs>
-      <LoaderWrapper
-        isLoading={status === TabStatus.Loading}
-        sx={{ overflowY: disabled ? 'hidden' : 'auto' }}
-      >
-        {isDescriptionVisible ? (
-          <TabInfo
-            messageKey={tabValue}
-            handleClose={
-              canCloseDescription
-                ? () => {
-                    setIsDescriptionVisible(false);
-                  }
-                : undefined
-            }
-          />
-        ) : (
-          <Box display="flex" justifyContent="flex-end">
-            <IconButton onClick={handleToggleDescription} color="info">
-              <InfoOutlined />
-            </IconButton>
-          </Box>
-        )}
-        {status === TabStatus.Error ? (
-          <TabError message={t('tabsBox.errorOnLoading')} />
-        ) : options.length > 0 ? (
-          <Box
-            sx={{
-              filter: disabled ? 'blur(3px)' : 'none',
-            }}
-          >
+      <Box sx={{ filter: uiDisabled ? 'blur(2px)' : 'none' }}>
+        <Tabs
+          textColor="secondary"
+          indicatorColor="secondary"
+          value={tabValue}
+          onChange={(e, value) => {
+            handleToggleDescription;
+            setTabValue(value);
+          }}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            bgcolor: 'grey.100',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+            '& .MuiTabs-scrollButtons.Mui-disabled': {
+              opacity: 0.3,
+            },
+          }}
+        >
+          {tabs.map(({ label, name, disabled }) => (
+            <Tab
+              key={name}
+              value={name}
+              label={label}
+              disabled={uiDisabled ? true : disabled}
+            />
+          ))}
+        </Tabs>
+        <LoaderWrapper
+          isLoading={status === TabStatus.Loading}
+          sx={{ overflowY: uiDisabled ? 'hidden' : 'auto' }}
+        >
+          {isDescriptionVisible ? (
+            <TabInfo
+              messageKey={tabValue}
+              handleClose={
+                canCloseDescription
+                  ? () => {
+                      setIsDescriptionVisible(false);
+                    }
+                  : undefined
+              }
+            />
+          ) : (
+            <Box display="flex" justifyContent="flex-end">
+              <IconButton
+                onClick={handleToggleDescription}
+                color="info"
+                disabled={uiDisabled}
+              >
+                <InfoOutlined />
+              </IconButton>
+            </Box>
+          )}
+          {status === TabStatus.Error ? (
+            <TabError message={t('tabsBox.errorOnLoading')} />
+          ) : options.length > 0 ? (
             <ul>
               {options.map((res) => (
                 <li
                   key={res.entity.uid}
                   onClick={
-                    disabled
+                    uiDisabled
                       ? undefined
                       : onSelectEntity && (() => onSelectEntity(res.entity.uid))
                   }
@@ -270,11 +275,11 @@ const EntityTabsBox = ({
                 </li>
               ))}
             </ul>
-          </Box>
-        ) : (
-          <TabError message={t('tabsBox.emptyList')} />
-        )}
-      </LoaderWrapper>
+          ) : (
+            <TabError message={t('tabsBox.emptyList')} />
+          )}
+        </LoaderWrapper>
+      </Box>
     </Paper>
   );
 };
