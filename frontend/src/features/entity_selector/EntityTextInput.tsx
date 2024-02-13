@@ -17,15 +17,58 @@ import { useCurrentPoll } from 'src/hooks';
 import { PollsService } from 'src/services/openapi';
 import { EntityResult } from 'src/utils/types';
 
-interface Props {
+interface EntitySearchInputProps {
   onClear?: () => void;
   onResults?: () => void;
   onResultSelect?: (uid: string) => void;
 }
 
-const EntitySearchInput = ({ onClear, onResults, onResultSelect }: Props) => {
-  const { t } = useTranslation();
+interface EntitySearchResultsProps {
+  entities: EntityResult[];
+  onSelect?: (uid: string) => void;
+}
+
+const EntitySearchResults = ({
+  entities,
+  onSelect,
+}: EntitySearchResultsProps) => {
   const theme = useTheme();
+
+  return (
+    <Paper
+      square
+      sx={{
+        pb: 2,
+        width: '100%',
+        position: 'absolute',
+        zIndex: theme.zIndex.entitySelectorSearchResults,
+        maxHeight: '40vh',
+        overflow: 'auto',
+        bgcolor: 'grey.100',
+      }}
+    >
+      <Box bgcolor="white">
+        <ul>
+          {entities.map((res) => (
+            <li
+              key={res.entity.uid}
+              onClick={onSelect && (() => onSelect(res.entity.uid))}
+            >
+              <RowEntityCard key={res.entity.uid} result={res} />
+            </li>
+          ))}
+        </ul>
+      </Box>
+    </Paper>
+  );
+};
+
+const EntitySearchInput = ({
+  onClear,
+  onResults,
+  onResultSelect,
+}: EntitySearchInputProps) => {
+  const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
   const [search, setSearch] = useState('');
@@ -108,31 +151,7 @@ const EntitySearchInput = ({ onClear, onResults, onResultSelect }: Props) => {
         </Button>
       </Box>
       {entities.length > 0 && (
-        <Paper
-          square
-          sx={{
-            pb: 2,
-            width: '100%',
-            position: 'absolute',
-            zIndex: theme.zIndex.entitySelectorSearchResults,
-            maxHeight: '40vh',
-            overflow: 'auto',
-            backgroundColor: 'white',
-          }}
-        >
-          <ul>
-            {entities.map((res) => (
-              <li
-                key={res.entity.uid}
-                onClick={
-                  onResultSelect && (() => onResultSelect(res.entity.uid))
-                }
-              >
-                <RowEntityCard key={res.entity.uid} result={res} />
-              </li>
-            ))}
-          </ul>
-        </Paper>
+        <EntitySearchResults entities={entities} onSelect={onResultSelect} />
       )}
     </Box>
   );
