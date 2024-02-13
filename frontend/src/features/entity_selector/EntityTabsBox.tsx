@@ -116,6 +116,7 @@ const EntityTabsBox = ({
   const { t } = useTranslation();
 
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
+  const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
   const [options, setOptions] = useState<EntityResult[]>([]);
   const [isDescriptionVisible, setIsDescriptionVisible] =
@@ -188,8 +189,12 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
-      {/* XXX: rename var */}
-      {entitySearchInput && <EntitySearchInput />}
+      {entitySearchInput && (
+        <EntitySearchInput
+          onClear={() => setDisabled(false)}
+          onResults={() => setDisabled(true)}
+        />
+      )}
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"
@@ -214,7 +219,7 @@ const EntityTabsBox = ({
       </Tabs>
       <LoaderWrapper
         isLoading={status === TabStatus.Loading}
-        sx={{ overflowY: 'auto' }}
+        sx={{ overflowY: disabled ? 'hidden' : 'auto' }}
       >
         {isDescriptionVisible ? (
           <TabInfo
@@ -237,26 +242,34 @@ const EntityTabsBox = ({
         {status === TabStatus.Error ? (
           <TabError message={t('tabsBox.errorOnLoading')} />
         ) : options.length > 0 ? (
-          <ul>
-            {options.map((res) => (
-              <li
-                key={res.entity.uid}
-                onClick={
-                  onSelectEntity && (() => onSelectEntity(res.entity.uid))
-                }
-              >
-                <RowEntityCard
-                  result={res}
-                  withLink={withLink}
-                  individualScores={
-                    displayIndividualScores
-                      ? getIndividualScores(res)
-                      : undefined
+          <Box
+            sx={{
+              filter: disabled ? 'blur(3px)' : 'none',
+            }}
+          >
+            <ul>
+              {options.map((res) => (
+                <li
+                  key={res.entity.uid}
+                  onClick={
+                    disabled
+                      ? undefined
+                      : onSelectEntity && (() => onSelectEntity(res.entity.uid))
                   }
-                />
-              </li>
-            ))}
-          </ul>
+                >
+                  <RowEntityCard
+                    result={res}
+                    withLink={withLink}
+                    individualScores={
+                      displayIndividualScores
+                        ? getIndividualScores(res)
+                        : undefined
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+          </Box>
         ) : (
           <TabError message={t('tabsBox.emptyList')} />
         )}

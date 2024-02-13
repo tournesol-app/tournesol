@@ -17,6 +17,7 @@ declare module '@mui/material/styles' {
 
   interface ZIndex {
     videoCardDuration: number;
+    entitySelectorSearchResults: number;
   }
 }
 
@@ -82,5 +83,6 @@ export const theme = createTheme({
   },
   zIndex: {
     videoCardDuration: 1,
+    entitySelectorSearchResults: 4,
   },
 });
