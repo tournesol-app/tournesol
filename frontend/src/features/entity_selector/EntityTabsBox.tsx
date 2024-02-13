@@ -180,7 +180,7 @@ const EntityTabsBox = ({
         li: {
           cursor: onSelectEntity && !uiDisabled ? 'pointer' : 'default',
           '&:hover': {
-            bgcolor: 'grey.100',
+            bgcolor: uiDisabled ? 'inherit' : 'grey.100',
           },
         },
         width: width,
@@ -196,7 +196,7 @@ const EntityTabsBox = ({
           onResultSelect={onSelectEntity}
         />
       )}
-      <Box sx={{ filter: uiDisabled ? 'blur(2px)' : 'none' }}>
+      <Box sx={{ filter: uiDisabled ? 'blur(3px)' : 'none' }}>
         <Tabs
           textColor="secondary"
           indicatorColor="secondary"

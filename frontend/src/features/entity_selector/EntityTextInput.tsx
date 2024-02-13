@@ -37,6 +37,7 @@ const EntitySearchResults = ({
   return (
     <Paper
       square
+      elevation={2}
       sx={{
         pb: 2,
         width: '100%',
