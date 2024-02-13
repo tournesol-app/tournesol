@@ -87,7 +87,9 @@ const EntitySearchInput = ({
     onClear && onClear();
   };
 
-  const searchEntity = async () => {
+  const searchEntity = async (event: React.FormEvent) => {
+    event.preventDefault();
+
     if (!search) {
       return;
     }
@@ -136,51 +138,50 @@ const EntitySearchInput = ({
       }}
       pt={2}
     >
-      <Box p={1} display="flex">
-        <TextField
-          fullWidth
-          size="small"
-          color="secondary"
-          label={t('entitySelector.search')}
-          onFocus={(e) => {
-            e.target.select();
-          }}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{
-            bgcolor: 'white',
-            '& .MuiInputBase-root': {
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-            },
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton aria-label="clear search" onClick={clearSearch}>
-                  <Close />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          // XXX: change the id
-          data-testid="paste-video-url"
-        />
-        <IconButton
-          color="primary"
-          onClick={searchEntity}
-          sx={{
-            color: theme.palette.neutral.dark,
-            backgroundColor: theme.palette.primary.main,
-            borderRadius: '4px',
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-          }}
-          disabled={loading}
-        >
-          <Search />
-        </IconButton>
-      </Box>
+      <form onSubmit={searchEntity} name="entity-selector-search">
+        <Box p={1} display="flex">
+          <TextField
+            fullWidth
+            size="small"
+            color="secondary"
+            label={t('entitySelector.search')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              bgcolor: 'white',
+              '& .MuiInputBase-root': {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+              },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton aria-label="clear search" onClick={clearSearch}>
+                    <Close />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            // XXX: change the id
+            data-testid="paste-video-url"
+          />
+          <IconButton
+            color="primary"
+            sx={{
+              color: theme.palette.neutral.dark,
+              backgroundColor: theme.palette.primary.main,
+              borderRadius: '4px',
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+            }}
+            disabled={loading}
+            type="submit"
+          >
+            <Search />
+          </IconButton>
+        </Box>
+      </form>
       {displayResults() && (
         <>
           <Box px={1} mt={1} mb={2}>
