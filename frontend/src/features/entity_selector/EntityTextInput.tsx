@@ -164,6 +164,11 @@ const EntitySearchInput = ({
     onClose && onClose();
   };
 
+  const selectResult = (uid: string) => {
+    closeSearch();
+    onResultSelect && onResultSelect(uid);
+  };
+
   const searchEntity = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -172,16 +177,18 @@ const EntitySearchInput = ({
     }
 
     setLoading(true);
-    let target = extractVideoId(search, { ignoreVideoId: true });
-    if (!target) {
-      target = search;
+    const target = extractVideoId(search, { ignoreVideoId: true });
+
+    if (target) {
+      selectResult(target);
+      return;
     }
 
     let entities;
     try {
       entities = await PollsService.pollsRecommendationsList({
         name: pollName,
-        search: target,
+        search: search,
         limit: 20,
         // TODO: add control to toggle between true/false
         unsafe: true,
@@ -190,7 +197,7 @@ const EntitySearchInput = ({
       setError(true);
       setLoading(false);
       setEntities([]);
-      setLastSearch(target);
+      setLastSearch(search);
       console.error(err);
       return;
     }
@@ -200,7 +207,7 @@ const EntitySearchInput = ({
     setError(false);
     setLoading(false);
     setEntities(results);
-    setLastSearch(target);
+    setLastSearch(search);
     onResults && onResults();
   };
 
@@ -273,7 +280,7 @@ const EntitySearchInput = ({
           error={error}
           lastSearch={lastSearch}
           entities={entities}
-          onSelect={onResultSelect}
+          onSelect={selectResult}
           onClose={closeSearch}
         />
       )}
