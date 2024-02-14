@@ -133,9 +133,6 @@
     "select": "Select",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
     "errorOnLoading": "An error occurred while loading the results.",
-    "searchResults_one": "<0>{{nResults}}</0> result for \"{{lastSearch}}\"",
-    "searchResults_other": "<0>{{nResults}}</0> results for \"{{lastSearch}}\"",
-    "search": "Search",
     "backButton": "Back"
   },
   "tabsBox": {
@@ -146,6 +143,12 @@
     "rateLater": "Your rate-later videos appear here. You can add some to your list by clicking on the '+' sign on the video cards. You can also add them directly from <2>the extension</2>.",
     "goodShortVideos": "A random sample of short videos recommended by the community.",
     "emptyList": "This list is empty."
+  },
+  "entitySearchInput": {
+    "closeSearch": "Close search",
+    "searchResults_one": "<0>{{nResults}}</0> result for \"{{lastSearch}}\"",
+    "searchResults_other": "<0>{{nResults}}</0> results for \"{{lastSearch}}\"",
+    "search": "Search"
   },
   "stackedCandidatesPaper": {
     "title_one": "Your ranking of the candidates",

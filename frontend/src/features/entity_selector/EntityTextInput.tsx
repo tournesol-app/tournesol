@@ -42,6 +42,7 @@ const EntitySearchResultsList = ({
   onSelect,
   onClose,
 }: EntitySearchResultsListProps) => {
+  const { t } = useTranslation();
   return (
     <>
       {entities.length > 0 && (
@@ -71,7 +72,10 @@ const EntitySearchResultsList = ({
         </Box>
       )}
       <Box p={1} display="flex" justifyContent="flex-end">
-        <IconButton onClick={onClose} aria-label="close search">
+        <IconButton
+          onClick={onClose}
+          aria-label={t('entitySearchInput.closeSearch')}
+        >
           <Close />
         </IconButton>
       </Box>
@@ -117,7 +121,7 @@ const EntitySearchResults = ({
           ) : (
             <Trans
               t={t}
-              i18nKey="entitySelector.searchResults"
+              i18nKey="entitySearchInput.searchResults"
               count={nResults}
             >
               <strong>{{ nResults }}</strong> results for {{ lastSearch }}
@@ -215,7 +219,7 @@ const EntitySearchInput = ({
             fullWidth
             size="small"
             color="secondary"
-            label={t('entitySelector.search')}
+            label={t('entitySearchInput.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             sx={{
@@ -228,7 +232,10 @@ const EntitySearchInput = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton aria-label="close search" onClick={closeSearch}>
+                  <IconButton
+                    aria-label={t('entitySearchInput.closeSearch')}
+                    onClick={closeSearch}
+                  >
                     <Close />
                   </IconButton>
                 </InputAdornment>
@@ -240,6 +247,7 @@ const EntitySearchInput = ({
           <IconButton
             type="submit"
             disabled={loading}
+            aria-label={t('entitySearchInput.search')}
             sx={{
               color: theme.palette.text.secondary,
               backgroundColor: theme.palette.primary.main,

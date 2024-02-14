@@ -137,10 +137,6 @@
     "select": "Sélectionner",
     "youtubeVideoUnavailable": "Vidéo YouTube indisponible.",
     "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
-    "searchResults_one": "<0>{{nResults}}</0> résultat pour « {{lastSearch}} »",
-    "searchResults_many": "<0>{{nResults}}</0> résultats pour « {{lastSearch}} »",
-    "searchResults_other": "<0>{{nResults}}</0> résultats pour « {{lastSearch}} »",
-    "search": "Rechercher",
     "backButton": "Retour"
   },
   "tabsBox": {
@@ -151,6 +147,13 @@
     "rateLater": "Vos vidéos à comparer plus tard apparaissent ici. Vous pouvez en ajouter sur le site web via le bouton '+'. Vous pouvez aussi les ajouter directement depuis YouTube grâce à <2>l'extension</2>.",
     "goodShortVideos": "Un échantillon aléatoire de vidéos courtes recommandées par la communauté.",
     "emptyList": "Cette liste est vide."
+  },
+  "entitySearchInput": {
+    "closeSearch": "Fermer la recherche",
+    "searchResults_one": "<0>{{nResults}}</0> résultat pour « {{lastSearch}} »",
+    "searchResults_many": "<0>{{nResults}}</0> résultats pour « {{lastSearch}} »",
+    "searchResults_other": "<0>{{nResults}}</0> résultats pour « {{lastSearch}} »",
+    "search": "Rechercher"
   },
   "stackedCandidatesPaper": {
     "title_one": "Votre classement des candidat·es",
