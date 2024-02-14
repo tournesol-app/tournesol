@@ -255,7 +255,7 @@ const EntityTabsBox = ({
           overflow="hidden"
         >
           {status === TabStatus.Error ? (
-            <TabError message={t('tabsBox.errorOnLoading')} />
+            <TabError message={t('entitySelector.errorOnLoading')} />
           ) : options.length > 0 ? (
             <ul>
               {options.map((res) => (

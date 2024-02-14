@@ -24,6 +24,7 @@ interface EntitySearchInputProps {
 }
 
 interface EntitySearchResultsProps {
+  error?: boolean;
   lastSearch: string;
   entities: EntityResult[];
   onSelect?: (uid: string) => void;
@@ -79,6 +80,7 @@ const EntitySearchResultsList = ({
 };
 
 const EntitySearchResults = ({
+  error = false,
   lastSearch,
   entities,
   onSelect,
@@ -110,9 +112,17 @@ const EntitySearchResults = ({
             },
           }}
         >
-          <Trans t={t} i18nKey="entitySelector.searchResults" count={nResults}>
-            <strong>{{ nResults }}</strong> results for {{ lastSearch }}
-          </Trans>
+          {error ? (
+            t('entitySelector.errorOnLoading')
+          ) : (
+            <Trans
+              t={t}
+              i18nKey="entitySelector.searchResults"
+              count={nResults}
+            >
+              <strong>{{ nResults }}</strong> results for {{ lastSearch }}
+            </Trans>
+          )}
         </Typography>
       </Box>
       <EntitySearchResultsList
@@ -134,6 +144,7 @@ const EntitySearchInput = ({
   const { name: pollName } = useCurrentPoll();
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const [search, setSearch] = useState('');
   const [lastSearch, setLastSearch] = useState('');
@@ -143,6 +154,7 @@ const EntitySearchInput = ({
     setSearch('');
     setLastSearch('');
     setEntities([]);
+    setError(false);
     setLoading(false);
     onClose && onClose();
   };
@@ -166,13 +178,17 @@ const EntitySearchInput = ({
         unsafe: true,
       });
     } catch (err) {
+      setError(true);
       setLoading(false);
+      setEntities([]);
+      setLastSearch(search);
       console.error(err);
       return;
     }
 
     const results = entities.results ?? [];
 
+    setError(false);
     setLoading(false);
     setEntities(results);
     setLastSearch(search);
@@ -241,6 +257,7 @@ const EntitySearchInput = ({
       </form>
       {displayResults() && (
         <EntitySearchResults
+          error={error}
           lastSearch={lastSearch}
           entities={entities}
           onSelect={onResultSelect}
