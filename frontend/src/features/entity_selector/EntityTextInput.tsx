@@ -16,6 +16,7 @@ import { RowEntityCard } from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks';
 import { PollsService } from 'src/services/openapi';
 import { EntityResult } from 'src/utils/types';
+import { extractVideoId } from 'src/utils/video';
 
 interface EntitySearchInputProps {
   onClose?: () => void;
@@ -171,21 +172,25 @@ const EntitySearchInput = ({
     }
 
     setLoading(true);
+    let target = extractVideoId(search, { ignoreVideoId: true });
+    if (!target) {
+      target = search;
+    }
 
     let entities;
     try {
       entities = await PollsService.pollsRecommendationsList({
         name: pollName,
-        search: search,
+        search: target,
         limit: 20,
-        // XXX: add control to toggle between true/false
+        // TODO: add control to toggle between true/false
         unsafe: true,
       });
     } catch (err) {
       setError(true);
       setLoading(false);
       setEntities([]);
-      setLastSearch(search);
+      setLastSearch(target);
       console.error(err);
       return;
     }
@@ -195,7 +200,7 @@ const EntitySearchInput = ({
     setError(false);
     setLoading(false);
     setEntities(results);
-    setLastSearch(search);
+    setLastSearch(target);
     onResults && onResults();
   };
 
