@@ -18,54 +18,108 @@ import { PollsService } from 'src/services/openapi';
 import { EntityResult } from 'src/utils/types';
 
 interface EntitySearchInputProps {
-  onClear?: () => void;
+  onClose?: () => void;
   onResults?: () => void;
   onResultSelect?: (uid: string) => void;
 }
 
 interface EntitySearchResultsProps {
+  lastSearch: string;
   entities: EntityResult[];
   onSelect?: (uid: string) => void;
+  onClose: () => void;
 }
 
-const EntitySearchResults = ({
+interface EntitySearchResultsListProps {
+  entities: EntityResult[];
+  onSelect?: (uid: string) => void;
+  onClose: () => void;
+}
+
+const EntitySearchResultsList = ({
   entities,
   onSelect,
+  onClose,
+}: EntitySearchResultsListProps) => {
+  return (
+    <>
+      {entities.length > 0 && (
+        <Box
+          mt={1}
+          bgcolor="white"
+          sx={{
+            overflow: 'auto',
+          }}
+        >
+          <ul>
+            {entities.map((res) => (
+              <li
+                key={res.entity.uid}
+                onClick={onSelect && (() => onSelect(res.entity.uid))}
+              >
+                <RowEntityCard key={res.entity.uid} result={res} />
+              </li>
+            ))}
+          </ul>
+        </Box>
+      )}
+      <Box p={1} display="flex" justifyContent="flex-end">
+        <IconButton onClick={onClose}>
+          <Close />
+        </IconButton>
+      </Box>
+    </>
+  );
+};
+
+const EntitySearchResults = ({
+  lastSearch,
+  entities,
+  onSelect,
+  onClose,
 }: EntitySearchResultsProps) => {
   const theme = useTheme();
-
+  const { t } = useTranslation();
+  const nResults = entities.length;
   return (
     <Paper
-      square
       elevation={2}
       sx={{
-        pb: 2,
         width: '100%',
         position: 'absolute',
         zIndex: theme.zIndex.entitySelectorSearchResults,
-        maxHeight: '47vh',
-        overflow: 'auto',
-        bgcolor: 'grey.100',
+        backgroundColor: 'inherit',
+        boxShadow:
+          '0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 6px 5px 0px rgba(0,0,0,0.12)',
       }}
     >
-      <Box bgcolor="white">
-        <ul>
-          {entities.map((res) => (
-            <li
-              key={res.entity.uid}
-              onClick={onSelect && (() => onSelect(res.entity.uid))}
-            >
-              <RowEntityCard key={res.entity.uid} result={res} />
-            </li>
-          ))}
-        </ul>
+      <Box p={1}>
+        <Typography
+          variant="subtitle1"
+          textAlign="center"
+          sx={{
+            '& strong': {
+              color: 'secondary.main',
+              fontSize: '1.4em',
+            },
+          }}
+        >
+          <Trans t={t} i18nKey="entitySelector.searchResults" count={nResults}>
+            <strong>{{ nResults }}</strong> results for {{ lastSearch }}
+          </Trans>
+        </Typography>
       </Box>
+      <EntitySearchResultsList
+        entities={entities}
+        onSelect={onSelect}
+        onClose={onClose}
+      />
     </Paper>
   );
 };
 
 const EntitySearchInput = ({
-  onClear,
+  onClose,
   onResults,
   onResultSelect,
 }: EntitySearchInputProps) => {
@@ -78,14 +132,13 @@ const EntitySearchInput = ({
   const [search, setSearch] = useState('');
   const [lastSearch, setLastSearch] = useState('');
   const [entities, setEntities] = useState<Array<EntityResult>>([]);
-  const nResults = entities.length;
 
-  const clearSearch = () => {
+  const closeSearch = () => {
     setSearch('');
     setLastSearch('');
     setEntities([]);
     setLoading(false);
-    onClear && onClear();
+    onClose && onClose();
   };
 
   const searchEntity = async (event: React.FormEvent) => {
@@ -133,12 +186,7 @@ const EntitySearchInput = ({
   };
 
   return (
-    <Box
-      sx={{
-        bgcolor: 'grey.100',
-      }}
-      pt={2}
-    >
+    <Box pt={2} bgcolor="grey.100">
       <form onSubmit={searchEntity} name="entity-selector-search">
         <Box p={1} display="flex">
           <TextField
@@ -158,7 +206,7 @@ const EntitySearchInput = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton aria-label="clear search" onClick={clearSearch}>
+                  <IconButton aria-label="clear search" onClick={closeSearch}>
                     <Close />
                   </IconButton>
                 </InputAdornment>
@@ -184,34 +232,12 @@ const EntitySearchInput = ({
         </Box>
       </form>
       {displayResults() && (
-        <>
-          <Box px={1} mt={1} mb={2}>
-            <Typography
-              variant="subtitle1"
-              textAlign="center"
-              sx={{
-                '& strong': {
-                  color: 'secondary.main',
-                  fontSize: '1.4em',
-                },
-              }}
-            >
-              <Trans
-                t={t}
-                i18nKey="entitySelector.searchResults"
-                count={nResults}
-              >
-                <strong>{{ nResults }}</strong> results for {{ lastSearch }}
-              </Trans>
-            </Typography>
-          </Box>
-          {nResults > 0 && (
-            <EntitySearchResults
-              entities={entities}
-              onSelect={onResultSelect}
-            />
-          )}
-        </>
+        <EntitySearchResults
+          lastSearch={lastSearch}
+          entities={entities}
+          onSelect={onResultSelect}
+          onClose={closeSearch}
+        />
       )}
     </Box>
   );
