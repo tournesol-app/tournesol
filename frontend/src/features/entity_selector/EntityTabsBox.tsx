@@ -196,60 +196,64 @@ const EntityTabsBox = ({
           onResultSelect={onSelectEntity}
         />
       )}
-      <Box sx={{ filter: uiDisabled ? 'blur(3px)' : 'none' }}>
-        <Tabs
-          textColor="secondary"
-          indicatorColor="secondary"
-          value={tabValue}
-          onChange={(e, value) => {
-            handleToggleDescription;
-            setTabValue(value);
-          }}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{
-            bgcolor: 'grey.100',
-            borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-            '& .MuiTabs-scrollButtons.Mui-disabled': {
-              opacity: 0.3,
-            },
-          }}
+
+      <Tabs
+        textColor="secondary"
+        indicatorColor="secondary"
+        value={tabValue}
+        onChange={(e, value) => {
+          handleToggleDescription;
+          setTabValue(value);
+        }}
+        variant="scrollable"
+        scrollButtons="auto"
+        sx={{
+          bgcolor: 'grey.100',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+          '& .MuiTabs-scrollButtons.Mui-disabled': {
+            opacity: 0.3,
+          },
+        }}
+      >
+        {tabs.map(({ label, name, disabled }) => (
+          <Tab
+            key={name}
+            value={name}
+            label={label}
+            disabled={uiDisabled ? true : disabled}
+          />
+        ))}
+      </Tabs>
+      <LoaderWrapper
+        isLoading={status === TabStatus.Loading}
+        sx={{ overflowY: uiDisabled ? 'hidden' : 'auto' }}
+      >
+        {isDescriptionVisible ? (
+          <TabInfo
+            messageKey={tabValue}
+            handleClose={
+              canCloseDescription
+                ? () => {
+                    setIsDescriptionVisible(false);
+                  }
+                : undefined
+            }
+          />
+        ) : (
+          <Box display="flex" justifyContent="flex-end">
+            <IconButton
+              onClick={handleToggleDescription}
+              color="info"
+              disabled={uiDisabled}
+            >
+              <InfoOutlined />
+            </IconButton>
+          </Box>
+        )}
+        <Box
+          sx={{ filter: uiDisabled ? 'blur(3px)' : 'none' }}
+          overflow="hidden"
         >
-          {tabs.map(({ label, name, disabled }) => (
-            <Tab
-              key={name}
-              value={name}
-              label={label}
-              disabled={uiDisabled ? true : disabled}
-            />
-          ))}
-        </Tabs>
-        <LoaderWrapper
-          isLoading={status === TabStatus.Loading}
-          sx={{ overflowY: uiDisabled ? 'hidden' : 'auto' }}
-        >
-          {isDescriptionVisible ? (
-            <TabInfo
-              messageKey={tabValue}
-              handleClose={
-                canCloseDescription
-                  ? () => {
-                      setIsDescriptionVisible(false);
-                    }
-                  : undefined
-              }
-            />
-          ) : (
-            <Box display="flex" justifyContent="flex-end">
-              <IconButton
-                onClick={handleToggleDescription}
-                color="info"
-                disabled={uiDisabled}
-              >
-                <InfoOutlined />
-              </IconButton>
-            </Box>
-          )}
           {status === TabStatus.Error ? (
             <TabError message={t('tabsBox.errorOnLoading')} />
           ) : options.length > 0 ? (
@@ -278,8 +282,8 @@ const EntityTabsBox = ({
           ) : (
             <TabError message={t('tabsBox.emptyList')} />
           )}
-        </LoaderWrapper>
-      </Box>
+        </Box>
+      </LoaderWrapper>
     </Paper>
   );
 };
