@@ -52,10 +52,12 @@ const EntitySearchResultsList = ({
           bgcolor="white"
           overflow="auto"
           sx={{
-            li: {
-              cursor: 'pointer',
-              '&:hover': {
-                bgcolor: 'grey.100',
+            ul: {
+              li: {
+                cursor: 'pointer',
+                '&:hover': {
+                  bgcolor: 'grey.100',
+                },
               },
             },
           }}
