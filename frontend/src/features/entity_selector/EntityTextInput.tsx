@@ -47,6 +47,7 @@ const EntitySearchResultsList = ({
         <Box
           mt={1}
           bgcolor="white"
+          overflow="auto"
           sx={{
             li: {
               cursor: 'pointer',
@@ -69,7 +70,7 @@ const EntitySearchResultsList = ({
         </Box>
       )}
       <Box p={1} display="flex" justifyContent="flex-end">
-        <IconButton onClick={onClose}>
+        <IconButton onClick={onClose} aria-label="close search">
           <Close />
         </IconButton>
       </Box>
@@ -105,7 +106,7 @@ const EntitySearchResults = ({
           sx={{
             '& strong': {
               color: 'secondary.main',
-              fontSize: '1.4em',
+              fontSize: '1.4rem',
             },
           }}
         >
@@ -211,7 +212,7 @@ const EntitySearchInput = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton aria-label="clear search" onClick={closeSearch}>
+                  <IconButton aria-label="close search" onClick={closeSearch}>
                     <Close />
                   </IconButton>
                 </InputAdornment>
@@ -221,16 +222,18 @@ const EntitySearchInput = ({
             data-testid="paste-video-url"
           />
           <IconButton
-            color="primary"
+            type="submit"
+            disabled={loading}
             sx={{
-              color: theme.palette.neutral.dark,
+              color: theme.palette.text.secondary,
               backgroundColor: theme.palette.primary.main,
               borderRadius: '4px',
               borderTopLeftRadius: 0,
               borderBottomLeftRadius: 0,
+              '&:hover': {
+                backgroundColor: 'rgb(178, 140, 0)',
+              },
             }}
-            disabled={loading}
-            type="submit"
           >
             <Search />
           </IconButton>
