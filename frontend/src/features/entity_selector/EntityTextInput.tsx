@@ -32,19 +32,35 @@ const EntitySearchResults = ({
   entities,
   onSelect,
 }: EntitySearchResultsProps) => {
+  const theme = useTheme();
+
   return (
-    <Box bgcolor="white">
-      <ul>
-        {entities.map((res) => (
-          <li
-            key={res.entity.uid}
-            onClick={onSelect && (() => onSelect(res.entity.uid))}
-          >
-            <RowEntityCard key={res.entity.uid} result={res} />
-          </li>
-        ))}
-      </ul>
-    </Box>
+    <Paper
+      square
+      elevation={2}
+      sx={{
+        pb: 2,
+        width: '100%',
+        position: 'absolute',
+        zIndex: theme.zIndex.entitySelectorSearchResults,
+        maxHeight: '47vh',
+        overflow: 'auto',
+        bgcolor: 'grey.100',
+      }}
+    >
+      <Box bgcolor="white">
+        <ul>
+          {entities.map((res) => (
+            <li
+              key={res.entity.uid}
+              onClick={onSelect && (() => onSelect(res.entity.uid))}
+            >
+              <RowEntityCard key={res.entity.uid} result={res} />
+            </li>
+          ))}
+        </ul>
+      </Box>
+    </Paper>
   );
 };
 
@@ -169,7 +185,7 @@ const EntitySearchInput = ({
       </form>
       {displayResults() && (
         <>
-          <Box px={1} my={1}>
+          <Box px={1} mt={1} mb={2}>
             <Typography
               variant="subtitle1"
               textAlign="center"
@@ -189,34 +205,12 @@ const EntitySearchInput = ({
               </Trans>
             </Typography>
           </Box>
-          <Paper
-            square
-            elevation={2}
-            sx={{
-              width: '100%',
-              position: 'absolute',
-              zIndex: theme.zIndex.entitySelectorSearchResults,
-              maxHeight: '47vh',
-              overflow: 'auto',
-              bgcolor: 'grey.100',
-              boxShadow:
-                '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 6px 5px 0px rgba(0,0,0,0.12)',
-            }}
-          >
-            {nResults > 0 && (
-              <Box mt={1}>
-                <EntitySearchResults
-                  entities={entities}
-                  onSelect={onResultSelect}
-                />
-              </Box>
-            )}
-            <Box p={1} display="flex" justifyContent="flex-end">
-              <IconButton onClick={clearSearch}>
-                <Close />
-              </IconButton>
-            </Box>
-          </Paper>
+          {nResults > 0 && (
+            <EntitySearchResults
+              entities={entities}
+              onSelect={onResultSelect}
+            />
+          )}
         </>
       )}
     </Box>
