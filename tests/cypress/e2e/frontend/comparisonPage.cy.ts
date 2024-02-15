@@ -228,6 +228,51 @@ describe('Comparison page', () => {
 
         cy.get("[data-testid=entity-search-input] input").should("not.exist")
       });
+
+      it('can display search results', () => {
+        cy.visit('/comparison');
+
+        cy.focused().type(username);
+        cy.get('input[name="password"]').click()
+          .type('tournesol').type('{enter}');
+
+        waitForAutoFill();
+
+        cy.get("[data-testid=entity-select-button-compact]").first().click();
+
+        pasteInVideoInput('aaaabbbbccccdddd');
+        cy.contains('0 results for "aaaabbbbccccdddd"');
+
+        cy.focused().clear().type('charrue').type('{enter}');
+        cy.contains('1 result for "charrue"');
+
+        cy.get('button[aria-label="Close search"]').last().click()
+        cy.contains('charrue', {matchCase: false})
+          .should('not.exist');
+      });
+
+      it('can select entity from search results', () => {
+        cy.visit('/comparison');
+
+        cy.focused().type(username);
+        cy.get('input[name="password"]').click()
+          .type('tournesol').type('{enter}');
+
+        waitForAutoFill();
+
+        cy.get("[data-testid=entity-select-button-compact]").first().click();
+
+        pasteInVideoInput('charrue');
+        cy.contains('1 result for "charrue"');
+        cy.contains('De la charrue', {matchCase: false}).click();
+
+        cy.contains('1 result for "charrue"')
+          .should('not.exist');
+        cy.get('button[aria-label="Close search"]')
+          .should('not.exist');
+        cy.contains('De la charrue', {matchCase: false})
+          .should('be.visible');
+      });
     });
   });
 
