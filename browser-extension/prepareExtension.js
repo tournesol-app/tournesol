@@ -7,18 +7,26 @@ import {
 } from './prepareTools.js';
 
 const env = process.env.TOURNESOL_ENV || 'production';
+
 const browser = process.env.EXTENSION_BROWSER || 'firefox';
+if (process.env.EXTENSION_BROWSER && !process.env.MANIFEST_VERSION) {
+  throw new Error(`MANIFEST_VERSION is required with EXTENSION_BROWSER`);
+}
 
-const defaultManifestVersion = browser === 'firefox' ? 2 : 3;
-const manifestVersion = parseInt(
-  process.env.MANIFEST_VERSION || defaultManifestVersion
-);
-
+const manifestVersion = parseInt(process.env.MANIFEST_VERSION || 2);
 if (manifestVersion != 2 && manifestVersion != 3)
   throw new Error(`Invalid manifest version: ${manifestVersion}`);
+if (manifestVersion === 2) {
+  console.info(
+    `Extension will be configured with manifest version ${manifestVersion}.`
+  );
+} else {
+  console.info(
+    `Extension will be configured for ${browser} with manifest version ${manifestVersion}.`
+  );
+}
 
 const { version } = await readPackage();
-
 const hostPermissions = [
   ...selectValue(env, {
     production: ['https://tournesol.app/', 'https://api.tournesol.app/'],
@@ -36,6 +44,11 @@ const permissions = [
   'contextMenus',
   'storage',
   'webNavigation',
+  // webRequest and webReauestBlocking were used to overwrite
+  // headers in the API response. This is no longer the case
+  // with version > 3.5.2.
+  // These permissions can be removed as soon as we are confident
+  // the next release works as expected.
   'webRequest',
   'webRequestBlocking',
   ...selectValue(manifestVersion, { 2: [], 3: ['scripting'] }),
