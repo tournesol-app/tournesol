@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import pandas as pd
 
 from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel
+from solidago.scoring_model import ScoringModel, ScaledScoringModel
 from solidago.voting_rights import VotingRights
 
 
@@ -16,7 +16,7 @@ class Scaling:
         entities: pd.DataFrame,
         voting_rights: VotingRights,
         privacy: PrivacySettings
-    ) -> dict[int, ScoringModel]:
+    ) -> dict[int, ScaledScoringModel]:
         """ Returns scaled user models
         
         Parameters

@@ -28,7 +28,7 @@ class QuantileZeroShift(Scaling):
         entities: pd.DataFrame,
         voting_rights: VotingRights,
         privacy: PrivacySettings
-    ) -> dict[int, ScoringModel]:
+    ) -> dict[int, ScaledScoringModel]:
         """ Returns scaled user models
         
         Parameters

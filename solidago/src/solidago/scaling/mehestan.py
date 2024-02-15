@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 import pandas as pd
@@ -7,6 +7,7 @@ import logging
 import timeit
 
 from .base import Scaling
+from .no_scaling import NoScaling
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.scoring_model import ScoringModel, ScaledScoringModel
@@ -73,9 +74,9 @@ class Mehestan(Scaling):
         user_models: dict[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame,
-        voting_rights: VotingRights = None,
-        privacy: PrivacySettings = None
-    ) -> dict[int, ScoringModel]:
+        voting_rights: Optional[VotingRights] = None,
+        privacy: Optional[PrivacySettings] = None
+    ) -> dict[int, ScaledScoringModel]:
         """ Returns scaled user models
         
         Parameters
@@ -106,7 +107,7 @@ class Mehestan(Scaling):
         nonscalers = users[users["is_scaler"] == False]
         if len(scalers) == 0:
             logger.warning("    No user qualifies as a scaler. No scaling performed.")
-            return user_models
+            return NoScaling()(user_models)
         end_step1 = timeit.default_timer()
         logger.info(f"Mehestan 1. Terminated in {int(end_step1 - start)} seconds")
         
@@ -300,7 +301,7 @@ class Mehestan(Scaling):
                 user,
                 user_models[user], 
                 entities,
-                users.loc[user, "trust_score"] if "trust_score" in users else 1,
+                users.loc[user, "trust_score"] if "trust_score" in users else 1.0,
                 privacy, 
                 self.privacy_penalty
             )
@@ -424,7 +425,12 @@ class Mehestan(Scaling):
         u_model: ScoringModel, 
         v_model: ScoringModel, 
         privacy: Optional[PrivacySettings]
-    ) -> tuple[list[float], list[float], list[float], list[float]]:
+    ) -> Optional[tuple[
+        list[float],
+        list[float],
+        list[float],
+        list[float],
+    ]]:
         ratios, voting_rights, lefts, rights = list(), list(), list(), list()
         for e, f in UnorderedPairs(uv_entities):
             output_u = _compute_abs_diff(u_model, e, f, entities)
@@ -690,7 +696,7 @@ def _computer_user_activities(
     trust_score: float,
     privacy: PrivacySettings,
     privacy_penalty: float
-) -> dict[int, float]:
+) -> float:
     """ Returns a dictionary, which maps users to their trustworthy activeness.
     
     Parameters
@@ -731,7 +737,7 @@ def _user_model_norms(
     privacy: PrivacySettings,
     power: float,
     privacy_penalty: float
-) -> dict[int, float]:
+) -> float:
     """ Estimator of the scale of scores of a user, with an emphasis on large scores.
     The estimator uses a L_power norm, and weighs scores, depending on public/private status.
     For each user u, it computes (sum_e w[ue] * score[u, e]**power / sum_e w[ue])**(1/power).
@@ -769,7 +775,7 @@ def _user_model_norms(
         weighted_sum += weight * (output[0]**power)
     
     if weight_sum == 0:
-        return 1
+        return 1.0
     
     return np.power(weighted_sum / weight_sum, 1 / power)
 
@@ -778,7 +784,11 @@ def _aggregate_user_comparisons(
     scaler_comparisons,
     error: float=1e-5,
     lipschitz: float=1.0
-) -> dict[int, tuple[list[float], list[float], list[float]]]:
+) -> tuple[
+    dict[int, list[float]],
+    dict[int, list[float]],
+    dict[int, list[float]],
+]:
     """ For any two pairs (scalee, scaler), aggregates their comparative data.
     Typically used to transform s_{uvef}'s into s_{uv}, and tau_{uve}'s into tau_{uv}.
     The reference to v is also lost in the process, as it is then irrelevant.
@@ -835,9 +845,9 @@ def _aggregate(
     uncertainties: list[float],
     default_value: float,
     error: float=1e-5,
-    aggregator: callable=qr_median,
+    aggregator: Callable = qr_median,
     default_dev: float=1,
-) -> dict[int, tuple[float, float]]:
+) -> tuple[float, float]:
     """ Computes the multiplicators of users with given user_ratios
     
     Parameters

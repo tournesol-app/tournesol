@@ -41,14 +41,14 @@ class DirectScoringModel(ScoringModel):
         super().__init__()
         self._dict = dict() if dct is None else dct
     
-    def __call__(self, entity_id: int, entity_features=None) -> Optional[float]:
+    def __call__(self, entity_id: int, entity_features=None) -> Optional[tuple[float, float, float]]:
         """ Returns both score and uncertainty
         """
         if entity_id not in self._dict:
             return None
         return self._dict[entity_id]
         
-    def __getitem__(self, entity_id: int) -> Optional[tuple[float, float]]:
+    def __getitem__(self, entity_id: int) -> Optional[tuple[float, float, float]]:
         return self(entity_id)
         
     def __setitem__(
@@ -67,7 +67,7 @@ class DirectScoringModel(ScoringModel):
     def scored_entities(self, entities=None) -> set[int]:
         if entities is None:
             return set(self._dict.keys())
-        return set(entities.index).intersection(set(self._dict.keys()))
+        return set(entities.index).intersection(self._dict.keys())
 
     def __str__(self, indent=""):
         return "{" + f"\n{indent}    " + f",\n{indent}    ".join([
