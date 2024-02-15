@@ -173,6 +173,7 @@ const EntitySearchInput = ({
 
   const searchEntity = async (event: React.FormEvent) => {
     event.preventDefault();
+    (document.activeElement as HTMLElement).blur();
 
     if (!search) {
       return;
