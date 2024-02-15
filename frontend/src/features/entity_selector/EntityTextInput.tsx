@@ -229,7 +229,6 @@ const EntitySearchInput = ({
       <form onSubmit={searchEntity} name="entity-selector-search">
         <Box p={1} display="flex">
           <TextField
-            fullWidth
             size="small"
             color="secondary"
             label={t('entitySearchInput.search')}
@@ -237,6 +236,7 @@ const EntitySearchInput = ({
             onChange={(e) => setSearch(e.target.value)}
             data-testid="entity-search-input"
             sx={{
+              flex: 1,
               bgcolor: 'white',
               '& .MuiInputBase-root': {
                 borderTopRightRadius: 0,
