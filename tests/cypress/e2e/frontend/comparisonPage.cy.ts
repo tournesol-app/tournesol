@@ -368,36 +368,10 @@ describe('Comparison page', () => {
       cy.focused().type(username);
       cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
-      cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
-      cy.location('search').should('contain', `uidB=yt%3A${videoBId}`)
-
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]").find("[type=text]")
-        .should('have.value', `yt:${videoAId}`);
-      cy.get("[data-testid=entity-select-button-compact]").last().click();
-      cy.get("[data-testid=paste-video-url]").find("[type=text]")
-        .should('have.value', `yt:${videoBId}`);
-    });
-
-    it('auto-fills selector correctly when one of the video uses a legacy param', () => {
-      const videoAId = 'u83A7DUNMHs';
-      const videoBId = '6jK9bFWE--g';
-
-      cy.visit(`/comparison?videoA=${videoAId}&uidB=yt:${videoBId}`);
-      cy.focused().type(username);
-      cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
-
-      cy.wait(1000);
-
-      cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
-      cy.location('search').should('contain', `uidB=yt%3A${videoBId}`)
-
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url]").find("[type=text]")
-        .should('have.value', `yt:${videoAId}`);
-      cy.get("[data-testid=entity-select-button-compact]").last().click();
-      cy.get("[data-testid=paste-video-url]").find("[type=text]")
-        .should('have.value', `yt:${videoBId}`);
+      cy.location('search').should('contain', `uidA=yt%3A${videoAId}`);
+      cy.location('search').should('contain', `uidB=yt%3A${videoBId}`);
+      cy.location('search').should('not.contain', `videoA=${videoAId}`);
+      cy.location('search').should('not.contain', `videoB=${videoBId}`);
     });
   });
 });
