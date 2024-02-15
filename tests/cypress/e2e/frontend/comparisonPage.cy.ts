@@ -96,13 +96,7 @@ describe('Comparison page', () => {
   }
 
   const pasteInVideoInput = (value: string) => {
-    cy.get("[data-testid=paste-video-url] input")
-      .focus()
-      .invoke("val", value)
-      // For some reason typing an additional character is needed for all event handlers
-      // to get the change. But a whitespace would be trimmed and ignored by the EntitySelector,
-      // so we put an arbitrary character and delete it right away.
-      .type("_{backspace}", {delay: 0});
+    cy.get("[data-testid=paste-video-url] input").type(value).type("{enter}");
   }
 
   describe('authorization', () => {
@@ -145,68 +139,95 @@ describe('Comparison page', () => {
   describe('video selectors', () => {
     const videoAId = "lYXQvHhfKuM";
     const videoAUrl = `https://www.youtube.com/watch?v=${videoAId}`;
+    const tournesolUrl = `https://tournesol.app/entities/yt:${videoAId}`;
 
-    it('support pasting YouTube URLs', () => {
-      cy.visit('/comparison');
+    describe('search input', () => {
+      it('automatically selects entity with Tournesol UID', () => {
+        cy.visit('/comparison');
 
-      cy.focused().type(username);
-      cy.get('input[name="password"]').click()
-        .type('tournesol').type('{enter}');
+        cy.focused().type(username);
+        cy.get('input[name="password"]').click()
+          .type('tournesol').type('{enter}');
 
-      waitForAutoFill();
+        // two cards must be displayed
+        cy.get("[data-testid=entity-select-button-compact]").should('have.length', 2);
 
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(videoAUrl);
+        waitForAutoFill();
 
-      // wait for the auto filled video to be replaced
-      cy.contains('5 IA surpuissantes');
+        cy.get("[data-testid=entity-select-button-compact]").first().click();
+        pasteInVideoInput(`yt:${videoAId}`);
 
-      // the video title, upload date, and the number of views must be displayed
-      cy.get('div[data-testid=video-card-info]').first().within(() => {
-        cy.contains(
-          '5 IA surpuissantes',
-          {matchCase: false}
-        ).should('be.visible');
-        cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
-        cy.contains('views', {matchCase: false}).should('be.visible');
+        // wait for the auto filled video to be replaced
+        cy.contains('5 IA surpuissantes');
+
+        // the video title, upload date, and the number of views must be displayed
+        cy.get('div[data-testid=video-card-info]').first().within(() => {
+          cy.contains(
+            '5 IA surpuissantes',
+            {matchCase: false}
+          ).should('be.visible');
+          cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
+          cy.contains('views', {matchCase: false}).should('be.visible');
+        });
+
+        cy.get("[data-testid=paste-video-url] input").should("not.exist");
       });
 
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url] input[type=text]")
-        .should('have.attr', 'value', `yt:${videoAId}`);
-    });
+      it('automatically selects entity with Tournesol URL', () => {
+        cy.visit('/comparison');
 
-    it('support pasting YouTube video ID', () => {
-      cy.visit('/comparison');
+        cy.focused().type(username);
+        cy.get('input[name="password"]').click()
+          .type('tournesol').type('{enter}');
 
-      cy.focused().type(username);
-      cy.get('input[name="password"]').click()
-        .type('tournesol').type('{enter}');
+        waitForAutoFill();
 
-      // two cards must be displayed
-      cy.get("[data-testid=entity-select-button-compact]").should('have.length', 2);
+        cy.get("[data-testid=entity-select-button-compact]").first().click();
+        pasteInVideoInput(tournesolUrl);
 
-      waitForAutoFill();
+        // wait for the auto filled video to be replaced
+        cy.contains('5 IA surpuissantes');
 
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(videoAId);
+        // the video title, upload date, and the number of views must be displayed
+        cy.get('div[data-testid=video-card-info]').first().within(() => {
+          cy.contains(
+            '5 IA surpuissantes',
+            {matchCase: false}
+          ).should('be.visible');
+          cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
+          cy.contains('views', {matchCase: false}).should('be.visible');
+        });
 
-      // wait for the auto filled video to be replaced
-      cy.contains('5 IA surpuissantes');
-
-      // the video title, upload date, and the number of views must be displayed
-      cy.get('div[data-testid=video-card-info]').first().within(() => {
-        cy.contains(
-          '5 IA surpuissantes',
-          {matchCase: false}
-        ).should('be.visible');
-        cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
-        cy.contains('views', {matchCase: false}).should('be.visible');
+        cy.get("[data-testid=paste-video-url] input").should("not.exist")
       });
 
-      cy.get("[data-testid=entity-select-button-compact]").first().click();
-      cy.get("[data-testid=paste-video-url] input[type=text]")
-        .should('have.attr', 'value', `yt:${videoAId}`);
+      it('automatically selects entity with YouTube URL', () => {
+        cy.visit('/comparison');
+
+        cy.focused().type(username);
+        cy.get('input[name="password"]').click()
+          .type('tournesol').type('{enter}');
+
+        waitForAutoFill();
+
+        cy.get("[data-testid=entity-select-button-compact]").first().click();
+        pasteInVideoInput(videoAUrl);
+
+        // wait for the auto filled video to be replaced
+        cy.contains('5 IA surpuissantes');
+
+        // the video title, upload date, and the number of views must be displayed
+        cy.get('div[data-testid=video-card-info]').first().within(() => {
+          cy.contains(
+            '5 IA surpuissantes',
+            {matchCase: false}
+          ).should('be.visible');
+          cy.contains('2022-06-20', {matchCase: false}).should('be.visible');
+          cy.contains('views', {matchCase: false}).should('be.visible');
+        });
+
+        cy.get("[data-testid=paste-video-url] input").should("not.exist")
+      });
     });
   });
 
