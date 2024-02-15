@@ -274,10 +274,10 @@ describe('Comparison page', () => {
 
       // add one video, and ask for a second one
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(videoAId);
+      pasteInVideoInput(`yt:${videoAId}`);
 
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      pasteInVideoInput(videoBId);
+      pasteInVideoInput(`yt:${videoBId}`);
 
       // only one criteria must be visible by default
       cy.contains('add optional criteria', {matchCase: false})
@@ -309,9 +309,9 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(videoAId);
+      pasteInVideoInput(`yt:${videoAId}`);
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      pasteInVideoInput(videoBId);
+      pasteInVideoInput(`yt:${videoBId}`);
 
       cy.contains('add optional criteria', {matchCase: false}).click();
 
@@ -344,9 +344,9 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(videoAId);
+      pasteInVideoInput(`yt:${videoAId}`);
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      pasteInVideoInput(videoAId);
+      pasteInVideoInput(`yt:${videoAId}`);
 
       cy.contains('These two items are very similar', {matchCase: false})
           .should('be.visible');
