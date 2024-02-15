@@ -7,8 +7,8 @@ import {
   IconButton,
   TextField,
   Paper,
-  useTheme,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { Close, Search } from '@mui/icons-material';
 
@@ -236,6 +236,7 @@ const EntitySearchInput = ({
             label={t('entitySearchInput.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            data-testid="entity-search-input"
             sx={{
               bgcolor: 'white',
               '& .MuiInputBase-root': {
@@ -255,8 +256,6 @@ const EntitySearchInput = ({
                 </InputAdornment>
               ),
             }}
-            // XXX: change the id
-            data-testid="paste-video-url"
           />
           <IconButton
             type="submit"

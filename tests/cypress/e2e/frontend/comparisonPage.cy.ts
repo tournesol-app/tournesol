@@ -96,7 +96,7 @@ describe('Comparison page', () => {
   }
 
   const pasteInVideoInput = (value: string) => {
-    cy.get("[data-testid=paste-video-url] input").type(value).type("{enter}");
+    cy.get("[data-testid=entity-search-input] input").type(value).type("{enter}");
   }
 
   describe('authorization', () => {
@@ -170,7 +170,7 @@ describe('Comparison page', () => {
           cy.contains('views', {matchCase: false}).should('be.visible');
         });
 
-        cy.get("[data-testid=paste-video-url] input").should("not.exist");
+        cy.get("[data-testid=entity-search-input] input").should("not.exist");
       });
 
       it('automatically selects entity with Tournesol URL', () => {
@@ -198,7 +198,7 @@ describe('Comparison page', () => {
           cy.contains('views', {matchCase: false}).should('be.visible');
         });
 
-        cy.get("[data-testid=paste-video-url] input").should("not.exist")
+        cy.get("[data-testid=entity-search-input] input").should("not.exist")
       });
 
       it('automatically selects entity with YouTube URL', () => {
@@ -226,7 +226,7 @@ describe('Comparison page', () => {
           cy.contains('views', {matchCase: false}).should('be.visible');
         });
 
-        cy.get("[data-testid=paste-video-url] input").should("not.exist")
+        cy.get("[data-testid=entity-search-input] input").should("not.exist")
       });
     });
   });
