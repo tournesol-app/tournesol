@@ -192,8 +192,7 @@ const EntitySearchInput = ({
         name: pollName,
         search: search,
         limit: 20,
-        // TODO: add control to toggle between true/false
-        unsafe: true,
+        unsafe: false,
       });
     } catch (err) {
       setError(true);
