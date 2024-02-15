@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from typing import Mapping
 
 import pandas as pd
 
@@ -11,7 +12,7 @@ class Scaling:
     @abstractmethod
     def __call__(
         self, 
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame,
         voting_rights: VotingRights,

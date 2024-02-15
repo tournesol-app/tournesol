@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Literal
+from typing import Literal
 
 import pandas as pd
 
@@ -28,7 +28,6 @@ class PipelineOutput(ABC):
         `scores`: DataFrame with columns
             * `user_id`
             * `entity_id`
-            * `criteria`
             * `raw_score`
             * `raw_uncertainty`
             * `voting_right`

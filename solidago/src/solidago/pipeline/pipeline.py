@@ -184,6 +184,7 @@ class Pipeline:
         user_models = self.preference_learning(judgments, users, entities, init_user_models)
         start_step4 = timeit.default_timer()
         logger.info(f"Pipeline 3. Terminated in {int(start_step4 - start_step3)} seconds")
+        raw_scorings = user_models
         
         logger.info(f"Pipeline 4. Collaborative scaling with {str(self.scaling)}")
         user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
@@ -201,9 +202,11 @@ class Pipeline:
         user_models, global_model = self.post_process(user_models, global_model, entities)
         end = timeit.default_timer()
         logger.info(f"Pipeline 6. Terminated in {np.round(end - start_step6, 2)} seconds")
-        # TODO:
-        # self.pipeline_output.save_individual_scores(user_models, voting_rights)
-        # self.pipeline_output.save_entity_scores(global_model)
+        if output is not None:
+            post_processed_scores = get_scorings_as_df(user_models)
+
+            self.save_individual_scores(user_models, voting_rights, output)
+            self.pipeline_output.save_entity_scores(global_model)
 
         logger.info(f"Successful pipeline run, in {int(end - start_step1)} seconds")
         return users, voting_rights, user_models, global_model
@@ -239,6 +242,31 @@ class Pipeline:
             }
         )
         output.save_individual_scalings(scalings_df)
+
+    def save_individual_scores(
+        self,
+        user_models: dict[int, ScoringModel],
+        voting_rights: VotingRights,
+        output: PipelineOutput,
+    ):
+        # TODO read raw_score from raw_scorings
+        scores_df = pd.DataFrame(
+            data=[
+                dict(
+                    user_id=user_id,
+                    entity_id=entity_id,
+                    raw_score=0.0,
+                    raw_uncertainty=0.0,
+                    score=score,
+                    uncertainty=left_unc+right_unc,
+                    voting_right=voting_rights[user_id, entity_id]
+                )
+                for (user_id, scoring) in user_models.items()
+                for (entity_id, (score, left_unc, right_unc)) in scoring.iter_entities()
+            ]
+        )
+        output.save_individual_scores(scores_df)
+
 
 def trust_propagation_from_json(json):
     if json[0] == "TrustAll": 
@@ -289,3 +317,17 @@ def post_process_from_json(json):
     raise ValueError(f"PostProcess {json[0]} was not recognized")
     
 
+def get_scorings_as_df(user_models: dict[int, ScoringModel]):
+    return pd.DataFrame(
+        data=[
+            dict(
+                user_id=user_id,
+                entity_id=entity_id,
+                score=score,
+                uncertainty_left=left_unc,
+                uncertainty_right=right_unc,
+            )
+            for (user_id, scoring) in user_models.items()
+            for (entity_id, (score, left_unc, right_unc)) in scoring.iter_entities()
+        ]
+    )

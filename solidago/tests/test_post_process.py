@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from solidago.scoring_model import DirectScoringModel, PostProcessedScoringModel
+from solidago.scoring_model import DirectScoringModel
 from solidago.post_process import Squash
 
 

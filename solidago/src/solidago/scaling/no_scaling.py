@@ -1,3 +1,5 @@
+from typing import Mapping
+
 import pandas as pd
 
 from solidago.voting_rights import VotingRights
@@ -9,7 +11,7 @@ from .base import Scaling
 class NoScaling(Scaling):
     def __call__(
         self, 
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         users: pd.DataFrame = ...,
         entities: pd.DataFrame = ...,
         voting_rights: VotingRights = ...,

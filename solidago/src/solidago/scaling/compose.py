@@ -18,7 +18,7 @@ class ScalingCompose(Scaling):
         scaled_models = user_models
         for scaling in self.scalings:
             scaled_models = scaling(scaled_models, users, entities, voting_rights, privacy)
-        return scaled_models
+        return scaled_models  # type: ignore
 
     def to_json(self):
         scalings_json = [scaling.to_json() for scaling in self.scalings]
