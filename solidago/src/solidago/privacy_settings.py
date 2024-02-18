@@ -33,10 +33,7 @@ class PrivacySettings:
         """
         user, entity = user_entity_tuple
         if is_private is None:
-            try:
-                self._dict[entity].pop(user)
-            except KeyError:
-                pass
+            self._dict[entity].pop(user, None)
             return
         self._dict.setdefault(entity, {})[user] = is_private
 

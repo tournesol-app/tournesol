@@ -1,6 +1,6 @@
 """ Helpers to manipulate time and dates """
 
-from datetime import datetime
+from datetime import date, datetime
 from datetime import timedelta
 
 def week_date_to_week_number(week_date: str, week_date0: str = "2021-01-11") -> int:
@@ -12,5 +12,5 @@ def week_date_to_week_number(week_date: str, week_date0: str = "2021-01-11") -> 
     return int((date - date0).days / 7)
 
 def week_number_to_week_date(week_number: int, week_date0: str = "2021-01-11") -> str:
-    date = datetime.fromisoformat(week_date0) + timedelta(weeks=week_number)
-    return date.isoformat()[:10]
+    week_date = date.fromisoformat(week_date0) + timedelta(weeks=week_number)
+    return week_date.isoformat()

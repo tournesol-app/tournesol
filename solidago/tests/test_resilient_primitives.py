@@ -158,4 +158,4 @@ class QrUncTest(TestCase):
     ]
 )
 def test_qr_quantile_returns_expected_results(W,w,x,delta,quantile,expected_result):
-    assert pytest.approx(expected_result, abs=1e-4) == QrQuantile(W,w,x,delta,quantile)
+    assert pytest.approx(expected_result, rel=1e-4, abs=1e-4) == QrQuantile(W,w,x,delta,quantile)

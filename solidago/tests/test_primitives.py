@@ -1,9 +1,8 @@
 import pytest
-from unittest import TestCase
 import numpy as np
 
 from solidago.primitives import (
-    qr_quantile, qr_median, qr_standard_deviation, qr_uncertainty, lipschitz_resilient_mean
+    qr_quantile, qr_median, qr_standard_deviation, lipschitz_resilient_mean
 )
 
 

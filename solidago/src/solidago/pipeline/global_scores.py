@@ -3,7 +3,7 @@ from typing import Literal, List, get_args
 import pandas as pd
 import numpy as np
 
-from solidago.resilient_primitives import QrDev, QrMed
+from solidago.primitives import qr_uncertainty, qr_median
 from solidago.voting_rights import compute_voting_rights
 from .parameters import PipelineParameters
 
@@ -15,7 +15,7 @@ ALL_SCORE_MODES: List[ScoreMode] = list(get_args(ScoreMode))
 def add_voting_rights(
     ratings_properties_df: pd.DataFrame,
     params: PipelineParameters,
-    score_mode: ScoreMode="default",
+    score_mode: ScoreMode = "default",
 ):
     """
     Add a "voting_right" column to the ratings_df DataFrame
@@ -72,11 +72,22 @@ def aggregate_scores(scaled_scores: pd.DataFrame, W: float):
 
     global_scores = {}
     for (entity_id, scores) in scaled_scores.groupby("entity_id"):
-        w = scores.voting_right
-        theta = scores.score
-        delta = scores.uncertainty
-        rho = QrMed(W, w, theta, delta)
-        rho_uncertainty = QrDev(W, 1, w, theta, delta, qr_med=rho)
+        w = scores.voting_right.to_numpy()
+        theta = scores.score.to_numpy()
+        delta = scores.uncertainty.to_numpy()
+        rho = qr_median(
+            lipschitz=1/W,
+            values=theta,
+            voting_rights=w,
+            left_uncertainties=delta,
+        )
+        rho_uncertainty = qr_uncertainty(
+            lipschitz=1/W,
+            values=theta,
+            voting_rights=w,
+            left_uncertainties=delta,
+            median=rho,
+        )
         global_scores[entity_id] = {
             "score": rho,
             "uncertainty": rho_uncertainty,

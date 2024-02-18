@@ -38,12 +38,11 @@ class PipelineOutput(ABC):
     def save_entity_scores(
         self,
         scores: pd.DataFrame,
-        score_mode: Literal["default", "all_equal", "trusted_only"]
+        score_mode: Literal["default", "all_equal", "trusted_only"] = "default"
     ):
         """
         scores: DataFrame with columns
             * `entity_id`
-            * `criteria`
             * `score`
             * `uncertainty`
         """
@@ -52,17 +51,18 @@ class PipelineOutput(ABC):
 
 
 class PipelineOutputInMemory(PipelineOutput):
+    trust_scores: pd.DataFrame
     individual_scalings: pd.DataFrame
     individual_scores: pd.DataFrame
     entity_scores: pd.DataFrame
 
     def save_trust_scores(self, trusts: pd.DataFrame):
-        return
+        self.trust_scores = trusts
 
     def save_individual_scalings(self, scalings):
         self.individual_scalings = scalings
 
-    def save_entity_scores(self, scores, score_mode):
+    def save_entity_scores(self, scores, score_mode="default"):
         if score_mode != "default":
             return
         self.entity_scores = scores

@@ -10,7 +10,7 @@ class ScoringModel:
     def __call__(
         self, 
         entity_id: int, 
-        entity_features: pd.Series
+        entity_features: Optional[pd.Series] = None,
     ) -> Optional[tuple[float, float, float]]:
         """ Assigns a score to an entity
         
@@ -26,15 +26,18 @@ class ScoringModel:
         """
         raise NotImplementedError
         
-    def scored_entities(self, entities) -> set[int]:
-        """ If not None, then the scoring model only scores a subset of entities. """
-        return set(range(len(entities)))
-    
-    def iter_entities(self) -> Iterable[tuple[int, tuple[float, float, float]]]:
+    def scored_entities(self, entities: Optional[pd.DataFrame] = None) -> set[int]:
         raise NotImplementedError
 
-    def get_scaling_parameters(self):
-        return 1, 0, 0, 0, 0, 0
+    def iter_entities(self, entities = None) -> Iterable[tuple[int, tuple[float, float, float]]]:
+        for entity_id in self.scored_entities(entities):
+            if entities is None:
+                result = self(entity_id)
+            else:
+                result = self(entity_id, entities.loc[entity_id])
+            if result is not None:
+                yield entity_id, result
+
 
 class DirectScoringModel(ScoringModel):
     def __init__(
@@ -72,7 +75,7 @@ class DirectScoringModel(ScoringModel):
             return set(self._dict.keys())
         return set(entities.index).intersection(self._dict.keys())
 
-    def iter_entities(self) -> Iterable[tuple[int, tuple[float, float, float]]]:
+    def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:
         return self._dict.items()
 
     def __str__(self, indent=""):
@@ -125,7 +128,7 @@ class ScaledScoringModel(ScoringModel):
             self.translation_left_uncertainty = translation_left_uncertainty
             self.translation_right_uncertainty = translation_right_uncertainty
         
-    def __call__(self, entity_id, entity_features):
+    def __call__(self, entity_id, entity_features=None):
         base_output = self.base_model(entity_id, entity_features)
         if base_output is None:
             return None
@@ -165,14 +168,7 @@ class ScaledScoringModel(ScoringModel):
             self.multiplicator_left_uncertainty, self.multiplicator_right_uncertainty, 
             self.translation_left_uncertainty, self.translation_right_uncertainty)
 
-    def get_scaling_parameters(self):
-        model, parameters = self, list()
-        while hasattr(model, "base_model"):
-            model = model.base_model
-            parameters.append(model._direct_scaling_parameters())
-        return ScaledScoringModel.compose_scaling_parameters(parameters)
-
-    def iter_entities(self) -> Iterable[tuple[int, tuple[float, float, float]]]:
+    def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:
         for (entity_id, values) in self.base_model.iter_entities():
             yield (entity_id, self.scale_score(*values))
 
@@ -215,9 +211,11 @@ class PostProcessedScoringModel(ScoringModel):
         self.base_model = base_model
         self.post_process = post_process
     
-    def __call__(self, entity_id, entity_features):
-        base_score, base_left, base_right = self.base_model(entity_id, entity_features)
-        return self.apply_post_process(base_score, base_left, base_right)
+    def __call__(self, entity_id, entity_features=None):
+        result = self.base_model(entity_id, entity_features)
+        if result is None:
+            return None
+        return self.apply_post_process(*result)
 
     def apply_post_process(self, base_score, base_left_unc, base_right_unc):
         score = self.post_process(base_score)
@@ -233,9 +231,6 @@ class PostProcessedScoringModel(ScoringModel):
     def scored_entities(self, entities) -> set[int]:
         return self.base_model.scored_entities(entities)
 
-    def get_scaling_parameters(self):
-        return self.base_model.get_scaling_parameters()
-
-    def iter_entities(self) -> Iterable[tuple[int, tuple[float, float, float]]]:
+    def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:
         for (entity_id, values) in self.base_model.iter_entities():
             yield (entity_id, self.apply_post_process(*values))

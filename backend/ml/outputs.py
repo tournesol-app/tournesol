@@ -9,6 +9,7 @@ from django.db import transaction
 from solidago.pipeline.global_scores import get_squash_function
 from solidago.pipeline.outputs import PipelineOutput
 
+from core.models import User
 from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
@@ -43,7 +44,15 @@ class TournesolPollOutput(PipelineOutput):
             * index:  `user_id`
             * columns: `trust_score`
         """
-        raise NotImplementedError
+        trust_scores = trusts.trust_score
+        users = User.objects.filter(id__in=trust_scores.index).only("trust_score")
+        for user in users:
+            user.trust_score = trusts[user.id]
+        User.objects.bulk_update(
+            users,
+            ["trust_score"],
+            batch_size=1000
+        )
 
     def save_individual_scalings(self, scalings: pd.DataFrame):
         scalings_iterator = (
@@ -157,7 +166,7 @@ class TournesolPollOutput(PipelineOutput):
     def save_entity_scores(
         self,
         scores: pd.DataFrame,
-        score_mode,
+        score_mode = "default",
     ):
         scores_iterator = scores[
             ["entity_id", "score", "uncertainty"]

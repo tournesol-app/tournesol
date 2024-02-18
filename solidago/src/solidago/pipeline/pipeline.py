@@ -203,11 +203,17 @@ class Pipeline:
         end = timeit.default_timer()
         logger.info(f"Pipeline 6. Terminated in {np.round(end - start_step6, 2)} seconds")
         if output is not None:
-            post_processed_scores = get_scorings_as_df(user_models)
-
-            self.save_individual_scores(user_models, voting_rights, output)
-            self.pipeline_output.save_entity_scores(global_model)
-
+            self.save_individual_scores(user_models, raw_scorings, voting_rights, output)
+            output.save_entity_scores(pd.DataFrame(
+                data=[
+                    dict(
+                        entity_id=entity_id,
+                        score=score,
+                        uncertainty=left_unc+right_unc
+                    )
+                    for (entity_id, (score, left_unc, right_unc)) in global_model.iter_entities()
+                ]
+            ))
         logger.info(f"Successful pipeline run, in {int(end - start_step1)} seconds")
         return users, voting_rights, user_models, global_model
         
@@ -245,26 +251,40 @@ class Pipeline:
 
     def save_individual_scores(
         self,
-        user_models: dict[int, ScoringModel],
+        user_scorings: dict[int, ScoringModel],
+        raw_user_scorings: dict[int, ScoringModel],
         voting_rights: VotingRights,
         output: PipelineOutput,
     ):
-        # TODO read raw_score from raw_scorings
         scores_df = pd.DataFrame(
             data=[
                 dict(
                     user_id=user_id,
                     entity_id=entity_id,
-                    raw_score=0.0,
-                    raw_uncertainty=0.0,
                     score=score,
                     uncertainty=left_unc+right_unc,
                     voting_right=voting_rights[user_id, entity_id]
                 )
-                for (user_id, scoring) in user_models.items()
+                for (user_id, scoring) in user_scorings.items()
                 for (entity_id, (score, left_unc, right_unc)) in scoring.iter_entities()
             ]
         )
+
+        def get_raw_score(row):
+            raw_scoring = raw_user_scorings[row.user_id](row.entity_id)
+            if raw_scoring is None:
+                return 0.0
+            score, _, _ = raw_scoring
+            return score
+
+        def get_raw_uncertainty(row):
+            raw_scoring = raw_user_scorings[row.user_id](row.entity_id)
+            assert raw_scoring is not None
+            _, left_unc, right_unc = raw_scoring
+            return left_unc + right_unc
+
+        scores_df["raw_score"] = scores_df.apply(get_raw_score, axis=1)
+        scores_df["raw_uncertainty"] = scores_df.apply(get_raw_uncertainty, axis=1)
         output.save_individual_scores(scores_df)
 
 
