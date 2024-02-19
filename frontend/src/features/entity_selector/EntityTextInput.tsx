@@ -176,8 +176,8 @@ const EntitySearchInput = ({
       entities = await PollsService.pollsRecommendationsList({
         name: pollName,
         search: search,
-        limit: 20,
-        unsafe: false,
+        unsafe: true,
+        limit: 30,
       });
     } catch (err) {
       setError(true);
