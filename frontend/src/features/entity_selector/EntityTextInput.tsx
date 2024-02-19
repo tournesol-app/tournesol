@@ -45,6 +45,7 @@ const EntitySearchResultsList = ({
       {entities.length > 0 && (
         <Box
           mt={1}
+          mb={2}
           bgcolor="white"
           overflow="auto"
           sx={{
