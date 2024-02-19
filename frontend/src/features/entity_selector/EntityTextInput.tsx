@@ -29,21 +29,17 @@ interface EntitySearchResultsProps {
   lastSearch: string;
   entities: EntityResult[];
   onSelect?: (uid: string) => void;
-  onClose: () => void;
 }
 
 interface EntitySearchResultsListProps {
   entities: EntityResult[];
   onSelect?: (uid: string) => void;
-  onClose: () => void;
 }
 
 const EntitySearchResultsList = ({
   entities,
   onSelect,
-  onClose,
 }: EntitySearchResultsListProps) => {
-  const { t } = useTranslation();
   return (
     <>
       {entities.length > 0 && (
@@ -74,14 +70,6 @@ const EntitySearchResultsList = ({
           </ul>
         </Box>
       )}
-      <Box p={1} display="flex" justifyContent="flex-end">
-        <IconButton
-          onClick={onClose}
-          aria-label={t('entitySearchInput.closeSearch')}
-        >
-          <Close />
-        </IconButton>
-      </Box>
     </>
   );
 };
@@ -91,7 +79,6 @@ const EntitySearchResults = ({
   lastSearch,
   entities,
   onSelect,
-  onClose,
 }: EntitySearchResultsProps) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -132,11 +119,7 @@ const EntitySearchResults = ({
           )}
         </Typography>
       </Box>
-      <EntitySearchResultsList
-        entities={entities}
-        onSelect={onSelect}
-        onClose={onClose}
-      />
+      <EntitySearchResultsList entities={entities} onSelect={onSelect} />
     </Paper>
   );
 };
@@ -282,7 +265,6 @@ const EntitySearchInput = ({
           lastSearch={lastSearch}
           entities={entities}
           onSelect={selectResult}
-          onClose={closeSearch}
         />
       )}
     </Box>

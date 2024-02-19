@@ -246,7 +246,7 @@ describe('Comparison page', () => {
         pasteInVideoInput('charrue');
         cy.contains('1 result for "charrue"');
 
-        cy.get('button[aria-label="Close search"]').last().click()
+        cy.get('button[aria-label="Close search"]').click()
         cy.contains('charrue', {matchCase: false})
           .should('not.exist');
       });
