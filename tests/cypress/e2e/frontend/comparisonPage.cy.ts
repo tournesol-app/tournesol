@@ -96,7 +96,7 @@ describe('Comparison page', () => {
   }
 
   const pasteInVideoInput = (value: string) => {
-    cy.get("[data-testid=entity-search-input] input").type(value).type("{enter}");
+    cy.get("[data-testid=entity-search-input] input").clear().type(value).type("{enter}");
   }
 
   describe('authorization', () => {
@@ -243,7 +243,7 @@ describe('Comparison page', () => {
         pasteInVideoInput('aaaabbbbccccdddd');
         cy.contains('0 results for "aaaabbbbccccdddd"');
 
-        cy.focused().clear().type('charrue').type('{enter}');
+        pasteInVideoInput('charrue');
         cy.contains('1 result for "charrue"');
 
         cy.get('button[aria-label="Close search"]').last().click()
