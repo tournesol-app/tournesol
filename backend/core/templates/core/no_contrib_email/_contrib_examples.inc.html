@@ -25,25 +25,4 @@
     </a>
   </li>
 </ul>
-{% if ext_url_firefox or ext_url_chrome %}
-<p>
-  {% blocktranslate %}You can also install the Tournesol browser extension to easily compare videos directly from
-YouTube, or to add them to your rate-later list.{% endblocktranslate %}
-</p>
-<ul>
-  {% if ext_url_firefox %}
-  <li>
-    <a href="{{ ext_url_firefox}}" rel="noopener" target="_blank">
-      {% translate "Install on Firefox" %}
-    </a>
-  </li>
-  {% endif %}
-  {% if ext_url_chrome %}
-  <li>
-    <a href="{{ ext_url_chrome}}" rel="noopener" target="_blank">
-      {% translate "Install on Chrome" %}
-    </a>
-  </li>
-  {% endif %}
-</ul>
-{% endif %}
+

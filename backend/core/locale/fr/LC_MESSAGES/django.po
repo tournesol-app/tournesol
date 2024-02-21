@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 13:51+0000\n"
+"POT-Creation-Date: 2024-02-21 13:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -230,27 +230,6 @@ msgstr "Top des vidéos du mois dernier"
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:5
 msgid "Top short videos of the past year"
 msgstr "Top des vidéos courtes de l'année passée"
-
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:30
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
-msgid ""
-"You can also install the Tournesol browser extension to easily compare "
-"videos directly from\n"
-"YouTube, or to add them to your rate-later list."
-msgstr ""
-"Vous pouvez aussi installer l'extension navigateur Tournesol pour comparer "
-"des vidéos directement depuis YouTube, ou pour les ajouter à votre liste à "
-"comparer plus tard."
-
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:37
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:11
-msgid "Install on Firefox"
-msgstr "Installer sur Firefox"
-
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:44
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:14
-msgid "Install on Chrome"
-msgstr "Installer sur Chrome"
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:10
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:7

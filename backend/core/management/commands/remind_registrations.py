@@ -23,23 +23,18 @@ class Command(BaseCommand):
     def get_subject(self):
         return "🌻 " + _("Want to help responsible scientific research?")
 
-    def get_message(self, n_comparisons, ctx):
+    def get_message(self, n_comparisons):
         if n_comparisons > 0:
-            return render_to_string("core/no_contrib_email/body_signup_contrib.txt", ctx)
-        return render_to_string("core/no_contrib_email/body_no_contrib.txt", ctx)
+            return render_to_string("core/no_contrib_email/body_signup_contrib.txt")
+        return render_to_string("core/no_contrib_email/body_no_contrib.txt")
 
-    def get_html_message(self, n_comparisons, ctx):
+    def get_html_message(self, n_comparisons):
         if n_comparisons > 0:
-            return render_to_string("core/no_contrib_email/body_signup_contrib.html", ctx)
-        return render_to_string("core/no_contrib_email/body_no_contrib.html", ctx)
+            return render_to_string("core/no_contrib_email/body_signup_contrib.html")
+        return render_to_string("core/no_contrib_email/body_no_contrib.html")
 
     def notify_users(self, users):
         from_email = settings.REST_REGISTRATION["VERIFICATION_FROM_EMAIL"]
-
-        ctx = {
-            "ext_url_firefox": getattr(settings, "BROWSER_EXT_URL_FIREFOX", None),
-            "ext_url_chrome": getattr(settings, "BROWSER_EXT_URL_CHROME", None)
-        }
 
         fails = []
         successes = 0
@@ -58,8 +53,8 @@ class Command(BaseCommand):
             try:
                 send_mail(
                     subject=self.get_subject(),
-                    message=self.get_message(user.n_comp_signup, ctx),
-                    html_message=self.get_html_message(user.n_comp_signup, ctx),
+                    message=self.get_message(user.n_comp_signup),
+                    html_message=self.get_html_message(user.n_comp_signup),
                     from_email=from_email,
                     recipient_list=[user.email],
                     fail_silently=False,
