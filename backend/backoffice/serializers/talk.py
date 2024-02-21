@@ -9,6 +9,7 @@ class TalkEntrySerializer(serializers.ModelSerializer):
         fields = [
             "name",
             "title",
+            "event_type",
             "date",
             "date_as_tz_europe_paris",
             "speakers",

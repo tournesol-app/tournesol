@@ -13,6 +13,7 @@ def create_talk_entry(name, date, public):
     return TalkEntry.objects.create(
         name=name,
         date=date,
+        event_type="TALK",
         title=f"{name}_title",
         speakers=f"{name}_speakers",
         abstract=f"{name}_abstract",
@@ -63,6 +64,7 @@ class TalksListViewTestCase(TestCase):
             {
                 "name": talk.name,
                 "title": talk.title,
+                "event_type": "TALK",
                 "date": "2019-12-22T00:00:00Z",
                 "date_as_tz_europe_paris": "2019-12-22T01:00:00+0100",
                 "speakers": talk.speakers,

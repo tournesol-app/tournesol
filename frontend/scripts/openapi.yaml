@@ -3328,6 +3328,14 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    EventTypeEnum:
+      enum:
+      - TALK
+      - LIVE
+      type: string
+      description: |-
+        * `TALK` - Tournesol Talk
+        * `LIVE` - Tournesol Live
     ExtendedCollectiveRating:
       type: object
       properties:
@@ -4431,13 +4439,15 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
         title:
           type: string
-          description: The title of the Talk.
+          description: The title of the event.
           maxLength: 255
+        event_type:
+          $ref: '#/components/schemas/EventTypeEnum'
         date:
           type: string
           format: date-time
           nullable: true
-          description: Date and time of the Talk according to the server time.
+          description: Date and time of the event according to the server time.
         date_as_tz_europe_paris:
           type: string
           nullable: true
@@ -4450,18 +4460,18 @@ components:
         abstract:
           type: string
           nullable: true
-          description: Description of the Talk.
+          description: Description of the event.
         invitation_link:
           type: string
           format: uri
           nullable: true
-          description: Allows the users to join the Talk.
+          description: Allows the users to join the event.
           maxLength: 200
         youtube_link:
           type: string
           format: uri
           nullable: true
-          description: The Talk's YouTube link.
+          description: The YouTube link of the recorded event.
           maxLength: 200
       required:
       - date_as_tz_europe_paris

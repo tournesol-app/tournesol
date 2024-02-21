@@ -26,7 +26,7 @@ class TalkEntry(models.Model):
         unique=True,
         max_length=255,
     )
-    event_type = models.CharField(max_length=16, choices=EVENT_TYPE)
+    event_type = models.CharField(max_length=16, choices=EVENT_TYPE, default=EVENT_TYPE_TALK)
     date = models.DateTimeField(
         help_text="Date and time of the event according to the server time.",
         null=True,
