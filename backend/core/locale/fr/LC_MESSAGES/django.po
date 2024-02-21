@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 14:04+0000\n"
+"POT-Creation-Date: 2024-02-21 14:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -192,14 +192,14 @@ msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:22
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:22
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:25
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:25
 msgid "Many thanks"
 msgstr "Merci beaucoup"
 
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:23
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:23
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:26
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:26
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
 
@@ -231,6 +231,25 @@ msgstr "Top des vidéos du mois dernier"
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
 msgid "Top short videos of the past year"
 msgstr "Top des vidéos courtes de l'année passée"
+
+#: core/templates/core/no_contrib_email/_mobile_available.inc.html:2
+#: core/templates/core/no_contrib_email/_mobile_available.inc.txt:1
+msgid "Tournesol is also available on mobile 📱"
+msgstr "Tournesol est aussi disponible sur mobile 📱"
+
+#: core/templates/core/no_contrib_email/_mobile_available.inc.html:4
+#: core/templates/core/no_contrib_email/_mobile_available.inc.txt:3
+msgid ""
+"If your smartphone is compatible, you can add the Tournesol application to "
+"your home page by\n"
+"visiting the website https://tournesol.app with your browser, and clicking "
+"on Install from the main\n"
+"menu."
+msgstr ""
+"Si votre téléphone est compatible, vous pouvez ajouter l'application "
+"Tournesol à votre page d'accueil en visitant le site web https://tournesol."
+"app avec votre navigateur, et en cliquant sur Installer depuis le menu menu "
+"principal."
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:10
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:7
@@ -273,16 +292,16 @@ msgstr ""
 "serait un énorme pas en avant pour le projet."
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:23
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:18
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:19
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:23
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:18
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:19
 msgid "What can I do? 🤔"
 msgstr "Que puis-je faire ? 🤔"
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:24
-#: core/templates/core/no_contrib_email/body_no_contrib.txt:20
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:21
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:24
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:20
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:21
 msgid "Here are examples of videos you could compare:"
 msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
 

@@ -1,0 +1,5 @@
+{% load i18n %}{% translate "Tournesol is also available on mobile 📱" %}
+
+{% blocktranslate %}If your smartphone is compatible, you can add the Tournesol application to your home page by
+visiting the website https://tournesol.app with your browser, and clicking on Install from the main
+menu.{% endblocktranslate %}
