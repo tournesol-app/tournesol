@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 14:39+0000\n"
+"POT-Creation-Date: 2024-02-21 16:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -193,13 +193,13 @@ msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:25
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:25
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:23
 msgid "Many thanks"
 msgstr "Merci beaucoup"
 
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:26
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:26
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:24
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
 
@@ -280,8 +280,8 @@ msgstr ""
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:20
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:15
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:20
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:15
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:18
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:13
 msgid ""
 "If every registered user makes at least 10 comparisons, the size of the "
 "Tournesol public\n"
@@ -293,15 +293,13 @@ msgstr ""
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:23
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:19
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:23
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:19
 msgid "What can I do? 🤔"
 msgstr "Que puis-je faire ? 🤔"
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:24
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:21
-#: core/templates/core/no_contrib_email/body_signup_contrib.html:24
-#: core/templates/core/no_contrib_email/body_signup_contrib.txt:21
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:22
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:19
 msgid "Here are examples of videos you could compare:"
 msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
 
@@ -310,27 +308,25 @@ msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
 msgid ""
 "We would like to thank you for taking the time to contribute to the project. "
 "Your comparisons\n"
-"already improve the public dataset and the recommendations made to thousands "
-"of users."
+"already improve the recommendations made to thousands of users, and also the "
+"public dataset."
 msgstr ""
 "Nous vous remercions d'avoir pris le temps de contribuer au projet. Vos "
-"comparaisons améliorent déjà la base de données publique et les "
-"recommandations faites à des milliers d'utilisateur·rices."
+"comparaisons améliorent déjà les recommandations faites à des milliers de "
+"personnes, ainsi que la base de données publique."
 
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:14
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:10
 msgid ""
-"This participatory research project works thanks to contributors who, like "
-"you, volunteer\n"
-"their time to compare videos. If you have time, we hope to see you again on "
-"the Tournesol platform. Every comparison you\n"
-"make will help advance scientific research on ethics and security of "
-"algorithms and recommender\n"
-"systems."
+"Tournesol works thanks to contributors who, like you, volunteer their time "
+"to compare videos.\n"
+"If you have time, we hope to see you again on the Tournesol platform."
 msgstr ""
-"Ce projet de recherche participatif fonctionne grâce à des personnes qui, "
-"comme vous, donnent de leur temps pour comparer des videos. Si vous avez le "
-"temps, nous espérons vous revoir sur la plateforme Tournesol. Chaque "
-"comparaison que vous faites contribue à faire avancer la recherche "
-"scientifique sur l'éthique et la sécurité des algorithmes et des systèmes de "
-"recommandation."
+"Tournesol fonctionne grâce à des personnes qui, comme vous, donnent un peu "
+"de leur temps pour comparer des videos. Si vous avez le temps, nous espérons "
+"vous revoir sur la plateforme Tournesol."
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:21
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:17
+msgid "Which videos can I compare? 🤔"
+msgstr "Quelles vidéos puis-je comparer ? 🤔"

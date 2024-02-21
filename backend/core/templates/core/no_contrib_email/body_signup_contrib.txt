@@ -5,18 +5,16 @@
 {% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
 
 {% blocktranslate %}We would like to thank you for taking the time to contribute to the project. Your comparisons
-already improve the public dataset and the recommendations made to thousands of users.{% endblocktranslate %}
+already improve the recommendations made to thousands of users, and also the public dataset.{% endblocktranslate %}
 
-{% blocktranslate %}This participatory research project works thanks to contributors who, like you, volunteer
-their time to compare videos. If you have time, we hope to see you again on the Tournesol platform. Every comparison you
-make will help advance scientific research on ethics and security of algorithms and recommender
-systems.{% endblocktranslate %}
+{% blocktranslate %}Tournesol works thanks to contributors who, like you, volunteer their time to compare videos.
+If you have time, we hope to see you again on the Tournesol platform.{% endblocktranslate %}
 
 {% blocktranslate %}If every registered user makes at least 10 comparisons, the size of the Tournesol public
 database will double! This would be a huge step forward for the project.{% endblocktranslate %}
 
 
-{% translate "What can I do? 🤔" %}
+{% translate "Which videos can I compare? 🤔" %}
 
 {% translate "Here are examples of videos you could compare:" %}
 {% include "core/no_contrib_email/_contrib_examples.inc.txt" %}
