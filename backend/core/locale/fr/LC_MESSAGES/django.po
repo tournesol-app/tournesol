@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 13:58+0000\n"
+"POT-Creation-Date: 2024-02-21 14:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,16 +218,17 @@ msgstr ""
 "utilisatrices.)"
 
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.html:8
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:2
 msgid "Your history if you have an account on YouTube"
 msgstr "Votre historique si vous utilisez un compte sur YouTube"
 
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.html:16
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:2
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:5
 msgid "Top videos of the past 30 days"
 msgstr "Top des vidéos du mois dernier"
 
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.html:24
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:5
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
 msgid "Top short videos of the past year"
 msgstr "Top des vidéos courtes de l'année passée"
 
