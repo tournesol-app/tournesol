@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 13:28+0000\n"
+"POT-Creation-Date: 2024-02-21 13:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -270,22 +270,23 @@ msgid ""
 "recommends to thousands of people, and helps advance research in ethics and "
 "security of recommender\n"
 "systems."
-msgstr "Chaque comparaison que vous faites permet d'identifier les vidéos "
-"d'utilité publique que la plateforme recommande à des milliers de personnes, "
-"et aide la recherche en éthique et sécurité des systèmes de recommandation."
+msgstr ""
+"Chaque comparaison que vous faites permet d'identifier les vidéos d'utilité "
+"publique que la plateforme recommande à des milliers de personnes, et aide "
+"la recherche en éthique et sécurité des systèmes de recommandation."
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:20
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:15
 #: core/templates/core/no_contrib_email/body_signup_contrib.html:20
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:15
 msgid ""
-"If every registered user made at least 10 comparisons, the quality of the "
-"public database\n"
-"would double! This would be a huge step forward for the project."
+"If every registered user makes at least 10 comparisons, the size of the "
+"Tournesol public\n"
+"database will double! This would be a huge step forward for the project."
 msgstr ""
 "Si chaque personne inscrite effectuait au moins 10 comparaisons, alors la "
-"qualité de la base de données publique doublerait ! Ce serait un énorme pas "
-"en avant pour le projet."
+"base de données de publique de Tournesol serait deux fois plus grande ! Ce "
+"serait un énorme pas en avant pour le projet."
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:23
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:18

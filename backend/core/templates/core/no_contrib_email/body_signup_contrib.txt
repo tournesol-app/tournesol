@@ -12,8 +12,8 @@ their time to compare videos. If you have time, we hope to see you again on the 
 make will help advance scientific research on ethics and security of algorithms and recommender
 systems.{% endblocktranslate %}
 
-{% blocktranslate %}If every registered user made at least 10 comparisons, the quality of the public database
-would double! This would be a huge step forward for the project.{% endblocktranslate %}
+{% blocktranslate %}If every registered user makes at least 10 comparisons, the size of the Tournesol public
+database will double! This would be a huge step forward for the project.{% endblocktranslate %}
 
 {% translate "Here are examples of videos you could compare:" %}
 {% include "core/no_contrib_email/_contrib_examples.inc.txt" %}
