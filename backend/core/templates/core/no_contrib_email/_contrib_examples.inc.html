@@ -1,5 +1,13 @@
 {% load i18n %}{% get_current_language as LANGUAGE_CODE %}
 <ul>
+    <li>
+    <a href="https://www.youtube.com/feed/history"
+       rel="noopener"
+       target="_blank"
+    >
+      {% translate "Your history if you have an account on YouTube" %}
+    </a>
+  </li>
   <li>
     <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder"
        rel="noopener"
