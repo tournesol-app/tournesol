@@ -424,7 +424,7 @@
     "updateVisibility": "Update visibility",
     "markAllAsPublic": "Mark all as <1>public</1>",
     "markAllAsPrivate": "Mark all as <1>private</1>",
-    "noVideoCorrespondsToFilter": "No video corresponds to your filter.",
+    "noVideoCorrespondsToFilter": "No video matches your filter.",
     "noVideoComparedYet": "You haven't compared any video yet",
     "compareVideosButton": "Compare videos"
   },
@@ -922,7 +922,7 @@
       "recommendations": "Recommendations"
     }
   },
-  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criteria.",
+  "noVideoCorrespondsToSearchCriterias": "No video matches your search criteria.",
   "profile": "Profile",
   "signup": {
     "oneLastStep": "One last step",

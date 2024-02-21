@@ -78,7 +78,7 @@ describe('Recommendations page', () => {
           cy.contains('A day ago', {matchCase: false}).should('be.visible');
           cy.get('input[type=checkbox][name="Today"]').check();
           cy.get('input[type=checkbox][name="Today"]').should('be.checked');
-          cy.contains('No video corresponds to your search criteria.', {matchCase: false}).should('be.visible');
+          cy.contains('No video matches your search criteria.', {matchCase: false}).should('be.visible');
         });
 
         it('allows to filter: all time', () => {
@@ -89,7 +89,7 @@ describe('Recommendations page', () => {
           cy.contains('All time', {matchCase: false}).click();
           cy.get('input[type=checkbox][name=""]').should('be.checked');
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
-          cy.contains('No video corresponds to your search criteria.', {matchCase: false}).should('not.exist');
+          cy.contains('No video matches your search criteria.', {matchCase: false}).should('not.exist');
         })
       });
     });
@@ -106,7 +106,7 @@ describe('Recommendations page', () => {
         cy.visit('/recommendations?advanced=unsafe&date=');
 
         const videoCard = cy.get('div[data-testid=video-card-info]').first();
-        videoCard.find('h6').click();
+        videoCard.find('h5').click();
         cy.location('pathname').should('match', /^\/entities\//);
       });
     });

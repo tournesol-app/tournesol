@@ -8,7 +8,7 @@
   margin-top: 12px;
 }
 
-button.tournesol-rate-button {
+button.tournesol-video-button {
   background: transparent;
   border: none;
   border-radius: 2px;
@@ -26,11 +26,11 @@ button.tournesol-rate-button {
   color: #0f0f0f;
   background: #ffc800;
 }
-button.tournesol-rate-button:hover {
+button.tournesol-video-button:hover {
   background: #b28c00;
 }
 
-button.tournesol-rate-button:disabled {
+button.tournesol-video-button:disabled {
   opacity: 0.5;
   cursor: default;
   background: #ffc800;
@@ -48,7 +48,7 @@ img.tournesol-button-image.tournesol-rate-later {
 }
 
 @media (max-width: 990px) {
-  button.tournesol-rate-button {
+  button.tournesol-video-button {
     font-size: 0;
   }
 

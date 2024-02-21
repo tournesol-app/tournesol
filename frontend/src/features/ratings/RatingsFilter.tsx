@@ -26,8 +26,12 @@ function RatingsFilter({
   };
 
   return (
-    <Box color="text.secondary">
-      <CollapseButton expanded={expanded} onClick={handleExpandClick}>
+    <Box color="text.secondary" marginBottom={2}>
+      <CollapseButton
+        expanded={expanded}
+        onClick={handleExpandClick}
+        variant="mainOptions"
+      >
         {t('options')}
       </CollapseButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
-import makeStyles from '@mui/styles/makeStyles';
 import {
   Grid,
   Box,
@@ -9,7 +8,6 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
-  Theme,
 } from '@mui/material';
 
 import { ActionList } from 'src/utils/types';
@@ -25,31 +23,6 @@ import { DurationWrapper } from 'src/components/entity/EntityImagery';
 import { VideoMetadata } from 'src/components/entity/EntityMetadata';
 import { useCurrentPoll } from 'src/hooks';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  youtube_complements: {
-    marginBottom: '8px',
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignContent: 'space-between',
-    fontFamily: 'Poppins',
-    fontSize: '0.8em',
-    color: theme.palette.neutral.main,
-  },
-  youtube_complements_p: {
-    marginRight: '12px',
-  },
-  top: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignContent: 'space-between',
-  },
-  settingsContainer: {
-    '&.MuiGrid-item': {
-      padding: 0,
-    },
-  },
-}));
 
 function VideoCard({
   video,
@@ -67,7 +40,6 @@ function VideoCard({
   showPlayer?: boolean;
 }) {
   const theme = useTheme();
-  const classes = useStyles();
 
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
@@ -183,7 +155,7 @@ function VideoCard({
         )}
       </Grid>
       {settings.length > 0 && (
-        <Grid item xs={12} className={classes.settingsContainer}>
+        <Grid item xs={12} p={0}>
           <Collapse in={settingsVisible || !isSmallScreen}>
             <Box
               paddingY={1}

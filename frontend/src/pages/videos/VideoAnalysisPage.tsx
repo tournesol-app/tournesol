@@ -64,7 +64,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
-          {video.entity_contexts && (
+          {video.entity_contexts.length > 0 && (
             <Grid item xs={12}>
               <EntityContextBox
                 uid={video.entity.uid}

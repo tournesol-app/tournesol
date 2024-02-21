@@ -1,17 +1,18 @@
 import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
-export const getForEnv = (object, env) => {
-  const result = object[env];
+export const selectValue = (key, options) => {
+  const result = options[key];
   if (result === undefined) {
-    throw new Error(
-      `No value found for the environment ${JSON.stringify(env)}`
-    );
+    throw new Error(`No value found for the key ${JSON.stringify(key)}`);
   }
   return result;
 };
 
-export const generateImportWrappers = async (manifest) => {
+export const generateImportWrappers = async (
+  manifest,
+  webAccessibleResources
+) => {
   await Promise.all(
     manifest['content_scripts'].map(async (contentScript) => {
       await Promise.all(
@@ -22,7 +23,7 @@ export const generateImportWrappers = async (manifest) => {
           await mkdir(dirname(path), { recursive: true });
           await writeFile(path, content);
           contentScript.js[i] = newJs;
-          manifest['web_accessible_resources'].push(js);
+          webAccessibleResources.push(js);
         })
       );
     })

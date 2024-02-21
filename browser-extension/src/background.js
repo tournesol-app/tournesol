@@ -31,10 +31,10 @@ const createContextMenu = function createContextMenu() {
     });
   });
 
-  chrome.contextMenus.onClicked.addListener(function (e) {
+  chrome.contextMenus.onClicked.addListener(function (e, tab) {
     var videoId = new URL(e.linkUrl).searchParams.get('v');
     if (!videoId) {
-      alertUseOnLinkToYoutube();
+      alertUseOnLinkToYoutube(tab);
     } else {
       addRateLater(videoId).then((response) => {
         if (!response.success) {
@@ -47,7 +47,8 @@ const createContextMenu = function createContextMenu() {
                 function (response) {
                   if (!response.success) {
                     alertOnCurrentTab(
-                      'Sorry, an error occured while opening the Tournesol login form.'
+                      'Sorry, an error occured while opening the Tournesol login form.',
+                      tab
                     );
                   }
                 }
@@ -60,32 +61,6 @@ const createContextMenu = function createContextMenu() {
   });
 };
 createContextMenu();
-
-/**
- * Remove the X-FRAME-OPTIONS and FRAME-OPTIONS headers included in the
- * Tournesol application HTTP answers. It allows the extension to display
- * the application in an iframe without enabling all website to do the same.
- */
-chrome.webRequest.onHeadersReceived.addListener(
-  function (info) {
-    const headers = info.responseHeaders.filter(
-      (h) =>
-        !['x-frame-options', 'frame-options'].includes(h.name.toLowerCase())
-    );
-    return { responseHeaders: headers };
-  },
-  {
-    urls: ['https://tournesol.app/*'],
-    types: ['sub_frame'],
-  },
-  [
-    'blocking',
-    'responseHeaders',
-    // Modern Chrome needs 'extraHeaders' to see and change this header,
-    // so the following code evaluates to 'extraHeaders' only in modern Chrome.
-    chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
-  ].filter(Boolean)
-);
 
 function getDateThreeWeeksAgo() {
   // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12

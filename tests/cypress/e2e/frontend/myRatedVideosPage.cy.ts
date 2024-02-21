@@ -66,7 +66,7 @@ describe('My rated elements page', () => {
 
 
       const videoCard = cy.get('div[data-testid=video-card-info]').first();
-      videoCard.find('h6').click();
+      videoCard.find('h5').click();
       cy.location('pathname').should('match', /^\/entities\//);
     });
 

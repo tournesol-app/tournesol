@@ -18,27 +18,11 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  nb_tournesol: {
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'bold',
-    fontSize: '2em',
-    lineHeight: '32px',
-  },
   ratings: {
-    marginRight: '4px',
-    fontFamily: 'Poppins',
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '0.9em',
-    color: theme.palette.neutral.main,
+    color: theme.palette.text.secondary,
   },
   contributors: {
-    fontFamily: 'Poppins',
-    fontStyle: 'italic',
-    fontWeight: 500,
-    fontSize: '0.9em',
-    color: '#B38B00',
+    color: theme.palette.neutral.dark,
   },
 }));
 
@@ -143,22 +127,27 @@ const EntityCardScores = ({
         display="flex"
         flexWrap="wrap"
         alignItems="center"
-        columnGap="12px"
-        py={1}
+        columnGap="10px"
+        paddingTop={1.5}
       >
         {showTournesolScore &&
           result.collective_rating?.tournesol_score != null && (
             <TournesolScore
               score={result.collective_rating.tournesol_score}
               tooltip={tournesolScoreTitle}
-              fontSize={32}
+              fontSize="2rem"
               unsafe={isUnsafe}
               data-testid="video-card-overall-score"
             />
           )}
 
         {nbRatings != null && nbRatings > 0 && (
-          <Box data-testid="video-card-ratings">
+          <Box
+            data-testid="video-card-ratings"
+            display="flex"
+            flexDirection="column"
+            fontSize="0.9rem"
+          >
             <span className={classes.ratings}>
               <Trans t={t} i18nKey="video.nbComparisonsBy" count={nbRatings}>
                 {{ count: nbRatings }} comparisons by
@@ -180,40 +169,42 @@ const EntityCardScores = ({
           <Box
             data-testid="video-card-minmax-criterias"
             display="flex"
-            alignItems="center"
+            flexDirection="column"
+            rowGap="2px"
             sx={{
-              fontFamily: 'Poppins',
-              fontSize: '0.9em',
-              color: 'text.secondary',
-              gap: '6px',
+              borderLeft: '1px solid',
+              borderColor: 'divider',
+              paddingLeft: 1,
+              fontSize: '0.9rem',
+              color: 'neutral.main',
             }}
           >
             {max_score > 0 && (
-              <>
-                <span>{t('video.criteriaRatedHigh')}</span>
+              <Box display="flex" alignItems="center" columnGap={1}>
+                {t('video.criteriaRatedHigh')}
                 <CriteriaIcon
                   criteriaName={max_criteria}
-                  emojiSize="26px"
-                  imgWidth="32px"
+                  emojiSize="14px"
+                  imgWidth="16px"
                   tooltip={`${getCriteriaLabel(
                     max_criteria
                   )}: ${max_score.toFixed(0)}`}
                 />
-              </>
+              </Box>
             )}
             <span />
             {min_score < 0 && (
-              <>
-                <span>{t('video.criteriaRatedLow')}</span>
+              <Box display="flex" alignItems="center" columnGap={1}>
+                {t('video.criteriaRatedLow')}
                 <CriteriaIcon
                   criteriaName={min_criteria}
-                  emojiSize="26px"
-                  imgWidth="32px"
+                  emojiSize="14px"
+                  imgWidth="16px"
                   tooltip={`${getCriteriaLabel(
                     min_criteria
                   )}: ${min_score.toFixed(0)}`}
                 />
-              </>
+              </Box>
             )}
           </Box>
         )}

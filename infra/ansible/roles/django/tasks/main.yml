@@ -181,7 +181,7 @@
   - find:
       paths: /etc/nginx/snippets
       patterns: block_tor.conf
-      age: -30d
+      age: -4d
     register: find_snippet
 
   - name: Generate block_tor snippet
@@ -193,6 +193,8 @@
       | sed "s/^/deny /g; s/$/;/g"
       > /etc/nginx/snippets/block_tor.conf
     when: find_snippet.matched == 0
+  notify:
+    - Reload Nginx
 
 - name: Copy Nginx configuration
   template:
