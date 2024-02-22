@@ -50,6 +50,7 @@ const EntitySearchResultsList = ({
           overflow="auto"
           sx={{
             ul: {
+              maxHeight: '42vh',
               li: {
                 cursor: 'pointer',
                 '&:hover': {
