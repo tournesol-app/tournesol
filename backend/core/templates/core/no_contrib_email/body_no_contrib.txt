@@ -5,7 +5,7 @@
 {% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
 
 {% blocktranslate %}Tournesol works thanks to the contributions of many people who volunteer their time to compare
-the videos they've seen on YouTube. We look forward to your contributions, if you have the time of
+the videos they've seen on YouTube. We look forward to your contributions, if you have time of
 course.{% endblocktranslate %}
 
 {% blocktranslate %}Every comparison you make helps to identify the videos of public interest that the platform
