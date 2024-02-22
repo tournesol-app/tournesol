@@ -50,9 +50,7 @@ class DirectScoringModel(ScoringModel):
     def __call__(self, entity_id: int, entity_features=None) -> Optional[tuple[float, float, float]]:
         """ Returns both score and uncertainty
         """
-        if entity_id not in self._dict:
-            return None
-        return self._dict[entity_id]
+        return self._dict.get(entity_id)
         
     def __getitem__(self, entity_id: int) -> Optional[tuple[float, float, float]]:
         return self(entity_id)

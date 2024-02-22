@@ -386,10 +386,11 @@ class Mehestan(Scaling):
             and left and right are the left and right ratio uncertainties.
         """
         user_entity_ratios = dict()
+        entities_ids = set(entities.index)
 
         for u in scalees.index:
             user_entity_ratios[u] = dict()
-            u_entities = scalee_models[u].scored_entities(entities)
+            u_entities = entities_ids & scalee_models[u].scored_entities()
             if len(u_entities) == 0:
                 continue
 
@@ -398,7 +399,7 @@ class Mehestan(Scaling):
                     user_entity_ratios[u][v] = [1.], [1.], [0.], [0.]
                     continue
 
-                uv_entities = list(u_entities & scaler_models[v].scored_entities(entities))
+                uv_entities = list(u_entities & scaler_models[v].scored_entities())
                 if len(entities) <= 1:
                     continue
                 elif len(entities) <= 100:
@@ -566,16 +567,17 @@ class Mehestan(Scaling):
             and left and right are the left and right ratio uncertainties.
         """
         differences = dict()
+        entities_ids = set(entities.index)
 
         for u in scalees.index:
-            u_entities = scalee_models[u].scored_entities(entities)
+            u_entities = entities_ids & scalee_models[u].scored_entities()
             differences[u] = dict()
             for v in scalers.index:
                 if u == v:
                     differences[u][v] = [0.], [1.], [0.], [0.]
                     continue
 
-                uv_entities = list(u_entities & scaler_models[v].scored_entities(entities))
+                uv_entities = u_entities & scaler_models[v].scored_entities()
                 if len(entities) == 0:
                     continue
 
@@ -716,13 +718,15 @@ def _computer_user_activities(
         activities[user] is a measure of user's trustworthy activeness.
     """
     results = 0
+    entity_ids = set(entities.index)
     
-    for e in user_model.scored_entities(entities):
-        score, left, right = user_model(e, entities.loc[e])
+    for entity_id, (score, left, right) in user_model.iter_entities():
+        if entity_id not in entity_ids:
+            continue
         if score <= left and score >= -right:
             continue
-        added_quantity = 1
-        if privacy is not None and privacy[user, e]:
+        added_quantity = 1.0
+        if privacy is not None and privacy[user, entity_id]:
             added_quantity *= privacy_penalty
         results += added_quantity
     

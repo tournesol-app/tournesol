@@ -197,8 +197,19 @@ def qr_standard_deviation(
     left_uncertainties = np.minimum(left_uncertainties, deviations)
     right_uncertainties = left_uncertainties * (deltas < 0) + right_uncertainties * (deltas > 0)
 
-    return max(qr_quantile(lipschitz, quantile_dev,deviations, voting_rights, 
-        left_uncertainties, right_uncertainties, default_dev, error), 0.)
+    return max(
+        qr_quantile(
+            lipschitz,
+            quantile_dev,
+            deviations,
+            voting_rights,
+            left_uncertainties,
+            right_uncertainties,
+            default_dev,
+            error,
+        ),
+        0.0,
+    )
 
 
 @njit
