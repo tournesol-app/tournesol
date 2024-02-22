@@ -248,7 +248,7 @@ msgid ""
 msgstr ""
 "Si votre téléphone est compatible, vous pouvez ajouter l'application "
 "Tournesol à votre page d'accueil en visitant le site web https://tournesol."
-"app avec votre navigateur, et en cliquant sur Installer depuis le menu menu "
+"app avec votre navigateur, et en cliquant sur Installer depuis le menu "
 "principal."
 
 #: core/templates/core/no_contrib_email/body_no_contrib.html:10
