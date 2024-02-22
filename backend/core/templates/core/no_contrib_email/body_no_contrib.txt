@@ -13,7 +13,7 @@ recommends to thousands of people, and helps advance research in ethics and secu
 systems.{% endblocktranslate %}
 
 {% blocktranslate %}If every registered user makes at least 10 comparisons, the size of the Tournesol public
-database will double! This would be a huge step forward for the project.{% endblocktranslate %}
+dataset will double! This would be a huge step forward for the project.{% endblocktranslate %}
 
 
 {% translate "What can I do? 🤔" %}
