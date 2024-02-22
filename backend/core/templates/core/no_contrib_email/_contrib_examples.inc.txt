@@ -6,4 +6,4 @@
   https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder
 
 * {% translate "The best short videos on Tournesol" %}:
-  https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder
+  https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=&duration_lte=5&utm_source=email&utm_campaign=registration_reminder
