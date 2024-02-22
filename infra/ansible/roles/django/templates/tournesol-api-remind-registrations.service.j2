@@ -1,0 +1,11 @@
+[Unit]
+Description=Tournesol API remind registrations
+
+[Service]
+Type=oneshot
+User=gunicorn
+Group=gunicorn
+WorkingDirectory=/srv/tournesol-backend
+Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
+ExecStart=/usr/bin/bash -c "source venv/bin/activate && python manage.py remind_registrations"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/post-on-discord.sh -c infra_alert -m 'Tournesol API remind_registrations job failed for {{ansible_host}}'; fi"

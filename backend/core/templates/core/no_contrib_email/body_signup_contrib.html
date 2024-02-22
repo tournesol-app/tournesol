@@ -1,0 +1,27 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+  <head>
+    <meta charset="UTF-8">
+    {% include "core/no_contrib_email/_body_style.inc.html" %}
+  </head>
+  <body>
+    {% include "core/no_contrib_email/_body_header.inc.html" %}
+    <p>
+      {% blocktranslate %}We would like to thank you for taking the time to contribute to the project. Your comparisons
+already improve the recommendations made to thousands of users, and also the public dataset.{% endblocktranslate %}
+    </p>
+    <p>
+      {% blocktranslate %}Tournesol works thanks to contributors who, like you, volunteer their time to compare videos.
+If you have time, we hope to see you again on the platform.{% endblocktranslate %}
+    </p>
+    <p>
+      {% blocktranslate %}If every registered user makes at least 10 comparisons, the size of the Tournesol public
+dataset will double! This would be a huge step forward for the project.{% endblocktranslate %}
+    </p>
+    <h3>{% translate "Which videos can I compare? 🤔" %}</h3>
+    <p>{% translate "Here are examples of videos you could compare:" %}</p>
+    {% include "core/no_contrib_email/_contrib_examples.inc.html" %}
+    {% include "core/no_contrib_email/_mobile_available.inc.html" %}
+    {% include "core/no_contrib_email/_body_footer.inc.html" %}
+  </body>
+</html>

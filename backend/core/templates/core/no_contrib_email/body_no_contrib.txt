@@ -1,0 +1,26 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}----==== {% translate "Would you like to help the research on responsible algorithms?" %} ====----
+
+{% translate "Hello 🌻" %}
+
+{% translate "(This email is an automatic reminder sent to new Tournesol users.)" %}
+
+{% blocktranslate %}Tournesol works thanks to the contributions of many people who volunteer their time to compare
+the videos they've seen on YouTube. We look forward to your contributions, if you have time of
+course.{% endblocktranslate %}
+
+{% blocktranslate %}Every comparison you make helps to identify the videos of public interest that the platform
+recommends to thousands of people, and helps advance research in ethics and security of recommender
+systems.{% endblocktranslate %}
+
+{% blocktranslate %}If every registered user makes at least 10 comparisons, the size of the Tournesol public
+dataset will double! This would be a huge step forward for the project.{% endblocktranslate %}
+
+
+{% translate "What can I do? 🤔" %}
+
+{% translate "Here are examples of videos you could compare:" %}
+{% include "core/no_contrib_email/_contrib_examples.inc.txt" %}
+
+{% include "core/no_contrib_email/_mobile_available.inc.txt" %}
+{% translate "Many thanks" %},
+{% translate "The Tournesol team" %}
