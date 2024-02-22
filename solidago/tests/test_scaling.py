@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 
-from solidago.collaborative_scaling import estimate_positive_score_shift
+from solidago.pipeline.legacy2023.collaborative_scaling import estimate_positive_score_shift
 
 
 def test_score_shift_when_all_scores_are_equal():

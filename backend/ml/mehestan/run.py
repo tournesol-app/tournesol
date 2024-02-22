@@ -6,8 +6,8 @@ from multiprocessing import Pool
 from django import db
 from django.conf import settings
 from solidago.pipeline import TournesolInput
-from solidago.pipeline.criterion_pipeline import run_pipeline_for_criterion
-from solidago.pipeline.individual_scores import get_individual_scores
+from solidago.pipeline.legacy2023.criterion_pipeline import run_pipeline_for_criterion
+from solidago.pipeline.legacy2023.individual_scores import get_individual_scores
 
 from core.models import User
 from ml.inputs import MlInputFromDb

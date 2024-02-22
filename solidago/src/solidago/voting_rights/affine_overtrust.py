@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 from .base import VotingRights, VotingRightsAssignment
 
@@ -30,7 +29,7 @@ class AffineOvertrust(VotingRightsAssignment):
         entities: pd.DataFrame,
         vouches: pd.DataFrame,
         privacy: PrivacySettings,
-    ) -> VotingRights:
+    ) -> tuple[VotingRights, pd.DataFrame]:
         """ Compute voting rights
         
         Parameters
@@ -62,7 +61,6 @@ class AffineOvertrust(VotingRightsAssignment):
         
         new_records = list()
         for e in entities.index:
-        
             privacy_weights = { 
                 u: self.privacy_penalty if privacy[u, e] else 1 
                 for u in privacy.users(e) 

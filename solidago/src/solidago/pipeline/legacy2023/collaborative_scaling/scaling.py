@@ -2,9 +2,9 @@ import logging
 
 import pandas as pd
 
-from solidago.collaborative_scaling.scaling_step import compute_scaling
 from solidago.pipeline import TournesolInput
 from solidago.primitives import qr_quantile, qr_standard_deviation
+from .scaling_step import compute_scaling
 
 
 def compute_individual_scalings(

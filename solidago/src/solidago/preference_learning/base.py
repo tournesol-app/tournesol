@@ -48,7 +48,10 @@ class PreferenceLearning(ABC):
         
         user_models = dict() if initialization is None else initialization
         for n_user, user in enumerate(users.index):
-            logger.info(f"  Preference learning for user {n_user} out of {len(users)}")
+            if n_user % 100 == 0:
+                logger.info(f"  Preference learning for user {n_user} out of {len(users)}")
+            else:
+                logger.debug(f"  Preference learning for user {n_user} out of {len(users)}")
             init_model = None
             if initialization is not None and user in initialization:
                 init_model = initialization[user]

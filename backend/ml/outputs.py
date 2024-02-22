@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django.db import transaction
-from solidago.pipeline.global_scores import get_squash_function
+from solidago.pipeline.legacy2023.global_scores import get_squash_function
 from solidago.pipeline.outputs import PipelineOutput
 
 from core.models import User

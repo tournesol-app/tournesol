@@ -1,10 +1,14 @@
 import logging
 
-from solidago import collaborative_scaling
-from .global_scores import add_voting_rights, aggregate_scores, get_squash_function, ALL_SCORE_MODES
+from .global_scores import (
+    add_voting_rights,
+    aggregate_scores,
+    get_squash_function,
+    ALL_SCORE_MODES,
+)
+from solidago.pipeline import TournesolInput, PipelineOutput
+from . import collaborative_scaling
 from .individual_scores import get_individual_scores
-from .inputs import TournesolInput
-from .outputs import PipelineOutput
 from .parameters import PipelineParameters
 
 
@@ -35,8 +39,7 @@ def run_pipeline_for_criterion(
         W=parameters.W,
     )
     scaled_scores = collaborative_scaling.apply_scalings(
-        individual_scores=indiv_scores,
-        scalings=scalings
+        individual_scores=indiv_scores, scalings=scalings
     )
 
     if len(scaled_scores) > 0:
