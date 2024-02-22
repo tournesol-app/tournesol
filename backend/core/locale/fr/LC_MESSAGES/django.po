@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-22 14:29+0000\n"
+"POT-Creation-Date: 2024-02-22 14:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -238,6 +238,17 @@ msgid "Tournesol is also available on mobile 📱"
 msgstr "Tournesol est aussi disponible sur mobile 📱"
 
 #: core/templates/core/no_contrib_email/_mobile_available.inc.html:4
+#, python-format
+msgid ""
+"If\n"
+"your smartphone is compatible, you can add the Tournesol application to your "
+"home page by visiting the website\n"
+"%(ts_url)s with your browser, and clicking on Install from the main menu."
+msgstr ""
+"Si votre téléphone est compatible, vous pouvez ajouter l'application "
+"Tournesol à votre page d'accueil en visitant le site web %(ts_url)s avec "
+"votre navigateur, et en cliquant sur Installer depuis le menu principal."
+
 #: core/templates/core/no_contrib_email/_mobile_available.inc.txt:3
 msgid ""
 "If your smartphone is compatible, you can add the Tournesol application to "
