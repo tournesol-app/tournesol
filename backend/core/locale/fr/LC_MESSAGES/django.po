@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-22 08:40+0000\n"
+"POT-Creation-Date: 2024-02-22 09:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,12 +84,12 @@ msgstr "Tournesol - confiance"
 msgid "Tournesol - preferences"
 msgstr "Tournesol - préférences"
 
-#: core/management/commands/remind_registrations.py:25
+#: core/management/commands/remind_registrations.py:24
 #: core/templates/core/no_contrib_email/_body_header.inc.html:4
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:1
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:1
-msgid "Want to help responsible scientific research?"
-msgstr "Vous souhaitez aider la recherche scientifique responsable?"
+msgid "Would you like to help the research on responsible algorithm?"
+msgstr "Vous souhaitez aider la recherche sur les algorithmes responsables?"
 
 #: core/models/user.py:31
 msgid "email address"
@@ -223,22 +223,14 @@ msgid "Your history if you have an account on YouTube"
 msgstr "Votre historique si vous utilisez un compte sur YouTube"
 
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.html:16
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:5
 msgid "The Tournesol recommendations of the last 30 days"
 msgstr "Les recommandations Tournesol des 30 derniers jours"
 
 #: core/templates/core/no_contrib_email/_contrib_examples.inc.html:24
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
 msgid "The best short videos on Tournesol"
 msgstr "Les meilleures vidéos courtes sur Tournesol"
-
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:5
-#, fuzzy
-#| msgid "The Tournesol recommendations of the last 30 days"
-msgid "Top videos of the past 30 days"
-msgstr "Les recommandations Tournesol des 30 derniers jours"
-
-#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
-msgid "Top short videos of the past year"
-msgstr ""
 
 #: core/templates/core/no_contrib_email/_mobile_available.inc.html:2
 #: core/templates/core/no_contrib_email/_mobile_available.inc.txt:1

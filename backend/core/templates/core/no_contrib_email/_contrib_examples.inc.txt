@@ -2,8 +2,8 @@
 * {% translate "Your history if you have an account on YouTube" %}
   https://www.youtube.com/feed/history
 
-* {% translate "Top videos of the past 30 days" %}:
+* {% translate "The Tournesol recommendations of the last 30 days" %}:
   https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder
 
-* {% translate "Top short videos of the past year" %}:
+* {% translate "The best short videos on Tournesol" %}:
   https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder

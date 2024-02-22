@@ -21,7 +21,7 @@ class Command(BaseCommand):
            " account was created."
 
     def get_subject(self):
-        return "🌻 " + _("Want to help responsible scientific research?")
+        return "🌻 " + _("Would you like to help the research on responsible algorithm?")
 
     def get_message(self, n_comparisons):
         if n_comparisons > 0:
