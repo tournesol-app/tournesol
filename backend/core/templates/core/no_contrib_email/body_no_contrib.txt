@@ -1,4 +1,4 @@
-{% load i18n %}{% get_current_language as LANGUAGE_CODE %}----==== {% translate "Would you like to help the research on responsible algorithm?" %} ====----
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}----==== {% translate "Would you like to help the research on responsible algorithms?" %} ====----
 
 {% translate "Hello 🌻" %}
 

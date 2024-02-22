@@ -22,7 +22,7 @@ class Command(BaseCommand):
            " defined period following their registration."
 
     def get_subject(self):
-        return "🌻 " + _("Would you like to help the research on responsible algorithm?")
+        return "🌻 " + _("Would you like to help the research on responsible algorithms?")
 
     def get_message(self, n_comparisons):
         if n_comparisons > 0:

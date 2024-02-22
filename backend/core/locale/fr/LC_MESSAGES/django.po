@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-22 09:18+0000\n"
+"POT-Creation-Date: 2024-02-22 14:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,11 +84,11 @@ msgstr "Tournesol - confiance"
 msgid "Tournesol - preferences"
 msgstr "Tournesol - préférences"
 
-#: core/management/commands/remind_registrations.py:24
+#: core/management/commands/remind_registrations.py:25
 #: core/templates/core/no_contrib_email/_body_header.inc.html:4
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:1
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:1
-msgid "Would you like to help the research on responsible algorithm?"
+msgid "Would you like to help the research on responsible algorithms?"
 msgstr "Vous souhaitez aider la recherche sur les algorithmes responsables?"
 
 #: core/models/user.py:31
