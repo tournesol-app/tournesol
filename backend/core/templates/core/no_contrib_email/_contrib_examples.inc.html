@@ -1,6 +1,6 @@
 {% load i18n %}{% get_current_language as LANGUAGE_CODE %}
 <ul>
-    <li>
+  <li>
     <a href="https://www.youtube.com/feed/history"
        rel="noopener"
        target="_blank"
@@ -13,15 +13,15 @@
        rel="noopener"
        target="_blank"
     >
-      {% translate "Top videos of the past 30 days" %}
+      {% translate "The Tournesol recommendations of the last 30 days" %}
     </a>
   </li>
   <li>
-    <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Year&duration_lte=5&utm_source=email&utm_campaign=registration_reminder"
+    <a href="https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=&duration_lte=5&utm_source=email&utm_campaign=registration_reminder"
        rel="noopener"
        target="_blank"
     >
-      {% translate "Top short videos of the past year" %}
+      {% translate "The best short videos on Tournesol" %}
     </a>
   </li>
 </ul>

@@ -8,7 +8,7 @@
 already improve the recommendations made to thousands of users, and also the public dataset.{% endblocktranslate %}
 
 {% blocktranslate %}Tournesol works thanks to contributors who, like you, volunteer their time to compare videos.
-If you have time, we hope to see you again on the Tournesol platform.{% endblocktranslate %}
+If you have time, we hope to see you again on the platform.{% endblocktranslate %}
 
 {% blocktranslate %}If every registered user makes at least 10 comparisons, the size of the Tournesol public
 database will double! This would be a huge step forward for the project.{% endblocktranslate %}
