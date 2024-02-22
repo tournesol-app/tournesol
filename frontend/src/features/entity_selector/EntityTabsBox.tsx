@@ -167,7 +167,6 @@ const EntityTabsBox = ({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '160px',
         ul: {
           listStyleType: 'none',
           p: 0,
@@ -178,9 +177,9 @@ const EntityTabsBox = ({
           },
         },
         li: {
-          cursor: onSelectEntity && !uiDisabled ? 'pointer' : 'default',
+          cursor: onSelectEntity && 'pointer',
           '&:hover': {
-            bgcolor: uiDisabled ? 'inherit' : 'grey.100',
+            bgcolor: 'grey.100',
           },
         },
         width: width,
@@ -208,6 +207,7 @@ const EntityTabsBox = ({
         variant="scrollable"
         scrollButtons="auto"
         sx={{
+          display: uiDisabled ? 'none' : 'inital',
           bgcolor: 'grey.100',
           borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
           '& .MuiTabs-scrollButtons.Mui-disabled': {
@@ -216,17 +216,12 @@ const EntityTabsBox = ({
         }}
       >
         {tabs.map(({ label, name, disabled }) => (
-          <Tab
-            key={name}
-            value={name}
-            label={label}
-            disabled={uiDisabled ? true : disabled}
-          />
+          <Tab key={name} value={name} label={label} disabled={disabled} />
         ))}
       </Tabs>
       <LoaderWrapper
         isLoading={status === TabStatus.Loading}
-        sx={{ overflowY: uiDisabled ? 'hidden' : 'auto' }}
+        sx={{ display: uiDisabled ? 'none' : 'initial' }}
       >
         {isDescriptionVisible ? (
           <TabInfo
@@ -241,19 +236,12 @@ const EntityTabsBox = ({
           />
         ) : (
           <Box display="flex" justifyContent="flex-end">
-            <IconButton
-              onClick={handleToggleDescription}
-              color="info"
-              disabled={uiDisabled}
-            >
+            <IconButton onClick={handleToggleDescription} color="info">
               <InfoOutlined />
             </IconButton>
           </Box>
         )}
-        <Box
-          sx={{ filter: uiDisabled ? 'blur(3px)' : 'none' }}
-          overflow="hidden"
-        >
+        <Box overflow="hidden">
           {status === TabStatus.Error ? (
             <TabError message={t('entitySelector.errorOnLoading')} />
           ) : options.length > 0 ? (
@@ -262,9 +250,7 @@ const EntityTabsBox = ({
                 <li
                   key={res.entity.uid}
                   onClick={
-                    uiDisabled
-                      ? undefined
-                      : onSelectEntity && (() => onSelectEntity(res.entity.uid))
+                    onSelectEntity && (() => onSelectEntity(res.entity.uid))
                   }
                 >
                   <RowEntityCard

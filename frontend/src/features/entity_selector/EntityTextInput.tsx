@@ -44,8 +44,6 @@ const EntitySearchResultsList = ({
     <>
       {entities.length > 0 && (
         <Box
-          mt={1}
-          mb={2}
           bgcolor="white"
           overflow="auto"
           sx={{
@@ -82,7 +80,6 @@ const EntitySearchResults = ({
   entities,
   onSelect,
 }: EntitySearchResultsProps) => {
-  const theme = useTheme();
   const { t } = useTranslation();
   const nResults = entities.length;
   return (
@@ -90,14 +87,12 @@ const EntitySearchResults = ({
       elevation={2}
       sx={{
         width: '100%',
-        position: 'absolute',
-        zIndex: theme.zIndex.entitySelectorSearchResults,
         backgroundColor: 'inherit',
         boxShadow:
           '0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 6px 5px 0px rgba(0,0,0,0.12)',
       }}
     >
-      <Box p={1}>
+      <Box p={1} pb={2}>
         <Typography
           variant="subtitle1"
           textAlign="center"
