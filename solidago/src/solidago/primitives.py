@@ -65,7 +65,7 @@ def qr_quantile(
     ))
 
 
-@njit(fastmath=True)
+@njit
 def _qr_quantile_loss_derivative(
     variable: float,
     lipschitz: float,
