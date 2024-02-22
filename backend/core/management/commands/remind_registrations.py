@@ -1,14 +1,15 @@
 """
-Notify by email active users who haven't contributed since their account was
-created.
+Notify by email active users who haven't contributed after a defined period
+following their registration.
 """
 
+from datetime import timedelta
 from smtplib import SMTPException
 
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q
 from django.template.loader import render_to_string
 from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
@@ -17,8 +18,8 @@ from core.models.user import User
 
 
 class Command(BaseCommand):
-    help = "Notify by email active users who haven't contributed since their"\
-           " account was created."
+    help = "Notify by email active users who haven't contributed after a"\
+           " defined period following their registration."
 
     def get_subject(self):
         return "🌻 " + _("Would you like to help the research on responsible algorithm?")
@@ -67,17 +68,19 @@ class Command(BaseCommand):
         return successes, fails
 
     def get_queryset(self, creation_date):
+        period = timedelta(hours=16)
+
         return User.objects.filter(
             is_active=True,
             date_joined__date=creation_date.date(),
         ).annotate(
             n_comp_signup=Count(
                 "comparisons",
-                filter=Q(comparisons__datetime_add__date=creation_date.date()),
+                filter=Q(comparisons__datetime_add__lte=F("date_joined") + period),
             ),
             n_comp_after_signup=Count(
                 "comparisons",
-                filter=Q(comparisons__datetime_add__date__gt=creation_date.date()),
+                filter=Q(comparisons__datetime_add__gt=F("date_joined") + period),
             ),
         )
 

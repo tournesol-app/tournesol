@@ -28,7 +28,8 @@ class RemindRegistrationTestCase(TestCase):
     def test_cmd_with_users(self, mock_send_mail):
         """
         When there are users in the database, notifications should be sent to
-        users that haven't made any comparison after their registration day.
+        users that haven't made any comparison after a period following their
+        registration.
         """
         out = StringIO()
 
@@ -63,9 +64,9 @@ class RemindRegistrationTestCase(TestCase):
 
         contributions = {
             user1.pk: [],
-            user2.pk: [signup_date],
-            user3.pk: [signup_date],
-            user4.pk: [signup_date + timedelta(days=1)],
+            user2.pk: [signup_date + timedelta(hours=4)],
+            user3.pk: [signup_date + timedelta(hours=16)],
+            user4.pk: [signup_date + timedelta(hours=17)],
         }
 
         for user, dates in contributions.items():
