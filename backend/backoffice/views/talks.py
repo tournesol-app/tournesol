@@ -16,5 +16,8 @@ class TalkEntryListView(ListAPIView):
     serializer_class = TalkEntrySerializer
 
     def get_queryset(self):
-        qst = TalkEntry.objects.all().filter(public=True, date__isnull=False).order_by("-date")
-        return qst
+        return TalkEntry.objects.filter(
+            public=True,
+            date__isnull=False,
+            event_type=TalkEntry.EVENT_TYPE_TALK,
+        ).order_by("-date")

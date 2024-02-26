@@ -74,6 +74,19 @@ class TalksListViewTestCase(TestCase):
             },
         )
 
+    def test_list_only_talks(self):
+        response = self.client.get(self.talk_base_url)
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["name"], self.talk_public.name)
+
+        self.talk_public.event_type = TalkEntry.EVENT_TYPE_LIVE
+        self.talk_public.save(update_fields=["event_type"])
+
+        response = self.client.get(self.talk_base_url)
+        results = response.data["results"]
+        self.assertEqual(len(results), 0)
+
     def test_list_only_public_talks(self):
         """
         Only public Talks can be listed.
