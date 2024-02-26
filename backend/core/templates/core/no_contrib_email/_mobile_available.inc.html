@@ -1,0 +1,7 @@
+{% load i18n %}
+<h3>{% translate "Tournesol is also available on mobile 📱" %}</h3>
+<p>
+  {% blocktranslate with ts_url="<a href='https://tournesol.app' rel='noopener' target='_blank'>https://tournesol.app</a>"|safe %}If
+your smartphone is compatible, you can add the Tournesol application to your home page by visiting the website
+{{ ts_url }} with your browser, and clicking on Install from the main menu.{% endblocktranslate %}
+</p>

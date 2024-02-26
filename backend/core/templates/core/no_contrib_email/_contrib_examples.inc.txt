@@ -1,0 +1,9 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}
+* {% translate "Your history if you have an account on YouTube" %}
+  https://www.youtube.com/feed/history
+
+* {% translate "The Tournesol recommendations of the last 30 days" %}:
+  https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=Month&utm_source=email&utm_campaign=registration_reminder
+
+* {% translate "The best short videos on Tournesol" %}:
+  https://tournesol.app/recommendations?language={{ LANGUAGE_CODE }}&date=&duration_lte=5&utm_source=email&utm_campaign=registration_reminder

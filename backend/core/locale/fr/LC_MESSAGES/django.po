@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-16 14:45+0000\n"
+"POT-Creation-Date: 2024-02-22 14:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,6 +83,13 @@ msgstr "Tournesol - confiance"
 #: core/admin.py:81
 msgid "Tournesol - preferences"
 msgstr "Tournesol - préférences"
+
+#: core/management/commands/remind_registrations.py:25
+#: core/templates/core/no_contrib_email/_body_header.inc.html:4
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:1
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:1
+msgid "Would you like to help the research on responsible algorithms?"
+msgstr "Vous souhaitez aider la recherche sur les algorithmes responsables?"
 
 #: core/models/user.py:31
 msgid "email address"
@@ -183,3 +190,154 @@ msgstr ""
 #: core/templates/accounts/reset_password/subject.txt:2
 msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
+
+#: core/templates/core/no_contrib_email/_body_footer.inc.html:3
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:25
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:23
+msgid "Many thanks"
+msgstr "Merci beaucoup"
+
+#: core/templates/core/no_contrib_email/_body_footer.inc.html:3
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:26
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:24
+msgid "The Tournesol team"
+msgstr "L'équipe Tournesol"
+
+#: core/templates/core/no_contrib_email/_body_header.inc.html:6
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:3
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:3
+msgid "Hello 🌻"
+msgstr "Bonjour 🌻"
+
+#: core/templates/core/no_contrib_email/_body_header.inc.html:8
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:5
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:5
+msgid "(This email is an automatic reminder sent to new Tournesol users.)"
+msgstr ""
+"(Ce courriel est un rappel automatique envoyé aux nouveaux utilisateurs et "
+"utilisatrices.)"
+
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:8
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:2
+msgid "Your history if you have an account on YouTube"
+msgstr "Votre historique si vous utilisez un compte sur YouTube"
+
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:16
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:5
+msgid "The Tournesol recommendations of the last 30 days"
+msgstr "Les recommandations Tournesol des 30 derniers jours"
+
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.html:24
+#: core/templates/core/no_contrib_email/_contrib_examples.inc.txt:8
+msgid "The best short videos on Tournesol"
+msgstr "Les meilleures vidéos courtes sur Tournesol"
+
+#: core/templates/core/no_contrib_email/_mobile_available.inc.html:2
+#: core/templates/core/no_contrib_email/_mobile_available.inc.txt:1
+msgid "Tournesol is also available on mobile 📱"
+msgstr "Tournesol est aussi disponible sur mobile 📱"
+
+#: core/templates/core/no_contrib_email/_mobile_available.inc.html:4
+#, python-format
+msgid ""
+"If\n"
+"your smartphone is compatible, you can add the Tournesol application to your "
+"home page by visiting the website\n"
+"%(ts_url)s with your browser, and clicking on Install from the main menu."
+msgstr ""
+"Si votre téléphone est compatible, vous pouvez ajouter l'application "
+"Tournesol à votre page d'accueil en visitant le site web %(ts_url)s avec "
+"votre navigateur, et en cliquant sur Installer depuis le menu principal."
+
+#: core/templates/core/no_contrib_email/_mobile_available.inc.txt:3
+msgid ""
+"If your smartphone is compatible, you can add the Tournesol application to "
+"your home page by\n"
+"visiting the website https://tournesol.app with your browser, and clicking "
+"on Install from the main\n"
+"menu."
+msgstr ""
+"Si votre téléphone est compatible, vous pouvez ajouter l'application "
+"Tournesol à votre page d'accueil en visitant le site web https://tournesol."
+"app avec votre navigateur, et en cliquant sur Installer depuis le menu "
+"principal."
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:10
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:7
+msgid ""
+"Tournesol works thanks to the contributions of many people who volunteer "
+"their time to compare\n"
+"the videos they've seen on YouTube. We look forward to your contributions, "
+"if you have time of\n"
+"course."
+msgstr ""
+"Tournesol fonctionne grâce aux contributions de nombreuses personnes qui, "
+"bénévolement, prennent un peu de leur temps pour comparer les vidéos qu'ils "
+"et elles ont vues sur YouTube. On espère pouvoir bénéficier bientôt de vos "
+"contributions. Si vous avez le temps, bien entendu."
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:15
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:11
+msgid ""
+"Every comparison you make helps to identify the videos of public interest "
+"that the platform\n"
+"recommends to thousands of people, and helps advance research in ethics and "
+"security of recommender\n"
+"systems."
+msgstr ""
+"Chaque comparaison que vous faites permet d'identifier les vidéos d'utilité "
+"publique que la plateforme recommande à des milliers de personnes, et aide "
+"la recherche en éthique et sécurité des systèmes de recommandation."
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:20
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:15
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:18
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:13
+msgid ""
+"If every registered user makes at least 10 comparisons, the size of the "
+"Tournesol public\n"
+"dataset will double! This would be a huge step forward for the project."
+msgstr ""
+"Si chaque personne inscrite effectuait au moins 10 comparaisons, alors la "
+"base de données de publique de Tournesol serait deux fois plus grande ! Ce "
+"serait un énorme pas en avant pour le projet."
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:23
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:19
+msgid "What can I do? 🤔"
+msgstr "Que puis-je faire ? 🤔"
+
+#: core/templates/core/no_contrib_email/body_no_contrib.html:24
+#: core/templates/core/no_contrib_email/body_no_contrib.txt:21
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:22
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:19
+msgid "Here are examples of videos you could compare:"
+msgstr "Voici des exemples de vidéos que vous pourriez comparer :"
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:10
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:7
+msgid ""
+"We would like to thank you for taking the time to contribute to the project. "
+"Your comparisons\n"
+"already improve the recommendations made to thousands of users, and also the "
+"public dataset."
+msgstr ""
+"Nous vous remercions d'avoir pris le temps de contribuer au projet. Vos "
+"comparaisons améliorent déjà les recommandations faites à des milliers de "
+"personnes, ainsi que la base de données publique."
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:14
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:10
+msgid ""
+"Tournesol works thanks to contributors who, like you, volunteer their time "
+"to compare videos.\n"
+"If you have time, we hope to see you again on the platform."
+msgstr ""
+"Tournesol fonctionne grâce à des personnes qui, comme vous, donnent un peu "
+"de leur temps pour comparer des videos. Si vous avez le temps, nous espérons "
+"vous revoir bientôt sur la plateforme."
+
+#: core/templates/core/no_contrib_email/body_signup_contrib.html:21
+#: core/templates/core/no_contrib_email/body_signup_contrib.txt:17
+msgid "Which videos can I compare? 🤔"
+msgstr "Quelles vidéos puis-je comparer ? 🤔"
