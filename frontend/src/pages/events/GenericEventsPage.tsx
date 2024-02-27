@@ -6,8 +6,12 @@ import { Alert, Box, Typography } from '@mui/material';
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import EventEntryList from 'src/pages/events/EventEntryList';
-import { TOLERANCE_PERIOD } from 'src/pages/talks/parameters';
-import { BackofficeService, TournesolEvent } from 'src/services/openapi';
+import { TOLERANCE_PERIOD } from 'src/pages/events/parameters';
+import {
+  BackofficeService,
+  EventTypeEnum,
+  TournesolEvent,
+} from 'src/services/openapi';
 
 import EventsMenu from './EventsMenu';
 
@@ -16,7 +20,20 @@ interface SortedEventAccumulator {
   future: TournesolEvent[];
 }
 
-const Events = () => {
+interface GenericEventsPageProps {
+  title: string;
+  selectedMenuItem: string;
+  eventType?: EventTypeEnum;
+  // An element that will be displayed below the page menu.
+  header?: React.ReactElement;
+}
+
+const GenericEventsPage = ({
+  title,
+  selectedMenuItem,
+  eventType,
+  header,
+}: GenericEventsPageProps) => {
   const { t } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
@@ -27,6 +44,7 @@ const Events = () => {
     async function getEventsEntries() {
       const events = await BackofficeService.backofficeEventsList({
         limit: 100,
+        eventType: eventType,
       }).catch(() => {
         contactAdministrator('error');
       });
@@ -62,15 +80,16 @@ const Events = () => {
     }
 
     getEventsEntries();
-  }, [contactAdministrator]);
+  }, [contactAdministrator, eventType]);
 
   return (
     <>
-      <ContentHeader title={t('eventsPage.title')} />
+      <ContentHeader title={title} />
       <ContentBox maxWidth="lg">
         <Box mb={4}>
-          <EventsMenu selected="all" />
+          <EventsMenu selected={selectedMenuItem} />
         </Box>
+        {header && header}
         <Box mb={4}>
           <Typography
             variant="h6"
@@ -107,4 +126,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default GenericEventsPage;

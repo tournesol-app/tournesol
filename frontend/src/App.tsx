@@ -24,9 +24,9 @@ import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import TermsOfService from './pages/about/TermsOfService/TermsOfService';
 import About from './pages/about/About';
-import Events from './pages/events/Events';
+import AllEvents from './pages/events/AllEventsPage';
+import TalksPage from './pages/events/TalksPage';
 import FAQ from './pages/faq/FAQ';
-import Talks from './pages/talks/Talks';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -90,10 +90,10 @@ function App() {
               <FAQ />
             </PublicRoute>
             <PublicRoute path="/events">
-              <Events />
+              <AllEvents />
             </PublicRoute>
             <PublicRoute path="/talks">
-              <Talks />
+              <TalksPage />
             </PublicRoute>
             <PublicRoute path="/about/terms-of-service">
               <TermsOfService />

@@ -758,13 +758,19 @@
   },
   "eventsPage": {
     "title": "Events",
-    "upcomingEvents": "Upcoming event(s)",
-    "noEventsPlannedForTheMoment": "No events planned for the moment.",
-    "pastEvents": "Past events",
     "live": "Live",
     "by": "By\u00a0{{speaker}}",
     "replay": "Replay",
-    "join": "Join"
+    "join": "Join",
+    "upcomingEvents": "Upcoming event(s)",
+    "noEventsPlannedForTheMoment": "No events planned for the moment.",
+    "pastEvents": "Past events"
+  },
+  "talksPage": {
+    "whatAreTournesolTalks": "What are Tournesol Talks?",
+    "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
+    "beInformedOfUpcomingEvents": "Be informed of upcoming events",
+    "title": "Tournesol Talks"
   },
   "faqPage": {
     "frequentlyAskedQuestions": "Frequently Asked Questions",
@@ -953,13 +959,6 @@
     "yourAccountIsNowVerified": "Your account is now verified.",
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
-  },
-  "talksPage": {
-    "whatAreTournesolTalks": "What are Tournesol Talks?",
-    "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
-    "beInformedOfUpcomingEvents": "Be informed of upcoming events",
-    "title": "Tournesol Talks",
-    "noTalksInTheNearFuture": "No Talks planned for the near future."
   },
   "actions": {
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",
