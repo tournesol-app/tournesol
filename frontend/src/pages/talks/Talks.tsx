@@ -8,14 +8,18 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import EventEntryList from 'src/pages/events/EventEntryList';
 import { tournesolTalksMailingListUrl } from 'src/utils/url';
-import { BackofficeService, TalkEntry } from 'src/services/openapi';
+import {
+  BackofficeService,
+  EventTypeEnum,
+  TournesolEvent,
+} from 'src/services/openapi';
 
 import { TOLERANCE_PERIOD } from './parameters';
 import EventsMenu from '../events/EventsMenu';
 
 interface SortedTalkAccumulator {
-  past: TalkEntry[];
-  future: TalkEntry[];
+  past: TournesolEvent[];
+  future: TournesolEvent[];
 }
 
 const IntroductionPaper = () => {
@@ -51,13 +55,14 @@ const Talks = () => {
   const { t } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
-  const [pastTalks, setPastTalks] = useState<Array<TalkEntry>>([]);
-  const [upcomingTalks, setUpcomingTalks] = useState<Array<TalkEntry>>([]);
+  const [pastTalks, setPastTalks] = useState<Array<TournesolEvent>>([]);
+  const [upcomingTalks, setUpcomingTalks] = useState<Array<TournesolEvent>>([]);
 
   useEffect(() => {
     async function getTalksEntries() {
-      const talks = await BackofficeService.backofficeTalksList({
+      const talks = await BackofficeService.backofficeEventsList({
         limit: 100,
+        eventType: EventTypeEnum.TALK,
       }).catch(() => {
         contactAdministrator('error');
       });
@@ -66,10 +71,10 @@ const Talks = () => {
         const now = new Date();
 
         const sortedTalks = talks.results.reduce<{
-          past: TalkEntry[];
-          future: TalkEntry[];
+          past: TournesolEvent[];
+          future: TournesolEvent[];
         }>(
-          (acc: SortedTalkAccumulator, talk: TalkEntry) => {
+          (acc: SortedTalkAccumulator, talk: TournesolEvent) => {
             // Do not display not scheduled Talk.
             if (!talk.date) {
               return acc;
