@@ -24,7 +24,7 @@ const Events = () => {
   const [futureEvents, setFutureEvents] = useState<Array<TalkEntry>>([]);
 
   useEffect(() => {
-    async function getTalksEntries() {
+    async function getEventsEntries() {
       const events = await BackofficeService.backofficeEventsList({
         limit: 100,
       }).catch(() => {
@@ -34,7 +34,7 @@ const Events = () => {
       if (events && events.results) {
         const now = new Date();
 
-        const sortedTalks = events.results.reduce<{
+        const sortedEvents = events.results.reduce<{
           past: TalkEntry[];
           future: TalkEntry[];
         }>(
@@ -44,9 +44,9 @@ const Events = () => {
               return acc;
             }
 
-            const talkDate = new Date(event.date);
+            const eventDate = new Date(event.date);
 
-            if (talkDate < new Date(now.getTime() - TOLERANCE_PERIOD)) {
+            if (eventDate < new Date(now.getTime() - TOLERANCE_PERIOD)) {
               acc.past.push(event);
             } else {
               acc.future.push(event);
@@ -56,12 +56,12 @@ const Events = () => {
           { past: [], future: [] }
         );
 
-        setPastEvents(sortedTalks.past);
-        setFutureEvents(sortedTalks.future);
+        setPastEvents(sortedEvents.past);
+        setFutureEvents(sortedEvents.future);
       }
     }
 
-    getTalksEntries();
+    getEventsEntries();
   }, [contactAdministrator]);
 
   return (

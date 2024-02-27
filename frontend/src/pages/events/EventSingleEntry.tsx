@@ -16,11 +16,10 @@ import {
   PlayArrow,
 } from '@mui/icons-material';
 
+import { TOLERANCE_PERIOD } from 'src/pages/talks/parameters';
 import { TalkEntry } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
 import { extractVideoId } from 'src/utils/video';
-
-import { TOLERANCE_PERIOD } from '../talks/parameters';
 
 function isPast(event: TalkEntry) {
   if (!event.date) {
