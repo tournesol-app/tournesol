@@ -16,7 +16,7 @@ import {
   PlayArrow,
 } from '@mui/icons-material';
 
-import { TOLERANCE_PERIOD } from 'src/pages/talks/parameters';
+import { TOLERANCE_PERIOD } from 'src/pages/events/parameters';
 import { TournesolEvent } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
 import { extractVideoId } from 'src/utils/video';
