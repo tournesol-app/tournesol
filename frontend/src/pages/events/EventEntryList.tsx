@@ -5,7 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import TalkSingleEntry from 'src/pages/talks/TalkSingleEntry';
 import { TalkEntry } from 'src/services/openapi';
 
-const TalkEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
+const EventEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
   return (
     <Grid container justifyContent="column" spacing={4}>
       {talks.map((talk, idx) => (
@@ -17,4 +17,4 @@ const TalkEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
   );
 };
 
-export default TalkEntryList;
+export default EventEntryList;

@@ -6,7 +6,7 @@ import { Email } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
-import TalkEntryList from 'src/pages/talks/TalkEntryList';
+import EventEntryList from 'src/pages/events/EventEntryList';
 import { tournesolTalksMailingListUrl } from 'src/utils/url';
 import { BackofficeService, TalkEntry } from 'src/services/openapi';
 
@@ -114,7 +114,7 @@ const Talks = () => {
           </Typography>
 
           {upcomingTalks && upcomingTalks.length > 0 ? (
-            <TalkEntryList talks={upcomingTalks} />
+            <EventEntryList talks={upcomingTalks} />
           ) : (
             <Alert severity="info">
               {t('talksPage.noTalksInTheNearFuture')}
@@ -132,7 +132,7 @@ const Talks = () => {
               {t('eventsPage.pastEvents')}
             </Typography>
 
-            <TalkEntryList talks={pastTalks} />
+            <EventEntryList talks={pastTalks} />
           </Box>
         )}
       </ContentBox>

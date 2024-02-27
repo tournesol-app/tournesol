@@ -5,7 +5,7 @@ import { Alert, Box, Typography } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
-import TalkEntryList from 'src/pages/talks/TalkEntryList';
+import EventEntryList from 'src/pages/events/EventEntryList';
 import { TOLERANCE_PERIOD } from 'src/pages/talks/parameters';
 import { BackofficeService, TalkEntry } from 'src/services/openapi';
 
@@ -82,7 +82,7 @@ const Events = () => {
           </Typography>
 
           {futureEvents && futureEvents.length > 0 ? (
-            <TalkEntryList talks={futureEvents} />
+            <EventEntryList talks={futureEvents} />
           ) : (
             <Alert severity="info">
               {t('eventsPage.noEventsPlannedForTheMoment')}
@@ -99,8 +99,7 @@ const Events = () => {
             >
               {t('eventsPage.pastEvents')}
             </Typography>
-
-            <TalkEntryList talks={pastEvents} />
+            <EventEntryList talks={pastEvents} />
           </Box>
         )}
       </ContentBox>
