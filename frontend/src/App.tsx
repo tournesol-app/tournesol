@@ -24,6 +24,9 @@ import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import TermsOfService from './pages/about/TermsOfService/TermsOfService';
 import About from './pages/about/About';
+import Events from './pages/events/Events';
+import FAQ from './pages/faq/FAQ';
+import Talks from './pages/talks/Talks';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -31,8 +34,6 @@ import { polls } from './utils/constants';
 import SharedContent from './app/SharedContent';
 import PollRoutes from './app/PollRoutes';
 import { PollProvider } from './hooks/useCurrentPoll';
-import FAQ from './pages/faq/FAQ';
-import Talks from './pages/talks/Talks';
 import { scrollToTop } from './utils/ui';
 
 // The Analysis Page uses recharts which is a rather big library,
@@ -87,6 +88,9 @@ function App() {
             {/* About routes */}
             <PublicRoute path="/faq">
               <FAQ />
+            </PublicRoute>
+            <PublicRoute path="/events">
+              <Events />
             </PublicRoute>
             <PublicRoute path="/talks">
               <Talks />

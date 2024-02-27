@@ -764,6 +764,12 @@
       "message": "Une erreur innatendu est survenue."
     }
   },
+  "eventsPage": {
+    "title": "Évènements",
+    "upcomingEvents": "Évènement(s) à venir",
+    "noEventsPlannedForTheMoment": "Aucun évènement prévu pour l'instant.",
+    "pastEvents": "Passés"
+  },
   "faqPage": {
     "frequentlyAskedQuestions": "Foire Aux Questions",
     "iDidFindTheAnswers": "Je n'ai pas trouvé la réponse à mes questions",
@@ -958,9 +964,7 @@
     "tournesolTalksIntroduction": "L'association Tournesol organise des événements en ligne publics et libres avec des experts et des chercheurs pour parler de leurs travaux concernant l'éthique, les algorithmes et systèmes de recommandation, l'information, la démocratie et plus encore.",
     "beInformedOfUpcomingEvents": "Être informé·e des évènements à venir",
     "title": "Tournesol Talks",
-    "upcomingEvents": "Évènement(s) à venir",
     "noTalksInTheNearFuture": "Aucun entretien n'est prévu dans un avenir proche.",
-    "pastEvents": "Passés",
     "live": "En direct",
     "by": "Par\u00a0{{speaker}}",
     "replay": "Revoir",

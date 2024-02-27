@@ -756,6 +756,12 @@
       "message": "An unexpected error has occurred."
     }
   },
+  "eventsPage": {
+    "title": "Events",
+    "upcomingEvents": "Upcoming event(s)",
+    "noEventsPlannedForTheMoment": "No events planned for the moment.",
+    "pastEvents": "Past events"
+  },
   "faqPage": {
     "frequentlyAskedQuestions": "Frequently Asked Questions",
     "iDidFindTheAnswers": "I didn't find the answer to my questions",
@@ -949,9 +955,7 @@
     "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
     "beInformedOfUpcomingEvents": "Be informed of upcoming events",
     "title": "Tournesol Talks",
-    "upcomingEvents": "Upcoming event(s)",
-    "noTalksInTheNearFuture": "No Talks are planned in the near future.",
-    "pastEvents": "Past events",
+    "noTalksInTheNearFuture": "No Talks planned for the near future.",
     "live": "Live",
     "by": "By\u00a0{{speaker}}",
     "replay": "Replay",

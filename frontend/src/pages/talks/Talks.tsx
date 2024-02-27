@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Button, Link, Paper, Typography } from '@mui/material';
+import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { Email } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader } from 'src/components';
@@ -11,6 +11,7 @@ import { tournesolTalksMailingListUrl } from 'src/utils/url';
 import { BackofficeService, TalkEntry } from 'src/services/openapi';
 
 import { TOLERANCE_PERIOD } from './parameters';
+import EventsMenu from '../events/EventsMenu';
 
 interface SortedTalkAccumulator {
   past: TalkEntry[];
@@ -21,7 +22,7 @@ const IntroductionPaper = () => {
   const { t } = useTranslation();
 
   return (
-    <Paper sx={{ p: 2, mb: 4 }}>
+    <Box sx={{ mb: 4 }}>
       <Typography component="h2" variant="h4" gutterBottom>
         {t('talksPage.whatAreTournesolTalks')}
       </Typography>
@@ -31,7 +32,8 @@ const IntroductionPaper = () => {
       <Box display="flex" justifyContent="flex-end">
         <Button
           size="small"
-          variant="contained"
+          variant="text"
+          color="secondary"
           startIcon={<Email />}
           component={Link}
           href={tournesolTalksMailingListUrl}
@@ -41,7 +43,7 @@ const IntroductionPaper = () => {
           {t('talksPage.beInformedOfUpcomingEvents')}
         </Button>
       </Box>
-    </Paper>
+    </Box>
   );
 };
 
@@ -97,6 +99,9 @@ const Talks = () => {
     <>
       <ContentHeader title={t('talksPage.title')} />
       <ContentBox maxWidth="lg">
+        <Box mb={4}>
+          <EventsMenu selected="talks" />
+        </Box>
         <IntroductionPaper />
         <Box mb={4}>
           <Typography
@@ -105,7 +110,7 @@ const Talks = () => {
             mb={2}
             borderBottom="1px solid #E7E5DB"
           >
-            {t('talksPage.upcomingEvents')}
+            {t('eventsPage.upcomingEvents')}
           </Typography>
 
           {upcomingTalks && upcomingTalks.length > 0 ? (
@@ -124,7 +129,7 @@ const Talks = () => {
               mb={2}
               borderBottom="1px solid #E7E5DB"
             >
-              {t('talksPage.pastEvents')}
+              {t('eventsPage.pastEvents')}
             </Typography>
 
             <TalkEntryList talks={pastTalks} />
