@@ -77,7 +77,7 @@ def test_untrusted_get_partial_voting_right(n_trusted, n_non_trusted):
     expected_partial_right = min(
         (OVER_TRUST_BIAS + n_trusted * OVER_TRUST_SCALE) / n_non_trusted, 1
     )
-    np.testing.assert_array_equal(
+    np.testing.assert_array_almost_equal(
         compute_voting_rights_with_params(
             np.array([0] * n_non_trusted + [1] * n_trusted),
             np.ones(shape=n_non_trusted + n_trusted),

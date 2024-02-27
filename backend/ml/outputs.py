@@ -166,11 +166,9 @@ class TournesolPollOutput(PipelineOutput):
     def save_entity_scores(
         self,
         scores: pd.DataFrame,
-        score_mode = "default",
+        score_mode="default",
     ):
-        scores_iterator = scores[
-            ["entity_id", "score", "uncertainty"]
-        ].itertuples(index=False)
+        scores_iterator = scores[["entity_id", "score", "uncertainty"]].itertuples(index=False)
 
         with transaction.atomic():
             EntityCriteriaScore.objects.filter(
