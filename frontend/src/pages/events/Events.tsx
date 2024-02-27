@@ -82,7 +82,7 @@ const Events = () => {
           </Typography>
 
           {futureEvents && futureEvents.length > 0 ? (
-            <EventEntryList talks={futureEvents} />
+            <EventEntryList events={futureEvents} />
           ) : (
             <Alert severity="info">
               {t('eventsPage.noEventsPlannedForTheMoment')}
@@ -99,7 +99,7 @@ const Events = () => {
             >
               {t('eventsPage.pastEvents')}
             </Typography>
-            <EventEntryList talks={pastEvents} />
+            <EventEntryList events={pastEvents} />
           </Box>
         )}
       </ContentBox>

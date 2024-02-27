@@ -20,50 +20,50 @@ import { TalkEntry } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
 import { extractVideoId } from 'src/utils/video';
 
-import { TOLERANCE_PERIOD } from './parameters';
+import { TOLERANCE_PERIOD } from '../talks/parameters';
 
-function isPast(talk: TalkEntry) {
-  if (!talk.date) {
+function isPast(event: TalkEntry) {
+  if (!event.date) {
     return false;
   }
 
   const now = new Date();
-  return new Date(talk.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
+  return new Date(event.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
 }
 
-function isLive(talk: TalkEntry) {
-  if (!talk.date) {
+function isLive(event: TalkEntry) {
+  if (!event.date) {
     return false;
   }
 
-  const talkDate = new Date(talk.date);
+  const eventDate = new Date(event.date);
   const now = new Date();
   return (
-    talkDate < now && now < new Date(talkDate.getTime() + TOLERANCE_PERIOD)
+    eventDate < now && now < new Date(eventDate.getTime() + TOLERANCE_PERIOD)
   );
 }
 
-const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
+const EventHeading = ({ event }: { event: TalkEntry }) => {
   const { t } = useTranslation();
 
   let headingLink;
-  if (isPast(talk) && talk.youtube_link) {
-    headingLink = talk.youtube_link;
-  } else if (!isPast(talk) && talk.invitation_link) {
-    headingLink = talk.invitation_link;
+  if (isPast(event) && event.youtube_link) {
+    headingLink = event.youtube_link;
+  } else if (!isPast(event) && event.invitation_link) {
+    headingLink = event.invitation_link;
   }
 
   let displayedDatetime;
 
   // We display the local date according to the Europe/Paris timezone.
-  if (talk.date_as_tz_europe_paris) {
-    const date = localDate(talk.date_as_tz_europe_paris);
-    const time = localTime(talk.date_as_tz_europe_paris);
+  if (event.date_as_tz_europe_paris) {
+    const date = localDate(event.date_as_tz_europe_paris);
+    const time = localTime(event.date_as_tz_europe_paris);
 
     if (date) {
       displayedDatetime = date;
 
-      if (!isPast(talk) && time) {
+      if (!isPast(event) && time) {
         displayedDatetime += ` ${time} Europe/Paris`;
       }
     }
@@ -71,7 +71,7 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
 
   return (
     <Box
-      id={talk.name}
+      id={event.name}
       p={2}
       color="#fff"
       bgcolor="background.emphatic"
@@ -99,19 +99,19 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
                   },
                 }}
               >
-                {talk.title}
+                {event.title}
               </Link>
             ) : (
-              talk.title
+              event.title
             )}
           </Typography>
         </Grid>
         {displayedDatetime && (
           <Grid item>
             <Box display="flex" alignItems="center" gap={1}>
-              {isLive(talk) && (
+              {isLive(event) && (
                 <Chip
-                  label={t('talksPage.live')}
+                  label={t('eventsPage.live')}
                   color="primary"
                   icon={<FiberManualRecord fontSize="small" color="error" />}
                 />
@@ -125,23 +125,23 @@ const TalkHeading = ({ talk }: { talk: TalkEntry }) => {
   );
 };
 
-const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
-  const talkIsPast = isPast(talk);
+const EventImagery = ({ event }: { event: TalkEntry }) => {
+  const eventIsPast = isPast(event);
 
   const imgSrc =
-    talkIsPast && talk.youtube_link
+    eventIsPast && event.youtube_link
       ? `https://i.ytimg.com/vi/${extractVideoId(
-          talk.youtube_link
+          event.youtube_link
         )}/mqdefault.jpg`
       : '/svg/Watering.svg';
 
   let imageLink;
-  if (talkIsPast && talk.youtube_link) {
-    imageLink = talk.youtube_link;
+  if (eventIsPast && event.youtube_link) {
+    imageLink = event.youtube_link;
   }
 
-  if (!talkIsPast && talk.invitation_link) {
-    imageLink = talk.invitation_link;
+  if (!eventIsPast && event.invitation_link) {
+    imageLink = event.invitation_link;
   }
 
   return (
@@ -180,36 +180,36 @@ const TalkImagery = ({ talk }: { talk: TalkEntry }) => {
   );
 };
 
-const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
+const EventSingleEntry = ({ event }: { event: TalkEntry }) => {
   const { t } = useTranslation();
 
-  const talkIsPast = isPast(talk);
-  const abstractParagraphs = talk.abstract ? talk.abstract.split('\n') : [];
+  const eventIsPast = isPast(event);
+  const abstractParagraphs = event.abstract ? event.abstract.split('\n') : [];
 
   let actionLink;
-  if (talkIsPast && talk.youtube_link) {
-    actionLink = talk.youtube_link;
+  if (eventIsPast && event.youtube_link) {
+    actionLink = event.youtube_link;
   }
 
-  if (!talkIsPast && talk.invitation_link) {
-    actionLink = talk.invitation_link;
+  if (!eventIsPast && event.invitation_link) {
+    actionLink = event.invitation_link;
   }
 
   return (
     <Paper>
-      <TalkHeading talk={talk} />
+      <EventHeading event={event} />
       <Box p={2} sx={{ overflow: 'auto' }}>
-        <TalkImagery talk={talk} />
+        <EventImagery event={event} />
         <Typography variant="h6" color="secondary" gutterBottom>
-          {talk.speakers && (
-            <Trans t={t} i18nKey="talksPage.by">
-              By {{ speaker: talk.speakers }}
+          {event.speakers && (
+            <Trans t={t} i18nKey="eventsPage.by">
+              By {{ speaker: event.speakers }}
             </Trans>
           )}
         </Typography>
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
-            key={`${talk.title}_p${index}`}
+            key={`${event.title}_p${index}`}
             textAlign="justify"
             paragraph
           >
@@ -223,13 +223,13 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
             size="small"
             color="secondary"
             variant="outlined"
-            startIcon={talkIsPast ? <PlayArrow /> : <PersonAddAlt1 />}
+            startIcon={eventIsPast ? <PlayArrow /> : <PersonAddAlt1 />}
             component={Link}
             href={actionLink}
             rel="noopener"
             target="_blank"
           >
-            {talkIsPast ? t('talksPage.replay') : t('talksPage.join')}
+            {eventIsPast ? t('eventsPage.replay') : t('eventsPage.join')}
           </Button>
         </Box>
       )}
@@ -237,4 +237,4 @@ const TalkSingleEntry = ({ talk }: { talk: TalkEntry }) => {
   );
 };
 
-export default TalkSingleEntry;
+export default EventSingleEntry;

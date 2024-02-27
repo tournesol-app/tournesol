@@ -2,15 +2,15 @@ import React from 'react';
 
 import Grid from '@mui/material/Unstable_Grid2';
 
-import TalkSingleEntry from 'src/pages/talks/TalkSingleEntry';
+import EventSingleEntry from 'src/pages/events/EventSingleEntry';
 import { TalkEntry } from 'src/services/openapi';
 
-const EventEntryList = ({ talks }: { talks: Array<TalkEntry> }) => {
+const EventEntryList = ({ events }: { events: Array<TalkEntry> }) => {
   return (
     <Grid container justifyContent="column" spacing={4}>
-      {talks.map((talk, idx) => (
-        <Grid key={`${idx}_${talk.name}`} width="100%">
-          <TalkSingleEntry key={talk.name} talk={talk} />
+      {events.map((event, idx) => (
+        <Grid key={`${idx}_${event.name}`} width="100%">
+          <EventSingleEntry key={event.name} event={event} />
         </Grid>
       ))}
     </Grid>

@@ -760,7 +760,11 @@
     "title": "Events",
     "upcomingEvents": "Upcoming event(s)",
     "noEventsPlannedForTheMoment": "No events planned for the moment.",
-    "pastEvents": "Past events"
+    "pastEvents": "Past events",
+    "live": "Live",
+    "by": "By\u00a0{{speaker}}",
+    "replay": "Replay",
+    "join": "Join"
   },
   "faqPage": {
     "frequentlyAskedQuestions": "Frequently Asked Questions",
@@ -955,11 +959,7 @@
     "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
     "beInformedOfUpcomingEvents": "Be informed of upcoming events",
     "title": "Tournesol Talks",
-    "noTalksInTheNearFuture": "No Talks planned for the near future.",
-    "live": "Live",
-    "by": "By\u00a0{{speaker}}",
-    "replay": "Replay",
-    "join": "Join"
+    "noTalksInTheNearFuture": "No Talks planned for the near future."
   },
   "actions": {
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",
