@@ -25,6 +25,7 @@ import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import TermsOfService from './pages/about/TermsOfService/TermsOfService';
 import About from './pages/about/About';
 import AllEvents from './pages/events/AllEventsPage';
+import LivePage from './pages/events/LivePage';
 import TalksPage from './pages/events/TalksPage';
 import FAQ from './pages/faq/FAQ';
 
@@ -91,6 +92,9 @@ function App() {
             </PublicRoute>
             <PublicRoute path="/events">
               <AllEvents />
+            </PublicRoute>
+            <PublicRoute path="/live">
+              <LivePage />
             </PublicRoute>
             <PublicRoute path="/talks">
               <TalksPage />

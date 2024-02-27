@@ -766,6 +766,9 @@
     "noEventsPlannedForTheMoment": "No events planned for the moment.",
     "pastEvents": "Past events"
   },
+  "livePage": {
+    "title": "Tournesol Live"
+  },
   "talksPage": {
     "whatAreTournesolTalks": "What are Tournesol Talks?",
     "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
