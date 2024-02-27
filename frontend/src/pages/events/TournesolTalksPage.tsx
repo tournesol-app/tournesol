@@ -14,10 +14,10 @@ const Header = () => {
   return (
     <Box sx={{ mb: 4 }}>
       <Typography component="h2" variant="h4" gutterBottom>
-        {t('talksPage.whatAreTournesolTalks')}
+        {t('tournesolTalksPage.whatAreTournesolTalks')}
       </Typography>
       <Typography paragraph>
-        {t('talksPage.tournesolTalksIntroduction')}
+        {t('tournesolTalksPage.tournesolTalksIntroduction')}
       </Typography>
       <Box display="flex" justifyContent="flex-end">
         <Button
@@ -30,18 +30,18 @@ const Header = () => {
           rel="noopener"
           target="_blank"
         >
-          {t('talksPage.beInformedOfUpcomingEvents')}
+          {t('tournesolTalksPage.beInformedOfUpcomingEvents')}
         </Button>
       </Box>
     </Box>
   );
 };
 
-const TalksPage = () => {
+const TournesolTalksPage = () => {
   const { t } = useTranslation();
   return (
     <GenericEventsPage
-      title={t('talksPage.title')}
+      title={t('tournesolTalksPage.title')}
       selectedMenuItem="talks"
       eventType={EventTypeEnum.TALK}
       header={<Header />}
@@ -49,4 +49,4 @@ const TalksPage = () => {
   );
 };
 
-export default TalksPage;
+export default TournesolTalksPage;

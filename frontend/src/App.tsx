@@ -25,8 +25,8 @@ import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import TermsOfService from './pages/about/TermsOfService/TermsOfService';
 import About from './pages/about/About';
 import AllEvents from './pages/events/AllEventsPage';
-import LivePage from './pages/events/LivePage';
-import TalksPage from './pages/events/TalksPage';
+import TournesolLivePage from './pages/events/TournesolLivePage';
+import TournesolTalksPage from './pages/events/TournesolTalksPage';
 import FAQ from './pages/faq/FAQ';
 
 import { OpenAPI } from 'src/services/openapi';
@@ -94,10 +94,10 @@ function App() {
               <AllEvents />
             </PublicRoute>
             <PublicRoute path="/live">
-              <LivePage />
+              <TournesolLivePage />
             </PublicRoute>
             <PublicRoute path="/talks">
-              <TalksPage />
+              <TournesolTalksPage />
             </PublicRoute>
             <PublicRoute path="/about/terms-of-service">
               <TermsOfService />
