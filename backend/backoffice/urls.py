@@ -3,8 +3,8 @@ from django.urls import path
 from backoffice.views import (
     BannerListView,
     FAQEntryLocalizedListView,
-    OnlineEventListView,
     TalkEntryListView,
+    TournesolEventListView,
 )
 
 urlpatterns = [
@@ -15,15 +15,15 @@ urlpatterns = [
     ),
     path(
         "events/",
-        OnlineEventListView.as_view(),
-        name="online_event_list",
+        TournesolEventListView.as_view(),
+        name="tournesol_event_list",
     ),
     path(
         "faq/",
         FAQEntryLocalizedListView.as_view(),
         name="faq_list_localized",
     ),
-    # Kept for retro-compatibility, use OnlineEventListView instead.
+    # Kept for retro-compatibility, use TournesolEventListView instead.
     path(
         "talks/",
         TalkEntryListView.as_view(),

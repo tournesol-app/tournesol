@@ -17,11 +17,11 @@ import {
 } from '@mui/icons-material';
 
 import { TOLERANCE_PERIOD } from 'src/pages/talks/parameters';
-import { TalkEntry } from 'src/services/openapi';
+import { TournesolEvent } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
 import { extractVideoId } from 'src/utils/video';
 
-function isPast(event: TalkEntry) {
+function isPast(event: TournesolEvent) {
   if (!event.date) {
     return false;
   }
@@ -30,7 +30,7 @@ function isPast(event: TalkEntry) {
   return new Date(event.date) < new Date(now.getTime() - TOLERANCE_PERIOD);
 }
 
-function isLive(event: TalkEntry) {
+function isLive(event: TournesolEvent) {
   if (!event.date) {
     return false;
   }
@@ -42,7 +42,7 @@ function isLive(event: TalkEntry) {
   );
 }
 
-const EventHeading = ({ event }: { event: TalkEntry }) => {
+const EventHeading = ({ event }: { event: TournesolEvent }) => {
   const { t } = useTranslation();
 
   let headingLink;
@@ -124,7 +124,7 @@ const EventHeading = ({ event }: { event: TalkEntry }) => {
   );
 };
 
-const EventImagery = ({ event }: { event: TalkEntry }) => {
+const EventImagery = ({ event }: { event: TournesolEvent }) => {
   const eventIsPast = isPast(event);
 
   const imgSrc =
@@ -179,7 +179,7 @@ const EventImagery = ({ event }: { event: TalkEntry }) => {
   );
 };
 
-const EventSingleEntry = ({ event }: { event: TalkEntry }) => {
+const EventSingleEntry = ({ event }: { event: TournesolEvent }) => {
   const { t } = useTranslation();
 
   const eventIsPast = isPast(event);

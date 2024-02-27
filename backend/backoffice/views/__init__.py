@@ -1,4 +1,4 @@
 from .banners import BannerListView
+from .events import TournesolEventListView
 from .faqs import FAQEntryLocalizedListView
-from .online_events import OnlineEventListView
 from .talks import TalkEntryListView

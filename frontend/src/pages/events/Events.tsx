@@ -7,21 +7,21 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import EventEntryList from 'src/pages/events/EventEntryList';
 import { TOLERANCE_PERIOD } from 'src/pages/talks/parameters';
-import { BackofficeService, TalkEntry } from 'src/services/openapi';
+import { BackofficeService, TournesolEvent } from 'src/services/openapi';
 
 import EventsMenu from './EventsMenu';
 
 interface SortedEventAccumulator {
-  past: TalkEntry[];
-  future: TalkEntry[];
+  past: TournesolEvent[];
+  future: TournesolEvent[];
 }
 
 const Events = () => {
   const { t } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
-  const [pastEvents, setPastEvents] = useState<Array<TalkEntry>>([]);
-  const [futureEvents, setFutureEvents] = useState<Array<TalkEntry>>([]);
+  const [pastEvents, setPastEvents] = useState<Array<TournesolEvent>>([]);
+  const [futureEvents, setFutureEvents] = useState<Array<TournesolEvent>>([]);
 
   useEffect(() => {
     async function getEventsEntries() {
@@ -35,10 +35,10 @@ const Events = () => {
         const now = new Date();
 
         const sortedEvents = events.results.reduce<{
-          past: TalkEntry[];
-          future: TalkEntry[];
+          past: TournesolEvent[];
+          future: TournesolEvent[];
         }>(
-          (acc: SortedEventAccumulator, event: TalkEntry) => {
+          (acc: SortedEventAccumulator, event: TournesolEvent) => {
             // Do not display not scheduled Talk.
             if (!event.date) {
               return acc;

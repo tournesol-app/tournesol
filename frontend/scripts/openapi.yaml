@@ -328,7 +328,7 @@ paths:
   /backoffice/events/:
     get:
       operationId: backoffice_events_list
-      description: List all scheduled online events.
+      description: List all scheduled Tournesol events.
       parameters:
       - name: limit
         required: false
@@ -360,7 +360,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedTalkEntryList'
+                $ref: '#/components/schemas/PaginatedTournesolEventList'
           description: ''
   /backoffice/faq/:
     get:
@@ -3831,6 +3831,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TalkEntry'
+    PaginatedTournesolEventList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TournesolEvent'
     PaginatedUnconnectedEntityList:
       type: object
       properties:
@@ -4466,6 +4486,54 @@ components:
       required:
       - bucket
     TalkEntry:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Used as an URL slug. Leave it blank to automatically build
+            it from the title.
+          maxLength: 255
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          description: The title of the event.
+          maxLength: 255
+        event_type:
+          $ref: '#/components/schemas/EventTypeEnum'
+        date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time of the event according to the server time.
+        date_as_tz_europe_paris:
+          type: string
+          nullable: true
+          readOnly: true
+        speakers:
+          type: string
+          nullable: true
+          description: A list of speakers and their titles (researcher, PhD student,
+            etc.).
+        abstract:
+          type: string
+          nullable: true
+          description: Description of the event.
+        invitation_link:
+          type: string
+          format: uri
+          nullable: true
+          description: Allows the users to join the event.
+          maxLength: 200
+        youtube_link:
+          type: string
+          format: uri
+          nullable: true
+          description: The YouTube link of the recorded event.
+          maxLength: 200
+      required:
+      - date_as_tz_europe_paris
+      - title
+    TournesolEvent:
       type: object
       properties:
         name:

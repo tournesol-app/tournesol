@@ -2,12 +2,12 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework.generics import ListAPIView
 
 from backoffice.models import TalkEntry
-from backoffice.serializers import TalkEntrySerializer
+from backoffice.serializers import TournesolEventSerializer
 
 
 @extend_schema_view(
     get=extend_schema(
-        description="List all scheduled online events.",
+        description="List all scheduled Tournesol events.",
         parameters=[
             OpenApiParameter(
                 name="event_type",
@@ -18,10 +18,10 @@ from backoffice.serializers import TalkEntrySerializer
         ],
     ),
 )
-class OnlineEventListView(ListAPIView):
+class TournesolEventListView(ListAPIView):
     permission_classes = []
     queryset = TalkEntry.objects.none()
-    serializer_class = TalkEntrySerializer
+    serializer_class = TournesolEventSerializer
 
     def get_queryset(self):
         event_type = self.request.query_params.get("event_type")
