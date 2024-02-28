@@ -7,8 +7,8 @@ from django.utils.text import slugify
 
 
 class TalkEntry(models.Model):
-    EVENT_TYPE_LIVE = "LIVE"
-    EVENT_TYPE_TALK = "TALK"
+    EVENT_TYPE_LIVE = "live"
+    EVENT_TYPE_TALK = "talk"
 
     EVENT_TYPE = {
         (EVENT_TYPE_LIVE, "Tournesol Live"),

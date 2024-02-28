@@ -347,8 +347,8 @@ paths:
         schema:
           type: string
           enum:
-          - LIVE
-          - TALK
+          - live
+          - talk
         description: Filter the events by type.
       tags:
       - backoffice
@@ -3367,12 +3367,12 @@ components:
         * `candidate_fr_2022` - Candidate (FR 2022)
     EventTypeEnum:
       enum:
-      - LIVE
-      - TALK
+      - talk
+      - live
       type: string
       description: |-
-        * `LIVE` - Tournesol Live
-        * `TALK` - Tournesol Talk
+        * `talk` - Tournesol Talk
+        * `live` - Tournesol Live
     ExtendedCollectiveRating:
       type: object
       properties:

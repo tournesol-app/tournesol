@@ -80,7 +80,7 @@ class TournesolEventListViewTestCase(TestCase):
             {
                 "name": live.name,
                 "title": live.title,
-                "event_type": "LIVE",
+                "event_type": "live",
                 "date": "2019-12-24T00:00:00Z",
                 "date_as_tz_europe_paris": "2019-12-24T01:00:00+0100",
                 "speakers": live.speakers,
@@ -130,7 +130,7 @@ class TournesolEventListViewTestCase(TestCase):
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0]["name"], self.live_public.name)
 
-        response = self.client.get(self.events_base_url, {"event_type": "TALK"})
+        response = self.client.get(self.events_base_url, {"event_type": "talk"})
         results = response.data["results"]
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["name"], self.talk_public.name)
