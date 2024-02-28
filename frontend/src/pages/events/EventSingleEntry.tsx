@@ -14,10 +14,12 @@ import {
   FiberManualRecord,
   PersonAddAlt1,
   PlayArrow,
+  Science,
+  YouTube,
 } from '@mui/icons-material';
 
 import { TOLERANCE_PERIOD } from 'src/pages/events/parameters';
-import { TournesolEvent } from 'src/services/openapi';
+import { EventTypeEnum, TournesolEvent } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
 import { extractVideoId } from 'src/utils/video';
 
@@ -41,6 +43,25 @@ function isLive(event: TournesolEvent) {
     eventDate < now && now < new Date(eventDate.getTime() + TOLERANCE_PERIOD)
   );
 }
+
+const EventTypeLabel = ({ event }: { event: TournesolEvent }) => {
+  return (
+    <>
+      {event.event_type === EventTypeEnum.LIVE && (
+        <Box display="flex" gap={1} alignItems="center">
+          <YouTube fontSize="small" />
+          <Typography variant="body2">Tournesol Live</Typography>
+        </Box>
+      )}
+      {event.event_type === EventTypeEnum.TALK && (
+        <Box display="flex" gap={1} alignItems="center">
+          <Science fontSize="small" />
+          <Typography variant="body2">Tournesol Talk</Typography>
+        </Box>
+      )}
+    </>
+  );
+};
 
 const EventHeading = ({ event }: { event: TournesolEvent }) => {
   const { t } = useTranslation();
@@ -71,7 +92,8 @@ const EventHeading = ({ event }: { event: TournesolEvent }) => {
   return (
     <Box
       id={event.name}
-      p={2}
+      px={2}
+      py="12px"
       color="#fff"
       bgcolor="background.emphatic"
       sx={{
@@ -86,24 +108,29 @@ const EventHeading = ({ event }: { event: TournesolEvent }) => {
         spacing={1}
       >
         <Grid item>
-          <Typography variant="h4">
-            {headingLink ? (
-              <Link
-                href={headingLink}
-                sx={{
-                  color: '#fff',
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {event.title}
-              </Link>
-            ) : (
-              event.title
-            )}
-          </Typography>
+          <Box display="flex" flexDirection="column">
+            <Typography variant="h4">
+              {headingLink ? (
+                <Link
+                  href={headingLink}
+                  target="_blank"
+                  rel="noopener"
+                  sx={{
+                    color: '#fff',
+                    textDecoration: 'none',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                >
+                  {event.title}
+                </Link>
+              ) : (
+                event.title
+              )}
+            </Typography>
+            <EventTypeLabel event={event} />
+          </Box>
         </Grid>
         {displayedDatetime && (
           <Grid item>
