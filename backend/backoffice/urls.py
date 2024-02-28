@@ -1,10 +1,6 @@
 from django.urls import path
 
-from backoffice.views import (
-    BannerListView,
-    FAQEntryLocalizedListView,
-    TournesolEventListView,
-)
+from backoffice.views import BannerListView, FAQEntryLocalizedListView, TournesolEventListView
 
 urlpatterns = [
     path(
