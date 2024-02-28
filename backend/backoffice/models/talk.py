@@ -58,7 +58,7 @@ class TalkEntry(models.Model):
 
     class Meta:
         ordering = ["-date"]
-        verbose_name = "Online Event"
+        verbose_name = "Tournesol Event"
 
     def __str__(self) -> str:
         return self.title
