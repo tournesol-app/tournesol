@@ -767,7 +767,6 @@
   "eventsPage": {
     "title": "Évènements",
     "live": "En direct",
-    "by": "Par\u00a0{{speaker}}",
     "replay": "Revoir",
     "join": "Rejoindre",
     "upcomingEvents": "Évènement(s) à venir",

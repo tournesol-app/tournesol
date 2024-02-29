@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import {
   Box,
@@ -226,13 +226,11 @@ const EventSingleEntry = ({ event }: { event: TournesolEvent }) => {
       <EventHeading event={event} />
       <Box p={2} sx={{ overflow: 'auto' }}>
         <EventImagery event={event} />
-        <Typography variant="h6" color="secondary" gutterBottom>
-          {event.speakers && (
-            <Trans t={t} i18nKey="eventsPage.by">
-              By {{ speaker: event.speakers }}
-            </Trans>
-          )}
-        </Typography>
+        {event.speakers && (
+          <Typography variant="h6" color="secondary" gutterBottom>
+            {event.speakers}
+          </Typography>
+        )}
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
             key={`${event.title}_p${index}`}
