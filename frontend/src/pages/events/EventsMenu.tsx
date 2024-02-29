@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button, ButtonGroup } from '@mui/material';
+import { Science, YouTube } from '@mui/icons-material';
 
 interface EventsMenuProps {
   selected: string;
@@ -25,6 +26,7 @@ const EventsMenu = ({ selected }: EventsMenuProps) => {
       <Button
         component={Link}
         to="/live"
+        startIcon={<YouTube />}
         variant={selected === 'live' ? 'contained' : undefined}
       >
         Live
@@ -32,6 +34,7 @@ const EventsMenu = ({ selected }: EventsMenuProps) => {
       <Button
         component={Link}
         to="/talks"
+        startIcon={<Science />}
         variant={selected === 'talks' ? 'contained' : undefined}
       >
         Talks
