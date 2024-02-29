@@ -22,8 +22,8 @@ const Header = () => {
       <Box display="flex" justifyContent="flex-end">
         <Button
           size="small"
-          variant="text"
-          color="secondary"
+          variant="contained"
+          color="primary"
           startIcon={<Email />}
           component={Link}
           href={tournesolTalksMailingListUrl}

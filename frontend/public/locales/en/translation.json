@@ -767,11 +767,13 @@
     "pastEvents": "Past events"
   },
   "tournesolLivePage": {
+    "whatAreTheTournesolLive": "What are the Tournesol Live?",
+    "tournesolLiveIntroduction": "The Tournesol Live are live interviews with the creators of the most recommended videos on the platform.",
     "title": "Tournesol Live"
   },
   "tournesolTalksPage": {
-    "whatAreTournesolTalks": "What are Tournesol Talks?",
-    "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
+    "whatAreTournesolTalks": "What are the Tournesol Talks?",
+    "tournesolTalksIntroduction": "The Tournesol association organizes public online events with experts and researchers to talk about their work related to ethics, information, algorithms, recommender systems, democracy, ecology and more.",
     "beInformedOfUpcomingEvents": "Be informed of upcoming events",
     "title": "Tournesol Talks"
   },
