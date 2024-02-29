@@ -759,7 +759,6 @@
   "eventsPage": {
     "title": "Events",
     "live": "Live",
-    "by": "By\u00a0{{speaker}}",
     "replay": "Replay",
     "join": "Join",
     "upcomingEvents": "Upcoming event(s)",
