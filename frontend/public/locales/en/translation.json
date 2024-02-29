@@ -756,6 +756,27 @@
       "message": "An unexpected error has occurred."
     }
   },
+  "eventsPage": {
+    "title": "Events",
+    "live": "Live",
+    "by": "By\u00a0{{speaker}}",
+    "replay": "Replay",
+    "join": "Join",
+    "upcomingEvents": "Upcoming event(s)",
+    "noEventsPlannedForTheMoment": "No events planned for the moment.",
+    "pastEvents": "Past events"
+  },
+  "tournesolLivePage": {
+    "whatAreTheTournesolLive": "What are the Tournesol Live?",
+    "tournesolLiveIntroduction": "These are live interviews with the creators of the most recommended videos on the platform. It's a chance to talk about their YouTube journey, the themes related to their work, and their relationship with online recommender systems.",
+    "title": "Tournesol Live"
+  },
+  "tournesolTalksPage": {
+    "whatAreTournesolTalks": "What are the Tournesol Talks?",
+    "tournesolTalksIntroduction": "These are public online conferences in which experts and researchers talk about their work related to ethics, information, algorithms, recommender systems, democracy, ecology and more.",
+    "beInformedOfUpcomingEvents": "Be informed of upcoming events",
+    "title": "Tournesol Talks"
+  },
   "faqPage": {
     "frequentlyAskedQuestions": "Frequently Asked Questions",
     "iDidFindTheAnswers": "I didn't find the answer to my questions",
@@ -943,19 +964,6 @@
     "yourAccountIsNowVerified": "Your account is now verified.",
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
-  },
-  "talksPage": {
-    "whatAreTournesolTalks": "What are Tournesol Talks?",
-    "tournesolTalksIntroduction": "The Tournesol association organizes public and free online events with experts and researchers to talk about their work related to ethics, algorithms and recommender systems, information, democracy and more.",
-    "beInformedOfUpcomingEvents": "Be informed of upcoming events",
-    "title": "Tournesol Talks",
-    "upcomingEvents": "Upcoming event(s)",
-    "noTalksInTheNearFuture": "No Talks are planned in the near future.",
-    "pastEvents": "Past events",
-    "live": "Live",
-    "by": "By\u00a0{{speaker}}",
-    "replay": "Replay",
-    "join": "Join"
   },
   "actions": {
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",

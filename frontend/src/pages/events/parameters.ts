@@ -1,5 +1,5 @@
 /**
- * Allow to consider a Talk as upcoming even if it started two hours ago.
+ * Allow to consider an event as upcoming even if it started two hours ago.
  *
  * The components to still display the invitation link, and latecomers will
  * be able to join.

@@ -1,21 +1,21 @@
 from django.urls import path
 
-from backoffice.views import BannerListView, FAQEntryLocalizedListView, TalkEntryListView
+from backoffice.views import BannerListView, FAQEntryLocalizedListView, TournesolEventListView
 
 urlpatterns = [
-    path(
-        "faq/",
-        FAQEntryLocalizedListView.as_view(),
-        name="faq_list_localized",
-    ),
-    path(
-        "talks/",
-        TalkEntryListView.as_view(),
-        name="talk_list",
-    ),
     path(
         "banners/",
         BannerListView.as_view(),
         name="banner_list",
+    ),
+    path(
+        "events/",
+        TournesolEventListView.as_view(),
+        name="tournesol_event_list",
+    ),
+    path(
+        "faq/",
+        FAQEntryLocalizedListView.as_view(),
+        name="faq_list_localized",
     ),
 ]

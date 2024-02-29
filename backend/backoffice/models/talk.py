@@ -7,8 +7,16 @@ from django.utils.text import slugify
 
 
 class TalkEntry(models.Model):
+    EVENT_TYPE_LIVE = "live"
+    EVENT_TYPE_TALK = "talk"
+
+    EVENT_TYPE = {
+        (EVENT_TYPE_LIVE, "Tournesol Live"),
+        (EVENT_TYPE_TALK, "Tournesol Talk"),
+    }
+
     title = models.CharField(
-        help_text="The title of the Talk.",
+        help_text="The title of the event.",
         unique=True,
         max_length=255,
     )
@@ -18,18 +26,19 @@ class TalkEntry(models.Model):
         unique=True,
         max_length=255,
     )
+    event_type = models.CharField(max_length=16, choices=EVENT_TYPE, default=EVENT_TYPE_TALK)
     date = models.DateTimeField(
-        help_text="Date and time of the Talk according to the server time.",
+        help_text="Date and time of the event according to the server time.",
         null=True,
         blank=True,
     )
     invitation_link = models.URLField(
-        help_text="Allows the users to join the Talk.",
+        help_text="Allows the users to join the event.",
         null=True,
         blank=True,
     )
     youtube_link = models.URLField(
-        help_text="The Talk's YouTube link.",
+        help_text="The YouTube link of the recorded event.",
         null=True,
         blank=True,
     )
@@ -39,18 +48,17 @@ class TalkEntry(models.Model):
         blank=True,
     )
     abstract = models.TextField(
-        help_text="Description of the Talk.",
+        help_text="Description of the event.",
         null=True,
         blank=True,
     )
     public = models.BooleanField(
-        help_text="If False, the Talk should not be returned by the API.", default=False
+        help_text="If False, the event should not be returned by the API.", default=False
     )
 
     class Meta:
         ordering = ["-date"]
-        verbose_name = "Talk Entry"
-        verbose_name_plural = "Talk Entries"
+        verbose_name = "Tournesol Event"
 
     def __str__(self) -> str:
         return self.title
