@@ -31,7 +31,7 @@
     }
   ],
   "id": "/",
-  "start_url": "/?utm_source=pwa",
+  "start_url": "/feed/recommendations?utm_source=pwa",
   "display": "standalone",
   "theme_color": "#ffc800",
   "background_color": "#a09b87",

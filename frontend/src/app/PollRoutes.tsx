@@ -13,6 +13,7 @@ import ProofByKeywordPage from 'src/pages/me/proof/ProofByKeywordPage';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
+import FeedCollectiveRecommendations from 'src/pages/feed/FeedCollectiveRecommendations';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { RouteID } from 'src/utils/types';
@@ -54,6 +55,12 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.Home,
       url: '',
       page: HomePage,
+      type: PublicRoute,
+    },
+    {
+      id: RouteID.FeedCollectiveRecommendations,
+      url: 'feed/recommendations',
+      page: FeedCollectiveRecommendations,
       type: PublicRoute,
     },
     {

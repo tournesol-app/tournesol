@@ -21,12 +21,13 @@ class TalkEntryAdmin(admin.ModelAdmin):
     list_display = (
         "get_human_time_europe_paris",
         "get_server_time",
+        "event_type",
         "title",
         "get_youtube_link",
         "public",
     )
     list_display_links = ("get_human_time_europe_paris",)
-    list_filter = ("public",)
+    list_filter = ("event_type", "public",)
 
     @admin.display(description="Server time", ordering="date")
     def get_server_time(self, obj):

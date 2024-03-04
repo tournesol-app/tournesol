@@ -367,7 +367,7 @@ describe('Comparison page', () => {
       optionalCriteriaSliders.forEach((slider) => {
         cy.get('#' + slider).within(() => {
           cy.get('span[data-index=12]').click();
-        })
+        });
       });
 
       cy.contains('submit', {matchCase: false})

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from backoffice.models import TalkEntry
 
 
-class TalkEntrySerializer(serializers.ModelSerializer):
+class TournesolEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = TalkEntry
         fields = [

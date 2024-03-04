@@ -24,6 +24,10 @@ import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import TermsOfService from './pages/about/TermsOfService/TermsOfService';
 import About from './pages/about/About';
+import AllEvents from './pages/events/AllEventsPage';
+import TournesolLivePage from './pages/events/TournesolLivePage';
+import TournesolTalksPage from './pages/events/TournesolTalksPage';
+import FAQ from './pages/faq/FAQ';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -31,8 +35,6 @@ import { polls } from './utils/constants';
 import SharedContent from './app/SharedContent';
 import PollRoutes from './app/PollRoutes';
 import { PollProvider } from './hooks/useCurrentPoll';
-import FAQ from './pages/faq/FAQ';
-import Talks from './pages/talks/Talks';
 import { scrollToTop } from './utils/ui';
 
 // The Analysis Page uses recharts which is a rather big library,
@@ -88,8 +90,14 @@ function App() {
             <PublicRoute path="/faq">
               <FAQ />
             </PublicRoute>
+            <PublicRoute path="/events">
+              <AllEvents />
+            </PublicRoute>
+            <PublicRoute path="/live">
+              <TournesolLivePage />
+            </PublicRoute>
             <PublicRoute path="/talks">
-              <Talks />
+              <TournesolTalksPage />
             </PublicRoute>
             <PublicRoute path="/about/terms-of-service">
               <TermsOfService />

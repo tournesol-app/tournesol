@@ -325,6 +325,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedBannerList'
           description: ''
+  /backoffice/events/:
+    get:
+      operationId: backoffice_events_list
+      description: List all scheduled Tournesol events.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: event_type
+        schema:
+          type: string
+          enum:
+          - live
+          - talk
+        description: Filter the events by type.
+      tags:
+      - backoffice
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTournesolEventList'
+          description: ''
   /backoffice/faq/:
     get:
       operationId: backoffice_faq_list
@@ -354,35 +391,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedFAQEntryList'
-          description: ''
-  /backoffice/talks/:
-    get:
-      operationId: backoffice_talks_list
-      description: List all scheduled public Talks.
-      parameters:
-      - name: limit
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
-        schema:
-          type: integer
-      tags:
-      - backoffice
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedTalkEntryList'
           description: ''
   /domains/:
     get:
@@ -3328,6 +3336,14 @@ components:
       description: |-
         * `video` - Video
         * `candidate_fr_2022` - Candidate (FR 2022)
+    EventTypeEnum:
+      enum:
+      - live
+      - talk
+      type: string
+      description: |-
+        * `live` - Tournesol Live
+        * `talk` - Tournesol Talk
     ExtendedCollectiveRating:
       type: object
       properties:
@@ -3766,7 +3782,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SubSample'
-    PaginatedTalkEntryList:
+    PaginatedTournesolEventList:
       type: object
       properties:
         count:
@@ -3785,7 +3801,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/TalkEntry'
+            $ref: '#/components/schemas/TournesolEvent'
     PaginatedUnconnectedEntityList:
       type: object
       properties:
@@ -4420,7 +4436,7 @@ components:
           readOnly: true
       required:
       - bucket
-    TalkEntry:
+    TournesolEvent:
       type: object
       properties:
         name:
@@ -4431,13 +4447,15 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
         title:
           type: string
-          description: The title of the Talk.
+          description: The title of the event.
           maxLength: 255
+        event_type:
+          $ref: '#/components/schemas/EventTypeEnum'
         date:
           type: string
           format: date-time
           nullable: true
-          description: Date and time of the Talk according to the server time.
+          description: Date and time of the event according to the server time.
         date_as_tz_europe_paris:
           type: string
           nullable: true
@@ -4450,18 +4468,18 @@ components:
         abstract:
           type: string
           nullable: true
-          description: Description of the Talk.
+          description: Description of the event.
         invitation_link:
           type: string
           format: uri
           nullable: true
-          description: Allows the users to join the Talk.
+          description: Allows the users to join the event.
           maxLength: 200
         youtube_link:
           type: string
           format: uri
           nullable: true
-          description: The Talk's YouTube link.
+          description: The YouTube link of the recorded event.
           maxLength: 200
       required:
       - date_as_tz_europe_paris
