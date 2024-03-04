@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { Alert, Box, Typography } from '@mui/material';
 
@@ -14,7 +15,6 @@ import {
 } from 'src/services/openapi';
 
 import EventsMenu from './EventsMenu';
-import { useHistory, useLocation } from 'react-router-dom';
 
 interface SortedEventAccumulator {
   past: TournesolEvent[];
