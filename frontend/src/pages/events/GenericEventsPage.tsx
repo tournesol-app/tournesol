@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Alert, Box, Typography } from '@mui/material';
 
-import { ContentBox, ContentHeader } from 'src/components';
+import { ContentBox, ContentHeader, Pagination } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
 import EventEntryList from 'src/pages/events/EventEntryList';
 import { TOLERANCE_PERIOD } from 'src/pages/events/parameters';
@@ -14,6 +14,7 @@ import {
 } from 'src/services/openapi';
 
 import EventsMenu from './EventsMenu';
+import { useHistory, useLocation } from 'react-router-dom';
 
 interface SortedEventAccumulator {
   past: TournesolEvent[];
@@ -36,18 +37,39 @@ const GenericEventsPage = ({
 }: GenericEventsPageProps) => {
   const { t } = useTranslation();
   const { contactAdministrator } = useNotifications();
+  const history = useHistory();
+  const location = useLocation();
 
   const [pastEvents, setPastEvents] = useState<Array<TournesolEvent>>([]);
   const [futureEvents, setFutureEvents] = useState<Array<TournesolEvent>>([]);
+  const [totalEvents, setTotalEvents] = useState(0);
+
+  const searchParams = new URLSearchParams(location.search);
+  const offset = Number(searchParams.get('offset') || 0);
+  const limit = 2;
+
+  const handleOffsetChange = (newOffset: number) => {
+    searchParams.set('offset', newOffset.toString());
+    history.push({ search: searchParams.toString() });
+  };
+
+  const displayFutureEvents = () => {
+    return offset === 0 || futureEvents.length > 0;
+  };
+
+  console.log(offset);
 
   useEffect(() => {
     async function getEventsEntries() {
       const events = await BackofficeService.backofficeEventsList({
-        limit: 100,
+        limit: limit,
+        offset: offset,
         eventType: eventType,
       }).catch(() => {
         contactAdministrator('error');
       });
+
+      setTotalEvents(events?.count ?? 0);
 
       if (events && events.results) {
         const now = new Date();
@@ -80,7 +102,7 @@ const GenericEventsPage = ({
     }
 
     getEventsEntries();
-  }, [contactAdministrator, eventType]);
+  }, [contactAdministrator, eventType, offset]);
 
   return (
     <>
@@ -90,24 +112,26 @@ const GenericEventsPage = ({
           <EventsMenu selected={selectedMenuItem} />
         </Box>
         {header && header}
-        <Box mb={4}>
-          <Typography
-            variant="h6"
-            component="h3"
-            mb={2}
-            borderBottom="1px solid #E7E5DB"
-          >
-            {t('eventsPage.upcomingEvents')}
-          </Typography>
+        {displayFutureEvents() && (
+          <Box mb={4}>
+            <Typography
+              variant="h6"
+              component="h3"
+              mb={2}
+              borderBottom="1px solid #E7E5DB"
+            >
+              {t('eventsPage.upcomingEvents')}
+            </Typography>
 
-          {futureEvents && futureEvents.length > 0 ? (
-            <EventEntryList events={futureEvents} />
-          ) : (
-            <Alert severity="info">
-              {t('eventsPage.noEventsPlannedForTheMoment')}
-            </Alert>
-          )}
-        </Box>
+            {futureEvents && futureEvents.length > 0 ? (
+              <EventEntryList events={futureEvents} />
+            ) : (
+              <Alert severity="info">
+                {t('eventsPage.noEventsPlannedForTheMoment')}
+              </Alert>
+            )}
+          </Box>
+        )}
         {pastEvents && pastEvents.length > 0 && (
           <Box mb={4}>
             <Typography
@@ -120,6 +144,14 @@ const GenericEventsPage = ({
             </Typography>
             <EventEntryList events={pastEvents} />
           </Box>
+        )}
+        {totalEvents > 0 && (
+          <Pagination
+            offset={offset}
+            count={totalEvents}
+            onOffsetChange={handleOffsetChange}
+            limit={limit}
+          />
         )}
       </ContentBox>
     </>
