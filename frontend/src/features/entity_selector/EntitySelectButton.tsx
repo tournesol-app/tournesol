@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+
 import {
   Autocomplete,
   Box,
@@ -7,7 +8,10 @@ import {
   useMediaQuery,
   Theme,
   Button,
+  IconButton,
 } from '@mui/material';
+import { Search } from '@mui/icons-material';
+
 import { useTranslation } from 'react-i18next';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
@@ -49,7 +53,7 @@ const VideoInput = ({
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
 
   const { isLoggedIn } = useLoginState();
-  const fullScreenModal = useMediaQuery(
+  const smallScreen = useMediaQuery(
     (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
     { noSsr: true }
   );
@@ -180,29 +184,44 @@ const VideoInput = ({
           width: variant === 'full' ? '100%' : 'auto',
         }}
       >
-        <Button
-          fullWidth={variant === 'full' ? true : false}
-          onClick={toggleSuggestions}
-          size="small"
-          variant="contained"
-          color="secondary"
-          disabled={disabled}
-          sx={
-            variant === 'full'
-              ? { minHeight: '100px', fontSize: '1rem' }
-              : { minWidth: '80px', fontSize: { xs: '0.7rem', sm: '0.8rem' } }
-          }
-          disableElevation
-          data-testid={`entity-select-button-${variant}`}
-        >
-          {variant === 'full'
-            ? t('entitySelector.selectAVideo')
-            : t('entitySelector.select')}
-        </Button>
+        {smallScreen && variant === 'compact' ? (
+          <IconButton
+            onClick={toggleSuggestions}
+            size="small"
+            color="secondary"
+            disabled={disabled}
+            sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+            data-testid={`entity-select-button-${variant}`}
+          >
+            <Search />
+          </IconButton>
+        ) : (
+          <Button
+            fullWidth={variant === 'full' ? true : false}
+            onClick={toggleSuggestions}
+            size="small"
+            variant="contained"
+            color="secondary"
+            disabled={disabled}
+            startIcon={variant === 'full' ? undefined : <Search />}
+            sx={
+              variant === 'full'
+                ? { minHeight: '100px', fontSize: '1rem' }
+                : { fontSize: { xs: '0.7rem', sm: '0.8rem' } }
+            }
+            disableElevation
+            data-testid={`entity-select-button-${variant}`}
+          >
+            {variant === 'full'
+              ? t('entitySelector.selectAVideo')
+              : t('entitySelector.select')}
+          </Button>
+        )}
+
         {selectorAnchor.current &&
           selectorAnchor.current.offsetParent != null && (
             <SelectorPopper
-              modal={fullScreenModal}
+              modal={smallScreen}
               open={suggestionsOpen}
               anchorEl={selectorAnchor.current}
               onClose={() => setSuggestionsOpen(false)}
