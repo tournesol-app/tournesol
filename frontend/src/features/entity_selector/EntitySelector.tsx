@@ -239,18 +239,16 @@ const EntitySelectorInnerAuth = ({
     [onChange]
   );
 
-  const bindDrag = useDrag((state) => {
-    if (state.type === 'pointerup' || state.type === 'touchend') {
-      const swipe = state.swipe;
+  const bindDrag = useDrag(({ swipe, type }) => {
+    if (type === 'pointerup' || type === 'touchend') {
       if (swipe[1] < 0) {
-        // XXX:
-        //   - trigger the refresh of the correct entity selector
-        //   - use a more React strategy
-        (
-          document.querySelectorAll(
-            'button[data-testid="auto-entity-button-compact"]'
-          )[0] as HTMLElement
-        ).click();
+        const autoButton = document.getElementById(
+          `auto-suggestion-${alignment}`
+        ) as HTMLElement;
+
+        if (autoButton) {
+          autoButton.click();
+        }
       }
     }
   });
@@ -288,6 +286,7 @@ const EntitySelectorInnerAuth = ({
             </Grid>
             <Grid item>
               <AutoEntityButton
+                htmlId={`auto-suggestion-${alignment}`}
                 disabled={loading}
                 currentUid={uid}
                 otherUid={otherUid}
