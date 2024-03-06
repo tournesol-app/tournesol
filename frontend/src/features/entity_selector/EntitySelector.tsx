@@ -239,27 +239,19 @@ const EntitySelectorInnerAuth = ({
     [onChange]
   );
 
-  const bind = useDrag((state) => {
+  const bindDrag = useDrag((state) => {
     if (state.type === 'pointerup' || state.type === 'touchend') {
       const swipe = state.swipe;
       if (swipe[1] < 0) {
+        // XXX:
+        //   - trigger the refresh of the correct entity selector
+        //   - use a more React strategy
         (
           document.querySelectorAll(
             'button[data-testid="auto-entity-button-compact"]'
           )[0] as HTMLElement
         ).click();
       }
-
-      //const movement = state.movement;
-      /*
-      if (movement[1] < 0) {
-        (
-          document.querySelectorAll(
-            'button[data-testid="auto-entity-button-compact"]'
-          )[0] as HTMLElement
-        ).click();
-      }
-      */
     }
   });
 
@@ -320,7 +312,7 @@ const EntitySelectorInnerAuth = ({
           </Typography>
         </Box>
       )}
-      <Box {...bind()} sx={{ touchAction: 'none' }}>
+      <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
         {rating ? (
           <EntityCard
             compact
