@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDrag } from '@use-gesture/react';
 
 import { useTheme } from '@mui/material/styles';
 import { Box, Grid, Typography } from '@mui/material';
@@ -238,6 +239,18 @@ const EntitySelectorInnerAuth = ({
     [onChange]
   );
 
+  const bind = useDrag((state) => {
+    if (state.type === 'pointerup' || state.type === 'touchend') {
+      if (state.swipe[1] > 0) {
+        (
+          document.querySelectorAll(
+            'button[data-testid="auto-entity-button-compact"]'
+          )[0] as HTMLElement
+        ).click();
+      }
+    }
+  });
+
   return (
     <>
       {showEntityInput && (
@@ -295,7 +308,7 @@ const EntitySelectorInnerAuth = ({
           </Typography>
         </Box>
       )}
-      <>
+      <Box {...bind()}>
         {rating ? (
           <EntityCard
             compact
@@ -389,7 +402,7 @@ const EntitySelectorInnerAuth = ({
             </Grid>
           </>
         )}
-      </>
+      </Box>
     </>
   );
 };
