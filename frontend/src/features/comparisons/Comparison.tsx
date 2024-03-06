@@ -17,7 +17,9 @@ import EntitySelector, {
 } from 'src/features/entity_selector/EntitySelector';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import ComparisonEntityContexts from './ComparisonEntityContexts';
+import ComparisonEntityContexts, {
+  selectorHasContext,
+} from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
@@ -273,9 +275,15 @@ const Comparison = ({
       >
         <ComparisonHelper />
       </Grid>
-      <Grid item xs={12}>
-        <ComparisonEntityContexts selectorA={selectorA} selectorB={selectorB} />
-      </Grid>
+      {selectorHasContext(selectorA) ||
+        (selectorHasContext(selectorB) && (
+          <Grid item xs={12}>
+            <ComparisonEntityContexts
+              selectorA={selectorA}
+              selectorB={selectorB}
+            />
+          </Grid>
+        ))}
       <Grid
         item
         xs={12}
