@@ -241,7 +241,9 @@ const EntitySelectorInnerAuth = ({
 
   const bind = useDrag((state) => {
     if (state.type === 'pointerup' || state.type === 'touchend') {
-      if (state.swipe[1] > 0) {
+      const movement = state.movement;
+
+      if (movement[1] < 0) {
         (
           document.querySelectorAll(
             'button[data-testid="auto-entity-button-compact"]'
@@ -308,7 +310,7 @@ const EntitySelectorInnerAuth = ({
           </Typography>
         </Box>
       )}
-      <Box {...bind()}>
+      <Box {...bind()} sx={{ touchAction: 'none' }}>
         {rating ? (
           <EntityCard
             compact
