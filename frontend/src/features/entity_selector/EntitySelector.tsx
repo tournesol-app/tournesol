@@ -241,8 +241,17 @@ const EntitySelectorInnerAuth = ({
 
   const bind = useDrag((state) => {
     if (state.type === 'pointerup' || state.type === 'touchend') {
-      const movement = state.movement;
+      const swipe = state.swipe;
+      if (swipe[1] < 0) {
+        (
+          document.querySelectorAll(
+            'button[data-testid="auto-entity-button-compact"]'
+          )[0] as HTMLElement
+        ).click();
+      }
 
+      //const movement = state.movement;
+      /*
       if (movement[1] < 0) {
         (
           document.querySelectorAll(
@@ -250,6 +259,7 @@ const EntitySelectorInnerAuth = ({
           )[0] as HTMLElement
         ).click();
       }
+      */
     }
   });
 
