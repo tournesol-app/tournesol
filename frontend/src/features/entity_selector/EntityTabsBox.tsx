@@ -221,7 +221,7 @@ const EntityTabsBox = ({
       </Tabs>
       <LoaderWrapper
         isLoading={status === TabStatus.Loading}
-        sx={{ display: uiDisabled ? 'none' : 'initial' }}
+        sx={{ display: uiDisabled ? 'none' : 'initial', overflowY: 'auto' }}
       >
         {isDescriptionVisible ? (
           <TabInfo
@@ -241,34 +241,32 @@ const EntityTabsBox = ({
             </IconButton>
           </Box>
         )}
-        <Box overflow="hidden">
-          {status === TabStatus.Error ? (
-            <TabError message={t('entitySelector.errorOnLoading')} />
-          ) : options.length > 0 ? (
-            <ul>
-              {options.map((res) => (
-                <li
-                  key={res.entity.uid}
-                  onClick={
-                    onSelectEntity && (() => onSelectEntity(res.entity.uid))
+        {status === TabStatus.Error ? (
+          <TabError message={t('entitySelector.errorOnLoading')} />
+        ) : options.length > 0 ? (
+          <ul>
+            {options.map((res) => (
+              <li
+                key={res.entity.uid}
+                onClick={
+                  onSelectEntity && (() => onSelectEntity(res.entity.uid))
+                }
+              >
+                <RowEntityCard
+                  result={res}
+                  withLink={withLink}
+                  individualScores={
+                    displayIndividualScores
+                      ? getIndividualScores(res)
+                      : undefined
                   }
-                >
-                  <RowEntityCard
-                    result={res}
-                    withLink={withLink}
-                    individualScores={
-                      displayIndividualScores
-                        ? getIndividualScores(res)
-                        : undefined
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <TabError message={t('tabsBox.emptyList')} />
-          )}
-        </Box>
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <TabError message={t('tabsBox.emptyList')} />
+        )}
       </LoaderWrapper>
     </Paper>
   );
