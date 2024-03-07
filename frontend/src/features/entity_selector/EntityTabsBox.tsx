@@ -261,7 +261,7 @@ const EntityTabsBox = ({
         ))}
       </Tabs>
       <LoaderWrapper
-        circularProgress={!searchError}
+        circularProgress={!searchError && !tabsHidden}
         isLoading={status === TabStatus.Loading}
         sx={{ display: tabsHidden ? 'none' : 'initial', overflowY: 'auto' }}
       >
