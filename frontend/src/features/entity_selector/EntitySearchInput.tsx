@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Close, Search } from '@mui/icons-material';
 
+import { LoaderWrapper } from 'src/components';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks';
 import { PollsService } from 'src/services/openapi';
@@ -28,6 +29,7 @@ interface EntitySearchInputProps {
 
 interface EntitySearchResultsProps {
   error?: boolean;
+  loading: boolean;
   lastSearch: string;
   entities: EntityResult[];
   onSelect?: (uid: string) => void;
@@ -81,6 +83,7 @@ const EntitySearchResultsList = ({
 
 const EntitySearchResults = ({
   error = false,
+  loading,
   lastSearch,
   entities,
   onSelect,
@@ -97,31 +100,33 @@ const EntitySearchResults = ({
           '0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 6px 5px 0px rgba(0,0,0,0.12)',
       }}
     >
-      <Box p={1} pb={2}>
-        <Typography
-          variant="subtitle1"
-          textAlign="center"
-          sx={{
-            '& strong': {
-              color: 'secondary.main',
-              fontSize: '1.4rem',
-            },
-          }}
-        >
-          {error ? (
-            t('entitySelector.errorOnLoading')
-          ) : (
-            <Trans
-              t={t}
-              i18nKey="entitySearchInput.searchResults"
-              count={nResults}
-            >
-              <strong>{{ nResults }}</strong> results for {{ lastSearch }}
-            </Trans>
-          )}
-        </Typography>
-      </Box>
-      <EntitySearchResultsList entities={entities} onSelect={onSelect} />
+      <LoaderWrapper isLoading={loading}>
+        <Box p={1} pb={2}>
+          <Typography
+            variant="subtitle1"
+            textAlign="center"
+            sx={{
+              '& strong': {
+                color: 'secondary.main',
+                fontSize: '1.4rem',
+              },
+            }}
+          >
+            {error ? (
+              t('entitySelector.errorOnLoading')
+            ) : (
+              <Trans
+                t={t}
+                i18nKey="entitySearchInput.searchResults"
+                count={nResults}
+              >
+                <strong>{{ nResults }}</strong> results for {{ lastSearch }}
+              </Trans>
+            )}
+          </Typography>
+        </Box>
+        <EntitySearchResultsList entities={entities} onSelect={onSelect} />
+      </LoaderWrapper>
     </Paper>
   );
 };
@@ -268,6 +273,7 @@ const EntitySearchInput = ({
       {displayResults() && (
         <EntitySearchResults
           error={error}
+          loading={loading}
           lastSearch={lastSearch}
           entities={entities}
           onSelect={selectResult}
