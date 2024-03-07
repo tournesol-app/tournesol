@@ -13,7 +13,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { EntityResult } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import EntitySearchInput from './EntityTextInput';
+import EntitySearchInput from './EntitySearchInput';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import { InfoOutlined } from '@mui/icons-material';
 
