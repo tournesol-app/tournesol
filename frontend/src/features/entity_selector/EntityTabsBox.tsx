@@ -118,9 +118,9 @@ const EntityTabsBox = ({
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
 
-  const [uiDisabled, setUiDisabled] = useState(false);
+  const [tabsHidden, setTabsHidden] = useState(false);
   const [tabsDisabled, setTabsDisabled] = useState(false);
-  const [searchOnError, setSearchOnError] = useState(false);
+  const [searchError, setSearchError] = useState(false);
   const [statusBeforeSearch, setStatusBeforeSearch] = useState<TabStatus>(
     TabStatus.Ok
   );
@@ -176,18 +176,18 @@ const EntityTabsBox = ({
   };
 
   const onSearchError = () => {
-    setSearchOnError(true);
+    setSearchError(true);
   };
 
   const onSearchClose = () => {
-    setUiDisabled(false);
+    setTabsHidden(false);
     setTabsDisabled(false);
-    setSearchOnError(false);
+    setSearchError(false);
     setStatus(statusBeforeSearch);
   };
 
   const onSearchResults = () => {
-    setUiDisabled(true);
+    setTabsHidden(true);
     setStatus(statusBeforeSearch);
   };
 
@@ -239,7 +239,7 @@ const EntityTabsBox = ({
         variant="scrollable"
         scrollButtons="auto"
         sx={{
-          display: uiDisabled ? 'none' : 'inital',
+          display: tabsHidden ? 'none' : 'inital',
           bgcolor: 'grey.100',
           borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
           '& .MuiTabs-scrollButtons.Mui-disabled': {
@@ -257,9 +257,9 @@ const EntityTabsBox = ({
         ))}
       </Tabs>
       <LoaderWrapper
-        circularProgress={!searchOnError}
+        circularProgress={!searchError}
         isLoading={status === TabStatus.Loading}
-        sx={{ display: uiDisabled ? 'none' : 'initial', overflowY: 'auto' }}
+        sx={{ display: tabsHidden ? 'none' : 'initial', overflowY: 'auto' }}
       >
         {isDescriptionVisible ? (
           <TabInfo
