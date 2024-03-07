@@ -177,6 +177,7 @@ const EntitySelectorInnerAuth = ({
       }
     }
     setLoading(false);
+    setSlideIn(true);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
@@ -242,6 +243,10 @@ const EntitySelectorInnerAuth = ({
   );
 
   const bindDrag = useDrag(({ swipe, type }) => {
+    if (variant === 'noControl' || slideIn === false) {
+      return;
+    }
+
     if (type === 'pointerup' || type === 'touchend') {
       if (swipe[1] < 0) {
         const autoButton = document.getElementById(
@@ -252,10 +257,6 @@ const EntitySelectorInnerAuth = ({
           setSlideIn(false);
           setTimeout(() => {
             autoButton.click();
-
-            setTimeout(() => {
-              setSlideIn(true);
-            }, 200);
           }, 160);
         }
       }
