@@ -11,5 +11,5 @@ from .base import PreferenceLearning
 from .generalized_bradley_terry import UniformGBT
 try:
     from .lbfgs_generalized_bradley_terry import LBFGSUniformGBT
-except ImportError:
+except RuntimeError:
     pass
