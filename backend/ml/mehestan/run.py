@@ -1,6 +1,6 @@
 import logging
 import os
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 
 from django import db
 from django.conf import settings
@@ -37,17 +37,15 @@ def update_user_scores(poll: Poll, user: User):
             },
             inplace=True,
         )
-        output.save_individual_scores(
-            scores,
-            single_user_id=user.pk
-        )
+        output.save_individual_scores(scores, single_user_id=user.pk)
+
+
+def close_db_connection_callback():
+    db.connection.close()
 
 
 def run_mehestan(
-    ml_input: TournesolInput,
-    poll: Poll,
-    parameters: MehestanParameters,
-    main_criterion_only=False
+    ml_input: TournesolInput, poll: Poll, parameters: MehestanParameters, main_criterion_only=False
 ):
     """
     This function use multiprocessing.
@@ -74,25 +72,37 @@ def run_mehestan(
 
     criteria = poll.criterias_list
 
-    os.register_at_fork(before=db.connections.close_all)
-
     criteria_to_run = [poll.main_criteria]
     if not main_criterion_only:
         criteria_to_run.extend(c for c in criteria if c != poll.main_criteria)
 
-    # compute each criterion in parallel
-    cpu_count = os.cpu_count() or 1
-    cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
+    if settings.MEHESTAN_MULTIPROCESSING:
+        # compute each criterion in parallel
+        cpu_count = os.cpu_count() or 1
+        cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
+        os.register_at_fork(before=db.connections.close_all)
+        executor = ProcessPoolExecutor(max_workers=max(1, cpu_count))
+    else:
+        # In tests, we might prefer to use a single thread to reduce overhead
+        # of multiple processes, db connections, and redundant numba compilation
+        executor = ThreadPoolExecutor(max_workers=1)
 
-    with ProcessPoolExecutor(max_workers=max(1, cpu_count)) as executor:
-        for crit in criteria_to_run:
+    with executor:
+        futures = [
             executor.submit(
                 run_pipeline_for_criterion,
                 criterion=crit,
                 input=ml_input,
                 parameters=parameters,
-                output=TournesolPollOutput(poll_name=poll.name, criterion=crit)
+                output=TournesolPollOutput(poll_name=poll.name, criterion=crit),
+                # The callback fixes a warning about unclosed connections to test database
+                done_callback=close_db_connection_callback,
             )
+            for crit in criteria_to_run
+        ]
+        for fut in as_completed(futures):
+            # reraise potential exception
+            fut.result()
 
     save_tournesol_scores(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)

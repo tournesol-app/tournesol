@@ -1,4 +1,5 @@
 import logging
+from typing import Callable, Optional
 
 from .global_scores import (
     add_voting_rights,
@@ -20,6 +21,7 @@ def run_pipeline_for_criterion(
     input: TournesolInput,
     parameters: PipelineParameters,
     output: PipelineOutput,
+    done_callback: Optional[Callable] = None,
 ):
     """
     Run Pipepeline for a single criterion
@@ -107,5 +109,8 @@ def run_pipeline_for_criterion(
         "Solidago pipeline for criterion '%s' DONE.",
         criterion,
     )
+
+    if done_callback is not None:
+        done_callback()
 
     return output

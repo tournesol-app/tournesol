@@ -1,4 +1,3 @@
-import logging
 from abc import abstractmethod
 from typing import Optional
 
@@ -7,12 +6,11 @@ import numpy as np
 
 try:
     import torch
-except ImportError:
-    logging.warning(
+except ImportError as exc:
+    raise RuntimeError(
         "Using LBFGS requires 'torch' to be installed. "
         "Install 'solidago[torch]' to get the optional dependencies."
-    )
-    raise
+    ) from exc
 
 from solidago.scoring_model import ScoringModel, DirectScoringModel
 from .comparison_learning import ComparisonBasedPreferenceLearning

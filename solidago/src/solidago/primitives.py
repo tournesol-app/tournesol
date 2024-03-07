@@ -54,14 +54,19 @@ def qr_quantile(
         return default_value
 
     if left_uncertainties is None:
-        left_uncertainties = np.zeros(len(values))
+        left_uncertainties_2 = np.zeros(len(values))
+    else:
+        left_uncertainties_2 = left_uncertainties ** 2
+
     if right_uncertainties is None:
-        right_uncertainties = left_uncertainties
-        
+        right_uncertainties_2 = left_uncertainties_2
+    else:
+        right_uncertainties_2 = right_uncertainties ** 2
+
     # Brent’s method is used as a faster alternative to usual bisection
     return brentq(_qr_quantile_loss_derivative, xtol=error, args=(
         lipschitz, quantile, values, voting_rights, 
-        left_uncertainties, right_uncertainties, default_value
+        left_uncertainties_2, right_uncertainties_2, default_value
     ))
 
 
@@ -72,8 +77,8 @@ def _qr_quantile_loss_derivative(
     quantile: float,
     values: npt.NDArray,
     voting_rights: Union[npt.NDArray, float],
-    left_uncertainties: npt.NDArray,
-    right_uncertainties: npt.NDArray,
+    left_uncertainties_2: npt.NDArray,
+    right_uncertainties_2: npt.NDArray,
     default_value: float = 0.0,
     spacing: float = 1e-18,
 ):
@@ -88,9 +93,8 @@ def _qr_quantile_loss_derivative(
         quantile_term = (1.0 - 2.0 * quantile) * np.sum(voting_rights)
 
     deltas = variable - values
-    uncertainties = spacing + left_uncertainties * (deltas < 0)
-    uncertainties += right_uncertainties * (deltas > 0)
-    forces = voting_rights * deltas / np.sqrt(uncertainties**2 + deltas**2)
+    uncertainties_2 = left_uncertainties_2 * (deltas < 0) + right_uncertainties_2 * (deltas > 0) + spacing
+    forces = voting_rights * deltas / np.sqrt(uncertainties_2 + deltas**2)
 
     return regularization + quantile_term + forces.sum()
 
