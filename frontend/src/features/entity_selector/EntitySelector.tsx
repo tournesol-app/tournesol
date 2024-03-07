@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDrag } from '@use-gesture/react';
 
 import { useTheme } from '@mui/material/styles';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, Slide, Typography } from '@mui/material';
 
 import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
@@ -121,6 +121,8 @@ const EntitySelectorInnerAuth = ({
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
+
+  const [slideIn, setSlideIn] = useState(true);
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
@@ -247,7 +249,14 @@ const EntitySelectorInnerAuth = ({
         ) as HTMLElement;
 
         if (autoButton) {
-          autoButton.click();
+          setSlideIn(false);
+          setTimeout(() => {
+            autoButton.click();
+
+            setTimeout(() => {
+              setSlideIn(true);
+            }, 200);
+          }, 160);
         }
       }
     }
@@ -311,101 +320,105 @@ const EntitySelectorInnerAuth = ({
           </Typography>
         </Box>
       )}
-      <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
-        {rating ? (
-          <EntityCard
-            compact
-            result={rating}
-            showRatingControl={showRatingControl}
-            onRatingChange={handleRatingUpdate}
-          ></EntityCard>
-        ) : (
-          <>
-            {(loading ||
-              !showEntityInput ||
-              entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) && (
-              <EmptyEntityCard compact loading={loading} />
-            )}
-            {!loading &&
-              entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && (
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  position="absolute"
-                  top="0"
-                  color="white"
-                  bgcolor="rgba(0,0,0,.6)"
-                  width="100%"
-                  sx={{
-                    aspectRatio: '16/9',
-                    [theme.breakpoints.down('sm')]: {
-                      fontSize: '0.8rem',
-                    },
-                  }}
-                >
-                  <Typography textAlign="center" fontSize="inherit">
-                    {pollName === YOUTUBE_POLL_NAME
-                      ? t('entitySelector.youtubeVideoUnavailable')
-                      : t('entityCard.thisElementIsNotAvailable')}
-                  </Typography>
-                </Box>
+      <Slide in={slideIn} direction="down" mountOnEnter timeout={160}>
+        <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
+          {rating ? (
+            <EntityCard
+              compact
+              result={rating}
+              showRatingControl={showRatingControl}
+              onRatingChange={handleRatingUpdate}
+            ></EntityCard>
+          ) : (
+            <>
+              {(loading ||
+                !showEntityInput ||
+                entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE) && (
+                <EmptyEntityCard compact loading={loading} />
               )}
-            <Grid
-              container
-              sx={{
-                ...entityCardMainSx,
-                display:
-                  uid ||
-                  loading ||
-                  !showEntityInput ||
-                  entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
-                    ? 'none'
-                    : 'flex',
-              }}
-            >
+              {!loading &&
+                entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && (
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    position="absolute"
+                    top="0"
+                    color="white"
+                    bgcolor="rgba(0,0,0,.6)"
+                    width="100%"
+                    sx={{
+                      aspectRatio: '16/9',
+                      [theme.breakpoints.down('sm')]: {
+                        fontSize: '0.8rem',
+                      },
+                    }}
+                  >
+                    <Typography textAlign="center" fontSize="inherit">
+                      {pollName === YOUTUBE_POLL_NAME
+                        ? t('entitySelector.youtubeVideoUnavailable')
+                        : t('entityCard.thisElementIsNotAvailable')}
+                    </Typography>
+                  </Box>
+                )}
               <Grid
                 container
-                item
-                xs={12}
                 sx={{
-                  aspectRatio: '16 / 9',
-                  backgroundColor: '#fafafa',
+                  ...entityCardMainSx,
+                  display:
+                    uid ||
+                    loading ||
+                    !showEntityInput ||
+                    entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE
+                      ? 'none'
+                      : 'flex',
                 }}
-                spacing={1}
-                alignItems="center"
-                justifyContent="space-around"
-                wrap="wrap"
               >
-                <Grid container item xs={12} sm={5} justifyContent="center">
-                  <EntitySelectButton
-                    value={inputValue || uid || ''}
-                    onChange={handleChange}
-                    otherUid={otherUid}
-                    variant="full"
-                  />
-                </Grid>
-                <Grid container item xs={12} sm={5} justifyContent="center">
-                  <AutoEntityButton
-                    disabled={loading}
-                    currentUid={uid}
-                    otherUid={otherUid}
-                    onClick={() => {
-                      setLoading(true);
-                      setInputValue('');
-                    }}
-                    onResponse={(uid) =>
-                      uid ? onChange({ uid, rating: null }) : setLoading(false)
-                    }
-                    autoFill={false}
-                    variant="full"
-                  />
+                <Grid
+                  container
+                  item
+                  xs={12}
+                  sx={{
+                    aspectRatio: '16 / 9',
+                    backgroundColor: '#fafafa',
+                  }}
+                  spacing={1}
+                  alignItems="center"
+                  justifyContent="space-around"
+                  wrap="wrap"
+                >
+                  <Grid container item xs={12} sm={5} justifyContent="center">
+                    <EntitySelectButton
+                      value={inputValue || uid || ''}
+                      onChange={handleChange}
+                      otherUid={otherUid}
+                      variant="full"
+                    />
+                  </Grid>
+                  <Grid container item xs={12} sm={5} justifyContent="center">
+                    <AutoEntityButton
+                      disabled={loading}
+                      currentUid={uid}
+                      otherUid={otherUid}
+                      onClick={() => {
+                        setLoading(true);
+                        setInputValue('');
+                      }}
+                      onResponse={(uid) =>
+                        uid
+                          ? onChange({ uid, rating: null })
+                          : setLoading(false)
+                      }
+                      autoFill={false}
+                      variant="full"
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </>
-        )}
-      </Box>
+            </>
+          )}
+        </Box>
+      </Slide>
     </>
   );
 };
