@@ -1,11 +1,10 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from functools import cached_property
 from typing import Optional, Callable
 
 import pandas as pd
 import numpy as np
 import numpy.typing as npt
-import numba
 from numba import njit
 
 from solidago.scoring_model import ScoringModel, DirectScoringModel
@@ -107,9 +106,10 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         
         init_solution = np.zeros(len(entities))
         if initialization is not None:
-            for entity in entity_coordinates:
-                if entity in initialization:
-                    init_solution[entity_coordinates[entity]] = initialization[entity]
+            for (entity_id, entity_coord) in entity_coordinates.items():
+                entity_init_values = initialization(entity_id)
+                if entity_init_values is not None:
+                    init_solution[entity_coord] = entity_init_values[0]
         
         updated_coordinates = list() if updated_entities is None else [
             entity_coordinates[entity] for entity in updated_entities
