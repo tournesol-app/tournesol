@@ -251,27 +251,30 @@ const EntitySelectorInnerAuth = ({
     [onChange]
   );
 
-  const bindDrag = useDrag(({ swipe, type }) => {
-    if (variant === 'noControl' || slideIn === false) {
-      return;
-    }
+  const bindDrag = useDrag(
+    ({ swipe, type }) => {
+      if (variant === 'noControl' || slideIn === false) {
+        return;
+      }
 
-    if (type === 'pointerup' || type === 'touchend') {
-      if (swipe[1] < 0) {
-        const autoButton = document.getElementById(
-          `auto-suggestion-${alignment}`
-        ) as HTMLElement;
+      if (type === 'pointerup' || type === 'touchend') {
+        if (swipe[1] < 0) {
+          const autoButton = document.getElementById(
+            `auto-suggestion-${alignment}`
+          ) as HTMLElement;
 
-        if (autoButton) {
-          setSlideIn(false);
-          setTimeout(() => {
-            setSlideDirection('up');
-            autoButton.click();
-          }, ENTITY_CARD_SWIPE_TIMEOUT + 1);
+          if (autoButton) {
+            setSlideIn(false);
+            setTimeout(() => {
+              setSlideDirection('up');
+              autoButton.click();
+            }, ENTITY_CARD_SWIPE_TIMEOUT + 1);
+          }
         }
       }
-    }
-  });
+    },
+    { swipe: { velocity: [0.4, 0.4] } }
+  );
 
   return (
     <>
