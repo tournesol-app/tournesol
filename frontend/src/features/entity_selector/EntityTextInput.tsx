@@ -49,6 +49,9 @@ const EntitySearchResultsList = ({
           sx={{
             ul: {
               maxHeight: '42vh',
+              '.MuiModal-root &': {
+                maxHeight: '62vh',
+              },
               li: {
                 cursor: 'pointer',
                 '&:hover': {
