@@ -23,6 +23,8 @@ import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
 
+const ENTITY_CARD_SWIPE_TIMEOUT = 160;
+
 interface Props {
   title: string;
   alignment?: 'left' | 'right';
@@ -123,6 +125,9 @@ const EntitySelectorInnerAuth = ({
   const { uid, rating, ratingIsExpired } = value;
 
   const [slideIn, setSlideIn] = useState(true);
+  const [slideDirection, setSlideDirection] = useState<
+    'left' | 'right' | 'up' | 'down'
+  >('down');
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
@@ -178,6 +183,10 @@ const EntitySelectorInnerAuth = ({
     }
     setLoading(false);
     setSlideIn(true);
+
+    setTimeout(() => {
+      setSlideDirection('down');
+    }, ENTITY_CARD_SWIPE_TIMEOUT + 1);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
@@ -256,8 +265,9 @@ const EntitySelectorInnerAuth = ({
         if (autoButton) {
           setSlideIn(false);
           setTimeout(() => {
+            setSlideDirection('up');
             autoButton.click();
-          }, 160);
+          }, ENTITY_CARD_SWIPE_TIMEOUT + 1);
         }
       }
     }
@@ -321,7 +331,12 @@ const EntitySelectorInnerAuth = ({
           </Typography>
         </Box>
       )}
-      <Slide in={slideIn} direction="down" mountOnEnter timeout={160}>
+      <Slide
+        in={slideIn}
+        direction={slideDirection}
+        mountOnEnter
+        timeout={ENTITY_CARD_SWIPE_TIMEOUT}
+      >
         <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
           {rating ? (
             <EntityCard
