@@ -116,8 +116,15 @@ const EntityTabsBox = ({
   const { t } = useTranslation();
 
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
-  const [uiDisabled, setUiDisabled] = useState(false);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
+
+  const [uiDisabled, setUiDisabled] = useState(false);
+  const [tabsDisabled, setTabsDisabled] = useState(false);
+  const [searchOnError, setSearchOnError] = useState(false);
+  const [statusBeforeSearch, setStatusBeforeSearch] = useState<TabStatus>(
+    TabStatus.Ok
+  );
+
   const [options, setOptions] = useState<EntityResult[]>([]);
   const [isDescriptionVisible, setIsDescriptionVisible] =
     useState(displayDescription);
@@ -148,6 +155,7 @@ const EntityTabsBox = ({
         }
       } catch {
         if (!aborted) {
+          setOptions([]);
           setStatus(TabStatus.Error);
         }
       }
@@ -160,6 +168,28 @@ const EntityTabsBox = ({
       aborted = true;
     };
   }, [tabs, tabValue]);
+
+  const onSearchStart = () => {
+    setStatusBeforeSearch(status);
+    setTabsDisabled(true);
+    setStatus(TabStatus.Loading);
+  };
+
+  const onSearchError = () => {
+    setSearchOnError(true);
+  };
+
+  const onSearchClose = () => {
+    setUiDisabled(false);
+    setTabsDisabled(false);
+    setSearchOnError(false);
+    setStatus(statusBeforeSearch);
+  };
+
+  const onSearchResults = () => {
+    setUiDisabled(true);
+    setStatus(statusBeforeSearch);
+  };
 
   return (
     <Paper
@@ -190,8 +220,10 @@ const EntityTabsBox = ({
     >
       {entitySearchInput && (
         <EntitySearchInput
-          onClose={() => setUiDisabled(false)}
-          onResults={() => setUiDisabled(true)}
+          onClose={onSearchClose}
+          onSearch={onSearchStart}
+          onError={onSearchError}
+          onResults={onSearchResults}
           onResultSelect={onSelectEntity}
         />
       )}
@@ -216,10 +248,16 @@ const EntityTabsBox = ({
         }}
       >
         {tabs.map(({ label, name, disabled }) => (
-          <Tab key={name} value={name} label={label} disabled={disabled} />
+          <Tab
+            key={name}
+            value={name}
+            label={label}
+            disabled={tabsDisabled || disabled}
+          />
         ))}
       </Tabs>
       <LoaderWrapper
+        circularProgress={!searchOnError}
         isLoading={status === TabStatus.Loading}
         sx={{ display: uiDisabled ? 'none' : 'initial', overflowY: 'auto' }}
       >

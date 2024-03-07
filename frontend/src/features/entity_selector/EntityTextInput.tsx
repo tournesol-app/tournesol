@@ -20,6 +20,8 @@ import { extractVideoId } from 'src/utils/video';
 
 interface EntitySearchInputProps {
   onClose?: () => void;
+  onSearch?: () => void;
+  onError?: () => void;
   onResults?: () => void;
   onResultSelect?: (uid: string) => void;
 }
@@ -126,6 +128,8 @@ const EntitySearchResults = ({
 
 const EntitySearchInput = ({
   onClose,
+  onSearch,
+  onError,
   onResults,
   onResultSelect,
 }: EntitySearchInputProps) => {
@@ -133,8 +137,8 @@ const EntitySearchInput = ({
   const theme = useTheme();
   const { name: pollName } = useCurrentPoll();
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [search, setSearch] = useState('');
   const [lastSearch, setLastSearch] = useState('');
@@ -163,6 +167,7 @@ const EntitySearchInput = ({
     }
 
     setLoading(true);
+    onSearch && onSearch();
     const target = extractVideoId(search, { ignoreVideoId: true });
 
     if (target) {
@@ -183,6 +188,7 @@ const EntitySearchInput = ({
       setLoading(false);
       setEntities([]);
       setLastSearch(search);
+      onError && onError();
       console.error(err);
       return;
     }
