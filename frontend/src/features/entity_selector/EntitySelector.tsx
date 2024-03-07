@@ -23,7 +23,6 @@ import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
 
 interface Props {
-  title: string;
   alignment?: 'left' | 'right';
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
@@ -42,7 +41,6 @@ const isUidValid = (uid: string | null) =>
   uid === null ? false : uid.match(/\w+:.+/);
 
 const EntitySelector = ({
-  title,
   alignment = 'left',
   value,
   onChange,
@@ -56,7 +54,6 @@ const EntitySelector = ({
     <>
       {isLoggedIn ? (
         <EntitySelectorInnerAuth
-          title={title}
           value={value}
           onChange={onChange}
           otherUid={otherUid}
@@ -107,7 +104,6 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
 };
 
 const EntitySelectorInnerAuth = ({
-  title,
   value,
   onChange,
   otherUid,
@@ -285,14 +281,6 @@ const EntitySelectorInnerAuth = ({
               />
             </Grid>
           </Grid>
-          <Typography
-            variant="h6"
-            color="secondary"
-            fontWeight="bold"
-            sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-          >
-            {title}
-          </Typography>
         </Box>
       )}
       <>

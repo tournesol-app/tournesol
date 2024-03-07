@@ -231,7 +231,6 @@ const Comparison = ({
         alignSelf="stretch"
       >
         <EntitySelector
-          title="A"
           alignment="left"
           value={selectorA}
           onChange={onChangeA}
@@ -248,7 +247,6 @@ const Comparison = ({
         alignSelf="stretch"
       >
         <EntitySelector
-          title="B"
           alignment="right"
           value={selectorB}
           onChange={onChangeB}
