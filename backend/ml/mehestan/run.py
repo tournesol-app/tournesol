@@ -1,7 +1,6 @@
 import logging
 import os
-from functools import partial
-from multiprocessing import Pool
+from concurrent.futures import ProcessPoolExecutor
 
 from django import db
 from django.conf import settings
@@ -85,17 +84,15 @@ def run_mehestan(
     cpu_count = os.cpu_count() or 1
     cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
 
-    with Pool(processes=max(1, cpu_count)) as pool:
-        for _ in pool.imap_unordered(
-            partial(
+    with ProcessPoolExecutor(max_workers=max(1, cpu_count)) as executor:
+        for crit in criteria_to_run:
+            executor.submit(
                 run_pipeline_for_criterion,
+                criterion=crit,
                 input=ml_input,
                 parameters=parameters,
-                output=TournesolPollOutput(poll_name=poll.name),
-            ),
-            criteria_to_run,
-        ):
-            pass
+                output=TournesolPollOutput(poll_name=poll.name, criterion=crit)
+            )
 
     save_tournesol_scores(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)

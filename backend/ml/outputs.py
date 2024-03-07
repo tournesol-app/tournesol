@@ -28,9 +28,15 @@ logger = logging.getLogger(__name__)
 
 
 class TournesolPollOutput(PipelineOutput):
-    def __init__(self, poll_name: str, criterion: Optional[str] = None):
+    def __init__(
+        self,
+        poll_name: str,
+        criterion: Optional[str] = None,
+        save_trust_scores_enabled: bool = True,
+    ):
         self.poll_name = poll_name
         self.criterion = criterion
+        self.save_trust_scores_enabled = save_trust_scores_enabled
 
     @cached_property
     def poll(self) -> Poll:
@@ -44,6 +50,8 @@ class TournesolPollOutput(PipelineOutput):
             * index:  `user_id`
             * columns: `trust_score`
         """
+        if not self.save_trust_scores_enabled:
+            return
         trust_scores = trusts.trust_score
         users = User.objects.filter(id__in=trust_scores.index).only("trust_score")
         for user in users:

@@ -25,8 +25,6 @@ def run_pipeline_for_criterion(
     Run Pipepeline for a single criterion
     """
     logger.info("Starting Solidago pipeline for criterion '%s'", criterion)
-    if hasattr(output, "criterion"):
-        output.criterion = criterion
 
     logger.info("Computing individual scores for criterion '%s'...", criterion)
     indiv_scores = get_individual_scores(input, criteria=criterion, parameters=parameters)
