@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
   Tabs,
   Tab,
@@ -9,13 +10,14 @@ import {
   Typography,
   IconButton,
 } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
+
 import { Trans, useTranslation } from 'react-i18next';
 import { EntityResult } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import EntitySearchInput from './EntitySearchInput';
 import { getWebExtensionUrl } from 'src/utils/extension';
-import { InfoOutlined } from '@mui/icons-material';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -170,7 +172,9 @@ const EntityTabsBox = ({
   }, [tabs, tabValue]);
 
   const onSearchStart = () => {
-    setStatusBeforeSearch(status);
+    if (!searchError) {
+      setStatusBeforeSearch(status);
+    }
     setTabsDisabled(true);
     setStatus(TabStatus.Loading);
   };
