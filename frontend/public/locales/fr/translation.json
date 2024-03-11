@@ -143,7 +143,7 @@
     "searchResults_one": "<0>{{nResults}}</0> résultat pour « {{lastSearch}} »",
     "searchResults_many": "<0>{{nResults}}</0> résultats pour « {{lastSearch}} »",
     "searchResults_other": "<0>{{nResults}}</0> résultats pour « {{lastSearch}} »",
-    "searchByTextOrPasteUrl": "Rechercher par texte ou coller URL",
+    "searchByTextOrPasteUrl": "Rechercher par texte ou coller une URL",
     "closeSearch": "Fermer la recherche",
     "search": "Rechercher"
   },
