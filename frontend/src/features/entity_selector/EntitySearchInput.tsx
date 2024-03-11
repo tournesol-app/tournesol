@@ -173,10 +173,10 @@ const EntitySearchInput = ({
 
     setLoading(true);
     onSearch && onSearch();
-    const target = extractVideoId(search, { ignoreVideoId: true });
+    const videoId = extractVideoId(search, { ignoreVideoId: true });
 
-    if (target) {
-      selectResult(target);
+    if (videoId) {
+      selectResult(videoId);
       return;
     }
 
