@@ -134,14 +134,7 @@ const HomeComparison = () => {
         gap: '8px',
       }}
     >
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
           variant="noControl"
           value={selectorA}
@@ -149,14 +142,7 @@ const HomeComparison = () => {
           otherUid={uidB}
         />
       </Grid>
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
           variant="noControl"
           value={selectorB}
