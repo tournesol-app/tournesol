@@ -226,7 +226,7 @@ const EntitySearchInput = ({
           <TextField
             size="small"
             color="secondary"
-            label={t('entitySearchInput.search')}
+            label={t('entitySearchInput.searchByTextOrPasteUrl')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             data-testid="entity-search-input"
