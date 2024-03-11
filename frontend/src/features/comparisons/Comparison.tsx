@@ -222,14 +222,7 @@ const Comparison = ({
         gap: '8px',
       }}
     >
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
           alignment="left"
           value={selectorA}
@@ -238,14 +231,7 @@ const Comparison = ({
           autoFill={autoFillSelectorA}
         />
       </Grid>
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
           alignment="right"
           value={selectorB}
