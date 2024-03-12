@@ -17,6 +17,7 @@ interface Props {
   disabled?: boolean;
   autoFill?: boolean;
   variant?: 'compact' | 'full';
+  htmlId?: string;
 }
 
 const AutoEntityButton = ({
@@ -27,6 +28,7 @@ const AutoEntityButton = ({
   disabled = false,
   autoFill = false,
   variant = 'compact',
+  htmlId,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -94,6 +96,7 @@ const AutoEntityButton = ({
     <>
       {smallScreen && variant === 'compact' ? (
         <IconButton
+          id={htmlId}
           disabled={disabled}
           color="secondary"
           size="small"
@@ -112,6 +115,7 @@ const AutoEntityButton = ({
             component to properly listen to fired events. */}
           <span>
             <Button
+              id={htmlId}
               fullWidth={variant === 'full' ? true : false}
               disabled={disabled}
               color="secondary"

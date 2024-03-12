@@ -13,6 +13,14 @@ interface EntityContextBoxProps {
   selectorB: SelectorValue;
 }
 
+export const selectorHasContext = (selector: SelectorValue) => {
+  return (
+    selector.uid &&
+    selector.rating &&
+    selector.rating.entity_contexts.length > 0
+  );
+};
+
 const ComparisonEntityContextsItem = ({
   selector,
   altAssociationDisclaimer,
@@ -22,15 +30,17 @@ const ComparisonEntityContextsItem = ({
 }) => {
   return (
     <>
-      {selector.rating && selector.uid && selector.rating.entity_contexts && (
-        <EntityContextBox
-          uid={selector.uid}
-          contexts={selector.rating.entity_contexts}
-          entityName={selector.rating?.entity?.metadata?.name}
-          altAssociationDisclaimer={altAssociationDisclaimer}
-          collapsible={true}
-        />
-      )}
+      {selector.uid &&
+        selector.rating &&
+        selector.rating.entity_contexts.length > 0 && (
+          <EntityContextBox
+            uid={selector.uid}
+            contexts={selector.rating.entity_contexts}
+            entityName={selector.rating?.entity?.metadata?.name}
+            altAssociationDisclaimer={altAssociationDisclaimer}
+            collapsible={true}
+          />
+        )}
     </>
   );
 };
@@ -45,6 +55,13 @@ const ComparisonEntityContexts = ({
   const { name: pollName } = useCurrentPoll();
 
   const entityName = getEntityName(t, pollName);
+
+  const selectorHasContextA = selectorHasContext(selectorA);
+  const selectorHasContextB = selectorHasContext(selectorB);
+
+  if (!selectorHasContextA && !selectorHasContextB) {
+    return <></>;
+  }
 
   return (
     <Grid
@@ -64,38 +81,42 @@ const ComparisonEntityContexts = ({
         </Grid>
       ) : (
         <>
-          <Grid item xs={12} sm={12} md={6}>
-            <ComparisonEntityContextsItem
-              selector={selectorA}
-              altAssociationDisclaimer={
-                <strong>
-                  <Trans
-                    t={t}
-                    i18nKey="entityContext.entityAtheAssociationWouldLikeToGiveYouContext"
-                  >
-                    <span className="primary">{{ entityName }} A</span> - The
-                    Tournesol association would like to give you some context.
-                  </Trans>
-                </strong>
-              }
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={6}>
-            <ComparisonEntityContextsItem
-              selector={selectorB}
-              altAssociationDisclaimer={
-                <strong>
-                  <Trans
-                    t={t}
-                    i18nKey="entityContext.entityBtheAssociationWouldLikeToGiveYouContext"
-                  >
-                    <span className="primary">{{ entityName }} B</span> - The
-                    Tournesol association would like to give you some context.
-                  </Trans>
-                </strong>
-              }
-            />
-          </Grid>
+          {selectorHasContextA && (
+            <Grid item xs={12} sm={12} md={6}>
+              <ComparisonEntityContextsItem
+                selector={selectorA}
+                altAssociationDisclaimer={
+                  <strong>
+                    <Trans
+                      t={t}
+                      i18nKey="entityContext.entityAtheAssociationWouldLikeToGiveYouContext"
+                    >
+                      <span className="primary">{{ entityName }} A</span> - The
+                      Tournesol association would like to give you some context.
+                    </Trans>
+                  </strong>
+                }
+              />
+            </Grid>
+          )}
+          {selectorHasContextB && (
+            <Grid item xs={12} sm={12} md={6}>
+              <ComparisonEntityContextsItem
+                selector={selectorB}
+                altAssociationDisclaimer={
+                  <strong>
+                    <Trans
+                      t={t}
+                      i18nKey="entityContext.entityBtheAssociationWouldLikeToGiveYouContext"
+                    >
+                      <span className="primary">{{ entityName }} B</span> - The
+                      Tournesol association would like to give you some context.
+                    </Trans>
+                  </strong>
+                }
+              />
+            </Grid>
+          )}
         </>
       )}
     </Grid>
