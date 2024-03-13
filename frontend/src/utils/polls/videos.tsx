@@ -41,7 +41,7 @@ export function getTutorialVideos(): Promise<Recommendation[]> {
 
   const metadata: Record<string, string | string[]> = {};
 
-  const minutesMax = 5;
+  const minutesMax = 60;
   const top = 100;
 
   metadata['duration:lte:int'] = (60 * minutesMax).toString();
