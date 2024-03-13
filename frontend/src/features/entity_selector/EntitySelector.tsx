@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDrag } from '@use-gesture/react';
 
 import { useTheme } from '@mui/material/styles';
-import { Box, Grid, Slide, Typography } from '@mui/material';
+import { Box, Grid, Slide, Typography, useMediaQuery } from '@mui/material';
 
 import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
@@ -42,6 +42,12 @@ export interface SelectorValue {
 
 const isUidValid = (uid: string | null) =>
   uid === null ? false : uid.match(/\w+:.+/);
+
+const wait = (milliseconds: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+};
 
 const EntitySelector = ({
   alignment = 'left',
@@ -117,6 +123,8 @@ const EntitySelectorInnerAuth = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
+
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { uid, rating, ratingIsExpired } = value;
 
@@ -269,7 +277,7 @@ const EntitySelectorInnerAuth = ({
         }
       }
     },
-    { swipe: { velocity: [0.4, 0.4] } }
+    { swipe: { velocity: [0.35, 0.35] } }
   );
 
   return (
@@ -295,6 +303,7 @@ const EntitySelectorInnerAuth = ({
             spacing={1}
             display={uid ? 'flex' : 'none'}
             direction={alignment === 'left' ? 'row' : 'row-reverse'}
+            justifyContent={smallScreen ? 'space-around' : 'flex-start'}
           >
             <Grid item>
               <EntitySelectButton
@@ -309,9 +318,12 @@ const EntitySelectorInnerAuth = ({
                 disabled={loading}
                 currentUid={uid}
                 otherUid={otherUid}
-                onClick={() => {
+                onClick={async () => {
                   setLoading(true);
+                  setSlideIn(false);
+                  await wait(ENTITY_CARD_SWIPE_TIMEOUT + 1);
                   setInputValue('');
+                  setSlideDirection('up');
                 }}
                 onResponse={(uid) => {
                   uid ? onChange({ uid, rating: null }) : setLoading(false);
@@ -412,7 +424,7 @@ const EntitySelectorInnerAuth = ({
                       disabled={loading}
                       currentUid={uid}
                       otherUid={otherUid}
-                      onClick={() => {
+                      onClick={async () => {
                         setLoading(true);
                         setInputValue('');
                       }}

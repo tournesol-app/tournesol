@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Tooltip, Button, useMediaQuery, IconButton } from '@mui/material';
-import { Autorenew } from '@mui/icons-material';
+import { Autorenew, SwipeUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { theme } from 'src/theme';
@@ -13,7 +13,7 @@ interface Props {
   currentUid: string | null;
   otherUid: string | null;
   onResponse: (newUid: string | null) => void;
-  onClick: () => void;
+  onClick: () => Promise<void>;
   disabled?: boolean;
   autoFill?: boolean;
   variant?: 'compact' | 'full';
@@ -43,7 +43,7 @@ const AutoEntityButton = ({
 
   const askNewVideo = useCallback(
     async ({ fromAutoFill = false } = {}) => {
-      onClick();
+      await onClick();
 
       const newUid: string | null = await getUidForComparison(
         currentUid || '',
@@ -104,7 +104,7 @@ const AutoEntityButton = ({
           sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
           data-testid={`auto-entity-button-${variant}`}
         >
-          <Autorenew />
+          <SwipeUp />
         </IconButton>
       ) : (
         <Tooltip
