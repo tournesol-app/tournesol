@@ -215,13 +215,7 @@ const Comparison = ({
   };
 
   return (
-    <Grid
-      container
-      sx={{
-        maxWidth: '880px',
-        gap: '8px',
-      }}
-    >
+    <Grid container maxWidth="880px" gap={1}>
       <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
           alignment="left"
