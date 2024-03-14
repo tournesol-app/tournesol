@@ -53,11 +53,7 @@ const GenericEventsPage = ({
     history.push({ search: searchParams.toString() });
   };
 
-  const displayFutureEvents = () => {
-    return offset === 0 || futureEvents.length > 0;
-  };
-
-  console.log(offset);
+  const displayFutureEvents = offset === 0 || futureEvents.length > 0;
 
   useEffect(() => {
     async function getEventsEntries() {
@@ -112,7 +108,7 @@ const GenericEventsPage = ({
           <EventsMenu selected={selectedMenuItem} />
         </Box>
         {header && header}
-        {displayFutureEvents() && (
+        {displayFutureEvents && (
           <Box mb={4}>
             <Typography
               variant="h6"
