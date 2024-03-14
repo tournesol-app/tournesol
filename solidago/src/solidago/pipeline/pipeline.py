@@ -176,6 +176,8 @@ class Pipeline:
             output.save_trust_scores(trusts=users)
             
         logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
+        # FIXME: `privacy` may contain (user, entity) even if user has expressed no judgement
+        # about the entity. These users should not be given a voting right on the entity.
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
         start_step3 = timeit.default_timer()
         logger.info(f"Pipeline 2. Terminated in {np.round(start_step3 - start_step2, 2)} seconds")

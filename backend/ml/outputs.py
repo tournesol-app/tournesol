@@ -55,7 +55,7 @@ class TournesolPollOutput(PipelineOutput):
         trust_scores = trusts.trust_score
         users = User.objects.filter(id__in=trust_scores.index).only("trust_score")
         for user in users:
-            user.trust_score = trusts[user.id]
+            user.trust_score = trust_scores[user.id]
         User.objects.bulk_update(
             users,
             ["trust_score"],

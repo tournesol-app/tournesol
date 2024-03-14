@@ -1,18 +1,14 @@
 import logging
-import numpy as np
-import pandas as pd
 from threading import Thread
 
 from solidago.pipeline.inputs import TournesolInputFromPublicDataset
-from solidago.judgments import DataFrameJudgments
-from solidago.privacy_settings import PrivacySettings
 
-from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust
-from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust
-# from solidago.preference_learning import PreferenceLearning, LBFGSUniformGBT
-from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift
-from solidago.aggregation import Aggregation, StandardizedQrQuantile
-from solidago.post_process import PostProcess, Squash
+from solidago.trust_propagation import LipschiTrust
+from solidago.voting_rights import AffineOvertrust
+from solidago.preference_learning import LBFGSUniformGBT
+from solidago.scaling import ScalingCompose, Mehestan, QuantileZeroShift
+from solidago.aggregation import StandardizedQrQuantile
+from solidago.post_process import Squash
 from solidago.pipeline import Pipeline
 
 
@@ -44,13 +40,13 @@ pipeline = Pipeline(
         min_overtrust=2.0,
         overtrust_ratio=0.1,
     ),
-    # preference_learning=LBFGSUniformGBT(
-    #     prior_std_dev=7,
-    #     comparison_max=10,
-    #     convergence_error=1e-5,
-    #     cumulant_generating_function_error=1e-5,
-    #     n_steps=2,
-    # ),
+    preference_learning=LBFGSUniformGBT(
+        prior_std_dev=7,
+        comparison_max=10,
+        convergence_error=1e-5,
+        cumulant_generating_function_error=1e-5,
+        n_steps=2,
+    ),
     scaling=ScalingCompose(
         Mehestan(
             lipschitz=0.1,
@@ -94,13 +90,10 @@ def run_pipeline(criterion):
     user_outputs[criterion], voting_rights[criterion] = output[0], output[1]
     user_models[criterion], global_model[criterion] = output[2], output[3]
 
-    logger.info(f"Successful pipeline run for criterion {criterion}.")
-
-
-# threads = [Thread(target=run_pipeline, args=(criterion,)) for criterion in criteria]
-# for thread in threads:
-#     thread.start()
-# for thread in threads:
-#     thread.join()
+threads = [Thread(target=run_pipeline, args=(criterion,)) for criterion in criteria]
+for thread in threads:
+    thread.start()
+for thread in threads:
+    thread.join()
     
-# logger.info(f"Successful pipeline run.")
+logger.info(f"Successful pipeline run.")
