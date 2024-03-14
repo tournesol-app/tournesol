@@ -46,7 +46,7 @@ const GenericEventsPage = ({
 
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
-  const limit = 2;
+  const limit = 20;
 
   const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
