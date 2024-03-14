@@ -8,6 +8,7 @@ from .base import TrustPropagation
 import pandas as pd
 import numpy as np
 
+
 class LipschiTrust(TrustPropagation):
     def __init__(self,
         pretrust_value: float=0.8,
@@ -69,11 +70,17 @@ class LipschiTrust(TrustPropagation):
             # Initialize to pretrust
             new_trusts = pretrusts.copy()
             # Propagate trust through vouches
-            for _, row in vouches.iterrows():
-                discount = self.decay * row["vouch"] / total_vouches[row["voucher"]]
-                new_trusts[row["vouchee"]] += discount * trusts[row["voucher"]]
+            for row in vouches.itertuples():
+                discount = self.decay * row.vouch / total_vouches[row.voucher]
+                new_trusts[row.vouchee] += discount * trusts[row.voucher]
+
             # Bound trusts for Lipschitz resilience
-            trusts = new_trusts.clip(upper=1.0)
+            new_trusts = new_trusts.clip(upper=1.0)
+
+            delta = np.linalg.norm(new_trusts - trusts, ord=1)
+            trusts = new_trusts
+            if delta < self.error:
+                break
         
         return users.assign(trust_score=trusts)
       
