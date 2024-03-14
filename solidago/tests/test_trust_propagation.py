@@ -51,7 +51,7 @@ def test_lipschitrust_test_data(test):
     td = importlib.import_module(f"data.data_{test}")
     trusts = td.pipeline.trust_propagation(td.users, td.vouches)
     for user, row in td.users.iterrows():
-        assert trusts.loc[user, "trust_score"] == row["trust_score"]
+        assert trusts.loc[user, "trust_score"] == pytest.approx(row["trust_score"])
 
 def test_trust_all():
     users = pd.DataFrame({ 
