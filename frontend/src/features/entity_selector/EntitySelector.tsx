@@ -272,7 +272,7 @@ const EntitySelectorInnerAuth = ({
             setTimeout(() => {
               setSlideDirection('up');
               autoButton.click();
-            }, ENTITY_CARD_SWIPE_TIMEOUT + 1);
+            }, ENTITY_CARD_SWIPE_TIMEOUT + 8);
           }
         }
       }
@@ -321,7 +321,7 @@ const EntitySelectorInnerAuth = ({
                 onClick={async () => {
                   setLoading(true);
                   setSlideIn(false);
-                  await wait(ENTITY_CARD_SWIPE_TIMEOUT + 1);
+                  await wait(ENTITY_CARD_SWIPE_TIMEOUT + 8);
                   setInputValue('');
                   setSlideDirection('up');
                 }}
