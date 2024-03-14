@@ -32,7 +32,7 @@ class StandardizedQrQuantile(Aggregation):
         user_models: dict[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame
-    ) -> tuple[dict[int, ScoringModel], ScoringModel]:
+    ) -> tuple[dict[int, ScaledScoringModel], ScoringModel]:
         """ Returns scaled user models
         
         Parameters
@@ -58,15 +58,16 @@ class StandardizedQrQuantile(Aggregation):
         std_dev = self._compute_std_dev(df)
             
         scaled_models = {
-            user: ScaledScoringModel(user_models[user], 1/std_dev)
-            for user in user_models
+            user_id: ScaledScoringModel(scoring, 1/std_dev)
+            for user_id, scoring in user_models.items()
         }
         for column in ("scores", "left_uncertainties", "right_uncertainties"):
             df[column] /= std_dev
 
         global_scores = DirectScoringModel()
-        for entity, _ in entities.iterrows():
-            dfe = df[df["entity_id"] == entity]
+        for entity_id, dfe in df.groupby("entity_id"):
+            if entity_id not in entities.index:
+                continue
             score = qr_quantile(
                 self.lipschitz, 
                 self.quantile, 
@@ -86,19 +87,20 @@ class StandardizedQrQuantile(Aggregation):
                 error = self.error,
                 median = score,
             )
-            global_scores[entity] = score, uncertainty
-                
+            global_scores[entity_id] = score, uncertainty
         return scaled_models, global_scores
     
     def _compute_std_dev(self, df):
+        if len(df) == 0:
+            return 1.0
         return qr_standard_deviation(
-            lipschitz=self.lipschitz, 
-            values=np.array(df["scores"]), 
+            lipschitz=self.lipschitz,
+            values=df["scores"].to_numpy(),
             quantile_dev=self.dev_quantile,
-            voting_rights=np.array(df["voting_rights"]), 
-            left_uncertainties=np.array(df["left_uncertainties"]), 
-            right_uncertainties=np.array(df["right_uncertainties"]), 
-            default_dev=1, 
+            voting_rights=df["voting_rights"].to_numpy(),
+            left_uncertainties=df["left_uncertainties"].to_numpy(),
+            right_uncertainties=df["right_uncertainties"].to_numpy(),
+            default_dev=1.0,
             error=self.error
         )
     
@@ -115,25 +117,27 @@ class StandardizedQrQuantile(Aggregation):
 
 
 def _get_user_scores(
-    voting_rights: VotingRights,
-    user_models: dict[int, ScoringModel],
-    entities: pd.DataFrame
+    voting_rights: VotingRights, user_models: dict[int, ScoringModel], entities: pd.DataFrame
 ):
-    user_list, entity_list, voting_right_list = list(), list(), list()
-    scores, lefts, rights = list(), list(), list()
-    for user in user_models:
-        for entity in user_models[user].scored_entities(entities):
-            user_list.append(user)
-            entity_list.append(entity)
-            voting_right_list.append(voting_rights[user, entity])
-            output = user_models[user](entity, entities.loc[entity])
-            scores.append(output[0])
-            lefts.append(output[1])
-            rights.append(output[2])
-                
-    return pd.DataFrame(dict(
-        user_id=user_list, entity_id=entity_list, voting_rights=voting_right_list, 
-        scores=scores, left_uncertainties=lefts, right_uncertainties=rights
-    ))    
-    
-
+    return pd.DataFrame(
+        (
+            dict(
+                user_id=user_id,
+                entity_id=entity_id,
+                voting_rights=voting_rights[user_id, entity_id],
+                scores=score,
+                left_uncertainties=left,
+                right_uncertainties=right,
+            )
+            for user_id, user_model in user_models.items()
+            for entity_id, (score, left, right) in user_model.iter_entities(entities)
+        ),
+        columns=[
+            "user_id",
+            "entity_id",
+            "voting_rights",
+            "scores",
+            "left_uncertainties",
+            "right_uncertainties",
+        ],
+    )

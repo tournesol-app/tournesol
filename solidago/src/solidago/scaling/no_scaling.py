@@ -1,20 +1,22 @@
+from typing import Mapping
+
 import pandas as pd
 
 from solidago.voting_rights import VotingRights
 from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel
+from solidago.scoring_model import ScoringModel, ScaledScoringModel
 
 from .base import Scaling
 
 class NoScaling(Scaling):
     def __call__(
         self, 
-        user_models: dict[int, ScoringModel],
-        users: pd.DataFrame,
-        entities: pd.DataFrame,
-        voting_rights: VotingRights,
-        privacy: PrivacySettings
-    ) -> dict[int, ScoringModel]:
+        user_models: Mapping[int, ScoringModel],
+        users: pd.DataFrame = ...,
+        entities: pd.DataFrame = ...,
+        voting_rights: VotingRights = ...,
+        privacy: PrivacySettings = ...,
+    ) -> dict[int, ScaledScoringModel]:
         """ Returns scaled user models
         
         Parameters
@@ -36,4 +38,7 @@ class NoScaling(Scaling):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        return user_models
+        return {
+            user_id: ScaledScoringModel(scoring)
+            for (user_id, scoring) in user_models.items()
+        }

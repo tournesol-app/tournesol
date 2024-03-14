@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Mapping
 
 import numpy as np
 import pandas as pd
@@ -14,7 +13,7 @@ class Squash(PostProcess):
     
     def __call__(
         self, 
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         global_model: ScoringModel,
         entities: Optional[pd.DataFrame] = None
     ) -> tuple[dict[int, ScoringModel], ScoringModel]:

@@ -28,7 +28,7 @@ class QuantileZeroShift(Scaling):
         entities: pd.DataFrame,
         voting_rights: VotingRights,
         privacy: PrivacySettings
-    ) -> dict[int, ScoringModel]:
+    ) -> dict[int, ScaledScoringModel]:
         """ Returns scaled user models
         
         Parameters
@@ -78,4 +78,3 @@ class QuantileZeroShift(Scaling):
         prop_names = ["zero_quantile", "lipschitz", "error"]
         prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
         return f"{type(self).__name__}({prop})"
-    

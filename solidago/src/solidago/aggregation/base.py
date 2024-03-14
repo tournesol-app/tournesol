@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from typing import Mapping
 
 import pandas as pd
 
@@ -11,7 +12,7 @@ class Aggregation:
     def __call__(
         self, 
         voting_rights: VotingRights,
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame
     ) -> tuple[dict[int, ScoringModel], ScoringModel]:

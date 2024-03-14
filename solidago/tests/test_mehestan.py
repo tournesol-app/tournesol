@@ -31,7 +31,7 @@ def test_learned_models(test):
 
 users = pd.DataFrame(dict(
     is_pretrusted=[True] * 5,
-    trust_score=[1] * 5,
+    trust_score=[1.] * 5,
 ))
 users.index.name = "user_id"
 

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Mapping
 
 import pandas as pd
 
@@ -9,7 +10,7 @@ class PostProcess(ABC):
     @abstractmethod
     def __call__(
         self, 
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         global_model: ScoringModel,
         entities: pd.DataFrame
     ) -> tuple[dict[int, ScoringModel], ScoringModel]:

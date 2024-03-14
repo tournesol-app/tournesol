@@ -1,9 +1,10 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from typing import Mapping
 
 import pandas as pd
 
 from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel
+from solidago.scoring_model import ScoringModel, ScaledScoringModel
 from solidago.voting_rights import VotingRights
 
 
@@ -11,12 +12,12 @@ class Scaling:
     @abstractmethod
     def __call__(
         self, 
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame,
         voting_rights: VotingRights,
         privacy: PrivacySettings
-    ) -> dict[int, ScoringModel]:
+    ) -> dict[int, ScaledScoringModel]:
         """ Returns scaled user models
         
         Parameters

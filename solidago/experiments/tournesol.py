@@ -1,18 +1,14 @@
 import logging
-import numpy as np
-import pandas as pd
 from threading import Thread
 
 from solidago.pipeline.inputs import TournesolInputFromPublicDataset
-from solidago.judgments import DataFrameJudgments
-from solidago.privacy_settings import PrivacySettings
 
-from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust
-from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust
-from solidago.preference_learning import PreferenceLearning, LBFGSUniformGBT
-from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift
-from solidago.aggregation import Aggregation, StandardizedQrQuantile
-from solidago.post_process import PostProcess, Squash
+from solidago.trust_propagation import LipschiTrust
+from solidago.voting_rights import AffineOvertrust
+from solidago.preference_learning import LBFGSUniformGBT
+from solidago.scaling import ScalingCompose, Mehestan, QuantileZeroShift
+from solidago.aggregation import StandardizedQrQuantile
+from solidago.post_process import Squash
 from solidago.pipeline import Pipeline
 
 

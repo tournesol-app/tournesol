@@ -2,19 +2,19 @@ from typing import Union, Optional
 
 import numpy as np
 import numpy.typing as npt
-import pandas as pd
 from numba import njit
 
 from solidago.solvers.optimize import njit_brentq as brentq
 
 
+@njit
 def qr_quantile(
     lipschitz: float, 
     quantile: float,
-    values: npt.ArrayLike, 
-    voting_rights: Union[npt.ArrayLike, float]=1, 
-    left_uncertainties: Optional[npt.ArrayLike]=None,
-    right_uncertainties: Optional[npt.ArrayLike]=None,
+    values: npt.NDArray,
+    voting_rights: Union[npt.NDArray, float]=1.0,
+    left_uncertainties: Optional[npt.NDArray]=None,
+    right_uncertainties: Optional[npt.NDArray]=None,
     default_value: float=0,
     error: float=1e-5
 ) -> float:
@@ -54,55 +54,60 @@ def qr_quantile(
         return default_value
 
     if left_uncertainties is None:
-        left_uncertainties = np.zeros(len(values))
+        left_uncertainties_2 = np.zeros(len(values))
+    else:
+        left_uncertainties_2 = left_uncertainties ** 2
+
     if right_uncertainties is None:
-        right_uncertainties = left_uncertainties
-        
+        right_uncertainties_2 = left_uncertainties_2
+    else:
+        right_uncertainties_2 = right_uncertainties ** 2
+
     # Brent’s method is used as a faster alternative to usual bisection
     return brentq(_qr_quantile_loss_derivative, xtol=error, args=(
         lipschitz, quantile, values, voting_rights, 
-        left_uncertainties, right_uncertainties, default_value
+        left_uncertainties_2, right_uncertainties_2, default_value
     ))
+
 
 @njit
 def _qr_quantile_loss_derivative(
     variable: float,
-    lipschitz: float,  
+    lipschitz: float,
     quantile: float,
-    values: npt.NDArray, 
+    values: npt.NDArray,
     voting_rights: Union[npt.NDArray, float],
-    left_uncertainties: npt.ArrayLike,
-    right_uncertainties: npt.ArrayLike, 
-    default_value: float = 0.,
-    error: float=1e-6
+    left_uncertainties_2: npt.NDArray,
+    right_uncertainties_2: npt.NDArray,
+    default_value: float = 0.0,
+    spacing: float = 1e-18,
 ):
-    """ Computes the derivative of the loss associated to qr_quantile """
+    """Computes the derivative of the loss associated to qr_quantile"""
     regularization = (variable - default_value) / lipschitz
-    
+
     if quantile == 0.5:
         quantile_term = 0.0
     elif isinstance(voting_rights, (int, float)):
         quantile_term = (1.0 - 2.0 * quantile) * voting_rights * len(values)
     else:
         quantile_term = (1.0 - 2.0 * quantile) * np.sum(voting_rights)
-    
+
     deltas = variable - values
-    uncertainties = error + left_uncertainties * (deltas < 0) 
-    uncertainties += right_uncertainties * (deltas > 0)
-    
-    forces = voting_rights * deltas / np.sqrt(uncertainties**2 + deltas**2)
-    
+    uncertainties_2 = left_uncertainties_2 * (deltas < 0) + right_uncertainties_2 * (deltas > 0) + spacing
+    forces = voting_rights * deltas / np.sqrt(uncertainties_2 + deltas**2)
+
     return regularization + quantile_term + forces.sum()
 
-   
+
+@njit
 def qr_median(
-    lipschitz: float, 
-    values: npt.ArrayLike, 
-    voting_rights: Union[npt.ArrayLike, float] = 1, 
-    left_uncertainties: Optional[npt.ArrayLike] = None,    
-    right_uncertainties: Optional[npt.ArrayLike] = None,
-    default_value: float = 0,
-    error: float = 1e-5
+    lipschitz: float,
+    values: npt.NDArray,
+    voting_rights: Union[npt.NDArray, float] = 1,
+    left_uncertainties: Optional[npt.NDArray] = None,
+    right_uncertainties: Optional[npt.NDArray] = None,
+    default_value: float = 0.0,
+    error: float = 1e-5,
 ):
     """ The quadratically regularized median is a Lipschitz-resilient median estimator. 
     It equals to the qr_quantile, for quantile = 0.5.
@@ -136,16 +141,17 @@ def qr_median(
         left_uncertainties, right_uncertainties, default_value, error)
 
 
+@njit
 def qr_standard_deviation(
-    lipschitz: float, 
-    values: npt.ArrayLike, 
+    lipschitz: float,
+    values: npt.NDArray,
     quantile_dev: float = 0.5,
-    voting_rights: Union[npt.ArrayLike, float] = 1, 
-    left_uncertainties: Optional[npt.ArrayLike] = None,    
-    right_uncertainties: Optional[npt.ArrayLike] = None,
-    default_dev: float = 1,
+    voting_rights: Union[npt.NDArray, float] = 1.0,
+    left_uncertainties: Optional[npt.NDArray] = None,
+    right_uncertainties: Optional[npt.NDArray] = None,
+    default_dev: float = 1.0,
     error: float = 1e-5,
-    median: float = None,
+    median: Optional[float] = None,
 ):
     """ Lipschitz-resilient estimator of the standard deviation.
     Can be understood as a measure of polarization.
@@ -179,34 +185,47 @@ def qr_standard_deviation(
         Lipschitz-resilient estimator of the quantile
     """
     assert quantile_dev > 0 and quantile_dev < 1
-    
+
     if left_uncertainties is None:
         left_uncertainties = np.zeros(len(values))
     if right_uncertainties is None:
         right_uncertainties = left_uncertainties
-        
+
     if median is None:
         median = qr_median(lipschitz, values, voting_rights, 
             left_uncertainties, right_uncertainties, error)
-    
+
     deltas = values - median
     deviations = np.abs(deltas)
     left_uncertainties = left_uncertainties * (deltas > 0) + right_uncertainties * (deltas < 0)
     left_uncertainties = np.minimum(left_uncertainties, deviations)
     right_uncertainties = left_uncertainties * (deltas < 0) + right_uncertainties * (deltas > 0)
-       
-    return max(qr_quantile(lipschitz, quantile_dev,deviations, voting_rights, 
-        left_uncertainties, right_uncertainties, default_dev, error), 0)
 
+    return max(
+        qr_quantile(
+            lipschitz,
+            quantile_dev,
+            deviations,
+            voting_rights,
+            left_uncertainties,
+            right_uncertainties,
+            default_dev,
+            error,
+        ),
+        0.0,
+    )
+
+
+@njit
 def qr_uncertainty(
-    lipschitz: float, 
-    values: npt.ArrayLike, 
-    voting_rights: Union[npt.ArrayLike, float] = 1, 
-    left_uncertainties: Optional[npt.ArrayLike] = None,    
-    right_uncertainties: Optional[npt.ArrayLike] = None,
-    default_dev: float = 1,
+    lipschitz: float,
+    values: npt.NDArray,
+    voting_rights: Union[npt.NDArray, float] = 1.0,
+    left_uncertainties: Optional[npt.NDArray] = None,
+    right_uncertainties: Optional[npt.NDArray] = None,
+    default_dev: float = 1.0,
     error: float = 1e-5,
-    median: float = None,
+    median: Optional[float] = None,
 ):
     """
     Quadratically regularized uncertainty
@@ -216,29 +235,32 @@ def qr_uncertainty(
         right_uncertainties, default_dev, error, median)
 
 
+@njit
 def clip(values: np.ndarray, center: float, radius: float):
     return values.clip(center - radius, center + radius)
 
 
+@njit
 def clip_mean(
     voting_rights: np.ndarray, 
     values: np.ndarray, 
-    center: float=0, 
-    radius: float=1
+    center: float=0., 
+    radius: float=1.,
 ):
     if len(values) == 0:
-        return default_value
+        return center
     return np.sum(voting_rights * clip(values, center, radius)) / np.sum(voting_rights)
 
 
+@njit
 def lipschitz_resilient_mean(
-    lipschitz: float, 
-    values: npt.ArrayLike, 
-    voting_rights: Union[npt.ArrayLike, float] = 1, 
-    left_uncertainties: Optional[npt.ArrayLike] = None,    
-    right_uncertainties: Optional[npt.ArrayLike] = None,
-    default_value: float=0,
-    error: float=1e-5
+    lipschitz: float,
+    values: npt.NDArray,
+    voting_rights: Union[npt.NDArray, float] = 1.0,
+    left_uncertainties: Optional[npt.NDArray] = None,
+    right_uncertainties: Optional[npt.NDArray] = None,
+    default_value: float = 0.0,
+    error: float = 1e-5,
 ):
     """ Lipschitz-robustified mean. Lipschitz-resilient mean estimator.
     It provably returns the mean, given sufficient participation and bounded values
@@ -270,14 +292,14 @@ def lipschitz_resilient_mean(
     """
     if len(values) == 0:
         return default_value
-        
+
     if isinstance(voting_rights, float):
         voting_rights = np.full(values.shape, voting_rights)
-    
+
     total_voting_rights = np.sum(voting_rights)
     if total_voting_rights == 0:
         return default_value
-    
+
     return clip_mean(
         voting_rights, 
         values, 
@@ -292,6 +314,3 @@ def lipschitz_resilient_mean(
         ), 
         radius=total_voting_rights * lipschitz / 4
     )
-
-
-

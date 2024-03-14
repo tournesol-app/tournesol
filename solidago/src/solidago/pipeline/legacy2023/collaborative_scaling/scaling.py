@@ -1,11 +1,10 @@
 import logging
 
-import numpy as np
 import pandas as pd
 
-from solidago.collaborative_scaling.scaling_step import compute_scaling
 from solidago.pipeline import TournesolInput
-from solidago.resilient_primitives import QrQuantile, QrMed
+from solidago.primitives import qr_quantile, qr_standard_deviation
+from .scaling_step import compute_scaling
 
 
 def compute_individual_scalings(
@@ -100,12 +99,23 @@ def estimate_positive_score_shift(
     w = 1 / scaled_individual_scores.groupby("user_id")["score"].transform("size")
     x = scaled_individual_scores.score
     delta = scaled_individual_scores.uncertainty
-    return QrQuantile(W, w, x, delta, quantile)
+    return qr_quantile(
+        lipschitz=1/W,
+        quantile=quantile,
+        values=x.to_numpy(),
+        voting_rights=w.to_numpy(),
+        left_uncertainties=delta.to_numpy(),
+    )
 
 
 def estimate_score_deviation(scaled_individual_scores, W, quantile=0.5):
     w = 1 / scaled_individual_scores.groupby("user_id")["score"].transform("size")
     x = scaled_individual_scores.score
     delta = scaled_individual_scores.uncertainty
-    qr_med = QrMed(W=W, w=w, x=x, delta=delta)
-    return QrQuantile(W=W, w=w, x=np.abs(x-qr_med), delta=delta, quantile=quantile)
+    return qr_standard_deviation(
+        lipschitz=1/W,
+        values=x.to_numpy(),
+        quantile_dev=quantile,
+        voting_rights=w.to_numpy(),
+        left_uncertainties=delta.to_numpy(),
+    )
