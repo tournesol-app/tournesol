@@ -215,23 +215,9 @@ const Comparison = ({
   };
 
   return (
-    <Grid
-      container
-      sx={{
-        maxWidth: '880px',
-        gap: '8px',
-      }}
-    >
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+    <Grid container maxWidth="880px" gap={1}>
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
-          title="A"
           alignment="left"
           value={selectorA}
           onChange={onChangeA}
@@ -239,16 +225,8 @@ const Comparison = ({
           autoFill={autoFillSelectorA}
         />
       </Grid>
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
-          title="B"
           alignment="right"
           value={selectorB}
           onChange={onChangeB}
