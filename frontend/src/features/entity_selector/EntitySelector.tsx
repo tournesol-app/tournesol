@@ -26,7 +26,6 @@ import { entityCardMainSx } from 'src/components/entity/style';
 const ENTITY_CARD_SWIPE_TIMEOUT = 160;
 
 interface Props {
-  title: string;
   alignment?: 'left' | 'right';
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
@@ -45,7 +44,6 @@ const isUidValid = (uid: string | null) =>
   uid === null ? false : uid.match(/\w+:.+/);
 
 const EntitySelector = ({
-  title,
   alignment = 'left',
   value,
   onChange,
@@ -59,7 +57,6 @@ const EntitySelector = ({
     <>
       {isLoggedIn ? (
         <EntitySelectorInnerAuth
-          title={title}
           value={value}
           onChange={onChange}
           otherUid={otherUid}
@@ -110,7 +107,6 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
 };
 
 const EntitySelectorInnerAuth = ({
-  title,
   value,
   onChange,
   otherUid,
@@ -280,7 +276,7 @@ const EntitySelectorInnerAuth = ({
     <>
       {showEntityInput && (
         <Box
-          m={1}
+          mb={1}
           display="flex"
           flexDirection={
             uid
@@ -324,14 +320,6 @@ const EntitySelectorInnerAuth = ({
               />
             </Grid>
           </Grid>
-          <Typography
-            variant="h6"
-            color="secondary"
-            fontWeight="bold"
-            sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-          >
-            {title}
-          </Typography>
         </Box>
       )}
       <Slide
@@ -392,6 +380,11 @@ const EntitySelectorInnerAuth = ({
                       ? 'none'
                       : 'flex',
                 }}
+                height="100%"
+                spacing={1}
+                alignItems="center"
+                justifyContent="space-around"
+                wrap="wrap"
               >
                 <Grid
                   container

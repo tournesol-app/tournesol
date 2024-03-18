@@ -22,6 +22,7 @@ import {
   tournesolTalksMailingListUrl,
   whitePaperUrl,
   tournesolTalksYTPlaylist,
+  youtubeTournesolUrl,
 } from 'src/utils/url';
 import { theme } from 'src/theme';
 
@@ -54,9 +55,11 @@ const Footer = () => {
       id: 'follow-us',
       title: t('footer.followUs'),
       items: [
+        { name: t('footer.events'), to: '/events' },
         { name: 'Twitter', to: twitterTournesolUrl },
-        { name: 'Discord', to: discordTournesolInviteUrl },
+        { name: 'YouTube', to: youtubeTournesolUrl },
         { name: 'Twitch', to: twitchTournesolUrl },
+        { name: 'Discord', to: discordTournesolInviteUrl },
         { name: 'LinkedIn', to: linkedInTournesolUrl },
         { name: 'GitHub', to: githubTournesolUrl },
       ],
