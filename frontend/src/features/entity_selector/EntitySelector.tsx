@@ -23,7 +23,7 @@ import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
 
-const ENTITY_CARD_SWIPE_TIMEOUT = 160;
+const ENTITY_CARD_SWIPE_TIMEOUT = 180;
 
 interface Props {
   alignment?: 'left' | 'right';
@@ -187,10 +187,6 @@ const EntitySelectorInnerAuth = ({
     }
     setLoading(false);
     setSlideIn(true);
-
-    setTimeout(() => {
-      setSlideDirection('down');
-    }, ENTITY_CARD_SWIPE_TIMEOUT + 8);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
@@ -269,10 +265,6 @@ const EntitySelectorInnerAuth = ({
 
           if (autoButton) {
             setSlideIn(false);
-            setTimeout(() => {
-              setSlideDirection('up');
-              autoButton.click();
-            }, ENTITY_CARD_SWIPE_TIMEOUT + 8);
           }
         }
       }
@@ -323,7 +315,6 @@ const EntitySelectorInnerAuth = ({
                   setSlideIn(false);
                   await wait(ENTITY_CARD_SWIPE_TIMEOUT + 8);
                   setInputValue('');
-                  setSlideDirection('up');
                 }}
                 onResponse={(uid) => {
                   uid ? onChange({ uid, rating: null }) : setLoading(false);
@@ -339,6 +330,22 @@ const EntitySelectorInnerAuth = ({
         direction={slideDirection}
         mountOnEnter
         timeout={ENTITY_CARD_SWIPE_TIMEOUT}
+        onEntered={() => {
+          setSlideDirection('down');
+        }}
+        onExited={() => {
+          const autoButton = document.getElementById(
+            `auto-suggestion-${alignment}`
+          ) as HTMLElement;
+
+          setSlideDirection('up');
+
+          if (autoButton) {
+            autoButton.click();
+          } else {
+            setSlideIn(true);
+          }
+        }}
       >
         <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
           {rating ? (
