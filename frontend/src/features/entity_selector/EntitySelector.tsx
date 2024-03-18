@@ -190,7 +190,7 @@ const EntitySelectorInnerAuth = ({
 
     setTimeout(() => {
       setSlideDirection('down');
-    }, ENTITY_CARD_SWIPE_TIMEOUT + 1);
+    }, ENTITY_CARD_SWIPE_TIMEOUT + 8);
   }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   /**
