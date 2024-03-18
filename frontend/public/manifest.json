@@ -31,6 +31,7 @@
     }
   ],
   "id": "/",
+  "scope": "/",
   "start_url": "/feed/recommendations?utm_source=pwa",
   "display": "standalone",
   "theme_color": "#ffc800",
