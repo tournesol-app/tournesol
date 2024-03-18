@@ -344,6 +344,7 @@ const EntitySelectorInnerAuth = ({
                   aspectRatio: '16 / 9',
                   backgroundColor: '#fafafa',
                 }}
+                height="100%"
                 spacing={1}
                 alignItems="center"
                 justifyContent="space-around"
