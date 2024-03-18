@@ -392,11 +392,6 @@ const EntitySelectorInnerAuth = ({
                       ? 'none'
                       : 'flex',
                 }}
-                height="100%"
-                spacing={1}
-                alignItems="center"
-                justifyContent="space-around"
-                wrap="wrap"
               >
                 <Grid
                   container
