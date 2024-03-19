@@ -272,6 +272,29 @@ const EntitySelectorInnerAuth = ({
     { swipe: { velocity: [0.35, 0.35] } }
   );
 
+  const onSlideEntered = () => {
+    setSlideDirection('down');
+  };
+
+  const onSlideExited = () => {
+    setSlideDirection('up');
+
+    if (!loading) {
+      const autoButton = document.getElementById(
+        `auto-suggestion-${alignment}`
+      ) as HTMLElement;
+
+      if (autoButton) {
+        autoButton.click();
+      } else {
+        setSlideIn(true);
+        console.warn(
+          "Can't suggest new entity: Auto button not found in the DOM."
+        );
+      }
+    }
+  };
+
   return (
     <>
       {showEntityInput && (
@@ -312,9 +335,9 @@ const EntitySelectorInnerAuth = ({
                 otherUid={otherUid}
                 onClick={async () => {
                   setLoading(true);
+                  setInputValue('');
                   setSlideIn(false);
                   await wait(ENTITY_CARD_SWIPE_TIMEOUT + 8);
-                  setInputValue('');
                 }}
                 onResponse={(uid) => {
                   uid ? onChange({ uid, rating: null }) : setLoading(false);
@@ -326,26 +349,12 @@ const EntitySelectorInnerAuth = ({
         </Box>
       )}
       <Slide
+        mountOnEnter
         in={slideIn}
         direction={slideDirection}
-        mountOnEnter
+        onEntered={onSlideEntered}
+        onExited={onSlideExited}
         timeout={ENTITY_CARD_SWIPE_TIMEOUT}
-        onEntered={() => {
-          setSlideDirection('down');
-        }}
-        onExited={() => {
-          const autoButton = document.getElementById(
-            `auto-suggestion-${alignment}`
-          ) as HTMLElement;
-
-          setSlideDirection('up');
-
-          if (autoButton) {
-            autoButton.click();
-          } else {
-            setSlideIn(true);
-          }
-        }}
       >
         <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
           {rating ? (
