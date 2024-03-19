@@ -123,15 +123,12 @@ const EntitySelectorInnerAuth = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
-
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { uid, rating, ratingIsExpired } = value;
 
   const [slideIn, setSlideIn] = useState(true);
-  const [slideDirection, setSlideDirection] = useState<
-    'left' | 'right' | 'up' | 'down'
-  >('down');
+  const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
