@@ -28,6 +28,7 @@ import AllEvents from './pages/events/AllEventsPage';
 import TournesolLivePage from './pages/events/TournesolLivePage';
 import TournesolTalksPage from './pages/events/TournesolTalksPage';
 import FAQ from './pages/faq/FAQ';
+import ActionsPage from './pages/actions/Actions';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -87,6 +88,10 @@ function App() {
         <Frame>
           <Switch>
             {/* About routes */}
+            {/* TODO confirm the link printed in the book */}
+            <PublicRoute path="/actions">
+              <ActionsPage />
+            </PublicRoute>
             <PublicRoute path="/faq">
               <FAQ />
             </PublicRoute>
