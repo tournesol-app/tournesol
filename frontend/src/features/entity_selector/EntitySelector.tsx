@@ -356,7 +356,8 @@ const EntitySelectorInnerAuth = ({
         onExited={onSlideExited}
         timeout={ENTITY_CARD_SWIPE_TIMEOUT}
       >
-        <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
+        {/* position: relative is required to correctly display the entity unavailable box */}
+        <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }} position="relative">
           {rating ? (
             <EntityCard
               compact
