@@ -56,10 +56,7 @@ const ComparisonEntityContexts = ({
 
   const entityName = getEntityName(t, pollName);
 
-  const selectorHasContextA = selectorHasContext(selectorA);
-  const selectorHasContextB = selectorHasContext(selectorB);
-
-  if (!selectorHasContextA && !selectorHasContextB) {
+  if (!selectorHasContext(selectorA) && !selectorHasContext(selectorB)) {
     return <></>;
   }
 
