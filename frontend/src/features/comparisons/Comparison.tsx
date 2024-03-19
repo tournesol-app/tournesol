@@ -219,9 +219,7 @@ const Comparison = ({
   const selectorHasContextA = selectorHasContext(selectorA);
   const selectorHasContextB = selectorHasContext(selectorB);
 
-  const displayContexts = () => {
-    return selectorHasContextA || selectorHasContextB;
-  };
+  const displayContexts = selectorHasContextA || selectorHasContextB;
 
   return (
     <Grid container maxWidth="880px" gap={1}>
@@ -260,7 +258,7 @@ const Comparison = ({
       >
         <ComparisonHelper />
       </Grid>
-      {displayContexts() && (
+      {displayContexts && (
         <Grid item xs={12}>
           <ComparisonEntityContexts
             selectorA={selectorA}

@@ -81,42 +81,38 @@ const ComparisonEntityContexts = ({
         </Grid>
       ) : (
         <>
-          {selectorHasContextA && (
-            <Grid item xs={12} sm={12} md={6}>
-              <ComparisonEntityContextsItem
-                selector={selectorA}
-                altAssociationDisclaimer={
-                  <strong>
-                    <Trans
-                      t={t}
-                      i18nKey="entityContext.entityAtheAssociationWouldLikeToGiveYouContext"
-                    >
-                      <span className="primary">{{ entityName }} A</span> - The
-                      Tournesol association would like to give you some context.
-                    </Trans>
-                  </strong>
-                }
-              />
-            </Grid>
-          )}
-          {selectorHasContextB && (
-            <Grid item xs={12} sm={12} md={6}>
-              <ComparisonEntityContextsItem
-                selector={selectorB}
-                altAssociationDisclaimer={
-                  <strong>
-                    <Trans
-                      t={t}
-                      i18nKey="entityContext.entityBtheAssociationWouldLikeToGiveYouContext"
-                    >
-                      <span className="primary">{{ entityName }} B</span> - The
-                      Tournesol association would like to give you some context.
-                    </Trans>
-                  </strong>
-                }
-              />
-            </Grid>
-          )}
+          <Grid item xs={12} sm={12} md={6}>
+            <ComparisonEntityContextsItem
+              selector={selectorA}
+              altAssociationDisclaimer={
+                <strong>
+                  <Trans
+                    t={t}
+                    i18nKey="entityContext.entityAtheAssociationWouldLikeToGiveYouContext"
+                  >
+                    <span className="primary">{{ entityName }} A</span> - The
+                    Tournesol association would like to give you some context.
+                  </Trans>
+                </strong>
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <ComparisonEntityContextsItem
+              selector={selectorB}
+              altAssociationDisclaimer={
+                <strong>
+                  <Trans
+                    t={t}
+                    i18nKey="entityContext.entityBtheAssociationWouldLikeToGiveYouContext"
+                  >
+                    <span className="primary">{{ entityName }} B</span> - The
+                    Tournesol association would like to give you some context.
+                  </Trans>
+                </strong>
+              }
+            />
+          </Grid>
         </>
       )}
     </Grid>
