@@ -6,7 +6,7 @@ import { Alert, AlertTitle, Box, Link, Typography } from '@mui/material';
 const HelpResearchSection = () => {
   const { t } = useTranslation();
   return (
-    <Box>
+    <Box sx={{ '& li': { mt: 1 } }}>
       <Typography
         variant="h4"
         fontStyle="italic"
@@ -17,19 +17,19 @@ const HelpResearchSection = () => {
       </Typography>
       <ul>
         <li>
-          <Typography paragraph>
+          <Typography>
             Signer la pétition pour une recherche publique au service de la
             société.
           </Typography>
         </li>
         <li>
-          <Typography paragraph>
+          <Typography>
             Promouvoir et participer au projet Tournesol, The personalization
             project, Horus, Politoscope, Their.tube…
           </Typography>
         </li>
         <li>
-          <Typography paragraph>
+          <Typography>
             Assister aux Tournesol Talks, ou demander à intervenir.
           </Typography>
         </li>
