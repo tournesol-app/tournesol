@@ -216,10 +216,8 @@ const Comparison = ({
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
-  const selectorHasContextA = selectorHasContext(selectorA);
-  const selectorHasContextB = selectorHasContext(selectorB);
-
-  const displayContexts = selectorHasContextA || selectorHasContextB;
+  const displayContexts =
+    selectorHasContext(selectorA) || selectorHasContext(selectorB);
 
   return (
     <Grid container maxWidth="880px" gap={1}>
