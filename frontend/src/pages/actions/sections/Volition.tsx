@@ -26,6 +26,17 @@ const projectsToUse = [
   },
 ];
 
+const booksToReadAndOfferEn = [
+  {
+    text: 'The Scout Mindset',
+    href: 'https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/',
+  },
+  {
+    text: 'Against Empathy',
+    href: 'https://www.harpercollins.com/products/against-empathy-paul-bloom',
+  },
+];
+
 // XXX duplciated code with BeEducated.tsx
 const ExternalLink = ({ text, href }: { text: string; href: string }) => {
   return (
@@ -61,6 +72,29 @@ const ProjectsToUse = () => {
   );
 };
 
+const BooksToReadAndOffer = () => {
+  const { t } = useTranslation();
+  return (
+    <Box>
+      <Typography>
+        {t('actionsPage.volition.readAndOfferBooksOnThisDistinction')}
+      </Typography>
+      <ul>
+        <li>
+          <Typography>{t('actionsPage.beEducated.inEnglish')}</Typography>
+          <ul>
+            {booksToReadAndOfferEn.map((book, idx) => (
+              <li key={`book_en_${idx}`}>
+                <ExternalLink {...book} />
+              </li>
+            ))}
+          </ul>
+        </li>
+      </ul>
+    </Box>
+  );
+};
+
 const Volition = () => {
   const { t } = useTranslation();
   return (
@@ -88,6 +122,9 @@ const Volition = () => {
             />
             .
           </Typography>
+        </li>
+        <li>
+          <BooksToReadAndOffer />
         </li>
       </ul>
     </Box>
