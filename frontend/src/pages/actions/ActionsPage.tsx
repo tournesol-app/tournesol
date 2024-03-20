@@ -6,8 +6,10 @@ import { Box, Paper, useTheme } from '@mui/material';
 
 import { ContentHeader, ContentBox } from 'src/components';
 
+import ApplicationOfLaws from './sections/ApplicationOfLaws';
 import BeEducated from './sections/BeEducated';
 import HelpResearch from './sections/HelpResearch';
+import JoinMovements from './sections/JoinMovements';
 import Volition from './sections/Volition';
 
 export const ActionQuestion = ({
@@ -51,6 +53,8 @@ const ActionsPage = () => {
             <BeEducated key="section_be_educated" />,
             <HelpResearch key="section_help_research" />,
             <Volition key="section_volition" />,
+            <ApplicationOfLaws key="section_application_of_law" />,
+            <JoinMovements key="section_join_movements" />,
           ].map((section) => (
             <ActionPaper key={`paper_${section.key}`}>{section}</ActionPaper>
           ))}

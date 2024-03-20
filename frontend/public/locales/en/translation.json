@@ -710,6 +710,10 @@
     "title": "Move to action",
     "whatCanYouDoToProtectSocietiesFromAIs": "What can you do to protect societies from the consequences of artificial intelligence?",
     "whatCanYouDoToProtectYourselfAndYourRelatives": "What can you do to protect yourself and your relatives?",
+    "applicationOfLaws": {
+      "demandTheApplicationOfLaws": "Demand the application of existing laws",
+      "why": "Coming soon..."
+    },
     "beEducated": {
       "readAndOfferMoreBooksLike": "Read and offer more books like:",
       "inEnglish": "in english",
@@ -728,11 +732,15 @@
       "why": "By taking part in research projects, you increase the volume of data that researchers can analyse. The results of the studies will be more reliable, and the political decisions based on these results will be better informed.",
       "attendTournesolTalks": "Attend to <2>Tournesol Talks</2>, or <5>ask to intervene</5>."
     },
+    "joinMovements": {
+      "getInvolvedInDigitalDemocracyMovements": "Get involved in digital democracy movements",
+      "why": "coming soon..."
+    },
     "volition": {
       "useAndParticipateInPlatforms": "Use and participate in platforms that value volitions, like:",
       "readAndOfferBooksOnThisDistinction": "Read and offer books on this distinction:",
       "favourThoughtfulVolitionsToInstinctivePreferences": "Favour thoughtful volitions to instinctive preferences",
-      "why": "to write...",
+      "why": "Coming soon...",
       "preventYourselfFromCompulsivePosting": "Prevent yourself from compulsive posting on social media, for instance by uninstalling applications from your phone.",
       "watchAndShareVideosOnThisDistinctionLike": "Watch and share videos on this distinction, like"
     }

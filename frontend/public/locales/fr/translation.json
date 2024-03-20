@@ -718,6 +718,10 @@
     "title": "Passez à l'action",
     "whatCanYouDoToProtectSocietiesFromAIs": "Que pouvez-vous faire pour protéger les sociétés des conséquences des intelligences artificielles ?",
     "whatCanYouDoToProtectYourselfAndYourRelatives": "Que pouvez-vous faire pour vous protéger et protéger vos proches ?",
+    "applicationOfLaws": {
+      "demandTheApplicationOfLaws": "Demander l'application des lois existantes",
+      "why": "A venir..."
+    },
     "beEducated": {
       "readAndOfferMoreBooksLike": "Lire et offrir d'autres livres comme :",
       "inEnglish": "en anglais",
@@ -736,11 +740,15 @@
       "why": "En participant à des projets de recherche vous augmentez le volume de données que les chercheurs et chercheuses peuvent analyser. Les résultats des études seront plus fiables, et les décisions politiques basées sur ces résultats seront plus éclairées.",
       "attendTournesolTalks": "Assister aux <2>Tournesol Talks</2>, ou <5>demander à intervenir</5>."
     },
+    "joinMovements": {
+      "getInvolvedInDigitalDemocracyMovements": "S'engager dans les mouvements de démocratie numérique",
+      "why": "A venir..."
+    },
     "volition": {
       "useAndParticipateInPlatforms": "Utiliser et participer à des plateformes qui favorisent la volition, comme :",
       "readAndOfferBooksOnThisDistinction": "Lire et offrir des livres sur cette distinction :",
       "favourThoughtfulVolitionsToInstinctivePreferences": "Favoriser les volitions réfléchies par rapport aux préférences instinctives",
-      "why": "to write...",
+      "why": "A venir...",
       "preventYourselfFromCompulsivePosting": "S'empêcher de poster impulsivement sur les réseaux sociaux, par exemple en désinstallant des applications de votre téléphone.",
       "watchAndShareVideosOnThisDistinctionLike": "Regarder et partager des vidéos sur cette distinction, comme"
     }
