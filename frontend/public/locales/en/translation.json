@@ -728,8 +728,7 @@
     },
     "donate": {
       "donateTo": "Donate to:",
-      "donateToOrganisationsFightingForQualityOfInformation": "Donate to organisations fighting for quality of information",
-      "why": "coming soon..."
+      "donateToOrganisationsFightingForQualityOfInformation": "Donate to organisations fighting for quality of information"
     },
     "helpResearch": {
       "promoteAndTakePartInResearchProjectsLike": "Promote and take part in research projects like:",
@@ -740,12 +739,12 @@
     "joinMovements": {
       "contributeToTheOpenSourceCodeOf": "Contribute to the open source codes of:",
       "getInvolvedInDigitalDemocracyMovements": "Get involved in digital democracy movements",
-      "why": "coming soon...",
       "makeComparisonsOnTournesol": "Make <2>comparisons</2> on Tournesol."
     },
     "orientYourCareer": {
       "orientYourCareerToImprove": "Orient your career to improve information ecosystems",
-      "why": "coming soon..."
+      "questionYourCareerPath": "Question your career path and consider alternatives. Read, for instance, the article <2>How to pick a career (that actually fits you)</2>.",
+      "leadActionsAsPartOfYourCurrentJob": "Lead actions as part of your current job to raise the awareness about information and artificial intelligence."
     },
     "volition": {
       "useToolsAndPlatforms": "Use tools and platforms that value volitions like:",

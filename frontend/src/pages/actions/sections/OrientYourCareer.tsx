@@ -1,7 +1,7 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, Box, Typography } from '@mui/material';
+import { Alert, Box, Link, Typography } from '@mui/material';
 
 const OrientYourCareer = () => {
   const { t } = useTranslation();
@@ -15,11 +15,38 @@ const OrientYourCareer = () => {
       >
         {t('actionsPage.orientYourCareer.orientYourCareerToImprove')}
       </Typography>
-      <Box my={2}>
-        <Alert severity="info" icon={false}>
-          {t('actionsPage.orientYourCareer.why')}
-        </Alert>
-      </Box>
+      <ul>
+        <li>
+          <Typography>
+            <Trans
+              t={t}
+              i18nKey="actionsPage.orientYourCareer.questionYourCareerPath"
+            >
+              Question your career path and consider alternatives. Read, for
+              instance, the article{' '}
+              <Link
+                href="https://ncase.me/"
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: 'revert',
+                  textDecoration: 'revert',
+                }}
+              >
+                How to pick a career (that actually fits you)
+              </Link>
+              .
+            </Trans>
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            {t(
+              'actionsPage.orientYourCareer.leadActionsAsPartOfYourCurrentJob'
+            )}
+          </Typography>
+        </li>
+      </ul>
     </Box>
   );
 };

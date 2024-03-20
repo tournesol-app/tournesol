@@ -53,11 +53,6 @@ const Donate = () => {
           'actionsPage.donate.donateToOrganisationsFightingForQualityOfInformation'
         )}
       </Typography>
-      <Box my={2}>
-        <Alert severity="info" icon={false}>
-          {t('actionsPage.donate.why')}
-        </Alert>
-      </Box>
       <OrganisationToDonateTo />
     </Box>
   );
