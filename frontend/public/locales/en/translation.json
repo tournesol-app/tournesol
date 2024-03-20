@@ -706,6 +706,11 @@
     "whatRightsContributorsHaveOverTheirDataParagraph": "By going to their contributor page, contributors can download the data they submitted to their platform. They can also request that Tournesol erases any personal data Tournesol recorded about them. This does not include the data that Tournesol is obliged to keep for administrative, legal, or security purposes."
   },
   "clickToDownload": "Click to Download",
+  "actionsPage": {
+    "title": "Move to action",
+    "whatCanYouDoToProtectSocietiesFromAIs": "What can you do to protect societies from the consequences of artificial intelligence?",
+    "whatCanYouDoToProtectYourselfAndYourRelatives": "What can you do to protect yourself and your relatives?"
+  },
   "myComparisonsPage": {
     "noComparisonYet": "No comparison",
     "listHasNbComparisons_one": "You already did <1>{{comparisonCount}}</1> comparison.",

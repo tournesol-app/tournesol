@@ -18,6 +18,7 @@ import { StatsLazyProvider } from './features/statistics/StatsContext';
 import PublicRoute from './features/login/PublicRoute';
 import PrivateRoute from './features/login/PrivateRoute';
 
+import ActionsPage from './pages/actions/ActionsPage';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
@@ -28,7 +29,6 @@ import AllEvents from './pages/events/AllEventsPage';
 import TournesolLivePage from './pages/events/TournesolLivePage';
 import TournesolTalksPage from './pages/events/TournesolTalksPage';
 import FAQ from './pages/faq/FAQ';
-import ActionsPage from './pages/actions/Actions';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
