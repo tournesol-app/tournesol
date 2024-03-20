@@ -745,8 +745,10 @@
       "attendTournesolTalks": "Assister aux <2>Tournesol Talks</2>, ou <5>demander à intervenir</5>."
     },
     "joinMovements": {
+      "contributeToTheOpenSourceCodeOf": "Contribuer aux codes open source de :",
       "getInvolvedInDigitalDemocracyMovements": "S'engager dans les mouvements de démocratie numérique",
-      "why": "A venir..."
+      "why": "A venir...",
+      "makeComparisonsOnTournesol": "Faire des <2>comparaisons</2> sur Tournesol."
     },
     "orientYourCareer": {
       "orientYourCareerToImprove": "Orienter sa carrière pour améliorer l'écosystème de l'information",
