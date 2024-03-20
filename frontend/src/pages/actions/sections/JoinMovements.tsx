@@ -2,7 +2,7 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Alert, Box, Link, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 
 import { ExternalLink } from 'src/components';
 import { githubTournesolUrl } from 'src/utils/url';

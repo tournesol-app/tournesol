@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, Box, Link, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 
 const OrientYourCareer = () => {
   const { t } = useTranslation();
