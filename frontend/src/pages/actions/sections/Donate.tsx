@@ -1,7 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Link, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
+
+import { ExternalLink } from 'src/components';
 
 const organisationToDonateTo = [
   {
@@ -17,22 +19,6 @@ const organisationToDonateTo = [
     href: 'https://donate.wikimedia.org/wiki/Ways_to_Give',
   },
 ];
-
-const ExternalLink = ({ text, href }: { text: string; href: string }) => {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener"
-      sx={{
-        color: 'revert',
-        textDecoration: 'revert',
-      }}
-    >
-      {text}
-    </Link>
-  );
-};
 
 const OrganisationToDonateTo = () => {
   const { t } = useTranslation();

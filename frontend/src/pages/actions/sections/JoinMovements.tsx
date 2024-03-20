@@ -4,6 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import { Alert, Box, Link, Typography } from '@mui/material';
 
+import { ExternalLink } from 'src/components';
 import { githubTournesolUrl } from 'src/utils/url';
 
 const sourceCodeToContributeTo = [
@@ -20,22 +21,6 @@ const sourceCodeToContributeTo = [
     href: 'https://pol.is/homehttps://github.com/compdemocracy',
   },
 ];
-
-const ExternalLink = ({ text, href }: { text: string; href: string }) => {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener"
-      sx={{
-        color: 'revert',
-        textDecoration: 'revert',
-      }}
-    >
-      {text}
-    </Link>
-  );
-};
 
 const SourceCodeToContributeTo = () => {
   const { t } = useTranslation();

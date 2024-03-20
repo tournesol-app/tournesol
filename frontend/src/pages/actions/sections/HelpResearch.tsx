@@ -3,6 +3,8 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Alert, Box, Link, Typography } from '@mui/material';
 
+import { ExternalLink } from 'src/components';
+
 const projectsToPromote = [
   {
     text: 'Tournesol',
@@ -25,23 +27,6 @@ const projectsToPromote = [
     href: 'https://www.their.tube',
   },
 ];
-
-// XXX duplciated code with BeEducated.tsx
-const ExternalLink = ({ text, href }: { text: string; href: string }) => {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener"
-      sx={{
-        color: 'revert',
-        textDecoration: 'revert',
-      }}
-    >
-      {text}
-    </Link>
-  );
-};
 
 const ProjectsToPromote = () => {
   const { t } = useTranslation();

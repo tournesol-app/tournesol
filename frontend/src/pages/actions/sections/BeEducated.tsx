@@ -10,6 +10,8 @@ import {
   YouTube,
 } from '@mui/icons-material';
 
+import { ExternalLink } from 'src/components';
+
 const booksToReadAndOfferEn = [
   {
     text: 'Manufacturing Consensus',
@@ -57,22 +59,6 @@ const videosToWatchAndShareFr = [
     href: 'https://tournesol.app/recommendations?language=&uploader=La%20Fabrique%20Sociale',
   },
 ];
-
-const ExternalLink = ({ text, href }: { text: string; href: string }) => {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener"
-      sx={{
-        color: 'revert',
-        textDecoration: 'revert',
-      }}
-    >
-      {text}
-    </Link>
-  );
-};
 
 const BooksToReadAndOffer = () => {
   const { t } = useTranslation();

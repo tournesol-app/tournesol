@@ -1,7 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Link, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
+
+import { ExternalLink } from 'src/components';
 
 const projectsToUse = [
   {
@@ -36,23 +38,6 @@ const booksToReadAndOfferEn = [
     href: 'https://www.harpercollins.com/products/against-empathy-paul-bloom',
   },
 ];
-
-// XXX duplciated code with BeEducated.tsx
-const ExternalLink = ({ text, href }: { text: string; href: string }) => {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener"
-      sx={{
-        color: 'revert',
-        textDecoration: 'revert',
-      }}
-    >
-      {text}
-    </Link>
-  );
-};
 
 const ProjectsToUse = () => {
   const { t } = useTranslation();
