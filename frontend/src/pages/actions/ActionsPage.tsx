@@ -18,7 +18,7 @@ export const ActionQuestion = ({
   const theme = useTheme();
   return (
     <Box
-      bgcolor={theme.palette.secondary.main}
+      bgcolor={theme.palette.background.emphatic}
       color="white"
       mt={mt}
       mb={4}
