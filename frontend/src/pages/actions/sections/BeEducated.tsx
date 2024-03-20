@@ -47,16 +47,16 @@ const videosToWatchAndShareEn = [
 
 const videosToWatchAndShareFr = [
   {
-    text: 'Science4All',
-    href: 'https://tournesol.app/recommendations?language=&uploader=Science4All',
-  },
-  {
     text: 'ApresLaBiere',
     href: 'https://tournesol.app/recommendations?language=&uploader=ApresLaBiere',
   },
   {
     text: 'La Fabrique Sociale',
     href: 'https://tournesol.app/recommendations?language=&uploader=La%20Fabrique%20Sociale',
+  },
+  {
+    text: 'Science4All',
+    href: 'https://tournesol.app/recommendations?language=&uploader=Science4All',
   },
 ];
 
