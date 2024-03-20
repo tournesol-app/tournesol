@@ -1,7 +1,54 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Typography } from '@mui/material';
+import { Alert, Box, Link, Typography } from '@mui/material';
+
+const organisationToDonateTo = [
+  {
+    text: 'Tournesol',
+    href: 'https://tournesol.app/about/donate',
+  },
+  {
+    text: 'Wikimedia France',
+    href: 'https://dons.wikimedia.fr/souteneznous/~mon-don',
+  },
+  {
+    text: 'Wikimedia Foundation',
+    href: 'https://donate.wikimedia.org/wiki/Ways_to_Give',
+  },
+];
+
+const ExternalLink = ({ text, href }: { text: string; href: string }) => {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener"
+      sx={{
+        color: 'revert',
+        textDecoration: 'revert',
+      }}
+    >
+      {text}
+    </Link>
+  );
+};
+
+const OrganisationToDonateTo = () => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Typography>{t('actionsPage.donate.donateTo')}</Typography>
+      <ul>
+        {organisationToDonateTo.map((organisation, idx) => (
+          <li key={`organisation_${idx}`}>
+            <ExternalLink {...organisation} />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+};
 
 const Donate = () => {
   const { t } = useTranslation();
@@ -12,9 +59,12 @@ const Donate = () => {
           'actionsPage.donate.donateToOrganisationsFightingForQualityOfInformation'
         )}
       </Typography>
-      <Alert severity="info" icon={false}>
-        {t('actionsPage.donate.why')}
-      </Alert>
+      <Box my={2}>
+        <Alert severity="info" icon={false}>
+          {t('actionsPage.donate.why')}
+        </Alert>
+      </Box>
+      <OrganisationToDonateTo />
     </Box>
   );
 };
