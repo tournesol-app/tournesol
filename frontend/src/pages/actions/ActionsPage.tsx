@@ -5,8 +5,9 @@ import { Typography } from '@mui/material';
 import { Box, Paper, useTheme } from '@mui/material';
 
 import { ContentHeader, ContentBox } from 'src/components';
+
 import BeEducated from './sections/BeEducated';
-import HelpResearchSection from './sections/HelpResearch';
+import HelpResearch from './sections/HelpResearch';
 
 export const ActionQuestion = ({
   question,
@@ -47,7 +48,7 @@ const ActionsPage = () => {
         <Box display="flex" flexDirection="column" gap={4}>
           {[
             <BeEducated key="section_be_educated" />,
-            <HelpResearchSection key="section_help_research" />,
+            <HelpResearch key="section_help_research" />,
           ].map((section) => (
             <ActionPaper key={`paper_${section.key}`}>{section}</ActionPaper>
           ))}

@@ -1,9 +1,67 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, AlertTitle, Box, Link, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 
-const HelpResearchSection = () => {
+const projectsToPromote = [
+  {
+    text: 'Tournesol',
+    href: 'https://tournesol.app',
+  },
+  {
+    text: 'Algorithmic Personalization Project',
+    href: 'https://personalization.csail.mit.edu',
+  },
+  {
+    text: 'Horus',
+    href: 'https://iscpif.fr/horus-methodologie/',
+  },
+  {
+    text: 'Politoscope',
+    href: 'https://politoscope.org',
+  },
+  {
+    text: 'TheirTube',
+    href: 'https://www.their.tube',
+  },
+];
+
+// XXX duplciated code with BeEducated.tsx
+const ExternalLink = ({ text, href }: { text: string; href: string }) => {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener"
+      sx={{
+        color: 'revert',
+        textDecoration: 'revert',
+      }}
+    >
+      {text}
+    </Link>
+  );
+};
+
+const ProjectsToPromote = () => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Typography>
+        {t('actionsPage.healResearch.promoteAndTakePartInProjectsLike')}
+      </Typography>
+      <ul>
+        {projectsToPromote.map((project, idx) => (
+          <li key={`projects_to_promote_${idx}`}>
+            <ExternalLink {...project} />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+};
+
+const HelpResearch = () => {
   const { t } = useTranslation();
   return (
     <Box sx={{ '& li': { mt: 1 } }}>
@@ -11,31 +69,49 @@ const HelpResearchSection = () => {
         variant="h4"
         fontStyle="italic"
         gutterBottom
-        id="account-terms"
+        id="help-research"
       >
-        Aider la recherche scientifique qui est au service de la société :
+        {t(
+          'actionsPage.healResearch.helpScientificResearchThatServesPublicInterest'
+        )}
       </Typography>
       <ul>
         <li>
-          <Typography>
-            Signer la pétition pour une recherche publique au service de la
-            société.
-          </Typography>
+          <ProjectsToPromote />
         </li>
         <li>
-          <Typography>
-            Promouvoir et participer au projet Tournesol, The personalization
-            project, Horus, Politoscope, Their.tube…
-          </Typography>
-        </li>
-        <li>
-          <Typography>
-            Assister aux Tournesol Talks, ou demander à intervenir.
-          </Typography>
+          <Trans t={t} i18nKey="actionsPage.healResearch.attendTournesolTalks">
+            Attend to{' '}
+            <Link
+              href="https://tournesol.app/talks"
+              target="_blank"
+              rel="noopener"
+              sx={{
+                color: 'revert',
+                textDecoration: 'revert',
+              }}
+            >
+              Tournesol Talks
+            </Link>
+            , or{' '}
+            <Link
+              // xxx set the correct contact address
+              href="https://tournesol.app"
+              target="_blank"
+              rel="noopener"
+              sx={{
+                color: 'revert',
+                textDecoration: 'revert',
+              }}
+            >
+              ask to intervene
+            </Link>
+            .
+          </Trans>
         </li>
       </ul>
     </Box>
   );
 };
 
-export default HelpResearchSection;
+export default HelpResearch;
