@@ -730,10 +730,16 @@
       "donateTo": "Donate to:",
       "donateToOrganisationsFightingForQualityOfInformation": "Donate to organisations fighting for quality of information"
     },
+    "qualityInformation": {
+      "increaseYourExposureToQualityInformation": "Increase your exposure to quality information"
+    },
     "helpResearch": {
       "promoteAndTakePartInResearchProjectsLike": "Promote and take part in research projects like:",
       "helpScientificResearchThatServesPublicInterest": "Help scientific research that serves the public interest",
       "attendTournesolTalks": "Attend to <2>Tournesol Talks</2>, or <5>ask to intervene</5>."
+    },
+    "increaseFriction": {
+      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Increase friction between you, or you relatives, and undesirable information usage"
     },
     "joinMovements": {
       "contributeToTheOpenSourceCodeOf": "Contribute to the open source codes of:",

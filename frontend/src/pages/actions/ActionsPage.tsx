@@ -13,6 +13,8 @@ import HelpResearch from './sections/HelpResearch';
 import JoinMovements from './sections/JoinMovements';
 import OrientYourCareer from './sections/OrientYourCareer';
 import Volition from './sections/Volition';
+import IncreaseFriction from './sections/IncreaseFriction';
+import ExposureToQualityInformation from './sections/ExposureToQualityInformation';
 
 export const ActionQuestion = ({
   question,
@@ -69,6 +71,14 @@ const ActionsPage = () => {
             'actionsPage.whatCanYouDoToProtectYourselfAndYourRelatives'
           )}
         />
+        <Box display="flex" flexDirection="column" gap={4}>
+          {[
+            <IncreaseFriction key="section_increase_friction" />,
+            <ExposureToQualityInformation key="section_exposure_to_quality" />,
+          ].map((section) => (
+            <ActionPaper key={`paper_${section.key}`}>{section}</ActionPaper>
+          ))}
+        </Box>
       </ContentBox>
     </>
   );
