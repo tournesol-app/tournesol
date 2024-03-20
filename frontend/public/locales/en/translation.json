@@ -725,6 +725,7 @@
     "healResearch": {
       "promoteAndTakePartInProjectsLike": "Promote and take part in projects like:",
       "helpScientificResearchThatServesPublicInterest": "Help scientific research that serves the public interest",
+      "why": "By taking part in research projects, you increase the volume of data that researchers can analyse. The results of the studies will be more reliable, and the political decisions based on these results will be better informed.",
       "attendTournesolTalks": "Attend to <2>Tournesol Talks</2>, or <5>ask to intervene</5>."
     },
     "volition": {

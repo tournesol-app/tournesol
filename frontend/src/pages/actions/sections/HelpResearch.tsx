@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Alert, Box, Link, Typography } from '@mui/material';
 
 const projectsToPromote = [
   {
@@ -75,6 +75,11 @@ const HelpResearch = () => {
           'actionsPage.healResearch.helpScientificResearchThatServesPublicInterest'
         )}
       </Typography>
+      <Box my={2}>
+        <Alert severity="info" icon={false}>
+          {t('actionsPage.healResearch.why')}
+        </Alert>
+      </Box>
       <ul>
         <li>
           <ProjectsToPromote />
