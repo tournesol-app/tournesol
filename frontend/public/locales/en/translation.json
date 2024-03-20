@@ -726,6 +726,10 @@
       "listenAndSharePodcastsLike": "Listen and share podcasts like",
       "discoverPlayAndShareEducationalGamesLike": "Discover, play and share educational games like <2>Nicky Case's</2>."
     },
+    "donate": {
+      "donateToOrganisationsFightingForQualityOfInformation": "Donate to organisations fighting for quality of information",
+      "why": "coming soon..."
+    },
     "helpResearch": {
       "promoteAndTakePartInProjectsLike": "Promote and take part in projects like:",
       "helpScientificResearchThatServesPublicInterest": "Help scientific research that serves the public interest",
@@ -734,6 +738,10 @@
     },
     "joinMovements": {
       "getInvolvedInDigitalDemocracyMovements": "Get involved in digital democracy movements",
+      "why": "coming soon..."
+    },
+    "orientYourCareer": {
+      "orientYourCareerToImprove": "Orient your career to improve information ecosystems",
       "why": "coming soon..."
     },
     "volition": {

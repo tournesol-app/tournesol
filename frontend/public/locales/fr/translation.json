@@ -734,6 +734,10 @@
       "listenAndSharePodcastsLike": "Écouter et partager des podcasts comme",
       "discoverPlayAndShareEducationalGamesLike": "Découvrir, jouer et partager des jeux éducatifs, comme ceux de <2>Nicky Case</2>."
     },
+    "donate": {
+      "donateToOrganisationsFightingForQualityOfInformation": "Donner aux organisations qui luttent pour la qualité de l'information",
+      "why": "A venir..."
+    },
     "helpResearch": {
       "promoteAndTakePartInProjectsLike": "Promouvoir et participer à des projets comme :",
       "helpScientificResearchThatServesPublicInterest": "Aider la recherche scientifique au service de l'intérêt général",
@@ -742,6 +746,10 @@
     },
     "joinMovements": {
       "getInvolvedInDigitalDemocracyMovements": "S'engager dans les mouvements de démocratie numérique",
+      "why": "A venir..."
+    },
+    "orientYourCareer": {
+      "orientYourCareerToImprove": "Orienter sa carrière pour améliorer l'écosystème de l'information",
       "why": "A venir..."
     },
     "volition": {

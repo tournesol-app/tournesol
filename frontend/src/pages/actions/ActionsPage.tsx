@@ -8,8 +8,10 @@ import { ContentHeader, ContentBox } from 'src/components';
 
 import ApplicationOfLaws from './sections/ApplicationOfLaws';
 import BeEducated from './sections/BeEducated';
+import Donate from './sections/Donate';
 import HelpResearch from './sections/HelpResearch';
 import JoinMovements from './sections/JoinMovements';
+import OrientYourCareer from './sections/OrientYourCareer';
 import Volition from './sections/Volition';
 
 export const ActionQuestion = ({
@@ -55,6 +57,8 @@ const ActionsPage = () => {
             <Volition key="section_volition" />,
             <ApplicationOfLaws key="section_application_of_law" />,
             <JoinMovements key="section_join_movements" />,
+            <OrientYourCareer key="section_orient_your_career" />,
+            <Donate key="section_donate" />,
           ].map((section) => (
             <ActionPaper key={`paper_${section.key}`}>{section}</ActionPaper>
           ))}
