@@ -144,7 +144,7 @@ const BeEducated = () => {
           {t('actionsPage.beEducated.why')}
         </Alert>
       </Box>
-      <Box display="flex" flexDirection="column" gap={4} mt={4}>
+      <Box display="flex" flexDirection="column" gap={2} mt={2}>
         <Divider>
           <ImportContacts />
         </Divider>
