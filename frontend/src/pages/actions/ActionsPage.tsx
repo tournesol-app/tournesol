@@ -8,13 +8,14 @@ import { ContentHeader, ContentBox } from 'src/components';
 
 import ApplicationOfLaws from './sections/ApplicationOfLaws';
 import BeEducated from './sections/BeEducated';
+import BeWellSurrounred from './sections/BeWellSurrounred';
 import Donate from './sections/Donate';
+import ExposureToQualityInformation from './sections/ExposureToQualityInformation';
 import HelpResearch from './sections/HelpResearch';
+import IncreaseFriction from './sections/IncreaseFriction';
 import JoinMovements from './sections/JoinMovements';
 import OrientYourCareer from './sections/OrientYourCareer';
 import Volition from './sections/Volition';
-import IncreaseFriction from './sections/IncreaseFriction';
-import ExposureToQualityInformation from './sections/ExposureToQualityInformation';
 
 export const ActionQuestion = ({
   question,
@@ -75,6 +76,7 @@ const ActionsPage = () => {
           {[
             <IncreaseFriction key="section_increase_friction" />,
             <ExposureToQualityInformation key="section_exposure_to_quality" />,
+            <BeWellSurrounred key="section_be_well_surrounred" />,
           ].map((section) => (
             <ActionPaper key={`paper_${section.key}`}>{section}</ActionPaper>
           ))}
