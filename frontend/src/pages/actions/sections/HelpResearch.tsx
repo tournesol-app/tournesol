@@ -48,7 +48,7 @@ const ProjectsToPromote = () => {
   return (
     <>
       <Typography>
-        {t('actionsPage.healResearch.promoteAndTakePartInProjectsLike')}
+        {t('actionsPage.helpResearch.promoteAndTakePartInProjectsLike')}
       </Typography>
       <ul>
         {projectsToPromote.map((project, idx) => (
@@ -72,12 +72,12 @@ const HelpResearch = () => {
         id="help-research"
       >
         {t(
-          'actionsPage.healResearch.helpScientificResearchThatServesPublicInterest'
+          'actionsPage.helpResearch.helpScientificResearchThatServesPublicInterest'
         )}
       </Typography>
       <Box my={2}>
         <Alert severity="info" icon={false}>
-          {t('actionsPage.healResearch.why')}
+          {t('actionsPage.helpResearch.why')}
         </Alert>
       </Box>
       <ul>
@@ -85,7 +85,7 @@ const HelpResearch = () => {
           <ProjectsToPromote />
         </li>
         <li>
-          <Trans t={t} i18nKey="actionsPage.healResearch.attendTournesolTalks">
+          <Trans t={t} i18nKey="actionsPage.helpResearch.attendTournesolTalks">
             Attend to{' '}
             <Link
               href="https://tournesol.app/talks"
