@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Alert, Box, Link, Typography } from '@mui/material';
 
 const projectsToUse = [
   {
@@ -104,6 +104,9 @@ const Volition = () => {
           'actionsPage.volition.favourThoughtfulVolitionsToInstinctivePreferences'
         )}
       </Typography>
+      <Alert severity="info" icon={false}>
+        {t('actionsPage.volition.why')}
+      </Alert>
       <ul>
         <li>
           <Typography>
