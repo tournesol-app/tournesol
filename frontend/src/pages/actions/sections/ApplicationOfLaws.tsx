@@ -15,9 +15,11 @@ const ApplicationOfLaws = () => {
       >
         {t('actionsPage.applicationOfLaws.demandTheApplicationOfLaws')}
       </Typography>
-      <Alert severity="info" icon={false}>
-        {t('actionsPage.applicationOfLaws.why')}
-      </Alert>
+      <Box my={2}>
+        <Alert severity="info" icon={false}>
+          {t('actionsPage.applicationOfLaws.why')}
+        </Alert>
+      </Box>
     </Box>
   );
 };

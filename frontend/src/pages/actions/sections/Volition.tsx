@@ -104,9 +104,11 @@ const Volition = () => {
           'actionsPage.volition.favourThoughtfulVolitionsToInstinctivePreferences'
         )}
       </Typography>
-      <Alert severity="info" icon={false}>
-        {t('actionsPage.volition.why')}
-      </Alert>
+      <Box my={2}>
+        <Alert severity="info" icon={false}>
+          {t('actionsPage.volition.why')}
+        </Alert>
+      </Box>
       <ul>
         <li>
           <Typography>

@@ -15,9 +15,11 @@ const OrientYourCareer = () => {
       >
         {t('actionsPage.orientYourCareer.orientYourCareerToImprove')}
       </Typography>
-      <Alert severity="info" icon={false}>
-        {t('actionsPage.orientYourCareer.why')}
-      </Alert>
+      <Box my={2}>
+        <Alert severity="info" icon={false}>
+          {t('actionsPage.orientYourCareer.why')}
+        </Alert>
+      </Box>
     </Box>
   );
 };

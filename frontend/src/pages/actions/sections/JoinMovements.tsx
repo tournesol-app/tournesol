@@ -67,9 +67,11 @@ const JoinMovements = () => {
       >
         {t('actionsPage.joinMovements.getInvolvedInDigitalDemocracyMovements')}
       </Typography>
-      <Alert severity="info" icon={false}>
-        {t('actionsPage.joinMovements.why')}
-      </Alert>
+      <Box my={2}>
+        <Alert severity="info" icon={false}>
+          {t('actionsPage.joinMovements.why')}
+        </Alert>
+      </Box>
       <ul>
         <li>
           <Typography>
