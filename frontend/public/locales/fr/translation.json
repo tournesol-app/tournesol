@@ -717,7 +717,19 @@
   "actionsPage": {
     "title": "Passez à l'action",
     "whatCanYouDoToProtectSocietiesFromAIs": "Que pouvez-vous faire pour protéger les sociétés des conséquences des intelligences artificielles ?",
-    "whatCanYouDoToProtectYourselfAndYourRelatives": "Que pouvez-vous faire pour vous protéger et protéger vos proches ?"
+    "whatCanYouDoToProtectYourselfAndYourRelatives": "Que pouvez-vous faire pour vous protéger et protéger vos proches ?",
+    "beEducated": {
+      "beTrainedAndTrainOthers": "Être formé et former les autres aux fondamentaux de la démocratie numérique.",
+      "why": "En comprenant les différents enjeux et leur ampleur vous prendrez des décisions informés et bénéfiques.",
+      "readAndOfferBooksResultingFromAssociationWorks": "Lire et offrir le livre issu des travaux de l'Association Tournesol :",
+      "readAndOfferMoreBooksLike": "Lire et offrir d'autres livres comme :",
+      "inEnglish": "en anglais",
+      "inFrench": "en français",
+      "watchAndShareVideosFrom": "Visionner et partager les vidéos de :",
+      "andMore": "et d'autres...",
+      "listenAndSharePodcastsLike": "Écouter et partager des podcasts comme :",
+      "discoverPlayAndShareEducationalGamesLike": "Découvrir, jouer et partager des jeux éducatifs, comme ceux de <2>Nicky Case</2>."
+    }
   },
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",

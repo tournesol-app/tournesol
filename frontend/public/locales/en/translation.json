@@ -709,7 +709,19 @@
   "actionsPage": {
     "title": "Move to action",
     "whatCanYouDoToProtectSocietiesFromAIs": "What can you do to protect societies from the consequences of artificial intelligence?",
-    "whatCanYouDoToProtectYourselfAndYourRelatives": "What can you do to protect yourself and your relatives?"
+    "whatCanYouDoToProtectYourselfAndYourRelatives": "What can you do to protect yourself and your relatives?",
+    "beEducated": {
+      "beTrainedAndTrainOthers": "Be trained and train others on the fundamentals of digital democracy.",
+      "why": "By understanding the different issues and their scope, you can make informed and beneficial decisions.",
+      "readAndOfferBooksResultingFromAssociationWorks": "Read and offer the book resulting from the Tournesol association's works:",
+      "readAndOfferMoreBooksLike": "Read and offer more books like:",
+      "inEnglish": "in english",
+      "inFrench": "in french",
+      "watchAndShareVideosFrom": "Watch and share videos from:",
+      "andMore": "and more...",
+      "listenAndSharePodcastsLike": "Listen and share podcasts like:",
+      "discoverPlayAndShareEducationalGamesLike": "Discover, play and share educational games like <2>Nicky Case's</2>."
+    }
   },
   "myComparisonsPage": {
     "noComparisonYet": "No comparison",
