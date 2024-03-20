@@ -8,6 +8,7 @@ import { ContentHeader, ContentBox } from 'src/components';
 
 import BeEducated from './sections/BeEducated';
 import HelpResearch from './sections/HelpResearch';
+import Volition from './sections/Volition';
 
 export const ActionQuestion = ({
   question,
@@ -49,6 +50,7 @@ const ActionsPage = () => {
           {[
             <BeEducated key="section_be_educated" />,
             <HelpResearch key="section_help_research" />,
+            <Volition key="section_volition" />,
           ].map((section) => (
             <ActionPaper key={`paper_${section.key}`}>{section}</ActionPaper>
           ))}
