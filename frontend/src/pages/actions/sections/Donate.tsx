@@ -7,8 +7,16 @@ import { ExternalLink } from 'src/components';
 
 const organisationToDonateTo = [
   {
-    text: 'Tournesol',
+    text: 'AlgorithmWatch',
+    href: 'https://algorithmwatch.org/en/',
+  },
+  {
+    text: 'Association Tournesol',
     href: 'https://tournesol.app/about/donate',
+  },
+  {
+    text: 'Mozilla Foundation',
+    href: 'https://foundation.mozilla.org/fr/?form=donate-header',
   },
   {
     text: 'Wikimedia France',
