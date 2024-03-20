@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, Box, Divider, Link, Typography } from '@mui/material';
+import { Alert, Box, Link, Typography } from '@mui/material';
 import {
   AutoStories,
   ImportContacts,
@@ -64,9 +64,12 @@ const BooksToReadAndOffer = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Typography>
-        {t('actionsPage.beEducated.readAndOfferMoreBooksLike')}
-      </Typography>
+      <Box display="flex" gap={2}>
+        <AutoStories />
+        <Typography>
+          {t('actionsPage.beEducated.readAndOfferMoreBooksLike')}
+        </Typography>
+      </Box>
       <ul>
         <li>
           <Typography>{t('actionsPage.beEducated.inEnglish')}</Typography>
@@ -97,9 +100,12 @@ const VideosToWatchAndShare = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Typography>
-        {t('actionsPage.beEducated.watchAndShareVideosFrom')}{' '}
-      </Typography>
+      <Box display="flex" gap={2}>
+        <YouTube />
+        <Typography>
+          {t('actionsPage.beEducated.watchAndShareVideosFrom')}{' '}
+        </Typography>
+      </Box>
       <ul>
         <li>
           <Typography>{t('actionsPage.beEducated.inEnglish')}</Typography>
@@ -145,61 +151,55 @@ const BeEducated = () => {
         </Alert>
       </Box>
       <Box display="flex" flexDirection="column" gap={2} mt={2}>
-        <Divider>
+        <Box display="flex" gap={2}>
           <ImportContacts />
-        </Divider>
-        <Typography paragraph>
-          {t(
-            'actionsPage.beEducated.readAndOfferBooksResultingFromAssociationWorks'
-          )}{' '}
-          <ExternalLink
-            text="La Dictature des Algorithmes (fr)"
-            href="https://www.tallandier.com/livre/la-dictature-des-algorithmes/"
-          />
-          .
-        </Typography>
-        <Divider>
-          <AutoStories />
-        </Divider>
-        <BooksToReadAndOffer />
-        <Divider>
-          <YouTube />
-        </Divider>
-        <VideosToWatchAndShare />
-        <Divider>
-          <Podcasts />
-        </Divider>
-        <Typography>
-          {t('actionsPage.beEducated.listenAndSharePodcastsLike')}{' '}
-          <ExternalLink
-            text="Your Undivided Attention (en)"
-            href="https://www.humanetech.com/podcast"
-          />
-          .
-        </Typography>
-        <Divider>
-          <VideogameAsset />
-        </Divider>
-        <Typography>
-          <Trans
-            t={t}
-            i18nKey="actionsPage.beEducated.discoverPlayAndShareEducationalGamesLike"
-          >
-            Discover, play and share educational games like{' '}
-            <Link
-              href="https://ncase.me/"
-              target="_blank"
-              rel="noopener"
-              sx={{
-                color: 'revert',
-                textDecoration: 'revert',
-              }}
-            >
-              Nicky Case&apos;s
-            </Link>
+          <Typography paragraph>
+            {t(
+              'actionsPage.beEducated.readAndOfferBooksResultingFromAssociationWorks'
+            )}{' '}
+            <ExternalLink
+              text="La Dictature des Algorithmes (fr)"
+              href="https://www.tallandier.com/livre/la-dictature-des-algorithmes/"
+            />
             .
-          </Trans>
-        </Typography>
+          </Typography>
+        </Box>
+        <BooksToReadAndOffer />
+        <VideosToWatchAndShare />
+        <Box display="flex" gap={2}>
+          <Podcasts />
+          <Typography>
+            {t('actionsPage.beEducated.listenAndSharePodcastsLike')}{' '}
+            <ExternalLink
+              text="Your Undivided Attention (en)"
+              href="https://www.humanetech.com/podcast"
+            />
+            .
+          </Typography>
+        </Box>
+        <Box display="flex" gap={2}>
+          <VideogameAsset />
+          <Typography>
+            <Trans
+              t={t}
+              i18nKey="actionsPage.beEducated.discoverPlayAndShareEducationalGamesLike"
+            >
+              Discover, play and share educational games like{' '}
+              <Link
+                href="https://ncase.me/"
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: 'revert',
+                  textDecoration: 'revert',
+                }}
+              >
+                Nicky Case&apos;s
+              </Link>
+              .
+            </Trans>
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );
