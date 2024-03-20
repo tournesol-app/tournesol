@@ -7,10 +7,6 @@ import { ExternalLink } from 'src/components';
 
 const projectsToPromote = [
   {
-    text: 'Tournesol',
-    href: 'https://tournesol.app',
-  },
-  {
     text: 'Algorithmic Personalization Project',
     href: 'https://personalization.csail.mit.edu',
   },
@@ -26,6 +22,10 @@ const projectsToPromote = [
     text: 'TheirTube',
     href: 'https://www.their.tube',
   },
+  {
+    text: 'Tournesol',
+    href: 'https://tournesol.app',
+  },
 ];
 
 const ProjectsToPromote = () => {
@@ -33,7 +33,7 @@ const ProjectsToPromote = () => {
   return (
     <>
       <Typography>
-        {t('actionsPage.helpResearch.promoteAndTakePartInProjectsLike')}
+        {t('actionsPage.helpResearch.promoteAndTakePartInResearchProjectsLike')}
       </Typography>
       <ul>
         {projectsToPromote.map((project, idx) => (

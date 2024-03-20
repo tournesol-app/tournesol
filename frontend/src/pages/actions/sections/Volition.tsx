@@ -7,8 +7,8 @@ import { ExternalLink } from 'src/components';
 
 const projectsToUse = [
   {
-    text: 'Wikipedia',
-    href: 'https://www.wikipedia.org',
+    text: 'CaptainFact',
+    href: 'https://captainfact.io',
   },
   {
     text: 'Community Notes',
@@ -19,23 +19,23 @@ const projectsToUse = [
     href: 'https://pol.is/home',
   },
   {
-    text: 'Captain Fact',
-    href: 'https://captainfact.io',
-  },
-  {
     text: 'Tournesol',
     href: 'https://tournesol.app',
+  },
+  {
+    text: 'Wikipedia',
+    href: 'https://www.wikipedia.org',
   },
 ];
 
 const booksToReadAndOfferEn = [
   {
-    text: 'The Scout Mindset',
-    href: 'https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/',
-  },
-  {
     text: 'Against Empathy',
     href: 'https://www.harpercollins.com/products/against-empathy-paul-bloom',
+  },
+  {
+    text: 'The Scout Mindset',
+    href: 'https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/',
   },
 ];
 
@@ -43,9 +43,7 @@ const ProjectsToUse = () => {
   const { t } = useTranslation();
   return (
     <>
-      <Typography>
-        {t('actionsPage.volition.useAndParticipateInPlatforms')}
-      </Typography>
+      <Typography>{t('actionsPage.volition.useToolsAndPlatforms')}</Typography>
       <ul>
         {projectsToUse.map((project, idx) => (
           <li key={`projects_to_promote_${idx}`}>

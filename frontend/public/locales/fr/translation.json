@@ -740,7 +740,7 @@
       "why": "A venir..."
     },
     "helpResearch": {
-      "promoteAndTakePartInProjectsLike": "Promouvoir et participer à des projets comme :",
+      "promoteAndTakePartInResearchProjectsLike": "Promouvoir et participer à des projets de recherche comme :",
       "helpScientificResearchThatServesPublicInterest": "Aider la recherche scientifique au service de l'intérêt général",
       "why": "En participant à des projets de recherche vous augmentez le volume de données que les chercheurs et chercheuses peuvent analyser. Les résultats des études seront plus fiables, et les décisions politiques basées sur ces résultats seront plus éclairées.",
       "attendTournesolTalks": "Assister aux <2>Tournesol Talks</2>, ou <5>demander à intervenir</5>."
@@ -756,8 +756,8 @@
       "why": "A venir..."
     },
     "volition": {
-      "useAndParticipateInPlatforms": "Utiliser et participer à des plateformes qui favorisent la volition, comme :",
-      "readAndOfferBooksOnThisDistinction": "Lire et offrir des livres sur cette distinction :",
+      "useToolsAndPlatforms": "Utiliser des outils et des plateformes qui favorisent la volition comme :",
+      "readAndOfferBooksOnThisDistinction": "Lire et offrir des livres sur cette distinction comme :",
       "favourThoughtfulVolitionsToInstinctivePreferences": "Favoriser les volitions réfléchies par rapport aux préférences instinctives",
       "why": "A venir...",
       "preventYourselfFromCompulsivePosting": "S'empêcher de poster impulsivement sur les réseaux sociaux, par exemple en désinstallant des applications de votre téléphone.",

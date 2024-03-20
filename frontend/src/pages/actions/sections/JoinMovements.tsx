@@ -9,16 +9,16 @@ import { githubTournesolUrl } from 'src/utils/url';
 
 const sourceCodeToContributeTo = [
   {
-    text: 'Tournesol',
-    href: githubTournesolUrl,
-  },
-  {
-    text: 'Captain Fact',
+    text: 'CaptainFact',
     href: 'https://github.com/captainfact',
   },
   {
     text: 'Polis',
     href: 'https://pol.is/homehttps://github.com/compdemocracy',
+  },
+  {
+    text: 'Tournesol',
+    href: githubTournesolUrl,
   },
 ];
 
