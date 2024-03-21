@@ -730,8 +730,14 @@
       "beWellSurrounred": "Be well surrounred"
     },
     "donate": {
-      "donateTo": "Donate to:",
-      "donateToOrganisationsFightingForQualityOfInformation": "Donate to organisations fighting for quality of information"
+      "algorithmWatchDesc": "AlgorithmWatch is a human rights organization based in Berlin and Zurich. We fight for a world where algorithms and Artificial Intelligence (AI) do not weaken justice, democracy, and sustainability but strengthen them.",
+      "associationTournesolDesc": "It's us 🌻",
+      "mozillaFoundationDesc": "The Mozilla Foundation works to ensure the internet remains a public resource that is open and accessible to us all.",
+      "wikimediaFoundationDesc": "Wikimedia is a global movement whose mission is to bring free educational content to the world.",
+      "yourLocalWikimediaChapter": "Your local Wikimedia chapter",
+      "localWikimediaChaptersDesc": "Wikimedia chapters are independent organizations founded to support and promote the Wikimedia projects in a specified geographical region (in most cases, a country).",
+      "donateToOrganisationsFightingForQualityOfInformation": "Donate to organisations fighting for quality of information",
+      "hereIsAlist": "Here is a non-exhaustive list of projects and organizations that, through their actions and philosophy, are fighting for information quality, and making the Internet a safer place."
     },
     "qualityInformation": {
       "increaseYourExposureToQualityInformation": "Increase your exposure to quality information"
