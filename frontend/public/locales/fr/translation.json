@@ -732,13 +732,13 @@
       "why": "En comprenant les différents enjeux et leur ampleur vous prendrez des décisions plus informées et bénéfiques.",
       "readAndOfferBooksResultingFromAssociationWorks": "Lire et offrir le livre issu des travaux de l'Association Tournesol :",
       "listenAndSharePodcastsLike": "Écouter et partager des podcasts comme",
-      "discoverPlayAndShareEducationalGamesLike": "Découvrir, jouer et partager des jeux éducatifs, comme ceux de <2>Nicky Case</2>."
+      "discoverAndShareEducationalGamesLike": "Découvrir et partager des jeux éducatifs, comme ceux de <2>Nicky Case</2>."
     },
     "beWellSurrounded": {
       "beWellSurrounded": "Être bien entouré",
-      "joinDiscord": "Rejoindre le <2>Discord de Tournesol</2> (venez dire bonjour et vous présenter !).",
-      "joinGroups": "Rejoindre des groupes où l’information de qualité est socialement valorisée.",
-      "takeCareMentalHealth": "Si vous suspectez ou constatez des répercussions négatives sur votre état de santé (par exemple : idées noires récurrentes, crises d'angoisse, perte d’appétit, isolement social progressif, etc.), envisagez de consulter un professionnel de santé."
+      "joinDiscord": "Rejoindre le <2>Discord de Tournesol</2> (venez dire bonjour et vous présenter 👋).",
+      "joinGroups": "Rejoindre des groupes où l'information de qualité est socialement valorisée.",
+      "takeCareMentalHealth": "Si vous suspectez ou constatez des répercussions négatives sur votre état de santé (par exemple : idées noires récurrentes, crises d'angoisse, perte d'appétit, isolement social progressif, etc.), envisagez de consulter un professionnel de santé."
     },
     "donate": {
       "website": "site web",
@@ -750,15 +750,15 @@
       "yourLocalWikimediaChapter": "Votre chapitre Wikimedia local",
       "localWikimediaChaptersDesc": "Les chapitres Wikimedia sont des organisations indépendantes fondées pour soutenir et promouvoir les projets Wikimedia dans une région géographique donnée (dans la plupart des cas, un pays).",
       "donateToOrganisationsFightingForQualityOfInformation": "Donner aux organisations qui luttent pour la qualité de l'information",
-      "hereIsAlist": "Voici une liste non exhaustive de projets et d'organisations qui, par leurs actions et leur philosophie, luttent pour la qualité de l'information, et font d'Internet un espace plus sûr."
+      "hereIsAlist": "Voici une liste non exhaustive de projets et d'organisations qui, par leurs actions et leur philosophie, luttent pour la qualité de l'information, et mettent en lumière les grands enjeux démocratiques et numériques associés."
     },
     "qualityInformation": {
       "increaseYourExposureToQualityInformation": "Augmenter votre exposition à des informations de qualité",
       "installTournesol": "Installer <2>l'extension Tournesol</2> sur votre navigateur et installer <6>l'application mobile Tournesol</6> (installable depuis votre navigateur sur Android).",
       "improveUnderstandingOfPsychology": "Améliorer la compréhension de notre psychologie",
-      "watchShareVideos": "Regarder et partager des vidéos sur ce sujet, comme <2>Dissatisfaction</2>",
+      "watchShareVideos": "Regarder et partager des vidéos sur ce sujet, comme <2>Dissatisfaction</2>.",
       "readOfferBooks": "Lire et offrir les ouvrages <2>The Righteous Mind</2>, <5>Feeling Good</5>, <8>The Scout Mindset</8>.",
-      "readAboutProcrastination": "Lire cette série d'articles sur la procrastination: <2>Why procrastinators procrastinate?</2>, ou visionner la <7>conférence TED</7> de leur auteur."
+      "readAboutProcrastination": "Lire cette série d'articles sur la procrastination : <2>Why procrastinators procrastinate?</2>, ou visionner la <5>conférence TED</5> de leur auteur."
     },
     "helpResearch": {
       "promoteAndTakePartInResearchProjectsLike": "Promouvoir et participer à des projets de recherche comme :",
@@ -767,16 +767,17 @@
     },
     "increaseFriction": {
       "installApplications": "Installer des applications qui favorisent les volitions comme, entre autres :",
-      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Augmenter la friction entre vous, ou vos proches, et les usages indésirables de l'information",
-      "deleteSocialMediaFromYourPhones": "Supprimer les médias sociaux de vos téléphones, et/ou éloigner vos téléphones de vous.",
-      "findOutAboutAndApplyOtherStrategies": "S'informer et appliquer d'autres stratégie, comme celles de l'article <2>Control Your Tech Use</2>.",
-      "takeRegularInternetBreaks": "Faire des coupures d'Internet de temps en temps.",
+      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Créer des frictions entre vous et les usages indésirables de l'information",
+      "deleteSocialMediaFromYourPhones": "Supprimer les réseaux sociaux de vos téléphones, et/ou éloigner vos téléphones de vous.",
+      "findOutAboutAndApplyOtherStrategies": "S'informer et appliquer d'autres stratégies, comme celles de l'article <2>Control Your Tech Use</2>.",
+      "takeRegularInternetBreaks": "Se couper régulièrement d'Internet.",
       "organizeYourEnvironment": "Façonner votre environnement pour que vos mauvais réflexes soient physiquement impossibles."
     },
     "joinMovements": {
       "contributeToTheOpenSourceCodeOf": "Contribuer aux codes open source de :",
-      "getInvolvedInDigitalDemocracyMovements": "S'engager dans les mouvements de démocratie numérique",
-      "makeComparisonsOnTournesol": "Faire des <2>comparaisons</2> sur Tournesol."
+      "getInvolvedInDigitalDemocracyMovements": "S'engager dans des mouvements de démocratie numérique",
+      "makeComparisonsOnTournesol": "Faire des <2>comparaisons</2> sur Tournesol.",
+      "takePartInFactCheckingOnCaptainFact": "Participer à la <2>vérifications des faits</2> des videos sur CaptainFact."
     },
     "orientYourCareer": {
       "orientYourCareerToImprove": "Orienter sa carrière pour améliorer l'écosystème de l'information",

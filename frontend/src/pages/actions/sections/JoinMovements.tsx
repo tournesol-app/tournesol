@@ -75,6 +75,28 @@ const JoinMovements = () => {
           </Typography>
         </li>
         <li>
+          <Typography>
+            <Trans
+              t={t}
+              i18nKey="actionsPage.joinMovements.takePartInFactCheckingOnCaptainFact"
+            >
+              Take part in{' '}
+              <Link
+                href="https://captainfact.io/videos"
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: 'revert',
+                  textDecoration: 'revert',
+                }}
+              >
+                fact-checking
+              </Link>{' '}
+              videos on CaptainFact.
+            </Trans>
+          </Typography>
+        </li>
+        <li>
           <SourceCodeToContributeTo />
         </li>
       </ul>

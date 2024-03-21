@@ -80,10 +80,7 @@ const HelpResearch = () => {
             </Link>
             , or{' '}
             <Link
-              // xxx set the correct contact address
-              href="https://tournesol.app"
-              target="_blank"
-              rel="noopener"
+              href="mailto:talks@tournesol.app"
               sx={{
                 color: 'revert',
                 textDecoration: 'revert',

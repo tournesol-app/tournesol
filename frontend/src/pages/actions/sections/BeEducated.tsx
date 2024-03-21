@@ -81,7 +81,7 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
-                <Box display="flex" gap={1}>
+                <Box display="flex" flexWrap="wrap" columnGap={1}>
                   <ExternalLink {...book} />
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
@@ -94,7 +94,7 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferFr.map((book, idx) => (
               <li key={`book_fr_${idx}`}>
-                <Box display="flex" gap={1}>
+                <Box display="flex" flexWrap="wrap" columnGap={1}>
                   <ExternalLink {...book} />
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
@@ -193,9 +193,9 @@ const BeEducated = () => {
           <Typography>
             <Trans
               t={t}
-              i18nKey="actionsPage.beEducated.discoverPlayAndShareEducationalGamesLike"
+              i18nKey="actionsPage.beEducated.discoverAndShareEducationalGamesLike"
             >
-              Discover, play and share educational games like{' '}
+              Discover and share educational games like{' '}
               <Link
                 href="https://ncase.me/"
                 target="_blank"

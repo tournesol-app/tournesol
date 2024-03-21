@@ -724,12 +724,12 @@
       "why": "By understanding the different issues and their scope, you can take more informed and beneficial decisions.",
       "readAndOfferBooksResultingFromAssociationWorks": "Read and offer the book resulting from the Tournesol association's works:",
       "listenAndSharePodcastsLike": "Listen and share podcasts like",
-      "discoverPlayAndShareEducationalGamesLike": "Discover, play and share educational games like <2>Nicky Case's</2>."
+      "discoverAndShareEducationalGamesLike": "Discover and share educational games like <2>Nicky Case's</2>."
     },
     "beWellSurrounded": {
       "beWellSurrounded": "Be well surrounded",
-      "joinDiscord": "Join <2>Tournesol Discord</2> (say hi and present yourself).",
-      "joinGroups": "Join groups where quality information is socially valued",
+      "joinDiscord": "Join <2>Tournesol Discord</2> (say hi and present yourself 👋).",
+      "joinGroups": "Join groups where quality information is socially valued.",
       "takeCareMentalHealth": "If you suspect or notice negative effects on your health (for example: recurring dark thoughts, panic attacks, loss of appetite, gradual social isolation, etc.), consider consulting a healthcare professional."
     },
     "donate": {
@@ -737,20 +737,20 @@
       "donate": "donate",
       "algorithmWatchDesc": "AlgorithmWatch is a human rights organization based in Berlin and Zurich. We fight for a world where algorithms and Artificial Intelligence (AI) do not weaken justice, democracy, and sustainability but strengthen them.",
       "associationTournesolDesc": "It's us 🌻",
-      "mozillaFoundationDesc": "The Mozilla Foundation works to ensure the internet remains a public resource that is open and accessible to us all.",
+      "mozillaFoundationDesc": "The Mozilla Foundation works to ensure the Internet remains a public resource that is open and accessible to us all.",
       "wikimediaFoundationDesc": "Wikimedia is a global movement whose mission is to bring free educational content to the world.",
       "yourLocalWikimediaChapter": "Your local Wikimedia chapter",
       "localWikimediaChaptersDesc": "Wikimedia chapters are independent organizations founded to support and promote the Wikimedia projects in a specified geographical region (in most cases, a country).",
-      "donateToOrganisationsFightingForQualityOfInformation": "Donate to organisations fighting for quality of information",
-      "hereIsAlist": "Here is a non-exhaustive list of projects and organizations that, through their actions and philosophy, are fighting for information quality, and making the Internet a safer place."
+      "donateToOrganisationsFightingForQualityOfInformation": "Donate to organizations fighting for quality of information",
+      "hereIsAlist": "Here is a non-exhaustive list of projects and organizations that, through their actions and philosophy, are fighting for information quality, and highlight the related democratic and digital issues."
     },
     "qualityInformation": {
       "increaseYourExposureToQualityInformation": "Increase your exposure to quality information",
       "installTournesol": "Install the <2>Tournesol browser extension</2> and the <6>Tournesol mobile app</6> (can be installed from your browser on Android).",
       "improveUnderstandingOfPsychology": "Improve your understanding of your psychology",
-      "watchShareVideos": "Watch and share videos on this topic, like <2>Dissatisfaction</2>",
+      "watchShareVideos": "Watch and share videos on this topic, like <2>Dissatisfaction</2>.",
       "readOfferBooks": "Read and offer books, like <2>The Righteous Mind</2>, <5>Feeling Good</5>, <8>The Scout Mindset</8>.",
-      "readAboutProcrastination": "Read the blog posts <2>Why procrastinators procrastinate?</2>, or watch the author's <7>TED talk</7>."
+      "readAboutProcrastination": "Read the blog posts <2>Why procrastinators procrastinate?</2>, or watch the author's <5>TED talk</5>."
     },
     "helpResearch": {
       "promoteAndTakePartInResearchProjectsLike": "Promote and take part in research projects like:",
@@ -759,16 +759,17 @@
     },
     "increaseFriction": {
       "installApplications": "Install applications that favor volitions like:",
-      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Increase friction between you, or you relatives, and undesirable information usage",
+      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Increase friction between you and undesirable information usage",
       "deleteSocialMediaFromYourPhones": "Delete social media from your phones and/or keep your phones away from you.",
       "findOutAboutAndApplyOtherStrategies": "Find out about and apply other strategies, such as those from the article <2>Control Your Tech Use</2>.",
       "takeRegularInternetBreaks": "Take regular Internet breaks.",
-      "organizeYourEnvironment": "Organize your environment so that your bad habits are physically impossible."
+      "organizeYourEnvironment": "Organize your environment to make your bad habits physically impossible."
     },
     "joinMovements": {
       "contributeToTheOpenSourceCodeOf": "Contribute to the open source codes of:",
       "getInvolvedInDigitalDemocracyMovements": "Get involved in digital democracy movements",
-      "makeComparisonsOnTournesol": "Make <2>comparisons</2> on Tournesol."
+      "makeComparisonsOnTournesol": "Make <2>comparisons</2> on Tournesol.",
+      "takePartInFactCheckingOnCaptainFact": "Take part in <2>fact-checking</2> videos on CaptainFact."
     },
     "orientYourCareer": {
       "orientYourCareerToImprove": "Orient your career to improve information ecosystems",

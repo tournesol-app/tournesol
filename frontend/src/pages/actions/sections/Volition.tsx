@@ -70,7 +70,7 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
-                <Box display="flex" gap={1}>
+                <Box display="flex" flexWrap="wrap" columnGap={1}>
                   <ExternalLink {...book} />
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>

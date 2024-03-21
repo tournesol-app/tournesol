@@ -25,7 +25,7 @@ const OrientYourCareer = () => {
               Question your career path and consider alternatives. Read, for
               instance, the article{' '}
               <Link
-                href="https://ncase.me/"
+                href="https://waitbutwhy.com/2018/04/picking-career.html"
                 target="_blank"
                 rel="noopener"
                 sx={{
