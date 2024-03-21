@@ -42,7 +42,16 @@ export const ActionQuestion = ({
 };
 
 export const ActionPaper = ({ children }: { children: React.ReactNode }) => {
-  return <Paper sx={{ p: 2 }}>{children}</Paper>;
+  return (
+    <Paper
+      sx={{
+        p: 2,
+        '& li': { mt: 1 },
+      }}
+    >
+      {children}
+    </Paper>
+  );
 };
 
 const ActionsPage = () => {

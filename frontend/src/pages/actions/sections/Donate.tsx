@@ -84,7 +84,7 @@ const Donate = () => {
   ];
 
   return (
-    <Box sx={{ '& li': { mt: 1 } }}>
+    <Box>
       <Typography variant="h4" fontStyle="italic" gutterBottom id="donate">
         {t(
           'actionsPage.donate.donateToOrganisationsFightingForQualityOfInformation'
