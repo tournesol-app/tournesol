@@ -753,7 +753,12 @@
       "hereIsAlist": "Voici une liste non exhaustive de projets et d'organisations qui, par leurs actions et leur philosophie, luttent pour la qualité de l'information, et font d'Internet un espace plus sûr."
     },
     "qualityInformation": {
-      "increaseYourExposureToQualityInformation": "Augmenter votre exposition à des informations de qualité"
+      "increaseYourExposureToQualityInformation": "Augmenter votre exposition à des informations de qualité",
+      "installTournesol": "Installer <2>l'extension Tournesol</2> sur votre navigateur et installer <6>l'application mobile Tournesol</6> (installable depuis votre navigateur sur Android).",
+      "improveUnderstandingOfPsychology": "Améliorer la compréhension de notre psychologie",
+      "watchShareVideos": "Regarder et partager des vidéos sur ce sujet, comme <2>Dissatisfaction</2>",
+      "readOfferBooks": "Lire et offrir les ouvrages <2>The Righteous Mind</2>, <5>Feeling Good</5>, <8>The Scout Mindset</8>.",
+      "readAboutProcrastination": "Lire cette série d'articles sur la procrastination: <2>Why procrastinators procrastinate?</2>, ou visionner la <7>conférence TED</7> de leur auteur."
     },
     "helpResearch": {
       "promoteAndTakePartInResearchProjectsLike": "Promouvoir et participer à des projets de recherche comme :",
