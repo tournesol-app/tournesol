@@ -16,10 +16,12 @@ const booksToReadAndOfferEn = [
   {
     text: 'Manufacturing Consensus',
     href: 'https://yalebooks.yale.edu/book/9780300251234/manufacturing-consensus/',
+    authors: 'Samuel WOOLLEY',
   },
   {
     text: 'Twitter and Tear Gas',
     href: 'https://www.twitterandteargas.org/downloads/twitter-and-tear-gas-by-zeynep-tufekci.pdf',
+    authors: 'Zeynep TÜFEKÇI',
   },
 ];
 
@@ -27,14 +29,17 @@ const booksToReadAndOfferFr = [
   {
     text: 'Algocratie',
     href: 'https://www.actes-sud.fr/algocratie',
+    authors: 'Lou HERRMANN',
   },
   {
     text: 'Le Fabuleux Chantier',
     href: 'https://laboutique.edpsciences.fr/produit/1107/9782759824304/Le%20fabuleux%20chantier',
+    authors: 'Lê Nguyên HOANG, El Mahdi EL MHAMDI',
   },
   {
     text: 'Toxic Data',
     href: 'https://editions.flammarion.com/toxic-data/9782080274946',
+    authors: 'David Chavalarias',
   },
 ];
 
@@ -76,7 +81,10 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
-                <ExternalLink {...book} />
+                <Box display="flex" gap={1}>
+                  <ExternalLink {...book} />
+                  <Typography variant="body2">- {book.authors}</Typography>
+                </Box>
               </li>
             ))}
           </ul>
@@ -86,7 +94,10 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferFr.map((book, idx) => (
               <li key={`book_fr_${idx}`}>
-                <ExternalLink {...book} />
+                <Box display="flex" gap={1}>
+                  <ExternalLink {...book} />
+                  <Typography variant="body2">- {book.authors}</Typography>
+                </Box>
               </li>
             ))}
           </ul>
