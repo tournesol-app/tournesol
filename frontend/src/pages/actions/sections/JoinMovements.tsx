@@ -2,7 +2,7 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { ExternalLink } from 'src/components';
 import { githubTournesolUrl } from 'src/utils/url';
@@ -61,18 +61,8 @@ const JoinMovements = () => {
               t={t}
               i18nKey="actionsPage.joinMovements.makeComparisonsOnTournesol"
             >
-              Make{' '}
-              <Link
-                component={RouterLink}
-                to="/comparison"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
-                comparisons
-              </Link>{' '}
-              on Tournesol.
+              Make <RouterLink to="/comparison">comparisons</RouterLink> on
+              Tournesol.
             </Trans>
           </Typography>
         </li>

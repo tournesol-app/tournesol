@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 
 import {
   Grid,
-  Link as MuiLink,
   Button,
   Typography,
   Checkbox,
@@ -46,16 +45,7 @@ const SignupSuccess = ({ email }: { email: string }) => {
       <Typography paragraph px={1} textAlign="center">
         <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">
           If your email address is incorrect, simply{' '}
-          <MuiLink
-            href="/signup"
-            sx={{
-              color: 'revert',
-              textDecoration: 'revert',
-            }}
-          >
-            create a new account
-          </MuiLink>
-          .
+          <Link to="/signup">create a new account</Link>.
         </Trans>
       </Typography>
     </>
