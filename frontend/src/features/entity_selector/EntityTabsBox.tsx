@@ -4,7 +4,6 @@ import {
   Tab,
   Paper,
   Alert,
-  Link,
   Box,
   Typography,
   IconButton,
@@ -16,6 +15,7 @@ import LoaderWrapper from 'src/components/LoaderWrapper';
 import EntityTextInput from './EntityTextInput';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import { InfoOutlined } from '@mui/icons-material';
+import { ExternalLink } from 'src/components';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -75,18 +75,7 @@ const TabInfo = ({
         Your rate-later videos appear here. You can add some to your list by
         clicking on the &apos;+&apos; sign on the video cards. You can also add
         them directly from{' '}
-        <Link
-          href={getWebExtensionUrl()}
-          target="_blank"
-          rel="noopener"
-          sx={{
-            color: 'revert',
-            textDecoration: 'revert',
-          }}
-        >
-          the extension
-        </Link>
-        .
+        <ExternalLink href={getWebExtensionUrl()}>the extension</ExternalLink>.
       </Trans>
     ),
     'good-short-videos': t('tabsBox.goodShortVideos'),

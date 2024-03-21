@@ -31,7 +31,7 @@ const ExposureToQualityInformation = () => {
               i18nKey="actionsPage.qualityInformation.installTournesol"
             >
               Install the{' '}
-              <ExternalLink href={browserExtensionUrl ?? ''}>
+              <ExternalLink href={browserExtensionUrl}>
                 Tournesol browser extension
               </ExternalLink>{' '}
               and the{' '}

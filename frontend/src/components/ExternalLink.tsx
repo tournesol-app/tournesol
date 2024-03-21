@@ -4,7 +4,7 @@ import { Link } from '@mui/material';
 
 interface ExternalLinkProps {
   children: React.ReactNode;
-  href: string;
+  href?: string;
 }
 
 const ExternalLink = ({ children, href }: ExternalLinkProps) => {

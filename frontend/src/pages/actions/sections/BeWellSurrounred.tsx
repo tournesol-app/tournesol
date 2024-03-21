@@ -4,6 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
 import { ExternalLink } from 'src/components';
+import { discordTournesolInviteUrl } from 'src/utils/url';
 
 const BeWellSurrounred = () => {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ const BeWellSurrounred = () => {
           <Typography>
             <Trans t={t} i18nKey="actionsPage.beWellSurrounded.joinDiscord">
               Join{' '}
-              <ExternalLink href="https://discord.com/invite/TvsFB8RNBV">
+              <ExternalLink href={discordTournesolInviteUrl}>
                 Tournesol Discord
               </ExternalLink>{' '}
               (say hi and present yourself).
