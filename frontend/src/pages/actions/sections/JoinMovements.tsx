@@ -14,7 +14,7 @@ const sourceCodeToContributeTo = [
   },
   {
     text: 'Polis',
-    href: 'https://pol.is/homehttps://github.com/compdemocracy',
+    href: 'https://github.com/compdemocracy',
   },
   {
     text: 'Tournesol',
