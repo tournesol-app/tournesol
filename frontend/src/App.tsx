@@ -87,8 +87,6 @@ function App() {
         <ScrollToTop />
         <Frame>
           <Switch>
-            {/* About routes */}
-            {/* TODO confirm the link printed in the book */}
             <PublicRoute path="/actions">
               <ActionsPage />
             </PublicRoute>
@@ -104,6 +102,7 @@ function App() {
             <PublicRoute path="/talks">
               <TournesolTalksPage />
             </PublicRoute>
+            {/* About routes */}
             <PublicRoute path="/about/terms-of-service">
               <TermsOfService />
             </PublicRoute>
