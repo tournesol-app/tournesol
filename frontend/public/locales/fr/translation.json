@@ -741,6 +741,8 @@
       "takeCareMentalHealth": "Si vous suspectez ou constatez des répercussions négatives sur votre état de santé (par exemple : idées noires récurrentes, crises d'angoisse, perte d’appétit, isolement social progressif, etc.), envisagez de consulter un professionnel de santé."
     },
     "donate": {
+      "website": "site web",
+      "donate": "faire un don",
       "algorithmWatchDesc": "AlgorithmWatch est une organisation de défense des droits humains basée à Berlin et à Zurich. Nous luttons pour un monde où les algorithmes et l'intelligence artificielle (IA) n'affaiblissent pas la justice, la démocratie et la durabilité, mais les renforcent.",
       "associationTournesolDesc": "C'est nous 🌻",
       "mozillaFoundationDesc": "La Fondation Mozilla est à pied d'œuvre pour s'assurer qu'Internet demeure un bien commun ouvert et accessible à tout le monde.",
