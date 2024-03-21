@@ -6,7 +6,7 @@ import { Alert, Box, Typography } from '@mui/material';
 const ApplicationOfLaws = () => {
   const { t } = useTranslation();
   return (
-    <Box sx={{ '& li': { mt: 1 } }}>
+    <Box>
       <Typography
         variant="h4"
         fontStyle="italic"

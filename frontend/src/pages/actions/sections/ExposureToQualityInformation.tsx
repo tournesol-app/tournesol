@@ -11,7 +11,6 @@ const ExposureToQualityInformation = () => {
   return (
     <Box
       sx={{
-        '& li': { mt: 1 },
         '& a': { color: 'revert', textDecoration: 'revert' },
       }}
     >

@@ -152,7 +152,7 @@ const VideosToWatchAndShare = () => {
 const BeEducated = () => {
   const { t } = useTranslation();
   return (
-    <Box sx={{ '& li': { mt: 1 } }}>
+    <Box>
       <Typography variant="h4" fontStyle="italic" gutterBottom id="be-educated">
         {t('actionsPage.beEducated.beTrainedAndTrainOthers')}
       </Typography>
