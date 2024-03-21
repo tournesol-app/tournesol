@@ -32,10 +32,12 @@ const booksToReadAndOfferEn = [
   {
     text: 'Against Empathy',
     href: 'https://www.harpercollins.com/products/against-empathy-paul-bloom',
+    authors: 'Paul BLOOM',
   },
   {
     text: 'The Scout Mindset',
     href: 'https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/',
+    authors: 'Julia GALEF',
   },
 ];
 
@@ -68,7 +70,10 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
-                <ExternalLink {...book} />
+                <Box display="flex" gap={1}>
+                  <ExternalLink {...book} />
+                  <Typography variant="body2">- {book.authors}</Typography>
+                </Box>
               </li>
             ))}
           </ul>
