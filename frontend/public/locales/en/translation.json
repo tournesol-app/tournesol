@@ -751,7 +751,9 @@
       "attendTournesolTalks": "Attend to <2>Tournesol Talks</2>, or <5>ask to intervene</5>."
     },
     "increaseFriction": {
-      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Increase friction between you, or you relatives, and undesirable information usage"
+      "installApplications": "Install applications that favor volitions like:",
+      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Increase friction between you, or you relatives, and undesirable information usage",
+      "deleteSocialMediaFromYourPhones": "Delete social media from your phones and/or keep your phones away from you."
     },
     "joinMovements": {
       "contributeToTheOpenSourceCodeOf": "Contribute to the open source codes of:",

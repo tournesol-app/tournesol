@@ -759,7 +759,9 @@
       "attendTournesolTalks": "Assister aux <2>Tournesol Talks</2>, ou <5>demander à intervenir</5>."
     },
     "increaseFriction": {
-      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Augmenter la friction entre vous, ou vos proches, et les usages indésirables de l'information"
+      "installApplications": "Installer des applications qui favorisent les volitions comme, entre autres :",
+      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Augmenter la friction entre vous, ou vos proches, et les usages indésirables de l'information",
+      "deleteSocialMediaFromYourPhones": "Supprimer les médias sociaux de vos téléphones, et/ou éloigner vos téléphones de vous."
     },
     "joinMovements": {
       "contributeToTheOpenSourceCodeOf": "Contribuer aux codes open source de :",
