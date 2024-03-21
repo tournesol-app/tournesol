@@ -18,6 +18,7 @@ import { StatsLazyProvider } from './features/statistics/StatsContext';
 import PublicRoute from './features/login/PublicRoute';
 import PrivateRoute from './features/login/PrivateRoute';
 
+import ActionsPage from './pages/actions/ActionsPage';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
@@ -86,7 +87,9 @@ function App() {
         <ScrollToTop />
         <Frame>
           <Switch>
-            {/* About routes */}
+            <PublicRoute path="/actions">
+              <ActionsPage />
+            </PublicRoute>
             <PublicRoute path="/faq">
               <FAQ />
             </PublicRoute>
@@ -99,6 +102,7 @@ function App() {
             <PublicRoute path="/talks">
               <TournesolTalksPage />
             </PublicRoute>
+            {/* About routes */}
             <PublicRoute path="/about/terms-of-service">
               <TermsOfService />
             </PublicRoute>
