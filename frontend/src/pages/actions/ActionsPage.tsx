@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import { Box, Paper, useTheme } from '@mui/material';
 
 import { ContentHeader, ContentBox } from 'src/components';
+import { useScrollToLocation } from 'src/hooks';
 
 import ApplicationOfLaws from './sections/ApplicationOfLaws';
 import BeEducated from './sections/BeEducated';
@@ -46,6 +47,8 @@ export const ActionPaper = ({ children }: { children: React.ReactNode }) => {
 
 const ActionsPage = () => {
   const { t } = useTranslation();
+  useScrollToLocation();
+
   return (
     <>
       <ContentHeader title={t('actionsPage.title')} />
