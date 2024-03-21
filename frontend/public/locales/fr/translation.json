@@ -761,7 +761,10 @@
     "increaseFriction": {
       "installApplications": "Installer des applications qui favorisent les volitions comme, entre autres :",
       "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Augmenter la friction entre vous, ou vos proches, et les usages indésirables de l'information",
-      "deleteSocialMediaFromYourPhones": "Supprimer les médias sociaux de vos téléphones, et/ou éloigner vos téléphones de vous."
+      "deleteSocialMediaFromYourPhones": "Supprimer les médias sociaux de vos téléphones, et/ou éloigner vos téléphones de vous.",
+      "findOutAboutAndApplyOtherStrategies": "S'informer et appliquer d'autres stratégie, comme celles de l'article <2>Control Your Tech Use</2>.",
+      "takeRegularInternetBreaks": "Faire des coupures d'Internet de temps en temps.",
+      "organizeYourEnvironment": "Façonner votre environnement pour que vos mauvais réflexes soient physiquement impossibles."
     },
     "joinMovements": {
       "contributeToTheOpenSourceCodeOf": "Contribuer aux codes open source de :",

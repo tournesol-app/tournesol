@@ -1,7 +1,7 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { ExternalLink } from 'src/components';
 
 const appsToInstall = [
@@ -58,6 +58,29 @@ const IncreaseFriction = () => {
         <li>
           <AppsToInstall />
         </li>
+        <li>
+          <Trans
+            t={t}
+            i18nKey="actionsPage.increaseFriction.findOutAboutAndApplyOtherStrategies"
+          >
+            Find out about and apply other strategies, such as those from the
+            article{' '}
+            <Link
+              href="https://www.humanetech.com/take-control"
+              target="_blank"
+              rel="noopener"
+              sx={{
+                color: 'revert',
+                textDecoration: 'revert',
+              }}
+            >
+              Control Your Tech Use
+            </Link>
+            .
+          </Trans>
+        </li>
+        <li>{t('actionsPage.increaseFriction.takeRegularInternetBreaks')}</li>
+        <li>{t('actionsPage.increaseFriction.organizeYourEnvironment')}</li>
       </ul>
     </Box>
   );
