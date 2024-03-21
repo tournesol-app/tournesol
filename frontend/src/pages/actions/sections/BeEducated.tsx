@@ -39,7 +39,7 @@ const booksToReadAndOfferFr = [
   {
     text: 'Toxic Data',
     href: 'https://editions.flammarion.com/toxic-data/9782080274946',
-    authors: 'David Chavalarias',
+    authors: 'David CHAVALARIAS',
   },
 ];
 
