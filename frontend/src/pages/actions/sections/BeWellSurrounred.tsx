@@ -15,9 +15,9 @@ const BeWellSurrounred = () => {
         variant="h4"
         fontStyle="italic"
         gutterBottom
-        id="be-well-surrounred"
+        id="be-well-surrounded"
       >
-        {t('actionsPage.beWellSurrounded.beWellSurrounred')}
+        {t('actionsPage.beWellSurrounded.beWellSurrounded')}
       </Typography>
       <ul>
         <li>
