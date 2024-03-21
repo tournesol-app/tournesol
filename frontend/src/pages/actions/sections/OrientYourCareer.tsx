@@ -1,7 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+
+import { ExternalLink } from 'src/components';
 
 const OrientYourCareer = () => {
   const { t } = useTranslation();
@@ -24,17 +26,9 @@ const OrientYourCareer = () => {
             >
               Question your career path and consider alternatives. Read, for
               instance, the article{' '}
-              <Link
-                href="https://waitbutwhy.com/2018/04/picking-career.html"
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
+              <ExternalLink href="https://waitbutwhy.com/2018/04/picking-career.html">
                 How to pick a career (that actually fits you)
-              </Link>
+              </ExternalLink>
               .
             </Trans>
           </Typography>

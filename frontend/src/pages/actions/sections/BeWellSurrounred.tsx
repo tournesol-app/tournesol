@@ -1,15 +1,14 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Box, Link, Typography } from '@mui/material';
+
+import { Box, Typography } from '@mui/material';
+
+import { ExternalLink } from 'src/components';
 
 const BeWellSurrounred = () => {
   const { t } = useTranslation();
   return (
-    <Box
-      sx={{
-        '& a': { color: 'revert', textDecoration: 'revert' },
-      }}
-    >
+    <Box>
       <Typography
         variant="h4"
         fontStyle="italic"
@@ -23,13 +22,9 @@ const BeWellSurrounred = () => {
           <Typography>
             <Trans t={t} i18nKey="actionsPage.beWellSurrounded.joinDiscord">
               Join{' '}
-              <Link
-                href="https://discord.com/invite/TvsFB8RNBV"
-                target="_blank"
-                rel="noopener"
-              >
+              <ExternalLink href="https://discord.com/invite/TvsFB8RNBV">
                 Tournesol Discord
-              </Link>{' '}
+              </ExternalLink>{' '}
               (say hi and present yourself).
             </Trans>
           </Typography>

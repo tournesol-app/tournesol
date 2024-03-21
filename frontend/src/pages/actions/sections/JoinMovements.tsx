@@ -32,7 +32,9 @@ const SourceCodeToContributeTo = () => {
       <ul>
         {sourceCodeToContributeTo.map((sourceCode, idx) => (
           <li key={`source_code_${idx}`}>
-            <ExternalLink {...sourceCode} />
+            <ExternalLink href={sourceCode.href}>
+              {sourceCode.text}
+            </ExternalLink>
           </li>
         ))}
       </ul>
@@ -81,17 +83,9 @@ const JoinMovements = () => {
               i18nKey="actionsPage.joinMovements.takePartInFactCheckingOnCaptainFact"
             >
               Take part in{' '}
-              <Link
-                href="https://captainfact.io/videos"
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
+              <ExternalLink href="https://captainfact.io/videos">
                 fact-checking
-              </Link>{' '}
+              </ExternalLink>{' '}
               videos on CaptainFact.
             </Trans>
           </Typography>

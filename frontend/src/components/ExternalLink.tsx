@@ -2,7 +2,12 @@ import React from 'react';
 
 import { Link } from '@mui/material';
 
-const ExternalLink = ({ text, href }: { text: string; href: string }) => {
+interface ExternalLinkProps {
+  children: React.ReactNode;
+  href: string;
+}
+
+const ExternalLink = ({ children, href }: ExternalLinkProps) => {
   return (
     <Link
       href={href}
@@ -13,7 +18,7 @@ const ExternalLink = ({ text, href }: { text: string; href: string }) => {
         textDecoration: 'revert',
       }}
     >
-      {text}
+      {children}
     </Link>
   );
 };

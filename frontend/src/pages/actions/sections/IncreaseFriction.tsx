@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { ExternalLink } from 'src/components';
 
 const appsToInstall = [
@@ -27,9 +27,9 @@ const AppsToInstall = () => {
         {t('actionsPage.increaseFriction.installApplications')}
       </Typography>
       <ul>
-        {appsToInstall.map((sourceCode, idx) => (
-          <li key={`source_code_${idx}`}>
-            <ExternalLink {...sourceCode} />
+        {appsToInstall.map((app, idx) => (
+          <li key={`app_${idx}`}>
+            <ExternalLink href={app.href}>{app.text}</ExternalLink>
           </li>
         ))}
       </ul>
@@ -65,17 +65,9 @@ const IncreaseFriction = () => {
           >
             Find out about and apply other strategies, such as those from the
             article{' '}
-            <Link
-              href="https://www.humanetech.com/take-control"
-              target="_blank"
-              rel="noopener"
-              sx={{
-                color: 'revert',
-                textDecoration: 'revert',
-              }}
-            >
+            <ExternalLink href="https://www.humanetech.com/take-control">
               Control Your Tech Use
-            </Link>
+            </ExternalLink>
             .
           </Trans>
         </li>
