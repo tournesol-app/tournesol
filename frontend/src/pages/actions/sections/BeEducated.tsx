@@ -29,7 +29,7 @@ const booksToReadAndOfferFr = [
   {
     text: 'Algocratie',
     href: 'https://www.actes-sud.fr/algocratie',
-    authors: 'Lou HERRMANN',
+    authors: 'Arthur GRIMONPONT',
   },
   {
     text: 'Le Fabuleux Chantier',
