@@ -217,8 +217,8 @@ class PostProcessedScoringModel(ScoringModel):
 
     def apply_post_process(self, base_score, base_left_unc, base_right_unc):
         score = self.post_process(base_score)
-        left = self.post_process(base_score - base_left_unc) - score
-        right = self.post_process(base_score - base_right_unc) - score
+        left = score - self.post_process(base_score - base_left_unc)
+        right = self.post_process(base_score + base_right_unc) - score
         if left < 0:
             assert right < 0
             temp = left
