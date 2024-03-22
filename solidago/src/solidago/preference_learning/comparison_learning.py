@@ -40,7 +40,7 @@ class ComparisonBasedPreferenceLearning(PreferenceLearning):
         user_judgments: dict[str, pd.DataFrame],
         entities: pd.DataFrame,
         initialization: Optional[ScoringModel] = None,
-        new_judgments: Optional[dict[str, pd.DataFrame]]=None,
+        new_judgments: Optional[dict[str, pd.DataFrame]]=None,  # TODO: should use Judgements ?
     ) -> ScoringModel:
         """ Learns a scoring model, given user judgments of entities
         

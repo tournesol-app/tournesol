@@ -56,6 +56,8 @@ privacy = PrivacySettings({
 })
 
 judgments = DataFrameJudgments(pd.DataFrame(dict(
+    # The judgements contain a pair of entities (2, 3) compared twice by user 1
+    # The learned models assume than only the last one is considered in the learning process.
     user_id= [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4],
     entity_a=[0, 2, 4, 0, 1, 4, 3, 4, 0, 2, 1, 0, 4, 0, 0, 0, 0, 2, 4, 0, 1, 2],
     entity_b=[2, 3, 3, 2, 2, 3, 2, 1, 4, 3, 0, 4, 1, 1, 2, 3, 4, 3, 3, 1, 2, 3],

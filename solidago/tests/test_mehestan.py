@@ -10,8 +10,7 @@ from solidago.scoring_model import DirectScoringModel, ScaledScoringModel
 
 from solidago.scaling import ScalingCompose, Mehestan, QuantileZeroShift
 
-from solidago.scaling.mehestan import (Mehestan, _compute_activities, _model_norms, 
-    _compute_score_diffs, _ScoreDiffs, _aggregate_user_comparisons, _aggregate)
+from solidago.scaling.mehestan import (Mehestan, _aggregate_user_comparisons, _aggregate)
 
 
 mehestan = Mehestan(
@@ -32,7 +31,7 @@ def test_learned_models(test):
 
 users = pd.DataFrame(dict(
     is_pretrusted=[True] * 5,
-    trust_score=[1] * 5,
+    trust_score=[1.] * 5,
 ))
 users.index.name = "user_id"
 
@@ -80,27 +79,23 @@ learned_models = {
     })
 } 
 
-score_diffs = _compute_score_diffs(learned_models, users, entities)
-activities = _compute_activities(learned_models, entities, users, privacy, mehestan.privacy_penalty)
-is_scaler = mehestan.compute_scalers(activities, users)
+activities = mehestan.compute_activities(learned_models, entities, users, privacy)
+is_scaler = mehestan.compute_scalers(learned_models, entities, users, privacy)
 users = users.assign(is_scaler=is_scaler)
 scalers = users[users["is_scaler"]]
 nonscalers = users[users["is_scaler"] == False]
         
-model_norms = _model_norms(learned_models, entities, privacy, 
-    power=mehestan.p_norm_for_multiplicative_resilience,
-    privacy_penalty=mehestan.privacy_penalty
-)
-scaler_entity_ratios = mehestan.compute_entity_ratios(scalers, scalers, score_diffs)
+scaler_model_norms = mehestan.compute_model_norms(learned_models, scalers, entities, privacy)
+scaler_entity_ratios = mehestan.compute_entity_ratios(learned_models, learned_models, entities, scalers, scalers, privacy)
 scaler_ratio_voting_rights, scaler_ratios, scaler_ratio_uncertainties = _aggregate_user_comparisons(
     scalers, scaler_entity_ratios, 
     error=mehestan.error, lipschitz=mehestan.user_comparison_lipschitz
 )
-multiplicators = mehestan.compute_multiplicators(
-    scaler_ratio_voting_rights, scaler_ratios, scaler_ratio_uncertainties, model_norms
+scaler_multiplicators = mehestan.compute_multiplicators(
+    scaler_ratio_voting_rights, scaler_ratios, scaler_ratio_uncertainties, scaler_model_norms
 )
 scaler_entity_diffs = mehestan.compute_entity_diffs(
-    learned_models, scalers, scalers, entities, multiplicators
+    learned_models, learned_models, scalers, scalers, entities, privacy, scaler_multiplicators
 )
 scaler_diff_voting_rights, scaler_diffs, scaler_diff_uncertainties = _aggregate_user_comparisons(
     scalers, scaler_entity_diffs,
@@ -114,44 +109,47 @@ scaled_models = dict()
 for scaler in scalers.index:
     scaled_models[scaler] = ScaledScoringModel(
         base_model=learned_models[scaler], 
-        multiplicator=multiplicators[scaler][0], 
+        multiplicator=scaler_multiplicators[scaler][0], 
         translation=scaler_translations[scaler][0],
-        multiplicator_left_uncertainty=multiplicators[scaler][1], 
-        multiplicator_right_uncertainty=multiplicators[scaler][1], 
+        multiplicator_left_uncertainty=scaler_multiplicators[scaler][1], 
+        multiplicator_right_uncertainty=scaler_multiplicators[scaler][1], 
         translation_left_uncertainty=scaler_translations[scaler][1],
         translation_right_uncertainty=scaler_translations[scaler][1]
     )
-    score_diffs[scaler] = _ScoreDiffs(scaled_models[scaler], entities)
 
-scalee_entity_ratios = mehestan.compute_entity_ratios(nonscalers, scalers, score_diffs)
-scalee_ratio_voting_rights, scalee_ratios, scalee_ratio_uncertainties = _aggregate_user_comparisons(
-    scalers, scalee_entity_ratios, error=mehestan.error, 
+nonscaler_model_norms = mehestan.compute_model_norms(learned_models, nonscalers, entities, privacy)
+nonscaler_entity_ratios = mehestan.compute_entity_ratios(learned_models, scaled_models, entities,
+    nonscalers, scalers, privacy)
+nonscaler_ratio_voting_rights, nonscaler_ratios, nonscaler_ratio_uncertainties = _aggregate_user_comparisons(
+    scalers, nonscaler_entity_ratios, 
+    error=mehestan.error, 
     lipschitz=mehestan.user_comparison_lipschitz
 )
-multiplicators |= mehestan.compute_multiplicators(
-    scalee_ratio_voting_rights, scalee_ratios, scalee_ratio_uncertainties, model_norms
+nonscaler_multiplicators = mehestan.compute_multiplicators(
+    nonscaler_ratio_voting_rights, nonscaler_ratios, nonscaler_ratio_uncertainties, 
+    nonscaler_model_norms
 )
 
-scalee_entity_diffs = mehestan.compute_entity_diffs(
-    learned_models, nonscalers, scalers, entities, multiplicators
+nonscaler_entity_diffs = mehestan.compute_entity_diffs(
+    learned_models, scaled_models, nonscalers, scalers, entities, privacy, nonscaler_multiplicators
 )
-scalee_diff_voting_rights, scalee_diffs, scalee_diff_uncertainties = _aggregate_user_comparisons(
-    scalers, scalee_entity_diffs, 
+nonscaler_diff_voting_rights, nonscaler_diffs, nonscaler_diff_uncertainties = _aggregate_user_comparisons(
+    scalers, nonscaler_entity_diffs, 
     error=mehestan.error, lipschitz=mehestan.user_comparison_lipschitz
 )
-scalee_translations = mehestan.compute_translations(
-    scalee_diff_voting_rights, scalee_diffs, scalee_diff_uncertainties
+nonscaler_translations = mehestan.compute_translations(
+    nonscaler_diff_voting_rights, nonscaler_diffs, nonscaler_diff_uncertainties
 )
 
 scaled_models |= { 
     u: ScaledScoringModel(
         base_model=learned_models[u], 
-        multiplicator=multiplicators[u][0], 
-        translation=scalee_translations[u][0],
-        multiplicator_left_uncertainty=multiplicators[u][1], 
-        multiplicator_right_uncertainty=multiplicators[u][1], 
-        translation_left_uncertainty=scalee_translations[u][1],
-        translation_right_uncertainty=scalee_translations[u][1]
+        multiplicator=nonscaler_multiplicators[u][0], 
+        translation=nonscaler_translations[u][0],
+        multiplicator_left_uncertainty=nonscaler_multiplicators[u][1], 
+        multiplicator_right_uncertainty=nonscaler_multiplicators[u][1], 
+        translation_left_uncertainty=nonscaler_translations[u][1],
+        translation_right_uncertainty=nonscaler_translations[u][1]
     ) for u in nonscalers.index
 }
 

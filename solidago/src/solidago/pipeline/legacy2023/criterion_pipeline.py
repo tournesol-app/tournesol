@@ -1,10 +1,15 @@
 import logging
+from typing import Callable, Optional
 
-from solidago import collaborative_scaling
-from .global_scores import add_voting_rights, aggregate_scores, get_squash_function, ALL_SCORE_MODES
+from .global_scores import (
+    add_voting_rights,
+    aggregate_scores,
+    get_squash_function,
+    ALL_SCORE_MODES,
+)
+from solidago.pipeline import TournesolInput, PipelineOutput
+from . import collaborative_scaling
 from .individual_scores import get_individual_scores
-from .inputs import TournesolInput
-from .outputs import PipelineOutput
 from .parameters import PipelineParameters
 
 
@@ -16,6 +21,7 @@ def run_pipeline_for_criterion(
     input: TournesolInput,
     parameters: PipelineParameters,
     output: PipelineOutput,
+    done_callback: Optional[Callable] = None,
 ):
     """
     Run Pipepeline for a single criterion
@@ -33,8 +39,7 @@ def run_pipeline_for_criterion(
         W=parameters.W,
     )
     scaled_scores = collaborative_scaling.apply_scalings(
-        individual_scores=indiv_scores,
-        scalings=scalings
+        individual_scores=indiv_scores, scalings=scalings
     )
 
     if len(scaled_scores) > 0:
@@ -52,7 +57,7 @@ def run_pipeline_for_criterion(
         scaled_scores.score /= score_std
         scaled_scores.uncertainty /= score_std
 
-    output.save_individual_scalings(scalings, criterion=criterion)
+    output.save_individual_scalings(scalings)
     logger.info("Computing individual scalings for criterion '%s' DONE", criterion)
 
     logger.info("Computing aggregated scores for criterion '%s'...", criterion)
@@ -85,7 +90,7 @@ def run_pipeline_for_criterion(
             criterion,
             mode,
         )
-        output.save_entity_scores(global_scores, criterion=criterion, score_mode=mode)
+        output.save_entity_scores(global_scores, score_mode=mode)
     logger.info("Computing aggregated scores for criterion '%s' DONE", criterion)
 
     logger.info("Computing squashed individual scores for criterion '%s'...", criterion)
@@ -97,12 +102,15 @@ def run_pipeline_for_criterion(
     )
     scaled_scores["score"] = squash_function(scaled_scores["score"])
     scaled_scores["criteria"] = criterion
-    output.save_individual_scores(scaled_scores, criterion=criterion)
+    output.save_individual_scores(scaled_scores)
     logger.info("Computing squashed individual scores for criterion '%s' DONE", criterion)
 
     logger.info(
         "Solidago pipeline for criterion '%s' DONE.",
         criterion,
     )
+
+    if done_callback is not None:
+        done_callback()
 
     return output

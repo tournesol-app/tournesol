@@ -1,10 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Union
+from typing import Callable, Optional
 
 import pandas as pd
 import numpy as np
-
-from inspect import getsource
 
 
 class EntityModel(ABC):
@@ -36,7 +34,7 @@ class SvdEntityModel(EntityModel):
     def __init__(
         self, 
         svd_dimension: int=3,
-        svd_distribution: Optional[callable]=None
+        svd_distribution: Optional[Callable]=None
     ):
         """ This model assumes each entity can be represented by a vector in a singular 
         value decomposition. This assumes user preferences will have such a representation
@@ -51,9 +49,10 @@ class SvdEntityModel(EntityModel):
             Given svd_dimension, generates a random vector
         """
         self.svd_dimension = svd_dimension
-        self.svd_distribution = svd_distribution      
         if svd_distribution is None:
             self.svd_distribution = lambda: np.random.normal(0, 1, self.svd_dimension)
+        else:
+            self.svd_distribution = svd_distribution
 
     def __call__(self, n_entities: int):
         """ Generates n_users users, with different characteristics
@@ -82,7 +81,7 @@ class SvdEntityModel(EntityModel):
         return f"SvdEntityModel(svd_dimension={self.svd_dimension})"
 
     def to_json(self):
-        return type(self).__name__, dict(svd_dimension=svd_dimension)
+        return type(self).__name__, dict(svd_dimension=self.svd_dimension)
 
 
 class NormalEntityModel(SvdEntityModel):
@@ -100,7 +99,7 @@ class NormalEntityModel(SvdEntityModel):
             Given svd_dimension, generates a random vector
         """
         assert mean is not None or svd_dimension is not None
-        if mean is None and svd_dimension is None:
+        if mean is not None and svd_dimension is not None:
             assert len(mean) == svd_dimension
         if mean is None:
             mean = np.zeros(svd_dimension)

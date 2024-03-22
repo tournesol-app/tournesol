@@ -17,11 +17,10 @@ class PrivacySettings:
         True (private), False (public) or None (undefined)
         """
         user, entity = user_entity_tuple
-        if entity not in self._dict:
+        entity_settings = self._dict.get(entity)
+        if entity_settings is None:
             return None
-        if user not in self._dict[entity]:
-            return None
-        return self._dict[entity][user]
+        return entity_settings.get(user)
     
     def __setitem__(self, user_entity_tuple: tuple[int, int], is_private: Optional[bool]):
         """ Returns the user's privacy setting for a given entity
@@ -33,24 +32,20 @@ class PrivacySettings:
         is_private: True (private), False (public) or None (undefined)
         """
         user, entity = user_entity_tuple
-        if entity not in self._dict and is_private is not None:
-            self._dict[entity] = dict()
-        if user in self._dict[entity] and is_private is None:
-            del self._dict[entity][user]
-        elif is_private is not None:
-            self._dict[entity][user] = is_private
+        if is_private is None:
+            self._dict[entity].pop(user, None)
+            return
+        self._dict.setdefault(entity, {})[user] = is_private
 
     def entities(self, user: Optional[int] = None) -> set[int]:
         if user is None:
             return set(self._dict.keys())
         return { e for e in self._dict if user in self._dict[e] }
 
-    def users(self, entity: int=None):
+    def users(self, entity: Optional[int] = None) -> set[int]:
         if entity is None:
-            return set().union(*[ self.users(e) for e in self.entities() ])
-        if entity not in self._dict:
-            return set()
-        return set(self._dict[entity].keys())
+            return set().union(*(self.users(e) for e in self.entities()))
+        return set(self._dict.get(entity, {}).keys())
 
     def __str__(self):
         return "{\n    " + ",\n    ".join([

@@ -1,13 +1,12 @@
 import logging
 import os
-from functools import partial
-from multiprocessing import Pool
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 
 from django import db
 from django.conf import settings
 from solidago.pipeline import TournesolInput
-from solidago.pipeline.criterion_pipeline import run_pipeline_for_criterion
-from solidago.pipeline.individual_scores import get_individual_scores
+from solidago.pipeline.legacy2023.criterion_pipeline import run_pipeline_for_criterion
+from solidago.pipeline.legacy2023.individual_scores import get_individual_scores
 
 from core.models import User
 from ml.inputs import MlInputFromDb
@@ -22,8 +21,8 @@ logger = logging.getLogger(__name__)
 def update_user_scores(poll: Poll, user: User):
     params = MehestanParameters()
     ml_input = MlInputFromDb(poll_name=poll.name)
-    output = TournesolPollOutput(poll_name=poll.name)
     for criteria in poll.criterias_list:
+        output = TournesolPollOutput(poll_name=poll.name, criterion=criteria)
         scores = get_individual_scores(
             ml_input,
             criteria,
@@ -38,18 +37,15 @@ def update_user_scores(poll: Poll, user: User):
             },
             inplace=True,
         )
-        output.save_individual_scores(
-            scores,
-            criterion=criteria,
-            single_user_id=user.pk
-        )
+        output.save_individual_scores(scores, single_user_id=user.pk)
+
+
+def close_db_connection_callback():
+    db.connection.close()
 
 
 def run_mehestan(
-    ml_input: TournesolInput,
-    poll: Poll,
-    parameters: MehestanParameters,
-    main_criterion_only=False
+    ml_input: TournesolInput, poll: Poll, parameters: MehestanParameters, main_criterion_only=False
 ):
     """
     This function use multiprocessing.
@@ -76,29 +72,37 @@ def run_mehestan(
 
     criteria = poll.criterias_list
 
-    os.register_at_fork(before=db.connections.close_all)
-
     criteria_to_run = [poll.main_criteria]
     if not main_criterion_only:
         criteria_to_run.extend(c for c in criteria if c != poll.main_criteria)
 
-    # compute each criterion in parallel
-    cpu_count = os.cpu_count() or 1
-    cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
+    if settings.MEHESTAN_MULTIPROCESSING:
+        # compute each criterion in parallel
+        cpu_count = os.cpu_count() or 1
+        cpu_count -= settings.MEHESTAN_KEEP_N_FREE_CPU
+        os.register_at_fork(before=db.connections.close_all)
+        executor = ProcessPoolExecutor(max_workers=max(1, cpu_count))
+    else:
+        # In tests, we might prefer to use a single thread to reduce overhead
+        # of multiple processes, db connections, and redundant numba compilation
+        executor = ThreadPoolExecutor(max_workers=1)
 
-    output = TournesolPollOutput(poll_name=poll.name)
-
-    with Pool(processes=max(1, cpu_count)) as pool:
-        for _ in pool.imap_unordered(
-            partial(
+    with executor:
+        futures = [
+            executor.submit(
                 run_pipeline_for_criterion,
+                criterion=crit,
                 input=ml_input,
                 parameters=parameters,
-                output=output,
-            ),
-            criteria_to_run,
-        ):
-            pass
+                output=TournesolPollOutput(poll_name=poll.name, criterion=crit),
+                # The callback fixes a warning about unclosed connections to test database
+                done_callback=close_db_connection_callback,
+            )
+            for crit in criteria_to_run
+        ]
+        for fut in as_completed(futures):
+            # reraise potential exception
+            fut.result()
 
     save_tournesol_scores(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)

@@ -1,11 +1,14 @@
-from abc import ABC, abstractmethod
-from typing import Optional
+from abc import abstractmethod
+from functools import cached_property
+from typing import Optional, Callable
 
 import pandas as pd
 import numpy as np
+import numpy.typing as npt
+from numba import njit
 
 from solidago.scoring_model import ScoringModel, DirectScoringModel
-from solidago.solvers.optimize import coordinate_descent
+from solidago.solvers.optimize import coordinate_descent, njit_brentq
 
 from .comparison_learning import ComparisonBasedPreferenceLearning
 
@@ -28,8 +31,8 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
     
-    @abstractmethod
-    def cumulant_generating_function_derivative(self, score_diff: float) -> float:
+    @property
+    def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
         """ The beauty of the generalized Bradley-Terry model is that it suffices
         to specify its cumulant generating function derivative to fully define it,
         and to allow a fast computation of its corresponding maximum a posterior.
@@ -43,7 +46,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         -------
         out: float
         """
-        pass
+        raise NotImplementedError
     
     @abstractmethod
     def cumulant_generating_function_second_derivative(self, score_diff: float) -> float:
@@ -60,6 +63,22 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         out: float
         """
         pass
+
+    @cached_property
+    def update_coordinate_function(self):
+        xtol = self.convergence_error / 10
+        partial_derivative = self.partial_derivative
+
+        @njit
+        def f(derivative_args, old_coordinate_value):
+            return njit_brentq(
+                partial_derivative,
+                args=derivative_args,
+                xtol=xtol,
+                a=old_coordinate_value - 1,
+                b=old_coordinate_value + 1
+            )
+        return f
 
     def comparison_learning(
         self, 
@@ -86,27 +105,33 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         comparisons_dict = self.comparisons_dict(comparisons, entity_coordinates)
         
         init_solution = np.zeros(len(entities))
-        for entity in entity_coordinates:
-            if initialization is not None and entity in initialization:
-                init_solution[entity_coordinates[entity]] = initialization[entity]        
+        if initialization is not None:
+            for (entity_id, entity_coord) in entity_coordinates.items():
+                entity_init_values = initialization(entity_id)
+                if entity_init_values is not None:
+                    init_solution[entity_coord] = entity_init_values[0]
         
         updated_coordinates = list() if updated_entities is None else [
             entity_coordinates[entity] for entity in updated_entities
         ]
-        
-        def loss_partial_derivative(coordinate, value, solution): 
-            return self.partial_derivative(coordinate, value, solution, 
-                comparisons_dict[coordinate])
+
+        def get_derivative_args(coord: int, sol: np.ndarray):
+            indices, comparisons_bis = comparisons_dict[coord]
+            return (
+                sol[indices],
+                comparisons_bis
+            )
         
         solution = coordinate_descent(
-            loss_partial_derivative=loss_partial_derivative,
+            self.update_coordinate_function,
+            get_args=get_derivative_args,
             initialization=init_solution,
             updated_coordinates=updated_coordinates,
             error=self.convergence_error,
         )
         
         uncertainties = [ 
-            self.hessian_diagonal_element(coordinate, solution, comparisons_dict[coordinate]) 
+            self.hessian_diagonal_element(coordinate, solution, comparisons_dict[coordinate][0])
             for coordinate in range(len(entities))
         ]
         
@@ -116,52 +141,78 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         
         return model
         
-    def comparisons_dict(self, comparisons, entity_coordinates):
-        comparisons_dict = { entity: dict() for entity in entity_coordinates.values() }
-        
-        for _, row in comparisons.iterrows():
+    def comparisons_dict(self, comparisons, entity_coordinates) -> dict[int, tuple[npt.NDArray, npt.NDArray]]:
+        comparisons = (
+            comparisons[
+                ["entity_a","entity_b","comparison", "comparison_max"]
+            ]
+            .assign(
+                pair=comparisons.apply(lambda c: {c["entity_a"], c["entity_b"]}, axis=1)
+            )
+            .drop_duplicates("pair", keep="last")
+            .drop(columns="pair")
+        )
+        comparisons_sym = pd.concat(
+            [
+                comparisons,
+                 pd.DataFrame(
+                    {
+                        "entity_a": comparisons.entity_b,
+                        "entity_b": comparisons.entity_a,
+                        "comparison": -1 * comparisons.comparison,
+                        "comparison_max": comparisons.comparison_max,
+                    }
+                ),
+            ]
+        )
+        comparisons_sym.entity_a = comparisons_sym.entity_a.map(entity_coordinates)
+        comparisons_sym.entity_b = comparisons_sym.entity_b.map(entity_coordinates)
+        comparisons_sym.comparison = -1 * np.where(
+            np.isfinite(comparisons_sym.comparison_max),
+            comparisons_sym.comparison / comparisons_sym.comparison_max,
+            comparisons_sym.comparison
+        )
+        return {
+            coord: (group["entity_b"].to_numpy(),  group["comparison"].to_numpy())
+            for (coord, group) in comparisons_sym.groupby("entity_a")
+        }  # type: ignore
             
-            a = entity_coordinates[row["entity_a"]]
-            b = entity_coordinates[row["entity_b"]]
-            
-            comparison = row["comparison"]
-            if np.isfinite(row["comparison_max"]):
-                comparison /= row["comparison_max"]
-            
-            comparisons_dict[a][b] = - comparison
-            comparisons_dict[b][a] = comparison
-            
-        return comparisons_dict
-            
-    def partial_derivative(
-        self, 
-        coordinate: int, 
-        value: float,
-        solution: np.array, 
-        comparisons_dict: dict[int, float]
-    ) -> float:
+    @cached_property
+    def partial_derivative(self):
         """ Computes the partial derivative along a coordinate, 
         for a given value along the coordinate,
         when other coordinates' values are given by the solution.
         The computation evidently depends on the dataset,
         which is given by coordinate_comparisons.
         """
-        result = value / self.prior_std_dev ** 2
-        for coordinate_bis in comparisons_dict:
-            score_diff = value - solution[coordinate_bis]
-            result += self.cumulant_generating_function_derivative(score_diff)
-            result -= comparisons_dict[coordinate_bis]
-        return result
+        prior_std_dev = self.prior_std_dev
+        cumulant_generating_function_derivative = self.cumulant_generating_function_derivative
+
+        @njit
+        def njit_partial_derivative(
+            value: float,
+            current_solution: npt.NDArray,
+            comparisons_values: npt.NDArray,
+        ) -> npt.NDArray:
+            score_diff = value - current_solution
+            return (
+                (value / prior_std_dev ** 2)
+                + np.sum(
+                    cumulant_generating_function_derivative(score_diff)
+                    - comparisons_values
+                )
+            )
+        return njit_partial_derivative
     
     def hessian_diagonal_element(
         self, 
-        coordinate: int, 
-        solution: np.array, 
-        comparisons_dict: dict[int, float]
+        coordinate: int,
+        solution: np.ndarray,
+        comparisons_indices: np.ndarray,
     ) -> float:
         """ Computes the second partial derivative """
         result = 1 / self.prior_std_dev ** 2
-        for coordinate_bis in comparisons_dict:
+        for coordinate_bis in comparisons_indices:
             score_diff = solution[coordinate] - solution[coordinate_bis]
             result += self.cumulant_generating_function_second_derivative(score_diff)
         return result
@@ -188,7 +239,8 @@ class UniformGBT(GeneralizedBradleyTerry):
         self.comparison_max = comparison_max
         self.cumulant_generating_function_error = cumulant_generating_function_error
     
-    def cumulant_generating_function_derivative(self, score_diff: float) -> float:
+    @cached_property
+    def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
         """ For.
         
         Parameters
@@ -200,9 +252,17 @@ class UniformGBT(GeneralizedBradleyTerry):
         -------
         out: float
         """
-        if np.abs(score_diff) < self.cumulant_generating_function_error:
-            return score_diff / 3
-        return 1 / np.tanh(score_diff) - 1 / score_diff
+        tolerance = self.cumulant_generating_function_error
+
+        @njit
+        def f(score_diff: npt.NDArray):
+            return np.where(
+                np.abs(score_diff) < tolerance,
+                score_diff / 3,
+                1/ np.tanh(score_diff) - 1 / score_diff
+            )
+        return f
+
     
     def cumulant_generating_function_second_derivative(self, score_diff: float) -> float:
         """ We estimate uncertainty by the flatness of the negative log likelihood,

@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
 import pandas as pd
-import numpy as np
 
+from solidago.privacy_settings import PrivacySettings
 from .voting_rights import VotingRights
+from solidago.privacy_settings import PrivacySettings
 
 
 class VotingRightsAssignment(ABC):
@@ -13,7 +14,7 @@ class VotingRightsAssignment(ABC):
         users: pd.DataFrame,
         entities: pd.DataFrame,
         vouches: pd.DataFrame,
-        privacy: pd.DataFrame
+        privacy: PrivacySettings,
     ) -> tuple[VotingRights, pd.DataFrame]:
         """ Compute voting rights
         

@@ -1,6 +1,4 @@
-from abc import ABC
 from typing import Optional
-from functools import cached_property
 
 import logging
 import numpy as np
@@ -96,6 +94,10 @@ class GenerativeModel:
         logger.info(f"Generate user engagement using {self.engagement_model}")
         privacy, judgments = self.engagement_model(users, entities)
         logger.info(f"Generate comparisons using {self.comparison_model}")
+
+        # FIXME: `engagement_model` is of type `EngagementModel` which produces generic "Judgments",
+        # but here we assume that Judgements can be assigned "comparisons"..
+        # Does that mean "DataFrameJudgments" should be used instead?
         judgments.comparisons = self.comparison_model(users, entities, judgments.comparisons)
         return users, vouches, entities, privacy, judgments
 

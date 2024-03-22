@@ -7,14 +7,16 @@ import logging
 import timeit
 
 from solidago import PrivacySettings, Judgments
-from solidago.scoring_model import ScoringModel, DirectScoringModel, PostProcessedScoringModel
+from solidago.scoring_model import ScoringModel, ScaledScoringModel
 
 from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust, NoTrustPropagation
 from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
 from solidago.preference_learning import PreferenceLearning, UniformGBT
-from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, NoScaling
-from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average
+from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, Standardize, NoScaling
+from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
+
+from solidago.pipeline.outputs import PipelineOutput
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +32,7 @@ class DefaultPipeline:
         sink_vouch=5.0,
         error=1e-8
     )
-    voting_rights: VotingRights = AffineOvertrust(
+    voting_rights: VotingRightsAssignment = AffineOvertrust(
         privacy_penalty=0.5, 
         min_overtrust=2.0,
         overtrust_ratio=0.1,
@@ -53,11 +55,15 @@ class DefaultPipeline:
             zero_quantile=0.15,
             lipschitz=0.1,
             error=1e-5
+        ),
+        Standardize(
+            dev_quantile=0.9,
+            lipschitz=0.1,
+            error=1e-5
         )
     )
-    aggregation: Aggregation = StandardizedQrQuantile(
+    aggregation: Aggregation = EntitywiseQrQuantile(
         quantile=0.2,
-        dev_quantile=0.9,
         lipschitz=0.1,
         error=1e-5
     )
@@ -70,11 +76,11 @@ class Pipeline:
     def __init__(
         self,
         trust_propagation: TrustPropagation = DefaultPipeline.trust_propagation,
-        voting_rights: VotingRights = DefaultPipeline.voting_rights,
+        voting_rights: VotingRightsAssignment = DefaultPipeline.voting_rights,
         preference_learning: PreferenceLearning = DefaultPipeline.preference_learning,
         scaling: Scaling = DefaultPipeline.scaling,
         aggregation: Aggregation = DefaultPipeline.aggregation,
-        post_process: PostProcess = DefaultPipeline.post_process
+        post_process: PostProcess = DefaultPipeline.post_process,
     ):
         """ Instantiates the pipeline components.
         
@@ -101,6 +107,7 @@ class Pipeline:
         self.aggregation = aggregation
         self.post_process = post_process
 
+
     @classmethod
     def from_json(cls, json) -> "Pipeline":
         return Pipeline(
@@ -120,7 +127,7 @@ class Pipeline:
         privacy: PrivacySettings,
         judgments: Judgments,
         init_user_models : Optional[dict[int, ScoringModel]] = None,
-        global_model: Optional[dict[int, ScoringModel]] = None,
+        output: Optional[PipelineOutput] = None,
     ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
         """ Run Pipeline 
         
@@ -139,24 +146,22 @@ class Pipeline:
             privacy[user, entity] in { True, False, None }
         judgments: Jugdments
             judgments[user] must yield the judgment data provided by the user
-        init_user_models: dict[int, UserModel]
+        init_user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        global_model: GlobalModel
-            global model
         skip_set: set[int]
             Steps that are skipped in the pipeline
             
         Returns
         -------
-        trusts: DataFrame with columns
+        users: DataFrame with columns
             * user_id: int (index)
             * is_pretrusted: bool
             * trust_score: float
         voting_rights: VotingRights
             voting_rights[user, entity] is the user's voting right for entity
-        user_models: dict[int, UserModel]
+        user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        global_model: GlobalModel
+        global_model: ScoringModel
             global model
         """   
             
@@ -167,8 +172,12 @@ class Pipeline:
         users = self.trust_propagation(users, vouches)
         start_step2 = timeit.default_timer()
         logger.info(f"Pipeline 1. Terminated in {np.round(start_step2 - start_step1, 2)} seconds")
+        if output is not None:
+            output.save_trust_scores(trusts=users)
             
         logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
+        # FIXME: `privacy` may contain (user, entity) even if user has expressed no judgement
+        # about the entity. These users should not be given a voting right on the entity.
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
         start_step3 = timeit.default_timer()
         logger.info(f"Pipeline 2. Terminated in {np.round(start_step3 - start_step2, 2)} seconds")
@@ -176,24 +185,38 @@ class Pipeline:
         logger.info(f"Pipeline 3. Learning preferences with {str(self.preference_learning)}")
         user_models = self.preference_learning(judgments, users, entities, init_user_models)
         start_step4 = timeit.default_timer()
-        logger.info(f"Pipeline 3. Terminated in {np.round(start_step4 - start_step3, 2)} seconds")
+        logger.info(f"Pipeline 3. Terminated in {int(start_step4 - start_step3)} seconds")
+        raw_scorings = user_models
         
         logger.info(f"Pipeline 4. Collaborative scaling with {str(self.scaling)}")
         user_models = self.scaling(user_models, users, entities, voting_rights, privacy)
         start_step5 = timeit.default_timer()
-        logger.info(f"Pipeline 4. Terminated in {np.round(start_step5 - start_step4, 2)} seconds")
+        logger.info(f"Pipeline 4. Terminated in {int(start_step5 - start_step4)} seconds")
+        if output is not None:
+            self.save_individual_scalings(user_models, output)
                 
         logger.info(f"Pipeline 5. Score aggregation with {str(self.aggregation)}")
         user_models, global_model = self.aggregation(voting_rights, user_models, users, entities)
         start_step6 = timeit.default_timer()
-        logger.info(f"Pipeline 5. Terminated in {np.round(start_step6 - start_step5, 2)} seconds")
-        
+        logger.info(f"Pipeline 5. Terminated in {int(start_step6 - start_step5)} seconds")
+
         logger.info(f"Pipeline 6. Post-processing scores {str(self.post_process)}")
         user_models, global_model = self.post_process(user_models, global_model, entities)
         end = timeit.default_timer()
         logger.info(f"Pipeline 6. Terminated in {np.round(end - start_step6, 2)} seconds")
-        
-        logger.info(f"Successful pipeline run, in {np.round(end - start_step1, 2)} seconds")
+        if output is not None:
+            self.save_individual_scores(user_models, raw_scorings, voting_rights, output)
+            output.save_entity_scores(pd.DataFrame(
+                data=[
+                    dict(
+                        entity_id=entity_id,
+                        score=score,
+                        uncertainty=left_unc+right_unc
+                    )
+                    for (entity_id, (score, left_unc, right_unc)) in global_model.iter_entities()
+                ]
+            ))
+        logger.info(f"Successful pipeline run, in {int(end - start_step1)} seconds")
         return users, voting_rights, user_models, global_model
         
     def to_json(self):
@@ -206,6 +229,66 @@ class Pipeline:
             post_process=self.post_process.to_json()
         )
         
+    def save_individual_scalings(
+        self,
+        user_models: dict[int, ScaledScoringModel],
+        output: PipelineOutput,
+    ):
+        scalings_df = pd.DataFrame(
+            index=np.array(user_models.keys()),
+            data={
+                "s": map(lambda u: u.multiplicator, user_models.values()),
+                "delta_s": map(
+                    lambda u: u.multiplicator_left_uncertainty + u.multiplicator_right_uncertainty,
+                    user_models.values(),
+                ),
+                "tau": map(lambda u: u.translation, user_models.values()),
+                "delta_tau": map(
+                    lambda u: u.translation_left_uncertainty + u.translation_right_uncertainty,
+                    user_models.values()
+                )
+            }
+        )
+        output.save_individual_scalings(scalings_df)
+
+    def save_individual_scores(
+        self,
+        user_scorings: dict[int, ScoringModel],
+        raw_user_scorings: dict[int, ScoringModel],
+        voting_rights: VotingRights,
+        output: PipelineOutput,
+    ):
+        scores_df = pd.DataFrame(
+            data=[
+                dict(
+                    user_id=user_id,
+                    entity_id=entity_id,
+                    score=score,
+                    uncertainty=left_unc+right_unc,
+                    voting_right=voting_rights[user_id, entity_id]
+                )
+                for (user_id, scoring) in user_scorings.items()
+                for (entity_id, (score, left_unc, right_unc)) in scoring.iter_entities()
+            ]
+        )
+
+        def get_raw_score(row):
+            raw_scoring = raw_user_scorings[row.user_id](row.entity_id)
+            if raw_scoring is None:
+                return 0.0
+            score, _, _ = raw_scoring
+            return score
+
+        def get_raw_uncertainty(row):
+            raw_scoring = raw_user_scorings[row.user_id](row.entity_id)
+            assert raw_scoring is not None
+            _, left_unc, right_unc = raw_scoring
+            return left_unc + right_unc
+
+        scores_df["raw_score"] = scores_df.apply(get_raw_score, axis=1)
+        scores_df["raw_uncertainty"] = scores_df.apply(get_raw_uncertainty, axis=1)
+        output.save_individual_scores(scores_df)
+
 
 def trust_propagation_from_json(json):
     if json[0] == "TrustAll": 
@@ -256,3 +339,17 @@ def post_process_from_json(json):
     raise ValueError(f"PostProcess {json[0]} was not recognized")
     
 
+def get_scorings_as_df(user_models: dict[int, ScoringModel]):
+    return pd.DataFrame(
+        data=[
+            dict(
+                user_id=user_id,
+                entity_id=entity_id,
+                score=score,
+                uncertainty_left=left_unc,
+                uncertainty_right=right_unc,
+            )
+            for (user_id, scoring) in user_models.items()
+            for (entity_id, (score, left_unc, right_unc)) in scoring.iter_entities()
+        ]
+    )

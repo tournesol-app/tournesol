@@ -3,7 +3,11 @@ import pandas as pd
 from numba import njit
 
 from solidago.pipeline import TournesolInput
-from solidago.resilient_primitives import BrMean, QrMed, QrUnc
+from solidago.primitives import (
+    lipschitz_resilient_mean,
+    qr_median,
+    qr_uncertainty,
+)
 
 
 # This limit allows to index pairs of entity_id into a usual Index with dtype 'uint64'.
@@ -129,26 +133,38 @@ def compute_scaling(
                     continue
 
                 ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
-                s_nqmab = np.abs(ABnm.score_a_m - ABnm.score_b_m) / np.abs(
-                    ABnm.score_a_n - ABnm.score_b_n
-                )
-
-                delta_s_nqmab = (
+                s_nqmab = (
+                    (ABnm.score_a_m - ABnm.score_b_m).abs()
+                    / (ABnm.score_a_n - ABnm.score_b_n).abs()
+                ).to_numpy()
+                delta_s_nqmab = ((
                     (
-                        np.abs(ABnm.score_a_m - ABnm.score_b_m)
+                        (ABnm.score_a_m - ABnm.score_b_m).abs()
                         + ABnm.uncertainty_a_m
                         + ABnm.uncertainty_b_m
                     )
                     / (
-                        np.abs(ABnm.score_a_n - ABnm.score_b_n)
+                        (ABnm.score_a_n - ABnm.score_b_n).abs()
                         - ABnm.uncertainty_a_n
                         - ABnm.uncertainty_b_n
                     )
-                ) - s_nqmab
+                ) - s_nqmab).to_numpy()
 
-                s = QrMed(1, 1, s_nqmab - 1, delta_s_nqmab)
+                s = qr_median(
+                    lipschitz=1.0,
+                    voting_rights=1.0,
+                    values=s_nqmab - 1,
+                    left_uncertainties=delta_s_nqmab,
+                )
                 s_nqm.append(s + 1)
-                delta_s_nqm.append(QrUnc(1, 1, 1, s_nqmab - 1, delta_s_nqmab, qr_med=s))
+                delta_s_nqm.append(qr_uncertainty(
+                    lipschitz=1.0,
+                    default_dev=1.0,
+                    voting_rights=1.0,
+                    values=s_nqmab - 1,
+                    left_uncertainties=delta_s_nqmab,
+                    median=s,
+                ))
                 s_weights.append(scaling_weights[user_m])
 
         s_weights = np.array(s_weights)
@@ -156,13 +172,35 @@ def compute_scaling(
         s_nqm = np.array(s_nqm)
         delta_s_nqm = np.array(delta_s_nqm)
         if calibration:
-            s_dict[user_n] = 1 + BrMean(8 * W * theta_inf, s_weights, s_nqm - 1, delta_s_nqm)
-            delta_s_dict[user_n] = QrUnc(8 * W * theta_inf, 1, s_weights, s_nqm - 1, delta_s_nqm)
+            s_dict[user_n] = lipschitz_resilient_mean(
+                lipschitz=1/(8*W*theta_inf),
+                values=s_nqm,
+                voting_rights=s_weights,
+                left_uncertainties=delta_s_nqm,
+                default_value=1.0,
+            )
+            delta_s_dict[user_n] = qr_uncertainty(
+                lipschitz=1/(8*W*theta_inf),
+                default_dev=1.0,
+                values=s_nqm,
+                voting_rights=s_weights,
+                left_uncertainties=delta_s_nqm,
+            )
         else:
-            qr_med = QrMed(8 * W * theta_inf, s_weights, s_nqm - 1, delta_s_nqm)
+            qr_med = qr_median(
+                lipschitz=1/(8*W*theta_inf),
+                voting_rights=s_weights,
+                values=s_nqm - 1,
+                left_uncertainties=delta_s_nqm,
+            )
             s_dict[user_n] = 1 + qr_med
-            delta_s_dict[user_n] = QrUnc(
-                8 * W * theta_inf, 1, s_weights, s_nqm - 1, delta_s_nqm, qr_med=qr_med
+            delta_s_dict[user_n] = qr_uncertainty(
+                lipschitz=1/(8*W*theta_inf),
+                default_dev=1.0,
+                voting_rights=s_weights,
+                values=s_nqm-1,
+                left_uncertainties=delta_s_nqm,
+                median=qr_med,
             )
 
     tau_dict = {}
@@ -189,25 +227,58 @@ def compute_scaling(
 
             s_m = s_dict.get(user_m, 1)
             s_n = s_dict[user_n]
-            tau_nqmab = s_m * m_scores.score - s_n * n_scores.score
-            delta_tau_nqmab = s_n * n_scores.uncertainty + s_m * m_scores.uncertainty
+            tau_nqmab = (s_m * m_scores.score - s_n * n_scores.score).to_numpy()
+            delta_tau_nqmab = (s_n * n_scores.uncertainty + s_m * m_scores.uncertainty).to_numpy()
 
-            tau = QrMed(1, 1, tau_nqmab, delta_tau_nqmab)
+            tau = qr_median(
+                lipschitz=1.0,
+                voting_rights=1.0,
+                values=tau_nqmab,
+                left_uncertainties=delta_tau_nqmab,
+            )
             tau_nqm.append(tau)
-            delta_tau_nqm.append(QrUnc(1, 1, 1, tau_nqmab, delta_tau_nqmab, qr_med=tau))
+            delta_tau_nqm.append(qr_uncertainty(
+                lipschitz=1.0,
+                default_dev=1.0,
+                voting_rights=1.0,
+                values=tau_nqmab,
+                left_uncertainties=delta_tau_nqmab,
+                median=tau,
+            ))
             s_weights.append(scaling_weights[user_m])
 
         s_weights = np.array(s_weights)
         tau_nqm = np.array(tau_nqm)
         delta_tau_nqm = np.array(delta_tau_nqm)
         if calibration:
-            tau_dict[user_n] = BrMean(8 * W, s_weights, tau_nqm, delta_tau_nqm)
-            delta_tau_dict[user_n] = QrUnc(8 * W, 1, s_weights, tau_nqm, delta_tau_nqm)
+            tau_dict[user_n] = lipschitz_resilient_mean(
+                lipschitz=1/(8*W),
+                voting_rights=s_weights,
+                values=tau_nqm,
+                left_uncertainties=delta_tau_nqm,
+            )
+            delta_tau_dict[user_n] = qr_uncertainty(
+                lipschitz=1/(8*W),
+                default_dev=1.0,
+                voting_rights=s_weights,
+                values=tau_nqm,
+                left_uncertainties=delta_tau_nqm,
+            )
         else:
-            qr_med = QrMed(8 * W, s_weights, tau_nqm, delta_tau_nqm)
+            qr_med = qr_median(
+                lipschitz=1/(8*W),
+                voting_rights=s_weights,
+                values=tau_nqm,
+                left_uncertainties=delta_tau_nqm,
+            )
             tau_dict[user_n] = qr_med
-            delta_tau_dict[user_n] = QrUnc(
-                8 * W, 1, s_weights, tau_nqm, delta_tau_nqm, qr_med=qr_med
+            delta_tau_dict[user_n] = qr_uncertainty(
+                lipschitz=1/(8*W),
+                default_dev=1.0,
+                voting_rights=s_weights,
+                values=tau_nqm,
+                left_uncertainties=delta_tau_nqm,
+                median=qr_med,
             )
 
     return pd.DataFrame(

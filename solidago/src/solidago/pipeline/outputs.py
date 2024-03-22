@@ -1,11 +1,20 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Literal
+from typing import Literal
 
 import pandas as pd
 
 class PipelineOutput(ABC):
     @abstractmethod
-    def save_individual_scalings(self, scalings: pd.DataFrame, criterion: str):
+    def save_trust_scores(self, trusts: pd.DataFrame):
+        """
+        `trusts`: DataFrame with
+            * index:  `user_id`  
+            * columns: `trust_score`
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_individual_scalings(self, scalings: pd.DataFrame):
         """
         `scalings`: DataFrame with
             * index:  `user_id`  
@@ -14,12 +23,11 @@ class PipelineOutput(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def save_individual_scores(self, scores: pd.DataFrame, criterion: str):
+    def save_individual_scores(self, scores: pd.DataFrame):
         """
         `scores`: DataFrame with columns
             * `user_id`
             * `entity_id`
-            * `criteria`
             * `raw_score`
             * `raw_uncertainty`
             * `voting_right`
@@ -30,36 +38,34 @@ class PipelineOutput(ABC):
     def save_entity_scores(
         self,
         scores: pd.DataFrame,
-        criterion: str,
-        score_mode: Literal["default", "all_equal", "trusted_only"]
+        score_mode: Literal["default", "all_equal", "trusted_only"] = "default"
     ):
         """
         scores: DataFrame with columns
             * `entity_id`
-            * `criteria`
             * `score`
             * `uncertainty`
         """
         raise NotImplementedError
 
 
+
 class PipelineOutputInMemory(PipelineOutput):
-    individual_scalings: Dict[str, pd.DataFrame]
-    individual_scores: Dict[str, pd.DataFrame]
-    entity_scores: Dict[str, pd.DataFrame]
+    trust_scores: pd.DataFrame
+    individual_scalings: pd.DataFrame
+    individual_scores: pd.DataFrame
+    entity_scores: pd.DataFrame
 
-    def __init__(self):
-        self.individual_scalings = {}
-        self.individual_scores = {}
-        self.entity_scores = {}
+    def save_trust_scores(self, trusts: pd.DataFrame):
+        self.trust_scores = trusts
 
-    def save_individual_scalings(self, scalings, criterion):
-        self.individual_scalings[criterion] = scalings
+    def save_individual_scalings(self, scalings):
+        self.individual_scalings = scalings
 
-    def save_entity_scores(self, scores, criterion, score_mode):
+    def save_entity_scores(self, scores, score_mode="default"):
         if score_mode != "default":
             return
-        self.entity_scores[criterion] = scores
+        self.entity_scores = scores
 
-    def save_individual_scores(self, scores, criterion):
-        self.individual_scores[criterion] = scores
+    def save_individual_scores(self, scores):
+        self.individual_scores = scores

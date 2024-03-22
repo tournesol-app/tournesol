@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
-from typing import Optional
+from abc import abstractmethod
+from typing import Callable, Optional, Union, Iterable
 
 import pandas as pd
 import numpy as np
@@ -10,7 +10,7 @@ class ScoringModel:
     def __call__(
         self, 
         entity_id: int, 
-        entity_features: pd.Series
+        entity_features: Optional[pd.Series] = None,
     ) -> Optional[tuple[float, float, float]]:
         """ Assigns a score to an entity
         
@@ -26,9 +26,17 @@ class ScoringModel:
         """
         raise NotImplementedError
         
-    def scored_entities(self, entities) -> set[int]:
-        """ If not None, then the scoring model only scores a subset of entities. """
-        return set(range(len(entities)))
+    def scored_entities(self, entities: Optional[pd.DataFrame] = None) -> set[int]:
+        raise NotImplementedError
+
+    def iter_entities(self, entities = None) -> Iterable[tuple[int, tuple[float, float, float]]]:
+        for entity_id in self.scored_entities(entities):
+            if entities is None:
+                result = self(entity_id)
+            else:
+                result = self(entity_id, entities.loc[entity_id])
+            if result is not None:
+                yield entity_id, result
 
 
 class DirectScoringModel(ScoringModel):
@@ -39,17 +47,19 @@ class DirectScoringModel(ScoringModel):
         super().__init__()
         self._dict = dict() if dct is None else dct
     
-    def __call__(self, entity_id: int, entity_features=None) -> Optional[float]:
+    def __call__(self, entity_id: int, entity_features=None) -> Optional[tuple[float, float, float]]:
         """ Returns both score and uncertainty
         """
-        if entity_id not in self._dict:
-            return None
-        return self._dict[entity_id]
+        return self._dict.get(entity_id)
         
-    def __getitem__(self, entity_id: int) -> Optional[tuple[float, float]]:
+    def __getitem__(self, entity_id: int) -> Optional[tuple[float, float, float]]:
         return self(entity_id)
         
-    def __setitem__(self, entity_id: int, score_and_uncertainties: tuple[float, float, float]):
+    def __setitem__(
+        self,
+        entity_id: int,
+        score_and_uncertainties: Union[tuple[float, float, float], tuple[float, float]]
+    ):
         if len(score_and_uncertainties) == 2:
             score_and_uncertainties = (
                 score_and_uncertainties[0], 
@@ -61,7 +71,10 @@ class DirectScoringModel(ScoringModel):
     def scored_entities(self, entities=None) -> set[int]:
         if entities is None:
             return set(self._dict.keys())
-        return set(entities.index).intersection(set(self._dict.keys()))
+        return set(entities.index).intersection(self._dict.keys())
+
+    def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:
+        return self._dict.items()
 
     def __str__(self, indent=""):
         return "{" + f"\n{indent}    " + f",\n{indent}    ".join([
@@ -70,9 +83,6 @@ class DirectScoringModel(ScoringModel):
                 + f"+{np.round(self[entity][2], 2)}]"
             for entity in self.scored_entities()
         ]) + f"\n{indent}" + "}"
-
-    def get_scaling_parameters(self):
-        return 1, 0, 0, 0, 0, 0
 
 
 class ScaledScoringModel(ScoringModel):
@@ -116,18 +126,21 @@ class ScaledScoringModel(ScoringModel):
             self.translation_left_uncertainty = translation_left_uncertainty
             self.translation_right_uncertainty = translation_right_uncertainty
         
-    def __call__(self, entity_id, entity_features):
+    def __call__(self, entity_id, entity_features=None):
         base_output = self.base_model(entity_id, entity_features)
         if base_output is None:
             return None
-        
-        base_score, base_left_uncertainty, base_right_uncertainty = base_output
-        base_left = base_score - base_left_uncertainty
-        base_right = base_score + base_right_uncertainty
+        return self.scale_score(*base_output)
+
+    def scale_score(
+        self, base_score, base_left_unc, base_right_unc
+    ) -> tuple[float, float, float]:
+        base_left = base_score - base_left_unc
+        base_right = base_score + base_right_unc
         
         score = self.multiplicator * base_score + self.translation
         
-        left_uncertainty = self.multiplicator * base_left_uncertainty
+        left_uncertainty = self.multiplicator * base_left_unc
         left_uncertainty += self.translation_left_uncertainty
         if base_left > 0:
             left_uncertainty += base_left * min(
@@ -135,7 +148,7 @@ class ScaledScoringModel(ScoringModel):
         else:
             left_uncertainty += (- base_left) * self.multiplicator_right_uncertainty
         
-        right_uncertainty = self.multiplicator * base_right_uncertainty
+        right_uncertainty = self.multiplicator * base_right_unc
         right_uncertainty += self.translation_right_uncertainty
         if base_right > 0:
             right_uncertainty += base_right * self.multiplicator_right_uncertainty
@@ -153,12 +166,9 @@ class ScaledScoringModel(ScoringModel):
             self.multiplicator_left_uncertainty, self.multiplicator_right_uncertainty, 
             self.translation_left_uncertainty, self.translation_right_uncertainty)
 
-    def get_scaling_parameters(self):
-        model, parameters = self, list()
-        while hasattr(model, "base_model"):
-            model = model.base_model
-            parameters.append(model._direct_scaling_parameters())
-        return ScaledScoringModel.compose_scaling_parameters(parameters)
+    def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:
+        for (entity_id, values) in self.base_model.iter_entities():
+            yield (entity_id, self.scale_score(*values))
 
     def __str__(self, indent=""):
         result = indent + "{\n" 
@@ -187,7 +197,7 @@ class ScaledScoringModel(ScoringModel):
 
 
 class PostProcessedScoringModel(ScoringModel):
-    def __init__(self, base_model: ScoringModel, post_process: callable):
+    def __init__(self, base_model: ScoringModel, post_process: Callable):
         """ Defines a derived scoring model, based on a base model and a post process
         
         Parameters
@@ -199,20 +209,26 @@ class PostProcessedScoringModel(ScoringModel):
         self.base_model = base_model
         self.post_process = post_process
     
-    def __call__(self, entity_id, entity_features):
-        base_score, base_left, base_right = self.base_model(entity_id, entity_features)
+    def __call__(self, entity_id, entity_features=None):
+        result = self.base_model(entity_id, entity_features)
+        if result is None:
+            return None
+        return self.apply_post_process(*result)
+
+    def apply_post_process(self, base_score, base_left_unc, base_right_unc):
         score = self.post_process(base_score)
-        left = self.post_process(base_score - base_left) - score
-        right = self.post_process(base_score - base_right) - score
+        left = self.post_process(base_score - base_left_unc) - score
+        right = self.post_process(base_score - base_right_unc) - score
         if left < 0:
             assert right < 0
             temp = left
             left = - right
             right = - temp
         return score, left, right
-        
+
     def scored_entities(self, entities) -> set[int]:
         return self.base_model.scored_entities(entities)
 
-    def get_scaling_parameters(self):
-        return self.base_model.get_scaling_parameters()
+    def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:
+        for (entity_id, values) in self.base_model.iter_entities():
+            yield (entity_id, self.apply_post_process(*values))

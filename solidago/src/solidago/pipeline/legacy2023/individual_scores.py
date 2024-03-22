@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from .inputs import TournesolInput
+from solidago.pipeline import TournesolInput
 from .parameters import PipelineParameters
 
 def get_individual_scores(
