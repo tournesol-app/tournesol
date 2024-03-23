@@ -14,7 +14,7 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import TransactionTestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 from solidago.pipeline.inputs import TournesolInputFromPublicDataset
@@ -41,7 +41,7 @@ from tournesol.tests.utils.mock_now import MockNow
         {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
     ),
 )
-class ExportTest(TestCase):
+class ExportTest(TransactionTestCase):
     @MockNow.Context()
     def setUp(self) -> None:
         self.poll_videos = Poll.default_poll()
