@@ -90,6 +90,13 @@ function App() {
             <PublicRoute path="/actions">
               <ActionsPage />
             </PublicRoute>
+            <PublicRoute path="/action">
+              {/*
+                https://tournesol.app/action is the URL mentionned
+                in "La Dictature des Algorithmes" (page 318)
+              */}
+              <Redirect to="/actions" />
+            </PublicRoute>
             <PublicRoute path="/faq">
               <FAQ />
             </PublicRoute>
