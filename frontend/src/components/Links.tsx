@@ -12,6 +12,7 @@ interface InternalLinkProps {
   children: React.ReactNode;
   href: string;
   target?: string;
+  ariaLabel?: string;
   color?: string;
   underline?: LinkOwnProps['underline'];
   fontWeight?: number;
@@ -38,6 +39,7 @@ export const InternalLink = ({
   children,
   href,
   target,
+  ariaLabel,
   color = 'secondary',
   underline = 'hover',
   fontWeight,
@@ -49,6 +51,7 @@ export const InternalLink = ({
       component={RouterLink}
       to={href}
       target={target}
+      aria-label={ariaLabel}
       color={color}
       underline={underline}
       fontWeight={fontWeight}
