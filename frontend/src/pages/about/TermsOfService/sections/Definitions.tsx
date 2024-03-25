@@ -62,7 +62,7 @@ const Definitions = () => {
             conditions, notices contained or referenced in this document (the
             &quot;Terms of Service&quot; or the Terms) and all other operating
             rules, policies (including our{' '}
-            <InternalLink href="/about/privacy_policy" target="_blank">
+            <InternalLink href="/about/privacy_policy">
               Privacy Policy
             </InternalLink>
             ) and procedures that we may publish from time to time on the
