@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Button, Typography, Box, Link } from '@mui/material';
+
+import { Grid, Button, Typography, Box } from '@mui/material';
+
 import {
   ContentHeader,
   ContentBox,
   Lines,
   FormTextField,
+  InternalLink,
 } from 'src/components';
+import { useNotifications } from 'src/hooks';
 import {
   AccountsService,
   ApiError,
   DefaultSendResetPasswordLink,
 } from 'src/services/openapi';
-import { useNotifications } from 'src/hooks';
 
 const ResetSuccess = () => {
   const { t } = useTranslation();
@@ -104,14 +106,9 @@ const ForgotPassword = () => {
               </Grid>
             </form>
             <Box my={2}>
-              <Link
-                component={RouterLink}
-                to="/login"
-                color="secondary"
-                underline="hover"
-              >
+              <InternalLink href="/login">
                 {t('reset.backToLogIn')}
-              </Link>
+              </InternalLink>
             </Box>
           </>
         )}

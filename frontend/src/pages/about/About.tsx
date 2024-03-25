@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+
 import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link, Paper } from '@mui/material';
 
-import { ContentHeader } from 'src/components';
+import { ContentHeader, InternalLink } from 'src/components';
 import {
   discordTournesolInviteUrl,
   githubTournesolUrl,
@@ -245,9 +245,9 @@ const AboutPage = () => {
             <Typography paragraph>
               <Trans t={t} i18nKey="about.considerHelpingWithDonation">
                 If you can, please consider helping us{' '}
-                <Link component={RouterLink} to="/about/donate" color="inherit">
+                <InternalLink href="/about/donate" color="inherit">
                   with a donation
-                </Link>
+                </InternalLink>
                 .
               </Trans>
             </Typography>

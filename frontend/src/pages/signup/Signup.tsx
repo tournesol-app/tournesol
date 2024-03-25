@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
 import {
   Grid,
@@ -21,6 +20,7 @@ import {
   ContentBox,
   Lines,
   FormTextField,
+  InternalLink,
 } from 'src/components';
 import NotificationsEmailResearch from 'src/features/settings/preferences/fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fields/NotificationsEmailNewFeatures';
@@ -212,13 +212,19 @@ const Signup = () => {
                     <Trans t={t} i18nKey="signup.iAgreeWithTheTerms">
                       I&apos;m at least 15 years old. I have read and I agree
                       with the{' '}
-                      <Link to="/about/terms-of-service" target="_blank">
+                      <InternalLink
+                        href="/about/terms-of-service"
+                        target="_blank"
+                      >
                         Terms of Service
-                      </Link>{' '}
+                      </InternalLink>{' '}
                       and the{' '}
-                      <Link to="/about/privacy_policy" target="_blank">
+                      <InternalLink
+                        href="/about/privacy_policy"
+                        target="_blank"
+                      >
                         Privacy Policy
-                      </Link>
+                      </InternalLink>
                       .
                     </Trans>
                   </Typography>

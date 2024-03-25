@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { Avatar, Box, useTheme } from '@mui/material';
 
+import { InternalLink } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
 import { JSONValue, EntityObject } from 'src/utils/types';
@@ -128,18 +128,18 @@ const EntityImagery = ({
         width="100%"
         sx={{
           '& img': {
-            // prevent the RouterLink to add few extra pixels
+            // prevent the InternalLink to add few extra pixels
             display: 'block',
           },
         }}
       >
         {videoConfig.thumbnailLink ?? true ? (
-          <RouterLink
-            to={`${baseUrl}/entities/${entity.uid}`}
+          <InternalLink
             className="full-width"
+            href={`${baseUrl}/entities/${entity.uid}`}
           >
             {thumbnail}
-          </RouterLink>
+          </InternalLink>
         ) : (
           thumbnail
         )}
@@ -162,7 +162,7 @@ const EntityImagery = ({
         {compact ? (
           <img src={entity.metadata.image_url} alt={entity.metadata.name} />
         ) : (
-          <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+          <InternalLink href={`${baseUrl}/entities/${entity.uid}`}>
             <Avatar
               alt={entity?.metadata?.name || ''}
               src={entity?.metadata?.image_url || ''}
@@ -172,7 +172,7 @@ const EntityImagery = ({
                 m: 2,
               }}
             />
-          </RouterLink>
+          </InternalLink>
         )}
       </Box>
     );

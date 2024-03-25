@@ -1,8 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import {
   ListItemButton,
   ListItemText,

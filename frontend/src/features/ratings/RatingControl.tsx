@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+
+import { Tooltip, Typography, Box, Switch } from '@mui/material';
+
+import { InternalLink } from 'src/components';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
   UsersService,
   ContributorRating,
   IndividualRating,
 } from 'src/services/openapi';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const setPublicStatus = async (
   pollName: string,
@@ -53,15 +55,14 @@ export const RatingControl = ({
     <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
       <Typography variant="caption" sx={{ fontSize: '11px' }}>
         {nComparisons > 0 ? (
-          <Link
+          <InternalLink
             color="inherit"
-            component={RouterLink}
-            to={`${baseUrl}/comparisons/?uid=${uid}`}
+            href={`${baseUrl}/comparisons/?uid=${uid}`}
           >
             <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
               {{ count: nComparisons }} comparison by you
             </Trans>
-          </Link>
+          </InternalLink>
         ) : (
           t('video.notYetComparedByYou')
         )}

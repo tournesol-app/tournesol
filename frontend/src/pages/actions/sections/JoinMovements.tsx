@@ -1,10 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { Box, Typography } from '@mui/material';
 
-import { ExternalLink } from 'src/components';
+import { ExternalLink, InternalLink } from 'src/components';
 import { githubTournesolUrl } from 'src/utils/url';
 
 const sourceCodeToContributeTo = [
@@ -61,8 +60,8 @@ const JoinMovements = () => {
               t={t}
               i18nKey="actionsPage.joinMovements.makeComparisonsOnTournesol"
             >
-              Make <RouterLink to="/comparison">comparisons</RouterLink> on
-              Tournesol.
+              Make <InternalLink href="/comparison">comparisons</InternalLink>{' '}
+              on Tournesol.
             </Trans>
           </Typography>
         </li>
