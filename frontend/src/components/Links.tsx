@@ -11,7 +11,7 @@ interface ExternalLinkProps {
 
 interface InternalLinkProps {
   children: React.ReactNode;
-  href: string;
+  to: string;
   target?: string;
   ariaLabel?: string;
   color?: string;
@@ -42,7 +42,7 @@ export const ExternalLink = ({
 
 export const InternalLink = ({
   children,
-  href,
+  to,
   target,
   ariaLabel,
   color = 'secondary',
@@ -52,10 +52,10 @@ export const InternalLink = ({
 }: InternalLinkProps) => {
   return (
     <Link
-      className={className}
       component={RouterLink}
-      to={href}
+      to={to}
       target={target}
+      className={className}
       aria-label={ariaLabel}
       color={color}
       underline={underline}

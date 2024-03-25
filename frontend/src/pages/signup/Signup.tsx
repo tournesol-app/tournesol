@@ -213,16 +213,13 @@ const Signup = () => {
                       I&apos;m at least 15 years old. I have read and I agree
                       with the{' '}
                       <InternalLink
-                        href="/about/terms-of-service"
+                        to="/about/terms-of-service"
                         target="_blank"
                       >
                         Terms of Service
                       </InternalLink>{' '}
                       and the{' '}
-                      <InternalLink
-                        href="/about/privacy_policy"
-                        target="_blank"
-                      >
+                      <InternalLink to="/about/privacy_policy" target="_blank">
                         Privacy Policy
                       </InternalLink>
                       .

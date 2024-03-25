@@ -46,7 +46,7 @@ const EntityCardTitle = ({
   return (
     <Box display="flex" flexWrap="wrap">
       {withLink ? (
-        <InternalLink href={`${baseUrl}/entities/${uid}`} underline="none">
+        <InternalLink to={`${baseUrl}/entities/${uid}`} underline="none">
           {titleNode}
         </InternalLink>
       ) : (

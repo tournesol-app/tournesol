@@ -11,7 +11,7 @@ const PreferencesIconButtonLink = ({ hash = '' }: { hash?: string }) => {
 
   return (
     <InternalLink
-      href={`/settings/preferences${hash}`}
+      to={`/settings/preferences${hash}`}
       ariaLabel={t('preferencesIconButtonLink.linkToThePreferencesPage')}
     >
       <IconButton color="secondary">

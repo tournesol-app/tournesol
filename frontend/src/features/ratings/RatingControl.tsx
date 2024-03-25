@@ -57,7 +57,7 @@ export const RatingControl = ({
         {nComparisons > 0 ? (
           <InternalLink
             color="inherit"
-            href={`${baseUrl}/comparisons/?uid=${uid}`}
+            to={`${baseUrl}/comparisons/?uid=${uid}`}
           >
             <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
               {{ count: nComparisons }} comparison by you

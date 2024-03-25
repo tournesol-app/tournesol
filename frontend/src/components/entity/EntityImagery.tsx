@@ -135,8 +135,8 @@ const EntityImagery = ({
       >
         {videoConfig.thumbnailLink ?? true ? (
           <InternalLink
+            to={`${baseUrl}/entities/${entity.uid}`}
             className="full-width"
-            href={`${baseUrl}/entities/${entity.uid}`}
           >
             {thumbnail}
           </InternalLink>
@@ -162,7 +162,7 @@ const EntityImagery = ({
         {compact ? (
           <img src={entity.metadata.image_url} alt={entity.metadata.name} />
         ) : (
-          <InternalLink href={`${baseUrl}/entities/${entity.uid}`}>
+          <InternalLink to={`${baseUrl}/entities/${entity.uid}`}>
             <Avatar
               alt={entity?.metadata?.name || ''}
               src={entity?.metadata?.image_url || ''}

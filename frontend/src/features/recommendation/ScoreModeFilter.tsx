@@ -40,7 +40,7 @@ function ScoreModeFilter(props: Props) {
             <InternalLink
               color="primary"
               target="_blank"
-              href="/about/trusted_domains"
+              to="/about/trusted_domains"
             >
               a trusted email address
             </InternalLink>

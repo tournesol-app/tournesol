@@ -106,9 +106,7 @@ const ForgotPassword = () => {
               </Grid>
             </form>
             <Box my={2}>
-              <InternalLink href="/login">
-                {t('reset.backToLogIn')}
-              </InternalLink>
+              <InternalLink to="/login">{t('reset.backToLogIn')}</InternalLink>
             </Box>
           </>
         )}

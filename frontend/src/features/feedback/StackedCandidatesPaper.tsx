@@ -82,7 +82,7 @@ const StackedCandidatesPaper = ({
         return (
           <ListItem key={entity.uid} alignItems="flex-start">
             <ListItemAvatar>
-              <InternalLink href={`${baseUrl}/entities/${entity.uid}`}>
+              <InternalLink to={`${baseUrl}/entities/${entity.uid}`}>
                 <Avatar
                   alt={entity?.metadata?.name || ''}
                   src={entity?.metadata?.image_url || ''}
@@ -105,7 +105,7 @@ const StackedCandidatesPaper = ({
                   >
                     <InternalLink
                       color="inherit"
-                      href={`${baseUrl}/comparisons/?uid=${entity.uid}`}
+                      to={`${baseUrl}/comparisons/?uid=${entity.uid}`}
                     >
                       <Trans
                         t={t}

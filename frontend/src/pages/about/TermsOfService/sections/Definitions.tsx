@@ -62,7 +62,7 @@ const Definitions = () => {
             conditions, notices contained or referenced in this document (the
             &quot;Terms of Service&quot; or the Terms) and all other operating
             rules, policies (including our{' '}
-            <InternalLink href="/about/privacy_policy">
+            <InternalLink to="/about/privacy_policy">
               Privacy Policy
             </InternalLink>
             ) and procedures that we may publish from time to time on the
@@ -79,15 +79,15 @@ const Definitions = () => {
         text={
           <Trans t={t} i18nKey="terms.definitions.website">
             The &quot;Website&quot; refers to the Tournesol project&apos;s
-            website located at{' '}
-            <InternalLink href="/">tournesol.app</InternalLink>, and all content
-            and services provided by the Association at or through the Website.
-            It also refers to the Association-owned subdomains of tournesol.app,
-            such as <span className="pre">api.tournesol.app</span>.
-            Occasionally, websites owned by the Association may provide
-            different or additional terms of service. If those additional terms
-            conflict with this Agreement, the more specific terms apply to the
-            relevant page or service.
+            website located at <InternalLink to="/">tournesol.app</InternalLink>
+            , and all content and services provided by the Association at or
+            through the Website. It also refers to the Association-owned
+            subdomains of tournesol.app, such as{' '}
+            <span className="pre">api.tournesol.app</span>. Occasionally,
+            websites owned by the Association may provide different or
+            additional terms of service. If those additional terms conflict with
+            this Agreement, the more specific terms apply to the relevant page
+            or service.
           </Trans>
         }
       />

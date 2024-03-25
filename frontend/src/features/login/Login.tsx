@@ -113,7 +113,7 @@ const Login = () => {
           </Grid>
         </form>
         <Box my={2}>
-          <InternalLink href="/forgot">
+          <InternalLink to="/forgot">
             {t('login.forgotYourPassword')}
           </InternalLink>
         </Box>

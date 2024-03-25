@@ -70,7 +70,7 @@ export const VideoMetadata = ({
             <InternalLink
               color="inherit"
               fontWeight={600}
-              href={`/recommendations?language=&uploader=${encodeURIComponent(
+              to={`/recommendations?language=&uploader=${encodeURIComponent(
                 uploader
               )}`}
             >

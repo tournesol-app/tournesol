@@ -60,8 +60,8 @@ const JoinMovements = () => {
               t={t}
               i18nKey="actionsPage.joinMovements.makeComparisonsOnTournesol"
             >
-              Make <InternalLink href="/comparison">comparisons</InternalLink>{' '}
-              on Tournesol.
+              Make <InternalLink to="/comparison">comparisons</InternalLink> on
+              Tournesol.
             </Trans>
           </Typography>
         </li>

@@ -74,7 +74,7 @@ const EntityContextTextList = ({
         }
       })}
       <Box display="flex" justifyContent="flex-end">
-        <InternalLink href="/faq?scrollTo=are_recommendations_moderated_by_the_association">
+        <InternalLink to="/faq?scrollTo=are_recommendations_moderated_by_the_association">
           {t('entityContextTextList.whyThisMessage')}
         </InternalLink>
       </Box>

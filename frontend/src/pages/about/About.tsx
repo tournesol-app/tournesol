@@ -226,7 +226,7 @@ const AboutPage = () => {
               <Trans t={t} i18nKey="about.considerHelpingWithDonation">
                 If you can, please consider helping us{' '}
                 <InternalLink
-                  href="/about/donate"
+                  to="/about/donate"
                   color="inherit"
                   underline="always"
                 >
