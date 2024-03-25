@@ -4,7 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link, Paper } from '@mui/material';
 
-import { ContentHeader, InternalLink } from 'src/components';
+import { ContentHeader, ExternalLink, InternalLink } from 'src/components';
 import {
   discordTournesolInviteUrl,
   githubTournesolUrl,
@@ -162,41 +162,21 @@ const AboutPage = () => {
                 hope to contribute to making today&apos;s and tomorrow&apos;s
                 large-scale algorithms robustly beneficial for all of humanity.
                 Find out more with our{' '}
-                <a
-                  href={whitePaperUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: 'white' }}
-                >
+                <ExternalLink href={whitePaperUrl} color="white">
                   white paper
-                </a>
+                </ExternalLink>
                 , our{' '}
-                <a
-                  href={githubTournesolUrl}
-                  target="_blank"
-                  style={{ color: 'white' }}
-                  rel="noreferrer"
-                >
+                <ExternalLink href={githubTournesolUrl} color="white">
                   GitHub
-                </a>
+                </ExternalLink>
                 , our{' '}
-                <a
-                  href={discordTournesolInviteUrl}
-                  target="_blank"
-                  style={{ color: 'white' }}
-                  rel="noreferrer"
-                >
+                <ExternalLink href={discordTournesolInviteUrl} color="white">
                   Discord
-                </a>
+                </ExternalLink>
                 , or our{' '}
-                <a
-                  href={linkedInTournesolUrl}
-                  target="_blank"
-                  style={{ color: 'white' }}
-                  rel="noreferrer"
-                >
+                <ExternalLink href={linkedInTournesolUrl} color="white">
                   LinkedIn page
-                </a>
+                </ExternalLink>
                 .
               </Trans>
             </Typography>
@@ -458,13 +438,11 @@ const AboutPage = () => {
                 As Tournesol is an open source project, we have been lucky to
                 benefit from contributions by multiple volunteers. Find our
                 wonderful contributors on{' '}
-                <a
+                <ExternalLink
                   href={`${githubTournesolUrl}/graphs/contributors`}
-                  target="_blank"
-                  rel="noreferrer"
                 >
                   Github Contributors
-                </a>
+                </ExternalLink>
               </Trans>
             </Typography>
           </ContentBox>

@@ -6,6 +6,7 @@ import { Link, LinkOwnProps } from '@mui/material';
 interface ExternalLinkProps {
   children: React.ReactNode;
   href?: string;
+  color?: string;
 }
 
 interface InternalLinkProps {
@@ -19,14 +20,18 @@ interface InternalLinkProps {
   className?: string;
 }
 
-export const ExternalLink = ({ children, href }: ExternalLinkProps) => {
+export const ExternalLink = ({
+  children,
+  href,
+  color = 'revert',
+}: ExternalLinkProps) => {
   return (
     <Link
       href={href}
       target="_blank"
-      rel="noopener"
+      rel="noreferrer"
       sx={{
-        color: 'revert',
+        color: color,
         textDecoration: 'revert',
       }}
     >
