@@ -245,7 +245,11 @@ const AboutPage = () => {
             <Typography paragraph>
               <Trans t={t} i18nKey="about.considerHelpingWithDonation">
                 If you can, please consider helping us{' '}
-                <InternalLink href="/about/donate" color="inherit">
+                <InternalLink
+                  href="/about/donate"
+                  color="inherit"
+                  underline="always"
+                >
                   with a donation
                 </InternalLink>
                 .
