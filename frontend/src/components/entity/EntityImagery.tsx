@@ -136,7 +136,7 @@ const EntityImagery = ({
         {videoConfig.thumbnailLink ?? true ? (
           <InternalLink
             to={`${baseUrl}/entities/${entity.uid}`}
-            className="full-width"
+            sx={{ width: '100%' }}
           >
             {thumbnail}
           </InternalLink>

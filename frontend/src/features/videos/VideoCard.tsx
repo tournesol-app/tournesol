@@ -82,7 +82,7 @@ function VideoCard({
           >
             <InternalLink
               to={`${baseUrl}/entities/${UID_YT_NAMESPACE}${videoId}`}
-              className="full-width"
+              sx={{ width: '100%' }}
             >
               <DurationWrapper duration={entity.metadata.duration || undefined}>
                 <img

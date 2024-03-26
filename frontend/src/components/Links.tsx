@@ -18,8 +18,7 @@ interface InternalLinkProps {
   ariaLabel?: string;
   color?: string;
   underline?: LinkOwnProps['underline'];
-  fontWeight?: number;
-  className?: string;
+  sx?: SxProps;
 }
 
 /**
@@ -64,8 +63,7 @@ export const InternalLink = ({
   ariaLabel,
   color = 'secondary',
   underline = 'hover',
-  fontWeight,
-  className,
+  sx,
 }: InternalLinkProps) => {
   return (
     <Link
@@ -73,11 +71,12 @@ export const InternalLink = ({
       to={to}
       target={target}
       id={id}
-      className={className}
       aria-label={ariaLabel}
       color={color}
       underline={underline}
-      fontWeight={fontWeight}
+      sx={{
+        ...sx,
+      }}
     >
       {children}
     </Link>

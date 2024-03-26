@@ -68,12 +68,14 @@ export const VideoMetadata = ({
             placement="bottom"
           >
             <InternalLink
-              color="inherit"
-              fontWeight={600}
-              underline="always"
               to={`/recommendations?language=&uploader=${encodeURIComponent(
                 uploader
               )}`}
+              color="inherit"
+              underline="always"
+              sx={{
+                fontWeight: 600,
+              }}
             >
               {uploader}
             </InternalLink>
