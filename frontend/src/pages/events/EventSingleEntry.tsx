@@ -181,7 +181,7 @@ const EventImagery = ({ event }: { event: TournesolEvent }) => {
       }}
     >
       {imageLink ? (
-        <a className="no-decoration" href={imageLink}>
+        <ExternalLink href={imageLink}>
           <img
             src={imgSrc}
             style={{
@@ -190,7 +190,7 @@ const EventImagery = ({ event }: { event: TournesolEvent }) => {
               borderRadius: '4px',
             }}
           />
-        </a>
+        </ExternalLink>
       ) : (
         <img
           src={imgSrc}
