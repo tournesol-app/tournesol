@@ -75,7 +75,10 @@ const TabInfo = ({
         Your rate-later videos appear here. You can add some to your list by
         clicking on the &apos;+&apos; sign on the video cards. You can also add
         them directly from{' '}
-        <ExternalLink href={getWebExtensionUrl()}>the extension</ExternalLink>.
+        <ExternalLink href={getWebExtensionUrl()} target="_blank">
+          the extension
+        </ExternalLink>
+        .
       </Trans>
     ),
     'good-short-videos': t('tabsBox.goodShortVideos'),

@@ -35,8 +35,6 @@ const ParticipateButton = ({ userProof }: { userProof: string }) => {
     <Button
       variant="contained"
       component={Link}
-      target="_blank"
-      rel="noopener"
       href={`${formUrl}${userProof}`}
       endIcon={<Biotech />}
     >

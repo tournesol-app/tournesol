@@ -91,7 +91,6 @@ const ContributorCard = ({
     <Link
       href={website}
       rel="noopener"
-      target="_blank"
       underline="none"
       color="inherit"
       variant="inherit"
@@ -379,7 +378,6 @@ const AboutPage = () => {
           <Link
             href="https://www.polyconseil.fr/"
             rel="noopener"
-            target="_blank"
             underline="none"
             color="inherit"
             variant="inherit"
@@ -404,7 +402,6 @@ const AboutPage = () => {
           <Link
             href="https://kleis.ch/"
             rel="noopener"
-            target="_blank"
             underline="none"
             color="inherit"
             variant="inherit"

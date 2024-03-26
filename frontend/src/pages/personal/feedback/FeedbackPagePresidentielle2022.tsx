@@ -173,13 +173,7 @@ const FeedbackPagePresidentielle2022 = () => {
               helperText={
                 <Trans t={t} i18nKey="myFeedbackPage.proofOfVoteHelperText">
                   This code will be helpful to complete{' '}
-                  <a
-                    target="_blank"
-                    rel="noreferrer"
-                    href={PRESIDENTIELLE_2022_SURVEY_URL}
-                  >
-                    our survey.
-                  </a>
+                  <a href={PRESIDENTIELLE_2022_SURVEY_URL}>our survey.</a>
                 </Trans>
               }
             />

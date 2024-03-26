@@ -61,7 +61,6 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
                       variant="contained"
                       component="a"
                       href={webExtensionUrl}
-                      target="_blank"
                       startIcon={<Extension />}
                     >
                       {t('home.getTheExtensionButton')}

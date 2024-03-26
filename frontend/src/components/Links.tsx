@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Link, LinkOwnProps } from '@mui/material';
+import { Link, LinkOwnProps, SxProps } from '@mui/material';
 
 interface ExternalLinkProps {
   children: React.ReactNode;
   href?: string;
+  target?: string;
   color?: string;
+  sx?: SxProps;
 }
 
 interface InternalLinkProps {
@@ -20,19 +22,33 @@ interface InternalLinkProps {
   className?: string;
 }
 
+/**
+ * A link to an external website.
+ *
+ * Avoid using the prop `target="_blank"` as much as possible. It changes the
+ * browser' default behaviour, and forces the opening of a new tab or window.
+ *
+ * `target="_blank"` can be useful when:
+ *   - a user is leaving a page with unsaved changes
+ *   - a media is playing on the page, and we don't want to interrupt it
+ *   - etc.
+ */
 export const ExternalLink = ({
   children,
   href,
+  target,
   color = 'revert',
+  sx,
 }: ExternalLinkProps) => {
   return (
     <Link
       href={href}
-      target="_blank"
+      target={target}
       rel="noreferrer"
       sx={{
         color: color,
         textDecoration: 'revert',
+        ...sx,
       }}
     >
       {children}

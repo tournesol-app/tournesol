@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   Divider,
-  Link,
   Stack,
   Typography,
   Paper,
@@ -15,7 +14,12 @@ import {
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
 
-import { ContentHeader, ContentBox, TitledPaper } from 'src/components';
+import {
+  ContentHeader,
+  ContentBox,
+  TitledPaper,
+  ExternalLink,
+} from 'src/components';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import {
   KKBBTournesolEnUrl,
@@ -130,21 +134,19 @@ const DonatePage = () => {
                     alignItems="center"
                     justify-content="space-between"
                   >
-                    <Link
+                    <ExternalLink
                       href={
                         currentLanguage === 'fr'
                           ? KKBBTournesolFrUrl
                           : KKBBTournesolEnUrl
                       }
-                      rel="noopener"
-                      target="_blank"
                     >
                       <img
                         src="/logos/KKBB_Logo.png"
                         alt="KissKissBankBank logo"
                         height="90px"
                       />
-                    </Link>
+                    </ExternalLink>
                     <Button
                       variant="contained"
                       href={
@@ -152,8 +154,6 @@ const DonatePage = () => {
                           ? KKBBTournesolFrUrl
                           : KKBBTournesolEnUrl
                       }
-                      rel="noopener"
-                      target="_blank"
                     >
                       {t('donate.donateWithKKBB')}
                     </Button>
@@ -166,11 +166,9 @@ const DonatePage = () => {
                     alignItems="center"
                     justify-content="space-between"
                   >
-                    <Link
+                    <ExternalLink
                       href={paypalDonateTournesolUrl}
-                      rel="noopener"
-                      target="_blank"
-                      width="100%"
+                      sx={{ width: '100%' }}
                     >
                       <img
                         src="/logos/PayPal_Logo.svg"
@@ -178,13 +176,8 @@ const DonatePage = () => {
                         height="90px"
                         width="100%"
                       />
-                    </Link>
-                    <Button
-                      variant="contained"
-                      href={paypalDonateTournesolUrl}
-                      rel="noopener"
-                      target="_blank"
-                    >
+                    </ExternalLink>
+                    <Button variant="contained" href={paypalDonateTournesolUrl}>
                       {t('donate.donateWithPaypal')}
                     </Button>
                   </Stack>

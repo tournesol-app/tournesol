@@ -59,8 +59,6 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
             <Button
               variant="contained"
               component={Link}
-              target="_blank"
-              rel="noopener"
               href="https://github.com/tournesol-app/tournesol"
               startIcon={<GitHub />}
             >

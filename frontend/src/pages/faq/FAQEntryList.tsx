@@ -51,7 +51,6 @@ const FAQEntryList = ({
       <Box display="flex" justifyContent="flex-end">
         <Button
           href="https://discord.gg/TvsFB8RNBV"
-          target="_blank"
           color="secondary"
           variant="outlined"
           startIcon={<PeopleAlt />}
