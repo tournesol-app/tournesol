@@ -33,7 +33,7 @@ const PublicDownloadSection = () => {
           can be downloaded by clicking the button below and is published under{' '}
           <ExternalLink
             href="https://opendatacommons.org/licenses/by/1-0/"
-            color="white"
+            sx={{ color: 'white' }}
           >
             Open Data Commons Attribution License (ODC-By)
           </ExternalLink>

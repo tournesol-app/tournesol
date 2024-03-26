@@ -7,7 +7,6 @@ interface ExternalLinkProps {
   children: React.ReactNode;
   href?: string;
   target?: string;
-  color?: string;
   sx?: SxProps;
 }
 
@@ -37,7 +36,6 @@ export const ExternalLink = ({
   children,
   href,
   target,
-  color = 'revert',
   sx,
 }: ExternalLinkProps) => {
   return (
@@ -46,7 +44,7 @@ export const ExternalLink = ({
       target={target}
       rel="noreferrer"
       sx={{
-        color: color,
+        color: 'revert',
         textDecoration: 'revert',
         ...sx,
       }}

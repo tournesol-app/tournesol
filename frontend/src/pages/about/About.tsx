@@ -161,19 +161,25 @@ const AboutPage = () => {
                 hope to contribute to making today&apos;s and tomorrow&apos;s
                 large-scale algorithms robustly beneficial for all of humanity.
                 Find out more with our{' '}
-                <ExternalLink href={whitePaperUrl} color="white">
+                <ExternalLink href={whitePaperUrl} sx={{ color: 'white' }}>
                   white paper
                 </ExternalLink>
                 , our{' '}
-                <ExternalLink href={githubTournesolUrl} color="white">
+                <ExternalLink href={githubTournesolUrl} sx={{ color: 'white' }}>
                   GitHub
                 </ExternalLink>
                 , our{' '}
-                <ExternalLink href={discordTournesolInviteUrl} color="white">
+                <ExternalLink
+                  href={discordTournesolInviteUrl}
+                  sx={{ color: 'white' }}
+                >
                   Discord
                 </ExternalLink>
                 , or our{' '}
-                <ExternalLink href={linkedInTournesolUrl} color="white">
+                <ExternalLink
+                  href={linkedInTournesolUrl}
+                  sx={{ color: 'white' }}
+                >
                   LinkedIn page
                 </ExternalLink>
                 .
