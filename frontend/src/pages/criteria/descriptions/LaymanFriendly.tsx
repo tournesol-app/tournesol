@@ -1,6 +1,8 @@
 import React from 'react';
 import { Trans } from 'react-i18next';
 
+import { ExternalLink } from 'src/components';
+
 const LaymanFriendlyDesc = () => (
   <Trans i18nKey="criteriaDescriptions.layman_friendly">
     <em>How understandable is it, without prior knowledge?</em>
@@ -22,9 +24,9 @@ const LaymanFriendlyDesc = () => (
     <p>
       An example of a very pedagogical video that may not be very
       layman-friendly is{' '}
-      <a href="https://tournesol.app/entities/yt:X8jsijhllIA">
+      <ExternalLink href="https://tournesol.app/entities/yt:X8jsijhllIA">
         this video by 3Blue1Brown
-      </a>
+      </ExternalLink>
       .
     </p>
   </Trans>

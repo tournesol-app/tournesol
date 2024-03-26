@@ -25,7 +25,8 @@ interface InternalLinkProps {
  * A link to an external website.
  *
  * Avoid using the prop `target="_blank"` as much as possible. It changes the
- * browser' default behaviour, and forces the opening of a new tab or window.
+ * browser' default behaviour, and forces the opening of a new tab or window
+ * regardless of the users' preferences.
  *
  * `target="_blank"` can be useful when:
  *   - a user is leaving a page with unsaved changes

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Trans } from 'react-i18next';
 
+import { ExternalLink } from 'src/components';
+
 const DiversityInclusionDesc = () => (
   <Trans i18nKey="criteriaDescriptions.diversity_inclusion">
     <em>
@@ -40,24 +42,24 @@ const DiversityInclusionDesc = () => (
     </p>
     <ul>
       <li>
-        <a href="https://www.youtube.com/watch?v=_JVwyW4zxQ4&t=775s">
+        <ExternalLink href="https://www.youtube.com/watch?v=_JVwyW4zxQ4&t=775s">
           Tibees&apos; video &quot;The First Computer Program&quot;
-        </a>
+        </ExternalLink>
       </li>
       <li>
-        <a href="https://tournesol.app/entities/yt:ybPgmjTRvMo">
+        <ExternalLink href="https://tournesol.app/entities/yt:ybPgmjTRvMo">
           Mark Robert&apos;s video &quot;The Truth About my Son&quot;
-        </a>
+        </ExternalLink>
       </li>
       <li>
-        <a href="https://tournesol.app/entities/yt:qF1DTK4U1AM">
+        <ExternalLink href="https://tournesol.app/entities/yt:qF1DTK4U1AM">
           Jaiden Animations&apos; video &quot;Being not Straight&quot;
-        </a>
+        </ExternalLink>
       </li>
       <li>
-        <a href="https://tournesol.app/entities/yt:Ok5sKLXqynQ">
+        <ExternalLink href="https://tournesol.app/entities/yt:Ok5sKLXqynQ">
           Vox&apos;s video &quot;Are we Automating Racism?&quot;
-        </a>
+        </ExternalLink>
       </li>
     </ul>
   </Trans>
