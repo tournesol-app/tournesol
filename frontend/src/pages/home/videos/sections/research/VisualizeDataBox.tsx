@@ -1,9 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
-import TitledPaper from 'src/components/TitledPaper';
+import { ExternalLink, TitledPaper } from 'src/components';
 
 const VisualizeDataBox = () => {
   const { t } = useTranslation();
@@ -14,12 +14,9 @@ const VisualizeDataBox = () => {
         <Typography paragraph>
           <Trans i18nKey="visualizeDataBox.youCanQuicklyExploreEtc">
             You can quickly explore our public database with our appplication
-            <Link
-              color="text.primary"
-              href="https://github.com/tournesol-app/tournesol/tree/main/data-visualization"
-            >
+            <ExternalLink href="https://github.com/tournesol-app/tournesol/tree/main/data-visualization">
               Tournesol Data Visualization
-            </Link>
+            </ExternalLink>
             made with Streamlit.
           </Trans>
         </Typography>
