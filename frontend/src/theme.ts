@@ -83,4 +83,17 @@ export const theme = createTheme({
   zIndex: {
     videoCardDuration: 1,
   },
+  components: {
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          // Make sure that inputs have font-size "16px" by default
+          // instead of "1rem" which may be equal to a smaller value on small screens.
+          // Safari on iOS would automatically zoom when focusing a input with
+          // font-size < 16px, not desirable in most cases (e.g in EntitySearchInput).
+          fontSize: '16px',
+        },
+      },
+    },
+  },
 });

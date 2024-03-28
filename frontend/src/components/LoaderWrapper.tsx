@@ -4,6 +4,7 @@ import { Box, CircularProgress, SxProps } from '@mui/material';
 interface LoaderProps {
   isLoading: boolean;
   children: React.ReactNode;
+  circularProgress?: boolean;
   sx?: SxProps;
 }
 
@@ -12,10 +13,15 @@ interface LoaderProps {
  * `isLoading`is True. The content will then be displayed as greyed-out,
  * and a circular loader will be visibled in an overlay.
  */
-const LoaderWrapper = ({ isLoading, sx = {}, children }: LoaderProps) => {
+const LoaderWrapper = ({
+  isLoading,
+  children,
+  circularProgress = true,
+  sx = {},
+}: LoaderProps) => {
   return (
     <>
-      {isLoading && (
+      {isLoading && circularProgress && (
         <Box position="relative" width="100%">
           <Box
             position="absolute"
