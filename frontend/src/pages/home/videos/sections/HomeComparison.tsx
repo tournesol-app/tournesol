@@ -17,7 +17,6 @@ import EntitySelector, {
 import CriteriaSlider from 'src/features/comparisons/CriteriaSlider';
 import { useLoginState, useCurrentPoll } from 'src/hooks';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
-import { getEntityName } from 'src/utils/constants';
 import { setPendingRating } from 'src/utils/comparison/pending';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { getTutorialVideos } from 'src/utils/polls/videos';
@@ -56,8 +55,6 @@ const HomeComparison = () => {
     uid: uidB,
     rating: null,
   });
-
-  const entityName = getEntityName(t, pollName);
 
   /**
    * This effect determines if the user should be redirected to the tutorial
@@ -137,33 +134,17 @@ const HomeComparison = () => {
         gap: '8px',
       }}
     >
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
           variant="noControl"
-          title={`${entityName} 1`}
           value={selectorA}
           onChange={setSelectorA}
           otherUid={uidB}
         />
       </Grid>
-      <Grid
-        item
-        xs
-        component={Card}
-        display="flex"
-        flexDirection="column"
-        alignSelf="stretch"
-      >
+      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
         <EntitySelector
           variant="noControl"
-          title={`${entityName} 2`}
           value={selectorB}
           onChange={setSelectorB}
           otherUid={uidA}

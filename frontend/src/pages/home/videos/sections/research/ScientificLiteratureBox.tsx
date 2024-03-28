@@ -275,11 +275,7 @@ const ScientificLiteratureBox = () => {
             {chosenArticles.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
-                  <ListItemButton
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener"
-                  >
+                  <ListItemButton href={article.url} rel="noreferrer">
                     <ListItemAvatar>
                       <Avatar>
                         <article.icon />
@@ -301,11 +297,7 @@ const ScientificLiteratureBox = () => {
             {studentWorks.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
-                  <ListItemButton
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener"
-                  >
+                  <ListItemButton href={article.url} rel="noreferrer">
                     <ListItemAvatar>
                       <Avatar>
                         <article.icon />
@@ -327,11 +319,7 @@ const ScientificLiteratureBox = () => {
             {theyCiteUs.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
-                  <ListItemButton
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener"
-                  >
+                  <ListItemButton href={article.url} rel="noreferrer">
                     <ListItemAvatar>
                       <Avatar>
                         <article.icon />
@@ -353,11 +341,7 @@ const ScientificLiteratureBox = () => {
             {inTheMedia.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
-                  <ListItemButton
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener"
-                  >
+                  <ListItemButton href={article.url} rel="noreferrer">
                     <ListItemAvatar>
                       <Avatar>
                         <article.icon />

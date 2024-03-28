@@ -3,6 +3,7 @@ import { useTranslation, Trans } from 'react-i18next';
 
 import { Typography, Button } from '@mui/material';
 
+import { ExternalLink } from 'src/components';
 import { getPollStats } from 'src/features/statistics/stats';
 import { useCurrentPoll, useStats } from 'src/hooks';
 
@@ -30,12 +31,12 @@ const PublicDownloadSection = () => {
           hope this important data will prove useful for researchers on ethics
           of algorithms and large scale recommender systems. Our public database
           can be downloaded by clicking the button below and is published under{' '}
-          <a
+          <ExternalLink
             href="https://opendatacommons.org/licenses/by/1-0/"
-            style={{ color: 'white' }}
+            sx={{ color: 'white' }}
           >
             Open Data Commons Attribution License (ODC-By)
-          </a>
+          </ExternalLink>
           .
         </Trans>
       </Typography>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Box, Typography, Link } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { ExternalLink } from 'src/components';
 import { getWebBrowser } from 'src/utils/extension';
 
 const ChromeInstructions = () => {
@@ -21,14 +22,12 @@ const ChromeInstructions = () => {
       <Typography>
         <Trans t={t} i18nKey="frame.findMoreDetailsOnPage">
           Find more details on{' '}
-          <Link
-            color="secondary"
-            target="_blank"
+          <ExternalLink
             href="https://support.google.com/chrome/answer/95647"
-            rel="noreferrer"
+            target="_blank"
           >
             this page
-          </Link>
+          </ExternalLink>
           .
         </Trans>
       </Typography>

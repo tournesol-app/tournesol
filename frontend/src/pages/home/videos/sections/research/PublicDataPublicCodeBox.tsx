@@ -4,7 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Box, Link, Typography, Button, SxProps } from '@mui/material';
 import { Download, GitHub } from '@mui/icons-material';
 
-import TitledPaper from 'src/components/TitledPaper';
+import { ExternalLink, TitledPaper } from 'src/components';
 import TalksBox from './TalksBox';
 
 const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
@@ -25,12 +25,9 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
             <Trans i18nKey="publicDataPublicCodeBox.theseDataArePublishedUnderODCBY">
               These data are published under the terms of the Open Data Commons
               Attribution License
-              <Link
-                color="text.primary"
-                href="https://opendatacommons.org/licenses/by/summary/"
-              >
+              <ExternalLink href="https://opendatacommons.org/licenses/by/summary/">
                 (ODC-BY 1.0).
-              </Link>
+              </ExternalLink>
             </Trans>
           </Typography>
           <Box display="flex" justifyContent="center">
@@ -59,8 +56,6 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
             <Button
               variant="contained"
               component={Link}
-              target="_blank"
-              rel="noopener"
               href="https://github.com/tournesol-app/tournesol"
               startIcon={<GitHub />}
             >

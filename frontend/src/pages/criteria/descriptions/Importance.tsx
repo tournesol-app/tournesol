@@ -1,6 +1,8 @@
 import React from 'react';
 import { Trans } from 'react-i18next';
 
+import { ExternalLink } from 'src/components';
+
 const ImportanceDesc = () => (
   <Trans i18nKey="criteriaDescriptions.importance">
     <em>
@@ -11,9 +13,9 @@ const ImportanceDesc = () => (
       This criterion aims to combat the problem of <em>mute news</em>, which are
       information that do not have the attention that they should have for the
       good of humanity and beyond. As an example, as explained by{' '}
-      <a href="https://tournesol.app/entities/yt:KdiA12KeSL0">
+      <ExternalLink href="https://tournesol.app/entities/yt:KdiA12KeSL0">
         this PBS Hot Mess video
-      </a>
+      </ExternalLink>
       , when it comes to mitigating climate change, asking viewers to switch off
       the light when not at home is orders of magnitude less important than,
       say, avoiding air travel.

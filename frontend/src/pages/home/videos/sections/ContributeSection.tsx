@@ -1,7 +1,7 @@
 import React from 'react';
-
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
 import { Typography, Button, Box } from '@mui/material';
 
 // ContributeSection is a paragraph displayed on the HomePage

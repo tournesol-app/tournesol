@@ -5,7 +5,6 @@ import {
   Tab,
   Paper,
   Alert,
-  Link,
   Box,
   Typography,
   IconButton,
@@ -14,6 +13,7 @@ import { InfoOutlined } from '@mui/icons-material';
 
 import { Trans, useTranslation } from 'react-i18next';
 import { EntityResult } from 'src/utils/types';
+import { ExternalLink } from 'src/components';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import EntitySearchInput from './EntitySearchInput';
@@ -77,17 +77,9 @@ const TabInfo = ({
         Your rate-later videos appear here. You can add some to your list by
         clicking on the &apos;+&apos; sign on the video cards. You can also add
         them directly from{' '}
-        <Link
-          href={getWebExtensionUrl()}
-          target="_blank"
-          rel="noopener"
-          sx={{
-            color: 'revert',
-            textDecoration: 'revert',
-          }}
-        >
+        <ExternalLink href={getWebExtensionUrl()} target="_blank">
           the extension
-        </Link>
+        </ExternalLink>
         .
       </Trans>
     ),

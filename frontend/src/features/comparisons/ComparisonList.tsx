@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
 import { Grid, Container, Tooltip, Fab, Box, useTheme } from '@mui/material';
 import { Compare as CompareIcon } from '@mui/icons-material';
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
+
 import {
   CircularProgress,
   Box,
@@ -8,12 +10,11 @@ import {
   Grid,
   Button,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { useTheme } from '@mui/styles';
 
 import { FormTextField } from 'src/components';
 import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
 import { Lens as LensIcon, HelpOutline as HelpIcon } from '@mui/icons-material';
-import { useTheme } from '@mui/styles';
 import { useNotifications } from 'src/hooks';
 
 const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {

@@ -10,6 +10,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import {
   ContentBox,
   ContentHeader,
+  ExternalLink,
   LoaderWrapper,
   Pagination,
 } from 'src/components';
@@ -55,13 +56,13 @@ const WhereToFindVideosDialog = ({
         <Typography paragraph>
           <Trans t={t} i18nKey="ratelater.findVideosYoutube">
             You can search them in your{' '}
-            <a href="https://www.youtube.com/feed/history">
+            <ExternalLink href="https://www.youtube.com/feed/history">
               YouTube history page
-            </a>{' '}
+            </ExternalLink>{' '}
             , or your{' '}
-            <a href="https://www.youtube.com/playlist?list=LL">
+            <ExternalLink href="https://www.youtube.com/playlist?list=LL">
               liked video playlist
-            </a>
+            </ExternalLink>
             .
           </Trans>
         </Typography>
@@ -228,13 +229,13 @@ const RateLaterPage = () => {
                 <li>
                   <Trans t={t} i18nKey="ratelater.useOurBrowserExtension">
                     Use our{' '}
-                    <a
+                    <ExternalLink
                       href={
                         getWebExtensionUrl() ?? getWebExtensionUrl('chrome')
                       }
                     >
                       browser extension
-                    </a>{' '}
+                    </ExternalLink>{' '}
                     to effortlessly add videos directly from YouTube.
                   </Trans>
                 </li>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+
 import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link, Paper } from '@mui/material';
 
-import { ContentHeader } from 'src/components';
+import { ContentHeader, ExternalLink, InternalLink } from 'src/components';
 import {
   discordTournesolInviteUrl,
   githubTournesolUrl,
@@ -91,7 +91,6 @@ const ContributorCard = ({
     <Link
       href={website}
       rel="noopener"
-      target="_blank"
       underline="none"
       color="inherit"
       variant="inherit"
@@ -162,41 +161,27 @@ const AboutPage = () => {
                 hope to contribute to making today&apos;s and tomorrow&apos;s
                 large-scale algorithms robustly beneficial for all of humanity.
                 Find out more with our{' '}
-                <a
-                  href={whitePaperUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: 'white' }}
-                >
+                <ExternalLink href={whitePaperUrl} sx={{ color: 'white' }}>
                   white paper
-                </a>
+                </ExternalLink>
                 , our{' '}
-                <a
-                  href={githubTournesolUrl}
-                  target="_blank"
-                  style={{ color: 'white' }}
-                  rel="noreferrer"
-                >
+                <ExternalLink href={githubTournesolUrl} sx={{ color: 'white' }}>
                   GitHub
-                </a>
+                </ExternalLink>
                 , our{' '}
-                <a
+                <ExternalLink
                   href={discordTournesolInviteUrl}
-                  target="_blank"
-                  style={{ color: 'white' }}
-                  rel="noreferrer"
+                  sx={{ color: 'white' }}
                 >
                   Discord
-                </a>
+                </ExternalLink>
                 , or our{' '}
-                <a
+                <ExternalLink
                   href={linkedInTournesolUrl}
-                  target="_blank"
-                  style={{ color: 'white' }}
-                  rel="noreferrer"
+                  sx={{ color: 'white' }}
                 >
                   LinkedIn page
-                </a>
+                </ExternalLink>
                 .
               </Trans>
             </Typography>
@@ -245,9 +230,13 @@ const AboutPage = () => {
             <Typography paragraph>
               <Trans t={t} i18nKey="about.considerHelpingWithDonation">
                 If you can, please consider helping us{' '}
-                <Link component={RouterLink} to="/about/donate" color="inherit">
+                <InternalLink
+                  to="/about/donate"
+                  color="inherit"
+                  underline="always"
+                >
                   with a donation
-                </Link>
+                </InternalLink>
                 .
               </Trans>
             </Typography>
@@ -395,7 +384,6 @@ const AboutPage = () => {
           <Link
             href="https://www.polyconseil.fr/"
             rel="noopener"
-            target="_blank"
             underline="none"
             color="inherit"
             variant="inherit"
@@ -420,7 +408,6 @@ const AboutPage = () => {
           <Link
             href="https://kleis.ch/"
             rel="noopener"
-            target="_blank"
             underline="none"
             color="inherit"
             variant="inherit"
@@ -454,13 +441,11 @@ const AboutPage = () => {
                 As Tournesol is an open source project, we have been lucky to
                 benefit from contributions by multiple volunteers. Find our
                 wonderful contributors on{' '}
-                <a
+                <ExternalLink
                   href={`${githubTournesolUrl}/graphs/contributors`}
-                  target="_blank"
-                  rel="noreferrer"
                 >
                   Github Contributors
-                </a>
+                </ExternalLink>
               </Trans>
             </Typography>
           </ContentBox>

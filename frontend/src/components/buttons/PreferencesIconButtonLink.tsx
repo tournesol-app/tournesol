@@ -1,22 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { IconButton } from '@mui/material';
 import { Settings } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+
+import { InternalLink } from 'src/components';
 
 const PreferencesIconButtonLink = ({ hash = '' }: { hash?: string }) => {
   const { t } = useTranslation();
 
   return (
-    <Link
-      aria-label={t('preferencesIconButtonLink.linkToThePreferencesPage')}
+    <InternalLink
       to={`/settings/preferences${hash}`}
+      ariaLabel={t('preferencesIconButtonLink.linkToThePreferencesPage')}
     >
       <IconButton color="secondary">
         <Settings />
       </IconButton>
-    </Link>
+    </InternalLink>
   );
 };
 
