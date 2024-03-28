@@ -1,7 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, Tooltip, Link } from '@mui/material';
+
+import { Box, Tooltip } from '@mui/material';
+
+import { InternalLink } from 'src/components';
 import { TypeEnum } from 'src/services/openapi';
 import { EntityObject } from 'src/utils/types';
 
@@ -65,16 +67,18 @@ export const VideoMetadata = ({
             title={`${t('video.seeRecommendedVideosSameUploader')}`}
             placement="bottom"
           >
-            <Link
-              color="inherit"
-              component={RouterLink}
+            <InternalLink
               to={`/recommendations?language=&uploader=${encodeURIComponent(
                 uploader
               )}`}
-              fontWeight={600}
+              color="inherit"
+              underline="always"
+              sx={{
+                fontWeight: 600,
+              }}
             >
               {uploader}
-            </Link>
+            </InternalLink>
           </Tooltip>
         ) : (
           uploader

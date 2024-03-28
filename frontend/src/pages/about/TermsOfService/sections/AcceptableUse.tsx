@@ -1,8 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, AlertTitle, Box, Link, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 
+import { ExternalLink } from 'src/components';
 import { githubTournesolCodeOfConductUrl } from 'src/utils/url';
 
 const AcceptableUse = () => {
@@ -59,17 +60,9 @@ const AcceptableUse = () => {
               i18nKey="terms.acceptableUse.p.orGoesAgainstOurCodeOfConduct"
             >
               or goes against our{' '}
-              <Link
-                href={githubTournesolCodeOfConductUrl}
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
+              <ExternalLink href={githubTournesolCodeOfConductUrl}>
                 Code of Conduct
-              </Link>
+              </ExternalLink>
               .
             </Trans>
           </Typography>

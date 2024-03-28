@@ -1,6 +1,8 @@
 import React from 'react';
 import { Trans } from 'react-i18next';
 
+import { ExternalLink } from 'src/components';
+
 const EngagingDesc = () => (
   <Trans i18nKey="criteriaDescriptions.engaging">
     <em>
@@ -26,9 +28,9 @@ const EngagingDesc = () => (
     </p>
     <p>
       This{' '}
-      <a href="https://tournesol.app/entities/yt:QLIKgT-OSLQ">
+      <ExternalLink href="https://tournesol.app/entities/yt:QLIKgT-OSLQ">
         Veritasium video
-      </a>{' '}
+      </ExternalLink>{' '}
       presents advice for more engaging science videos.
     </p>
     <h3>Thought-provoking</h3>
@@ -43,26 +45,26 @@ const EngagingDesc = () => (
       As opposed to many metrics including &quot;scientific intelligence&quot;
       <sup>
         (
-        <a href="https://www.cambridge.org/core/journals/behavioural-public-policy/article/abs/motivated-numeracy-and-enlightened-selfgovernment/EC9F2410D5562EF10B7A5E2539063806">
+        <ExternalLink href="https://www.cambridge.org/core/journals/behavioural-public-policy/article/abs/motivated-numeracy-and-enlightened-selfgovernment/EC9F2410D5562EF10B7A5E2539063806">
           KahanPCS-17
-        </a>
+        </ExternalLink>
         )
       </sup>
       , scientific curiosity has been linked to a convergence of beliefs despite
       diverging political views{' '}
       <sup>
         (
-        <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/pops.12396">
+        <ExternalLink href="https://onlinelibrary.wiley.com/doi/full/10.1111/pops.12396">
           KahanLCHH-17
-        </a>
+        </ExternalLink>
         )
       </sup>
       .
     </p>
     <p>
-      <a href="https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/">
+      <ExternalLink href="https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/">
         Galef-21
-      </a>{' '}
+      </ExternalLink>{' '}
       argues that the greatest bottleneck to good judgment is usually the will
       to adopt the &quot;scout mindset&quot;, which is defined as accuracy
       motivated reasoning or intellectual honesty. This is as opposed to the

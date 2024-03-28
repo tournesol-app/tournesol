@@ -714,6 +714,84 @@
     "whatRightsContributorsHaveOverTheirDataParagraph": "En accédant à la page de leur compte, les contributeurs peuvent télécharger les données transmises à la plateforme. Ils ont également la possibilité de demander la suppression de toutes les données personnelles les concernant que Tournesol conserve. Cela n'inclut pas les données que Tournesol a l'obligation de conserver pour des raisons administratives, légales ou à des fins de sécurité."
   },
   "clickToDownload": "Télécharger",
+  "actionsPage": {
+    "title": "Passez à l'action",
+    "whatCanYouDoToProtectSocietiesFromAIs": "Que pouvez-vous faire pour protéger les sociétés des conséquences des intelligences artificielles ?",
+    "whatCanYouDoToProtectYourselfAndYourRelatives": "Que pouvez-vous faire pour vous protéger et protéger vos proches ?",
+    "applicationOfLaws": {
+      "demandTheApplicationOfLaws": "Demander l'application des lois existantes",
+      "why": "A venir..."
+    },
+    "beEducated": {
+      "readAndOfferMoreBooksLike": "Lire et offrir d'autres livres comme :",
+      "inEnglish": "en anglais",
+      "inFrench": "en français",
+      "watchAndShareVideosFrom": "Visionner et partager les vidéos de :",
+      "andMore": "et d'autres...",
+      "beTrainedAndTrainOthers": "Être formé et former les autres aux fondamentaux de la démocratie numérique",
+      "why": "En comprenant les différents enjeux et leur ampleur vous prendrez des décisions plus informées et bénéfiques.",
+      "readAndOfferBooksResultingFromAssociationWorks": "Lire et offrir le livre issu des travaux de l'Association Tournesol :",
+      "listenAndSharePodcastsLike": "Écouter et partager des podcasts comme",
+      "discoverAndShareEducationalGamesLike": "Découvrir et partager des jeux éducatifs, comme ceux de <2>Nicky Case</2>."
+    },
+    "beWellSurrounded": {
+      "beWellSurrounded": "Être bien entouré",
+      "joinDiscord": "Rejoindre le <2>Discord de Tournesol</2> (venez dire bonjour et vous présenter 👋).",
+      "joinGroups": "Rejoindre des groupes où l'information de qualité est socialement valorisée.",
+      "takeCareMentalHealth": "Si vous suspectez ou constatez des répercussions négatives sur votre état de santé (par exemple : idées noires récurrentes, crises d'angoisse, perte d'appétit, isolement social progressif, etc.), envisagez de consulter un professionnel de santé."
+    },
+    "donate": {
+      "website": "site web",
+      "donate": "faire un don",
+      "algorithmWatchDesc": "AlgorithmWatch est une organisation de défense des droits humains basée à Berlin et à Zurich. Nous luttons pour un monde où les algorithmes et l'intelligence artificielle (IA) n'affaiblissent pas la justice, la démocratie et la durabilité, mais les renforcent.",
+      "associationTournesolDesc": "C'est nous 🌻",
+      "mozillaFoundationDesc": "La Fondation Mozilla est à pied d'œuvre pour s'assurer qu'Internet demeure un bien commun ouvert et accessible à tout le monde.",
+      "wikimediaFoundationDesc": "Wikimedia est un mouvement mondial dont la mission est de diffuser des contenus éducatifs gratuits dans le monde entier.",
+      "yourLocalWikimediaChapter": "Votre chapitre Wikimedia local",
+      "localWikimediaChaptersDesc": "Les chapitres Wikimedia sont des organisations indépendantes fondées pour soutenir et promouvoir les projets Wikimedia dans une région géographique donnée (dans la plupart des cas, un pays).",
+      "donateToOrganisationsFightingForQualityOfInformation": "Donner aux organisations qui luttent pour la qualité de l'information",
+      "hereIsAlist": "Voici une liste non exhaustive de projets et d'organisations qui, par leurs actions et leur philosophie, luttent pour la qualité de l'information, et mettent en lumière les grands enjeux démocratiques et numériques associés."
+    },
+    "qualityInformation": {
+      "increaseYourExposureToQualityInformation": "Augmenter votre exposition à des informations de qualité",
+      "installTournesol": "Installer <2>l'extension Tournesol</2> sur votre navigateur et installer <6>l'application mobile Tournesol</6> (installable depuis votre navigateur sur Android).",
+      "improveUnderstandingOfPsychology": "Améliorer la compréhension de notre psychologie",
+      "watchShareVideos": "Regarder et partager des vidéos sur ce sujet, comme <2>Dissatisfaction</2>.",
+      "readOfferBooks": "Lire et offrir les ouvrages <2>The Righteous Mind</2>, <5>Feeling Good</5>, <8>The Scout Mindset</8>.",
+      "readAboutProcrastination": "Lire cette série d'articles sur la procrastination : <2>Why procrastinators procrastinate?</2>, ou visionner la <5>conférence TED</5> de leur auteur."
+    },
+    "helpResearch": {
+      "promoteAndTakePartInResearchProjectsLike": "Promouvoir et participer à des projets de recherche comme :",
+      "helpScientificResearchThatServesPublicInterest": "Aider la recherche scientifique au service de l'intérêt général",
+      "attendTournesolTalks": "Assister aux <2>Tournesol Talks</2>, ou <5>demander à intervenir</5>."
+    },
+    "increaseFriction": {
+      "installApplications": "Installer des applications qui favorisent les volitions comme, entre autres :",
+      "increaseFrictionBetweenYouAndUndesirableInformationUsage": "Créer des frictions entre vous et les usages indésirables de l'information",
+      "deleteSocialMediaFromYourPhones": "Supprimer les réseaux sociaux de vos téléphones, et/ou éloigner vos téléphones de vous.",
+      "findOutAboutAndApplyOtherStrategies": "S'informer et appliquer d'autres stratégies, comme celles de l'article <2>Control Your Tech Use</2>.",
+      "takeRegularInternetBreaks": "Se couper régulièrement d'Internet.",
+      "organizeYourEnvironment": "Façonner votre environnement pour que vos mauvais réflexes soient physiquement impossibles."
+    },
+    "joinMovements": {
+      "contributeToTheOpenSourceCodeOf": "Contribuer aux codes open source de :",
+      "getInvolvedInDigitalDemocracyMovements": "S'engager dans des mouvements de démocratie numérique",
+      "makeComparisonsOnTournesol": "Faire des <1>comparaisons</1> sur Tournesol.",
+      "takePartInFactCheckingOnCaptainFact": "Participer à la <2>vérifications des faits</2> des videos sur CaptainFact."
+    },
+    "orientYourCareer": {
+      "orientYourCareerToImprove": "Orienter sa carrière pour améliorer l'écosystème de l'information",
+      "questionYourCareerPath": "Questionner sa carrière et envisager des alternatives. Lire, par exemple, l'article <2>How to pick a career (that actually fits you)</2>.",
+      "leadActionsAsPartOfYourCurrentJob": "Mener des actions dans le cadre de votre travail pour sensibiliser aux enjeux de l'information et des intelligences artificielles."
+    },
+    "volition": {
+      "useToolsAndPlatforms": "Utiliser des outils et des plateformes qui favorisent la volition comme :",
+      "readAndOfferBooksOnThisDistinction": "Lire et offrir des livres sur cette distinction comme :",
+      "favourThoughtfulVolitionsToInstinctivePreferences": "Favoriser les volitions réfléchies par rapport aux préférences instinctives",
+      "preventYourselfFromCompulsivePosting": "S'empêcher de poster impulsivement sur les réseaux sociaux, par exemple en désinstallant des applications de votre téléphone.",
+      "watchAndShareVideosOnThisDistinctionLike": "Regarder et partager des vidéos sur cette distinction, comme"
+    }
+  },
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
     "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",

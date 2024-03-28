@@ -10,6 +10,7 @@ export { default as FormTextField } from './FormTextField';
 export { default as TitledSection } from './TitledSection';
 export { default as ChoicesFilterSection } from './ChoicesFilterSection';
 export { default as CollapseButton } from './CollapseButton';
+export { ExternalLink, InternalLink } from './Links';
 export { default as LoaderWrapper } from './LoaderWrapper';
 export { default as Pagination } from './Pagination';
 export { default as SettingsSection } from './SettingsSection';

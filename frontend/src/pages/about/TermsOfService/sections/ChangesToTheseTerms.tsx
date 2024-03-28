@@ -1,8 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, AlertTitle, Box, Link, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 
+import { ExternalLink } from 'src/components';
 import { githubTournesolTermsOfServiceHistoryUrl } from 'src/utils/url';
 
 const ChangesToTheseTerms = () => {
@@ -39,17 +40,9 @@ const ChangesToTheseTerms = () => {
           other non-impacting modifications, User&apos;s continued use of the
           Service constitutes agreement to our revisions of these Terms of
           Service. You can view all changes to these Terms in our{' '}
-          <Link
-            href={githubTournesolTermsOfServiceHistoryUrl}
-            target="_blank"
-            rel="noopener"
-            sx={{
-              color: 'revert',
-              textDecoration: 'revert',
-            }}
-          >
+          <ExternalLink href={githubTournesolTermsOfServiceHistoryUrl}>
             GitHub repository
-          </Link>
+          </ExternalLink>
           .
         </Trans>
       </Typography>

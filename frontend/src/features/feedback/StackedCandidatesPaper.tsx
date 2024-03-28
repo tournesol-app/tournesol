@@ -6,13 +6,13 @@ import {
   Box,
   Button,
   Grid,
-  Link,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Typography,
 } from '@mui/material';
 
+import { InternalLink } from 'src/components';
 import StackedCard from 'src/components/StackedCard';
 import { useCurrentPoll } from 'src/hooks';
 import {
@@ -82,12 +82,12 @@ const StackedCandidatesPaper = ({
         return (
           <ListItem key={entity.uid} alignItems="flex-start">
             <ListItemAvatar>
-              <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+              <InternalLink to={`${baseUrl}/entities/${entity.uid}`}>
                 <Avatar
                   alt={entity?.metadata?.name || ''}
                   src={entity?.metadata?.image_url || ''}
                 />
-              </RouterLink>
+              </InternalLink>
             </ListItemAvatar>
 
             {/* To stay mobile friendly, only the avatar is clickable. The
@@ -103,9 +103,8 @@ const StackedCandidatesPaper = ({
                     variant="body2"
                     color="text.primary"
                   >
-                    <Link
+                    <InternalLink
                       color="inherit"
-                      component={RouterLink}
                       to={`${baseUrl}/comparisons/?uid=${entity.uid}`}
                     >
                       <Trans
@@ -115,7 +114,7 @@ const StackedCandidatesPaper = ({
                       >
                         with {{ nComp }} comparisons
                       </Trans>
-                    </Link>
+                    </InternalLink>
                   </Typography>
                   {' - '}
                   {t('stackedCandidatesPaper.score')}

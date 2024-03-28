@@ -27,8 +27,6 @@ const Header = () => {
           startIcon={<Email />}
           component={Link}
           href={tournesolTalksMailingListUrl}
-          rel="noopener"
-          target="_blank"
         >
           {t('tournesolTalksPage.beInformedOfUpcomingEvents')}
         </Button>

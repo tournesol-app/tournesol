@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import linkifyStr from 'linkify-string';
 
@@ -10,12 +9,12 @@ import {
   Collapse,
   Divider,
   IconButton,
-  Link,
   SxProps,
   Typography,
 } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 
+import { InternalLink } from 'src/components';
 import { EntityContext, OriginEnum } from 'src/services/openapi';
 import {
   getCollapsedState,
@@ -75,16 +74,9 @@ const EntityContextTextList = ({
         }
       })}
       <Box display="flex" justifyContent="flex-end">
-        <Link
-          to="/faq?scrollTo=are_recommendations_moderated_by_the_association"
-          component={RouterLink}
-          sx={{
-            color: 'inherit',
-            textDecorationColor: 'inherit',
-          }}
-        >
+        <InternalLink to="/faq?scrollTo=are_recommendations_moderated_by_the_association">
           {t('entityContextTextList.whyThisMessage')}
-        </Link>
+        </InternalLink>
       </Box>
     </>
   );
