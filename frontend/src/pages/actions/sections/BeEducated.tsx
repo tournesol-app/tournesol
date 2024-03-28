@@ -26,7 +26,7 @@ const booksToReadAndOfferEn = [
   {
     text: 'Weapons of Math Destruction',
     href: 'https://www.penguinrandomhouse.com/books/241363/weapons-of-math-destruction-by-cathy-oneil/',
-    authors: "Cathy O'Neil",
+    authors: "Cathy O'NEIL",
   },
 ];
 
@@ -39,7 +39,7 @@ const booksToReadAndOfferFr = [
   {
     text: 'Algorithmes : la bombe à retardement',
     href: 'https://arenes.fr/livre/algorithmes-la-bombe-a-retardement/',
-    authors: "Cathy O'Neil",
+    authors: "Cathy O'NEIL",
   },
   {
     text: 'Le Fabuleux Chantier',
