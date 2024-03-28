@@ -1,10 +1,13 @@
 import random
 
+from numba import njit
+import numpy as np
 import pandas as pd
 import pytest
 
-from solidago.comparisons_to_scores import ContinuousBradleyTerry, HookeIndividualScores
 
+from solidago.comparisons_to_scores import ContinuousBradleyTerry, HookeIndividualScores
+from solidago.comparisons_to_scores.continuous_bradley_terry import get_high_likelihood_range
 
 matrix_inversion = HookeIndividualScores(r_max=10)
 continuous_bradley_terry = ContinuousBradleyTerry(r_max=10)
@@ -145,3 +148,96 @@ class TestIndividualScores:
         assert scores.loc["B"].raw_score == pytest.approx(scores.loc["F"].raw_score, abs=1e-4)
         assert scores.loc["C"].raw_score == pytest.approx(scores.loc["G"].raw_score, abs=1e-4)
         assert scores.loc["D"].raw_score == pytest.approx(scores.loc["H"].raw_score, abs=1e-4)
+
+
+@pytest.mark.parametrize("comparisons",[
+    pd.DataFrame({
+        "entity_a": ["A", "A", "B", "C"],
+        "entity_b": ["B", "C", "C", "D"],
+        "score": [4, 4, 2, 4]
+    }),
+    pd.DataFrame({
+        "entity_a": ["X", "Z", "B", "C", "A", "A"],
+        "entity_b": ["Y", "X", "C", "D", "B", "C"],
+        "score": [4, 4, 2, 0, -1, -11]
+    }),
+    pd.DataFrame({
+        "entity_a": ["X", "Z", "B", "C", "A", "A"],
+        "entity_b": ["Y", "X", "C", "D", "B", "C"],
+        "score": [-11, 11, -11, 11, -11, 11],
+    })
+])
+def test_gbt_uncertainty_uncertainty_bounds_contain_score(comparisons):
+    model = ContinuousBradleyTerry(r_max=11)
+    individual_scores = model.compute_individual_scores(comparisons)
+    rows = [row for _, row in individual_scores.iterrows()]
+    assert all(
+        row["raw_score_lower_bound"] <= row["raw_score"] <= row["raw_score_upper_bound"]
+        for row in rows
+    )
+
+def test_gbt_uncertainty_has_infinite_range_with_max_comparison():
+    model = ContinuousBradleyTerry(r_max=4)
+    comparisons = pd.DataFrame({
+        "entity_a": ["A", "A", "B", "C"],
+        "entity_b": ["B", "C", "C", "D"],
+        "score": [4, 4, 2, 4]
+    })
+    individual_scores = model.compute_individual_scores(comparisons)
+    assert individual_scores.raw_score_lower_bound.loc["A"] == -np.inf
+    assert individual_scores.raw_score_upper_bound.loc["A"] < np.inf
+    assert individual_scores.raw_score_upper_bound.loc["D"] == np.inf
+
+
+def test_gbt_uncertainty_has_finite_range_with_non_max_comparison():
+    model = ContinuousBradleyTerry(r_max=5)
+    comparisons = pd.DataFrame({
+        "entity_a": ["A", "A", "B", "C"],
+        "entity_b": ["B", "C", "C", "D"],
+        "score": [4, 4, 2, 4]
+    })
+    individual_scores = model.compute_individual_scores(comparisons)
+    assert individual_scores.raw_score_lower_bound.loc["A"] != -np.inf
+    assert individual_scores.raw_score_upper_bound.loc["A"] != np.inf
+    assert individual_scores.raw_score_lower_bound.loc["D"] != -np.inf
+    assert individual_scores.raw_score_upper_bound.loc["D"] != np.inf
+
+
+@njit
+def quadratic_log_likelihood_mock(x):
+    return -10 - (x-3)**2
+
+@njit
+def asymetrix_log_likelihood_mock(x):
+    return -10 - (x-3)**2 if x > 3 else -10 - (x-3)**2 / 9
+
+@pytest.mark.parametrize("log_likelihood,max_a_posteriori,threshold,expected_range", [
+    (quadratic_log_likelihood_mock, 3, 1, (2, 4)),
+    (asymetrix_log_likelihood_mock, 3, 1, (0, 4)),
+    (quadratic_log_likelihood_mock, 3, 9, (0, 6)),
+    (quadratic_log_likelihood_mock, 0, 7, (-1, 7)),
+])
+def test_get_high_likelihood_range_has_expected_value(log_likelihood, max_a_posteriori,threshold,expected_range):
+    found_lower, found_upper = get_high_likelihood_range(log_likelihood, max_a_posteriori, threshold)
+    expected_lower, expected_upper =  expected_range
+    assert found_lower == pytest.approx(expected_lower)
+    assert found_upper == pytest.approx(expected_upper)
+
+
+@njit
+def lost_against_magnus_log_likelihood_mock(x):
+    # This represents the likelihood of losing a game against world champion
+    # Magnus Carlsen. This observation would tell you that the elo score `x`
+    # cannot be extermely high, but it may very likely be arbitrarily low.
+    # In other words, with such a likelihood function, we expect infinite
+    # uncertainty on the left. 
+    L = 0.005 
+    MAGNUS_ELO = 2839  # Source https://ratings.fide.com/profile/1503014 as of Sep 23rd
+    return np.log(1-1./(1 + np.exp(L * (MAGNUS_ELO - x))))
+
+def test_get_high_likelihood_range_supports_infinite_uncertainty():
+    found_lower, _ = get_high_likelihood_range(
+        lost_against_magnus_log_likelihood_mock,
+        2000,
+    )
+    assert found_lower == -np.inf

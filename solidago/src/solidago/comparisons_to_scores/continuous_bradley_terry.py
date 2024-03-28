@@ -4,13 +4,14 @@ based on Continuous Bradley-Terry model (CBT)
 using coordinate descent.
 """
 import random
+from typing import Tuple, Callable
 
 import numpy as np
 import pandas as pd
 from numba import njit
 
 from solidago.comparisons_to_scores.base import ComparisonsToScoresAlgorithm
-from solidago.solvers.optimize import brentq
+from solidago.solvers.optimize import brentq, SignChangeIntervalNotFoundError
 
 
 DEFAULT_ALPHA = 0.20  # Signal-to-noise hyperparameter
@@ -29,6 +30,19 @@ def contributor_loss_partial_derivative(theta_a, theta_b, r_ab, alpha):
         + r_ab
     )
 
+@njit
+def continuous_bradley_terry_log_likelihood(theta_a, theta_b, r_ab, r_max) -> float:
+    theta_ab = theta_a - theta_b
+    normalized_r_ab = r_ab / r_max
+    positive_exponential_term = np.exp((normalized_r_ab + 1) * theta_ab)
+    negative_exponential_term = np.exp((normalized_r_ab - 1) * theta_ab)
+    return np.where(
+        np.abs(theta_ab) < EPSILON,
+        1 / 2,
+        np.log(theta_ab / (positive_exponential_term - negative_exponential_term)),
+    ).sum()
+
+
 
 @njit
 def Delta_theta(theta_ab):
@@ -37,6 +51,64 @@ def Delta_theta(theta_ab):
         1 / 3 - 1 / 15 * theta_ab**2,
         1 - (1 / np.tanh(theta_ab)) ** 2 + 1 / theta_ab**2,
     ).sum() ** (-0.5)
+
+
+HIGH_LIKELIHOOD_RANGE_THRESHOLD = 1
+
+
+@njit
+def translated_function(x, f, translation, args=()):
+    """Returns the function x => f(x) - translation"""
+    return f(x, *args) - translation
+
+def get_high_likelihood_range(
+    log_likelihood,
+    maximum_a_posteriori: float,
+    threshold: float = HIGH_LIKELIHOOD_RANGE_THRESHOLD,
+    args=(),
+) -> Tuple[float, float]:
+    """
+    Find a root of a function in a bracketing interval using Brent's method
+    adapted from Scipy's brentq.
+    Uses the classic Brent's method to find a zero of the function `f` on
+    the sign changing interval [a , b].
+
+    Parameters
+    ----------
+    likelihood_function:
+        Python function computing a log likelihood.
+        `f` must be continuous and concave.
+        `f` must be jitted via numba.
+    maximum_a_posteriori:
+        The high liklihood position selected as most likely based on the prior
+        distribution and the observed likelihood
+    threshold:
+        The threshold used to compute the high likelihood range. The range will
+        be the interval with where we have
+        log_likelihood > log_likelihood(maximum_a_posteriori) - threshold
+        The threshold must be strictly positive.
+
+    Returns
+    -------
+    interval:
+        A tuple of float representing an interval containing the
+        maximum_a_posteriori.
+    """
+    if threshold <= 0:
+        raise ValueError("`threshold` must be strictly positive")
+    log_likelihood_at_maximum_a_posteriori = log_likelihood(maximum_a_posteriori, *args)
+    min_log_likelihood = log_likelihood_at_maximum_a_posteriori - threshold
+
+    try:
+        lower_bound = brentq(translated_function, a=maximum_a_posteriori-1, b=maximum_a_posteriori, search_b=False, args=(log_likelihood, min_log_likelihood, args))
+    except SignChangeIntervalNotFoundError:
+        lower_bound = -np.inf
+    try: 
+        upper_bound = brentq(translated_function, a=maximum_a_posteriori, b=maximum_a_posteriori+1, search_a=False, args=(log_likelihood, min_log_likelihood, args))
+    except SignChangeIntervalNotFoundError:
+        upper_bound = np.inf
+
+    return lower_bound, upper_bound
 
 
 @njit
@@ -91,17 +163,17 @@ class ContinuousBradleyTerry(ComparisonsToScoresAlgorithm):
                 unchanged.clear()
         return theta
 
-    def compute_individual_scores(self, scores: pd.DataFrame, initial_entity_scores=None):
-        scores = scores[["entity_a", "entity_b", "score"]]
+    def compute_individual_scores(self, comparison_scores: pd.DataFrame, initial_entity_scores=None):
+        comparison_scores = comparison_scores[["entity_a", "entity_b", "score"]]
         scores_sym = (
             pd.concat(
                 [
-                    scores,
+                    comparison_scores,
                     pd.DataFrame(
                         {
-                            "entity_a": scores.entity_b,
-                            "entity_b": scores.entity_a,
-                            "score": -1 * scores.score,
+                            "entity_a": comparison_scores.entity_b,
+                            "entity_b": comparison_scores.entity_a,
+                            "score": -1 * comparison_scores.score,
                         }
                     ),
                 ]
@@ -124,14 +196,25 @@ class ContinuousBradleyTerry(ComparisonsToScoresAlgorithm):
             initial_scores = initial_scores.to_numpy()
         theta_star_numpy = self.coordinate_descent(coord_to_subset, initial_scores=initial_scores)
         delta_star_numpy = np.zeros(len(theta_star_numpy))
+        raw_score_lower_bound = np.zeros(len(theta_star_numpy))
+        raw_score_upper_bound = np.zeros(len(theta_star_numpy))
         for idx_a in range(len(theta_star_numpy)):
-            indices_b, _r_ab = coord_to_subset[idx_a]
+            indices_b, r_ab = coord_to_subset[idx_a]
+            lower_bound, upper_bound = get_high_likelihood_range(
+                continuous_bradley_terry_log_likelihood,
+                theta_star_numpy[idx_a],
+                args=(theta_star_numpy[indices_b], r_ab, self.r_max),
+            )
+            raw_score_lower_bound[idx_a] = lower_bound
+            raw_score_upper_bound[idx_a] = upper_bound
             delta_star_numpy[idx_a] = Delta_theta(theta_star_numpy[idx_a] - theta_star_numpy[indices_b])
 
         result = pd.DataFrame(
             {
                 "raw_score": theta_star_numpy,
                 "raw_uncertainty": delta_star_numpy,
+                "raw_score_lower_bound": raw_score_lower_bound,
+                "raw_score_upper_bound": raw_score_upper_bound,
             },
             index=entities_index,
         )
