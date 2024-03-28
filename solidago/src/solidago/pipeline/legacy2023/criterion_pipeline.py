@@ -68,10 +68,12 @@ def run_pipeline_for_criterion(
         on=["user_id", "entity_id"],
     )
 
+    logger.info(" computing voting rights scores for criterion '%s'...", criterion)
     scaled_scores_with_voting_rights_per_score_mode = {
         mode: add_voting_rights(scaled_scores, params=parameters, score_mode=mode)
         for mode in ALL_SCORE_MODES
     }
+    logger.info(" computing voting rights scores for criterion '%s' DONE", criterion)
     for mode in ALL_SCORE_MODES:
         scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
         global_scores = aggregate_scores(scaled_scores_with_voting_rights, W=parameters.W)
