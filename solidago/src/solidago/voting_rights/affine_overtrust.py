@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from .base import VotingRights, VotingRightsAssignment
@@ -143,23 +144,24 @@ class AffineOvertrust(VotingRightsAssignment):
         trust_scores: pd.Series,
         privacy_weights: pd.Series,
     ) -> float:
-        """ Returns the overtrust, if min_voting_right is enforced upon all raters.
-        
+        """Returns the overtrust, if min_voting_right is enforced upon all raters.
+
         Parameters
         ----------
         min_voting_right: float
             Overtrust for min_voting_right
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
-        privacy_weights: dict[int, float]
-            privacy_weights[u] is the privacy weight of user u
-            
+        trust_scores: Series with index user_id (int)
+            values: trust_score (float)
+        privacy_weights: Series with index user_id (int)
+            values: privacy weight of user
+
         Returns
         -------
         out: float
         """
-        return (privacy_weights * (min_voting_right - trust_scores).clip(lower=0.)).sum()
+        return (privacy_weights * (min_voting_right - trust_scores))[
+            min_voting_right > trust_scores
+        ].sum()
 
     def min_voting_right(
         self,

@@ -37,7 +37,7 @@ def solve(
     if delta <= error:
         return (xmin + xmax) / 2
 
-    n_iterations = int(np.ceil(np.log(delta / error) / np.log(2)))
+    n_iterations = int(np.ceil(np.log2(delta / error)))
     for _ in range(n_iterations):
         x = (xmin + xmax) / 2
         y = f(x) - value
