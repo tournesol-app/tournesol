@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDrag } from '@use-gesture/react';
+import { Vector2 } from '@use-gesture/core/types';
 
 import { useTheme } from '@mui/material/styles';
 import { Box, Grid, Slide, Typography, useMediaQuery } from '@mui/material';
@@ -24,6 +25,8 @@ import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
 
 const ENTITY_CARD_SWIPE_TIMEOUT = 180;
+// The minimum velocity per axis in pixels / ms.
+const ENTITY_CARD_SWIPE_VELOCITY: number | Vector2 = [0.35, 0.35];
 
 interface Props {
   alignment?: 'left' | 'right';
@@ -266,7 +269,7 @@ const EntitySelectorInnerAuth = ({
         }
       }
     },
-    { swipe: { velocity: [0.35, 0.35] } }
+    { swipe: { velocity: ENTITY_CARD_SWIPE_VELOCITY } }
   );
 
   const onSlideEntered = () => {
