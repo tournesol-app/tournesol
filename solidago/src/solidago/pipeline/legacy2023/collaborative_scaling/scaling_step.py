@@ -171,16 +171,17 @@ def compute_scaling(
         theta_inf = np.max(user_n_scores.score.abs())
         s_nqm = np.array(s_nqm)
         delta_s_nqm = np.array(delta_s_nqm)
+        lipshitz = 1/(8*W*theta_inf) if theta_inf > 0.0 else 1e18
         if calibration:
             s_dict[user_n] = lipschitz_resilient_mean(
-                lipschitz=1/(8*W*theta_inf),
+                lipschitz=lipshitz,
                 values=s_nqm,
                 voting_rights=s_weights,
                 left_uncertainties=delta_s_nqm,
                 default_value=1.0,
             )
             delta_s_dict[user_n] = qr_uncertainty(
-                lipschitz=1/(8*W*theta_inf),
+                lipschitz=lipshitz,
                 default_dev=1.0,
                 values=s_nqm,
                 voting_rights=s_weights,
@@ -188,14 +189,14 @@ def compute_scaling(
             )
         else:
             qr_med = qr_median(
-                lipschitz=1/(8*W*theta_inf),
+                lipschitz=lipshitz,
                 voting_rights=s_weights,
                 values=s_nqm - 1,
                 left_uncertainties=delta_s_nqm,
             )
             s_dict[user_n] = 1 + qr_med
             delta_s_dict[user_n] = qr_uncertainty(
-                lipschitz=1/(8*W*theta_inf),
+                lipschitz=lipshitz,
                 default_dev=1.0,
                 voting_rights=s_weights,
                 values=s_nqm-1,
