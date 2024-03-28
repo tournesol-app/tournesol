@@ -6,6 +6,50 @@ import { Box, Typography } from '@mui/material';
 import { ExternalLink } from 'src/components';
 import { getWebExtensionUrl } from 'src/utils/extension';
 
+const booksToReadAndOfferEn = [
+  {
+    text: 'Feeling Good',
+    href: 'https://feelinggood.com/books/',
+    authors: 'David D. BURNS',
+  },
+  {
+    text: 'The Righteous Mind',
+    href: 'https://www.penguinrandomhouse.com/books/73535/the-righteous-mind-by-jonathan-haidt/',
+    authors: 'Jonathan HAIDT',
+  },
+  {
+    text: 'The Scout Mindset',
+    href: 'https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/',
+    authors: 'Julia GALEF',
+  },
+];
+
+const BooksToReadAndOffer = () => {
+  const { t } = useTranslation();
+  return (
+    <Box>
+      <Typography>
+        {t('actionsPage.qualityInformation.readAndOfferBooksLike')}
+      </Typography>
+      <ul>
+        <li>
+          <Typography>{t('actionsPage.inEnglish')}</Typography>
+          <ul>
+            {booksToReadAndOfferEn.map((book, idx) => (
+              <li key={`book_en_${idx}`}>
+                <Box display="flex" flexWrap="wrap" columnGap={1}>
+                  <ExternalLink href={book.href}>{book.text}</ExternalLink>
+                  <Typography variant="body2">- {book.authors}</Typography>
+                </Box>
+              </li>
+            ))}
+          </ul>
+        </li>
+      </ul>
+    </Box>
+  );
+};
+
 const ExposureToQualityInformation = () => {
   const { t } = useTranslation();
   const browserExtensionUrl =
@@ -62,26 +106,7 @@ const ExposureToQualityInformation = () => {
           </Typography>
         </li>
         <li>
-          <Typography>
-            <Trans
-              t={t}
-              i18nKey="actionsPage.qualityInformation.readOfferBooks"
-            >
-              Read and offer books, like{' '}
-              <ExternalLink href="https://www.penguinrandomhouse.com/books/73535/the-righteous-mind-by-jonathan-haidt/">
-                The Righteous Mind
-              </ExternalLink>
-              ,{' '}
-              <ExternalLink href="https://feelinggood.com/books/">
-                Feeling Good
-              </ExternalLink>
-              ,{' '}
-              <ExternalLink href="https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/">
-                The Scout Mindset
-              </ExternalLink>
-              .
-            </Trans>
-          </Typography>
+          <BooksToReadAndOffer />
         </li>
         <li>
           <Typography>

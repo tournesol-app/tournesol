@@ -66,7 +66,7 @@ const BooksToReadAndOffer = () => {
       </Typography>
       <ul>
         <li>
-          <Typography>{t('actionsPage.beEducated.inEnglish')}</Typography>
+          <Typography>{t('actionsPage.inEnglish')}</Typography>
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
