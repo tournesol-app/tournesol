@@ -6,10 +6,10 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from solidago.pipeline.inputs import TournesolInputFromPublicDataset
 
 from core.models import User
 from core.models.user import EmailDomain
-from ml.inputs import MlInputFromPublicDataset
 from tournesol.models import Comparison, ComparisonCriteriaScore, ContributorRating, Entity, Poll
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 
@@ -25,9 +25,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--user-sampling", type=float, default=None)
-        parser.add_argument("--comparisons-url", type=str, default=PUBLIC_DATASET_URL)
+        parser.add_argument("--dataset-url", type=str, default=PUBLIC_DATASET_URL)
 
-    def create_user(self, username: str, ml_input: MlInputFromPublicDataset):
+    def create_user(self, username: str, ml_input: TournesolInputFromPublicDataset):
         user = ml_input.users.loc[ml_input.users.public_username == username].iloc[0]
         is_pretrusted = user.trust_score > 0.5
         email = f"{username}@trusted.example" if is_pretrusted else f"{username}@example.com"
@@ -43,10 +43,10 @@ class Command(BaseCommand):
             user.save()
         return user
 
-    def create_videos(self, video_ids):
+    def create_videos(self, video_ids: pd.Series):
         videos = {}
-        for video_id in video_ids:
-            videos[video_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
+        for (entity_id, video_id) in video_ids.items():
+            videos[entity_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
         return videos
 
     def fetch_video_metadata(self, videos):
@@ -66,7 +66,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        public_dataset = MlInputFromPublicDataset(options["comparisons_url"])
+        public_dataset = TournesolInputFromPublicDataset(options["dataset_url"])
         nb_comparisons = 0
 
         with transaction.atomic():
@@ -93,17 +93,17 @@ class Command(BaseCommand):
             }
             print(f"Created {len(users)} users")
 
-            videos = self.create_videos(set(comparisons.entity_a) | set(comparisons.entity_b))
+            videos = self.create_videos(video_ids=public_dataset.entity_id_to_video_id)
             print(f"Created {len(videos)} video entities")
 
-            for ((username, video_a, video_b), rows) in comparisons.groupby(
+            for ((username, entity_a, entity_b), rows) in comparisons.groupby(
                 ["public_username", "entity_a", "entity_b"]
             ):
                 comparison = Comparison.objects.create(
                     user=users[username],
                     poll=poll,
-                    entity_1=videos[video_a],
-                    entity_2=videos[video_b],
+                    entity_1=videos[entity_a],
+                    entity_2=videos[entity_b],
                 )
                 for _, values in rows.iterrows():
                     ComparisonCriteriaScore.objects.create(

@@ -7,7 +7,7 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 # pylint: skip-file
-from typing import Tuple
+from typing import Callable, Tuple
 
 import numpy as np
 from numba import njit
@@ -41,37 +41,16 @@ def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
 
 
 @njit
-def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0) -> float:
-    """
-    Find a root of a function in a bracketing interval using Brent's method
-    adapted from Scipy's brentq.
-    Uses the classic Brent's method to find a zero of the function `f` on
-    the sign changing interval [a , b].
-    `f` must be jitted via numba.
+def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0) -> float:
+    """ `Accelerated brentq. Requires f to be itself jitted via numba.
+    Essentially, numba optimizes the execution by running an optimized compilation
+    of the function when it is first called, and by then running the compiled function.
+    
+    
     Parameters
     ----------
     f : jitted and callable
         Python function returning a number.  `f` must be continuous.
-    a : number
-        One end of the bracketing interval [a,b].
-    b : number
-        The other end of the bracketing interval [a,b].
-    args : tuple, optional(default=())
-        Extra arguments to be used in the function call.
-    xtol : number, optional(default=2e-12)
-        The computed root ``x0`` will satisfy ``np.allclose(x, x0,
-        atol=xtol, rtol=rtol)``, where ``x`` is the exact root. The
-        parameter must be nonnegative.
-    rtol : number, optional(default=4*np.finfo(float).eps)
-        The computed root ``x0`` will satisfy ``np.allclose(x, x0,
-        atol=xtol, rtol=rtol)``, where ``x`` is the exact root.
-    maxiter : number, optional(default=100)
-        Maximum number of iterations.
-    disp : bool, optional(default=True)
-        If True, raise a RuntimeError if the algorithm didn't converge.
-    Returns
-    -------
-    root : float
     """
     while f(a, *args) > 0:
         a = a - 2 * (b-a)
@@ -159,3 +138,58 @@ def brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: floa
         raise RuntimeError("Failed to converge")
 
     return root  # type: ignore
+
+
+def coordinate_descent(
+    update_coordinate_function: Callable[[Tuple, float], float],
+    get_args: Callable[[int, np.ndarray], Tuple],
+    initialization: np.ndarray, 
+    updated_coordinates: list[int],
+    error: float = 1e-5
+):
+    """ Minimize a loss function with coordinate descent,
+    by leveraging the partial derivatives of the loss
+    
+    Parameters
+    ----------
+    loss_partial_derivative: callable
+        (coordinate: int, coordinate_value: float, solution: np.array) -> float
+        Returns the partial derivative of a loss, along coordinate,
+        when the coordinate value is modified
+    initialization: np.array
+        Initialization point of the coordinate descent
+    error: float
+        Tolerated error
+        
+    Returns
+    -------
+    out: stationary point of the loss
+        For well behaved losses, there is a convergence guarantee
+    """
+    unchanged = set()
+    to_pick = updated_coordinates
+    solution = initialization
+    solution_len = len(solution)
+
+    def pick_next_coordinate():
+        nonlocal to_pick
+        if not to_pick:
+            to_pick = list(range(solution_len))
+            np.random.shuffle(to_pick)
+        return to_pick.pop()
+
+    while len(unchanged) < solution_len:
+        coordinate = pick_next_coordinate()
+        if coordinate in unchanged:
+            continue
+        old_coordinate_value = solution[coordinate]
+        new_coordinate_value = update_coordinate_function(
+            get_args(coordinate, solution),
+            old_coordinate_value,
+        )
+        solution[coordinate] = new_coordinate_value
+        if abs(new_coordinate_value - old_coordinate_value) < error:
+            unchanged.add(coordinate)
+        else:
+            unchanged.clear()
+    return solution

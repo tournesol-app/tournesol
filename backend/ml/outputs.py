@@ -1,11 +1,15 @@
 import logging
+from functools import cached_property
 from itertools import islice
-from typing import Iterable, Optional, Union
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 from django.db import transaction
+from solidago.pipeline.legacy2023.global_scores import get_squash_function
+from solidago.pipeline.outputs import PipelineOutput
 
+from core.models import User
 from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
@@ -15,50 +19,185 @@ from tournesol.models import (
     EntityPollRating,
     Poll,
 )
-from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 
 from .inputs import MlInputFromDb
+from .mehestan.parameters import MehestanParameters
 
 logger = logging.getLogger(__name__)
 
 
-def save_entity_scores(
-    poll,
-    entity_scores: Union[pd.DataFrame, Iterable[tuple]],
-    single_criteria=None,
-    score_mode=ScoreMode.DEFAULT,
-):
-    if isinstance(entity_scores, pd.DataFrame):
-        scores_iterator = entity_scores[
-            ["entity_id", "criteria", "score", "uncertainty", "deviation"]
-        ].itertuples(index=False)
-    else:
-        scores_iterator = entity_scores
+class TournesolPollOutput(PipelineOutput):
+    def __init__(
+        self,
+        poll_name: str,
+        criterion: Optional[str] = None,
+        save_trust_scores_enabled: bool = True,
+    ):
+        self.poll_name = poll_name
+        self.criterion = criterion
+        self.save_trust_scores_enabled = save_trust_scores_enabled
 
-    with transaction.atomic():
-        scores_to_delete = EntityCriteriaScore.objects.filter(
-            poll=poll, score_mode=score_mode
+    @cached_property
+    def poll(self) -> Poll:
+        # Retrieving the poll instance lazily allows to be use this instance
+        # in a forked process. See the function `run_mehestan()`.
+        return Poll.objects.get(name=self.poll_name)
+
+    def save_trust_scores(self, trusts: pd.DataFrame):
+        """
+        `trusts`: DataFrame with
+            * index:  `user_id`
+            * columns: `trust_score`
+        """
+        if not self.save_trust_scores_enabled:
+            return
+        trust_scores = trusts.trust_score
+        users = User.objects.filter(id__in=trust_scores.index).only("trust_score")
+        for user in users:
+            user.trust_score = trust_scores[user.id]
+        User.objects.bulk_update(
+            users,
+            ["trust_score"],
+            batch_size=1000
         )
-        if single_criteria:
-            scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
-        scores_to_delete.delete()
 
-        EntityCriteriaScore.objects.bulk_create(
+    def save_individual_scalings(self, scalings: pd.DataFrame):
+        scalings_iterator = (
+            scalings[["s", "delta_s", "tau", "delta_tau"]]
+            .replace({np.nan: None})
+            .itertuples(index=True)
+        )
+
+        with transaction.atomic():
+            ContributorScaling.objects.filter(poll=self.poll, criteria=self.criterion).delete()
+            ContributorScaling.objects.bulk_create(
+                (
+                    ContributorScaling(
+                        poll=self.poll,
+                        criteria=self.criterion,
+                        user_id=user_id,
+                        scale=s,
+                        scale_uncertainty=delta_s,
+                        translation=tau,
+                        translation_uncertainty=delta_tau,
+                    )
+                    for user_id, s, delta_s, tau, delta_tau in scalings_iterator
+                ),
+                batch_size=10000,
+            )
+
+    def save_individual_scores(
+        self,
+        scores: pd.DataFrame,
+        single_user_id: Optional[int] = None,
+    ):
+        if "score" not in scores:
+            # Scaled "score" and "uncertainty" need to be computed
+            # based on raw_score and raw_uncertainty
+            scores = apply_score_scalings(self.poll, scores)
+
+        if "voting_right" not in scores:
+            # Row contains `voting_right` when it comes from a full ML run, but not in the
+            # case of online individual updates. As online updates do not update the
+            # global scores, it makes sense to set the voting right equal to 0.0
+            # temporarily and to expect it to be updated during the next ML run.
+            scores["voting_right"] = 0.0
+
+        ratings = ContributorRating.objects.filter(poll=self.poll)
+        if single_user_id is not None:
+            ratings = ratings.filter(user_id=single_user_id)
+
+        rating_ids = {
+            (contributor_id, entity_id): rating_id
+            for rating_id, contributor_id, entity_id in ratings.values_list(
+                "id", "user_id", "entity_id"
+            )
+        }
+        ratings_to_create = set(
+            (contributor_id, entity_id)
+            for contributor_id, entity_id in scores[
+                ["user_id", "entity_id"]
+            ].itertuples(index=False)
+            if (contributor_id, entity_id) not in rating_ids
+        )
+        ContributorRating.objects.bulk_create(
             (
-                EntityCriteriaScore(
-                    poll=poll,
+                ContributorRating(
+                    poll_id=self.poll.pk,
                     entity_id=entity_id,
-                    criteria=criteria,
-                    score=score,
-                    uncertainty=uncertainty,
-                    deviation=deviation,
-                    score_mode=score_mode,
+                    user_id=contributor_id,
                 )
-                for entity_id, criteria, score, uncertainty, deviation in scores_iterator
+                for contributor_id, entity_id in ratings_to_create
             ),
             batch_size=10000,
+            ignore_conflicts=True,
         )
+        # Refresh the `ratings_id` with the newly created `ContributorRating`s.
+        rating_ids.update(
+            {
+                (contributor_id, entity_id): rating_id
+                for rating_id, contributor_id, entity_id in ratings.values_list(
+                    "id", "user_id", "entity_id"
+                )
+            }
+        )
+
+        scores_to_delete = ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__poll=self.poll,
+            criteria=self.criterion
+        )
+
+        if single_user_id is not None:
+            scores_to_delete = scores_to_delete.filter(
+                contributor_rating__user_id=single_user_id
+            )
+
+        with transaction.atomic():
+            scores_to_delete.delete()
+            ContributorRatingCriteriaScore.objects.bulk_create(
+                (
+                    ContributorRatingCriteriaScore(
+                        contributor_rating_id=rating_ids[(row.user_id, row.entity_id)],
+                        criteria=self.criterion,
+                        score=row.score,
+                        uncertainty=row.uncertainty,
+                        raw_score=row.raw_score,
+                        raw_uncertainty=row.raw_uncertainty,
+                        voting_right=row.voting_right,
+                    )
+                    for _, row in scores.iterrows()
+                ),
+                batch_size=10000,
+            )
+
+    def save_entity_scores(
+        self,
+        scores: pd.DataFrame,
+        score_mode="default",
+    ):
+        scores_iterator = scores[["entity_id", "score", "uncertainty"]].itertuples(index=False)
+
+        with transaction.atomic():
+            EntityCriteriaScore.objects.filter(
+                poll=self.poll,
+                score_mode=score_mode,
+                criteria=self.criterion,
+            ).delete()
+            EntityCriteriaScore.objects.bulk_create(
+                (
+                    EntityCriteriaScore(
+                        poll=self.poll,
+                        entity_id=entity_id,
+                        criteria=self.criterion,
+                        score=score,
+                        uncertainty=uncertainty,
+                        score_mode=score_mode,
+                    )
+                    for entity_id, score, uncertainty in scores_iterator
+                ),
+                batch_size=10000,
+            )
 
 
 def save_tournesol_scores(poll):
@@ -150,139 +289,13 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
         + contributor_scores["translation"]
     )
 
-    # Apply poll scaling
-    scale_function = poll.scale_function
+    # Apply score squashing
+    squash_function = get_squash_function(MehestanParameters())
     contributor_scores["uncertainty"] = 0.5 * (
-        scale_function(contributor_scores["score"] + contributor_scores["uncertainty"])
-        - scale_function(
+        squash_function(contributor_scores["score"] + contributor_scores["uncertainty"])
+        - squash_function(
             contributor_scores["score"] - contributor_scores["uncertainty"]
         )
     )
-    contributor_scores["score"] = scale_function(contributor_scores["score"])
+    contributor_scores["score"] = squash_function(contributor_scores["score"])
     return contributor_scores
-
-
-def save_contributor_scores(
-    poll: Poll,
-    contributor_scores: Union[pd.DataFrame, Iterable[tuple]],
-    single_criteria: Optional[str] = None,
-    single_user_id: Optional[int] = None,
-) -> None:
-    if not isinstance(contributor_scores, pd.DataFrame):
-        contributor_scores = pd.DataFrame(
-            contributor_scores,
-            columns=[
-                "user_id",
-                "entity_id",
-                "criteria",
-                "raw_score",
-                "raw_uncertainty",
-                "voting_right",
-            ],
-        )
-
-    if "score" not in contributor_scores:
-        # Scaled "score" and "uncertainty" need to be computed
-        # based on raw_score and raw_uncertainty
-        contributor_scores = apply_score_scalings(poll, contributor_scores)
-
-    ratings = ContributorRating.objects.filter(poll=poll)
-    if single_user_id is not None:
-        ratings = ratings.filter(user_id=single_user_id)
-
-    rating_ids = {
-        (contributor_id, entity_id): rating_id
-        for rating_id, contributor_id, entity_id in ratings.values_list(
-            "id", "user_id", "entity_id"
-        )
-    }
-    ratings_to_create = set(
-        (contributor_id, entity_id)
-        for contributor_id, entity_id in contributor_scores[
-            ["user_id", "entity_id"]
-        ].itertuples(index=False)
-        if (contributor_id, entity_id) not in rating_ids
-    )
-    ContributorRating.objects.bulk_create(
-        (
-            ContributorRating(
-                poll_id=poll.pk,
-                entity_id=entity_id,
-                user_id=contributor_id,
-            )
-            for contributor_id, entity_id in ratings_to_create
-        ),
-        batch_size=10000,
-        ignore_conflicts=True,
-    )
-    # Refresh the `ratings_id` with the newly created `ContributorRating`s.
-    rating_ids.update(
-        {
-            (contributor_id, entity_id): rating_id
-            for rating_id, contributor_id, entity_id in ratings.values_list(
-                "id", "user_id", "entity_id"
-            )
-        }
-    )
-
-    scores_to_delete = ContributorRatingCriteriaScore.objects.filter(
-        contributor_rating__poll=poll
-    )
-
-    if single_criteria is not None:
-        scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
-
-    if single_user_id is not None:
-        scores_to_delete = scores_to_delete.filter(
-            contributor_rating__user_id=single_user_id
-        )
-
-    with transaction.atomic():
-        scores_to_delete.delete()
-        ContributorRatingCriteriaScore.objects.bulk_create(
-            (
-                ContributorRatingCriteriaScore(
-                    contributor_rating_id=rating_ids[(row.user_id, row.entity_id)],
-                    criteria=row.criteria,
-                    score=row.score,
-                    uncertainty=row.uncertainty,
-                    raw_score=row.raw_score,
-                    raw_uncertainty=row.raw_uncertainty,
-                    # Row contains `voting_right` when it comes from a full ML run, but not in the
-                    # case of online individual updates. As online updates do not update the
-                    # global scores, it makes sense to set the voting right equal to 0.0
-                    # temporarily and to expect it to be updated during the next ML run.
-                    voting_right=row.voting_right
-                    if hasattr(row, "voting_right")
-                    else 0.0,
-                )
-                for _, row in contributor_scores.iterrows()
-            ),
-            batch_size=10000,
-        )
-
-
-def save_contributor_scalings(poll: Poll, criteria: str, scalings: pd.DataFrame):
-    scalings_iterator = (
-        scalings[["s", "delta_s", "tau", "delta_tau"]]
-        .replace({np.nan: None})
-        .itertuples(index=True)
-    )
-
-    with transaction.atomic():
-        ContributorScaling.objects.filter(poll=poll, criteria=criteria).delete()
-        ContributorScaling.objects.bulk_create(
-            (
-                ContributorScaling(
-                    poll=poll,
-                    criteria=criteria,
-                    user_id=user_id,
-                    scale=s,
-                    scale_uncertainty=delta_s,
-                    translation=tau,
-                    translation_uncertainty=delta_tau,
-                )
-                for user_id, s, delta_s, tau, delta_tau in scalings_iterator
-            ),
-            batch_size=10000,
-        )

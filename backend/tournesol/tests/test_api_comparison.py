@@ -1073,7 +1073,10 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
-    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
+    @override_settings(
+        UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True,
+        MEHESTAN_MULTIPROCESSING=False,
+    )
     def test_update_individual_scores_after_new_comparison(self):
         call_command("ml_train")
 

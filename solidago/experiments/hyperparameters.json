@@ -1,0 +1,80 @@
+{
+    "title": "Resilience of Solidago to untrustworthy users",
+    "ylegend": "Correlation between learned global and ground truth",
+    "xlegend": "Fraction of trustworthy users",
+    "xparameter": "generative_model.user_model.p_trustworthy",
+    "xvalues": [0.01, 0.2, 0.5, 0.8, 1.0], 
+    "zparameter": "pipeline.aggregation.lipschitz", 
+    "zvalues": [0.01, 10],
+    "zlegends": ["Lipschitz = 0.01", "Lipschitz = 10"],
+    "n_users": 10, 
+    "n_entities": 20,
+    "n_seeds": 10, 
+    "generative_model": {
+        "user_model": ["NormalUserModel", {
+            "p_trustworthy": 0.8, 
+            "p_pretrusted": 0.2, 
+            "zipf_vouch": 2.0, 
+            "zipf_compare": 1.5, 
+            "poisson_compare": 30.0, 
+            "n_comparisons_per_entity": 3.0, 
+            "svd_dimension": 5
+        }], 
+        "vouch_model": ["ErdosRenyiVouchModel"], 
+        "entity_model": ["NormalEntityModel", {
+            "mean": [0.0, 0.0, 0.0, 0.0, 0.0]
+        }], 
+        "engagement_model": ["SimpleEngagementModel", {
+            "p_per_criterion": {"0": 1.0}, 
+            "p_private": 0.2
+        }], 
+        "comparison_model": ["KnaryGBT", {
+            "n_options": 21, 
+            "comparison_max": 10
+        }]
+    }, 
+    "pipeline": {
+        "trust_propagation": ["LipschiTrust", {
+            "pretrust_value": 0.8, 
+            "decay": 0.8, 
+            "sink_vouch": 5.0, 
+            "error": 1e-08
+        }], 
+        "voting_rights": ["AffineOvertrust", {
+            "privacy_penalty": 0.5, 
+            "min_overtrust": 2.0, 
+            "overtrust_ratio": 0.1
+        }], 
+        "preference_learning": ["UniformGBT", {
+            "prior_std_dev": 7, 
+            "comparison_max": 10, 
+            "convergence_error": 1e-05, 
+            "cumulant_generating_function_error": 1e-05
+        }], 
+        "scaling": ["ScalingCompose", [
+                ["Mehestan", {
+                    "lipschitz": 1, 
+                    "min_activity": 1, 
+                    "n_scalers_max": 100, 
+                    "privacy_penalty": 0.5, 
+                    "p_norm_for_multiplicative_resilience": 4.0, 
+                    "error": 1e-05
+                }], 
+                ["QuantileZeroShift", {
+                    "zero_quantile": 0.15, 
+                    "lipschitz": 0.1, 
+                    "error": 1e-05
+                }]
+            ]
+        ], 
+        "aggregation": ["StandardizedQrQuantile", {
+            "quantile": 0.2, 
+            "dev_quantile": 0.9, 
+            "lipschitz": 0.1, 
+            "error": 1e-05
+        }], 
+        "post_process": ["Squash", {
+            "score_max": 100
+        }]
+    }
+}

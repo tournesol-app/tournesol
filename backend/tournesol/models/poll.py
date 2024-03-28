@@ -1,12 +1,10 @@
 from typing import List
 
-import numpy as np
 from django.core.signing import Signer
 from django.db import models
 from django.utils.functional import cached_property
 
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS, VideoEntity
-from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 DEFAULT_POLL_NAME = "videos"
 
@@ -76,10 +74,6 @@ class Poll(models.Model):
     @property
     def entity_cls(self):
         return ENTITY_TYPE_NAME_TO_CLASS[self.entity_type]
-
-    @property
-    def scale_function(self):
-        return lambda x: MEHESTAN_MAX_SCALED_SCORE * x / np.sqrt(1 + x * x)
 
     def user_meets_proof_requirements(self, user_id: int, keyword: str) -> bool:
         """
