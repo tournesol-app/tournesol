@@ -13,6 +13,14 @@ interface EntityContextBoxProps {
   selectorB: SelectorValue;
 }
 
+export const selectorHasContext = (selector: SelectorValue) => {
+  return (
+    selector.uid &&
+    selector.rating &&
+    selector.rating.entity_contexts.length > 0
+  );
+};
+
 const ComparisonEntityContextsItem = ({
   selector,
   altAssociationDisclaimer,
@@ -22,15 +30,17 @@ const ComparisonEntityContextsItem = ({
 }) => {
   return (
     <>
-      {selector.rating && selector.uid && selector.rating.entity_contexts && (
-        <EntityContextBox
-          uid={selector.uid}
-          contexts={selector.rating.entity_contexts}
-          entityName={selector.rating?.entity?.metadata?.name}
-          altAssociationDisclaimer={altAssociationDisclaimer}
-          collapsible={true}
-        />
-      )}
+      {selector.uid &&
+        selector.rating &&
+        selector.rating.entity_contexts.length > 0 && (
+          <EntityContextBox
+            uid={selector.uid}
+            contexts={selector.rating.entity_contexts}
+            entityName={selector.rating?.entity?.metadata?.name}
+            altAssociationDisclaimer={altAssociationDisclaimer}
+            collapsible={true}
+          />
+        )}
     </>
   );
 };
@@ -45,6 +55,10 @@ const ComparisonEntityContexts = ({
   const { name: pollName } = useCurrentPoll();
 
   const entityName = getEntityName(t, pollName);
+
+  if (!selectorHasContext(selectorA) && !selectorHasContext(selectorB)) {
+    return <></>;
+  }
 
   return (
     <Grid
