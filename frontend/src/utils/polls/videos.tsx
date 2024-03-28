@@ -74,6 +74,7 @@ export const getTutorialDialogActions = (
           component={Link}
           href={getWebExtensionUrl()}
           target="_blank"
+          rel="noreferrer"
         >
           {t('videos.dialogs.tutorial.installTheExtension')}
         </Button>

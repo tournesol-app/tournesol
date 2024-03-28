@@ -1,10 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
-import { ExternalLink } from 'src/components';
+import { ExternalLink, InternalLink } from 'src/components';
 import { githubTournesolUrl } from 'src/utils/url';
 
 const sourceCodeToContributeTo = [
@@ -32,7 +31,9 @@ const SourceCodeToContributeTo = () => {
       <ul>
         {sourceCodeToContributeTo.map((sourceCode, idx) => (
           <li key={`source_code_${idx}`}>
-            <ExternalLink {...sourceCode} />
+            <ExternalLink href={sourceCode.href}>
+              {sourceCode.text}
+            </ExternalLink>
           </li>
         ))}
       </ul>
@@ -59,18 +60,8 @@ const JoinMovements = () => {
               t={t}
               i18nKey="actionsPage.joinMovements.makeComparisonsOnTournesol"
             >
-              Make{' '}
-              <Link
-                component={RouterLink}
-                to="/comparison"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
-                comparisons
-              </Link>{' '}
-              on Tournesol.
+              Make <InternalLink to="/comparison">comparisons</InternalLink> on
+              Tournesol.
             </Trans>
           </Typography>
         </li>
@@ -81,17 +72,9 @@ const JoinMovements = () => {
               i18nKey="actionsPage.joinMovements.takePartInFactCheckingOnCaptainFact"
             >
               Take part in{' '}
-              <Link
-                href="https://captainfact.io/videos"
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
+              <ExternalLink href="https://captainfact.io/videos">
                 fact-checking
-              </Link>{' '}
+              </ExternalLink>{' '}
               videos on CaptainFact.
             </Trans>
           </Typography>

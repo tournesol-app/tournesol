@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, Box, Link, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import {
   AutoStories,
   ImportContacts,
@@ -82,7 +82,7 @@ const BooksToReadAndOffer = () => {
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
                 <Box display="flex" flexWrap="wrap" columnGap={1}>
-                  <ExternalLink {...book} />
+                  <ExternalLink href={book.href}>{book.text}</ExternalLink>
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
               </li>
@@ -95,7 +95,7 @@ const BooksToReadAndOffer = () => {
             {booksToReadAndOfferFr.map((book, idx) => (
               <li key={`book_fr_${idx}`}>
                 <Box display="flex" flexWrap="wrap" columnGap={1}>
-                  <ExternalLink {...book} />
+                  <ExternalLink href={book.href}>{book.text}</ExternalLink>
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
               </li>
@@ -123,7 +123,7 @@ const VideosToWatchAndShare = () => {
           <ul>
             {videosToWatchAndShareEn.map((videos, idx) => (
               <li key={`videos_en_${idx}`}>
-                <ExternalLink {...videos} />
+                <ExternalLink href={videos.href}>{videos.text}</ExternalLink>
               </li>
             ))}
             <li>
@@ -136,7 +136,7 @@ const VideosToWatchAndShare = () => {
           <ul>
             {videosToWatchAndShareFr.map((videos, idx) => (
               <li key={`videos_fr_${idx}`}>
-                <ExternalLink {...videos} />
+                <ExternalLink href={videos.href}>{videos.text}</ExternalLink>
               </li>
             ))}
             <li>
@@ -168,10 +168,9 @@ const BeEducated = () => {
             {t(
               'actionsPage.beEducated.readAndOfferBooksResultingFromAssociationWorks'
             )}{' '}
-            <ExternalLink
-              text="La Dictature des Algorithmes (fr)"
-              href="https://www.tallandier.com/livre/la-dictature-des-algorithmes/"
-            />
+            <ExternalLink href="https://www.tallandier.com/livre/la-dictature-des-algorithmes/">
+              {'La Dictature des Algorithmes (fr)'}
+            </ExternalLink>
             .
           </Typography>
         </Box>
@@ -181,10 +180,9 @@ const BeEducated = () => {
           <Podcasts />
           <Typography>
             {t('actionsPage.beEducated.listenAndSharePodcastsLike')}{' '}
-            <ExternalLink
-              text="Your Undivided Attention (en)"
-              href="https://www.humanetech.com/podcast"
-            />
+            <ExternalLink href="https://www.humanetech.com/podcast">
+              {'Your Undivided Attention (en)'}
+            </ExternalLink>
             .
           </Typography>
         </Box>
@@ -196,17 +194,9 @@ const BeEducated = () => {
               i18nKey="actionsPage.beEducated.discoverAndShareEducationalGamesLike"
             >
               Discover and share educational games like{' '}
-              <Link
-                href="https://ncase.me/"
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
+              <ExternalLink href="https://ncase.me/">
                 Nicky Case&apos;s
-              </Link>
+              </ExternalLink>
               .
             </Trans>
           </Typography>

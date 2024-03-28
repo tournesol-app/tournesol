@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 import {
   Grid,
   Box,
@@ -18,6 +17,7 @@ import {
 } from '@mui/icons-material';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import EntityCardScores from 'src/components/entity/EntityCardScores';
+import { InternalLink } from 'src/components';
 import { entityCardMainSx } from 'src/components/entity/style';
 import { DurationWrapper } from 'src/components/entity/EntityImagery';
 import { VideoMetadata } from 'src/components/entity/EntityMetadata';
@@ -80,9 +80,9 @@ function VideoCard({
               },
             }}
           >
-            <RouterLink
+            <InternalLink
               to={`${baseUrl}/entities/${UID_YT_NAMESPACE}${videoId}`}
-              className="full-width"
+              sx={{ width: '100%' }}
             >
               <DurationWrapper duration={entity.metadata.duration || undefined}>
                 <img
@@ -91,7 +91,7 @@ function VideoCard({
                   alt={entity.metadata.name}
                 />
               </DurationWrapper>
-            </RouterLink>
+            </InternalLink>
           </Box>
         </Grid>
       )}

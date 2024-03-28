@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Link, Tooltip } from '@mui/material';
+
+import { Tooltip } from '@mui/material';
 import { HelpOutline } from '@mui/icons-material';
-import { ChoicesFilterSection } from 'src/components';
+
+import { ChoicesFilterSection, InternalLink } from 'src/components';
 import { ScoreModeEnum } from 'src/utils/api/recommendations';
 
 interface Props {
@@ -36,13 +37,13 @@ function ScoreModeFilter(props: Props) {
         title={
           <Trans t={t} i18nKey="filter.scoreMode.trustedOnly.description">
             Only accounts associated with{' '}
-            <Link
-              component={RouterLink}
+            <InternalLink
+              color="primary"
               target="_blank"
               to="/about/trusted_domains"
             >
               a trusted email address
-            </Link>
+            </InternalLink>
             are considered
           </Trans>
         }

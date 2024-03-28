@@ -1,8 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
 import { Alert, AlertTitle, Box, Typography } from '@mui/material';
+
+import { InternalLink } from 'src/components';
 
 const Section = ({
   text,
@@ -61,8 +62,11 @@ const Definitions = () => {
             conditions, notices contained or referenced in this document (the
             &quot;Terms of Service&quot; or the Terms) and all other operating
             rules, policies (including our{' '}
-            <Link to="/about/privacy_policy">Privacy Policy</Link>) and
-            procedures that we may publish from time to time on the website.
+            <InternalLink to="/about/privacy_policy">
+              Privacy Policy
+            </InternalLink>
+            ) and procedures that we may publish from time to time on the
+            website.
           </Trans>
         }
       />
@@ -75,10 +79,10 @@ const Definitions = () => {
         text={
           <Trans t={t} i18nKey="terms.definitions.website">
             The &quot;Website&quot; refers to the Tournesol project&apos;s
-            website located at <Link to="/">tournesol.app</Link>, and all
-            content and services provided by the Association at or through the
-            Website. It also refers to the Association-owned subdomains of
-            tournesol.app, such as{' '}
+            website located at <InternalLink to="/">tournesol.app</InternalLink>
+            , and all content and services provided by the Association at or
+            through the Website. It also refers to the Association-owned
+            subdomains of tournesol.app, such as{' '}
             <span className="pre">api.tournesol.app</span>. Occasionally,
             websites owned by the Association may provide different or
             additional terms of service. If those additional terms conflict with

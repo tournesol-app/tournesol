@@ -1,6 +1,8 @@
 import React from 'react';
 import { Trans } from 'react-i18next';
 
+import { ExternalLink } from 'src/components';
+
 const BackfireRiskDesc = () => (
   <Trans i18nKey="criteriaDescriptions.backfire_risk">
     <em>
@@ -13,16 +15,20 @@ const BackfireRiskDesc = () => (
       be particularly likely to occur for contents presented with a strong
       &quot;us versus them&quot; atmosphere on controversial topics
       <sup>
-        (<a href="https://www.pnas.org/content/115/37/9216">BailABBC+-18</a>)
+        (
+        <ExternalLink href="https://www.pnas.org/content/115/37/9216">
+          BailABBC+-18
+        </ExternalLink>
+        )
       </sup>
       . Note, however, that this{' '}
-      <a href="https://tournesol.app/entities/yt:eVtCO84MDj8">
+      <ExternalLink href="https://tournesol.app/entities/yt:eVtCO84MDj8">
         Veritasium video
-      </a>{' '}
+      </ExternalLink>{' '}
       (based on his{' '}
-      <a href="http://www.physics.usyd.edu.au/super/theses/PhD(Muller).pdf">
+      <ExternalLink href="http://www.physics.usyd.edu.au/super/theses/PhD(Muller).pdf">
         PhD thesis
-      </a>
+      </ExternalLink>
       ) shows that backfiring also occurs for clean presentation of a
       counter-intuitive scientific concept, if the content does not pinpoint the
       risks of misunderstandings.

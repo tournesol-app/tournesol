@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { ExternalLink } from 'src/components';
 
@@ -38,7 +38,7 @@ const ProjectsToPromote = () => {
       <ul>
         {projectsToPromote.map((project, idx) => (
           <li key={`projects_to_promote_${idx}`}>
-            <ExternalLink {...project} />
+            <ExternalLink href={project.href}>{project.text}</ExternalLink>
           </li>
         ))}
       </ul>
@@ -67,27 +67,13 @@ const HelpResearch = () => {
         <li>
           <Trans t={t} i18nKey="actionsPage.helpResearch.attendTournesolTalks">
             Attend to{' '}
-            <Link
-              href="https://tournesol.app/talks"
-              target="_blank"
-              rel="noopener"
-              sx={{
-                color: 'revert',
-                textDecoration: 'revert',
-              }}
-            >
+            <ExternalLink href="https://tournesol.app/talks">
               Tournesol Talks
-            </Link>
+            </ExternalLink>
             , or{' '}
-            <Link
-              href="mailto:talks@tournesol.app"
-              sx={{
-                color: 'revert',
-                textDecoration: 'revert',
-              }}
-            >
+            <ExternalLink href="mailto:talks@tournesol.app">
               ask to intervene
-            </Link>
+            </ExternalLink>
             .
           </Trans>
         </li>

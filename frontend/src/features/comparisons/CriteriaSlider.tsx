@@ -2,14 +2,20 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
-import Typography from '@mui/material/Typography';
-import { Box, Slider, Grid, Checkbox, Chip, Tooltip } from '@mui/material';
+import {
+  Box,
+  Slider,
+  Grid,
+  Checkbox,
+  Chip,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { HelpOutline } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { Link } from '@mui/material';
-import { CriteriaIcon } from 'src/components';
+import { CriteriaIcon, InternalLink } from 'src/components';
 import { getCriteriaTooltips } from 'src/utils/constants';
-import { HelpOutline } from '@mui/icons-material';
 import { RouteID } from 'src/utils/types';
 
 const SLIDER_MIN_STEP = -10;
@@ -68,16 +74,14 @@ const CriteriaLabelWithLink = ({ children, criteria }: Props) => {
 
   if (hasCriteriaPage) {
     return (
-      <Link
-        color="text.secondary"
-        href={`${poll.baseUrl}/criteria#${criteria}`}
+      <InternalLink
+        to={`${poll.baseUrl}/criteria#${criteria}`}
         id={`id_explanation_${criteria}`}
         target="_blank"
-        rel="noreferrer"
-        underline="hover"
+        color="text.secondary"
       >
         {children}
-      </Link>
+      </InternalLink>
     );
   }
 

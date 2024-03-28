@@ -18,6 +18,7 @@ import {
   YouTube,
 } from '@mui/icons-material';
 
+import { ExternalLink } from 'src/components';
 import { TOLERANCE_PERIOD } from 'src/pages/events/parameters';
 import { EventTypeEnum, TournesolEvent } from 'src/services/openapi';
 import { localDate, localTime } from 'src/utils/datetime';
@@ -111,10 +112,8 @@ const EventHeading = ({ event }: { event: TournesolEvent }) => {
           <Box display="flex" flexDirection="column">
             <Typography variant="h4">
               {headingLink ? (
-                <Link
+                <ExternalLink
                   href={headingLink}
-                  target="_blank"
-                  rel="noopener"
                   sx={{
                     color: '#fff',
                     textDecoration: 'none',
@@ -124,7 +123,7 @@ const EventHeading = ({ event }: { event: TournesolEvent }) => {
                   }}
                 >
                   {event.title}
-                </Link>
+                </ExternalLink>
               ) : (
                 event.title
               )}
@@ -182,7 +181,7 @@ const EventImagery = ({ event }: { event: TournesolEvent }) => {
       }}
     >
       {imageLink ? (
-        <a className="no-decoration" href={imageLink}>
+        <ExternalLink href={imageLink}>
           <img
             src={imgSrc}
             style={{
@@ -191,7 +190,7 @@ const EventImagery = ({ event }: { event: TournesolEvent }) => {
               borderRadius: '4px',
             }}
           />
-        </a>
+        </ExternalLink>
       ) : (
         <img
           src={imgSrc}
@@ -250,8 +249,6 @@ const EventSingleEntry = ({ event }: { event: TournesolEvent }) => {
             startIcon={eventIsPast ? <PlayArrow /> : <PersonAddAlt1 />}
             component={Link}
             href={actionLink}
-            rel="noopener"
-            target="_blank"
           >
             {eventIsPast ? t('eventsPage.replay') : t('eventsPage.join')}
           </Button>

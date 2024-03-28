@@ -27,17 +27,15 @@ const OrganisationToDonateTo = ({
               {organisation.name}
             </Typography>
             {'·'}
-            <ExternalLink
-              text={t('actionsPage.donate.website')}
-              href={organisation.href}
-            />
+            <ExternalLink href={organisation.href}>
+              {t('actionsPage.donate.website')}
+            </ExternalLink>
             {organisation.hrefDonate && (
               <>
                 {'·'}
-                <ExternalLink
-                  text={t('actionsPage.donate.donate')}
-                  href={organisation.hrefDonate}
-                />
+                <ExternalLink href={organisation.hrefDonate}>
+                  {t('actionsPage.donate.donate')}
+                </ExternalLink>
               </>
             )}
           </Box>

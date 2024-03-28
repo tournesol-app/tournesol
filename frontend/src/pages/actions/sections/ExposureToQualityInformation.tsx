@@ -1,6 +1,9 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Box, Link, Typography } from '@mui/material';
+
+import { Box, Typography } from '@mui/material';
+
+import { ExternalLink } from 'src/components';
 import { getWebExtensionUrl } from 'src/utils/extension';
 
 const ExposureToQualityInformation = () => {
@@ -9,11 +12,7 @@ const ExposureToQualityInformation = () => {
     getWebExtensionUrl() ?? getWebExtensionUrl('firefox');
 
   return (
-    <Box
-      sx={{
-        '& a': { color: 'revert', textDecoration: 'revert' },
-      }}
-    >
+    <Box>
       <Typography
         variant="h4"
         fontStyle="italic"
@@ -32,13 +31,13 @@ const ExposureToQualityInformation = () => {
               i18nKey="actionsPage.qualityInformation.installTournesol"
             >
               Install the{' '}
-              <Link href={browserExtensionUrl} target="_blank" rel="noopener">
+              <ExternalLink href={browserExtensionUrl}>
                 Tournesol browser extension
-              </Link>{' '}
+              </ExternalLink>{' '}
               and the{' '}
-              <Link href="https://tournesol.app" target="_blank" rel="noopener">
+              <ExternalLink href="https://tournesol.app">
                 Tournesol mobile app
-              </Link>{' '}
+              </ExternalLink>{' '}
               (can be installed from your browser on Android).
             </Trans>
           </Typography>
@@ -55,13 +54,10 @@ const ExposureToQualityInformation = () => {
               i18nKey="actionsPage.qualityInformation.watchShareVideos"
             >
               Watch and share videos on this topic, like{' '}
-              <Link
-                href={'https://tournesol.app/entities/yt:WPPPFqsECz0'}
-                target="_blank"
-                rel="noopener"
-              >
+              <ExternalLink href="https://tournesol.app/entities/yt:WPPPFqsECz0">
                 Dissatisfaction
-              </Link>
+              </ExternalLink>
+              .
             </Trans>
           </Typography>
         </li>
@@ -72,33 +68,17 @@ const ExposureToQualityInformation = () => {
               i18nKey="actionsPage.qualityInformation.readOfferBooks"
             >
               Read and offer books, like{' '}
-              <Link
-                href={
-                  'https://www.penguinrandomhouse.com/books/73535/the-righteous-mind-by-jonathan-haidt/'
-                }
-                target="_blank"
-                rel="noopener"
-              >
+              <ExternalLink href="https://www.penguinrandomhouse.com/books/73535/the-righteous-mind-by-jonathan-haidt/">
                 The Righteous Mind
-              </Link>
+              </ExternalLink>
               ,{' '}
-              <Link
-                href={'https://feelinggood.com/books/'}
-                target="_blank"
-                rel="noopener"
-              >
+              <ExternalLink href="https://feelinggood.com/books/">
                 Feeling Good
-              </Link>
+              </ExternalLink>
               ,{' '}
-              <Link
-                href={
-                  'https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/'
-                }
-                target="_blank"
-                rel="noopener"
-              >
+              <ExternalLink href="https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/">
                 The Scout Mindset
-              </Link>
+              </ExternalLink>
               .
             </Trans>
           </Typography>
@@ -109,24 +89,14 @@ const ExposureToQualityInformation = () => {
               t={t}
               i18nKey="actionsPage.qualityInformation.readAboutProcrastination"
             >
-              Read blog post{' '}
-              <Link
-                href={
-                  'https://waitbutwhy.com/2013/10/why-procrastinators-procrastinate.html'
-                }
-                target="_blank"
-                rel="noopener"
-              >
+              Read the blog posts{' '}
+              <ExternalLink href="https://waitbutwhy.com/2013/10/why-procrastinators-procrastinate.html">
                 Why procrastinators procrastinate?
-              </Link>
+              </ExternalLink>
               , or watch the author&apos;s{' '}
-              <Link
-                href={'https://tournesol.app/entities/yt:arj7oStGLkU'}
-                target="_blank"
-                rel="noopener"
-              >
+              <ExternalLink href="https://tournesol.app/entities/yt:arj7oStGLkU">
                 TED talk
-              </Link>
+              </ExternalLink>
               .
             </Trans>
           </Typography>

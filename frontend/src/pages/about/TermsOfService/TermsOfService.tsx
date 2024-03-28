@@ -1,12 +1,13 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Link, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import {
   ContentHeader,
   ContentBoxLegalDocument,
   LegalPaper,
+  ExternalLink,
 } from 'src/components';
 
 import AcceptableUse from './sections/AcceptableUse';
@@ -48,17 +49,9 @@ const TermsOfServicePage = () => {
             >
               The present texts are dedicated to the Public Domain, as stated by
               the license{' '}
-              <Link
-                href="https://creativecommons.org/publicdomain/zero/1.0/"
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'revert',
-                  textDecoration: 'revert',
-                }}
-              >
+              <ExternalLink href="https://creativecommons.org/publicdomain/zero/1.0/">
                 Creative Commons Zero v1.0 Universal (CC0 1.0)
-              </Link>
+              </ExternalLink>
               .
             </Trans>
           </Typography>

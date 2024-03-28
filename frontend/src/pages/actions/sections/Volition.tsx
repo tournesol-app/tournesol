@@ -49,7 +49,7 @@ const ProjectsToUse = () => {
       <ul>
         {projectsToUse.map((project, idx) => (
           <li key={`projects_to_promote_${idx}`}>
-            <ExternalLink {...project} />
+            <ExternalLink href={project.href}>{project.text}</ExternalLink>
           </li>
         ))}
       </ul>
@@ -71,7 +71,7 @@ const BooksToReadAndOffer = () => {
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
                 <Box display="flex" flexWrap="wrap" columnGap={1}>
-                  <ExternalLink {...book} />
+                  <ExternalLink href={book.href}>{book.text}</ExternalLink>
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
               </li>
@@ -104,10 +104,9 @@ const Volition = () => {
         <li>
           <Typography>
             {t('actionsPage.volition.watchAndShareVideosOnThisDistinctionLike')}{' '}
-            <ExternalLink
-              text="This Video Will Make You Angry"
-              href="https://tournesol.app/entities/yt:rE3j_RHkqJc"
-            />
+            <ExternalLink href="https://tournesol.app/entities/yt:rE3j_RHkqJc">
+              {'This Video Will Make You Angry'}
+            </ExternalLink>
             .
           </Typography>
         </li>
