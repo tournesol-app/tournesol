@@ -197,15 +197,16 @@ class ComparisonDetailApi(
         their immutability and thus prevent the falsification of comparisons
         by uid swap.
         """
-        if self.request.method == "PUT":
+        if self.request.method in ["PATCH", "PUT"]:
             return self.UPDATE_SERIALIZER
 
         return self.DEFAULT_SERIALIZER
 
     def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["reverse"] = self.currently_reversed
-        return context
+        ctx = super().get_serializer_context()
+        ctx["reverse"] = self.currently_reversed
+        ctx["partial_update"] = self.request.method == 'PATCH'
+        return ctx
 
     def perform_update(self, serializer):
         super().perform_update(serializer)
@@ -222,6 +223,13 @@ class ComparisonDetailApi(
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""
         return self.retrieve(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        """Partially update a comparison made by the logged user, in the given poll."""
+        if not self.poll_from_url.active:
+            raise InactivePollError
+        return self.partial_update(request, *args, **kwargs)
+
 
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user, in the given poll"""

@@ -37,11 +37,19 @@ class ComparisonSerializerMixin:
 
     def validate_criteria_scores(self, value):
         current_poll = self.context["poll"]
-        missing_criterias = set(current_poll.required_criterias_list) - set(
-            score["criteria"] for score in value
-        )
-        if missing_criterias:
-            raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
+        partial_update = self.context.get("partial_update")
+
+        # XXX test me
+        if not partial_update:
+            missing_criterias = set(current_poll.required_criterias_list) - set(
+                score["criteria"] for score in value
+            )
+            if missing_criterias:
+                raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
+
+        # XXX missing check: if the main criterion has not been rated, the
+        # submitted value should contain the main criterion.
+
         return value
 
 
@@ -193,9 +201,20 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
             instance.duration_ms = validated_data.get("duration_ms")
 
         instance.save()
-        instance.criteria_scores.all().delete()
 
-        for criteria_score in validated_data.pop("criteria_scores"):
-            instance.criteria_scores.create(**criteria_score)
+        partial_update = self.context.get("partial_update")
+
+        # XXX test me
+        if partial_update:
+            for criteria_score in validated_data.pop("criteria_scores"):
+                instance.criteria_scores.update_or_create(
+                    criteria=criteria_score["criteria"],
+                    defaults={**criteria_score}
+                )
+        else:
+            instance.criteria_scores.all().delete()
+
+            for criteria_score in validated_data.pop("criteria_scores"):
+                instance.criteria_scores.create(**criteria_score)
 
         return instance
