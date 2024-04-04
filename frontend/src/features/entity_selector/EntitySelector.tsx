@@ -258,6 +258,7 @@ const EntitySelectorInnerAuth = ({
       }
 
       if (type === 'pointerup' || type === 'touchend') {
+        // On swipe up
         if (swipe[1] < 0) {
           const autoButton = document.getElementById(
             `auto-suggestion-${alignment}`
@@ -289,7 +290,7 @@ const EntitySelectorInnerAuth = ({
       } else {
         setSlideIn(true);
         console.warn(
-          "Can't suggest new entity: Auto button not found in the DOM."
+          "Can't suggest new entity: Auto button not found in the document."
         );
       }
     }
