@@ -28,7 +28,7 @@ jobs:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: pip install -e .[test]
+        run: pip install -e .[test,torch]
 
       - name: Run pytest
         run: pytest

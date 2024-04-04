@@ -1,0 +1,83 @@
+{
+    "title": "The role of Mehestan to fix engagement bias",
+    "ylegend": "Correlation between learned global and ground truth",
+    "xlegend": "Amount of multiplicator variance",
+    "xparameter": "generative_model.user_model.multiplicator_std_dev",
+    "xvalues": [0.1, 1.0, 3.0, 10.0], 
+    "zparameter": "pipeline.scaling.scalings.0.lipschitz", 
+    "zvalues": [1.0, 3.0, 10.0, 30.0],
+    "zlegends": ["Scaling Lipschitz = 1", "Scaling Lipschitz = 3", "Scaling Lipschitz = 10", "Scaling Lipschitz = 30"],
+    "n_users": 30, 
+    "n_entities": 100,
+    "n_seeds": 100, 
+    "generative_model": {
+        "user_model": ["NormalUserModel", {
+            "p_trustworthy": 0.8, 
+            "p_pretrusted": 0.5, 
+            "zipf_vouch": 1.5, 
+            "zipf_compare": 1.5, 
+            "poisson_compare": 30.0, 
+            "n_comparisons_per_entity": 3.0, 
+            "multiplicator_std_dev": 1.0,
+            "svd_mean": [3.0, 0.0],
+            "engagement_bias_std_dev": 1.0
+        }], 
+        "vouch_model": ["ErdosRenyiVouchModel"], 
+        "entity_model": ["NormalEntityModel", {
+            "mean": [0.0, 0.0]
+        }], 
+        "engagement_model": ["SimpleEngagementModel", {
+            "p_per_criterion": {"0": 1.0}, 
+            "p_private": 0.2
+        }], 
+        "comparison_model": ["KnaryGBT", {
+            "n_options": 21, 
+            "comparison_max": 10
+        }]
+    }, 
+    "pipeline": {
+        "trust_propagation": ["LipschiTrust", {
+            "pretrust_value": 0.8, 
+            "decay": 0.8, 
+            "sink_vouch": 5.0, 
+            "error": 1e-08
+        }], 
+        "voting_rights": ["AffineOvertrust", {
+            "privacy_penalty": 0.5, 
+            "min_overtrust": 2.0, 
+            "overtrust_ratio": 0.1
+        }], 
+        "preference_learning": ["UniformGBT", {
+            "prior_std_dev": 7, 
+            "comparison_max": 10, 
+            "convergence_error": 1e-05, 
+            "cumulant_generating_function_error": 1e-05
+        }], 
+        "scaling": ["ScalingCompose", [
+                ["Mehestan", {
+                    "lipschitz": 1, 
+                    "min_activity": 1, 
+                    "n_scalers_max": 100, 
+                    "privacy_penalty": 0.5, 
+                    "user_comparison_lipschitz": 10, 
+                    "p_norm_for_multiplicative_resilience": 4.0, 
+                    "error": 1e-05
+                }], 
+                ["QuantileZeroShift", {
+                    "zero_quantile": 0.15, 
+                    "lipschitz": 0.1, 
+                    "error": 1e-05
+                }]
+            ]
+        ], 
+        "aggregation": ["StandardizedQrQuantile", {
+            "quantile": 0.2, 
+            "dev_quantile": 0.9, 
+            "lipschitz": 0.1, 
+            "error": 1e-05
+        }], 
+        "post_process": ["Squash", {
+            "score_max": 100
+        }]
+    }
+}

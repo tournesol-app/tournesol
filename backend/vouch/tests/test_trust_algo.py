@@ -1,77 +1,12 @@
 """
 All test cases of the trust algorithm.
 """
-
-import numpy as np
 from django.test import TestCase
 
 from core.models.user import EmailDomain, User
 from core.tests.factories.user import UserFactory
 from vouch.models import Voucher
-from vouch.trust_algo import (
-    TRUSTED_EMAIL_PRETRUST,
-    compute_byztrust,
-    get_weighted_vouch_matrix,
-    trust_algo,
-)
-
-
-class TrustAlgoUnitTest(TestCase):
-    _nb_users = 10
-
-    def get_random_pretrust_vector(self):
-        pretrusts = np.random.randint(2, size=self._nb_users)
-        # Make sure that at least 1 user is pre-trusted
-        pretrusts[0] = 1
-        return pretrusts * TRUSTED_EMAIL_PRETRUST
-
-    def get_random_vouch_matrix(self):
-        random_vouch = (np.random.rand(self._nb_users, self._nb_users) > 0.1).astype(int)
-        # One cannot vouch for oneself
-        np.fill_diagonal(random_vouch, 0)
-        return random_vouch
-
-    def test_weighted_vouch_matrix(self):
-        """
-        The normalized vouch matrix must be row-stochastic, i.e. each
-        voucher's total vouch must equal 1.
-        """
-        vouch_matrix = self.get_random_vouch_matrix()
-        weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
-
-        # Weight vouch matrix is "row-substochastic"
-        for u in range(self._nb_users):
-            self.assertLessEqual(np.sum(weighted_vouch_matrix[u]), 1)
-
-        # Weight vouch is strictly positive where the initial vouch_matrix
-        # is strictly positive
-        self.assertTrue(
-            np.array_equal(vouch_matrix > 0, weighted_vouch_matrix > 0)
-        )
-
-    def test_compute_byztrust(self):
-        """
-        The sum of relative post trusts must equal 1. Post-trusts must also
-        assign at least `PRETRUST_BIAS` to pre-trusted users. Finally, it
-        should assign a zero trust to non-pre-trusted non-vouched users.
-        """
-        pretrusts = self.get_random_pretrust_vector()
-        vouch_matrix = self.get_random_vouch_matrix()
-        weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
-        byztrusts = compute_byztrust(weighted_vouch_matrix, pretrusts)
-
-        # ensure that all pre-trusted users have a positive relative post-trust
-        for byztrust, pretrust in zip(byztrusts, pretrusts):
-            if pretrust > 0:
-                self.assertGreaterEqual(byztrust, TRUSTED_EMAIL_PRETRUST)
-
-        # ensure that untrusted users than aren't vouched for don't get trust
-        untrusted_user = self._nb_users - 1
-        pretrusts[untrusted_user] = 0
-        vouch_matrix[:, untrusted_user] = 0
-        weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
-        byztrusts = compute_byztrust(weighted_vouch_matrix, pretrusts)
-        self.assertAlmostEqual(byztrusts[untrusted_user], 0)
+from vouch.trust_algo import TRUSTED_EMAIL_PRETRUST, trust_algo
 
 
 class TrustAlgoTest(TestCase):

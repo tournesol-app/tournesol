@@ -26,10 +26,10 @@ class TestLoadPublicDataset(TransactionTestCase):
             ContributorRating.objects.update(is_public=True)
 
         call_command("create_dataset")
-        public_comparisons_resp = self.client.get("/exports/all/")
-        with tempfile.NamedTemporaryFile(mode="wb", delete=False) as comparisons_file:
-            comparisons_file.write(public_comparisons_resp.content)
-            self.comparisons_path = comparisons_file.name
+        public_dataset_resp = self.client.get("/exports/all/")
+        with tempfile.NamedTemporaryFile(mode="wb", delete=False) as dataset_file:
+            dataset_file.write(public_dataset_resp.content)
+            self.comparisons_path = dataset_file.name
 
         User.objects.all().delete()
         Entity.objects.filter(type=TYPE_VIDEO).delete()
@@ -40,7 +40,7 @@ class TestLoadPublicDataset(TransactionTestCase):
         self.assertEqual(Comparison.objects.count(), 0)
         self.assertEqual(Entity.objects.filter(type=TYPE_VIDEO).count(), 0)
 
-        call_command("load_public_dataset", "--comparisons-url", self.comparisons_path)
+        call_command("load_public_dataset", "--dataset-url", self.comparisons_path)
 
         self.assertEqual(User.objects.count(), 2)  # 1 user from public dataset + 1 test user
         public_user = User.objects.get(username="public_user")
