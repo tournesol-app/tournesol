@@ -28,37 +28,74 @@ const ComparisonCriteriaButtons = ({
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
-  const [currentCrit, setCurrentCrit] = useState(0);
 
-  const criterion = criterias[currentCrit];
+  const [critPosition, setCritPosition] = useState(0);
+  const criterion = criterias[critPosition];
 
   const criterionScore = initialComparison?.criteria_scores.find(
     (crit) => crit.criteria === criterion.name
   );
 
-  const slide = () => {
+  const [submittedScore, setSubmittedScore] = useState<number | undefined>(
+    undefined
+  );
+
+  const onSlideEntered = () => {
+    setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
+  };
+
+  const onSlideExited = async () => {
+    if (slideDirection === 'up') {
+      setCritPosition(
+        critPosition - 1 >= 0 ? critPosition - 1 : criterias.length - 1
+      );
+    } else {
+      setCritPosition(
+        critPosition + 1 < criterias.length ? critPosition + 1 : 0
+      );
+    }
+
+    setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
+
+    if (submittedScore === undefined) {
+      setSlideIn(true);
+      return;
+    }
+
+    const comparisonRequest = {
+      pollName: pollName,
+      entity_a: { uid: uidA },
+      entity_b: { uid: uidB },
+      criteria_scores: [
+        {
+          criteria: criterion.name,
+          score: submittedScore,
+        },
+      ],
+    };
+
+    try {
+      await onSubmit(comparisonRequest, true);
+    } catch {
+      setCritPosition(critPosition);
+    } finally {
+      setSlideIn(true);
+    }
+  };
+
+  const moveWithoutPatching = (from: 'up' | 'down') => {
     if (slideIn === false) {
       return;
     }
+    setSlideDirection(from);
     setSlideIn(false);
+    setSubmittedScore(undefined);
   };
 
-  const onSlideEntered = () => {
-    setSlideDirection('down');
-  };
-
-  const onSlideExited = () => {
-    setSlideDirection('up');
-
-    if (currentCrit + 1 < criterias.length) {
-      setCurrentCrit(currentCrit + 1);
-    } else {
-      setCurrentCrit(0);
-    }
-
-    setSlideIn(true);
-  };
-
+  /**
+   * FIXME it should not be possible to skip the main criterion if it has not
+   * been rated yet.
+   */
   const bindDrag = useDrag(
     ({ swipe, type }) => {
       if (slideIn === false) {
@@ -66,33 +103,25 @@ const ComparisonCriteriaButtons = ({
       }
 
       if (type === 'pointerup' || type === 'touchend') {
+        // Swipe up
         if (swipe[1] < 0) {
-          slide();
+          moveWithoutPatching('down');
+          // Swipe down
+        } else if (swipe[1] > 0) {
+          moveWithoutPatching('up');
         }
       }
     },
     { swipe: { velocity: SWIPE_VELOCITY } }
   );
 
-  const onClick = async (criterion: string, score: number) => {
-    const comparisonRequest = {
-      pollName: pollName,
-      entity_a: { uid: uidA },
-      entity_b: { uid: uidB },
-      criteria_scores: [
-        {
-          criteria: criterion,
-          score: score,
-        },
-      ],
-    };
-
-    try {
-      await onSubmit(comparisonRequest, true);
-      slide();
-    } catch {
-      // XXX handle error
+  const patchScore = async (score: number) => {
+    if (slideIn === false) {
+      return;
     }
+    setSlideDirection('down');
+    setSlideIn(false);
+    setSubmittedScore(score);
   };
 
   return (
@@ -109,7 +138,7 @@ const ComparisonCriteriaButtons = ({
           critName={criterion.name}
           critLabel={criterion.label}
           givenScore={criterionScore?.score}
-          onClick={onClick}
+          onClick={patchScore}
         />
       </Slide>
     </Box>

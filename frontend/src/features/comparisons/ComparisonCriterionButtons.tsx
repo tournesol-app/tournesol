@@ -8,22 +8,20 @@ import { CriteriaLabel } from './CriteriaSlider';
 
 interface ScoreButtonProps {
   children: React.ReactNode;
-  critName: string;
   score: number;
   selected: boolean;
-  onClick: (criteron: string, score: number) => Promise<void>;
+  onClick: (score: number) => Promise<void>;
 }
 
 interface ComparisonCriterionButtonsProps {
   critName: string;
   critLabel: string;
   givenScore?: number;
-  onClick: (criteron: string, score: number) => Promise<void>;
+  onClick: (score: number) => Promise<void>;
 }
 
 const ScoreButton = ({
   children,
-  critName,
   score,
   selected,
   onClick,
@@ -34,7 +32,7 @@ const ScoreButton = ({
     <IconButton
       color="secondary"
       aria-label="todo"
-      onClick={() => onClick(critName, score)}
+      onClick={() => onClick(score)}
       sx={{
         borderRadius: '4px',
         backgroundColor: selected ? theme.palette.secondary.main : undefined,
@@ -102,7 +100,6 @@ const ComparisonCriterionButtons = React.forwardRef(function (
           {scoreButtons.map((btn, idx) => (
             <ScoreButton
               key={`criterion_button_${idx}`}
-              critName={critName}
               score={btn.score}
               selected={btn.score === givenScore}
               onClick={onClick}
