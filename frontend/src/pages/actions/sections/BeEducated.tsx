@@ -23,6 +23,11 @@ const booksToReadAndOfferEn = [
     href: 'https://www.twitterandteargas.org/downloads/twitter-and-tear-gas-by-zeynep-tufekci.pdf',
     authors: 'Zeynep TÜFEKÇI',
   },
+  {
+    text: 'Weapons of Math Destruction',
+    href: 'https://www.penguinrandomhouse.com/books/241363/weapons-of-math-destruction-by-cathy-oneil/',
+    authors: "Cathy O'NEIL",
+  },
 ];
 
 const booksToReadAndOfferFr = [
@@ -30,6 +35,11 @@ const booksToReadAndOfferFr = [
     text: 'Algocratie',
     href: 'https://www.actes-sud.fr/algocratie',
     authors: 'Arthur GRIMONPONT',
+  },
+  {
+    text: 'Algorithmes : la bombe à retardement',
+    href: 'https://arenes.fr/livre/algorithmes-la-bombe-a-retardement/',
+    authors: "Cathy O'NEIL",
   },
   {
     text: 'Le Fabuleux Chantier',
@@ -77,7 +87,7 @@ const BooksToReadAndOffer = () => {
       </Box>
       <ul>
         <li>
-          <Typography>{t('actionsPage.beEducated.inEnglish')}</Typography>
+          <Typography>{t('actionsPage.inEnglish')}</Typography>
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
@@ -90,7 +100,7 @@ const BooksToReadAndOffer = () => {
           </ul>
         </li>
         <li>
-          <Typography>{t('actionsPage.beEducated.inFrench')}</Typography>
+          <Typography>{t('actionsPage.inFrench')}</Typography>
           <ul>
             {booksToReadAndOfferFr.map((book, idx) => (
               <li key={`book_fr_${idx}`}>
@@ -119,7 +129,7 @@ const VideosToWatchAndShare = () => {
       </Box>
       <ul>
         <li>
-          <Typography>{t('actionsPage.beEducated.inEnglish')}</Typography>
+          <Typography>{t('actionsPage.inEnglish')}</Typography>
           <ul>
             {videosToWatchAndShareEn.map((videos, idx) => (
               <li key={`videos_en_${idx}`}>
@@ -132,7 +142,7 @@ const VideosToWatchAndShare = () => {
           </ul>
         </li>
         <li>
-          <Typography>{t('actionsPage.beEducated.inFrench')}</Typography>
+          <Typography>{t('actionsPage.inFrench')}</Typography>
           <ul>
             {videosToWatchAndShareFr.map((videos, idx) => (
               <li key={`videos_fr_${idx}`}>

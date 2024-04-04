@@ -1,8 +1,8 @@
 import logging
 
-import numpy as np
+import pandas as pd
 from django.db.models import Q
-from numpy.typing import NDArray
+from solidago.trust_propagation import LipschiTrust
 
 from core.models.user import User
 from vouch.models import Voucher
@@ -23,7 +23,7 @@ APPROXIMATION_ERROR = 1e-8
 # the amount of trust scores the contributor assigns grows almost
 # linearly, thereby not penalizing previously vouched contributors.
 # Vouching is thereby not (too) disincentivized.
-SINK_VOUCH = 5
+SINK_VOUCH = 5.0
 
 # The algorithm guarantees that every pre-trusted user is given a trust score
 # which is at least TRUSTED_EMAIL_PRETRUST. Moreover, all users' trust score
@@ -39,39 +39,12 @@ TRUSTED_EMAIL_PRETRUST = 0.8
 VOUCH_DECAY = 0.8
 
 
-def get_weighted_vouch_matrix(vouch_matrix: NDArray) -> NDArray:
-    """
-    Returns the weighted_vouch_matrix, derived from the vouch_matrix
-    (composed of explicit Voucher created by users).
-
-    The weighted_vouch_matrix integrates implicit vouches, i.e vouches
-    attributed to a sink, such as the sum of weighted vouches given by
-    any voucher is at most one.
-    """
-
-    n_vouches_by_voucher = vouch_matrix.sum(axis=1)
-    weighted_denominator = n_vouches_by_voucher + SINK_VOUCH
-    weighted_vouch_matrix = vouch_matrix / weighted_denominator[:, np.newaxis]
-    return weighted_vouch_matrix
-
-
-def compute_byztrust(weighted_vouch_matrix, pretrusts: NDArray):
-    """
-    Return a vector of trust scores per user, given the vouch network
-    and the pre-trust scores (based on user's email domains).
-    ByzTrust is inspired from EigenTrust.
-    """
-    trusts = pretrusts
-    delta = np.inf
-    while delta >= APPROXIMATION_ERROR:
-        # Apply vouch decay
-        new_trusts = pretrusts + VOUCH_DECAY * weighted_vouch_matrix.T.dot(trusts)
-        # Clip to avoid power concentration
-        new_trusts = new_trusts.clip(max=1.0)
-
-        delta = np.linalg.norm(new_trusts - trusts, ord=1)
-        trusts = new_trusts
-    return trusts
+lipshitrust = LipschiTrust(
+    pretrust_value=TRUSTED_EMAIL_PRETRUST,
+    decay=VOUCH_DECAY,
+    sink_vouch=SINK_VOUCH,
+    error=APPROXIMATION_ERROR,
+)
 
 
 def trust_algo():
@@ -85,45 +58,37 @@ def trust_algo():
     """
     # Import users and pretrust status
     users = list(
-        User.objects
-        .filter(is_active=True)
+        User.objects.filter(is_active=True)
         .annotate(with_trusted_email=Q(pk__in=User.with_trusted_email()))
         .only("id")
     )
-    users_index__user_id = {
-        user.id: user_index for user_index, user in enumerate(users)
-    }
-    pretrusts = np.array([
-        TRUSTED_EMAIL_PRETRUST if u.with_trusted_email else 0.0
-        for u in users
-    ])
-    if np.sum(pretrusts) == 0:
+
+    users_df = pd.DataFrame(
+        {
+            "user_id": user.id,
+            "is_pretrusted": user.with_trusted_email,
+        }
+        for user in users
+    )
+    users_df.set_index("user_id", inplace=True)
+    if not users_df["is_pretrusted"].any():
         logger.warning("Trust scores cannot be computed: no pre-trusted user exists")
         return
 
-    nb_users = len(users)
+    vouches = pd.DataFrame(
+        (
+            {"voucher": vouch.by_id, "vouchee": vouch.to_id, "vouch": vouch.value}
+            for vouch in Voucher.objects.iterator()
+            if vouch.by_id in users_df.index and vouch.to_id in users_df.index
+        ),
+        columns=["voucher", "vouchee", "vouch"],
+    )
 
-    # Import vouch matrix
-    vouch_matrix = np.zeros([nb_users, nb_users], dtype=float)
-    for vouch in Voucher.objects.iterator():
-        voucher = users_index__user_id[vouch.by_id]
-        vouchee = users_index__user_id[vouch.to_id]
-        vouch_matrix[voucher][vouchee] = vouch.value
+    trust_scores = lipshitrust(users=users_df, vouches=vouches)["trust_score"]
 
-    # Compute weighted vouch matrix (row-substochastic)
-    weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
-
-    # Compute trust scores using ByzTrust
-    trust_scores = compute_byztrust(weighted_vouch_matrix, pretrusts)
-
-    # Update `trust_score` in the database
-    for user_no, user_model in enumerate(users):
-        user_model.trust_score = float(trust_scores[user_no])
+    for user in users:
+        user.trust_score = trust_scores[user.id]
 
     # Updating all users at once increases the risk of a database deadlock.
     # We use an explicitly low `batch_size` value to reduce this risk.
-    User.objects.bulk_update(
-        users,
-        ["trust_score"],
-        batch_size=1000
-    )
+    User.objects.bulk_update(users, ["trust_score"], batch_size=1000)

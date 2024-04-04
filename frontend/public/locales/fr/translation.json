@@ -724,8 +724,6 @@
     },
     "beEducated": {
       "readAndOfferMoreBooksLike": "Lire et offrir d'autres livres comme :",
-      "inEnglish": "en anglais",
-      "inFrench": "en français",
       "watchAndShareVideosFrom": "Visionner et partager les vidéos de :",
       "andMore": "et d'autres...",
       "beTrainedAndTrainOthers": "Être formé et former les autres aux fondamentaux de la démocratie numérique",
@@ -734,6 +732,8 @@
       "listenAndSharePodcastsLike": "Écouter et partager des podcasts comme",
       "discoverAndShareEducationalGamesLike": "Découvrir et partager des jeux éducatifs, comme ceux de <2>Nicky Case</2>."
     },
+    "inEnglish": "en anglais",
+    "inFrench": "en français",
     "beWellSurrounded": {
       "beWellSurrounded": "Être bien entouré",
       "joinDiscord": "Rejoindre le <2>Discord de Tournesol</2> (venez dire bonjour et vous présenter 👋).",
@@ -753,11 +753,11 @@
       "hereIsAlist": "Voici une liste non exhaustive de projets et d'organisations qui, par leurs actions et leur philosophie, luttent pour la qualité de l'information, et mettent en lumière les grands enjeux démocratiques et numériques associés."
     },
     "qualityInformation": {
+      "readAndOfferBooksLike": "Lire et offir des livres comme :",
       "increaseYourExposureToQualityInformation": "Augmenter votre exposition à des informations de qualité",
       "installTournesol": "Installer <2>l'extension Tournesol</2> sur votre navigateur et installer <6>l'application mobile Tournesol</6> (installable depuis votre navigateur sur Android).",
       "improveUnderstandingOfPsychology": "Améliorer la compréhension de notre psychologie",
       "watchShareVideos": "Regarder et partager des vidéos sur ce sujet, comme <2>Dissatisfaction</2>.",
-      "readOfferBooks": "Lire et offrir les ouvrages <2>The Righteous Mind</2>, <5>Feeling Good</5>, <8>The Scout Mindset</8>.",
       "readAboutProcrastination": "Lire cette série d'articles sur la procrastination : <2>Why procrastinators procrastinate?</2>, ou visionner la <5>conférence TED</5> de leur auteur."
     },
     "helpResearch": {
