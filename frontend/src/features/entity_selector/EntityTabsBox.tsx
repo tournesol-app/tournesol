@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
   Tabs,
   Tab,
@@ -8,14 +9,15 @@ import {
   Typography,
   IconButton,
 } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
+
 import { Trans, useTranslation } from 'react-i18next';
 import { EntityResult } from 'src/utils/types';
+import { ExternalLink } from 'src/components';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import EntityTextInput from './EntityTextInput';
+import EntitySearchInput from './EntitySearchInput';
 import { getWebExtensionUrl } from 'src/utils/extension';
-import { InfoOutlined } from '@mui/icons-material';
-import { ExternalLink } from 'src/components';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -24,7 +26,7 @@ interface Props {
   elevation?: number;
   maxHeight?: string | number;
   withLink?: boolean;
-  entityTextInput?: { value: string; onChange: (value: string) => void };
+  entitySearchInput?: boolean;
   displayDescription?: boolean;
 }
 
@@ -102,13 +104,21 @@ const EntityTabsBox = ({
   elevation = 1,
   maxHeight = '40vh',
   withLink = false,
-  entityTextInput,
+  entitySearchInput = false,
   displayDescription = true,
 }: Props) => {
   const { t } = useTranslation();
 
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
+
+  const [tabsHidden, setTabsHidden] = useState(false);
+  const [tabsDisabled, setTabsDisabled] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+  const [statusBeforeSearch, setStatusBeforeSearch] = useState<TabStatus>(
+    TabStatus.Ok
+  );
+
   const [options, setOptions] = useState<EntityResult[]>([]);
   const [isDescriptionVisible, setIsDescriptionVisible] =
     useState(displayDescription);
@@ -139,6 +149,7 @@ const EntityTabsBox = ({
         }
       } catch {
         if (!aborted) {
+          setOptions([]);
           setStatus(TabStatus.Error);
         }
       }
@@ -152,13 +163,36 @@ const EntityTabsBox = ({
     };
   }, [tabs, tabValue]);
 
+  const onSearchStart = () => {
+    if (!searchError) {
+      setStatusBeforeSearch(status);
+    }
+    setTabsDisabled(true);
+    setStatus(TabStatus.Loading);
+  };
+
+  const onSearchError = () => {
+    setSearchError(true);
+  };
+
+  const onSearchClose = () => {
+    setTabsHidden(false);
+    setTabsDisabled(false);
+    setSearchError(false);
+    setStatus(statusBeforeSearch);
+  };
+
+  const onSearchResults = () => {
+    setTabsHidden(true);
+    setStatus(statusBeforeSearch);
+  };
+
   return (
     <Paper
       elevation={elevation}
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '160px',
         ul: {
           listStyleType: 'none',
           p: 0,
@@ -180,12 +214,16 @@ const EntityTabsBox = ({
         flexGrow: 1,
       }}
     >
-      {entityTextInput && (
-        <EntityTextInput
-          value={entityTextInput.value}
-          onChange={entityTextInput.onChange}
+      {entitySearchInput && (
+        <EntitySearchInput
+          onClose={onSearchClose}
+          onSearch={onSearchStart}
+          onError={onSearchError}
+          onResults={onSearchResults}
+          onResultSelect={onSelectEntity}
         />
       )}
+
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"
@@ -197,6 +235,7 @@ const EntityTabsBox = ({
         variant="scrollable"
         scrollButtons="auto"
         sx={{
+          display: tabsHidden ? 'none' : 'inital',
           bgcolor: 'grey.100',
           borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
           '& .MuiTabs-scrollButtons.Mui-disabled': {
@@ -205,12 +244,18 @@ const EntityTabsBox = ({
         }}
       >
         {tabs.map(({ label, name, disabled }) => (
-          <Tab key={name} value={name} label={label} disabled={disabled} />
+          <Tab
+            key={name}
+            value={name}
+            label={label}
+            disabled={tabsDisabled || disabled}
+          />
         ))}
       </Tabs>
       <LoaderWrapper
+        circularProgress={!searchError && !tabsHidden}
         isLoading={status === TabStatus.Loading}
-        sx={{ overflowY: 'auto' }}
+        sx={{ display: tabsHidden ? 'none' : 'initial', overflowY: 'auto' }}
       >
         {isDescriptionVisible ? (
           <TabInfo
@@ -231,7 +276,7 @@ const EntityTabsBox = ({
           </Box>
         )}
         {status === TabStatus.Error ? (
-          <TabError message={t('tabsBox.errorOnLoading')} />
+          <TabError message={t('entitySelector.errorOnLoading')} />
         ) : options.length > 0 ? (
           <ul>
             {options.map((res) => (

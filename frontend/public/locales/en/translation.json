@@ -122,6 +122,7 @@
     "newVideo": "Select a new video automatically",
     "letTournesolSelectAVideo": "Let Tournesol select a video",
     "auto": "Auto",
+    "errorOnLoading": "An error occurred while loading the results.",
     "suggestions": "Suggestions",
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",
@@ -132,8 +133,14 @@
     "selectAVideo": "Select a video",
     "select": "Select",
     "youtubeVideoUnavailable": "YouTube video unavailable.",
-    "pasteUrlOrVideoId": "Paste URL or Video ID",
     "backButton": "Back"
+  },
+  "entitySearchInput": {
+    "searchResults_one": "<0>{{nResults}}</0> result for \"{{lastSearch}}\"",
+    "searchResults_other": "<0>{{nResults}}</0> results for \"{{lastSearch}}\"",
+    "searchByTextOrPasteUrl": "Search by text or paste URL",
+    "closeSearch": "Close search",
+    "search": "Search"
   },
   "tabsBox": {
     "subsample": "An ordered sample of your personal ranking. The elements you recommend the most appear first.",
@@ -142,7 +149,6 @@
     "toConnect": "Videos isolated from your other comparisons appear here. Compare them to improve the recommendations.",
     "rateLater": "Your rate-later videos appear here. You can add some to your list by clicking on the '+' sign on the video cards. You can also add them directly from <2>the extension</2>.",
     "goodShortVideos": "A random sample of short videos recommended by the community.",
-    "errorOnLoading": "An error occurred while loading the results.",
     "emptyList": "This list is empty."
   },
   "stackedCandidatesPaper": {

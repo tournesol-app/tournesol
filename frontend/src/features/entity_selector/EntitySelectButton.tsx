@@ -230,10 +230,7 @@ const VideoInput = ({
                 tabs={tabs}
                 onSelectEntity={handleOptionClick}
                 elevation={10}
-                entityTextInput={{
-                  value: value,
-                  onChange: onChange,
-                }}
+                entitySearchInput={true}
                 displayDescription={comparisonsCount < 8}
               />
             </SelectorPopper>
