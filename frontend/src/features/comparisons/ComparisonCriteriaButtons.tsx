@@ -14,12 +14,14 @@ const SWIPE_VELOCITY: number | Vector2 = [0.35, 0.35];
 interface ComparisonCriteriaButtonsProps {
   uidA: string;
   uidB: string;
+  initialComparison: ComparisonRequest | null;
   onSubmit: (c: ComparisonRequest, partialUpdate?: boolean) => Promise<void>;
 }
 
 const ComparisonCriteriaButtons = ({
   uidA,
   uidB,
+  initialComparison,
   onSubmit,
 }: ComparisonCriteriaButtonsProps) => {
   const { criterias, name: pollName } = useCurrentPoll();
@@ -29,6 +31,10 @@ const ComparisonCriteriaButtons = ({
   const [currentCrit, setCurrentCrit] = useState(0);
 
   const criterion = criterias[currentCrit];
+
+  const criterionScore = initialComparison?.criteria_scores.find(
+    (crit) => crit.criteria === criterion.name
+  );
 
   const slide = () => {
     if (slideIn === false) {
@@ -102,6 +108,7 @@ const ComparisonCriteriaButtons = ({
         <ComparisonCriterionButtons
           critName={criterion.name}
           critLabel={criterion.label}
+          givenScore={criterionScore?.score}
           onClick={onClick}
         />
       </Slide>

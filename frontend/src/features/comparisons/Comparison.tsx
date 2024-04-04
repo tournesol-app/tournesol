@@ -178,12 +178,13 @@ const Comparison = ({
       if (initialComparison) {
         const { entity_a, entity_b, criteria_scores, duration_ms } = c;
         if (partialUpdate === true) {
-          await UsersService.usersMeComparisonsPartialUpdate({
+          const resp = await UsersService.usersMeComparisonsPartialUpdate({
             pollName,
             uidA: entity_a.uid,
             uidB: entity_b.uid,
             requestBody: { criteria_scores, duration_ms },
           });
+          setInitialComparison(resp);
         } else {
           await UsersService.usersMeComparisonsUpdate({
             pollName,
@@ -312,6 +313,7 @@ const Comparison = ({
               uidA={uidA || ''}
               uidB={uidB || ''}
               onSubmit={onSubmitComparison}
+              initialComparison={initialComparison}
             />
           )
         ) : (

@@ -301,10 +301,10 @@ REST_FRAMEWORK = {
         "tournesol.throttling.SustainedUserRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "anon_burst": "120/min",
-        "user_burst": server_settings.get("THROTTLE_USER_BURST", "120/min"),
-        "anon_sustained": "3600/hour",
-        "user_sustained": "3600/hour",
+        "anon_burst": "99999/min",
+        "user_burst": server_settings.get("THROTTLE_USER_BURST", "99999/min"),
+        "anon_sustained": "999999999/hour",
+        "user_sustained": "999999999/hour",
         # specific rates for specific parts of the API
         "api_video_post": "50/min",
         "api_users_me_export": "10/min",

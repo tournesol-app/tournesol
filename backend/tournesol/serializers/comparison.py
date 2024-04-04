@@ -47,9 +47,6 @@ class ComparisonSerializerMixin:
             if missing_criterias:
                 raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
 
-        # XXX missing check: if the main criterion has not been rated, the
-        # submitted value should contain the main criterion.
-
         return value
 
 

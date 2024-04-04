@@ -230,7 +230,6 @@ class ComparisonDetailApi(
             raise InactivePollError
         return self.partial_update(request, *args, **kwargs)
 
-
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user, in the given poll"""
         if not self.poll_from_url.active:
