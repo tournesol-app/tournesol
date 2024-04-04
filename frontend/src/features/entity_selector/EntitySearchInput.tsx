@@ -6,7 +6,6 @@ import {
   InputAdornment,
   IconButton,
   TextField,
-  Paper,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -49,13 +48,9 @@ const EntitySearchResultsList = ({
       {entities.length > 0 && (
         <Box
           bgcolor="white"
-          overflow="auto"
           sx={{
+            overflowY: 'auto',
             ul: {
-              maxHeight: '42vh',
-              '.MuiModal-root &': {
-                maxHeight: '62vh',
-              },
               li: {
                 cursor: 'pointer',
                 '&:hover': {
@@ -91,16 +86,20 @@ const EntitySearchResults = ({
   const { t } = useTranslation();
   const nResults = entities.length;
   return (
-    <Paper
-      elevation={2}
+    <Box
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        overflow: 'hidden',
         width: '100%',
         backgroundColor: 'inherit',
-        boxShadow:
-          '0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 6px 5px 0px rgba(0,0,0,0.12)',
       }}
     >
-      <LoaderWrapper isLoading={loading}>
+      <LoaderWrapper
+        isLoading={loading}
+        sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+      >
         <Box p={1} pb={2}>
           <Typography
             variant="subtitle1"
@@ -127,7 +126,7 @@ const EntitySearchResults = ({
         </Box>
         <EntitySearchResultsList entities={entities} onSelect={onSelect} />
       </LoaderWrapper>
-    </Paper>
+    </Box>
   );
 };
 
@@ -207,20 +206,17 @@ const EntitySearchInput = ({
     onResults && onResults();
   };
 
-  const displayResults = () => {
-    if (entities.length > 0) {
-      return true;
-    }
-
-    if (lastSearch !== '') {
-      return true;
-    }
-
-    return false;
-  };
+  const displayResults = entities.length > 0 || lastSearch !== '';
 
   return (
-    <Box pt={2} bgcolor="grey.100">
+    <Box
+      pt={2}
+      bgcolor="grey.100"
+      display="flex"
+      flexDirection="column"
+      overflow="hidden"
+      flexShrink={displayResults ? undefined : 0}
+    >
       <form onSubmit={searchEntity} name="entity-selector-search">
         <Box p={1} display="flex">
           <TextField
@@ -270,7 +266,7 @@ const EntitySearchInput = ({
           </IconButton>
         </Box>
       </form>
-      {displayResults() && (
+      {displayResults && (
         <EntitySearchResults
           error={error}
           loading={loading}
