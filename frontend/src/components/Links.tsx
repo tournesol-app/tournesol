@@ -33,14 +33,13 @@ interface InternalLinkProps {
  *   - a media is playing on the page, and we don't want to interrupt it
  *   - etc.
  */
-export const ExternalLink = ({
-  children,
-  href,
-  target,
-  sx,
-}: ExternalLinkProps) => {
+export const ExternalLink = React.forwardRef<
+  HTMLAnchorElement,
+  ExternalLinkProps
+>(function ExternalLink({ children, href, target, sx, ...other }, ref) {
   return (
     <Link
+      ref={ref}
       href={href}
       target={target}
       rel="noreferrer"
@@ -49,25 +48,34 @@ export const ExternalLink = ({
         textDecoration: 'revert',
         ...sx,
       }}
+      {...other} // MUI Tooltip requires to forward both ref and props
     >
       {children}
     </Link>
   );
-};
+});
 
-export const InternalLink = ({
-  children,
-  to,
-  target,
-  id,
-  ariaLabel,
-  color = 'secondary',
-  underline = 'hover',
-  sx,
-}: InternalLinkProps) => {
+export const InternalLink = React.forwardRef<
+  HTMLAnchorElement,
+  InternalLinkProps
+>(function InternalLink(
+  {
+    children,
+    to,
+    target,
+    id,
+    ariaLabel,
+    color = 'secondary',
+    underline = 'hover',
+    sx,
+    ...other
+  },
+  ref
+) {
   return (
     <Link
       component={RouterLink}
+      ref={ref}
       to={to}
       target={target}
       id={id}
@@ -77,8 +85,9 @@ export const InternalLink = ({
       sx={{
         ...sx,
       }}
+      {...other} // MUI Tooltip requires to forward both ref and props
     >
       {children}
     </Link>
   );
-};
+});
