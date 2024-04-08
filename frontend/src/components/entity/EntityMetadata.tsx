@@ -46,7 +46,6 @@ export const VideoMetadata = ({
         fontSize: '0.8rem',
         color: 'neutral.main',
         columnGap: '12px',
-        marginTop: '4px',
       }}
     >
       {views && (
