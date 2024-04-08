@@ -56,14 +56,18 @@ const ComparisonEntityContexts = ({
 
   const entityName = getEntityName(t, pollName);
 
-  if (!selectorHasContext(selectorA) && !selectorHasContext(selectorB)) {
+  const selectorAHasContext = selectorHasContext(selectorA);
+  const selectorBHasContext = selectorHasContext(selectorB);
+
+  if (!selectorAHasContext && !selectorBHasContext) {
     return <></>;
   }
 
   return (
     <Grid
       container
-      spacing={1}
+      // Save space when there is one or zero context item to display.
+      spacing={selectorAHasContext && selectorBHasContext ? 1 : 0}
       sx={{
         'span.primary': {
           color: theme.palette.secondary.main,
