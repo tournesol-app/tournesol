@@ -131,6 +131,10 @@ class ComparisonCriteriaScore(models.Model):
         help_text="Score for the given comparison",
         validators=[MinValueValidator(-COMPARISON_MAX), MaxValueValidator(COMPARISON_MAX)],
     )
+    score_magnitude = models.IntegerField(
+        help_text="The absolute value of the maximum score.",
+        default=COMPARISON_MAX,
+    )
     # TODO: ask Lê if weights should be in a certain range (maybe always > 0)
     # and add validation if required
     weight = models.FloatField(

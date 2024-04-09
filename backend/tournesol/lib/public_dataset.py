@@ -52,6 +52,7 @@ def get_comparisons_data(poll_name: str, until_: datetime) -> QuerySet:
             comparisoncriteriascore.criteria,
             comparisoncriteriascore.weight,
             comparisoncriteriascore.score,
+            comparisoncriteriascore.score_magnitude,
             DATE(DATE_TRUNC('week', datetime_add)) AS week_date
 
         FROM tournesol_comparison
@@ -281,7 +282,15 @@ def write_comparisons_file(
 
     # If we want this function to be generic, the specific video_a and video_b
     # columns should be renamed entity_a and entity_b.
-    fieldnames = ["public_username", "video_a", "video_b", "criteria", "score", "week_date"]
+    fieldnames = [
+        "public_username",
+        "video_a",
+        "video_b",
+        "criteria",
+        "score",
+        "score_magnitude",
+        "week_date"
+    ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(
@@ -291,6 +300,7 @@ def write_comparisons_file(
             "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
             "criteria": comparison.criteria,
             "score": int(round(comparison.score)),
+            "score_magnitude": comparison.score_magnitude,
             "week_date": comparison.week_date,
         }
         for comparison in get_comparisons_data(poll_name, until_).iterator()

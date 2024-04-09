@@ -1383,6 +1383,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ComparisonUpdate'
           description: ''
+    patch:
+      operationId: users_me_comparisons_partial_update
+      description: Partially update a comparison made by the logged user, in the given
+        poll.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid_a
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid_b
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedComparisonUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedComparisonUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedComparisonUpdateRequest'
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComparisonUpdate'
+          description: ''
     delete:
       operationId: users_me_comparisons_destroy
       description: Delete a comparison made by the logged user, in the given poll
@@ -2749,6 +2792,11 @@ components:
           maximum: 10.0
           minimum: -10.0
           description: Score for the given comparison
+        score_magnitude:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: The absolute value of the maximum score.
         weight:
           type: number
           format: double
@@ -2770,6 +2818,11 @@ components:
           maximum: 10.0
           minimum: -10.0
           description: Score for the given comparison
+        score_magnitude:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: The absolute value of the maximum score.
         weight:
           type: number
           format: double
@@ -3842,6 +3895,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VideoSerializerWithCriteria'
+    PatchedComparisonUpdateRequest:
+      type: object
+      description: |-
+        A comparison serializer used only for updates.
+
+        Given the context determined by the view, it will represent or save the
+        comparison in the reverse order.
+
+        Use `ComparisonSerializer` for all other operations.
+      properties:
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComparisonCriteriaScoreRequest'
+        duration_ms:
+          type: number
+          format: double
+          nullable: true
+          description: Time it took to rate the videos (in milliseconds)
     PatchedContributorRatingRequest:
       type: object
       properties:

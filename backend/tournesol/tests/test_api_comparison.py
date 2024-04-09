@@ -13,6 +13,7 @@ from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago, time_ahead
 from tournesol.models import (
     Comparison,
+    ComparisonCriteriaScore,
     ContributorRatingCriteriaScore,
     Entity,
     EntityCriteriaScore,
@@ -144,7 +145,12 @@ class ComparisonApiTestCase(TestCase):
                 "entity_a": {"uid": uid_1},
                 "entity_b": {"uid": uid_2},
                 "criteria_scores": [
-                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
+                    {
+                        "criteria": "largely_recommended",
+                        "score": 10,
+                        "score_magnitude": 10,
+                        "weight": 10,
+                     }
                 ],
                 "duration_ms": 103,
             },
@@ -830,6 +836,216 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(comp1["entity_b"]["uid"], comparison1.entity_2.uid)
         self.assertEqual(comp2["entity_a"]["uid"], comparison2.entity_1.uid)
         self.assertEqual(comp2["entity_b"]["uid"], comparison2.entity_2.uid)
+
+    def test_anonymous_cant_patch(self):
+        score = ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=8,
+            score_magnitude=10,
+        )
+
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": "largely_recommended",
+                        "score": 2,
+                        "score_magnitude": 2,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        score.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(score.score, 8)
+        self.assertEqual(score.score_magnitude, 10)
+
+    def test_authenticated_can_patch(self):
+        """
+        An authenticated user can patch the score and the magnitude of the
+        main criterion.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.comparisons[0].criteria_scores.all().delete()
+
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=8,
+            score_magnitude=10,
+        )
+
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": "largely_recommended",
+                        "score": 2,
+                        "score_magnitude": 2,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 2.0, "score_magnitude": 2, "weight": 1.0},
+            ],
+        )
+
+    def test_authenticated_can_patch_optional(self):
+        """
+        An authenticated user can patch the score and the magnitude of an
+        optional criterion.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.comparisons[0].criteria_scores.all().delete()
+
+        optional = "pedagogy"
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=1,
+            score_magnitude=10,
+        )
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="reliability",
+            score=2,
+            score_magnitude=10,
+        )
+
+        # A new criterion can be added, without erasing all existing criteria.
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": optional,
+                        "score": 3,
+                        "score_magnitude": 8,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 1.0, "score_magnitude": 10, "weight": 1.0},
+                {"criteria": "reliability", "score": 2.0, "score_magnitude": 10, "weight": 1.0},
+                {"criteria": "pedagogy", "score": 3.0, "score_magnitude": 8, "weight": 1.0},
+            ],
+        )
+
+        # An existing criterion can be updated, without affecting all existing criteria.
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": optional,
+                        "score": 4,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 1.0, "score_magnitude": 10, "weight": 1.0},
+                {"criteria": "reliability", "score": 2.0, "score_magnitude": 10, "weight": 1.0},
+                {"criteria": "pedagogy", "score": 4.0, "score_magnitude": 8, "weight": 1.0},
+            ],
+        )
+
+    def test_authenticated_can_patch_several(self):
+        """
+        An authenticated user can patch the score and the magnitude of several
+        criteria at a time.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.comparisons[0].criteria_scores.all().delete()
+
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=1,
+            score_magnitude=10,
+        )
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="reliability",
+            score=2,
+            score_magnitude=10,
+        )
+
+        # A new criterion can be added, without erasing all existing criteria.
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": "reliability",
+                        "score": 4,
+                        "score_magnitude": 8,
+                    },
+                    {
+                        "criteria": "pedagogy",
+                        "score": 5,
+                        "score_magnitude": 9,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 1.0, "score_magnitude": 10, "weight": 1.0},
+                {"criteria": "reliability", "score": 4.0, "score_magnitude": 8, "weight": 1.0},
+                {"criteria": "pedagogy", "score": 5.0, "score_magnitude": 9, "weight": 1.0},
+            ],
+        )
 
     def test_anonymous_cant_delete(self):
         """
