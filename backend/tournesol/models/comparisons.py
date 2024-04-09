@@ -129,6 +129,7 @@ class ComparisonCriteriaScore(models.Model):
     )
     score = models.FloatField(
         help_text="Score for the given comparison",
+        # TODO: remove the validators, the function save replaces them.
         validators=[MinValueValidator(-COMPARISON_MAX), MaxValueValidator(COMPARISON_MAX)],
     )
     score_magnitude = models.IntegerField(
@@ -148,3 +149,11 @@ class ComparisonCriteriaScore(models.Model):
 
     def __str__(self):
         return f"{self.comparison}/{self.criteria}/{self.score}"
+
+    def save(self, *args, **kwargs):
+        if abs(self.score) > abs(self.score_magnitude):
+            raise ValueError(
+                f"The absolute value of the score {self.score} given to the criterion "
+                f"{self.criteria} can't be superior to the magnitude {self.score_magnitude}."
+            )
+        return super().save(*args, **kwargs)
