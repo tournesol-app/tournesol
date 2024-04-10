@@ -359,7 +359,7 @@ const EntitySelectorInnerAuth = ({
         appear={variant === 'noControl' ? false : true}
       >
         {/* position: relative is required to correctly display the entity unavailable box */}
-        <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }} position="relative">
+        <Box {...bindDrag()} sx={{ touchAction: 'none' }} position="relative">
           {rating ? (
             <EntityCard
               compact
