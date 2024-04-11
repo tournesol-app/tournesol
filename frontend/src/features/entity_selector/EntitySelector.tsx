@@ -335,8 +335,15 @@ const EntitySelectorInnerAuth = ({
         timeout={ENTITY_CARD_SWIPE_TIMEOUT}
         appear={false}
       >
-        {/* position: relative is required to correctly display the entity unavailable box */}
-        <Box {...bindDrag()} sx={{ touchAction: 'none' }} position="relative">
+        <Box
+          {...bindDrag()}
+          sx={{ touchAction: 'none' }}
+          // "flex" properties allow the cards to be flexible and both cards to keep the same height.
+          // "position: relative" is required to correctly display the entity unavailable box.
+          display="flex"
+          flex={1}
+          position="relative"
+        >
           {rating ? (
             <EntityCard
               compact
