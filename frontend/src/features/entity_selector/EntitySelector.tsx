@@ -272,6 +272,9 @@ const EntitySelectorInnerAuth = ({
     const newUid = await nextSuggestion(uid, otherUid, pollName);
     if (newUid) {
       onChange({ uid: newUid, rating: null });
+    } else {
+      console.warn('No entity found by the function nextSuggestion.');
+      setSlideIn(true);
     }
   };
 
