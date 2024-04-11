@@ -116,7 +116,10 @@ const Footer = () => {
           to: '/about/terms-of-service',
         },
         { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
-        // { name: 'FAQ', to: '' },
+        {
+          name: t('footer.takeAction'),
+          to: '/actions',
+        },
       ],
       trailingDivider: false,
     },

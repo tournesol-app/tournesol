@@ -190,7 +190,8 @@
     "tournesolTalksMailingList": "Tournesol Talks - mailing list",
     "tournesolTalksYTPlaylist": "Tournesol Talks - YouTube playlist",
     "more": "More",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "takeAction": "Take action 👈️"
   },
   "terms": {
     "termsOfService": "Terms of Service",
@@ -712,7 +713,7 @@
   },
   "clickToDownload": "Click to Download",
   "actionsPage": {
-    "title": "Move to action",
+    "title": "Take action",
     "whatCanYouDoToProtectSocietiesFromAIs": "What can you do to protect societies from the consequences of artificial intelligence?",
     "whatCanYouDoToProtectYourselfAndYourRelatives": "What can you do to protect yourself and your relatives?",
     "applicationOfLaws": {
