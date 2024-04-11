@@ -6,7 +6,12 @@ import { Vector2 } from '@use-gesture/core/types';
 import { useTheme } from '@mui/material/styles';
 import { Box, Grid, Slide, Typography } from '@mui/material';
 
-import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
+import {
+  useCurrentPoll,
+  useEntityAvailable,
+  useLoginState,
+  useSuggestions,
+} from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
@@ -23,7 +28,6 @@ import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
-import { useUidToCompare } from 'src/hooks/useUidToCompare';
 
 const ENTITY_CARD_SWIPE_TIMEOUT = 180;
 // The minimum velocity per axis in pixels / ms.
@@ -123,9 +127,9 @@ const EntitySelectorInnerAuth = ({
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
-  const { nextSuggestion } = useUidToCompare({
-    currentUid: uid,
-    otherUid,
+  const { nextSuggestion } = useSuggestions({
+    uidA: uid,
+    uidB: otherUid,
     pollName,
   });
 
