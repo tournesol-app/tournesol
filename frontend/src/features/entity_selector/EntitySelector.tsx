@@ -38,7 +38,6 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
-  autoFill?: boolean;
   variant?: 'regular' | 'noControl';
 }
 
@@ -57,7 +56,6 @@ const EntitySelector = ({
   onChange,
   otherUid,
   variant = 'regular',
-  autoFill = false,
 }: Props) => {
   const { isLoggedIn } = useLoginState();
 
@@ -70,7 +68,6 @@ const EntitySelector = ({
           otherUid={otherUid}
           alignment={alignment}
           variant={variant}
-          autoFill={autoFill}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -120,18 +117,13 @@ const EntitySelectorInnerAuth = ({
   otherUid,
   alignment,
   variant,
-  autoFill,
 }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
-  const { nextSuggestion } = useSuggestions({
-    uidA: uid,
-    uidB: otherUid,
-    pollName,
-  });
+  const { nextSuggestion } = useSuggestions();
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
@@ -277,7 +269,7 @@ const EntitySelectorInnerAuth = ({
 
   const onSlideExited = async () => {
     setSlideDirection('up');
-    const newUid = await nextSuggestion();
+    const newUid = await nextSuggestion(uid, otherUid, pollName);
     if (newUid) {
       onChange({ uid: newUid, rating: null });
     }
@@ -338,7 +330,7 @@ const EntitySelectorInnerAuth = ({
         onEntered={onSlideEntered}
         onExited={onSlideExited}
         timeout={ENTITY_CARD_SWIPE_TIMEOUT}
-        appear={variant === 'noControl' ? false : true}
+        appear={false}
       >
         {/* position: relative is required to correctly display the entity unavailable box */}
         <Box {...bindDrag()} sx={{ touchAction: 'none' }} position="relative">
