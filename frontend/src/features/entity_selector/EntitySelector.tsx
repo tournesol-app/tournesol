@@ -6,7 +6,12 @@ import { Vector2 } from '@use-gesture/core/types';
 import { useTheme } from '@mui/material/styles';
 import { Box, Grid, Slide, Typography } from '@mui/material';
 
-import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
+import {
+  useCurrentPoll,
+  useEntityAvailable,
+  useLoginState,
+  useSuggestions,
+} from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
@@ -33,7 +38,6 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
-  autoFill?: boolean;
   variant?: 'regular' | 'noControl';
 }
 
@@ -46,19 +50,12 @@ export interface SelectorValue {
 const isUidValid = (uid: string | null) =>
   uid === null ? false : uid.match(/\w+:.+/);
 
-const wait = (milliseconds: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, milliseconds);
-  });
-};
-
 const EntitySelector = ({
   alignment = 'left',
   value,
   onChange,
   otherUid,
   variant = 'regular',
-  autoFill = false,
 }: Props) => {
   const { isLoggedIn } = useLoginState();
 
@@ -71,7 +68,6 @@ const EntitySelector = ({
           otherUid={otherUid}
           alignment={alignment}
           variant={variant}
-          autoFill={autoFill}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -121,13 +117,13 @@ const EntitySelectorInnerAuth = ({
   otherUid,
   alignment,
   variant,
-  autoFill,
 }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
+  const { nextSuggestion } = useSuggestions();
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
@@ -259,13 +255,7 @@ const EntitySelectorInnerAuth = ({
       if (type === 'pointerup' || type === 'touchend') {
         // On swipe up
         if (swipe[1] < 0) {
-          const autoButton = document.getElementById(
-            `auto-suggestion-${alignment}`
-          ) as HTMLElement;
-
-          if (autoButton) {
-            setSlideIn(false);
-          }
+          slideUp();
         }
       }
     },
@@ -274,25 +264,28 @@ const EntitySelectorInnerAuth = ({
 
   const onSlideEntered = () => {
     setSlideDirection('down');
+    setLoading(false);
   };
 
-  const onSlideExited = () => {
+  const onSlideExited = async () => {
     setSlideDirection('up');
-
-    if (!loading) {
-      const autoButton = document.getElementById(
-        `auto-suggestion-${alignment}`
-      ) as HTMLElement;
-
-      if (autoButton) {
-        autoButton.click();
-      } else {
-        setSlideIn(true);
-        console.warn(
-          "Can't suggest new entity: Auto button not found in the document."
-        );
-      }
+    const newUid = await nextSuggestion(uid, otherUid, pollName);
+    if (newUid) {
+      onChange({ uid: newUid, rating: null });
+    } else {
+      console.warn('No entity found by the function nextSuggestion.');
+      setSlideIn(true);
     }
+  };
+
+  const slideUp = async () => {
+    if (loading || !slideIn) {
+      return;
+    }
+
+    setLoading(true);
+    setInputValue('');
+    setSlideIn(false);
   };
 
   return (
@@ -328,22 +321,7 @@ const EntitySelectorInnerAuth = ({
               />
             </Grid>
             <Grid item>
-              <AutoEntityButton
-                htmlId={`auto-suggestion-${alignment}`}
-                disabled={loading}
-                currentUid={uid}
-                otherUid={otherUid}
-                onClick={async () => {
-                  setLoading(true);
-                  setInputValue('');
-                  setSlideIn(false);
-                  await wait(ENTITY_CARD_SWIPE_TIMEOUT + 8);
-                }}
-                onResponse={(uid) => {
-                  uid ? onChange({ uid, rating: null }) : setLoading(false);
-                }}
-                autoFill={autoFill}
-              />
+              <AutoEntityButton disabled={loading} onClick={slideUp} />
             </Grid>
           </Grid>
         </Box>
@@ -355,7 +333,7 @@ const EntitySelectorInnerAuth = ({
         onEntered={onSlideEntered}
         onExited={onSlideExited}
         timeout={ENTITY_CARD_SWIPE_TIMEOUT}
-        appear={variant === 'noControl' ? false : true}
+        appear={false}
       >
         {/* position: relative is required to correctly display the entity unavailable box */}
         <Box {...bindDrag()} sx={{ touchAction: 'none' }} position="relative">
@@ -435,18 +413,7 @@ const EntitySelectorInnerAuth = ({
                   <Grid container item xs={12} sm={5} justifyContent="center">
                     <AutoEntityButton
                       disabled={loading}
-                      currentUid={uid}
-                      otherUid={otherUid}
-                      onClick={async () => {
-                        setLoading(true);
-                        setInputValue('');
-                      }}
-                      onResponse={(uid) =>
-                        uid
-                          ? onChange({ uid, rating: null })
-                          : setLoading(false)
-                      }
-                      autoFill={false}
+                      onClick={slideUp}
                       variant="full"
                     />
                   </Grid>
