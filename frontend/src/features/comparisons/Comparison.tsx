@@ -152,10 +152,10 @@ const Comparison = ({
       }
 
       if (autoUidA) {
-        setSelectorA({ uid: autoUidA, rating: null });
+        onChangeA({ uid: autoUidA, rating: null });
       }
       if (autoUidB) {
-        setSelectorB({ uid: autoUidB, rating: null });
+        onChangeB({ uid: autoUidB, rating: null });
       }
 
       initializeWithSuggestions.current = false;
