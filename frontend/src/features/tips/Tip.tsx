@@ -45,11 +45,19 @@ const Tip = ({ tip, tipId }: TipProps) => {
       <AlertTitle>
         <strong>{tip.title}</strong>
       </AlertTitle>
+
       {defaultVisibleParagrahs > 0 && (
-        <Typography paragraph mb={1}>
-          {tip.messages.slice(0, defaultVisibleParagrahs)}
-        </Typography>
+        <>
+          {tip.messages
+            .slice(0, defaultVisibleParagrahs)
+            .map((message, index) => (
+              <Typography key={`tip_${index}`} paragraph mb={1}>
+                {message}
+              </Typography>
+            ))}
+        </>
       )}
+
       <Collapse in={collapsed} timeout="auto">
         {tip.messages.slice(defaultVisibleParagrahs).map((message, index) => {
           return (
