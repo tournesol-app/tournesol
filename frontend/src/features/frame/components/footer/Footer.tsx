@@ -117,7 +117,7 @@ const Footer = () => {
         },
         { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
         {
-          name: t('footer.moveToAction'),
+          name: t('footer.takeAction'),
           to: '/actions',
         },
       ],
