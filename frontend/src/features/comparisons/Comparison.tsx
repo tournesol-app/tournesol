@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { CircularProgress, Grid, Typography, Card } from '@mui/material';
+import { CircularProgress, Grid, Card } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import {
@@ -273,13 +273,14 @@ const Comparison = ({
           alignItems: 'center',
           flexDirection: 'column',
           py: 3,
+          '&:empty': { display: 'none' },
         }}
         component={Card}
         elevation={2}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (
-            <CircularProgress />
+            <CircularProgress color="secondary" />
           ) : (
             <ComparisonSliders
               submit={onSubmitComparison}
@@ -292,9 +293,10 @@ const Comparison = ({
               }
             />
           )
-        ) : (
-          <Typography>{t('comparison.pleaseSelectTwoItems')}</Typography>
-        )}
+        ) : selectorA.uid && selectorB.uid ? (
+          // Entities are selected but ratings are not loaded yet
+          <CircularProgress color="secondary" />
+        ) : null}
       </Grid>
     </Grid>
   );
