@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 
 import DialogBox from 'src/components/DialogBox';
-import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
 import { useLoginState } from 'src/hooks';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
@@ -317,7 +316,7 @@ const ComparisonSeries = ({
 
   const currentDialog = dialogs?.[step];
   return (
-    <LoaderWrapper isLoading={initializing.current}>
+    <>
       {/*
         Do not display the dialog box while the alternatives array
         is being built, to avoid a blink effect.
@@ -363,7 +362,7 @@ const ComparisonSeries = ({
       {!initializing.current && (
         <Comparison afterSubmitCallback={afterSubmitCallback} />
       )}
-    </LoaderWrapper>
+    </>
   );
 };
 
