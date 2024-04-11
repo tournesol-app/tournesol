@@ -1,11 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { CircularProgress, Grid, Typography, Card } from '@mui/material';
+import { CircularProgress, Grid, Card } from '@mui/material';
 
-import { useNotifications } from 'src/hooks';
+import { useNotifications, useSuggestions } from 'src/hooks';
 import {
   UsersService,
   ComparisonRequest,
@@ -80,14 +86,15 @@ const Comparison = ({
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
+  const { nextSuggestion } = useSuggestions();
 
+  const initializeWithSuggestions = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const [initialComparison, setInitialComparison] =
     useState<ComparisonRequest | null>(null);
 
   const { uidA, uidB } = getUidsFromLocation(location);
-
   const [selectorA, setSelectorA] = useState<SelectorValue>({
     uid: uidA,
     rating: null,
@@ -123,15 +130,58 @@ const Comparison = ({
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
   const onChangeB = useMemo(() => onChange('vidB'), [onChange]);
 
+  /**
+   * Automatically initialize the first comparison if the autoFill parameters
+   * are true.
+   */
   useEffect(() => {
+    if (initializeWithSuggestions.current === false) {
+      return;
+    }
+
+    const autoFillComparison = async () => {
+      let autoUidA = null;
+      let autoUidB = null;
+
+      if (!uidA && autoFillSelectorA) {
+        autoUidA = await nextSuggestion(uidA, uidB, pollName);
+      }
+
+      if (!uidB && autoFillSelectorB) {
+        autoUidB = await nextSuggestion(uidB, autoUidA || uidA, pollName);
+      }
+
+      if (autoUidA) {
+        onChangeA({ uid: autoUidA, rating: null });
+      }
+      if (autoUidB) {
+        onChangeB({ uid: autoUidB, rating: null });
+      }
+
+      initializeWithSuggestions.current = false;
+    };
+
+    autoFillComparison();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Wait for the potential initialization of the suggested entities before
+    // retrieving the comparison.
+    if (initializeWithSuggestions.current) {
+      return;
+    }
+
     setIsLoading(true);
     setInitialComparison(null);
+
     if (selectorA.uid !== uidA) {
       setSelectorA({ uid: uidA, rating: null });
     }
     if (selectorB.uid !== uidB) {
       setSelectorB({ uid: uidB, rating: null });
     }
+
     if (uidA && uidB)
       UsersService.usersMeComparisonsRetrieve({
         pollName,
@@ -222,7 +272,6 @@ const Comparison = ({
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          autoFill={autoFillSelectorA}
         />
       </Grid>
       <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
@@ -231,7 +280,6 @@ const Comparison = ({
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          autoFill={autoFillSelectorB}
         />
       </Grid>
       <Grid
@@ -251,7 +299,7 @@ const Comparison = ({
       >
         <ComparisonHelper />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ '&:empty': { display: 'none' } }}>
         <ComparisonEntityContexts selectorA={selectorA} selectorB={selectorB} />
       </Grid>
       <Grid
@@ -263,13 +311,14 @@ const Comparison = ({
           alignItems: 'center',
           flexDirection: 'column',
           py: 3,
+          '&:empty': { display: 'none' },
         }}
         component={Card}
         elevation={2}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (
-            <CircularProgress />
+            <CircularProgress color="secondary" />
           ) : (
             <ComparisonSliders
               submit={onSubmitComparison}
@@ -282,9 +331,10 @@ const Comparison = ({
               }
             />
           )
-        ) : (
-          <Typography>{t('comparison.pleaseSelectTwoItems')}</Typography>
-        )}
+        ) : selectorA.uid && selectorB.uid ? (
+          // Entities are selected but ratings are not loaded yet
+          <CircularProgress color="secondary" />
+        ) : null}
       </Grid>
     </Grid>
   );

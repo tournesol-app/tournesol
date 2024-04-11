@@ -7,7 +7,9 @@ import {
   Box,
   Collapse,
   Link,
+  Theme,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 
 interface TipProps {
@@ -18,8 +20,11 @@ interface TipProps {
 
 const Tip = ({ tip, tipId }: TipProps) => {
   const { t } = useTranslation();
-
   const [collapsed, setCollapsed] = useState(false);
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('sm')
+  );
+  const defaultVisibleParagrahs = isSmallScreen ? 0 : 1;
 
   const handleCollapse = () => {
     setCollapsed(!collapsed);
@@ -30,7 +35,6 @@ const Tip = ({ tip, tipId }: TipProps) => {
       severity="info"
       icon={false}
       sx={{
-        minHeight: '131.617px',
         width: '100%',
         '.MuiAlert-message': {
           width: '100%',
@@ -41,11 +45,21 @@ const Tip = ({ tip, tipId }: TipProps) => {
       <AlertTitle>
         <strong>{tip.title}</strong>
       </AlertTitle>
-      <Typography paragraph mb={1}>
-        {tip.messages[0]}
-      </Typography>
+
+      {defaultVisibleParagrahs > 0 && (
+        <>
+          {tip.messages
+            .slice(0, defaultVisibleParagrahs)
+            .map((message, index) => (
+              <Typography key={`tip_${index}`} paragraph mb={1}>
+                {message}
+              </Typography>
+            ))}
+        </>
+      )}
+
       <Collapse in={collapsed} timeout="auto">
-        {tip.messages.slice(1).map((message, index) => {
+        {tip.messages.slice(defaultVisibleParagrahs).map((message, index) => {
           return (
             <Typography key={`tip_${index}`} paragraph mb={1}>
               {message}
@@ -53,7 +67,7 @@ const Tip = ({ tip, tipId }: TipProps) => {
           );
         })}
       </Collapse>
-      {tip.messages.length > 1 && (
+      {tip.messages.length > defaultVisibleParagrahs && (
         <Box display="flex" justifyContent="flex-end">
           <Link
             component="button"

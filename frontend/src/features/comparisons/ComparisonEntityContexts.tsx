@@ -13,6 +13,14 @@ interface EntityContextBoxProps {
   selectorB: SelectorValue;
 }
 
+export const selectorHasContext = (selector: SelectorValue) => {
+  return (
+    selector.uid &&
+    selector.rating &&
+    selector.rating.entity_contexts.length > 0
+  );
+};
+
 const ComparisonEntityContextsItem = ({
   selector,
   altAssociationDisclaimer,
@@ -22,15 +30,17 @@ const ComparisonEntityContextsItem = ({
 }) => {
   return (
     <>
-      {selector.rating && selector.uid && selector.rating.entity_contexts && (
-        <EntityContextBox
-          uid={selector.uid}
-          contexts={selector.rating.entity_contexts}
-          entityName={selector.rating?.entity?.metadata?.name}
-          altAssociationDisclaimer={altAssociationDisclaimer}
-          collapsible={true}
-        />
-      )}
+      {selector.uid &&
+        selector.rating &&
+        selector.rating.entity_contexts.length > 0 && (
+          <EntityContextBox
+            uid={selector.uid}
+            contexts={selector.rating.entity_contexts}
+            entityName={selector.rating?.entity?.metadata?.name}
+            altAssociationDisclaimer={altAssociationDisclaimer}
+            collapsible={true}
+          />
+        )}
     </>
   );
 };
@@ -46,10 +56,18 @@ const ComparisonEntityContexts = ({
 
   const entityName = getEntityName(t, pollName);
 
+  const selectorAHasContext = selectorHasContext(selectorA);
+  const selectorBHasContext = selectorHasContext(selectorB);
+
+  if (!selectorAHasContext && !selectorBHasContext) {
+    return <></>;
+  }
+
   return (
     <Grid
       container
-      spacing={1}
+      // Save space when there is one or zero context item to display.
+      spacing={selectorAHasContext && selectorBHasContext ? 1 : 0}
       sx={{
         'span.primary': {
           color: theme.palette.secondary.main,
