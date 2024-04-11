@@ -1,10 +1,6 @@
 import React from 'react';
 import { Box, Chip, Grid, Typography } from '@mui/material';
 
-// Allow to position contents like the footer relatively to the top of the
-// page.
-export const contentHeaderHeight = 61;
-
 /**
  * Display a header.
  *
@@ -23,17 +19,20 @@ const ContentHeader = ({
   chipLabel?: string;
 }) => {
   return (
-    <Box
-      px={[2, 4]}
-      py={2}
-      color="text.secondary"
-      bgcolor="background.menu"
-      borderBottom="1px solid rgba(0, 0, 0, 0.12)"
-      height={contentHeaderHeight}
-    >
+    <Box px={[2, 4]} py={2} color="text.secondary">
       <Grid container spacing={1} justifyContent="space-between">
         <Grid item>
-          <Typography variant="h4" component="h2">
+          <Typography
+            variant="h4"
+            component="h2"
+            sx={(theme) => ({
+              textDecorationLine: 'underline',
+              textDecorationColor: theme.palette.primary.light,
+              textDecorationThickness: '0.6em',
+              textDecorationSkipInk: 'none',
+              textUnderlineOffset: '-0.1em',
+            })}
+          >
             {title}
           </Typography>
         </Grid>
