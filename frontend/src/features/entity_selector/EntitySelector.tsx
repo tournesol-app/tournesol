@@ -292,7 +292,7 @@ const EntitySelectorInnerAuth = ({
     <>
       {showEntityInput && (
         <Box
-          mb={1}
+          mb={{ xs: '4px', sm: 1 }}
           display="flex"
           flexDirection={
             uid
