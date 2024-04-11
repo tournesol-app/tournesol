@@ -80,7 +80,6 @@
   },
   "comparison": {
     "successfullySubmitted": "The comparison has been successfully submitted.",
-    "pleaseSelectTwoItems": "Please select 2 items to compare them.",
     "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
     "removeOptionalCriterias": "Remove optional criteria",
     "addOptionalCriterias": "Add optional criteria",
