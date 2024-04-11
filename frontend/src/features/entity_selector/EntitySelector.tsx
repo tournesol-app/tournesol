@@ -4,7 +4,7 @@ import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
 import { useTheme } from '@mui/material/styles';
-import { Box, Grid, Slide, Typography, useMediaQuery } from '@mui/material';
+import { Box, Grid, Slide, Typography } from '@mui/material';
 
 import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
@@ -126,7 +126,6 @@ const EntitySelectorInnerAuth = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { uid, rating, ratingIsExpired } = value;
 
@@ -319,7 +318,7 @@ const EntitySelectorInnerAuth = ({
             spacing={1}
             display={uid ? 'flex' : 'none'}
             direction={alignment === 'left' ? 'row' : 'row-reverse'}
-            justifyContent={smallScreen ? 'space-around' : 'flex-start'}
+            justifyContent={{ xs: 'space-around', sm: 'flex-start' }}
           >
             <Grid item>
               <EntitySelectButton

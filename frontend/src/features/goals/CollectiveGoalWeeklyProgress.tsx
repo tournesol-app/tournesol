@@ -1,11 +1,10 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, LinearProgress, Typography, useMediaQuery } from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material';
 
 import { getPollStats } from 'src/features/statistics/stats';
 import { useCurrentPoll, useStats } from 'src/hooks';
-import { theme } from 'src/theme';
 
 import {
   WEEKLY_COMPARISON_GOAL,
@@ -15,7 +14,6 @@ import {
 const CollectiveGoalWeeklyProgress = () => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const stats = useStats({ poll: pollName });
   const pollStats = getPollStats(stats, pollName);
@@ -33,7 +31,7 @@ const CollectiveGoalWeeklyProgress = () => {
       flexDirection="column"
       alignItems="center"
       gap={1}
-      mb={smallScreen ? 2 : 4}
+      mb={{ xs: 2, sm: 4 }}
     >
       <Typography variant="h5" textAlign="center">
         <Trans
