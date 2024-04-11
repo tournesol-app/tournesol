@@ -23,6 +23,7 @@ import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
+import { useUidToCompare } from 'src/hooks/useUidToCompare';
 
 const ENTITY_CARD_SWIPE_TIMEOUT = 180;
 // The minimum velocity per axis in pixels / ms.
@@ -45,12 +46,6 @@ export interface SelectorValue {
 
 const isUidValid = (uid: string | null) =>
   uid === null ? false : uid.match(/\w+:.+/);
-
-const wait = (milliseconds: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, milliseconds);
-  });
-};
 
 const EntitySelector = ({
   alignment = 'left',
@@ -128,6 +123,11 @@ const EntitySelectorInnerAuth = ({
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
+  const { nextSuggestion } = useUidToCompare({
+    currentUid: uid,
+    otherUid,
+    pollName,
+  });
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
@@ -259,13 +259,7 @@ const EntitySelectorInnerAuth = ({
       if (type === 'pointerup' || type === 'touchend') {
         // On swipe up
         if (swipe[1] < 0) {
-          const autoButton = document.getElementById(
-            `auto-suggestion-${alignment}`
-          ) as HTMLElement;
-
-          if (autoButton) {
-            setSlideIn(false);
-          }
+          slideUp();
         }
       }
     },
@@ -274,25 +268,25 @@ const EntitySelectorInnerAuth = ({
 
   const onSlideEntered = () => {
     setSlideDirection('down');
+    setLoading(false);
   };
 
-  const onSlideExited = () => {
+  const onSlideExited = async () => {
     setSlideDirection('up');
-
-    if (!loading) {
-      const autoButton = document.getElementById(
-        `auto-suggestion-${alignment}`
-      ) as HTMLElement;
-
-      if (autoButton) {
-        autoButton.click();
-      } else {
-        setSlideIn(true);
-        console.warn(
-          "Can't suggest new entity: Auto button not found in the document."
-        );
-      }
+    const newUid = await nextSuggestion();
+    if (newUid) {
+      onChange({ uid: newUid, rating: null });
     }
+  };
+
+  const slideUp = async () => {
+    if (loading || !slideIn) {
+      return;
+    }
+
+    setLoading(true);
+    setInputValue('');
+    setSlideIn(false);
   };
 
   return (
@@ -328,22 +322,7 @@ const EntitySelectorInnerAuth = ({
               />
             </Grid>
             <Grid item>
-              <AutoEntityButton
-                htmlId={`auto-suggestion-${alignment}`}
-                disabled={loading}
-                currentUid={uid}
-                otherUid={otherUid}
-                onClick={async () => {
-                  setLoading(true);
-                  setInputValue('');
-                  setSlideIn(false);
-                  await wait(ENTITY_CARD_SWIPE_TIMEOUT + 8);
-                }}
-                onResponse={(uid) => {
-                  uid ? onChange({ uid, rating: null }) : setLoading(false);
-                }}
-                autoFill={autoFill}
-              />
+              <AutoEntityButton disabled={loading} onClick={slideUp} />
             </Grid>
           </Grid>
         </Box>
@@ -435,18 +414,7 @@ const EntitySelectorInnerAuth = ({
                   <Grid container item xs={12} sm={5} justifyContent="center">
                     <AutoEntityButton
                       disabled={loading}
-                      currentUid={uid}
-                      otherUid={otherUid}
-                      onClick={async () => {
-                        setLoading(true);
-                        setInputValue('');
-                      }}
-                      onResponse={(uid) =>
-                        uid
-                          ? onChange({ uid, rating: null })
-                          : setLoading(false)
-                      }
-                      autoFill={false}
+                      onClick={slideUp}
                       variant="full"
                     />
                   </Grid>
