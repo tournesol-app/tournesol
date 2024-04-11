@@ -26,7 +26,7 @@ import { entityCardMainSx } from 'src/components/entity/style';
 
 const ENTITY_CARD_SWIPE_TIMEOUT = 180;
 // The minimum velocity per axis in pixels / ms.
-const ENTITY_CARD_SWIPE_VELOCITY: number | Vector2 = [0.35, 0.35];
+const ENTITY_CARD_SWIPE_VELOCITY: number | Vector2 = [0.25, 0.25];
 
 interface Props {
   alignment?: 'left' | 'right';
