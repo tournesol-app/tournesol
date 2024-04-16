@@ -21,6 +21,10 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
+import {
+  selectorAHistory,
+  selectorBHistory,
+} from 'src/features/entity_selector/EntitySelectorHistory';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
@@ -143,11 +147,15 @@ const Comparison = ({
       let autoUidA = null;
       let autoUidB = null;
 
-      if (!uidA && autoFillSelectorA) {
+      if (uidA) {
+        selectorAHistory.push(pollName, uidA);
+      } else if (autoFillSelectorA) {
         autoUidA = await nextSuggestion(uidA, uidB, pollName, 'A');
       }
 
-      if (!uidB && autoFillSelectorB) {
+      if (uidB) {
+        selectorBHistory.push(pollName, uidB);
+      } else if (autoFillSelectorB) {
         autoUidB = await nextSuggestion(uidB, autoUidA || uidA, pollName, 'B');
       }
 
