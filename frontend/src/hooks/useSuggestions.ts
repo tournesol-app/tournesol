@@ -7,7 +7,7 @@ import {
   autoSuggestionsRandom,
   fillAutoSuggestions,
   isAutoSuggestionsEmpty,
-} from 'src/features/rateLater/autoSuggestions';
+} from 'src/features/suggestions/autoSuggestions';
 import { UsersService } from 'src/services/openapi';
 
 export async function randomUidFromSuggestions(

@@ -1,5 +1,8 @@
-// A pool of UIDs that can be suggested.
-export const AUTO_SUGGESTIONS: { [key: string]: string[] } = {};
+/**
+ * A pool of UIDs to compare, that can be queried using the following
+ * interface.
+ */
+const AUTO_SUGGESTIONS: { [key: string]: string[] } = {};
 
 export const clearAutoSuggestions = () => {
   Object.keys(AUTO_SUGGESTIONS).forEach((key) => (AUTO_SUGGESTIONS[key] = []));
