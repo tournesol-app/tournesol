@@ -1,10 +1,4 @@
-import { UsersService } from 'src/services/openapi';
 import { VideoObject } from './types';
-import {
-  autoSuggestionsRandom,
-  fillAutoSuggestions,
-  isAutoSuggestionsEmpty,
-} from 'src/features/rateLater/autoSuggestions';
 
 export function extractVideoId(
   idOrUrl: string,
@@ -77,40 +71,6 @@ export function idFromUid(uid: string): string {
   }
 
   return '';
-}
-
-export async function getUidForComparison(
-  uid: string | null,
-  uidOther: string | null,
-  poll: string
-): Promise<string | null> {
-  const exclude: string[] = [];
-
-  [uid, uidOther].forEach((item) => {
-    if (item) {
-      exclude.push(item);
-    }
-  });
-
-  if (isAutoSuggestionsEmpty(poll)) {
-    const suggestions = await UsersService.usersMeSuggestionsTocompareList({
-      pollName: poll,
-    });
-
-    if (suggestions && suggestions.length > 0) {
-      fillAutoSuggestions(
-        poll,
-        suggestions.map((item) => item.entity.uid),
-        exclude
-      );
-    }
-  }
-
-  if (isAutoSuggestionsEmpty(poll)) {
-    return null;
-  }
-
-  return autoSuggestionsRandom(poll, exclude);
 }
 
 export const convertDurationToClockDuration = (duration: number) => {

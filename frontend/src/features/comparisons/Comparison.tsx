@@ -150,13 +150,17 @@ const Comparison = ({
       if (uidA) {
         selectorAHistory.push(pollName, uidA);
       } else if (autoFillSelectorA) {
-        autoUidA = await nextSuggestion(uidA, uidB, pollName, 'A');
+        autoUidA = await nextSuggestion(pollName, [uidA, uidB], 'A');
       }
 
       if (uidB) {
         selectorBHistory.push(pollName, uidB);
       } else if (autoFillSelectorB) {
-        autoUidB = await nextSuggestion(uidB, autoUidA || uidA, pollName, 'B');
+        autoUidB = await nextSuggestion(
+          pollName,
+          [autoUidA || uidA, uidB],
+          'B'
+        );
       }
 
       if (autoUidA) {
