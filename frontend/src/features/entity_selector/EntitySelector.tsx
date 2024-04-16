@@ -28,6 +28,7 @@ import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
+import { HistoryId } from 'src/hooks/useSuggestions';
 
 const ENTITY_CARD_SWIPE_TIMEOUT = 180;
 // The minimum velocity per axis in pixels / ms.
@@ -39,6 +40,7 @@ interface Props {
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
+  historyId: HistoryId;
 }
 
 export interface SelectorValue {
@@ -56,6 +58,7 @@ const EntitySelector = ({
   onChange,
   otherUid,
   variant = 'regular',
+  historyId,
 }: Props) => {
   const { isLoggedIn } = useLoginState();
 
@@ -68,6 +71,7 @@ const EntitySelector = ({
           otherUid={otherUid}
           alignment={alignment}
           variant={variant}
+          historyId={historyId}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -117,6 +121,7 @@ const EntitySelectorInnerAuth = ({
   otherUid,
   alignment,
   variant,
+  historyId,
 }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -273,7 +278,7 @@ const EntitySelectorInnerAuth = ({
 
   const onSlideExited = async () => {
     if (slideDirection === 'up') {
-      const newUid = previousSuggestion(pollName);
+      const newUid = previousSuggestion(pollName, historyId);
 
       if (newUid) {
         setSlideDirection('down');
@@ -282,7 +287,7 @@ const EntitySelectorInnerAuth = ({
         setSlideIn(true);
       }
     } else {
-      const newUid = await nextSuggestion(uid, otherUid, pollName);
+      const newUid = await nextSuggestion(uid, otherUid, pollName, historyId);
 
       if (newUid) {
         setSlideDirection('up');

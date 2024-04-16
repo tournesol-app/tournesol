@@ -144,11 +144,11 @@ const Comparison = ({
       let autoUidB = null;
 
       if (!uidA && autoFillSelectorA) {
-        autoUidA = await nextSuggestion(uidA, uidB, pollName);
+        autoUidA = await nextSuggestion(uidA, uidB, pollName, 'A');
       }
 
       if (!uidB && autoFillSelectorB) {
-        autoUidB = await nextSuggestion(uidB, autoUidA || uidA, pollName);
+        autoUidB = await nextSuggestion(uidB, autoUidA || uidA, pollName, 'B');
       }
 
       if (autoUidA) {
@@ -272,6 +272,7 @@ const Comparison = ({
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
+          historyId="A"
         />
       </Grid>
       <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
@@ -280,6 +281,7 @@ const Comparison = ({
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
+          historyId="B"
         />
       </Grid>
       <Grid
