@@ -123,7 +123,7 @@ const EntitySelectorInnerAuth = ({
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
-  const { nextSuggestion } = useSuggestions();
+  const { nextSuggestion, previousSuggestion } = useSuggestions();
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
@@ -257,6 +257,10 @@ const EntitySelectorInnerAuth = ({
         if (swipe[1] < 0) {
           slideUp();
         }
+        // On swipe down
+        if (swipe[1] > 0) {
+          slideDown();
+        }
       }
     },
     { swipe: { velocity: ENTITY_CARD_SWIPE_VELOCITY } }
@@ -268,13 +272,25 @@ const EntitySelectorInnerAuth = ({
   };
 
   const onSlideExited = async () => {
-    setSlideDirection('up');
-    const newUid = await nextSuggestion(uid, otherUid, pollName);
-    if (newUid) {
-      onChange({ uid: newUid, rating: null });
+    if (slideDirection === 'up') {
+      const newUid = previousSuggestion(pollName);
+
+      if (newUid) {
+        setSlideDirection('down');
+        onChange({ uid: newUid, rating: null });
+      } else {
+        setSlideIn(true);
+      }
     } else {
-      console.warn('No entity found by the function nextSuggestion.');
-      setSlideIn(true);
+      const newUid = await nextSuggestion(uid, otherUid, pollName);
+
+      if (newUid) {
+        setSlideDirection('up');
+        onChange({ uid: newUid, rating: null });
+      } else {
+        console.warn('No entity found by the function nextSuggestion.');
+        setSlideIn(true);
+      }
     }
   };
 
@@ -283,6 +299,18 @@ const EntitySelectorInnerAuth = ({
       return;
     }
 
+    setSlideDirection('down');
+    setLoading(true);
+    setInputValue('');
+    setSlideIn(false);
+  };
+
+  const slideDown = () => {
+    if (loading || !slideIn) {
+      return;
+    }
+
+    setSlideDirection('up');
     setLoading(true);
     setInputValue('');
     setSlideIn(false);
