@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
+import { clearEntitySelectorsHistory } from 'src/features/entity_selector/EntitySelectorHistory';
 import {
   selectLogin,
   logout as logoutAction,
@@ -23,6 +24,7 @@ export const useLoginState = () => {
      */
     dispatch(clearSettings());
     clearAutoSuggestions();
+    clearEntitySelectorsHistory();
   }, [dispatch]);
 
   const updateUsername = useCallback(

@@ -85,7 +85,17 @@ class UidHistory {
 
     return this.#history[poll].at(this.#cursor[poll] + 1) !== undefined;
   }
+
+  clear() {
+    this.#cursor = {};
+    this.#history = {};
+  }
 }
 
 export const selectorAHistory = new UidHistory();
 export const selectorBHistory = new UidHistory();
+const allSelectorsHistory = [selectorAHistory, selectorBHistory];
+
+export const clearEntitySelectorsHistory = () => {
+  allSelectorsHistory.forEach((history) => history.clear());
+};
