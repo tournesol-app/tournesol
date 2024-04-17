@@ -1,8 +1,10 @@
 /**
- * A class representing a generic history of UIDs.
+ * A generic history of UIDs, supporting multiple polls
  *
- * One instance supports multiple polls. The public methods `previous` and
- * `next` allows to navigate in the history of UIDs.
+ * A history can be used, for instance, to keep track of all UIDs that have
+ * been displayed by an entity selector.
+ *
+ * A history should always be cleared at logout.
  */
 class UidHistory {
   // The current position in the history.

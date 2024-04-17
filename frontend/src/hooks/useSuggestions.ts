@@ -3,11 +3,7 @@ import {
   selectorAHistory as historyA,
   selectorBHistory as historyB,
 } from 'src/features/entity_selector/EntitySelectorHistory';
-import {
-  autoSuggestionsRandom,
-  fillAutoSuggestions,
-  isAutoSuggestionsEmpty,
-} from 'src/features/suggestions/autoSuggestions';
+import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 import { UsersService } from 'src/services/openapi';
 
 export async function randomUidFromSuggestions(
@@ -16,13 +12,13 @@ export async function randomUidFromSuggestions(
 ): Promise<string | null> {
   const excluded = exclude.filter((elem) => elem != null) as string[];
 
-  if (isAutoSuggestionsEmpty(poll)) {
+  if (autoSuggestionPool.isEmpty(poll)) {
     const suggestions = await UsersService.usersMeSuggestionsTocompareList({
       pollName: poll,
     });
 
     if (suggestions && suggestions.length > 0) {
-      fillAutoSuggestions(
+      autoSuggestionPool.fill(
         poll,
         suggestions.map((item) => item.entity.uid),
         excluded
@@ -30,11 +26,11 @@ export async function randomUidFromSuggestions(
     }
   }
 
-  if (isAutoSuggestionsEmpty(poll)) {
+  if (autoSuggestionPool.isEmpty(poll)) {
     return null;
   }
 
-  return autoSuggestionsRandom(poll, excluded);
+  return autoSuggestionPool.random(poll, excluded);
 }
 
 export type HistoryId = 'A' | 'B';
