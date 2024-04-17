@@ -24,6 +24,7 @@ import {
   FormatQuote,
   Newspaper,
   Headphones,
+  SwapHoriz,
 } from '@mui/icons-material';
 import TitledPaper from 'src/components/TitledPaper';
 
@@ -87,7 +88,7 @@ const ScientificLiteratureBox = () => {
       authors:
         'Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang, Oscar Villemaud (2024). AAAI.',
       url: 'https://ojs.aaai.org/index.php/AAAI/article/view/30020',
-      icon: HowToVote,
+      icon: SwapHoriz,
     },
     {
       name: 'Robust Sparse Voting',
