@@ -1,4 +1,4 @@
-import { UidHistory } from 'src/features/entity_selector/entitySelectorHistory';
+import { UidHistory } from 'src/features/suggestions/uidHistory';
 
 describe('class: UidHistory', () => {
   const pollA = 'foo';
