@@ -84,7 +84,7 @@ const ScientificLiteratureBox = () => {
       icon: MenuBook,
     },
     {
-      name: ' Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons ',
+      name: ' Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons',
       authors:
         'Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang, Oscar Villemaud (2024). AAAI.',
       url: 'https://ojs.aaai.org/index.php/AAAI/article/view/30020',
