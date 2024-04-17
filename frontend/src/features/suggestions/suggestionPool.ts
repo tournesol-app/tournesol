@@ -6,7 +6,7 @@
  *
  * A pool should always be cleared at logout.
  */
-class SuggestionPool {
+export class SuggestionPool {
   #suggestions: { [key: string]: string[] };
 
   constructor() {
@@ -34,11 +34,16 @@ class SuggestionPool {
       ...this.#suggestions[poll].filter((uid) => !excludeSet?.has(uid)),
     ];
 
+    if (uids.length === 0) {
+      return null;
+    }
+
     const selected = uids[Math.floor(Math.random() * uids.length)];
     this.#suggestions[poll].splice(
       this.#suggestions[poll].indexOf(selected),
       1
     );
+
     return selected;
   }
 
