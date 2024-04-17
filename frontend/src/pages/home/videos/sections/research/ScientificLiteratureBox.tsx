@@ -24,6 +24,7 @@ import {
   FormatQuote,
   Newspaper,
   Headphones,
+  SwapHoriz,
 } from '@mui/icons-material';
 import TitledPaper from 'src/components/TitledPaper';
 
@@ -83,9 +84,16 @@ const ScientificLiteratureBox = () => {
       icon: MenuBook,
     },
     {
+      name: ' Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons',
+      authors:
+        'Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang, Oscar Villemaud (2024). AAAI.',
+      url: 'https://ojs.aaai.org/index.php/AAAI/article/view/30020',
+      icon: SwapHoriz,
+    },
+    {
       name: 'Robust Sparse Voting',
       authors:
-        'Youssef Allouah, Rachid Guerraoui, Lê-Nguyên Hoang, Oscar Villemaud (2022). ArXiV.',
+        'Youssef Allouah, Rachid Guerraoui, Lê-Nguyên Hoang, Oscar Villemaud (2024). AISTATS.',
       url: 'https://arxiv.org/abs/2202.08656',
       icon: HowToVote,
     },
