@@ -6,7 +6,7 @@
  *
  * A history should always be cleared at logout.
  */
-class UidHistory {
+export class UidHistory {
   // The current position in the history.
   #cursor: { [key: string]: number };
   #history: { [key: string]: string[] };

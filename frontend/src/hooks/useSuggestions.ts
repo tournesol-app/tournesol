@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import {
   selectorAHistory as historyA,
   selectorBHistory as historyB,
-} from 'src/features/entity_selector/EntitySelectorHistory';
+} from 'src/features/entity_selector/entitySelectorHistory';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 import { UsersService } from 'src/services/openapi';
 

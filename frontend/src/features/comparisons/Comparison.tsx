@@ -24,7 +24,7 @@ import EntitySelector, {
 import {
   selectorAHistory,
   selectorBHistory,
-} from 'src/features/entity_selector/EntitySelectorHistory';
+} from 'src/features/entity_selector/entitySelectorHistory';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';

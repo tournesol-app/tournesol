@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
-import { clearEntitySelectorsHistory } from 'src/features/entity_selector/EntitySelectorHistory';
+import { clearEntitySelectorsHistory } from 'src/features/entity_selector/entitySelectorHistory';
 import {
   selectLogin,
   logout as logoutAction,
