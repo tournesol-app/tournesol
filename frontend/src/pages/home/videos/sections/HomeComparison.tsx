@@ -140,7 +140,7 @@ const HomeComparison = () => {
           value={selectorA}
           onChange={setSelectorA}
           otherUid={uidB}
-          historyId="A"
+          historyId="selectorA"
         />
       </Grid>
       <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
@@ -149,7 +149,7 @@ const HomeComparison = () => {
           value={selectorB}
           onChange={setSelectorB}
           otherUid={uidA}
-          historyId="B"
+          historyId="selectorA"
         />
       </Grid>
       <Grid item xs={12} mt={1} component={Card} elevation={2}>

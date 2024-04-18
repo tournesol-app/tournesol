@@ -6,155 +6,227 @@ describe('class: UidHistory', () => {
 
   it('constructor', () => {
     const history = new UidHistory();
-    expect(history.isHistoryEmpty(pollA)).toEqual(true);
-    expect(history.isHistoryEmpty(pollB)).toEqual(true);
-    expect(history.previous(pollA)).toBeNull();
-    expect(history.previous(pollB)).toBeNull();
-    expect(history.next(pollA)).toBeNull();
-    expect(history.next(pollB)).toBeNull();
-    expect(history.hasNext(pollA)).toEqual(false);
-    expect(history.hasNext(pollB)).toEqual(false);
+    expect(history.isEmpty(pollA)).toEqual(true);
+    expect(history.isEmpty(pollB)).toEqual(true);
+    expect(history.moveLeft(pollA)).toBeNull();
+    expect(history.moveLeft(pollB)).toBeNull();
+    expect(history.moveRight(pollA)).toBeNull();
+    expect(history.moveRight(pollB)).toBeNull();
+    expect(history.hasNextLeft(pollA)).toEqual(false);
+    expect(history.hasNextLeft(pollB)).toEqual(false);
+    expect(history.hasNextRight(pollA)).toEqual(false);
+    expect(history.hasNextRight(pollB)).toEqual(false);
   });
 
-  it('method: isHistoryEmpty - is poll specific', () => {
+  it('method: isEmpty - is poll specific', () => {
     const history = new UidHistory();
-    history.push(pollA, 'uid1');
+    history.appendRight(pollA, 'uid1');
 
-    expect(history.isHistoryEmpty(pollA)).toEqual(false);
-    expect(history.isHistoryEmpty(pollB)).toEqual(true);
+    expect(history.isEmpty(pollA)).toEqual(false);
+    expect(history.isEmpty(pollB)).toEqual(true);
   });
 
-  it('method: push - is poll specific', () => {
+  it('method: appendLeft - is poll specific', () => {
     const history = new UidHistory();
-    ['uid1', 'uid2'].forEach((uid) => history.push(pollA, uid));
-    ['uidA', 'uidB'].forEach((uid) => history.push(pollB, uid));
+    ['uid1', 'uid2'].forEach((uid) => history.appendLeft(pollA, uid));
+    ['uidA', 'uidB'].forEach((uid) => history.appendLeft(pollB, uid));
 
-    expect(history.previous(pollA)).toEqual('uid1');
-    expect(history.previous(pollB)).toEqual('uidA');
+    expect(history.moveRight(pollA)).toEqual('uid1');
+    expect(history.moveRight(pollB)).toEqual('uidA');
   });
 
-  it('method: push - reset the history cursor', () => {
+  it('method: appendLeft - reset the history cursor', () => {
     const history = new UidHistory();
 
-    history.push(pollA, 'uid1');
-    expect(history.previous(pollA)).toBeNull();
+    history.appendLeft(pollA, 'uid1');
+    expect(history.moveRight(pollA)).toBeNull();
 
-    history.push(pollA, 'uid2');
-    expect(history.previous(pollA)).toEqual('uid1');
+    history.appendLeft(pollA, 'uid2');
+    expect(history.moveRight(pollA)).toEqual('uid1');
 
-    history.push(pollA, 'uid3');
-    history.push(pollA, 'uid4');
-    expect(history.previous(pollA)).toEqual('uid3');
+    history.appendLeft(pollA, 'uid3');
+    history.appendLeft(pollA, 'uid4');
+    expect(history.moveRight(pollA)).toEqual('uid3');
 
-    history.previous(pollA);
-    history.previous(pollA);
-    history.push(pollA, 'uid5');
-    expect(history.previous(pollA)).toEqual('uid4');
+    history.moveRight(pollA);
+    history.moveRight(pollA);
+    history.appendLeft(pollA, 'uid5');
+    expect(history.moveRight(pollA)).toEqual('uid4');
   });
 
-  it('method: previous - is poll specific', () => {
+  it('method: appendRight - is poll specific', () => {
     const history = new UidHistory();
-    ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) => history.push(pollA, uid));
-    ['uidA', 'uidB', 'uidC', 'uidD'].forEach((uid) => history.push(pollB, uid));
+    ['uid1', 'uid2'].forEach((uid) => history.appendRight(pollA, uid));
+    ['uidA', 'uidB'].forEach((uid) => history.appendRight(pollB, uid));
 
-    expect(history.previous(pollA)).toEqual('uid3');
-    expect(history.previous(pollA)).toEqual('uid2');
-    expect(history.previous(pollA)).toEqual('uid1');
-    expect(history.previous(pollA)).toBeNull();
-
-    expect(history.previous(pollB)).toEqual('uidC');
-    expect(history.previous(pollB)).toEqual('uidB');
-    expect(history.previous(pollB)).toEqual('uidA');
-    expect(history.previous(pollB)).toBeNull();
+    expect(history.moveLeft(pollA)).toEqual('uid1');
+    expect(history.moveLeft(pollB)).toEqual('uidA');
   });
 
-  it('method: next - is poll specific', () => {
+  it('method: appendRight - reset the history cursor', () => {
     const history = new UidHistory();
-    ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) => history.push(pollA, uid));
-    ['uidA', 'uidB', 'uidC', 'uidD'].forEach((uid) => history.push(pollB, uid));
 
-    expect(history.next(pollA)).toBeNull();
-    expect(history.next(pollB)).toBeNull();
+    history.appendRight(pollA, 'uid1');
+    expect(history.moveLeft(pollA)).toBeNull();
 
-    history.previous(pollA);
-    expect(history.next(pollA)).toEqual('uid4');
+    history.appendRight(pollA, 'uid2');
+    expect(history.moveLeft(pollA)).toEqual('uid1');
 
-    history.previous(pollA);
-    history.previous(pollA);
-    expect(history.next(pollA)).toEqual('uid3');
-    expect(history.next(pollA)).toEqual('uid4');
-    expect(history.next(pollA)).toBeNull();
+    history.appendRight(pollA, 'uid3');
+    history.appendRight(pollA, 'uid4');
+    expect(history.moveLeft(pollA)).toEqual('uid3');
+
+    history.moveLeft(pollA);
+    history.moveLeft(pollA);
+    history.appendRight(pollA, 'uid5');
+    expect(history.moveLeft(pollA)).toEqual('uid4');
+  });
+
+  it('method: moveLeft - is poll specific', () => {
+    const history = new UidHistory();
+    ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
+      history.appendRight(pollA, uid)
+    );
+    ['uidA', 'uidB', 'uidC', 'uidD'].forEach((uid) =>
+      history.appendRight(pollB, uid)
+    );
+
+    expect(history.moveLeft(pollA)).toEqual('uid3');
+    expect(history.moveLeft(pollA)).toEqual('uid2');
+    expect(history.moveLeft(pollA)).toEqual('uid1');
+    expect(history.moveLeft(pollA)).toBeNull();
+
+    expect(history.moveLeft(pollB)).toEqual('uidC');
+    expect(history.moveLeft(pollB)).toEqual('uidB');
+    expect(history.moveLeft(pollB)).toEqual('uidA');
+    expect(history.moveLeft(pollB)).toBeNull();
+  });
+
+  it('method: moveRight - is poll specific', () => {
+    const history = new UidHistory();
+    ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
+      history.appendRight(pollA, uid)
+    );
+    ['uidA', 'uidB', 'uidC', 'uidD'].forEach((uid) =>
+      history.appendRight(pollB, uid)
+    );
+
+    expect(history.moveRight(pollA)).toBeNull();
+    expect(history.moveRight(pollB)).toBeNull();
+
+    history.moveLeft(pollA);
+    expect(history.moveRight(pollA)).toEqual('uid4');
+
+    history.moveLeft(pollA);
+    history.moveLeft(pollA);
+    expect(history.moveRight(pollA)).toEqual('uid3');
+    expect(history.moveRight(pollA)).toEqual('uid4');
+    expect(history.moveRight(pollA)).toBeNull();
 
     for (let i = 0; i < 10; i++) {
-      history.previous(pollA);
+      history.moveLeft(pollA);
     }
-    expect(history.next(pollA)).toEqual('uid2');
+    expect(history.moveRight(pollA)).toEqual('uid2');
 
-    history.previous(pollB);
-    expect(history.next(pollB)).toEqual('uidD');
-    expect(history.next(pollB)).toBeNull();
+    history.moveLeft(pollB);
+    expect(history.moveRight(pollB)).toEqual('uidD');
+    expect(history.moveRight(pollB)).toBeNull();
   });
 
-  it('method: hasNext - is poll specific', () => {
+  it('method: hasNextLeft - is poll specific', () => {
     const history = new UidHistory();
-    ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) => history.push(pollA, uid));
-    ['uidA', 'uidB', 'uidC', 'uidD'].forEach((uid) => history.push(pollB, uid));
+    ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
+      history.appendLeft(pollA, uid)
+    );
+    ['uidA', 'uidB', 'uidC', 'uidD'].forEach((uid) =>
+      history.appendLeft(pollB, uid)
+    );
 
-    expect(history.hasNext(pollA)).toEqual(false);
-    expect(history.hasNext(pollB)).toEqual(false);
+    expect(history.hasNextLeft(pollA)).toEqual(false);
+    expect(history.hasNextLeft(pollB)).toEqual(false);
 
-    history.previous(pollA);
-    expect(history.hasNext(pollA)).toEqual(true);
-    expect(history.next(pollA)).toEqual('uid4');
-    expect(history.hasNext(pollA)).toEqual(false);
+    history.moveRight(pollA);
+    expect(history.hasNextLeft(pollA)).toEqual(true);
+    expect(history.moveLeft(pollA)).toEqual('uid4');
+    expect(history.hasNextLeft(pollA)).toEqual(false);
 
     for (let i = 0; i < 10; i++) {
-      history.previous(pollA);
+      history.moveRight(pollA);
     }
-    expect(history.hasNext(pollA)).toEqual(true);
-    expect(history.next(pollA)).toEqual('uid2');
-    expect(history.hasNext(pollA)).toEqual(true);
+    expect(history.hasNextLeft(pollA)).toEqual(true);
+    expect(history.moveLeft(pollA)).toEqual('uid2');
+    expect(history.hasNextLeft(pollA)).toEqual(true);
 
-    history.previous(pollB);
-    expect(history.hasNext(pollB)).toEqual(true);
-    expect(history.next(pollB)).toEqual('uidD');
-    expect(history.hasNext(pollB)).toEqual(false);
+    history.moveRight(pollB);
+    expect(history.hasNextLeft(pollB)).toEqual(true);
+    expect(history.moveLeft(pollB)).toEqual('uidD');
+    expect(history.hasNextLeft(pollB)).toEqual(false);
+  });
+
+  it('method: hasNextRight - is poll specific', () => {
+    const history = new UidHistory();
+    ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
+      history.appendRight(pollA, uid)
+    );
+    ['uidA', 'uidB', 'uidC', 'uidD'].forEach((uid) =>
+      history.appendRight(pollB, uid)
+    );
+
+    expect(history.hasNextRight(pollA)).toEqual(false);
+    expect(history.hasNextRight(pollB)).toEqual(false);
+
+    history.moveLeft(pollA);
+    expect(history.hasNextRight(pollA)).toEqual(true);
+    expect(history.moveRight(pollA)).toEqual('uid4');
+    expect(history.hasNextRight(pollA)).toEqual(false);
+
+    for (let i = 0; i < 10; i++) {
+      history.moveLeft(pollA);
+    }
+    expect(history.hasNextRight(pollA)).toEqual(true);
+    expect(history.moveRight(pollA)).toEqual('uid2');
+    expect(history.hasNextRight(pollA)).toEqual(true);
+
+    history.moveLeft(pollB);
+    expect(history.hasNextRight(pollB)).toEqual(true);
+    expect(history.moveRight(pollB)).toEqual('uidD');
+    expect(history.hasNextRight(pollB)).toEqual(false);
   });
 
   it('method: clear - clears everything', () => {
     const history = new UidHistory();
     const pollC = 'foobar';
 
-    ['uid1', 'uid2', 'uid3'].forEach((uid) => history.push(pollA, uid));
-    ['uidA', 'uidB', 'uidC'].forEach((uid) => history.push(pollB, uid));
-    ['uidX', 'uidY', 'uidZ'].forEach((uid) => history.push(pollC, uid));
+    ['uid1', 'uid2', 'uid3'].forEach((uid) => history.appendRight(pollA, uid));
+    ['uidA', 'uidB', 'uidC'].forEach((uid) => history.appendRight(pollB, uid));
+    ['uidX', 'uidY', 'uidZ'].forEach((uid) => history.appendRight(pollC, uid));
 
     // Move at the beginning of the history A.
-    history.previous(pollA);
-    history.previous(pollA);
+    history.moveLeft(pollA);
+    history.moveLeft(pollA);
     // Move in the middle of the history B.
-    history.previous(pollB);
+    history.moveLeft(pollB);
 
-    expect(history.isHistoryEmpty(pollA)).toEqual(false);
-    expect(history.isHistoryEmpty(pollB)).toEqual(false);
-    expect(history.isHistoryEmpty(pollC)).toEqual(false);
+    expect(history.isEmpty(pollA)).toEqual(false);
+    expect(history.isEmpty(pollB)).toEqual(false);
+    expect(history.isEmpty(pollC)).toEqual(false);
 
     history.clear();
 
-    expect(history.isHistoryEmpty(pollA)).toEqual(true);
-    expect(history.isHistoryEmpty(pollB)).toEqual(true);
-    expect(history.isHistoryEmpty(pollC)).toEqual(true);
+    expect(history.isEmpty(pollA)).toEqual(true);
+    expect(history.isEmpty(pollB)).toEqual(true);
+    expect(history.isEmpty(pollC)).toEqual(true);
 
-    expect(history.previous(pollA)).toBeNull();
-    expect(history.previous(pollB)).toBeNull();
-    expect(history.previous(pollC)).toBeNull();
+    expect(history.moveLeft(pollA)).toBeNull();
+    expect(history.moveLeft(pollB)).toBeNull();
+    expect(history.moveLeft(pollC)).toBeNull();
 
-    expect(history.next(pollA)).toBeNull();
-    expect(history.next(pollB)).toBeNull();
-    expect(history.next(pollC)).toBeNull();
+    expect(history.moveRight(pollA)).toBeNull();
+    expect(history.moveRight(pollB)).toBeNull();
+    expect(history.moveRight(pollC)).toBeNull();
 
-    expect(history.hasNext(pollA)).toEqual(false);
-    expect(history.hasNext(pollB)).toEqual(false);
-    expect(history.hasNext(pollC)).toEqual(false);
+    expect(history.hasNextRight(pollA)).toEqual(false);
+    expect(history.hasNextRight(pollB)).toEqual(false);
+    expect(history.hasNextRight(pollC)).toEqual(false);
   });
 });

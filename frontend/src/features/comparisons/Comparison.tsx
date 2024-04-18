@@ -147,19 +147,28 @@ const Comparison = ({
       let autoUidA = null;
       let autoUidB = null;
 
+      // At this moment, the entities still present in selectorAHistory and
+      // selectorBHistory come from a previous comparison session. During this
+      // last session they may have been compared enough times to not be
+      // considered as suggestion by the API anymore. To avoid suggesting
+      // entities that don't match the suggestion strategies used by the API,
+      // we clear the history of all selectors.
+      selectorAHistory.clear();
+      selectorBHistory.clear();
+
       if (uidA) {
-        selectorAHistory.push(pollName, uidA);
+        selectorAHistory.appendRight(pollName, uidA);
       } else if (autoFillSelectorA) {
-        autoUidA = await nextSuggestion(pollName, [uidA, uidB], 'A');
+        autoUidA = await nextSuggestion(pollName, [uidA, uidB], 'selectorA');
       }
 
       if (uidB) {
-        selectorBHistory.push(pollName, uidB);
+        selectorBHistory.appendRight(pollName, uidB);
       } else if (autoFillSelectorB) {
         autoUidB = await nextSuggestion(
           pollName,
           [autoUidA || uidA, uidB],
-          'B'
+          'selectorB'
         );
       }
 
@@ -284,7 +293,7 @@ const Comparison = ({
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          historyId="A"
+          historyId="selectorA"
         />
       </Grid>
       <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
@@ -293,7 +302,7 @@ const Comparison = ({
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          historyId="B"
+          historyId="selectorB"
         />
       </Grid>
       <Grid

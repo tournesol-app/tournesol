@@ -14,6 +14,7 @@ import { Search } from '@mui/icons-material';
 
 import { useTranslation } from 'react-i18next';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { HistoryId, useSuggestions } from 'src/hooks/useSuggestions';
 import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
@@ -37,6 +38,10 @@ interface Props {
   otherUid: string | null;
   variant?: 'compact' | 'full';
   disabled?: boolean;
+  // When provided with historyInsertion, the selected UID will be added to
+  // the specified history.
+  historyId?: HistoryId;
+  historyInsertion?: 'left' | 'right';
 }
 
 const VideoInput = ({
@@ -45,9 +50,12 @@ const VideoInput = ({
   otherUid,
   variant = 'compact',
   disabled = false,
+  historyId,
+  historyInsertion,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+  const { insertInHistory } = useSuggestions();
 
   const selectorAnchor = useRef<HTMLDivElement>(null);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -65,6 +73,10 @@ const VideoInput = ({
   const handleOptionClick = (uid: string) => {
     onChange(uid);
     setSuggestionsOpen(false);
+
+    if (historyId && historyInsertion) {
+      insertInHistory(pollName, historyId, historyInsertion, uid);
+    }
   };
 
   const toggleSuggestions = () => {

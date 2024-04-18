@@ -1,5 +1,6 @@
 /**
- * A generic history of UIDs, supporting multiple polls
+ * A generic history of UIDs, supporting appends to both ends and multiple
+ * polls.
  *
  * A history can be used, for instance, to keep track of all UIDs that have
  * been displayed by an entity selector.
@@ -24,7 +25,7 @@ export class UidHistory {
     return true;
   }
 
-  isHistoryEmpty(poll: string) {
+  isEmpty(poll: string) {
     if (this.#history[poll] == undefined || this.#history[poll].length === 0) {
       return true;
     }
@@ -32,7 +33,32 @@ export class UidHistory {
     return false;
   }
 
-  push(poll: string, uid: string) {
+  insert(poll: string, position: 'left' | 'right', uid: string) {
+    if (this.#history[poll] == undefined) {
+      this.#history[poll] = [];
+    }
+
+    if (this.#history[poll][this.#cursor[poll]] === uid) {
+      return;
+    }
+
+    if (position === 'right') {
+      this.#cursor[poll] += 1;
+    }
+
+    this.#history[poll].splice(this.#cursor[poll], 0, uid);
+  }
+
+  appendLeft(poll: string, uid: string) {
+    if (this.#history[poll] == undefined) {
+      this.#history[poll] = [];
+    }
+
+    this.#history[poll].unshift(uid);
+    this.#cursor[poll] = 0;
+  }
+
+  appendRight(poll: string, uid: string) {
     if (this.#history[poll] == undefined) {
       this.#history[poll] = [];
     }
@@ -41,8 +67,8 @@ export class UidHistory {
     this.#cursor[poll] = this.#history[poll].length - 1;
   }
 
-  previous(poll: string): string | null {
-    if (this.isHistoryEmpty(poll)) {
+  moveLeft(poll: string): string | null {
+    if (this.isEmpty(poll)) {
       return null;
     }
 
@@ -50,7 +76,6 @@ export class UidHistory {
       this.#cursor[poll] = this.#history[poll].length;
     }
 
-    // End of the history. We could also restart at length - 1 instead.
     if (this.#cursor[poll] <= 0) {
       return null;
     }
@@ -59,8 +84,8 @@ export class UidHistory {
     return this.#history[poll].at(this.#cursor[poll]) ?? null;
   }
 
-  next(poll: string): string | null {
-    if (this.isHistoryEmpty(poll)) {
+  moveRight(poll: string): string | null {
+    if (this.isEmpty(poll)) {
       return null;
     }
 
@@ -76,8 +101,8 @@ export class UidHistory {
     return this.#history[poll].at(this.#cursor[poll]) ?? null;
   }
 
-  hasNext(poll: string): boolean {
-    if (this.isHistoryEmpty(poll)) {
+  hasNextLeft(poll: string): boolean {
+    if (this.isEmpty(poll)) {
       return false;
     }
 
@@ -85,7 +110,19 @@ export class UidHistory {
       this.#cursor[poll] = this.#history[poll].length - 1;
     }
 
-    return this.#history[poll].at(this.#cursor[poll] + 1) !== undefined;
+    return this.#history[poll][this.#cursor[poll] - 1] !== undefined;
+  }
+
+  hasNextRight(poll: string): boolean {
+    if (this.isEmpty(poll)) {
+      return false;
+    }
+
+    if (!this.isCursorInitialized(poll)) {
+      this.#cursor[poll] = this.#history[poll].length - 1;
+    }
+
+    return this.#history[poll][this.#cursor[poll] + 1] !== undefined;
   }
 
   clear() {

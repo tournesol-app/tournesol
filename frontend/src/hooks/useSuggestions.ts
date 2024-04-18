@@ -33,9 +33,25 @@ export async function randomUidFromSuggestions(
   return autoSuggestionPool.random(poll, excluded);
 }
 
-export type HistoryId = 'A' | 'B';
+export type HistoryId = 'selectorA' | 'selectorB';
 
 export const useSuggestions = () => {
+  /**
+   * Insert an UID to the right or the left of the current history position.
+   */
+  const insertInHistory = useCallback(
+    (
+      pollName: string,
+      historyId: HistoryId,
+      position: 'left' | 'right',
+      uid: string
+    ) => {
+      const history = historyId === 'selectorA' ? historyA : historyB;
+      history.insert(pollName, position, uid);
+    },
+    []
+  );
+
   /**
    * Return a new UID to compare from the suggestion pool.
    *
@@ -48,16 +64,16 @@ export const useSuggestions = () => {
       exclude: Array<string | null>,
       historyId: HistoryId
     ) => {
-      const history = historyId === 'A' ? historyA : historyB;
+      const history = historyId === 'selectorA' ? historyA : historyB;
 
-      if (history.hasNext(pollName)) {
-        return history.next(pollName);
+      if (history.hasNextRight(pollName)) {
+        return history.moveRight(pollName);
       }
 
       const suggestion = await randomUidFromSuggestions(pollName, exclude);
 
       if (suggestion) {
-        history.push(pollName, suggestion);
+        history.appendRight(pollName, suggestion);
       }
 
       return suggestion;
@@ -66,17 +82,36 @@ export const useSuggestions = () => {
   );
 
   /**
-   * Return the UID preceding the current point in the history.
+   * Return a new UID to compare from the suggestion pool.
+   *
+   * If the history has been browsed forwards, return the previous entry in the
+   * history instead.
    */
   const previousSuggestion = useCallback(
-    (pollName: string, historyId: HistoryId) => {
-      const history = historyId === 'A' ? historyA : historyB;
-      return history.previous(pollName);
+    async (
+      pollName: string,
+      exclude: Array<string | null>,
+      historyId: HistoryId
+    ) => {
+      const history = historyId === 'selectorA' ? historyA : historyB;
+
+      if (history.hasNextLeft(pollName)) {
+        return history.moveLeft(pollName);
+      }
+
+      const suggestion = await randomUidFromSuggestions(pollName, exclude);
+
+      if (suggestion) {
+        history.appendLeft(pollName, suggestion);
+      }
+
+      return suggestion;
     },
     []
   );
 
   return {
+    insertInHistory,
     nextSuggestion,
     previousSuggestion,
   };
