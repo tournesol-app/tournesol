@@ -147,6 +147,15 @@ const Comparison = ({
       let autoUidA = null;
       let autoUidB = null;
 
+      // At this moment, the entities still present in selectorAHistory and
+      // selectorBHistory come from a previous comparison session. During this
+      // last session they may have been compared enough times to not be
+      // considered as suggestion by the API anymore. To avoid suggesting
+      // entities that don't match the suggestion strategies used by the API,
+      // we clear the history of all selectors.
+      selectorAHistory.clear();
+      selectorBHistory.clear();
+
       if (uidA) {
         selectorAHistory.appendRight(pollName, uidA);
       } else if (autoFillSelectorA) {
