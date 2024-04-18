@@ -33,9 +33,25 @@ export async function randomUidFromSuggestions(
   return autoSuggestionPool.random(poll, excluded);
 }
 
-export type HistoryId = 'A' | 'B';
+export type HistoryId = 'selectorA' | 'selectorB';
 
 export const useSuggestions = () => {
+  /**
+   * Insert an UID to the right or the left of the current history position.
+   */
+  const insertInHistory = useCallback(
+    (
+      pollName: string,
+      historyId: HistoryId,
+      position: 'left' | 'right',
+      uid: string
+    ) => {
+      const history = historyId === 'selectorA' ? historyA : historyB;
+      history.insert(pollName, position, uid);
+    },
+    []
+  );
+
   /**
    * Return a new UID to compare from the suggestion pool.
    *
@@ -48,7 +64,7 @@ export const useSuggestions = () => {
       exclude: Array<string | null>,
       historyId: HistoryId
     ) => {
-      const history = historyId === 'A' ? historyA : historyB;
+      const history = historyId === 'selectorA' ? historyA : historyB;
 
       if (history.hasNextRight(pollName)) {
         return history.moveRight(pollName);
@@ -77,7 +93,7 @@ export const useSuggestions = () => {
       exclude: Array<string | null>,
       historyId: HistoryId
     ) => {
-      const history = historyId === 'A' ? historyA : historyB;
+      const history = historyId === 'selectorA' ? historyA : historyB;
 
       if (history.hasNextLeft(pollName)) {
         return history.moveLeft(pollName);
@@ -95,6 +111,7 @@ export const useSuggestions = () => {
   );
 
   return {
+    insertInHistory,
     nextSuggestion,
     previousSuggestion,
   };

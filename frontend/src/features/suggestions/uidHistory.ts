@@ -33,6 +33,22 @@ export class UidHistory {
     return false;
   }
 
+  insert(poll: string, position: 'left' | 'right', uid: string) {
+    if (this.#history[poll] == undefined) {
+      this.#history[poll] = [];
+    }
+
+    if (this.#history[poll][this.#cursor[poll]] === uid) {
+      return;
+    }
+
+    if (position === 'right') {
+      this.#cursor[poll] += 1;
+    }
+
+    this.#history[poll].splice(this.#cursor[poll], 0, uid);
+  }
+
   appendLeft(poll: string, uid: string) {
     if (this.#history[poll] == undefined) {
       this.#history[poll] = [];
