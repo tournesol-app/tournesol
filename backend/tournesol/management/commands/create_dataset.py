@@ -65,19 +65,20 @@ class Command(BaseCommand):
                 f" {settings.APP_TOURNESOL['DATASETS_BUILD_DIR']}"
             )
 
-        dataset_base_name = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
+        dataset_base_name: str = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
         datasets_build_dir = Path(settings.MEDIA_ROOT).joinpath(
             settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
         )
         datasets_build_dir.mkdir(parents=True, exist_ok=True)
-        dataset_base_name = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
-        archive_abs_path = datasets_build_dir.joinpath(dataset_base_name).with_suffix(".zip")
+        dataset_base_path = datasets_build_dir / dataset_base_name
+        archive_abs_path = dataset_base_path.with_suffix(".zip")
+        archive_temp_path = dataset_base_path.with_suffix(".zip.tmp")
 
-        # TODO: write to temporary file?
         with transaction.atomic():
             cursor = connection.cursor()
             cursor.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
-            self.write_archive(archive_abs_path)
+            self.write_archive(archive_temp_path)
+            archive_temp_path.rename(archive_abs_path)
 
         self.stdout.write(self.style.SUCCESS(f"archive created at {archive_abs_path}"))
 
@@ -88,7 +89,7 @@ class Command(BaseCommand):
             all_datasets = list(datasets_build_dir.glob(f"{dataset_base_name}*"))
             all_datasets.sort(key=getctime, reverse=True)
 
-            for old_dataset in all_datasets[options["keep_only"] :]:
+            for old_dataset in all_datasets[options["keep_only"]:]:
                 old_dataset.unlink()
                 self.stdout.write(f"deleted old {old_dataset}")
 

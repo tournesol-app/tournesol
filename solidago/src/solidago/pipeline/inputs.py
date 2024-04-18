@@ -86,6 +86,8 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # such as "NA" are converted to float NaN.
                 self.users = pd.read_csv(users_file, keep_default_na=False)
                 self.users.index.name = "user_id"
+                # Fill trust_score on newly created users for which it was not computed yet
+                self.users.trust_score = pd.to_numeric(self.users.trust_score).fillna(0.0)
 
             username_to_user_id = pd.Series(
                 data=self.users.index, index=self.users["public_username"]

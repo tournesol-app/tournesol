@@ -403,5 +403,7 @@ def write_vouchers_file(write_target):
             "to_username": voucher.to.username,
             "value": voucher.value,
         }
-        for voucher in Voucher.objects.filter(is_public=True).select_related("by", "to")
+        for voucher in Voucher.objects.filter(is_public=True)
+        .select_related("by", "to")
+        .order_by("by__username", "to__username")
     )

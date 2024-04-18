@@ -256,6 +256,7 @@ class ExportTest(TransactionTestCase):
                 "comparisons.csv",
                 "individual_criteria_scores.csv",
                 "collective_criteria_scores.csv",
+                "vouchers.csv",
             ]
             filenames = [filepath.rsplit("/", 1)[-1] for filepath in zip_file.namelist()]
             self.assertEqual(filenames, expected_filenames)
