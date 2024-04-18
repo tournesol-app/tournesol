@@ -278,7 +278,11 @@ const EntitySelectorInnerAuth = ({
 
   const onSlideExited = async () => {
     if (slideDirection === 'up') {
-      const newUid = previousSuggestion(pollName, historyId);
+      const newUid = await previousSuggestion(
+        pollName,
+        [uid, otherUid],
+        historyId
+      );
 
       if (newUid) {
         setSlideDirection('down');

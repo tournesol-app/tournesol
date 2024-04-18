@@ -50,14 +50,14 @@ export const useSuggestions = () => {
     ) => {
       const history = historyId === 'A' ? historyA : historyB;
 
-      if (history.hasNext(pollName)) {
-        return history.next(pollName);
+      if (history.hasNextRight(pollName)) {
+        return history.moveRight(pollName);
       }
 
       const suggestion = await randomUidFromSuggestions(pollName, exclude);
 
       if (suggestion) {
-        history.push(pollName, suggestion);
+        history.appendRight(pollName, suggestion);
       }
 
       return suggestion;
@@ -66,12 +66,30 @@ export const useSuggestions = () => {
   );
 
   /**
-   * Return the UID preceding the current point in the history.
+   * Return a new UID to compare from the suggestion pool.
+   *
+   * If the history has been browsed forwards, return the previous entry in the
+   * history instead.
    */
   const previousSuggestion = useCallback(
-    (pollName: string, historyId: HistoryId) => {
+    async (
+      pollName: string,
+      exclude: Array<string | null>,
+      historyId: HistoryId
+    ) => {
       const history = historyId === 'A' ? historyA : historyB;
-      return history.previous(pollName);
+
+      if (history.hasNextLeft(pollName)) {
+        return history.moveLeft(pollName);
+      }
+
+      const suggestion = await randomUidFromSuggestions(pollName, exclude);
+
+      if (suggestion) {
+        history.appendLeft(pollName, suggestion);
+      }
+
+      return suggestion;
     },
     []
   );

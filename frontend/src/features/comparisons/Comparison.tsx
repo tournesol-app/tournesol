@@ -148,13 +148,13 @@ const Comparison = ({
       let autoUidB = null;
 
       if (uidA) {
-        selectorAHistory.push(pollName, uidA);
+        selectorAHistory.appendRight(pollName, uidA);
       } else if (autoFillSelectorA) {
         autoUidA = await nextSuggestion(pollName, [uidA, uidB], 'A');
       }
 
       if (uidB) {
-        selectorBHistory.push(pollName, uidB);
+        selectorBHistory.appendRight(pollName, uidB);
       } else if (autoFillSelectorB) {
         autoUidB = await nextSuggestion(
           pollName,
