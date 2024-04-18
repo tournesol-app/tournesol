@@ -1,5 +1,5 @@
 /**
- * A generic history of UIDs, supporting appends from both sides and multiple
+ * A generic history of UIDs, supporting appends to both ends and multiple
  * polls.
  *
  * A history can be used, for instance, to keep track of all UIDs that have
