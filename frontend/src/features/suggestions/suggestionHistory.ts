@@ -168,7 +168,7 @@ export class SuggestionHistory extends BaseHistory {
    */
   async nextLeftOrSuggestion(
     poll: string,
-    exclude: Array<string | null>
+    exclude?: Array<string | null>
   ): Promise<string | null> {
     if (this.hasNextLeft(poll)) {
       return this.nextLeft(poll);
@@ -189,7 +189,7 @@ export class SuggestionHistory extends BaseHistory {
    */
   async nextRightOrSuggestion(
     poll: string,
-    exclude: Array<string | null>
+    exclude?: Array<string | null>
   ): Promise<string | null> {
     if (this.hasNextRight(poll)) {
       return this.nextRight(poll);

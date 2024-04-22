@@ -113,8 +113,8 @@ describe('class: SuggestionPool', () => {
           },
         },
         body: JSON.stringify([
-          { entity: { uid: 'uidA' } },
-          { entity: { uid: 'uidB' } },
+          { entity: { uid: 'uid1' } },
+          { entity: { uid: 'uid2' } },
         ]),
       })
     );
@@ -122,15 +122,15 @@ describe('class: SuggestionPool', () => {
     const pool = setup();
     expect(pool.isEmpty(pollA)).toEqual(true);
 
-    const sugg1 = await pool.getSuggestion(pollA, []);
+    const sugg1 = await pool.getSuggestion(pollA);
 
     expect(pool.isEmpty(pollA)).toEqual(false);
     expect(pool.isEmpty(pollB)).toEqual(true);
 
-    const sugg2 = await pool.getSuggestion(pollA, []);
+    const sugg2 = await pool.getSuggestion(pollA);
 
     expect(pool.isEmpty(pollA)).toEqual(true);
-    expect(new Set([sugg1, sugg2])).toEqual(new Set(['uidA', 'uidB']));
+    expect(new Set([sugg1, sugg2])).toEqual(new Set(['uid1', 'uid2']));
   });
 
   it('method: getSuggestion - can exclude UIDs', async () => {
@@ -146,10 +146,10 @@ describe('class: SuggestionPool', () => {
           },
         },
         body: JSON.stringify([
-          { entity: { uid: 'uidA' } },
-          { entity: { uid: 'uidB' } },
-          { entity: { uid: 'uidC' } },
-          { entity: { uid: 'uidD' } },
+          { entity: { uid: 'uid1' } },
+          { entity: { uid: 'uid2' } },
+          { entity: { uid: 'uid3' } },
+          { entity: { uid: 'uid4' } },
         ]),
       })
     );
@@ -157,9 +157,9 @@ describe('class: SuggestionPool', () => {
     const pool = setup();
 
     expect(pool.isEmpty(pollA)).toEqual(true);
-    await pool.getSuggestion(pollA, ['uidA', 'uidB']);
-    expect(pool._suggestions[pollA].includes('uidA')).toBe(false);
-    expect(pool._suggestions[pollA].includes('uidB')).toBe(false);
+    await pool.getSuggestion(pollA, ['uid1', 'uid2']);
+    expect(pool._suggestions[pollA].includes('uid1')).toBe(false);
+    expect(pool._suggestions[pollA].includes('uid2')).toBe(false);
     expect(pool.isEmpty(pollA)).toEqual(false);
   });
 });

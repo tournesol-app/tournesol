@@ -60,9 +60,10 @@ export class BasePool {
 export class SuggestionPool extends BasePool {
   async getSuggestion(
     poll: string,
-    exclude: Array<string | null>
+    exclude?: Array<string | null>
   ): Promise<string | null> {
-    const excluded = exclude.filter((elem) => elem != null) as string[];
+    const excluded =
+      (exclude?.filter((elem) => elem != null) as string[]) ?? [];
 
     if (this.isEmpty(poll)) {
       const suggestions = await UsersService.usersMeSuggestionsTocompareList({

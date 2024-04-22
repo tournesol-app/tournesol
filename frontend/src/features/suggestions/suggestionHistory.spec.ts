@@ -1,4 +1,8 @@
-import { BaseHistory } from 'src/features/suggestions/suggestionHistory';
+import {
+  BaseHistory,
+  SuggestionHistory,
+} from 'src/features/suggestions/suggestionHistory';
+import { SuggestionPool } from 'src/features/suggestions/suggestionPool';
 
 describe('class: BaseHistory', () => {
   const pollA = 'foo';
@@ -232,5 +236,118 @@ describe('class: BaseHistory', () => {
     expect(history.hasNextRight(pollA)).toEqual(false);
     expect(history.hasNextRight(pollB)).toEqual(false);
     expect(history.hasNextRight(pollC)).toEqual(false);
+  });
+});
+
+describe('class: SuggestionHistory', () => {
+  const pollA = 'foo';
+  const pollB = 'bar';
+
+  const setup = () => {
+    return new SuggestionHistory(new SuggestionPool());
+  };
+
+  it('method: nextLeftOrSuggestion - get UIDs from API', async () => {
+    fetchMock.mockIf(
+      (req) =>
+        req.method == 'GET' &&
+        /users\/me\/suggestions\/foo\/tocompare/.test(req.url),
+      () => ({
+        init: {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        body: JSON.stringify([
+          { entity: { uid: 'uid1' } },
+          { entity: { uid: 'uid2' } },
+          { entity: { uid: 'uid3' } },
+          { entity: { uid: 'uid4' } },
+        ]),
+      })
+    );
+
+    const history = setup();
+
+    expect(history.isEmpty(pollA)).toEqual(true);
+    expect(history.isEmpty(pollB)).toEqual(true);
+
+    const sugg1 =
+      (await history.nextLeftOrSuggestion(pollA, ['uid3', 'uid4'])) ?? '';
+
+    expect(['uid1', 'uid2'].includes(sugg1)).toBe(true);
+    expect(history.isEmpty(pollB)).toEqual(true);
+    expect(history.isEmpty(pollA)).toEqual(false);
+    expect(history.hasNextLeft(pollA)).toEqual(false);
+    expect(history.hasNextRight(pollA)).toEqual(false);
+
+    const sugg2 = (await history.nextLeftOrSuggestion(pollA)) ?? '';
+
+    expect(history.hasNextLeft(pollA)).toEqual(false);
+    expect(history.hasNextRight(pollA)).toEqual(true);
+
+    if (sugg1 === 'uid1') {
+      expect(sugg2).toEqual('uid2');
+      expect(history.nextRight(pollA)).toEqual('uid1');
+      expect(await history.nextLeftOrSuggestion(pollA)).toEqual('uid2');
+    } else {
+      expect(sugg2).toEqual('uid1');
+      expect(history.nextRight(pollA)).toEqual('uid2');
+      expect(await history.nextLeftOrSuggestion(pollA)).toEqual('uid1');
+    }
+
+    expect(new Set(history._history[pollA])).toEqual(new Set(['uid1', 'uid2']));
+  });
+
+  it('method: nextRightOrSuggestion - get UIDs from API', async () => {
+    fetchMock.mockIf(
+      (req) =>
+        req.method == 'GET' &&
+        /users\/me\/suggestions\/foo\/tocompare/.test(req.url),
+      () => ({
+        init: {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        body: JSON.stringify([
+          { entity: { uid: 'uid1' } },
+          { entity: { uid: 'uid2' } },
+          { entity: { uid: 'uid3' } },
+          { entity: { uid: 'uid4' } },
+        ]),
+      })
+    );
+
+    const history = setup();
+
+    expect(history.isEmpty(pollA)).toEqual(true);
+    expect(history.isEmpty(pollB)).toEqual(true);
+
+    const sugg1 =
+      (await history.nextRightOrSuggestion(pollA, ['uid3', 'uid4'])) ?? '';
+
+    expect(['uid1', 'uid2'].includes(sugg1)).toBe(true);
+    expect(history.isEmpty(pollB)).toEqual(true);
+    expect(history.isEmpty(pollA)).toEqual(false);
+    expect(history.hasNextLeft(pollA)).toEqual(false);
+    expect(history.hasNextRight(pollA)).toEqual(false);
+
+    const sugg2 = (await history.nextRightOrSuggestion(pollA)) ?? '';
+
+    expect(history.hasNextLeft(pollA)).toEqual(true);
+    expect(history.hasNextRight(pollA)).toEqual(false);
+
+    if (sugg1 === 'uid1') {
+      expect(sugg2).toEqual('uid2');
+      expect(history.nextLeft(pollA)).toEqual('uid1');
+      expect(await history.nextRightOrSuggestion(pollA)).toEqual('uid2');
+    } else {
+      expect(sugg2).toEqual('uid1');
+      expect(history.nextLeft(pollA)).toEqual('uid2');
+      expect(await history.nextRightOrSuggestion(pollA)).toEqual('uid1');
+    }
   });
 });
