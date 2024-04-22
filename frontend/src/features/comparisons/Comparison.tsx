@@ -11,7 +11,7 @@ import { Location } from 'history';
 
 import { CircularProgress, Grid, Card } from '@mui/material';
 
-import { useNotifications, useSuggestions } from 'src/hooks';
+import { useNotifications } from 'src/hooks';
 import {
   UsersService,
   ComparisonRequest,
@@ -90,7 +90,6 @@ const Comparison = ({
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
-  const { nextSuggestion } = useSuggestions();
 
   const initializeWithSuggestions = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -159,17 +158,19 @@ const Comparison = ({
       if (uidA) {
         selectorAHistory.appendRight(pollName, uidA);
       } else if (autoFillSelectorA) {
-        autoUidA = await nextSuggestion(pollName, [uidA, uidB], 'selectorA');
+        autoUidA = await selectorAHistory.nextRightOrSuggestion(pollName, [
+          uidA,
+          uidB,
+        ]);
       }
 
       if (uidB) {
         selectorBHistory.appendRight(pollName, uidB);
       } else if (autoFillSelectorB) {
-        autoUidB = await nextSuggestion(
-          pollName,
-          [autoUidA || uidA, uidB],
-          'selectorB'
-        );
+        autoUidB = await selectorBHistory.nextRightOrSuggestion(pollName, [
+          autoUidA || uidA,
+          uidB,
+        ]);
       }
 
       if (autoUidA) {
@@ -293,7 +294,7 @@ const Comparison = ({
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          historyId="selectorA"
+          history={selectorAHistory}
         />
       </Grid>
       <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
@@ -302,7 +303,7 @@ const Comparison = ({
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          historyId="selectorB"
+          history={selectorBHistory}
         />
       </Grid>
       <Grid
