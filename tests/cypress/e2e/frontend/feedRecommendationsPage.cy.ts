@@ -14,7 +14,7 @@ describe('Feed - collective recommendations', () => {
     it('anonymous users are redirected with default filters', () => {
       cy.visit('/feed/recommendations');
       cy.location('pathname').should('equal', '/recommendations');
-      cy.location('search').should('contain', '?date=Month');
+      cy.location('search').should('contain', '?date=Month&advanced=exclude_compared');
     });
 
     it('authenticated users are redirected with their preferences', () => {

@@ -13,10 +13,11 @@ const FeedCollectiveRecommendations = () => {
   const searchParams = getDefaultRecommendationsSearchParams(
     pollName,
     options,
-    userSettings
+    userSettings,
+    { forceExcludeCompared: true }
   );
 
-  return <Redirect to={`/recommendations${searchParams.toString()}`} />;
+  return <Redirect to={`/recommendations${searchParams}`} />;
 };
 
 export default FeedCollectiveRecommendations;

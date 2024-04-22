@@ -35,15 +35,17 @@ export const buildVideosDefaultRecoSearchParams = (
   searchParams: URLSearchParams,
   userSettings: VideosPollUserSettings | undefined
 ) => {
-  const advancedFilters: string[] = [];
+  const advancedFilters = new Set(
+    searchParams.get('advanced')?.split(',') ?? []
+  );
   if (userSettings?.recommendations__default_unsafe) {
-    advancedFilters.push('unsafe');
+    advancedFilters.add('unsafe');
   }
   if (userSettings?.recommendations__default_exclude_compared_entities) {
-    advancedFilters.push('exclude_compared');
+    advancedFilters.add('exclude_compared');
   }
-  if (advancedFilters.length > 0) {
-    searchParams.set('advanced', advancedFilters.join(','));
+  if (advancedFilters.size > 0) {
+    searchParams.set('advanced', [...advancedFilters].join(','));
   }
 
   if (userSettings?.recommendations__default_date != undefined) {
@@ -66,11 +68,15 @@ export const buildVideosDefaultRecoSearchParams = (
 export const getDefaultRecommendationsSearchParams = (
   pollName: string,
   pollOptions: SelectablePoll | undefined,
-  userSettings: TournesolUserSettings
+  userSettings: TournesolUserSettings,
+  { forceExcludeCompared = false }: { forceExcludeCompared?: boolean } = {}
 ) => {
   const searchParams = new URLSearchParams(
     pollOptions?.defaultRecoSearchParams
   );
+  if (forceExcludeCompared) {
+    searchParams.set('advanced', 'exclude_compared');
+  }
 
   const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
 
