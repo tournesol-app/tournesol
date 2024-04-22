@@ -1,17 +1,21 @@
-import { SuggestionPool } from 'src/features/suggestions/suggestionPool';
+import { BasePool } from 'src/features/suggestions/suggestionPool';
 
 describe('class: SuggestionPool', () => {
   const pollA = 'foo';
   const pollB = 'bar';
 
+  const setup = () => {
+    return new BasePool();
+  };
+
   it('constructor', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     expect(suggestionPool.isEmpty(pollA)).toEqual(true);
     expect(suggestionPool.random(pollA)).toBeNull();
   });
 
   it('method: isEmpty - is poll specific', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     suggestionPool.fill(pollA, ['uid1', 'uid2']);
 
     expect(suggestionPool.isEmpty(pollA)).toEqual(false);
@@ -19,7 +23,7 @@ describe('class: SuggestionPool', () => {
   });
 
   it('method: fill - is poll specific', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     suggestionPool.fill(pollA, ['uid1']);
     suggestionPool.fill(pollB, ['uid2']);
 
@@ -28,7 +32,7 @@ describe('class: SuggestionPool', () => {
   });
 
   it('method: fill - replaces the suggestions', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     suggestionPool.fill(pollA, ['uid1', 'uid2']);
     suggestionPool.fill(pollA, ['uid3', 'uid4']);
 
@@ -40,7 +44,7 @@ describe('class: SuggestionPool', () => {
   });
 
   it('method: fill - can exclude UIDs', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     const uids = ['uid1', 'uid2', 'uid3', 'uid4'];
     suggestionPool.fill(pollA, uids, ['uid1', 'uid3', 'uid4']);
 
@@ -48,7 +52,7 @@ describe('class: SuggestionPool', () => {
   });
 
   it('method: random - is poll specific', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     suggestionPool.fill(pollA, ['uid1', 'uid2']);
 
     const results = [];
@@ -60,7 +64,7 @@ describe('class: SuggestionPool', () => {
   });
 
   it('method: random - can exclude UIDs', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     const uids = ['uid1', 'uid2', 'uid3', 'uid4', 'uid5'];
 
     suggestionPool.fill(pollA, uids);
@@ -70,7 +74,7 @@ describe('class: SuggestionPool', () => {
   });
 
   it('method: clear - clears everything', () => {
-    const suggestionPool = new SuggestionPool();
+    const suggestionPool = setup();
     const uids = ['uid1', 'uid2', 'uid3', 'uid4', 'uid5'];
 
     expect(suggestionPool.isEmpty(pollA)).toEqual(true);

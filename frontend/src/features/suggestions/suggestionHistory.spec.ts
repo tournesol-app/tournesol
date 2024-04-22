@@ -1,11 +1,15 @@
-import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
+import { BaseHistory } from 'src/features/suggestions/suggestionHistory';
 
-describe('class: SuggestionHistory', () => {
+describe('class: BaseHistory', () => {
   const pollA = 'foo';
   const pollB = 'bar';
 
+  const setup = () => {
+    return new BaseHistory();
+  };
+
   it('constructor', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     expect(history.isEmpty(pollA)).toEqual(true);
     expect(history.isEmpty(pollB)).toEqual(true);
     expect(history.nextLeft(pollA)).toBeNull();
@@ -19,7 +23,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: isEmpty - is poll specific', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     history.appendRight(pollA, 'uid1');
 
     expect(history.isEmpty(pollA)).toEqual(false);
@@ -27,7 +31,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: appendLeft - is poll specific', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     ['uid1', 'uid2'].forEach((uid) => history.appendLeft(pollA, uid));
     ['uidA', 'uidB'].forEach((uid) => history.appendLeft(pollB, uid));
 
@@ -36,7 +40,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: appendLeft - reset the history cursor', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
 
     history.appendLeft(pollA, 'uid1');
     expect(history.nextRight(pollA)).toBeNull();
@@ -55,7 +59,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: appendRight - is poll specific', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     ['uid1', 'uid2'].forEach((uid) => history.appendRight(pollA, uid));
     ['uidA', 'uidB'].forEach((uid) => history.appendRight(pollB, uid));
 
@@ -64,7 +68,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: appendRight - reset the history cursor', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
 
     history.appendRight(pollA, 'uid1');
     expect(history.nextLeft(pollA)).toBeNull();
@@ -83,7 +87,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: nextLeft - is poll specific', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
       history.appendRight(pollA, uid)
     );
@@ -103,7 +107,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: nextRight - is poll specific', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
       history.appendRight(pollA, uid)
     );
@@ -134,7 +138,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: hasNextLeft - is poll specific', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
       history.appendLeft(pollA, uid)
     );
@@ -164,7 +168,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: hasNextRight - is poll specific', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     ['uid1', 'uid2', 'uid3', 'uid4'].forEach((uid) =>
       history.appendRight(pollA, uid)
     );
@@ -194,7 +198,7 @@ describe('class: SuggestionHistory', () => {
   });
 
   it('method: clear - clears everything', () => {
-    const history = new SuggestionHistory();
+    const history = setup();
     const pollC = 'foobar';
 
     ['uid1', 'uid2', 'uid3'].forEach((uid) => history.appendRight(pollA, uid));
