@@ -38,7 +38,7 @@ export class SuggestionHistory {
    * Insert an UID in the history at the left or the right of the current
    * cursor position, and move the cursor to this new position.
    */
-  insert(poll: string, position: 'left' | 'right', uid: string) {
+  insert(poll: string, uid: string, position: 'left' | 'right') {
     if (this.#history[poll] == undefined) {
       this.#history[poll] = [];
     }

@@ -125,7 +125,6 @@ const EntitySelectorInnerAuth = ({
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
-  const [lastSlide, setLastSlide] = useState<'up' | 'down'>('up');
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
@@ -304,7 +303,6 @@ const EntitySelectorInnerAuth = ({
       return;
     }
 
-    setLastSlide('up');
     setSlideDirection('down');
     setLoading(true);
     setInputValue('');
@@ -316,7 +314,6 @@ const EntitySelectorInnerAuth = ({
       return;
     }
 
-    setLastSlide('down');
     setSlideDirection('up');
     setLoading(true);
     setInputValue('');
@@ -354,7 +351,6 @@ const EntitySelectorInnerAuth = ({
                 onChange={handleChange}
                 otherUid={otherUid}
                 history={history}
-                historyInsertion={lastSlide === 'up' ? 'right' : 'left'}
               />
             </Grid>
             <Grid item>

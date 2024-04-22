@@ -38,10 +38,8 @@ interface Props {
   otherUid: string | null;
   variant?: 'compact' | 'full';
   disabled?: boolean;
-  // When provided with historyInsertion, the selected UID will be added to
-  // the history.
+  // When provided the selected UID will be added to this history.
   history?: SuggestionHistory;
-  historyInsertion?: 'left' | 'right';
 }
 
 const VideoInput = ({
@@ -51,7 +49,6 @@ const VideoInput = ({
   variant = 'compact',
   disabled = false,
   history,
-  historyInsertion,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -73,8 +70,8 @@ const VideoInput = ({
     onChange(uid);
     setSuggestionsOpen(false);
 
-    if (history != undefined && historyInsertion) {
-      history.insert(pollName, historyInsertion, uid);
+    if (history != undefined) {
+      history.insert(pollName, uid, 'right');
     }
   };
 
