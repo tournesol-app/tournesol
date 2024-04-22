@@ -1,13 +1,14 @@
+import { randomUidToCompare } from 'src/features/suggestions/suggestionPool';
+
 /**
- * A generic history of UIDs, supporting appends to both ends and multiple
- * polls.
+ * A history of UIDs, supporting appends to both ends and multiple polls.
  *
  * A history can be used, for instance, to keep track of all UIDs that have
  * been displayed by an entity selector.
  *
  * A history should always be cleared at logout.
  */
-export class UidHistory {
+export class SuggestionHistory {
   // The current position in the history.
   #cursor: { [key: string]: number };
   #history: { [key: string]: string[] };
@@ -33,6 +34,10 @@ export class UidHistory {
     return false;
   }
 
+  /**
+   * Insert an UID in the history at the left or the right of the current
+   * cursor position, and move the cursor to this new position.
+   */
   insert(poll: string, position: 'left' | 'right', uid: string) {
     if (this.#history[poll] == undefined) {
       this.#history[poll] = [];
@@ -49,6 +54,10 @@ export class UidHistory {
     this.#history[poll].splice(this.#cursor[poll], 0, uid);
   }
 
+  /**
+   * Append a new UID to the left of the history and move the cursor to this
+   * new position.
+   */
   appendLeft(poll: string, uid: string) {
     if (this.#history[poll] == undefined) {
       this.#history[poll] = [];
@@ -58,6 +67,10 @@ export class UidHistory {
     this.#cursor[poll] = 0;
   }
 
+  /**
+   * Append a new UID to the right of the history and move the cursor to this
+   * new position.
+   */
   appendRight(poll: string, uid: string) {
     if (this.#history[poll] == undefined) {
       this.#history[poll] = [];
@@ -67,7 +80,10 @@ export class UidHistory {
     this.#cursor[poll] = this.#history[poll].length - 1;
   }
 
-  moveLeft(poll: string): string | null {
+  /**
+   * Move the cursor one step to the left and return the found UID if any.
+   */
+  nextLeft(poll: string): string | null {
     if (this.isEmpty(poll)) {
       return null;
     }
@@ -84,7 +100,10 @@ export class UidHistory {
     return this.#history[poll].at(this.#cursor[poll]) ?? null;
   }
 
-  moveRight(poll: string): string | null {
+  /**
+   * Move the cursor one step to the right and return the found UID if any.
+   */
+  nextRight(poll: string): string | null {
     if (this.isEmpty(poll)) {
       return null;
     }
@@ -123,6 +142,48 @@ export class UidHistory {
     }
 
     return this.#history[poll][this.#cursor[poll] + 1] !== undefined;
+  }
+
+  /**
+   * Same as `nextLeft`, except if null should be returned, return a new UID
+   * from the pool auto suggestion instead.
+   */
+  async nextLeftOrSuggestion(
+    poll: string,
+    exclude: Array<string | null>
+  ): Promise<string | null> {
+    if (this.hasNextLeft(poll)) {
+      return this.nextLeft(poll);
+    }
+
+    const suggestion = await randomUidToCompare(poll, exclude);
+
+    if (suggestion) {
+      this.appendLeft(poll, suggestion);
+    }
+
+    return suggestion;
+  }
+
+  /**
+   * Same as `nextRight`, except if null should be returned, return a new UID
+   * from the pool auto suggestion instead.
+   */
+  async nextRightOrSuggestion(
+    poll: string,
+    exclude: Array<string | null>
+  ): Promise<string | null> {
+    if (this.hasNextRight(poll)) {
+      return this.nextRight(poll);
+    }
+
+    const suggestion = await randomUidToCompare(poll, exclude);
+
+    if (suggestion) {
+      this.appendRight(poll, suggestion);
+    }
+
+    return suggestion;
   }
 
   clear() {

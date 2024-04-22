@@ -6,16 +6,11 @@ import { Vector2 } from '@use-gesture/core/types';
 import { useTheme } from '@mui/material/styles';
 import { Box, Grid, Slide, Typography } from '@mui/material';
 
-import {
-  useCurrentPoll,
-  useEntityAvailable,
-  useLoginState,
-  useSuggestions,
-} from 'src/hooks';
+import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
 import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
-
+import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 import {
   UsersService,
   ContributorRating,
@@ -28,7 +23,6 @@ import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
-import { HistoryId } from 'src/hooks/useSuggestions';
 
 const ENTITY_CARD_SWIPE_TIMEOUT = 180;
 // The minimum velocity per axis in pixels / ms.
@@ -40,7 +34,7 @@ interface Props {
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
-  historyId: HistoryId;
+  history?: SuggestionHistory;
 }
 
 export interface SelectorValue {
@@ -58,7 +52,7 @@ const EntitySelector = ({
   onChange,
   otherUid,
   variant = 'regular',
-  historyId,
+  history,
 }: Props) => {
   const { isLoggedIn } = useLoginState();
 
@@ -71,7 +65,7 @@ const EntitySelector = ({
           otherUid={otherUid}
           alignment={alignment}
           variant={variant}
-          historyId={historyId}
+          history={history}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -121,14 +115,13 @@ const EntitySelectorInnerAuth = ({
   otherUid,
   alignment,
   variant,
-  historyId,
+  history,
 }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
-  const { nextSuggestion, previousSuggestion } = useSuggestions();
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
@@ -279,11 +272,10 @@ const EntitySelectorInnerAuth = ({
 
   const onSlideExited = async () => {
     if (slideDirection === 'up') {
-      const newUid = await previousSuggestion(
-        pollName,
-        [uid, otherUid],
-        historyId
-      );
+      const newUid = await history?.nextLeftOrSuggestion(pollName, [
+        uid,
+        otherUid,
+      ]);
 
       if (newUid) {
         setSlideDirection('down');
@@ -292,7 +284,10 @@ const EntitySelectorInnerAuth = ({
         setSlideIn(true);
       }
     } else {
-      const newUid = await nextSuggestion(pollName, [uid, otherUid], historyId);
+      const newUid = await history?.nextRightOrSuggestion(pollName, [
+        uid,
+        otherUid,
+      ]);
 
       if (newUid) {
         setSlideDirection('up');
@@ -358,7 +353,7 @@ const EntitySelectorInnerAuth = ({
                 value={inputValue || uid || ''}
                 onChange={handleChange}
                 otherUid={otherUid}
-                historyId={historyId}
+                history={history}
                 historyInsertion={lastSlide === 'up' ? 'right' : 'left'}
               />
             </Grid>

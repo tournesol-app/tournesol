@@ -7,5 +7,4 @@ export { useNotifications } from './useNotifications';
 export { useRefreshSettings } from './useRefreshSettings';
 export { useScrollToLocation } from './useScrollToLocation';
 export { useStats } from './useStats';
-export { useSuggestions } from './useSuggestions';
 export { usePreferredLanguages } from './usePreferredLanguages';

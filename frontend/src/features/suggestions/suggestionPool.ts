@@ -1,3 +1,5 @@
+import { UsersService } from 'src/services/openapi';
+
 /**
  * A generic pool of UIDs, supporting multiple polls.
  *
@@ -53,3 +55,30 @@ export class SuggestionPool {
 }
 
 export const autoSuggestionPool = new SuggestionPool();
+
+export const randomUidToCompare = async (
+  poll: string,
+  exclude: Array<string | null>
+): Promise<string | null> => {
+  const excluded = exclude.filter((elem) => elem != null) as string[];
+
+  if (autoSuggestionPool.isEmpty(poll)) {
+    const suggestions = await UsersService.usersMeSuggestionsTocompareList({
+      pollName: poll,
+    });
+
+    if (suggestions && suggestions.length > 0) {
+      autoSuggestionPool.fill(
+        poll,
+        suggestions.map((item) => item.entity.uid),
+        excluded
+      );
+    }
+  }
+
+  if (autoSuggestionPool.isEmpty(poll)) {
+    return null;
+  }
+
+  return autoSuggestionPool.random(poll, excluded);
+};
