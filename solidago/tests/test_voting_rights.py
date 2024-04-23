@@ -165,6 +165,7 @@ def test_min_voting_right_more_than_min_trust(n_random_users):
     min_trust_score = trust_scores.min()
     assert min_voting_right > min_trust_score
 
+
 def test_voting_rights_abstraction():
     voting_rights = VotingRights()
     voting_rights[3, 46] = 0.4
@@ -175,28 +176,40 @@ def test_voting_rights_abstraction():
 def test_affine_overtrust():
     users = pd.DataFrame(dict(trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
     users.index.name = "user_id"
-    vouches = None
+    vouches = pd.DataFrame()
     entities = pd.DataFrame(dict(entity_id=range(6)))
     entities.set_index("entity_id")
-    privacy = PrivacySettings({
-        0: { 0: True, 2: False, 3: False },
-        1: { 1: False, 2: True, 3: False },
-        3: { 0: True, 4: True },
-        5: { 0: False, 1: True }
-    })
-    
+    privacy = PrivacySettings(
+        {
+            0: {0: True, 2: False, 3: False},
+            1: {1: False, 2: True, 3: False},
+            3: {0: True, 4: True},
+            5: {0: False, 1: True},
+        }
+    )
     voting_rights_assignment = AffineOvertrust(
-        privacy_penalty=0.5, 
-        min_overtrust=2.0,
-        overtrust_ratio=0.1
+        privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1
     )
     voting_rights, entities = voting_rights_assignment(users, entities, vouches, privacy)
+
+    assert len(entities) == 6  # 6 entities
+    assert list(entities.columns) == [
+        "entity_id",
+        "cumulative_trust",
+        "min_voting_right",
+        "overtrust",
+    ]
+
+    # Voting rights are assigned only on entities where privacy settings are defined.
+    assert voting_rights.entities() == {0, 1, 3, 5}
+
 
 @pytest.mark.parametrize("test", range(4))
 def test_affine_overtrust_test_data(test):
     td = importlib.import_module(f"data.data_{test}")
     voting_rights, entities = td.pipeline.voting_rights(
-        td.users, td.entities, td.vouches, td.privacy)
+        td.users, td.entities, td.vouches, td.privacy
+    )
     for entity in td.voting_rights.entities():
-        for user in td.voting_rights.on_entity(entity):            
+        for user in td.voting_rights.on_entity(entity):
             assert td.voting_rights[user, entity] == voting_rights[user, entity]
