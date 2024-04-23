@@ -30,7 +30,9 @@ describe('Feed - collective recommendations', () => {
       cy.visit('/feed/recommendations');
       cy.location('pathname').should('equal', '/recommendations');
       cy.location('search')
-        .should('contain', '?date=Today&advanced=unsafe%2Cexclude_compared&language=en');
+        .should('contain', 'date=Today')
+        .should('contain', 'advanced=exclude_compared%2Cunsafe')
+        .should('contain', 'language=en');
     });
   });
 });
