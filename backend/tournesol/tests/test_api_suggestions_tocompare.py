@@ -122,6 +122,7 @@ class SuggestionsToCompareTestCase(TestCase):
         today = timezone.now().date()
         recommendations_new = VideoFactory.create_batch(
             4,
+            metadata__language="en",
             metadata__publication_date=today.isoformat(),
             make_safe_for_poll=self.poll1,
         )
@@ -129,6 +130,7 @@ class SuggestionsToCompareTestCase(TestCase):
         long_time_ago = timezone.now() - timedelta(days=120)
         recommendations_past = VideoFactory.create_batch(
             4,
+            metadata__language="en",
             metadata__publication_date=long_time_ago.isoformat(),
             make_safe_for_poll=self.poll1
         )
