@@ -1,6 +1,5 @@
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict
 
 import pandas as pd
 from django.conf import settings
@@ -44,7 +43,7 @@ class Command(BaseCommand):
             user.save()
         return user
 
-    def create_videos(self, video_ids: pd.Series) -> Dict[int, Entity]:
+    def create_videos(self, video_ids: pd.Series) -> dict[int, Entity]:
         videos = {}
         for (entity_id, video_id) in video_ids.items():
             videos[entity_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
