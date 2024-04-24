@@ -192,7 +192,9 @@ List of columns:
 vouchers.csv
 ------------
 
-This file contains all vouchers shared between users to obtain a higher trust score.
+This file contains all vouchers shared between users to obtain a higher trust
+score. The graph is oriented: the sender gives a voucher in order to propagate
+some trust to the receiver.
 
 List of columns:
 
