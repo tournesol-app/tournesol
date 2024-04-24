@@ -40,14 +40,32 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
-
         strategy = request.query_params.get("strategy", ToCompareStrategy.CLASSIC)
+        langs = []
+
+        try:
+            # TODO: move this to the user model
+            preferred_langs = self.request.user.settings.get(self.poll_from_url.name).get(
+                "recommendations__default_languages"
+            )
+        except AttributeError:
+            langs = [self.request.headers.get("accept-language", "en")]
+        else:
+            if preferred_langs:
+                langs = preferred_langs
+        finally:
+            if "fr" not in langs or "en" not in langs:
+                langs.append("en")
 
         if strategy == ToCompareStrategy.CLASSIC:
-            self.strategy = ClassicEntitySuggestionStrategy(self.poll_from_url, request.user)
+            self.strategy = ClassicEntitySuggestionStrategy(
+                self.poll_from_url, request.user, langs
+            )
         else:
             # Fallback to the classic strategy if an unknown strategy is provided.
-            self.strategy = ClassicEntitySuggestionStrategy(self.poll_from_url, request.user)
+            self.strategy = ClassicEntitySuggestionStrategy(
+                self.poll_from_url, request.user, langs
+            )
 
     def get_queryset(self):
         return self.strategy.get_results()
