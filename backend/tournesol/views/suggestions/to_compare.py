@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db import models
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import generics
@@ -38,24 +40,44 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
 
     strategy = None
 
+    # When the user's preferred languages are unknown, use this language.
+    fallback_lang = "en"
+    # If the user's preferred languages don't contain at least one language
+    # from this list, use the fallback language.
+    min_lang_set = ["en", "fr"]
+
+    def _langs_from_accept_language(self, header: str) -> list[str]:
+        """
+        Return a list of language tags from a given Accept-Language HTTP
+        header.
+
+        See https://www.rfc-editor.org/rfc/rfc9110#field.accept-language
+        """
+        return [lang.split(';')[0].strip() for lang in header.split(",")]
+
+    def _get_user_preferred_langs(self, fallback: Optional[str] = None) -> list[str]:
+        preferred_langs = self.request.user.get_recommendations_default_langs(
+            self.poll_from_url.name
+        )
+
+        if preferred_langs is None:
+            langs = self._langs_from_accept_language(
+                self.request.headers.get("accept-language", "en")
+            )
+        else:
+            langs = preferred_langs
+
+        if fallback and len(langs) > 0:
+            if all(lang not in langs for lang in self.min_lang_set):
+                langs.append(fallback)
+
+        return langs
+
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
-        strategy = request.query_params.get("strategy", ToCompareStrategy.CLASSIC)
-        langs = []
 
-        try:
-            # TODO: move this to the user model
-            preferred_langs = self.request.user.settings.get(self.poll_from_url.name).get(
-                "recommendations__default_languages"
-            )
-        except AttributeError:
-            langs = [self.request.headers.get("accept-language", "en")]
-        else:
-            if preferred_langs:
-                langs = preferred_langs
-        finally:
-            if "fr" not in langs or "en" not in langs:
-                langs.append("en")
+        langs = self._get_user_preferred_langs(self.fallback_lang)
+        strategy = request.query_params.get("strategy", ToCompareStrategy.CLASSIC)
 
         if strategy == ToCompareStrategy.CLASSIC:
             self.strategy = ClassicEntitySuggestionStrategy(
