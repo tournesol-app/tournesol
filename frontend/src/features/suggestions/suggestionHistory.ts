@@ -28,11 +28,7 @@ export class BaseHistory {
   }
 
   isEmpty(poll: string) {
-    if (this._history[poll] == undefined || this._history[poll].length === 0) {
-      return true;
-    }
-
-    return false;
+    return this._history[poll] == undefined || this._history[poll].length === 0;
   }
 
   /**
