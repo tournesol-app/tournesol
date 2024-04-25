@@ -1,13 +1,15 @@
 """
 Create and save a public dataset archive on the disk.
 """
+
+import codecs
 import zipfile
-from io import StringIO
 from os.path import getctime
 from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db import connection, transaction
 from django.utils import timezone
 
 from core.utils.time import time_ago
@@ -17,6 +19,7 @@ from tournesol.lib.public_dataset import (
     write_individual_criteria_scores_file,
     write_metadata_file,
     write_users_file,
+    write_vouchers_file,
 )
 from tournesol.models.poll import Poll
 
@@ -62,59 +65,20 @@ class Command(BaseCommand):
                 f" {settings.APP_TOURNESOL['DATASETS_BUILD_DIR']}"
             )
 
-        dataset_base_name = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
+        dataset_base_name: str = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
         datasets_build_dir = Path(settings.MEDIA_ROOT).joinpath(
             settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
         )
         datasets_build_dir.mkdir(parents=True, exist_ok=True)
+        dataset_base_path = datasets_build_dir / dataset_base_name
+        archive_abs_path = dataset_base_path.with_suffix(".zip")
+        archive_temp_path = dataset_base_path.with_suffix(".zip.tmp")
 
-        # Only the default poll is exported for the moment.
-        poll_name = Poll.default_poll().name
-
-        archive_abs_path = datasets_build_dir.joinpath(dataset_base_name).with_suffix(".zip")
-
-        readme_path = Path("tournesol/resources/export_readme.txt")
-        license_path = Path("tournesol/resources/export_odc_by_1.0_public_text.txt")
-
-        first_day_of_week = time_ago(days=timezone.now().weekday()).date()
-
-        # BUILDING phase
-        with zipfile.ZipFile(archive_abs_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
-            with open(readme_path, "r", encoding="utf-8") as readme:
-                zip_file.writestr("README.txt", readme.read())
-
-            with open(license_path, "r", encoding="utf-8") as license_:
-                zip_file.writestr("LICENSE.txt", license_.read())
-
-            with StringIO() as output:
-                self.stdout.write("building tournesol metadata...")
-                write_metadata_file(output, data_until=first_day_of_week)
-                zip_file.writestr("metadata.json", output.getvalue())
-                self.stdout.write("- metadata.json written.")
-
-            with StringIO() as output:
-                self.stdout.write("retrieving users' data...")
-                write_users_file(poll_name, output)
-                zip_file.writestr("users.csv", output.getvalue())
-                self.stdout.write("- users.csv written.")
-
-            with StringIO() as output:
-                self.stdout.write("retrieving comparisons' data...")
-                write_comparisons_file(poll_name, output, until_=first_day_of_week)
-                zip_file.writestr("comparisons.csv", output.getvalue())
-                self.stdout.write("- comparisons.csv written.")
-
-            with StringIO() as output:
-                self.stdout.write("retrieving individual criteria scores' data...")
-                write_individual_criteria_scores_file(poll_name, output)
-                zip_file.writestr("individual_criteria_scores.csv", output.getvalue())
-                self.stdout.write("- individual_criteria_scores.csv written.")
-
-            with StringIO() as output:
-                self.stdout.write("retrieving collective criteria scores' data...")
-                write_collective_criteria_scores_file(poll_name, output)
-                zip_file.writestr("collective_criteria_scores.csv", output.getvalue())
-                self.stdout.write("- collective_criteria_scores.csv written.")
+        with transaction.atomic():
+            cursor = connection.cursor()
+            cursor.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            self.write_archive(archive_temp_path)
+            archive_temp_path.rename(archive_abs_path)
 
         self.stdout.write(self.style.SUCCESS(f"archive created at {archive_abs_path}"))
 
@@ -131,3 +95,61 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
+
+    def write_archive(self, archive_abs_path: Path):
+        # Only the default poll is exported for the moment.
+        poll_name = Poll.default_poll().name
+
+        readme_path = Path("tournesol/resources/export_readme.txt")
+        license_path = Path("tournesol/resources/export_odc_by_1.0_public_text.txt")
+
+        first_day_of_week = time_ago(days=timezone.now().weekday()).replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+        # BUILDING phase
+        with zipfile.ZipFile(archive_abs_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+            with open(readme_path, "r", encoding="utf-8") as readme:
+                zip_file.writestr("README.txt", readme.read())
+
+            with open(license_path, "r", encoding="utf-8") as license_file:
+                zip_file.writestr("LICENSE.txt", license_file.read())
+
+            with zip_file.open("metadata.json", "w") as output:
+                text_output = codecs.getwriter("utf8")(output)
+                self.stdout.write("building tournesol metadata...")
+                write_metadata_file(text_output, data_until=first_day_of_week)
+            self.stdout.write("- metadata.json written.")
+
+            with zip_file.open("users.csv", "w") as output:
+                text_output = codecs.getwriter("utf8")(output)
+                self.stdout.write("retrieving users' data...")
+                write_users_file(poll_name, text_output)
+            self.stdout.write("- users.csv written.")
+
+            with zip_file.open("comparisons.csv", "w") as output:
+                text_output = codecs.getwriter("utf8")(output)
+                self.stdout.write("retrieving comparisons' data...")
+                write_comparisons_file(poll_name, text_output, until_=first_day_of_week)
+            self.stdout.write("- comparisons.csv written.")
+
+            with zip_file.open("individual_criteria_scores.csv", "w") as output:
+                text_output = codecs.getwriter("utf8")(output)
+                self.stdout.write("retrieving individual criteria scores' data...")
+                write_individual_criteria_scores_file(poll_name, text_output)
+            self.stdout.write("- individual_criteria_scores.csv written.")
+
+            with zip_file.open("collective_criteria_scores.csv", "w") as output:
+                text_output = codecs.getwriter("utf8")(output)
+                self.stdout.write("retrieving collective criteria scores' data...")
+                write_collective_criteria_scores_file(poll_name, text_output)
+            self.stdout.write("- collective_criteria_scores.csv written.")
+
+            with zip_file.open("vouchers.csv", "w") as output:
+                text_output = codecs.getwriter("utf8")(output)
+                self.stdout.write("retrieving vouchers data...")
+                write_vouchers_file(text_output)
+            self.stdout.write("- vouchers.csv written")

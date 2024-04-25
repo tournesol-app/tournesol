@@ -1,4 +1,4 @@
-import concurrent
+import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             user.save()
         return user
 
-    def create_videos(self, video_ids: pd.Series):
+    def create_videos(self, video_ids: pd.Series) -> dict[int, Entity]:
         videos = {}
         for (entity_id, video_id) in video_ids.items():
             videos[entity_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
@@ -114,8 +114,8 @@ class Command(BaseCommand):
                 nb_comparisons += 1
             print(f"Created {nb_comparisons} comparisons")
 
-            for entity in Entity.objects.iterator():
-                entity.update_entity_poll_rating(poll=poll)
+            for video in videos.values():
+                video.update_entity_poll_rating(poll=poll)
 
             self.create_test_user()
             ContributorRating.objects.update(is_public=True)

@@ -7,15 +7,19 @@ from time import sleep
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import TransactionTestCase, override_settings
+
+from tournesol.models import Poll
 
 
 @override_settings(
     MEDIA_ROOT=gettempdir(),
     APP_TOURNESOL=ChainMap({"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL),
 )
-class CreateDatasetTestCase(TestCase):
+class CreateDatasetTestCase(TransactionTestCase):
     def setUp(self):
+        # Create poll if it does not exist
+        self.poll = Poll.default_poll()
         self.dataset_base_name = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
 
     def tearDown(self):

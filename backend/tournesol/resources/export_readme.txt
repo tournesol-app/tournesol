@@ -188,3 +188,24 @@ List of columns:
   uncertainty on the score value. For more detail, check out the algorithms
   implementation or the paper which describe them
   https://arxiv.org/abs/2211.01179
+
+vouchers.csv
+------------
+
+This file contains all vouchers shared between users to obtain a higher trust
+score. The graph is oriented: the sender gives a voucher in order to propagate
+some trust to the receiver.
+
+List of columns:
+
+- by_username:
+
+  The name of the user who gave the voucher
+
+- to_username:
+
+  The name of the user who received the voucher
+
+- value:
+
+  For the time being, the value of a voucher is always 1.

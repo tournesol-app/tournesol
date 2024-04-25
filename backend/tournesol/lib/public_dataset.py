@@ -4,6 +4,7 @@ The public dataset library.
 This module contains functions to retrieve data from the database and
 shortcuts to write these data in file-like objects.
 """
+
 import csv
 import json
 from datetime import datetime
@@ -15,6 +16,7 @@ from django.utils import timezone
 
 from ml.mehestan.run import MehestanParameters
 from tournesol.entities.base import UID_DELIMITER
+from vouch.models import Voucher
 from vouch.trust_algo import SINK_VOUCH, TRUSTED_EMAIL_PRETRUST, VOUCH_DECAY
 
 # The standard decimal precision of floating point numbers appearing in the
@@ -237,7 +239,7 @@ def get_collective_criteria_scores_data(poll_name: str) -> QuerySet:
     )
 
 
-def write_metadata_file(write_target, data_until: Optional[datetime] = None) -> None:
+def write_metadata_file(write_target, data_until: datetime) -> None:
     """
     Write the metadata as JSON in `write_target`, an
     object supporting the Python file API.
@@ -385,3 +387,23 @@ def write_collective_criteria_scores_file(poll_name: str, write_target) -> None:
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(rows)
+
+
+def write_vouchers_file(write_target):
+    fieldnames = [
+        "by_username",
+        "to_username",
+        "value",
+    ]
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(
+        {
+            "by_username": voucher.by.username,
+            "to_username": voucher.to.username,
+            "value": voucher.value,
+        }
+        for voucher in Voucher.objects.filter(is_public=True)
+        .select_related("by", "to")
+        .order_by("by__username", "to__username")
+    )
