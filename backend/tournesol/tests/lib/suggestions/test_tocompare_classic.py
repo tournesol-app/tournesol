@@ -67,14 +67,34 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         today = timezone.now().date()
 
-        self.videos_new = VideoFactory.create_batch(
-            20, metadata__publication_date=today.isoformat()
+        self.videos_new_es = VideoFactory.create_batch(
+            5, metadata__language="es", metadata__publication_date=today.isoformat()
+        )
+        self.videos_new_fr = VideoFactory.create_batch(
+            5, metadata__language="fr", metadata__publication_date=today.isoformat()
+        )
+        self.videos_new_it = VideoFactory.create_batch(
+            10, metadata__language="it", metadata__publication_date=today.isoformat()
         )
 
-        self.videos_past = VideoFactory.create_batch(
-            20, metadata__publication_date=(today - timedelta(days=60)).isoformat()
+        self.videos_past_es = VideoFactory.create_batch(
+            5,
+            metadata__language="es",
+            metadata__publication_date=(today - timedelta(days=60)).isoformat(),
+        )
+        self.videos_past_fr = VideoFactory.create_batch(
+            5,
+            metadata__language="fr",
+            metadata__publication_date=(today - timedelta(days=60)).isoformat(),
+        )
+        self.videos_past_it = VideoFactory.create_batch(
+            10,
+            metadata__language="it",
+            metadata__publication_date=(today - timedelta(days=60)).isoformat(),
         )
 
+        self.videos_new = self.videos_new_es + self.videos_new_fr + self.videos_new_it
+        self.videos_past = self.videos_past_es + self.videos_past_fr + self.videos_past_it
         self.videos = self.videos_new + self.videos_past
 
     def test_get_recommendations(self):
@@ -320,6 +340,47 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 5)
         self.assertTrue(set(results) == set(recent_entities[5:]))
 
+    def test_ids_from_pool_reco_last_month_lang_filter(self):
+        # [WHEN] the strategy is initialized with one language
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, ["es"])
+        results = strategy._ids_from_pool_reco_last_month([])
+        self.assertEqual(len(results), 0)
+
+        entities_es = create_entity_poll_ratings(self.poll1, self.videos_new_es, True)
+        entities_fr = create_entity_poll_ratings(self.poll1, self.videos_new_fr, True)
+        entities_it = create_entity_poll_ratings(self.poll1, self.videos_new_it[:5], True)
+        create_entity_poll_ratings(self.poll1, self.videos_new_it[5:], False)
+        create_entity_poll_ratings(self.poll1, self.videos_past, True)
+
+        # [THEN] all recommended "recent" entities matching this language should be returned.
+        results = strategy._ids_from_pool_reco_last_month([])
+        self.assertEqual(len(results), 5)
+        self.assertTrue(set(results) == set(entities_es))
+
+        # [WHEN] the strategy is initialized with several languages
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, ["it", "fr"])
+
+        # [THEN] all recommended "recent" entities matching those languages should be returned.
+        results = strategy._ids_from_pool_reco_last_month([])
+        self.assertEqual(len(results), 10)
+        self.assertTrue(set(results) == set(entities_fr + entities_it))
+
+        # [WHEN] the strategy is initialized with no language
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, [])
+
+        # [THEN] all recommended "recent" entities should be returned.
+        results = strategy._ids_from_pool_reco_last_month([])
+        self.assertEqual(len(results), 15)
+        self.assertTrue(set(results) == set(entities_es + entities_fr + entities_it))
+
+        # [WHEN] the strategy is initialized with no language
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, None)
+
+        # [THEN] all recommended "recent" entities should be returned.
+        results = strategy._ids_from_pool_reco_last_month([])
+        self.assertEqual(len(results), 15)
+        self.assertTrue(set(results) == set(entities_es + entities_fr + entities_it))
+
     def test_ids_from_pool_reco_all_time(self):
         """
         The method `_ids_from_pool_reco_all_time` should return a random
@@ -344,6 +405,47 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         results = self.strategy._ids_from_pool_reco_all_time(past_entities[:5])
         self.assertEqual(len(results), 5)
         self.assertTrue(set(results) == set(past_entities[5:]))
+
+    def test_ids_from_pool_reco_all_time_lang_filter(self):
+        # [WHEN] the strategy is initialized with one language
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, ["es"])
+        results = strategy._ids_from_pool_reco_all_time([])
+        self.assertEqual(len(results), 0)
+
+        entities_es = create_entity_poll_ratings(self.poll1, self.videos_past_es, True)
+        entities_fr = create_entity_poll_ratings(self.poll1, self.videos_past_fr, True)
+        entities_it = create_entity_poll_ratings(self.poll1, self.videos_past_it[:5], True)
+        create_entity_poll_ratings(self.poll1, self.videos_past_it[5:], False)
+        create_entity_poll_ratings(self.poll1, self.videos_new, True)
+
+        # [THEN] all recommended "past" entities matching this language should be returned.
+        results = strategy._ids_from_pool_reco_all_time([])
+        self.assertEqual(len(results), 5)
+        self.assertTrue(set(results) == set(entities_es))
+
+        # [WHEN] the strategy is initialized with several languages
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, ["it", "fr"])
+
+        # [THEN] all recommended "past" entities matching those languages should be returned.
+        results = strategy._ids_from_pool_reco_all_time([])
+        self.assertEqual(len(results), 10)
+        self.assertTrue(set(results) == set(entities_fr + entities_it))
+
+        # [WHEN] the strategy is initialized with no language
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, [])
+
+        # [THEN] all recommended "past" entities should be returned.
+        results = strategy._ids_from_pool_reco_all_time([])
+        self.assertEqual(len(results), 15)
+        self.assertTrue(set(results) == set(entities_es + entities_fr + entities_it))
+
+        # [WHEN] the strategy is initialized with no language
+        strategy = ClassicEntitySuggestionStrategy(self.poll1, self.user1, None)
+
+        # [THEN] all recommended "past" entities should be returned.
+        results = strategy._ids_from_pool_reco_all_time([])
+        self.assertEqual(len(results), 15)
+        self.assertTrue(set(results) == set(entities_es + entities_fr + entities_it))
 
     def test_consolidate_results(self):
         """

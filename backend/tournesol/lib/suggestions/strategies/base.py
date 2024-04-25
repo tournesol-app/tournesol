@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from core.models import User
 from tournesol.models import Poll
@@ -12,9 +13,10 @@ class ContributionSuggestionStrategy(ABC):
     make, etc.
     """
 
-    def __init__(self, poll: Poll, user: User):
+    def __init__(self, poll: Poll, user: User, languages: Optional[list[str]] = None):
         self.poll = poll
         self.user = user
+        self.languages = languages
 
     @abstractmethod
     def get_results(self):

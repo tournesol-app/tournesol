@@ -153,6 +153,12 @@ class User(AbstractUser):
         domain = f"@{domain_part}".lower()
         EmailDomain.objects.get_or_create(domain=domain)
 
+    def get_recommendations_default_langs(self, poll: str):
+        try:
+            return self.settings[poll].get("recommendations__default_languages")
+        except KeyError:
+            return None
+
     def clean(self):
         value = self.email
 
