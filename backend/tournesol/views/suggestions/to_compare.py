@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
 from tournesol.serializers.suggestion import EntityToCompare
+from tournesol.utils.http import langs_from_header_accept_language
 from tournesol.views import PollScopedViewMixin
 
 
@@ -46,22 +47,13 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
     # from this list, use the fallback language.
     min_lang_set = ["en", "fr"]
 
-    def _langs_from_accept_language(self, header: str) -> list[str]:
-        """
-        Return a list of language tags from a given Accept-Language HTTP
-        header.
-
-        See https://www.rfc-editor.org/rfc/rfc9110#field.accept-language
-        """
-        return [lang.split(';')[0].strip() for lang in header.split(",")]
-
     def _get_user_preferred_langs(self, fallback: Optional[str] = None) -> list[str]:
         preferred_langs = self.request.user.get_recommendations_default_langs(
             self.poll_from_url.name
         )
 
         if preferred_langs is None:
-            langs = self._langs_from_accept_language(
+            langs = langs_from_header_accept_language(
                 self.request.headers.get("accept-language", "en")
             )
         else:
