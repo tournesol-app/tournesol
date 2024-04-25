@@ -20,11 +20,7 @@ export class BaseHistory {
   }
 
   isCursorInitialized(poll: string) {
-    if (this._cursor[poll] == undefined) {
-      return false;
-    }
-
-    return true;
+    return this._cursor[poll] != undefined;
   }
 
   isEmpty(poll: string) {
