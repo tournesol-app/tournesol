@@ -46,7 +46,6 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         provided filters.
         """
         poll = self.poll
-
         return (
             Entity.objects.filter_safe_for_poll(poll)
             .filter(**entity_filters)
@@ -128,6 +127,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             ).isoformat(),
         }
 
+        if self.languages:
+            entity_filters["metadata__language__in"] = self.languages
+
         recommendations = self._get_recommendations(entity_filters, exclude_ids)
         already_compared = self._get_compared_sufficiently(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
@@ -148,6 +150,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
                 days=self.recent_recommendations_days
             ).isoformat(),
         }
+
+        if self.languages:
+            entity_filters["metadata__language__in"] = self.languages
 
         recommendations = self._get_recommendations(entity_filters, exclude_ids)[
             : self.top_recommendations_limit

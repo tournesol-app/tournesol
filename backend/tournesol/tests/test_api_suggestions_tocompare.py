@@ -11,7 +11,6 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import Poll, RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
-from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFactory
 
@@ -122,6 +121,7 @@ class SuggestionsToCompareTestCase(TestCase):
         today = timezone.now().date()
         recommendations_new = VideoFactory.create_batch(
             4,
+            metadata__language="en",
             metadata__publication_date=today.isoformat(),
             make_safe_for_poll=self.poll1,
         )
@@ -129,8 +129,9 @@ class SuggestionsToCompareTestCase(TestCase):
         long_time_ago = timezone.now() - timedelta(days=120)
         recommendations_past = VideoFactory.create_batch(
             4,
+            metadata__language="en",
             metadata__publication_date=long_time_ago.isoformat(),
-            make_safe_for_poll=self.poll1
+            make_safe_for_poll=self.poll1,
         )
 
         self.client.force_authenticate(self.user1)
