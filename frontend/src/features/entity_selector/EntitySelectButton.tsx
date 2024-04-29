@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Autocomplete,
@@ -12,7 +13,7 @@ import {
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
-import { useTranslation } from 'react-i18next';
+import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
   PRESIDENTIELLE_2022_POLL_NAME,
@@ -37,6 +38,8 @@ interface Props {
   otherUid: string | null;
   variant?: 'compact' | 'full';
   disabled?: boolean;
+  // When provided the selected UID will be added to this history.
+  history?: SuggestionHistory;
 }
 
 const VideoInput = ({
@@ -45,6 +48,7 @@ const VideoInput = ({
   otherUid,
   variant = 'compact',
   disabled = false,
+  history,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -65,6 +69,10 @@ const VideoInput = ({
   const handleOptionClick = (uid: string) => {
     onChange(uid);
     setSuggestionsOpen(false);
+
+    if (history != undefined) {
+      history.insert(pollName, uid, 'right');
+    }
   };
 
   const toggleSuggestions = () => {

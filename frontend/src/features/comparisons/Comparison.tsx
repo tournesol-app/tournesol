@@ -11,7 +11,7 @@ import { Location } from 'history';
 
 import { CircularProgress, Grid, Card } from '@mui/material';
 
-import { useNotifications, useSuggestions } from 'src/hooks';
+import { useNotifications } from 'src/hooks';
 import {
   UsersService,
   ComparisonRequest,
@@ -21,6 +21,8 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
+import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
+import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
@@ -86,10 +88,12 @@ const Comparison = ({
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
-  const { nextSuggestion } = useSuggestions();
 
   const initializeWithSuggestions = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
+
+  const selectorAHistory = useRef(new SuggestionHistory(autoSuggestionPool));
+  const selectorBHistory = useRef(new SuggestionHistory(autoSuggestionPool));
 
   const [initialComparison, setInitialComparison] =
     useState<ComparisonRequest | null>(null);
@@ -143,12 +147,22 @@ const Comparison = ({
       let autoUidA = null;
       let autoUidB = null;
 
-      if (!uidA && autoFillSelectorA) {
-        autoUidA = await nextSuggestion(uidA, uidB, pollName);
+      if (uidA) {
+        selectorAHistory.current.appendRight(pollName, uidA);
+      } else if (autoFillSelectorA) {
+        autoUidA = await selectorAHistory.current.nextRightOrSuggestion(
+          pollName,
+          [uidA, uidB]
+        );
       }
 
-      if (!uidB && autoFillSelectorB) {
-        autoUidB = await nextSuggestion(uidB, autoUidA || uidA, pollName);
+      if (uidB) {
+        selectorBHistory.current.appendRight(pollName, uidB);
+      } else if (autoFillSelectorB) {
+        autoUidB = await selectorBHistory.current.nextRightOrSuggestion(
+          pollName,
+          [autoUidA || uidA, uidB]
+        );
       }
 
       if (autoUidA) {
@@ -272,6 +286,7 @@ const Comparison = ({
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
+          history={selectorAHistory.current}
         />
       </Grid>
       <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
@@ -280,6 +295,7 @@ const Comparison = ({
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
+          history={selectorBHistory.current}
         />
       </Grid>
       <Grid

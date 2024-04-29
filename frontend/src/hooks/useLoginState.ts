@@ -8,7 +8,7 @@ import {
 import { clearSettings } from 'src/features/settings/userSettingsSlice';
 import { LoginState } from 'src/features/login/LoginState.model';
 import { isLoggedIn as isStateLoggedIn } from 'src/features/login/loginUtils';
-import { clearAutoSuggestions } from 'src/features/rateLater/autoSuggestions';
+import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 
 export const useLoginState = () => {
   const loginState: LoginState = useAppSelector(selectLogin);
@@ -22,7 +22,7 @@ export const useLoginState = () => {
      * browser.
      */
     dispatch(clearSettings());
-    clearAutoSuggestions();
+    autoSuggestionPool.clear();
   }, [dispatch]);
 
   const updateUsername = useCallback(
