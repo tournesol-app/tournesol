@@ -5,12 +5,10 @@ API endpoint to manipulate videos
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
-
 from rest_framework.viewsets import GenericViewSet
 
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
-
 from tournesol.serializers.entity import VideoSerializer
 from tournesol.throttling import (
     BurstAnonRateThrottle,
