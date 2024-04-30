@@ -7,7 +7,6 @@ import {
   Recommendation,
   RelatedEntity,
   TournesolUserSettings,
-  Video,
   EntityNoExtraField,
 } from 'src/services/openapi';
 
@@ -39,7 +38,6 @@ export type EntityResult =
   | Recommendation
   | SimpleEntityResult;
 export type EntityObject = RelatedEntity | EntityNoExtraField;
-export type VideoObject = Video;
 
 /**
  * An exhaustive list of route ids helping to enforce type checking in each
