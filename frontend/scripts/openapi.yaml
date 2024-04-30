@@ -2406,120 +2406,6 @@ paths:
                   $ref: '#/components/schemas/ReadOnlyVoucher'
           description: ''
   /video/:
-    get:
-      operationId: video_list
-      description: Retrieve a list of recommended videos, sorted by decreasing total
-        score.
-      parameters:
-      - name: limit
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
-        schema:
-          type: integer
-      - in: query
-        name: search
-        schema:
-          type: string
-      - in: query
-        name: language
-        schema:
-          type: string
-        description: Accepted languages separated by commas (e.g. 'en,fr,de'). If
-          empty, accept all languages.
-      - in: query
-        name: uploader
-        schema:
-          type: string
-      - in: query
-        name: date_lte
-        schema:
-          type: string
-          format: date-time
-        description: "Return videos published **before** this date.  \nAccepted formats:\
-          \ ISO 8601 datetime (e.g `2021-12-01T12:45:00`) or legacy: `dd-mm-yy-hh-mm-ss`."
-      - in: query
-        name: date_gte
-        schema:
-          type: string
-          format: date-time
-        description: "Return videos published **after** this date.  \nAccepted formats:\
-          \ ISO 8601 datetime (e.g `2021-12-01T12:45:00`) or legacy: `dd-mm-yy-hh-mm-ss`."
-      - in: query
-        name: unsafe
-        schema:
-          type: boolean
-        description: If true, videos considered as unsafe recommendations because
-          of a low score or due to too few contributions will be included.
-      - in: query
-        name: largely_recommended
-        schema:
-          type: integer
-        description: Weight for criteria 'largely_recommended', between 0 and 100
-      - in: query
-        name: reliability
-        schema:
-          type: integer
-        description: Weight for criteria 'reliability', between 0 and 100
-      - in: query
-        name: importance
-        schema:
-          type: integer
-        description: Weight for criteria 'importance', between 0 and 100
-      - in: query
-        name: engaging
-        schema:
-          type: integer
-        description: Weight for criteria 'engaging', between 0 and 100
-      - in: query
-        name: pedagogy
-        schema:
-          type: integer
-        description: Weight for criteria 'pedagogy', between 0 and 100
-      - in: query
-        name: layman_friendly
-        schema:
-          type: integer
-        description: Weight for criteria 'layman_friendly', between 0 and 100
-      - in: query
-        name: diversity_inclusion
-        schema:
-          type: integer
-        description: Weight for criteria 'diversity_inclusion', between 0 and 100
-      - in: query
-        name: backfire_risk
-        schema:
-          type: integer
-        description: Weight for criteria 'backfire_risk', between 0 and 100
-      - in: query
-        name: better_habits
-        schema:
-          type: integer
-        description: Weight for criteria 'better_habits', between 0 and 100
-      - in: query
-        name: entertaining_relaxing
-        schema:
-          type: integer
-        description: Weight for criteria 'entertaining_relaxing', between 0 and 100
-      tags:
-      - video
-      security:
-      - oauth2:
-        - read write groups
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedVideoSerializerWithCriteriaList'
-          description: ''
     post:
       operationId: video_create
       description: Add a video to the db if it does not already exist.
@@ -2546,29 +2432,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Video'
-          description: ''
-  /video/{video_id}/:
-    get:
-      operationId: video_retrieve
-      description: Retrieve details about a single video.
-      parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - video
-      security:
-      - oauth2:
-        - read write groups
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VideoSerializerWithCriteria'
           description: ''
 components:
   schemas:
@@ -3822,26 +3685,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UnconnectedEntity'
-    PaginatedVideoSerializerWithCriteriaList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/VideoSerializerWithCriteria'
     PatchedContributorRatingRequest:
       type: object
       properties:
@@ -4781,80 +4624,6 @@ components:
           pattern: ^([A-Za-z0-9-_]{11})$
       required:
       - video_id
-    VideoSerializerWithCriteria:
-      type: object
-      properties:
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        name:
-          type: string
-          readOnly: true
-          description: Video title
-        description:
-          type: string
-          readOnly: true
-          nullable: true
-          description: Video description, from YouTube
-        publication_date:
-          type: string
-          format: date-time
-          readOnly: true
-          nullable: true
-        views:
-          type: integer
-          readOnly: true
-          nullable: true
-        uploader:
-          type: string
-          readOnly: true
-          nullable: true
-          description: Name of the channel on YouTube
-        language:
-          type: string
-          readOnly: true
-          nullable: true
-        rating_n_ratings:
-          type: integer
-          readOnly: true
-          default: 0
-        rating_n_contributors:
-          type: integer
-          readOnly: true
-          default: 0
-        duration:
-          type: integer
-          readOnly: true
-          nullable: true
-        video_id:
-          type: string
-          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
-          pattern: ^([A-Za-z0-9-_]{11})$
-        tournesol_score:
-          type: number
-          format: double
-          readOnly: true
-          nullable: true
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityCriteriaScore'
-      required:
-      - criteria_scores
-      - description
-      - duration
-      - language
-      - name
-      - publication_date
-      - rating_n_contributors
-      - rating_n_ratings
-      - tournesol_score
-      - uid
-      - uploader
-      - video_id
-      - views
     VideosPollUserSettings:
       type: object
       description: |-
