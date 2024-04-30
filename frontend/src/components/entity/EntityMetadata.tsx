@@ -1,4 +1,5 @@
 import React from 'react';
+import CSS from 'csstype';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Tooltip } from '@mui/material';
@@ -16,11 +17,13 @@ export const VideoMetadata = ({
   publicationDate,
   uploader,
   withLinks = true,
+  flexWrap = 'wrap',
 }: {
   views?: number | null;
   publicationDate?: string | null;
   uploader?: string | null;
   withLinks?: boolean;
+  flexWrap?: CSS.Properties['flexWrap'];
 }) => {
   const { t, i18n } = useTranslation();
 
@@ -41,15 +44,15 @@ export const VideoMetadata = ({
     <Box
       sx={{
         display: 'flex',
-        flexWrap: 'wrap',
+        flexWrap: flexWrap,
         alignContent: 'space-between',
         fontSize: '0.8rem',
         color: 'neutral.main',
-        columnGap: '12px',
+        columnGap: '10px',
       }}
     >
       {views && (
-        <Box component="span">
+        <Box component="span" flexShrink={0}>
           <Trans t={t} i18nKey="video.nbViews">
             {{
               nbViews: views.toLocaleString(i18n.resolvedLanguage),
@@ -58,41 +61,55 @@ export const VideoMetadata = ({
           </Trans>
         </Box>
       )}
-      {publicationDate && <Box component="span">{displayedDate}</Box>}
+      {publicationDate && (
+        <Box component="span" flexShrink={0}>
+          {displayedDate}
+        </Box>
+      )}
 
-      {uploader &&
-        (withLinks ? (
-          <Tooltip
-            title={`${t('video.seeRecommendedVideosSameUploader')}`}
-            placement="bottom"
-          >
-            <InternalLink
-              to={`/recommendations?language=&uploader=${encodeURIComponent(
-                uploader
-              )}`}
-              color="inherit"
-              underline="always"
-              sx={{
-                fontWeight: 600,
-              }}
+      {uploader && (
+        <Box component="span" flexShrink={0}>
+          {withLinks ? (
+            <Tooltip
+              title={`${t('video.seeRecommendedVideosSameUploader')}`}
+              placement="bottom"
             >
-              {uploader}
-            </InternalLink>
-          </Tooltip>
-        ) : (
-          uploader
-        ))}
+              <InternalLink
+                to={`/recommendations?language=&uploader=${encodeURIComponent(
+                  uploader
+                )}`}
+                color="inherit"
+                underline="always"
+                sx={{
+                  fontWeight: 600,
+                }}
+              >
+                {uploader}
+              </InternalLink>
+            </Tooltip>
+          ) : (
+            uploader
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
 
-const EntityMetadata = ({ entity }: { entity: EntityObject }) => {
+const EntityMetadata = ({
+  entity,
+  flexWrap,
+}: {
+  entity: EntityObject;
+  flexWrap?: CSS.Properties['flexWrap'];
+}) => {
   if (entity.type === TypeEnum.VIDEO) {
     return (
       <VideoMetadata
         views={entity.metadata.views}
         publicationDate={entity.metadata.publication_date}
         uploader={entity.metadata.uploader}
+        flexWrap={flexWrap}
       />
     );
   }

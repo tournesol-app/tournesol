@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import CSS from 'csstype';
 import { useTranslation } from 'react-i18next';
+
 import {
   Box,
   Collapse,
@@ -245,11 +247,13 @@ export const RowEntityCard = ({
   withLink = false,
   individualScores,
   displayEntityContextChip = true,
+  flexWrapMetadata,
 }: {
   result: EntityResult;
   withLink?: boolean;
   individualScores?: ContributorCriteriaScore[];
   displayEntityContextChip?: boolean;
+  flexWrapMetadata?: CSS.Properties['flexWrap'];
 }) => {
   const entity = result.entity;
   return (
@@ -286,6 +290,7 @@ export const RowEntityCard = ({
             uploader={entity.metadata.uploader}
             publicationDate={entity.metadata.publication_date}
             withLinks={false}
+            flexWrap={flexWrapMetadata}
           />
         )}
 

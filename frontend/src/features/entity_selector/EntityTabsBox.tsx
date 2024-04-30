@@ -289,6 +289,7 @@ const EntityTabsBox = ({
                 <RowEntityCard
                   result={res}
                   withLink={withLink}
+                  flexWrapMetadata="nowrap"
                   individualScores={
                     displayIndividualScores
                       ? getIndividualScores(res)
