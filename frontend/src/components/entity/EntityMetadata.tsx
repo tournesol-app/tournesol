@@ -1,5 +1,4 @@
 import React from 'react';
-import CSS from 'csstype';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Tooltip } from '@mui/material';
@@ -7,6 +6,8 @@ import { Box, Tooltip } from '@mui/material';
 import { InternalLink } from 'src/components';
 import { TypeEnum } from 'src/services/openapi';
 import { EntityObject } from 'src/utils/types';
+
+export type EntityMetadataVariant = 'singleLine' | 'wrap';
 
 const toPaddedString = (num: number): string => {
   return num.toString().padStart(2, '0');
@@ -17,15 +18,24 @@ export const VideoMetadata = ({
   publicationDate,
   uploader,
   withLinks = true,
-  flexWrap = 'wrap',
+  variant = 'wrap',
 }: {
   views?: number | null;
   publicationDate?: string | null;
   uploader?: string | null;
   withLinks?: boolean;
-  flexWrap?: CSS.Properties['flexWrap'];
+  variant?: EntityMetadataVariant;
 }) => {
   const { t, i18n } = useTranslation();
+
+  let flexShrink = 1;
+  let flexWrap = 'wrap';
+
+  switch (variant) {
+    case 'singleLine':
+      flexShrink = 0;
+      flexWrap = 'nowrap';
+  }
 
   let displayedDate;
   // Instead of displaying the date in the same format for every user, we
@@ -52,7 +62,7 @@ export const VideoMetadata = ({
       }}
     >
       {views && (
-        <Box component="span" flexShrink={0}>
+        <Box component="span" flexShrink={flexShrink}>
           <Trans t={t} i18nKey="video.nbViews">
             {{
               nbViews: views.toLocaleString(i18n.resolvedLanguage),
@@ -62,13 +72,13 @@ export const VideoMetadata = ({
         </Box>
       )}
       {publicationDate && (
-        <Box component="span" flexShrink={0}>
+        <Box component="span" flexShrink={flexShrink}>
           {displayedDate}
         </Box>
       )}
 
       {uploader && (
-        <Box component="span" flexShrink={0}>
+        <Box component="span" flexShrink={flexShrink}>
           {withLinks ? (
             <Tooltip
               title={`${t('video.seeRecommendedVideosSameUploader')}`}
@@ -98,10 +108,10 @@ export const VideoMetadata = ({
 
 const EntityMetadata = ({
   entity,
-  flexWrap,
+  variant = 'wrap',
 }: {
   entity: EntityObject;
-  flexWrap?: CSS.Properties['flexWrap'];
+  variant?: EntityMetadataVariant;
 }) => {
   if (entity.type === TypeEnum.VIDEO) {
     return (
@@ -109,7 +119,7 @@ const EntityMetadata = ({
         views={entity.metadata.views}
         publicationDate={entity.metadata.publication_date}
         uploader={entity.metadata.uploader}
-        flexWrap={flexWrap}
+        variant={variant}
       />
     );
   }

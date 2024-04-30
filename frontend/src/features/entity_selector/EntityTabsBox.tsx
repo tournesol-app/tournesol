@@ -289,7 +289,7 @@ const EntityTabsBox = ({
                 <RowEntityCard
                   result={res}
                   withLink={withLink}
-                  flexWrapMetadata="nowrap"
+                  metadataVariant="singleLine"
                   individualScores={
                     displayIndividualScores
                       ? getIndividualScores(res)

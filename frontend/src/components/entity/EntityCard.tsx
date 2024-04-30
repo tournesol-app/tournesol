@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import CSS from 'csstype';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -38,7 +37,10 @@ import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
 import EntityContextChip from './EntityContextChip';
 import EntityImagery from './EntityImagery';
-import EntityMetadata, { VideoMetadata } from './EntityMetadata';
+import EntityMetadata, {
+  EntityMetadataVariant,
+  VideoMetadata,
+} from './EntityMetadata';
 import EntityIndividualScores from './EntityIndividualScores';
 import { entityCardMainSx } from './style';
 
@@ -247,13 +249,13 @@ export const RowEntityCard = ({
   withLink = false,
   individualScores,
   displayEntityContextChip = true,
-  flexWrapMetadata,
+  metadataVariant,
 }: {
   result: EntityResult;
   withLink?: boolean;
   individualScores?: ContributorCriteriaScore[];
   displayEntityContextChip?: boolean;
-  flexWrapMetadata?: CSS.Properties['flexWrap'];
+  metadataVariant?: EntityMetadataVariant;
 }) => {
   const entity = result.entity;
   return (
@@ -290,7 +292,7 @@ export const RowEntityCard = ({
             uploader={entity.metadata.uploader}
             publicationDate={entity.metadata.publication_date}
             withLinks={false}
-            flexWrap={flexWrapMetadata}
+            variant={metadataVariant}
           />
         )}
 
