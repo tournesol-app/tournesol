@@ -339,8 +339,8 @@ const AboutPage = () => {
           <Grid item xs={12} sm={6} className={classes.container}>
             <ContributorCard
               name="Sergei"
-              image="/people/sergia.jpg"
-              description={t('about.sergiaDescription')}
+              image="/people/Sergei.jpg"
+              description={t('about.sergeiDescription')}
               website="https://sergia.ch"
             />
           </Grid>
