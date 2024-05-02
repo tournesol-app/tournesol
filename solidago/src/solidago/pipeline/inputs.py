@@ -29,6 +29,7 @@ class TournesolInput(ABC):
             * `entity_b`: int or str
             * `criteria`: str
             * `score`: float
+            * `score_max`: int
             * `weight`: float
         """
         raise NotImplementedError
@@ -103,7 +104,10 @@ class TournesolInputFromPublicDataset(TournesolInput):
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
         dtf["weight"] = 1
-        return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
+        if "score_max" not in dtf:
+            # For compatibility with older datasets
+            dtf["score_max"] = 10
+        return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"]]
 
     @cached_property
     def ratings_properties(self):
