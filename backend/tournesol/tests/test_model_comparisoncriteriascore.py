@@ -40,6 +40,9 @@ class ComparisonCriteriaScoreTestCase(TestCase):
         with self.assertRaises(ValidationError):
             score.clean_fields()
 
+        score.score_max = 1
+        score.clean_fields()
+
     def test_save_validate_score(self):
         score = ComparisonCriteriaScore(
             comparison=self.comparison,
