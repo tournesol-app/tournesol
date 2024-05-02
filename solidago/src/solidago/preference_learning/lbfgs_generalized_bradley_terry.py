@@ -176,12 +176,8 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         n_steps: int = 3,
     ):
         """
-        Parameters
+        Parameters (TODO)
         ----------
-        initialization: dict[int, float]
-            previously computed entity scores
-        error: float
-            tolerated error
         """
         super().__init__(prior_std_dev, convergence_error, n_steps)
         self.comparison_max = comparison_max

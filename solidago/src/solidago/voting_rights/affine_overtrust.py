@@ -178,11 +178,10 @@ class AffineOvertrust(VotingRightsAssignment):
         ----------
         max_overtrust: float
             Maximal overtrust allowed for entity_id
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
+        trust_scores:
+            trust score values per user
         privacy_weights: dict[int, float]
-            privacy_weights[u] is the privacy weight of user u
+            privacy weight per user
 
         Returns
         -------

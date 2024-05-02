@@ -23,7 +23,7 @@ class PreferenceLearning(ABC):
         
         Parameters
         ----------
-        user_judgments: dict[str, pd.DataFrame]
+        judgments:
             May contain different forms of judgments, 
             but most likely will contain "comparisons" and/or "assessments"
         entities: DataFrame with columns
@@ -32,9 +32,10 @@ class PreferenceLearning(ABC):
         initialization: dict[int, ScoringModel] or ScoringModel or None
             Starting models, added to facilitate optimization
             It is not supposed to affect the output of the training
-        new_judgments: New judgments
-           This allows to prioritize coordinate descent, starting with newly evaluated entities
-            
+        new_judgments:
+            New judgments
+            This allows to prioritize coordinate descent, starting with newly evaluated entities
+
         Returns
         -------
         user_models: dict[int, ScoringModel]
@@ -76,8 +77,9 @@ class PreferenceLearning(ABC):
         initialization: ScoringModel or None
             Starting model, added to facilitate optimization
             It is not supposed to affect the output of the training
-        new_judgments: New judgments
-           This allows to prioritize coordinate descent, starting with newly evaluated entities
+        new_judgments:
+            New judgments
+            This allows to prioritize coordinate descent, starting with newly evaluated entities
             
         Returns
         -------

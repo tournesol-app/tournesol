@@ -228,12 +228,8 @@ class UniformGBT(GeneralizedBradleyTerry):
     ):
         """
 
-        Parameters
+        Parameters (TODO)
         ----------
-        initialization: dict[int, float]
-            previously computed entity scores
-        error: float
-            tolerated error
         """
         super().__init__(prior_std_dev, convergence_error)
         self.cumulant_generating_function_error = cumulant_generating_function_error
