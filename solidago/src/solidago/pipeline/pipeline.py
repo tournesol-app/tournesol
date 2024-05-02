@@ -82,7 +82,7 @@ class Pipeline:
         aggregation: Aggregation = DefaultPipeline.aggregation,
         post_process: PostProcess = DefaultPipeline.post_process,
     ):
-        """ Instantiates the pipeline components.
+        """Instantiates the pipeline components.
         
         Parameters
         ----------
@@ -148,8 +148,6 @@ class Pipeline:
             judgments[user] must yield the judgment data provided by the user
         init_user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        skip_set: set[int]
-            Steps that are skipped in the pipeline
             
         Returns
         -------
@@ -229,8 +227,8 @@ class Pipeline:
             post_process=self.post_process.to_json()
         )
         
+    @staticmethod
     def save_individual_scalings(
-        self,
         user_models: dict[int, ScaledScoringModel],
         output: PipelineOutput,
     ):
@@ -251,8 +249,8 @@ class Pipeline:
         )
         output.save_individual_scalings(scalings_df)
 
+    @staticmethod
     def save_individual_scores(
-        self,
         user_scorings: dict[int, ScoringModel],
         raw_user_scorings: dict[int, ScoringModel],
         voting_rights: VotingRights,

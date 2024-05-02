@@ -175,12 +175,8 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         max_iter: int = 100,
     ):
         """
-        Parameters
+        Parameters (TODO)
         ----------
-        initialization: dict[int, float]
-            previously computed entity scores
-        error: float
-            tolerated error
         """
         super().__init__(prior_std_dev, convergence_error, max_iter=max_iter)
         self.cumulant_generating_function_error = cumulant_generating_function_error
