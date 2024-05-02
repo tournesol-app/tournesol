@@ -791,6 +791,16 @@ class PollsEntityTestCase(TestCase):
         self.assertIn("criteria_scores", data["collective_rating"])
 
 
+    def test_users_can_read_entity_without_score(self):
+        self.video_1.all_poll_ratings.all().delete()
+
+        response = self.client.get(f"/polls/videos/entities/{self.video_1.uid}")
+        data = response.data
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["entity"]["uid"], self.video_1.uid)
+        self.assertEqual(data["collective_rating"], None)
+
     def test_users_read_404_if_uid_doesnt_exist(self):
         # anonymous user
         response = self.client.get(f"/polls/videos/entities/{self._non_existing_uid}")

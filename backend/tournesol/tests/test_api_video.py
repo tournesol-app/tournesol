@@ -55,21 +55,6 @@ class VideoApi(TestCase):
         VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.3)
         VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4)
 
-    def test_anonymous_can_list_with_pagination(self):
-        """
-        An anonymous user can list a subset of videos by using all pagination
-        parameters.
-
-        Several combinations of parameters are checked, with coherent and
-        incoherent values.
-        """
-        # TODO: ensure this feature is tested by the API /polls/{name}/recommendations/
-        pass
-
-    def test_anonymous_can_get_video_without_score(self):
-        # TODO: ensure this feature is tested by the API /polls/{name}/entities/{uid}
-        pass
-
     def test_language_detection(self):
         # TODO: this is not an API test, move it elsewhere
         VideoFactory.create_batch(5, metadata__uploader="Tournesol4All", metadata__language="fr")
