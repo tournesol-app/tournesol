@@ -341,7 +341,7 @@ const AboutPage = () => {
               name="Sergei"
               image="/people/Sergei.jpg"
               description={t('about.sergeiDescription')}
-              website="https://sergia.ch"
+              website="https://linkedin.com/in/sergeivolodin"
             />
           </Grid>
           <Grid item xs={12} sm={6} className={classes.container}>
