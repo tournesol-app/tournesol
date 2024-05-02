@@ -502,6 +502,24 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(resp.data["count"], 0)
         self.assertEqual(resp.data["results"], [])
 
+    def test_anon_can_list_videos_filtered_by_date(self):
+        response = self.client.get(
+            "/polls/videos/recommendations/?date_lte=2021-01-03T00:00:00.000Z"
+        )
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["entity"]["uid"], self.video_3.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video_2.uid)
+
+        response = self.client.get(
+            "/polls/videos/recommendations/?date_gte=2021-01-03T00:00:00.000Z"
+        )
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["entity"]["uid"], self.video_4.uid)
+
     def test_anon_cannot_use_forbidden_strings_in_metadata_filter(self):
         response = self.client.get("/polls/videos/recommendations/?metadata[__]=10")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
