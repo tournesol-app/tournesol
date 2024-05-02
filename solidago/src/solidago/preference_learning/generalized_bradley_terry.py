@@ -216,18 +216,18 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             score_diff = solution[coordinate] - solution[coordinate_bis]
             result += self.cumulant_generating_function_second_derivative(score_diff)
         return result
-    
-        
+
+
 class UniformGBT(GeneralizedBradleyTerry):
+
     def __init__(
-        self, 
-        prior_std_dev: float=7,
-        comparison_max: float=10,
-        convergence_error: float=1e-5,
-        cumulant_generating_function_error: float=1e-5,
+        self,
+        prior_std_dev: float = 7,
+        convergence_error: float = 1e-5,
+        cumulant_generating_function_error: float = 1e-5,
     ):
         """
-        
+
         Parameters
         ----------
         initialization: dict[int, float]
@@ -236,22 +236,10 @@ class UniformGBT(GeneralizedBradleyTerry):
             tolerated error
         """
         super().__init__(prior_std_dev, convergence_error)
-        self.comparison_max = comparison_max
         self.cumulant_generating_function_error = cumulant_generating_function_error
-    
+
     @cached_property
     def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
-        """ For.
-        
-        Parameters
-        ----------
-        score_diff: float
-            Score difference
-            
-        Returns
-        -------
-        out: float
-        """
         tolerance = self.cumulant_generating_function_error
 
         @njit
@@ -259,38 +247,36 @@ class UniformGBT(GeneralizedBradleyTerry):
             return np.where(
                 np.abs(score_diff) < tolerance,
                 score_diff / 3,
-                1/ np.tanh(score_diff) - 1 / score_diff
+                1 / np.tanh(score_diff) - 1 / score_diff,
             )
+
         return f
 
-    
     def cumulant_generating_function_second_derivative(self, score_diff: float) -> float:
-        """ We estimate uncertainty by the flatness of the negative log likelihood,
+        """We estimate uncertainty by the flatness of the negative log likelihood,
         which is directly given by the second derivative of the cumulant generating function.
-        
+
         Parameters
         ----------
         score_diff: float
             Score difference
-            
+
         Returns
         -------
         out: float
         """
         if np.abs(score_diff) < self.cumulant_generating_function_error:
-            return (1/3) - (score_diff**2 / 15)
-        return 1 - (1 / np.tanh(score_diff)**2) + (1 / score_diff**2)
-    
+            return (1 / 3) - (score_diff**2 / 15)
+        return 1 - (1 / np.tanh(score_diff) ** 2) + (1 / score_diff**2)
+
     def to_json(self):
         return type(self).__name__, dict(
             prior_std_dev=self.prior_std_dev,
-            comparison_max=self.comparison_max,
             convergence_error=self.convergence_error,
             cumulant_generating_function_error=self.cumulant_generating_function_error,
         )
-    
+
     def __str__(self):
-        prop_names = ["prior_std_dev", "convergence_error", "comparison_max", 
-            "cumulant_generating_function_error"]
+        prop_names = ["prior_std_dev", "convergence_error", "cumulant_generating_function_error"]
         prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
         return f"{type(self).__name__}({prop})"

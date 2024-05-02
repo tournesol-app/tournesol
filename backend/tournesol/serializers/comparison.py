@@ -11,7 +11,7 @@ from tournesol.serializers.entity_context import EntityContextSerializer
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
     class Meta:
         model = ComparisonCriteriaScore
-        fields = ["criteria", "score", "weight"]
+        fields = ["criteria", "score", "score_max", "weight"]
 
     def validate_criteria(self, value):
         current_poll = self.context["poll"]
@@ -37,11 +37,15 @@ class ComparisonSerializerMixin:
 
     def validate_criteria_scores(self, value):
         current_poll = self.context["poll"]
-        missing_criterias = set(current_poll.required_criterias_list) - set(
-            score["criteria"] for score in value
-        )
-        if missing_criterias:
-            raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
+        partial_update = self.context.get("partial_update")
+
+        if not partial_update:
+            missing_criterias = set(current_poll.required_criterias_list) - set(
+                score["criteria"] for score in value
+            )
+            if missing_criterias:
+                raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
+
         return value
 
 
@@ -193,9 +197,19 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
             instance.duration_ms = validated_data.get("duration_ms")
 
         instance.save()
-        instance.criteria_scores.all().delete()
 
-        for criteria_score in validated_data.pop("criteria_scores"):
-            instance.criteria_scores.create(**criteria_score)
+        partial_update = self.context.get("partial_update")
+
+        if partial_update:
+            for criteria_score in validated_data.pop("criteria_scores"):
+                instance.criteria_scores.update_or_create(
+                    criteria=criteria_score["criteria"],
+                    defaults={**criteria_score}
+                )
+        else:
+            instance.criteria_scores.all().delete()
+
+            for criteria_score in validated_data.pop("criteria_scores"):
+                instance.criteria_scores.create(**criteria_score)
 
         return instance

@@ -5,12 +5,11 @@ Models for Tournesol's main functions related to contributor's comparisons
 import uuid
 
 import computed_property
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, ObjectDoesNotExist, Q
 
 from core.models import User
-from tournesol.utils.constants import COMPARISON_MAX
 
 from .poll import Poll
 
@@ -129,7 +128,10 @@ class ComparisonCriteriaScore(models.Model):
     )
     score = models.FloatField(
         help_text="Score for the given comparison",
-        validators=[MinValueValidator(-COMPARISON_MAX), MaxValueValidator(COMPARISON_MAX)],
+    )
+    score_max = models.IntegerField(
+        help_text="The absolute value of the maximum score.",
+        validators=[MinValueValidator(1)],
     )
     # TODO: ask Lê if weights should be in a certain range (maybe always > 0)
     # and add validation if required
@@ -144,3 +146,17 @@ class ComparisonCriteriaScore(models.Model):
 
     def __str__(self):
         return f"{self.comparison}/{self.criteria}/{self.score}"
+
+    def save(self, *args, **kwargs):
+        if self.score_max is None:
+            raise TypeError("The value of score_max cannot be None.")
+
+        if self.score_max <= 0:
+            raise ValueError("The value of score_max must be greater than or equal to 1.")
+
+        if abs(self.score) > self.score_max:
+            raise ValueError(
+                f"The absolute value of the score {self.score} given to the criterion "
+                f"{self.criteria} can't be greater than the value of score_max {self.score_max}."
+            )
+        return super().save(*args, **kwargs)

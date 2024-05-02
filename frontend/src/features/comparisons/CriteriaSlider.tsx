@@ -18,8 +18,9 @@ import { CriteriaIcon, InternalLink } from 'src/components';
 import { getCriteriaTooltips } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
 
-const SLIDER_MIN_STEP = -10;
-const SLIDER_MAX_STEP = 10;
+export const SLIDER_SCORE_MAX = 10;
+const SLIDER_MIN_STEP = -SLIDER_SCORE_MAX;
+const SLIDER_MAX_STEP = +SLIDER_SCORE_MAX;
 const SLIDER_STEP = 1;
 
 const useStyles = makeStyles(() => ({
@@ -125,7 +126,11 @@ const CriteriaSlider = ({
   criteriaLabel: string;
   criteriaValue: number | undefined;
   disabled?: boolean;
-  handleSliderChange: (criteria: string, value: number | undefined) => void;
+  handleSliderChange: (
+    criteria: string,
+    value: number | undefined,
+    valueMax: number
+  ) => void;
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -187,7 +192,11 @@ const CriteriaSlider = ({
               disabled={disabled}
               checked={criteriaValue !== undefined}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleSliderChange(criteria, e.target.checked ? 0 : undefined)
+                handleSliderChange(
+                  criteria,
+                  e.target.checked ? 0 : undefined,
+                  SLIDER_SCORE_MAX
+                )
               }
               color="secondary"
               sx={{
@@ -224,7 +233,7 @@ const CriteriaSlider = ({
           track={false}
           disabled={disabled || criteriaValue === undefined}
           onChange={(_: Event, score: number | number[]) =>
-            handleSliderChange(criteria, score as number)
+            handleSliderChange(criteria, score as number, SLIDER_SCORE_MAX)
           }
         />
       </div>

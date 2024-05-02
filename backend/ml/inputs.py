@@ -70,6 +70,7 @@ class MlInputFromDb(TournesolInput):
 
         values = scores_queryset.values(
             "score",
+            "score_max",
             "criteria",
             "weight",
             entity_a=F("comparison__entity_1_id"),
@@ -78,7 +79,9 @@ class MlInputFromDb(TournesolInput):
         )
         if len(values) > 0:
             dtf = pd.DataFrame(values)
-            return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
+            return dtf[
+                ["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"]
+            ]
 
         return pd.DataFrame(
             columns=[
@@ -87,6 +90,7 @@ class MlInputFromDb(TournesolInput):
                 "entity_b",
                 "criteria",
                 "score",
+                "score_max",
                 "weight",
             ]
         )
