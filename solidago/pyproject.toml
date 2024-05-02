@@ -29,6 +29,11 @@ dynamic = ["version"]
 "Bug Tracker" = "https://github.com/tournesol-app/tournesol/issues"
 
 [project.optional-dependencies]
+docs = [
+    "mkdocs-material==9.*",
+    "mkdocstrings-python",
+    "markdown-include"
+]
 test = [
     "pytest >=7.1.3,<9.0.0",
 ]
