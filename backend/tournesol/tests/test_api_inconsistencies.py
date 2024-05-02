@@ -405,6 +405,7 @@ class ScoreInconsistenciesApiTestCase(TestCase):
             self.assertEqual(results["entity_1_rating"], rating_1_score)
             self.assertEqual(results["entity_2_rating"], rating_2_score)
             self.assertEqual(results["comparison_score"], comparison_score)
+            self.assertEqual(results["comparison_score_max"], 10)
             self.assertGreater(results["expected_comparison_score"], 0)
             self.assertLess(results["expected_comparison_score"], 1)
 

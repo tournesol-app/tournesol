@@ -548,7 +548,7 @@ class ExportTest(TestCase):
         self.assertEqual(len(comparisons_df), 1)
         self.assertEqual(
             list(comparisons_df.columns),
-            ["user_id", "entity_a", "entity_b", "criteria", "score", "weight"],
+            ["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"],
         )
 
         self.assertEqual(len(rating_properties), 2)

@@ -56,6 +56,7 @@ class ScoreInconsistencySerializer(Serializer):
     entity_1_rating = serializers.FloatField()
     entity_2_rating = serializers.FloatField()
     comparison_score = serializers.FloatField()
+    comparison_score_max = serializers.IntegerField()
     expected_comparison_score = serializers.FloatField()
 
 
