@@ -4434,11 +4434,14 @@ components:
         comparison_score:
           type: number
           format: double
+        comparison_score_max:
+          type: integer
         expected_comparison_score:
           type: number
           format: double
       required:
       - comparison_score
+      - comparison_score_max
       - criteria
       - entity_1_rating
       - entity_1_uid
