@@ -72,10 +72,6 @@ class VideoApi(TestCase):
         for input_, output in test_details:
             self.assertEqual(compute_video_language(*input_), output)
 
-    def test_search_in_tags_should_not_affect_order(self):
-        # TODO: ensure this feature is tested by the API /polls/{name}/entities/{uid}
-        pass
-
     def test_anonymous_cant_create(self):
         """
         An anonymous user can't add a new video.

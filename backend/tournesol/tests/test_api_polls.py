@@ -347,7 +347,7 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 3)
 
-    def test_anonymous_can_list_unsafe_recommendations(self):
+    def test_anon_can_list_unsafe_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/?unsafe=true")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 4)
@@ -611,7 +611,7 @@ class PollsRecommendationsTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_can_list_recommendations_with_score_mode(self):
+    def test_can_list_reco_with_score_mode(self):
         response = self.client.get(
             "/polls/videos/recommendations/?score_mode=all_equal&weights[reliability]=10&weights[importance]=10&weights[largely_recommended]=0"
         )
@@ -627,13 +627,38 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(results[2]["entity"]["uid"], self.video_2.uid)
         self.assertEqual(results[2]["recommendation_metadata"]["total_score"], -2.0)
 
-    def test_can_list_recommendations_with_mehestan_default_weights(self):
+    def test_can_list_reco_with_mehestan_default_weights(self):
         response = self.client.get(
             "/polls/videos/recommendations/"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.data["results"]
         self.assertEqual(len(results), 3)
+
+    def test_users_can_search_video_by_tags(self):
+        """
+        Users can perform a full text search in the videos' tags.
+        """
+        self.video_1.metadata["tags"] = ["tag 1", "tag 2", "tag 3"]
+        self.video_1.save()
+        self.video_2.metadata["tags"] = ["tag 4"]
+        self.video_2.save()
+
+        response = self.client.get("/polls/videos/recommendations/?search=tag")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], self.video_2.uid)
+
+        self.video_3.metadata["tags"] = ["tag 5"]
+        self.video_3.save()
+
+        cache.clear()
+        response = self.client.get("/polls/videos/recommendations/?search=tag")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], self.video_3.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], self.video_2.uid)
 
 
 class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
