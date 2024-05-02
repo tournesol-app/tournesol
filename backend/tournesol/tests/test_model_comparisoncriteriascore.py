@@ -2,7 +2,7 @@
 All test cases of the `ComparisonCriteriaScore` model.
 """
 
-from django.db import IntegrityError, transaction
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from core.tests.factories.user import UserFactory
@@ -21,10 +21,24 @@ class ComparisonCriteriaScoreTestCase(TestCase):
     def setUp(self):
         self.poll = PollWithCriteriasFactory()
         self.user = UserFactory(username=self._user)
-        self.comparison = ComparisonFactory(
-            user=self.user,
-            poll=self.poll,
+        self.comparison = ComparisonFactory(poll=self.poll, user=self.user)
+
+    def test_validators_score_max(self):
+        score = ComparisonCriteriaScore(
+            comparison=self.comparison,
+            criteria=self.poll.main_criteria,
+            score=0,
+            score_max=0,
         )
+
+        # score_max cannot be zero.
+        with self.assertRaises(ValidationError):
+            score.clean_fields()
+
+        score.score_max = -1
+        # score_max cannot be negative.
+        with self.assertRaises(ValidationError):
+            score.clean_fields()
 
     def test_save_validate_score(self):
         score = ComparisonCriteriaScore(
@@ -34,19 +48,48 @@ class ComparisonCriteriaScoreTestCase(TestCase):
             score_max=10,
         )
 
-        # The score cannot be superior to the score_max.
+        # The score cannot be greater than score_max.
         with self.assertRaises(ValueError):
             score.save()
 
         score.score = -11
-        # The absolute value of the score cannot be superior to the score_max.
+        # The absolute value of the score cannot be greater than score_max.
         with self.assertRaises(ValueError):
             score.save()
 
-        # The score can be equal to the magnitude.
+        # The score can be zero.
+        score.score = 0
+        score.save()
+
+        # The score can be equal to the score_max.
         score.score = score.score_max
         score.save()
 
-        # The absolute value of the score can be inferior to the score_max.
-        score.score = 0
+        # The absolute value of the score can be lesser than score_max.
+        score.score = -1
+        score.save()
+
+    def test_save_validate_score_max(self):
+        score = ComparisonCriteriaScore(
+            comparison=self.comparison,
+            criteria=self.poll.main_criteria,
+            score=5,
+            score_max=None,
+        )
+
+        # score_max cannot be None.
+        with self.assertRaises(TypeError):
+            score.save()
+
+        score.score_max = 0
+        # score_max cannot be zero.
+        with self.assertRaises(ValueError):
+            score.save()
+
+        score.score_max = -10
+        # score_max cannot be negative.
+        with self.assertRaises(ValueError):
+            score.save()
+
+        score.score_max = 10
         score.save()
