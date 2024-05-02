@@ -364,10 +364,30 @@ class PollsRecommendationsTestCase(TestCase):
             }
         )
 
-    def test_anonymous_can_list_with_offset(self):
+    def test_anon_can_list_with_limit(self):
         """
-        An anonymous user can list a subset of videos by using the `offset`
-        query parameter.
+        An anonymous user can list a subset of recommendations by using the
+        `limit` query parameter.
+        """
+        response = self.client.get("/polls/videos/recommendations/?limit=1")
+        results = response.data["results"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(results[0]["collective_rating"]["tournesol_score"], 44.0)
+
+        response = self.client.get("/polls/videos/recommendations/?limit=2")
+        results = response.data["results"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(results[0]["collective_rating"]["tournesol_score"], 44.0)
+        self.assertEqual(results[1]["collective_rating"]["tournesol_score"], 33.0)
+
+    def test_anon_can_list_with_offset(self):
+        """
+        An anonymous user can list a subset of recommendations by using the
+        `offset` query parameter.
         """
         response = self.client.get("/polls/videos/recommendations/?offset=2")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

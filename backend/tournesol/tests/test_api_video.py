@@ -8,7 +8,6 @@ from rest_framework.test import APIClient
 from core.models import User
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.tests.factories.entity import VideoCriteriaScoreFactory, VideoFactory
-from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.utils.video_language import compute_video_language
 
 from ..models import Entity
@@ -55,14 +54,6 @@ class VideoApi(TestCase):
         )
         VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.3)
         VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4)
-
-    def test_anonymous_can_list_with_limit(self):
-        """
-        An anonymous user can list a subset of videos by using the `limit`
-        query parameter.
-        """
-        # TODO: ensure this feature is tested by the API /polls/{name}/recommendations/
-        pass
 
     def test_anonymous_can_list_with_pagination(self):
         """
