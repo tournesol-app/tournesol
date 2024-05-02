@@ -13,7 +13,6 @@ from tournesol.serializers.inconsistencies import (
     ScoreInconsistenciesFilterSerializer,
     ScoreInconsistenciesSerializer,
 )
-from tournesol.utils.constants import COMPARISON_MAX
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
@@ -214,6 +213,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                 "comparison__entity_2__uid",
                 "criteria",
                 "score",
+                "score_max",
             )
         )
 
@@ -229,16 +229,18 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
             )
         )
 
-        response = self._list_inconsistent_comparisons(contributor_comparisons_criteria,
-                                                       ratings,
-                                                       filters["inconsistency_threshold"],
-                                                       poll.criterias_list)
+        response = self._list_inconsistent_comparisons(
+            contributor_comparisons_criteria,
+            ratings,
+            filters["inconsistency_threshold"],
+            poll.criterias_list,
+        )
 
         return Response(ScoreInconsistenciesSerializer(response).data)
 
     @staticmethod
     def _list_inconsistent_comparisons(  # pylint: disable=too-many-locals
-        criteria_comparisons: list,
+        criteria_comparisons: list[dict],
         criteria_ratings: list,
         threshold: float,
         criteria_list: list
@@ -265,6 +267,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
             entity_2 = comparison_criteria["comparison__entity_2__uid"]
             criteria = comparison_criteria["criteria"]
             comparison_score = comparison_criteria["score"]
+            comparison_score_max = comparison_criteria["score_max"]
 
             try:
                 rating_1 = ratings_map[(entity_1, criteria)]
@@ -278,6 +281,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                 rating_1["score"],
                 rating_2["score"],
                 comparison_score,
+                comparison_score_max,
                 uncertainty,
             )
 
@@ -296,6 +300,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                         "entity_1_rating": rating_1["score"],
                         "entity_2_rating": rating_2["score"],
                         "comparison_score": comparison_score,
+                        "comparison_score_max": comparison_score_max,
                         "expected_comparison_score": ideal_comparison_score,
                     }
                 )
@@ -322,10 +327,13 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         return response
 
     @staticmethod
-    def _calculate_inconsistency(entity_1_calculated_rating,
-                                 entity_2_calculated_rating,
-                                 comparison_score,
-                                 uncertainty) -> float:
+    def _calculate_inconsistency(
+        entity_1_calculated_rating,
+        entity_2_calculated_rating,
+        comparison_score,
+        comparison_score_max,
+        uncertainty,
+    ) -> tuple[float, float]:
         """
         Calculate the inconsistency between the comparison
         criteria score and the general rating of the entity.
@@ -361,18 +369,20 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
 
         base_rating_difference = entity_2_calculated_rating - entity_1_calculated_rating
 
-        def inconsistency_calculation(rating_diff):
-            return abs(comparison_score - COMPARISON_MAX * rating_diff / sqrt(rating_diff**2 + 1))
+        def inconsistency_calculation(rating_diff) -> float:
+            return abs(
+                comparison_score - comparison_score_max * rating_diff / sqrt(rating_diff**2 + 1)
+            )
 
         min_rating_difference = base_rating_difference - uncertainty
         max_rating_difference = base_rating_difference + uncertainty
 
-        if comparison_score <= -COMPARISON_MAX:
+        if comparison_score <= -comparison_score_max:
             min_inconsistency = inconsistency_calculation(min_rating_difference)
-        elif comparison_score >= COMPARISON_MAX:
+        elif comparison_score >= comparison_score_max:
             min_inconsistency = inconsistency_calculation(max_rating_difference)
         else:
-            root = comparison_score / sqrt(COMPARISON_MAX ** 2 - comparison_score ** 2)
+            root = comparison_score / sqrt(comparison_score_max**2 - comparison_score**2)
             if max_rating_difference < root:
                 # The inconsistency is decreasing with the rating_difference
                 min_inconsistency = inconsistency_calculation(max_rating_difference)
@@ -381,12 +391,12 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                 min_inconsistency = inconsistency_calculation(min_rating_difference)
             else:
                 # The root is a possible value for the rating_difference
-                min_inconsistency = 0
+                min_inconsistency = 0.0
 
         # Comparison imprecision of 0.5, because comparisons scores are on integers, not floats
         inconsistency = max(min_inconsistency - 0.5, 0)
-
-        expected_comparison_score = \
-            COMPARISON_MAX * base_rating_difference / sqrt(base_rating_difference**2 + 1)
+        expected_comparison_score = (
+            comparison_score_max * base_rating_difference / sqrt(base_rating_difference**2 + 1)
+        )
 
         return inconsistency, expected_comparison_score
