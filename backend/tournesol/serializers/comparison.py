@@ -11,7 +11,7 @@ from tournesol.serializers.entity_context import EntityContextSerializer
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
     class Meta:
         model = ComparisonCriteriaScore
-        fields = ["criteria", "score", "score_magnitude", "weight"]
+        fields = ["criteria", "score", "score_max", "weight"]
 
     def validate_criteria(self, value):
         current_poll = self.context["poll"]

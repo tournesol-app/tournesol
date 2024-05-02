@@ -70,12 +70,12 @@ List of columns:
 
 - score:
 
-  The score is an integer in the range [-score_magnitude, +score_magnitude].
-  Negative values indicate that the user considers the video_a better, and
-  positive values indicate that they prefer the video_b. A score of 0 or close
-  to 0 means that they find the two videos similar.
+  The score is an integer in the range [-score_max, +score_max]. Negative
+  values indicate that the user considers the video_a better, and positive
+  values indicate that they prefer the video_b. A score of 0 or close to 0
+  means that they find the two videos similar.
 
-- score_magnitude:
+- score_max:
 
   The absolute value of the minimum and maximum score. 10 means the user could
   have given a score between -10 and +10 for the criterion.

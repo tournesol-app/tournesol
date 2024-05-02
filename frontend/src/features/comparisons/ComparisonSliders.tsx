@@ -22,7 +22,7 @@ import {
   resetPendingRatings,
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
-import CriteriaSlider, { SLIDER_SCORE_MAGNITUDE } from './CriteriaSlider';
+import CriteriaSlider, { SLIDER_SCORE_MAX } from './CriteriaSlider';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -99,7 +99,7 @@ const ComparisonSliders = ({
         .map((c) => ({
           criteria: c.name,
           score: pendingRatings[c.name] || 0,
-          score_magnitude: SLIDER_SCORE_MAGNITUDE,
+          score_max: SLIDER_SCORE_MAX,
         })),
     };
   };
@@ -161,7 +161,7 @@ const ComparisonSliders = ({
   const handleSliderChange = (
     criteria: string,
     score: number | undefined,
-    scoreMagnitude: number
+    scoreMax: number
   ) => {
     const cs = comparison.criteria_scores.find((c) => c.criteria === criteria);
     if (score === undefined) {
@@ -171,12 +171,12 @@ const ComparisonSliders = ({
     } else if (cs) {
       if (cs.score == score) return;
       cs.score = score;
-      cs.score_magnitude = scoreMagnitude;
+      cs.score_max = scoreMax;
     } else {
       comparison.criteria_scores.push({
         criteria,
         score,
-        score_magnitude: scoreMagnitude,
+        score_max: scoreMax,
         weight: 1,
       });
     }
@@ -198,7 +198,7 @@ const ComparisonSliders = ({
       handleSliderChange(
         criteria,
         showOptionalCriterias ? undefined : 0,
-        SLIDER_SCORE_MAGNITUDE
+        SLIDER_SCORE_MAX
       )
     );
   };

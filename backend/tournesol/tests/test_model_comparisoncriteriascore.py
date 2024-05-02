@@ -31,22 +31,22 @@ class ComparisonCriteriaScoreTestCase(TestCase):
             comparison=self.comparison,
             criteria=self.poll.main_criteria,
             score=11,
-            score_magnitude=10,
+            score_max=10,
         )
 
-        # The score cannot be superior to the magnitude.
+        # The score cannot be superior to the score_max.
         with self.assertRaises(ValueError):
             score.save()
 
         score.score = -11
-        # The absolute value of the score cannot be superior to the magnitude.
+        # The absolute value of the score cannot be superior to the score_max.
         with self.assertRaises(ValueError):
             score.save()
 
         # The score can be equal to the magnitude.
-        score.score = score.score_magnitude
+        score.score = score.score_max
         score.save()
 
-        # The absolute value of the score can be inferior to the magnitude.
+        # The absolute value of the score can be inferior to the score_max.
         score.score = 0
         score.save()

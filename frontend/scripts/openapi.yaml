@@ -2789,13 +2789,11 @@ components:
         score:
           type: number
           format: double
-          maximum: 10.0
-          minimum: -10.0
           description: Score for the given comparison
-        score_magnitude:
+        score_max:
           type: integer
           maximum: 2147483647
-          minimum: -2147483648
+          minimum: 1
           description: The absolute value of the maximum score.
         weight:
           type: number
@@ -2804,6 +2802,7 @@ components:
       required:
       - criteria
       - score
+      - score_max
     ComparisonCriteriaScoreRequest:
       type: object
       properties:
@@ -2815,13 +2814,11 @@ components:
         score:
           type: number
           format: double
-          maximum: 10.0
-          minimum: -10.0
           description: Score for the given comparison
-        score_magnitude:
+        score_max:
           type: integer
           maximum: 2147483647
-          minimum: -2147483648
+          minimum: 1
           description: The absolute value of the maximum score.
         weight:
           type: number
@@ -2830,6 +2827,7 @@ components:
       required:
       - criteria
       - score
+      - score_max
     ComparisonRequest:
       type: object
       description: |-
