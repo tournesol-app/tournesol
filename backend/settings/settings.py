@@ -212,13 +212,6 @@ DATABASES = {
     },
 }
 
-DRF_RECAPTCHA_PUBLIC_KEY = server_settings.get(
-    "DRF_RECAPTCHA_PUBLIC_KEY", "dsfsdfdsfsdfsdfsdf"
-)
-DRF_RECAPTCHA_SECRET_KEY = server_settings.get(
-    "DRF_RECAPTCHA_SECRET_KEY", "dsfsdfdsfsdf"
-)
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -330,8 +323,6 @@ LEGACY_CRITERIAS = [
     'entertaining_relaxing',
 ]
 
-# maximal weight to assign to a rating for a particular feature, see #41
-MAX_FEATURE_WEIGHT = 8
 
 SPECTACULAR_SETTINGS = {
     # Split data components into 2 distinct schemas for request and response.
