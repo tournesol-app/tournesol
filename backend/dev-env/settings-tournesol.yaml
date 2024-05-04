@@ -1,3 +1,8 @@
+# This configuration file is intended for development environment only
+# (see instructions in /dev-env/README.md).
+# Find more information regarding the configuration and a detailed example
+# in /backend/documentation/settings-tournesol.yaml
+
 DEBUG: True
 SECRET_KEY: g&*0o49mk(t&*vvdsfsdgfsdgsgesqdg5n*e7ars&$qz*lpi^s$k*
 ALLOWED_HOSTS:
