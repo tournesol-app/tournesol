@@ -95,7 +95,9 @@ export const VideoMetadata = ({
         <Box component="span" flexShrink={flexShrink}>
           <Trans t={t} i18nKey="video.nbViews">
             {{
-              nbViews: views.toLocaleString(i18n.resolvedLanguage),
+              nbViews: Intl.NumberFormat(i18n.resolvedLanguage, {
+                notation: 'compact',
+              }).format(views),
             }}{' '}
             views
           </Trans>
