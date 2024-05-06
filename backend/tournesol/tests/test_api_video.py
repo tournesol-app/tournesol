@@ -55,23 +55,6 @@ class VideoApi(TestCase):
         VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.3)
         VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4)
 
-    def test_language_detection(self):
-        # TODO: this is not an API test, move it elsewhere
-        VideoFactory.create_batch(5, metadata__uploader="Tournesol4All", metadata__language="fr")
-        # Not enough videos to qualify for skipping language detection
-        VideoFactory.create_batch(2, metadata__uploader="Sunflower4All", metadata__language="en")
-        test_details = [
-            (
-                ["Tournesol4All", "I speak english", "I have not description"],
-                "fr",
-            ),  # fr because of existing known channel
-            (["Sunflower4All", "I speak english", "I have not description"], "en"),
-            (["Sunflower4All", "Je parle Français", "Bonjour, Merci beaucoup"], "fr"),
-            (["Sunflower4All", "Ich spreche Deutsch", "Hallo, Danke schön"], "de"),
-        ]
-        for input_, output in test_details:
-            self.assertEqual(compute_video_language(*input_), output)
-
     def test_anonymous_cant_create(self):
         """
         An anonymous user can't add a new video.
