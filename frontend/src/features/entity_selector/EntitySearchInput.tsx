@@ -69,7 +69,7 @@ const EntitySearchResultsList = ({
                 <RowEntityCard
                   key={res.entity.uid}
                   result={res}
-                  metadataVariant="singleLine"
+                  metadataVariant="uploaderOnly"
                 />
               </li>
             ))}

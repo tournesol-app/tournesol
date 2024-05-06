@@ -289,7 +289,7 @@ const EntityTabsBox = ({
                 <RowEntityCard
                   result={res}
                   withLink={withLink}
-                  metadataVariant="singleLine"
+                  metadataVariant="uploaderOnly"
                   individualScores={
                     displayIndividualScores
                       ? getIndividualScores(res)

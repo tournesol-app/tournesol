@@ -7,7 +7,7 @@ import { InternalLink } from 'src/components';
 import { TypeEnum } from 'src/services/openapi';
 import { EntityObject } from 'src/utils/types';
 
-export type EntityMetadataVariant = 'singleLine' | 'wrap';
+export type EntityMetadataVariant = 'uploaderOnly' | 'wrap';
 
 const toPaddedString = (num: number): string => {
   return num.toString().padStart(2, '0');
@@ -32,7 +32,7 @@ export const VideoMetadata = ({
   let flexWrap = 'wrap';
 
   switch (variant) {
-    case 'singleLine':
+    case 'uploaderOnly':
       flexShrink = 0;
       flexWrap = 'nowrap';
   }
@@ -61,22 +61,6 @@ export const VideoMetadata = ({
         columnGap: '10px',
       }}
     >
-      {views && (
-        <Box component="span" flexShrink={flexShrink}>
-          <Trans t={t} i18nKey="video.nbViews">
-            {{
-              nbViews: views.toLocaleString(i18n.resolvedLanguage),
-            }}{' '}
-            views
-          </Trans>
-        </Box>
-      )}
-      {publicationDate && (
-        <Box component="span" flexShrink={flexShrink}>
-          {displayedDate}
-        </Box>
-      )}
-
       {uploader && (
         <Box component="span" flexShrink={flexShrink}>
           {withLinks ? (
@@ -100,6 +84,21 @@ export const VideoMetadata = ({
           ) : (
             uploader
           )}
+        </Box>
+      )}
+      {variant === 'wrap' && publicationDate && (
+        <Box component="span" flexShrink={flexShrink}>
+          {displayedDate}
+        </Box>
+      )}
+      {variant === 'wrap' && views && (
+        <Box component="span" flexShrink={flexShrink}>
+          <Trans t={t} i18nKey="video.nbViews">
+            {{
+              nbViews: views.toLocaleString(i18n.resolvedLanguage),
+            }}{' '}
+            views
+          </Trans>
         </Box>
       )}
     </Box>
