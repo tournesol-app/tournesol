@@ -1,7 +1,16 @@
+# This file is an example settings file for Tournesol backend.
+# It should NOT be deployed as is.
+# Follow the instructions below to adapt the configuration
+# and generate secret values.
+
 # to be set to False in production
 DEBUG: True
-# to be changed in production
+
+# TO BE CHANGED IN PRODUCTION
+# Can be generated (for example) with the command below:
+# `openssl rand -base64 48`
 SECRET_KEY: g&*0o49mk(t&*vvdsfsdgfsdgsgesqdg5n*e7ars&$qz*lpi^s$k*
+
 # to be set to the actual hosts on which the API in served in production
 ALLOWED_HOSTS:
     - localhost
@@ -35,8 +44,10 @@ LOGIN_URL: /admin/login
 OIDC_ENABLED: true
 # to be set to the actual IDP URI in production
 OIDC_ISS_ENDPOINT: http://localhost:8000/o
-# test key generated with the command below (change it in production)
-# openssl genrsa 4096
+
+# TO BE CHANGED IN PRODUCTION
+# The key can be generated with the command below:
+# `openssl genrsa 4096`
 OIDC_RSA_PRIVATE_KEY: |
     -----BEGIN RSA PRIVATE KEY-----
     MIIJKAIBAAKCAgEAx0m1CHyJjkjCQW3f9pRDXHDWkmJtEGTPLqoxug8TRi6baRKs

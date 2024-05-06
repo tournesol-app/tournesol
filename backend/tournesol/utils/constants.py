@@ -14,9 +14,6 @@ REQUEST_TIMEOUT = 3
 # Maximal entity score after poll scaling is applied
 MEHESTAN_MAX_SCALED_SCORE = 100.0
 
-# Maximal absolute value for a comparison [-10, 10]
-COMPARISON_MAX = 10.0
-
 # Default weight for a criteria in the recommendations
 # FIXME: the default weight used by the front end is 50, not 10
 CRITERIA_DEFAULT_WEIGHT = 10

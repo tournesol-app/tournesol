@@ -33,7 +33,7 @@ def write_logged_user_comparisons_file(request, write_target):
 
     Comparisons from all polls are included.
     """
-    fieldnames = ["video_a", "video_b", "criteria", "weight", "score"]
+    fieldnames = ["video_a", "video_b", "criteria", "weight", "score", "score_max"]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
     comparisons = (

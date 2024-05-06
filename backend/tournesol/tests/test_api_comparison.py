@@ -13,6 +13,7 @@ from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago, time_ahead
 from tournesol.models import (
     Comparison,
+    ComparisonCriteriaScore,
     ContributorRatingCriteriaScore,
     Entity,
     EntityCriteriaScore,
@@ -54,7 +55,9 @@ class ComparisonApiTestCase(TestCase):
     non_existing_comparison = {
         "entity_a": {"uid": _uid_01},
         "entity_b": {"uid": _uid_03},
-        "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+        "criteria_scores": [
+            {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+        ],
         "duration_ms": 103,
     }
 
@@ -144,7 +147,12 @@ class ComparisonApiTestCase(TestCase):
                 "entity_a": {"uid": uid_1},
                 "entity_b": {"uid": uid_2},
                 "criteria_scores": [
-                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
+                    {
+                        "criteria": "largely_recommended",
+                        "score": 10,
+                        "score_max": 10,
+                        "weight": 10,
+                    }
                 ],
                 "duration_ms": 103,
             },
@@ -752,7 +760,11 @@ class ComparisonApiTestCase(TestCase):
                 self._uid_01,
                 self._uid_02,
             ),
-            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
+            {
+                "criteria_scores": [
+                    {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+                ]
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -768,7 +780,11 @@ class ComparisonApiTestCase(TestCase):
             "/users/me/comparisons/{}/{}/{}/".format(
                 non_existing_poll, self._uid_01, self._uid_02
             ),
-            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
+            {
+                "criteria_scores": [
+                    {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+                ]
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -809,7 +825,11 @@ class ComparisonApiTestCase(TestCase):
                 self._uid_03,
                 self._uid_04,
             ),
-            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
+            {
+                "criteria_scores": [
+                    {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+                ]
+            },
             format="json",
         )
 
@@ -830,6 +850,216 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(comp1["entity_b"]["uid"], comparison1.entity_2.uid)
         self.assertEqual(comp2["entity_a"]["uid"], comparison2.entity_1.uid)
         self.assertEqual(comp2["entity_b"]["uid"], comparison2.entity_2.uid)
+
+    def test_anonymous_cant_patch(self):
+        score = ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=8,
+            score_max=10,
+        )
+
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": "largely_recommended",
+                        "score": 2,
+                        "score_max": 2,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        score.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(score.score, 8)
+        self.assertEqual(score.score_max, 10)
+
+    def test_authenticated_can_patch(self):
+        """
+        An authenticated user can patch the score and the score_max of the
+        main criterion.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.comparisons[0].criteria_scores.all().delete()
+
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=8,
+            score_max=10,
+        )
+
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": "largely_recommended",
+                        "score": 2,
+                        "score_max": 2,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 2.0, "score_max": 2, "weight": 1.0},
+            ],
+        )
+
+    def test_authenticated_can_patch_optional(self):
+        """
+        An authenticated user can patch the score and the score_max of an
+        optional criterion.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.comparisons[0].criteria_scores.all().delete()
+
+        optional = "pedagogy"
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=1,
+            score_max=10,
+        )
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="reliability",
+            score=2,
+            score_max=10,
+        )
+
+        # A new criterion can be added, without erasing all existing criteria.
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": optional,
+                        "score": 3,
+                        "score_max": 8,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 1.0, "score_max": 10, "weight": 1.0},
+                {"criteria": "reliability", "score": 2.0, "score_max": 10, "weight": 1.0},
+                {"criteria": "pedagogy", "score": 3.0, "score_max": 8, "weight": 1.0},
+            ],
+        )
+
+        # An existing criterion can be updated, without affecting all existing criteria.
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": optional,
+                        "score": 4,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 1.0, "score_max": 10, "weight": 1.0},
+                {"criteria": "reliability", "score": 2.0, "score_max": 10, "weight": 1.0},
+                {"criteria": "pedagogy", "score": 4.0, "score_max": 8, "weight": 1.0},
+            ],
+        )
+
+    def test_authenticated_can_patch_several(self):
+        """
+        An authenticated user can patch the score and the score_max of several
+        criteria at a time.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.comparisons[0].criteria_scores.all().delete()
+
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=1,
+            score_max=10,
+        )
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="reliability",
+            score=2,
+            score_max=10,
+        )
+
+        # A new criterion can be added, without erasing all existing criteria.
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": "reliability",
+                        "score": 4,
+                        "score_max": 8,
+                    },
+                    {
+                        "criteria": "pedagogy",
+                        "score": 5,
+                        "score_max": 9,
+                    },
+                ]
+            },
+            format="json",
+        )
+
+        criteria_scores = response.data["criteria_scores"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            criteria_scores,
+            [
+                {"criteria": "largely_recommended", "score": 1.0, "score_max": 10, "weight": 1.0},
+                {"criteria": "reliability", "score": 4.0, "score_max": 8, "weight": 1.0},
+                {"criteria": "pedagogy", "score": 5.0, "score_max": 9, "weight": 1.0},
+            ],
+        )
 
     def test_anonymous_cant_delete(self):
         """
@@ -919,7 +1149,9 @@ class ComparisonApiTestCase(TestCase):
         data1 = {
             "entity_a": {"uid": self._uid_05},
             "entity_b": {"uid": self._uid_06},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+            ],
             "duration_ms": 103,
         }
         response = self.client.post(
@@ -932,7 +1164,9 @@ class ComparisonApiTestCase(TestCase):
         data2 = {
             "entity_a": {"uid": self._uid_05},
             "entity_b": {"uid": self._uid_07},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+            ],
             "duration_ms": 103,
         }
         response = self.client.post(
@@ -947,7 +1181,9 @@ class ComparisonApiTestCase(TestCase):
         data3 = {
             "entity_a": {"uid": self._uid_05},
             "entity_b": {"uid": self._uid_06},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+            ],
             "duration_ms": 103,
         }
         response = self.client.post(
@@ -986,7 +1222,9 @@ class ComparisonApiTestCase(TestCase):
         data = {
             "entity_a": {"uid": self._uid_01},
             "entity_b": {"uid": self._uid_02},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+            ],
         }
         response = self.client.post(self.comparisons_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
@@ -997,7 +1235,9 @@ class ComparisonApiTestCase(TestCase):
         data = {
             "entity_a": {"uid": self._uid_01},
             "entity_b": {"uid": self._uid_03},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+            ],
         }
 
         response = self.client.post(self.comparisons_base_url, data, format="json")
@@ -1097,7 +1337,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
             data={
                 "entity_a": {"uid": self.entities[0].uid},
                 "entity_b": {"uid": self.entities[2].uid},
-                "criteria_scores": [{"criteria": "criteria1", "score": 3}],
+                "criteria_scores": [{"criteria": "criteria1", "score": 3, "score_max": 10}],
             },
             format="json",
         )

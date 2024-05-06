@@ -31,3 +31,4 @@ class ComparisonCriteriaScoreFactory(factory.django.DjangoModelFactory):
     comparison = factory.SubFactory(ComparisonFactory)
     criteria = "better_habits"
     score = fuzzy.FuzzyDecimal(-10, 10)
+    score_max = 10

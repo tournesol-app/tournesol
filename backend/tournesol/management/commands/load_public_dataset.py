@@ -110,6 +110,7 @@ class Command(BaseCommand):
                         comparison=comparison,
                         criteria=values["criteria"],
                         score=values["score"],
+                        score_max=values["score_max"],
                     )
                 nb_comparisons += 1
             print(f"Created {nb_comparisons} comparisons")

@@ -22,7 +22,7 @@ import {
   resetPendingRatings,
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
-import CriteriaSlider from './CriteriaSlider';
+import CriteriaSlider, { SLIDER_SCORE_MAX } from './CriteriaSlider';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -96,7 +96,11 @@ const ComparisonSliders = ({
       entity_b: { uid: uidB },
       criteria_scores: criterias
         .filter((c) => !c.optional || critAlwaysDisplayed?.includes(c.name))
-        .map((c) => ({ criteria: c.name, score: pendingRatings[c.name] || 0 })),
+        .map((c) => ({
+          criteria: c.name,
+          score: pendingRatings[c.name] || 0,
+          score_max: SLIDER_SCORE_MAX,
+        })),
     };
   };
 
@@ -154,7 +158,11 @@ const ComparisonSliders = ({
     }
   };
 
-  const handleSliderChange = (criteria: string, score: number | undefined) => {
+  const handleSliderChange = (
+    criteria: string,
+    score: number | undefined,
+    scoreMax: number
+  ) => {
     const cs = comparison.criteria_scores.find((c) => c.criteria === criteria);
     if (score === undefined) {
       comparison.criteria_scores = comparison.criteria_scores.filter(
@@ -163,8 +171,14 @@ const ComparisonSliders = ({
     } else if (cs) {
       if (cs.score == score) return;
       cs.score = score;
+      cs.score_max = scoreMax;
     } else {
-      comparison.criteria_scores.push({ criteria, score, weight: 1 });
+      comparison.criteria_scores.push({
+        criteria,
+        score,
+        score_max: scoreMax,
+        weight: 1,
+      });
     }
 
     clearPendingRating(pollName, uidA, uidB, criteria);
@@ -181,7 +195,11 @@ const ComparisonSliders = ({
       .map((c) => c.name);
 
     optionalCriteriasKeys.forEach((criteria) =>
-      handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
+      handleSliderChange(
+        criteria,
+        showOptionalCriterias ? undefined : 0,
+        SLIDER_SCORE_MAX
+      )
     );
   };
 

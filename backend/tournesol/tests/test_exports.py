@@ -57,7 +57,7 @@ class ExportTest(TransactionTestCase):
             entity_2=self.video2,
         )
         ComparisonCriteriaScore.objects.create(
-            comparison=self.comparison, score=5, criteria="largely_recommended"
+            comparison=self.comparison, score=5, score_max=10, criteria="largely_recommended"
         )
         self.user_without_comparisons = UserFactory(username="user_without_comparisons")
 
@@ -138,7 +138,7 @@ class ExportTest(TransactionTestCase):
             entity_2=video2,
         )
         ComparisonCriteriaScoreFactory(
-            comparison=comparison, score=5, criteria="largely_recommended"
+            comparison=comparison, score=5, score_max=10, criteria="largely_recommended"
         )
 
     def parse_zipped_csv(self, response: requests.models.Response, filename: str) -> Dict[str, str]:
@@ -549,7 +549,7 @@ class ExportTest(TransactionTestCase):
         self.assertEqual(len(comparisons_df), 1)
         self.assertEqual(
             list(comparisons_df.columns),
-            ["user_id", "entity_a", "entity_b", "criteria", "score", "weight"],
+            ["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"],
         )
 
         self.assertEqual(len(rating_properties), 2)
