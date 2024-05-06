@@ -15,6 +15,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { EntityResult } from 'src/utils/types';
 import { ExternalLink } from 'src/components';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
+import { EntityMetadataVariant } from 'src/components/entity/EntityMetadata';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import EntitySearchInput from './EntitySearchInput';
 import { getWebExtensionUrl } from 'src/utils/extension';
@@ -28,6 +29,7 @@ interface Props {
   withLink?: boolean;
   entitySearchInput?: boolean;
   displayDescription?: boolean;
+  metadataVariant?: EntityMetadataVariant;
 }
 
 export interface EntitiesTab {
@@ -106,6 +108,7 @@ const EntityTabsBox = ({
   withLink = false,
   entitySearchInput = false,
   displayDescription = true,
+  metadataVariant = 'wrap',
 }: Props) => {
   const { t } = useTranslation();
 
@@ -289,7 +292,7 @@ const EntityTabsBox = ({
                 <RowEntityCard
                   result={res}
                   withLink={withLink}
-                  metadataVariant="uploaderOnly"
+                  metadataVariant={metadataVariant}
                   individualScores={
                     displayIndividualScores
                       ? getIndividualScores(res)
