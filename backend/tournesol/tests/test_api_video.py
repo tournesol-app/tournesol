@@ -290,10 +290,3 @@ class VideoApi(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             Entity.get_from_video_id(video_id=new_video_id)
-
-    def test_video_views_stored_on_64bits(self):
-        # TODO: this is not an API test, move it elsewhere
-        self.video_1.metadata["views"] = 9_000_000_000
-        self.video_1.save()
-        video = Entity.get_from_video_id(video_id=self.video_1.video_id)
-        self.assertEqual(video.metadata["views"], 9_000_000_000)
