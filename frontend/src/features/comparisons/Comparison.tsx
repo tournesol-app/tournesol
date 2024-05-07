@@ -27,6 +27,7 @@ import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
+import ComparisonCriteriaButtons from './ComparisonCriteriaButtons';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -231,16 +232,30 @@ const Comparison = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLang]);
 
-  const onSubmitComparison = async (c: ComparisonRequest) => {
+  const onSubmitComparison = async (
+    c: ComparisonRequest,
+    partialUpdate?: boolean
+  ) => {
     try {
       if (initialComparison) {
         const { entity_a, entity_b, criteria_scores, duration_ms } = c;
-        await UsersService.usersMeComparisonsUpdate({
-          pollName,
-          uidA: entity_a.uid,
-          uidB: entity_b.uid,
-          requestBody: { criteria_scores, duration_ms },
-        });
+
+        if (partialUpdate === true) {
+          const resp = await UsersService.usersMeComparisonsPartialUpdate({
+            pollName,
+            uidA: entity_a.uid,
+            uidB: entity_b.uid,
+            requestBody: { criteria_scores, duration_ms },
+          });
+          setInitialComparison(resp);
+        } else {
+          await UsersService.usersMeComparisonsUpdate({
+            pollName,
+            uidA: entity_a.uid,
+            uidB: entity_b.uid,
+            requestBody: { criteria_scores, duration_ms },
+          });
+        }
       } else {
         await UsersService.usersMeComparisonsCreate({
           pollName,
@@ -329,13 +344,15 @@ const Comparison = ({
           py: 3,
           '&:empty': { display: 'none' },
         }}
-        component={Card}
-        elevation={2}
+        // restore elevation for crit sliders
+        // component={Card}
+        // elevation={2}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (
             <CircularProgress color="secondary" />
           ) : (
+            /*
             <ComparisonSliders
               submit={onSubmitComparison}
               initialComparison={initialComparison}
@@ -345,6 +362,14 @@ const Comparison = ({
                 selectorA.rating.individual_rating.is_public &&
                 selectorB.rating.individual_rating.is_public
               }
+            />
+            */
+            // XXX || '' should not be required
+            <ComparisonCriteriaButtons
+              uidA={uidA || ''}
+              uidB={uidB || ''}
+              onSubmit={onSubmitComparison}
+              initialComparison={initialComparison}
             />
           )
         ) : selectorA.uid && selectorB.uid ? (
