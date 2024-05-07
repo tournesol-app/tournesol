@@ -4,7 +4,9 @@ import { Vector2 } from '@use-gesture/core/types';
 
 import { Box, Slide } from '@mui/material';
 
-import ComparisonCriterionButtons from 'src/features/comparisons/ComparisonCriterionButtons';
+import ComparisonCriterionButtons, {
+  BUTTON_SCORE_MAX,
+} from 'src/features/comparisons/ComparisonCriterionButtons';
 import { useCurrentPoll } from 'src/hooks';
 import { ComparisonRequest } from 'src/services/openapi';
 
@@ -72,8 +74,7 @@ const ComparisonCriteriaButtons = ({
         {
           criteria: criterion.name,
           score: submittedScore,
-          // TODO: create a constant
-          score_max: 2,
+          score_max: BUTTON_SCORE_MAX,
         },
       ],
     };

@@ -6,6 +6,9 @@ import { Add, Balance } from '@mui/icons-material';
 import { CriteriaIcon } from 'src/components';
 import { CriteriaLabel } from './CriteriaSlider';
 
+export const BUTTON_SCORE_MAX = 2;
+const BUTTON_SCORE_STEP = 1;
+
 interface ScoreButtonProps {
   children: React.ReactNode;
   score: number;
@@ -66,7 +69,7 @@ const ComparisonCriterionButtons = React.forwardRef(function (
 ) {
   const scoreButtons = [
     {
-      score: -2,
+      score: -BUTTON_SCORE_MAX,
       icons: (
         <>
           <Add />
@@ -75,7 +78,7 @@ const ComparisonCriterionButtons = React.forwardRef(function (
       ),
     },
     {
-      score: -1,
+      score: -BUTTON_SCORE_STEP,
       icons: <Add />,
     },
     {
@@ -83,11 +86,11 @@ const ComparisonCriterionButtons = React.forwardRef(function (
       icons: <Balance />,
     },
     {
-      score: 1,
+      score: BUTTON_SCORE_STEP,
       icons: <Add />,
     },
     {
-      score: 2,
+      score: BUTTON_SCORE_MAX,
       icons: (
         <>
           <Add />
