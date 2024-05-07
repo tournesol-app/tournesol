@@ -42,7 +42,7 @@ const ScoreButton = ({
       onClick={() => onClick(score)}
       sx={{
         borderRadius: '4px',
-        backgroundColor: selected ? theme.palette.secondary.main : undefined,
+        backgroundColor: selected ? theme.palette.primary.main : 'grey.200',
         color: selected ? 'white' : undefined,
         '&:hover': {
           color: 'white',
