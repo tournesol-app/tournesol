@@ -28,6 +28,7 @@ const ComparisonCriteriaButtons = ({
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
+  const [disableButtons, setDisableButtons] = useState(false);
 
   const [critPosition, setCritPosition] = useState(0);
   const criterion = criterias[critPosition];
@@ -41,6 +42,7 @@ const ComparisonCriteriaButtons = ({
   );
 
   const onSlideEntered = () => {
+    setDisableButtons(false);
     setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
   };
 
@@ -105,10 +107,8 @@ const ComparisonCriteriaButtons = ({
       }
 
       if (type === 'pointerup' || type === 'touchend') {
-        // Swipe up
         if (swipe[1] < 0) {
           moveWithoutPatching('down');
-          // Swipe down
         } else if (swipe[1] > 0) {
           moveWithoutPatching('up');
         }
@@ -134,12 +134,14 @@ const ComparisonCriteriaButtons = ({
         direction={slideDirection}
         onEntered={onSlideEntered}
         onExited={onSlideExited}
+        onExiting={() => setDisableButtons(true)}
         timeout={SWIPE_TIMEOUT}
       >
         <ComparisonCriterionButtons
           critName={criterion.name}
           critLabel={criterion.label}
           givenScore={criterionScore?.score}
+          disabled={disableButtons}
           onClick={patchScore}
         />
       </Slide>

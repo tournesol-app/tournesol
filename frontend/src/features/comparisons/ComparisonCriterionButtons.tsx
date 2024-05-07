@@ -10,6 +10,7 @@ interface ScoreButtonProps {
   children: React.ReactNode;
   score: number;
   selected: boolean;
+  disabled: boolean;
   onClick: (score: number) => Promise<void>;
 }
 
@@ -17,6 +18,7 @@ interface ComparisonCriterionButtonsProps {
   critName: string;
   critLabel: string;
   givenScore?: number;
+  disabled: boolean;
   onClick: (score: number) => Promise<void>;
 }
 
@@ -24,12 +26,14 @@ const ScoreButton = ({
   children,
   score,
   selected,
+  disabled,
   onClick,
 }: ScoreButtonProps) => {
   const theme = useTheme();
 
   return (
     <IconButton
+      disabled={disabled}
       color="secondary"
       aria-label="todo"
       onClick={() => onClick(score)}
@@ -51,7 +55,13 @@ const ScoreButton = ({
 };
 
 const ComparisonCriterionButtons = React.forwardRef(function (
-  { critName, critLabel, givenScore, onClick }: ComparisonCriterionButtonsProps,
+  {
+    critName,
+    critLabel,
+    givenScore,
+    disabled,
+    onClick,
+  }: ComparisonCriterionButtonsProps,
   ref
 ) {
   const scoreButtons = [
@@ -102,6 +112,7 @@ const ComparisonCriterionButtons = React.forwardRef(function (
               key={`criterion_button_${idx}`}
               score={btn.score}
               selected={btn.score === givenScore}
+              disabled={disabled}
               onClick={onClick}
             >
               {btn.icons}
