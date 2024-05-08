@@ -9,7 +9,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { CircularProgress, Grid, Card } from '@mui/material';
+import { CircularProgress, Grid, Card, Paper, Box } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import {
@@ -337,32 +337,31 @@ const Comparison = ({
         item
         xs={12}
         sx={{
-          marginTop: 2,
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'stretch',
           flexDirection: 'column',
-          py: 3,
           '&:empty': { display: 'none' },
         }}
-        // restore elevation for crit sliders
-        // component={Card}
-        // elevation={2}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (
-            <CircularProgress color="secondary" />
+            <Box display="flex" justifyContent="center">
+              <CircularProgress color="secondary" />
+            </Box>
           ) : (
             /*
-            <ComparisonSliders
-              submit={onSubmitComparison}
-              initialComparison={initialComparison}
-              uidA={uidA || ''}
-              uidB={uidB || ''}
-              isComparisonPublic={
-                selectorA.rating.individual_rating.is_public &&
-                selectorB.rating.individual_rating.is_public
-              }
-            />
+            <Paper sx={{ py: 2 }}>
+              <ComparisonSliders
+                submit={onSubmitComparison}
+                initialComparison={initialComparison}
+                uidA={uidA || ''}
+                uidB={uidB || ''}
+                isComparisonPublic={
+                  selectorA.rating.individual_rating.is_public &&
+                  selectorB.rating.individual_rating.is_public
+                }
+              />
+            </Paper>
             */
             // XXX || '' should not be required
             <ComparisonCriteriaButtons
@@ -374,7 +373,9 @@ const Comparison = ({
           )
         ) : selectorA.uid && selectorB.uid ? (
           // Entities are selected but ratings are not loaded yet
-          <CircularProgress color="secondary" />
+          <Box display="flex" justifyContent="center">
+            <CircularProgress color="secondary" />
+          </Box>
         ) : null}
       </Grid>
     </Grid>

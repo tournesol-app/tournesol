@@ -129,12 +129,12 @@ const ComparisonCriteriaButtons = ({
   };
 
   return (
-    <Box width="100%" {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
+    <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
           <IconButton
-            aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
-            onClick={() => moveWithoutPatching('up')}
+            aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
+            onClick={() => moveWithoutPatching('down')}
           >
             <ArrowDropUp />
           </IconButton>
@@ -160,8 +160,8 @@ const ComparisonCriteriaButtons = ({
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
           <IconButton
-            aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
-            onClick={() => moveWithoutPatching('down')}
+            aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
+            onClick={() => moveWithoutPatching('up')}
           >
             <ArrowDropDown />
           </IconButton>
