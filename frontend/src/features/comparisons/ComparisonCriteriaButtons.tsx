@@ -29,25 +29,27 @@ const ComparisonCriteriaButtons = ({
   onSubmit,
 }: ComparisonCriteriaButtonsProps) => {
   const { t } = useTranslation();
-  const { criterias, name: pollName } = useCurrentPoll();
+  const { criterias, name: pollName, options } = useCurrentPoll();
+  const mainCriterionName = options?.mainCriterionName;
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
-  const [disableButtons, setDisableButtons] = useState(false);
+  const [disableScoreButtons, setDisableScoreButtons] = useState(false);
 
   const [critPosition, setCritPosition] = useState(0);
-  const criterion = criterias[critPosition];
-
-  const criterionScore = initialComparison?.criteria_scores.find(
-    (crit) => crit.criteria === criterion.name
-  );
-
   const [submittedScore, setSubmittedScore] = useState<number | undefined>(
     undefined
   );
 
+  const criterion = criterias[critPosition];
+  const criterionScore = initialComparison?.criteria_scores.find(
+    (crit) => crit.criteria === criterion.name
+  );
+  const navigationDisabled =
+    criterion.name === mainCriterionName && criterionScore == undefined;
+
   const onSlideEntered = () => {
-    setDisableButtons(false);
+    setDisableScoreButtons(false);
     setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
   };
 
@@ -92,7 +94,7 @@ const ComparisonCriteriaButtons = ({
   };
 
   const moveWithoutPatching = (direction: 'up' | 'down') => {
-    if (slideIn === false) {
+    if (slideIn === false || navigationDisabled) {
       return;
     }
     setSlideDirection(direction === 'up' ? 'down' : 'up');
@@ -100,13 +102,9 @@ const ComparisonCriteriaButtons = ({
     setSubmittedScore(undefined);
   };
 
-  /**
-   * FIXME it should not be possible to skip the main criterion if it has not
-   * been rated yet.
-   */
   const bindDrag = useDrag(
     ({ swipe, type }) => {
-      if (slideIn === false) {
+      if (slideIn === false || navigationDisabled) {
         return;
       }
 
@@ -132,39 +130,43 @@ const ComparisonCriteriaButtons = ({
 
   return (
     <Box width="100%" {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
-      <Box display="flex" justifyContent="center">
-        <IconButton
-          aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
-          onClick={() => moveWithoutPatching('up')}
-        >
-          <ArrowDropUp />
-        </IconButton>
-      </Box>
+      {!navigationDisabled && (
+        <Box display="flex" justifyContent="center">
+          <IconButton
+            aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
+            onClick={() => moveWithoutPatching('up')}
+          >
+            <ArrowDropUp />
+          </IconButton>
+        </Box>
+      )}
       <Slide
         in={slideIn}
         appear={false}
         direction={slideDirection}
         onEntered={onSlideEntered}
         onExited={onSlideExited}
-        onExiting={() => setDisableButtons(true)}
+        onExiting={() => setDisableScoreButtons(true)}
         timeout={SWIPE_TIMEOUT}
       >
         <ComparisonCriterionButtons
           critName={criterion.name}
           critLabel={criterion.label}
           givenScore={criterionScore?.score}
-          disabled={disableButtons}
+          disabled={disableScoreButtons}
           onClick={patchScore}
         />
       </Slide>
-      <Box display="flex" justifyContent="center">
-        <IconButton
-          aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
-          onClick={() => moveWithoutPatching('down')}
-        >
-          <ArrowDropDown />
-        </IconButton>
-      </Box>
+      {!navigationDisabled && (
+        <Box display="flex" justifyContent="center">
+          <IconButton
+            aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
+            onClick={() => moveWithoutPatching('down')}
+          >
+            <ArrowDropDown />
+          </IconButton>
+        </Box>
+      )}
     </Box>
   );
 };
