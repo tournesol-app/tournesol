@@ -93,6 +93,10 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
     "comparisonCriteria": "Comparison criteria"
   },
+  "comparisonCriteriaButtons": {
+    "previousQualityCriterion": "Previous quality criterion",
+    "nextQualityCriterion": "Next quality criterion"
+  },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - The Tournesol association would like to give you some context.",
     "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - The Tournesol association would like to give you some context.",

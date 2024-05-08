@@ -102,8 +102,8 @@ const ComparisonCriterionButtons = React.forwardRef(function (
 
   return (
     <Box ref={ref}>
-      <Paper sx={{ p: 2 }}>
-        <Box display="flex" justifyContent="center" mb={1}>
+      <Paper sx={{ py: 2, px: 1 }}>
+        <Box display="flex" justifyContent="center" mb={2}>
           <CriteriaIcon criteriaName={critName} sx={{ mr: 1 }} />
           <Typography fontSize={{ xs: '90%', sm: '100%' }}>
             <CriteriaLabel criteria={critName} criteriaLabel={critLabel} />

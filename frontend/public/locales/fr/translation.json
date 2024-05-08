@@ -97,6 +97,10 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
     "comparisonCriteria": "Critères de comparaison"
   },
+  "comparisonCriteriaButtons": {
+    "previousQualityCriterion": "Critère de qualité précédent",
+    "nextQualityCriterion": "Critère de qualité suivant"
+  },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - L'association Tournesol souhaite vous apporter du contexte.",
     "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - L'association Tournesol souhaite vous apporter du contexte.",

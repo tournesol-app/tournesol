@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
-import { Box, Slide } from '@mui/material';
+import { Box, IconButton, Slide } from '@mui/material';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import ComparisonCriterionButtons, {
   BUTTON_SCORE_MAX,
 } from 'src/features/comparisons/ComparisonCriterionButtons';
 import { useCurrentPoll } from 'src/hooks';
 import { ComparisonRequest } from 'src/services/openapi';
+import { useTranslation } from 'react-i18next';
 
 const SWIPE_TIMEOUT = 225;
-const SWIPE_VELOCITY: number | Vector2 = [0.35, 0.35];
+const SWIPE_VELOCITY: number | Vector2 = [0.25, 0.25];
 
 interface ComparisonCriteriaButtonsProps {
   uidA: string;
@@ -26,6 +28,7 @@ const ComparisonCriteriaButtons = ({
   initialComparison,
   onSubmit,
 }: ComparisonCriteriaButtonsProps) => {
+  const { t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
   const [slideIn, setSlideIn] = useState(true);
@@ -88,11 +91,11 @@ const ComparisonCriteriaButtons = ({
     }
   };
 
-  const moveWithoutPatching = (from: 'up' | 'down') => {
+  const moveWithoutPatching = (direction: 'up' | 'down') => {
     if (slideIn === false) {
       return;
     }
-    setSlideDirection(from);
+    setSlideDirection(direction === 'up' ? 'down' : 'up');
     setSlideIn(false);
     setSubmittedScore(undefined);
   };
@@ -109,9 +112,9 @@ const ComparisonCriteriaButtons = ({
 
       if (type === 'pointerup' || type === 'touchend') {
         if (swipe[1] < 0) {
-          moveWithoutPatching('down');
-        } else if (swipe[1] > 0) {
           moveWithoutPatching('up');
+        } else if (swipe[1] > 0) {
+          moveWithoutPatching('down');
         }
       }
     },
@@ -129,6 +132,14 @@ const ComparisonCriteriaButtons = ({
 
   return (
     <Box width="100%" {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
+      <Box display="flex" justifyContent="center">
+        <IconButton
+          aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
+          onClick={() => moveWithoutPatching('up')}
+        >
+          <ArrowDropUp />
+        </IconButton>
+      </Box>
       <Slide
         in={slideIn}
         appear={false}
@@ -146,6 +157,14 @@ const ComparisonCriteriaButtons = ({
           onClick={patchScore}
         />
       </Slide>
+      <Box display="flex" justifyContent="center">
+        <IconButton
+          aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
+          onClick={() => moveWithoutPatching('down')}
+        >
+          <ArrowDropDown />
+        </IconButton>
+      </Box>
     </Box>
   );
 };
