@@ -94,6 +94,22 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 data=self.users.index, index=self.users["public_username"]
             )
             self.comparisons = self.comparisons.join(username_to_user_id, on="public_username")
+            
+            with (zipfile.Path(zip_file) / "vouchers.csv").open(mode="rb") as vouchers_file:
+                # keep_default_na=False is required otherwise some public usernames
+                # such as "NA" are converted to float NaN.
+                self.vouchers = pd.read_csv(vouchers_file, keep_default_na=False)
+            
+            with (zipfile.Path(zip_file) / "collective_criteria_scores.csv").open(mode="rb") as collective_scores_file:
+                # keep_default_na=False is required otherwise some public usernames
+                # such as "NA" are converted to float NaN.
+                self.collective_scores = pd.read_csv(collective_scores_file, keep_default_na=False)
+            
+            with (zipfile.Path(zip_file) / "individual_criteria_scores.csv").open(mode="rb") as individual_scores_file:
+                # keep_default_na=False is required otherwise some public usernames
+                # such as "NA" are converted to float NaN.
+                self.individual_scores = pd.read_csv(individual_scores_file, keep_default_na=False)
+                
 
     @classmethod
     def download(cls) -> "TournesolInputFromPublicDataset":
