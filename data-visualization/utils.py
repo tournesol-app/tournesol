@@ -79,7 +79,7 @@ def get_criterion_score(row, name):
 
 def get_tournesol_reco(limit: int, offset: int):
     return requests.get(
-        f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}"
+        f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}&unsafe=true"
     ).json()
 
 
@@ -91,11 +91,12 @@ def get_collective_n_contributor(row):
     return row["collective_rating"]["n_contributors"]
 
 
+@st.cache_data
 def api_get_tournesol_df():
     """
     Return a DataFrame created from the Tournesol recommendations.
     """
-    limit = 200
+    limit = 2000
     offset = 0
 
     response = get_tournesol_reco(limit, offset)
