@@ -1,4 +1,5 @@
 import io
+from multiprocessing.pool import ThreadPool
 import zipfile
 
 import pandas as pd
@@ -77,10 +78,14 @@ def get_criterion_score(row, name):
             return item["score"]
 
 
+def get_url_json(url):
+    return requests.get(url).json()
+
+
 def get_tournesol_reco(limit: int, offset: int):
-    return requests.get(
+    return get_url_json(
         f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}&unsafe=true"
-    ).json()
+    )
 
 
 def get_metadata(row, metadata):
@@ -103,14 +108,19 @@ def api_get_tournesol_df():
     df = pd.DataFrame.from_dict(response["results"])
     offset += limit
 
-    while offset < 100_000:
-        response = get_tournesol_reco(limit, offset)
+    reco_urls = [
+        f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}&unsafe=true"
+        for offset in range(limit, 100_000, limit)
+    ]
 
-        if not response["results"]:
-            break
+    with ThreadPool(16) as pool:
+        for result in pool.map(get_url_json, reco_urls):
+            if not result["results"]:
+                continue
 
-        df = pd.concat([df, pd.DataFrame.from_dict(response["results"])], ignore_index=True)
-        offset += limit
+            df = pd.concat(
+                [df, pd.DataFrame.from_dict(result["results"])], ignore_index=True
+            )
 
     df["video_id"] = df.apply(lambda x: get_metadata(x, "video_id"), axis=1)
     df["name"] = df.apply(lambda x: get_metadata(x, "name"), axis=1)

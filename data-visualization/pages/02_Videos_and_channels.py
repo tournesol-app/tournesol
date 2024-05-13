@@ -219,7 +219,7 @@ def add_expander_detailed_correlation():
 
 st.title("Videos and channels (computed scores)")
 
-# Load public dataset (the function is cached to not overload the API)
+# Load the recommendations (the function is cached to not overload the API)
 st.session_state.df_scores = api_get_tournesol_df()
 
 # Select uploaders
