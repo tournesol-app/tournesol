@@ -28,14 +28,8 @@ export const VideoMetadata = ({
 }) => {
   const { t, i18n } = useTranslation();
 
-  let flexShrink = 1;
-  let flexWrap = 'wrap';
-
-  switch (variant) {
-    case 'uploaderOnly':
-      flexShrink = 0;
-      flexWrap = 'nowrap';
-  }
+  const flexWrap = variant === "wrap" ? "wrap" : "nowrap";
+  const flexShrink = variant === "wrap" ? 1 : 0;
 
   let displayedDate;
   // Instead of displaying the date in the same format for every user, we
