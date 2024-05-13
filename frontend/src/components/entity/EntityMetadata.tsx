@@ -58,7 +58,7 @@ export const VideoMetadata = ({
         alignContent: 'space-between',
         fontSize: '0.8rem',
         color: 'neutral.main',
-        columnGap: '10px',
+        columnGap: '12px',
       }}
     >
       {uploader && (
