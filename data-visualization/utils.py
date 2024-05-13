@@ -71,25 +71,56 @@ def get_unique_video_list(df):
     return list(set(df["video_a"]) | set(df["video_b"]))
 
 
-def get_score(row, crit):
-    for item in row["criteria_scores"]:
-        if item["criteria"] == crit:
+def get_criterion_score(row, name):
+    for item in row["collective_rating"]["criteria_scores"]:
+        if item["criteria"] == name:
             return item["score"]
 
 
-@st.cache_data
-def api_get_tournesol_scores():
-    """Get a dataframe with all videos from tournesol.."""
-
-    response = requests.get(
-        f"https://api.tournesol.app/video/?limit=99999&unsafe=true"
+def get_tournesol_reco(limit: int, offset: int):
+    return requests.get(
+        f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}"
     ).json()
 
+
+def get_metadata(row, metadata):
+    return row["entity"]["metadata"][metadata]
+
+
+def get_collective_n_contributor(row):
+    return row["collective_rating"]["n_contributors"]
+
+
+def api_get_tournesol_df():
+    """
+    Return a DataFrame created from the Tournesol recommendations.
+    """
+    limit = 200
+    offset = 0
+
+    response = get_tournesol_reco(limit, offset)
     df = pd.DataFrame.from_dict(response["results"])
+    offset += limit
+
+    while offset < 100_000:
+        response = get_tournesol_reco(limit, offset)
+
+        if not response["results"]:
+            break
+
+        df = pd.concat([df, pd.DataFrame.from_dict(response["results"])], ignore_index=True)
+        offset += limit
+
+    df["video_id"] = df.apply(lambda x: get_metadata(x, "video_id"), axis=1)
+    df["name"] = df.apply(lambda x: get_metadata(x, "name"), axis=1)
+    df["description"] = df.apply(lambda x: get_metadata(x, "description"), axis=1)
+    df["views"] = df.apply(lambda x: get_metadata(x, "views"), axis=1)
+    df["duration"] = df.apply(lambda x: get_metadata(x, "duration"), axis=1)
+    df["language"] = df.apply(lambda x: get_metadata(x, "language"), axis=1)
+    df["uploader"] = df.apply(lambda x: get_metadata(x, "uploader"), axis=1)
+    df["n_contributors"] = df.apply(lambda x: get_collective_n_contributor(x), axis=1)
 
     for crit in CRITERIA:
-        df[crit] = df.apply(lambda x: get_score(x, crit), axis=1)
-
-    df.drop(columns=["criteria_scores"], inplace=True)
+        df[crit] = df.apply(lambda x: get_criterion_score(x, crit), axis=1)
 
     return df
