@@ -102,11 +102,9 @@ def api_get_tournesol_df():
     Return a DataFrame created from the Tournesol recommendations.
     """
     limit = 2000
-    offset = 0
 
-    response = get_tournesol_reco(limit, offset)
+    response = get_tournesol_reco(limit, 0)
     df = pd.DataFrame.from_dict(response["results"])
-    offset += limit
 
     reco_urls = [
         f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}&unsafe=true"
