@@ -240,6 +240,7 @@ const VideoInput = ({
                 elevation={10}
                 entitySearchInput={true}
                 displayDescription={comparisonsCount < 8}
+                metadataVariant="uploaderOnly"
               />
             </SelectorPopper>
           )}
