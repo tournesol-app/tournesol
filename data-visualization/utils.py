@@ -113,7 +113,7 @@ def api_get_tournesol_df():
         for offset in range(limit, 100_000, limit)
     ]
 
-    with ThreadPool(16) as pool:
+    with ThreadPool(10) as pool:
         for result in pool.map(get_url_json, reco_urls):
             if not result["results"]:
                 continue
