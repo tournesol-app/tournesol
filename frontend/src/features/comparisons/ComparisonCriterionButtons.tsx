@@ -85,14 +85,19 @@ const ScoreButton = ({
         borderRadius: '4px',
         backgroundColor: selected ? theme.palette.primary.main : 'grey.200',
         color: selected ? 'white' : undefined,
-        '&:hover': {
-          color: hover ? 'white' : undefined,
-          backgroundColor: hover
-            ? selected
-              ? theme.palette.secondary.dark
-              : theme.palette.secondary.main
-            : 'grey.200',
-        },
+        '&:hover': hover
+          ? {
+              color: 'white',
+              backgroundColor: selected
+                ? theme.palette.secondary.dark
+                : theme.palette.secondary.main,
+            }
+          : {
+              color: undefined,
+              backgroundColor: selected
+                ? theme.palette.primary.main
+                : 'grey.200',
+            },
       }}
     >
       {children}
