@@ -129,7 +129,13 @@ const ComparisonCriteriaButtons = ({
   };
 
   return (
-    <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
+    <Box
+      {...bindDrag()}
+      sx={{ touchAction: 'pan-x' }}
+      display="flex"
+      flexDirection="column"
+      rowGap={1}
+    >
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
           <IconButton

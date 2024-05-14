@@ -25,6 +25,39 @@ interface ComparisonCriterionButtonsProps {
   onClick: (score: number) => Promise<void>;
 }
 
+export const scoreButtons = [
+  {
+    score: -BUTTON_SCORE_MAX,
+    icons: (
+      <>
+        <Add />
+        <Add />
+      </>
+    ),
+  },
+  {
+    score: -BUTTON_SCORE_STEP,
+    icons: <Add />,
+  },
+  {
+    score: 0,
+    icons: <Balance />,
+  },
+  {
+    score: BUTTON_SCORE_STEP,
+    icons: <Add />,
+  },
+  {
+    score: BUTTON_SCORE_MAX,
+    icons: (
+      <>
+        <Add />
+        <Add />
+      </>
+    ),
+  },
+];
+
 const ScoreButton = ({
   children,
   score,
@@ -67,39 +100,6 @@ const ComparisonCriterionButtons = React.forwardRef(function (
   }: ComparisonCriterionButtonsProps,
   ref
 ) {
-  const scoreButtons = [
-    {
-      score: -BUTTON_SCORE_MAX,
-      icons: (
-        <>
-          <Add />
-          <Add />
-        </>
-      ),
-    },
-    {
-      score: -BUTTON_SCORE_STEP,
-      icons: <Add />,
-    },
-    {
-      score: 0,
-      icons: <Balance />,
-    },
-    {
-      score: BUTTON_SCORE_STEP,
-      icons: <Add />,
-    },
-    {
-      score: BUTTON_SCORE_MAX,
-      icons: (
-        <>
-          <Add />
-          <Add />
-        </>
-      ),
-    },
-  ];
-
   return (
     <Box ref={ref}>
       <Paper sx={{ py: 2, px: 1 }}>
