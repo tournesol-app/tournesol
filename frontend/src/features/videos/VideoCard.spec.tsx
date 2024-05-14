@@ -54,7 +54,7 @@ describe('VideoCard content', () => {
       'Video title'
     );
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      '154,988 views'
+      '155K views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
       '9 comparisons by 4 contributors'
@@ -106,7 +106,7 @@ describe('VideoCard content', () => {
       'Video title'
     );
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      '154,988 views'
+      '155K views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
       '9 comparisons by 4 contributors'
@@ -207,7 +207,7 @@ describe('VideoCard content', () => {
       'Video title'
     );
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      '154,988 views'
+      '155K views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
       '9 comparisons by 4 contributors'
