@@ -291,7 +291,8 @@ const Comparison = ({
       setSelectorB((value) => ({ ...value, ratingIsExpired: true }));
     }
 
-    showSuccessAlert(t('comparison.successfullySubmitted'));
+    // Lower the alert display time to 1600 ms to save space on mobile devices.
+    showSuccessAlert(t('comparison.successfullySubmitted'), 1600);
   };
 
   return (
