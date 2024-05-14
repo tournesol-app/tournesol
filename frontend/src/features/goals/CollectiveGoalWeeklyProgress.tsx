@@ -31,7 +31,7 @@ const CollectiveGoalWeeklyProgress = () => {
       flexDirection="column"
       alignItems="center"
       gap={1}
-      mb={{ xs: 2, sm: 4 }}
+      mb={{ xs: 1, sm: 4 }}
     >
       <Typography variant="h5" textAlign="center">
         <Trans
