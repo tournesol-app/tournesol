@@ -1,6 +1,13 @@
 import React from 'react';
 
-import { Box, IconButton, Paper, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  Paper,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { Add, Balance } from '@mui/icons-material';
 
 import { CriteriaIcon } from 'src/components';
@@ -66,6 +73,7 @@ const ScoreButton = ({
   onClick,
 }: ScoreButtonProps) => {
   const theme = useTheme();
+  const hover = useMediaQuery('(hover: hover)');
 
   return (
     <IconButton
@@ -78,10 +86,12 @@ const ScoreButton = ({
         backgroundColor: selected ? theme.palette.primary.main : 'grey.200',
         color: selected ? 'white' : undefined,
         '&:hover': {
-          color: 'white',
-          backgroundColor: selected
-            ? theme.palette.secondary.dark
-            : theme.palette.secondary.main,
+          color: hover ? 'white' : undefined,
+          backgroundColor: hover
+            ? selected
+              ? theme.palette.secondary.dark
+              : theme.palette.secondary.main
+            : 'grey.200',
         },
       }}
     >
