@@ -9,7 +9,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { CircularProgress, Grid, Card, Paper, Box } from '@mui/material';
+import { CircularProgress, Grid, Card, Box } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import {
@@ -17,7 +17,6 @@ import {
   ComparisonRequest,
   ApiError,
 } from 'src/services/openapi';
-import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
@@ -27,8 +26,10 @@ import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
-import ComparisonCriteriaButtons from './ComparisonCriteriaButtons';
 import CriteriaButtonsScoreReview from './CriteriaButtonsScoreReview';
+import ComparisonInputStrategy, {
+  ratedWithInputButtons,
+} from './ComparisonInputStrategy';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -91,7 +92,7 @@ const Comparison = ({
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
-  const { name: pollName } = useCurrentPoll();
+  const { name: pollName, options } = useCurrentPoll();
 
   const initializeWithSuggestions = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,6 +112,11 @@ const Comparison = ({
     uid: uidB,
     rating: null,
   });
+
+  const ratedWithButtons = ratedWithInputButtons(
+    initialComparison?.criteria_scores,
+    options?.mainCriterionName
+  );
 
   const onChange = useCallback(
     (vidKey: 'vidA' | 'vidB') => (newValue: SelectorValue) => {
@@ -359,26 +365,15 @@ const Comparison = ({
                 <CircularProgress color="secondary" />
               </Box>
             ) : (
-              /*
-            <Paper sx={{ py: 2 }}>
-              <ComparisonSliders
-                submit={onSubmitComparison}
-                initialComparison={initialComparison}
-                uidA={uidA || ''}
-                uidB={uidB || ''}
-                isComparisonPublic={
-                  selectorA.rating.individual_rating.is_public &&
-                  selectorB.rating.individual_rating.is_public
-                }
-              />
-            </Paper>
-            */
-              // XXX || '' should not be required
-              <ComparisonCriteriaButtons
+              <ComparisonInputStrategy
                 uidA={uidA || ''}
                 uidB={uidB || ''}
                 onSubmit={onSubmitComparison}
                 initialComparison={initialComparison}
+                isComparisonPublic={
+                  selectorA.rating.individual_rating.is_public &&
+                  selectorB.rating.individual_rating.is_public
+                }
               />
             )
           ) : selectorA.uid && selectorB.uid ? (
@@ -388,9 +383,11 @@ const Comparison = ({
             </Box>
           ) : null}
         </Grid>
-        <Grid item xs>
-          <CriteriaButtonsScoreReview initialComparison={initialComparison} />
-        </Grid>
+        {ratedWithButtons && (
+          <Grid item xs>
+            <CriteriaButtonsScoreReview initialComparison={initialComparison} />
+          </Grid>
+        )}
       </Grid>
     </>
   );
