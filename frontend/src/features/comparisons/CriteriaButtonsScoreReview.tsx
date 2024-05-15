@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box } from '@mui/material';
+import { Box, Zoom } from '@mui/material';
 import { CriteriaIcon } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import { ComparisonRequest } from 'src/services/openapi';
@@ -47,9 +47,11 @@ const CriteriaButtonsScoreReview = ({
             if (crit.score !== scoreBtn.score) return;
 
             return (
-              <Box key={crit.criteria}>
-                <CriteriaIcon criteriaName={crit.criteria} />
-              </Box>
+              <Zoom in={true} key={crit.criteria}>
+                <Box>
+                  <CriteriaIcon criteriaName={crit.criteria} />
+                </Box>
+              </Zoom>
             );
           })}
         </Box>
