@@ -76,6 +76,7 @@ def test_qr_quantile_high_uncertainty():
 @pytest.mark.parametrize(
     "lipshitz,w,x,delta,quantile,expected_result",
     [
+<<<<<<< HEAD
         (0.1, np.array([0.1]), np.array([0.]), np.array([0.1]), 0.5, 0),
         (0.1, np.array([0.1]), np.array([0.]), np.array([0.1]), 0.1, 0),
         (0.1, np.array([0.1]), np.array([0.]), np.array([0.1]), 0.9, 0),
@@ -83,6 +84,15 @@ def test_qr_quantile_high_uncertainty():
         (0.1, np.array([1.] * 1000), np.array([-1.] * 100 + [1.] * 900), np.array([1e-6] * 1000), 0.10, 0.),
         (10000., np.array([1.] * 1000), np.array([-1.] * 102 + [1.] * 898), np.array([1e-6] * 1000), 0.01, -1.),
         (1e12, np.array([1000.] * 1000), np.arange(1000., 2000, 1), np.array([1e-6] * 1000), 0.90, 1899.1817),
+=======
+        (0.1, np.array([0.1]), np.array([0]), np.array([0.1]), 0.5, 0),
+        (0.1, np.array([0.1]), np.array([0]), np.array([0.1]), 0.1, 0),
+        (0.1, np.array([0.1]), np.array([0]), np.array([0.1]), 0.9, 0),
+        (0.1, np.array([1] * 1000), np.array([-1] * 500 + [1] * 500), np.array([0.1] * 1000), 0.10, -0.986816),
+        (0.1, np.array([1] * 1000), np.array([-1] * 100 + [1] * 900), np.array([1e-6] * 1000), 0.10, 0.),
+        (10000, np.array([1] * 1000), np.array([-1] * 102 + [1] * 898), np.array([1e-6] * 1000), 0.01, -1),
+        (1e12, np.array([1000] * 1000), np.arange(1000, 2000, 1), np.array([1e-6] * 1000), 0.90, 1899.1817),
+>>>>>>> df57fbf0 (Important change: Modified qr_quantile using asymmetric Huber rather than additional term.)
     ]
 )
 def test_qr_quantile_returns_expected_results(lipshitz,w,x,delta,quantile,expected_result):
