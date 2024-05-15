@@ -296,62 +296,67 @@ const Comparison = ({
   };
 
   return (
-    <Grid container maxWidth="880px" gap={1}>
-      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
-        <EntitySelector
-          alignment="left"
-          value={selectorA}
-          onChange={onChangeA}
-          otherUid={uidB}
-          history={selectorAHistory.current}
-        />
+    <Box display="flex" flexDirection="column" rowGap={1} maxWidth="880px">
+      <Grid container gap={1}>
+        <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
+          <EntitySelector
+            alignment="left"
+            value={selectorA}
+            onChange={onChangeA}
+            otherUid={uidB}
+            history={selectorAHistory.current}
+          />
+        </Grid>
+        <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
+          <EntitySelector
+            alignment="right"
+            value={selectorB}
+            onChange={onChangeB}
+            otherUid={uidA}
+            history={selectorBHistory.current}
+          />
+        </Grid>
       </Grid>
-      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
-        <EntitySelector
-          alignment="right"
-          value={selectorB}
-          onChange={onChangeB}
-          otherUid={uidA}
-          history={selectorBHistory.current}
-        />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sx={{
-          mt: 1,
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-          '&:empty': {
-            display: 'none',
-          },
-        }}
-        component={Card}
-        elevation={2}
-      >
-        <ComparisonHelper />
-      </Grid>
-      <Grid item xs={12} sx={{ '&:empty': { display: 'none' } }}>
-        <ComparisonEntityContexts selectorA={selectorA} selectorB={selectorB} />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sx={{
-          display: 'flex',
-          alignItems: 'stretch',
-          flexDirection: 'column',
-          '&:empty': { display: 'none' },
-        }}
-      >
-        {selectorA.rating && selectorB.rating ? (
-          isLoading ? (
-            <Box display="flex" justifyContent="center">
-              <CircularProgress color="secondary" />
-            </Box>
-          ) : (
-            /*
+      <Grid container gap={1}>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+            '&:empty': {
+              display: 'none',
+            },
+          }}
+          component={Card}
+          elevation={2}
+        >
+          <ComparisonHelper />
+        </Grid>
+        <Grid item xs={12} sx={{ '&:empty': { display: 'none' } }}>
+          <ComparisonEntityContexts
+            selectorA={selectorA}
+            selectorB={selectorB}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            display: 'flex',
+            alignItems: 'stretch',
+            flexDirection: 'column',
+            '&:empty': { display: 'none' },
+          }}
+        >
+          {selectorA.rating && selectorB.rating ? (
+            isLoading ? (
+              <Box display="flex" justifyContent="center">
+                <CircularProgress color="secondary" />
+              </Box>
+            ) : (
+              /*
             <Paper sx={{ py: 2 }}>
               <ComparisonSliders
                 submit={onSubmitComparison}
@@ -365,25 +370,26 @@ const Comparison = ({
               />
             </Paper>
             */
-            // XXX || '' should not be required
-            <ComparisonCriteriaButtons
-              uidA={uidA || ''}
-              uidB={uidB || ''}
-              onSubmit={onSubmitComparison}
-              initialComparison={initialComparison}
-            />
-          )
-        ) : selectorA.uid && selectorB.uid ? (
-          // Entities are selected but ratings are not loaded yet
-          <Box display="flex" justifyContent="center">
-            <CircularProgress color="secondary" />
-          </Box>
-        ) : null}
+              // XXX || '' should not be required
+              <ComparisonCriteriaButtons
+                uidA={uidA || ''}
+                uidB={uidB || ''}
+                onSubmit={onSubmitComparison}
+                initialComparison={initialComparison}
+              />
+            )
+          ) : selectorA.uid && selectorB.uid ? (
+            // Entities are selected but ratings are not loaded yet
+            <Box display="flex" justifyContent="center">
+              <CircularProgress color="secondary" />
+            </Box>
+          ) : null}
+        </Grid>
+        <Grid item xs>
+          <CriteriaButtonsScoreReview initialComparison={initialComparison} />
+        </Grid>
       </Grid>
-      <Grid item xs>
-        <CriteriaButtonsScoreReview initialComparison={initialComparison} />
-      </Grid>
-    </Grid>
+    </Box>
   );
 };
 
