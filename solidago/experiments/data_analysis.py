@@ -51,10 +51,9 @@ def add_comparison_analysis_columns(comparisons):
                 first_comparison_score.append(np.nan)
         return first_comparison_score
     
-    first_scores = score_of_first_comparison(comparisons)
-    comparisons = comparisons.assign(first_comparison_score=first_scores)
+    comparisons = comparisons.assign(first_comparison_score=score_of_first_comparison(comparisons))
     
-    def has_optional_comparisons(comparisons):
+    def has_others(comparisons):
         with_others = dict()
         for _, r in comparisons[comparisons.criteria != "largely_recommended"].iterrows():
             if r.user_id not in with_others:
@@ -71,12 +70,33 @@ def add_comparison_analysis_columns(comparisons):
             )
         return has_others
         
-    has_others = has_optional_comparisons(comparisons)
-    comparisons = comparisons.assign(has_others=has_others)
+    comparisons = comparisons.assign(has_others=has_others(comparisons))
+    
+    def is_trusted(comparisons):
+        return [data.users.loc[r.user_id, "trust_score"] >= 0.8 for _, r in comparisons.iterrows()]
+    
+    comparisons = comparisons.assign(is_trusted=is_trusted(comparisons))
     
     return comparisons
 
 c = add_comparison_analysis_columns(data.comparisons)
+
+def add_user_analysis_columns(users, comparisons):
+    def n_comparisons(users, comparisons):
+        return [
+            len(comparisons[comparisons.user_id == user_id])
+            for user_id, _ in data.users.iterrows()
+        ]
+    users = users.assign(n_comparisons=n_comparisons(users, comparisons))
+    users = users.assign(
+        n_main_comparisons=n_comparisons(
+            users, 
+            comparisons[comparisons.criteria == "largely_recommneded"]
+        )
+    )
+    return users
+    
+u = add_user_analysis_columns(data.users, data.comparisons)
 
 def add_score_analysis_columns():
     def _unsquash(scores):
@@ -108,5 +128,8 @@ def n_extreme_values(scores, n_std_dev):
     std_dev = np.sqrt(scores.var())
     return len(scores[np.abs(scores - mean) > n_std_dev * std_dev])
     
-
-        
+def plot(comparison_scores, colors=("g", "y", "r"), labels=None):
+    if labels is None:
+        plt.hist(comparison_scores, 21, density=True, histtype='bar', color=colors)
+    else:
+        plt.hist(comparison_scores, 21, density=True, histtype='bar', color=colors, label=labels)

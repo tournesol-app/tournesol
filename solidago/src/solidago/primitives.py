@@ -85,18 +85,23 @@ def _qr_quantile_loss_derivative(
     """Computes the derivative of the loss associated to qr_quantile"""
     regularization = (variable - default_value) / lipschitz
 
-    if quantile == 0.5:
-        quantile_term = 0.0
-    elif isinstance(voting_rights, (int, float)):
-        quantile_term = (1.0 - 2.0 * quantile) * voting_rights * len(values)
-    else:
-        quantile_term = (1.0 - 2.0 * quantile) * np.sum(voting_rights)
-
     deltas = variable - values
     uncertainties_2 = left_uncertainties_2 * (deltas < 0) + right_uncertainties_2 * (deltas > 0) + spacing
     forces = voting_rights * deltas / np.sqrt(uncertainties_2 + deltas**2)
+    
+    if quantile == 0.5:
+        return regularization + forces.sum()
+    
+    left_strength = min(1.0, quantile / (1-quantile))
+    right_strength = min(1.0, (1-quantile) / quantile)
+    
+    forces = np.where(
+        forces < 0,
+        forces * left_strength,
+        forces * right_strength,
+    )
 
-    return regularization + quantile_term + forces.sum()
+    return regularization + forces.sum()
 
 
 @njit
