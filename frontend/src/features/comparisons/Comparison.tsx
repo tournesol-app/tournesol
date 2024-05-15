@@ -383,6 +383,7 @@ const Comparison = ({
             </Box>
           ) : null}
         </Grid>
+        {/* TODO: create a component similar to ComparisonInputStrategy */}
         {ratedWithButtons && (
           <Grid item xs>
             <CriteriaButtonsScoreReview initialComparison={initialComparison} />

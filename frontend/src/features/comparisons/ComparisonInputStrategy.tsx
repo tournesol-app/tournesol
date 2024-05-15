@@ -8,9 +8,11 @@ import {
   ComparisonRequest,
 } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
+import { isMobileDevice } from 'src/utils/extension';
 
 import ComparisonCriteriaButtons from './ComparisonCriteriaButtons';
 import { BUTTON_SCORE_MAX } from './ComparisonCriterionButtons';
+import { SLIDER_SCORE_MAX } from './CriteriaSlider';
 
 interface ComparisonInputStrategyProps {
   uidA: string;
@@ -36,6 +38,26 @@ export const ratedWithInputButtons = (
   return found != undefined;
 };
 
+export const getCriterionScoreMax = (
+  criteriaScores?: ComparisonCriteriaScoreRequest[],
+  mainCriterion?: string
+) => {
+  if (criteriaScores == undefined || mainCriterion == undefined) {
+    return false;
+  }
+
+  const found = criteriaScores.find(
+    (crit) =>
+      crit.criteria === mainCriterion && crit.score_max === BUTTON_SCORE_MAX
+  );
+
+  if (found == undefined) {
+    return undefined;
+  }
+
+  return found.score_max;
+};
+
 const ComparisonInputStrategy = ({
   uidA,
   uidB,
@@ -45,14 +67,19 @@ const ComparisonInputStrategy = ({
 }: ComparisonInputStrategyProps) => {
   const { options } = useCurrentPoll();
 
-  const useButtons = ratedWithInputButtons(
+  const mainScoreMax = getCriterionScoreMax(
     initialComparison?.criteria_scores,
     options?.mainCriterionName
   );
 
+  const buttonsUsed = mainScoreMax == BUTTON_SCORE_MAX;
+  const slidersUsed = mainScoreMax == SLIDER_SCORE_MAX;
+  // TODO: decide if isMobileDevice() is the correct method to use
+  const fallBackToButtons = !buttonsUsed && !slidersUsed && isMobileDevice();
+
   return (
     <>
-      {useButtons ? (
+      {buttonsUsed || fallBackToButtons ? (
         <ComparisonCriteriaButtons
           uidA={uidA || ''}
           uidB={uidB || ''}
