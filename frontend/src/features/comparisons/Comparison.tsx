@@ -39,6 +39,8 @@ const LEGACY_PARAMS: { vidA: string; vidB: string } = {
   vidB: 'videoB',
 };
 
+const COMPARISON_MAX_WIDTH = '880px';
+
 const getUidsFromLocation = (location: Location) => {
   const searchParams = new URLSearchParams(location.search);
   let uidA = searchParams.get(UID_PARAMS.vidA);
@@ -296,8 +298,8 @@ const Comparison = ({
   };
 
   return (
-    <Box display="flex" flexDirection="column" rowGap={1} maxWidth="880px">
-      <Grid container gap={1}>
+    <>
+      <Grid container gap={1} mb={1} maxWidth={COMPARISON_MAX_WIDTH}>
         <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
           <EntitySelector
             alignment="left"
@@ -317,14 +319,14 @@ const Comparison = ({
           />
         </Grid>
       </Grid>
-      <Grid container gap={1}>
+      <Grid container gap={1} maxWidth={COMPARISON_MAX_WIDTH}>
         <Grid
           item
           xs={12}
+          display="flex"
+          alignItems="center"
+          flexDirection="column"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column',
             '&:empty': {
               display: 'none',
             },
@@ -343,10 +345,11 @@ const Comparison = ({
         <Grid
           item
           xs={12}
+          display="flex"
+          alignItems="stretch"
+          flexDirection="column"
+          gap={1}
           sx={{
-            display: 'flex',
-            alignItems: 'stretch',
-            flexDirection: 'column',
             '&:empty': { display: 'none' },
           }}
         >
@@ -389,7 +392,7 @@ const Comparison = ({
           <CriteriaButtonsScoreReview initialComparison={initialComparison} />
         </Grid>
       </Grid>
-    </Box>
+    </>
   );
 };
 
