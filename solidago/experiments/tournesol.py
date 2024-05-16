@@ -38,8 +38,6 @@ video_id_to_entity_id = {
     for entity_id, video_id in enumerate(inputs.entity_id_to_video_id)
 }
 
-logger.info("Preprocessing data for the pipeline")
-users, vouches, all_entities, privacy = inputs.get_pipeline_objects()
 
 # criteria = set(inputs.comparisons["criteria"])
 criteria = { "largely_recommended" }
@@ -89,10 +87,18 @@ pipeline = Pipeline(
 
 user_outputs, entities, voting_rights, scaled_user_models = dict(), dict(), dict(), dict()
 
-users = pipeline.trust_propagation(users, vouches)
     
 for c in criteria:
     logger.info(f"Running the pipeline for criterion `{c}`")
+
+    pipeline_objects = inputs.get_pipeline_kwargs(criterion=c)
+    users = pipeline_objects["users"]
+    vouches = pipeline_objects["vouches"]
+    all_entities = pipeline_objects["entities"]
+    privacy = pipeline_objects["privacy"]
+    judgments = pipeline_objects["judgements"]
+
+    users = pipeline.trust_propagation(users, vouches)
     
     judgments = inputs.get_judgments(c)
     
