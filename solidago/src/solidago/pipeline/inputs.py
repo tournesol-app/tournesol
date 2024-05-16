@@ -57,14 +57,26 @@ class TournesolInput(ABC):
     ) -> Optional[pd.DataFrame]:
         raise NotImplementedError
 
+    @abstractmethod
     def get_vouches(self):
-        # TODO: make abstract and implement in subclasses
-        return pd.DataFrame(columns=["voucher", "vouchee", "vouch"])
+        """Fetch data about vouches shared between users
+
+        Returns:
+        - DataFrame with columns
+            * `voucher`: int, user_id of the user who gives the vouch
+            * `vouchee`: int, user_id of the user who receives the vouch
+            * `vouch`: float, value of this vouch
+        """
+        raise NotImplementedError
+
+    def get_users(self):
+        users = self.ratings_properties.groupby("user_id").first()[["trust_score"]]
+        users["is_pretrusted"] = users["trust_score"] >= 0.8
+        return users
 
     def get_pipeline_kwargs(self, criterion: str):
         ratings_properties = self.ratings_properties
-        users = ratings_properties.groupby("user_id").first()[["trust_score"]]
-        users["is_pretrusted"] = users["trust_score"] >= 0.8
+        users = self.get_users()
         vouches = self.get_vouches()
         comparisons = self.get_comparisons(criteria=criterion)
         entities_ids = set(comparisons["entity_a"].unique()) | set(
@@ -134,26 +146,25 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # Fill trust_score on newly created users for which it was not computed yet
                 self.users.trust_score = pd.to_numeric(self.users.trust_score).fillna(0.0)
 
-            username_to_user_id = pd.Series(
+            self.username_to_user_id = pd.Series(
                 data=self.users.index, index=self.users["public_username"]
             )
-            self.comparisons = self.comparisons.join(username_to_user_id, on="public_username")
-            
+            self.comparisons = self.comparisons.join(self.username_to_user_id, on="public_username")
+
             with (zipfile.Path(zip_file) / "vouchers.csv").open(mode="rb") as vouchers_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.vouchers = pd.read_csv(vouchers_file, keep_default_na=False)
-            
+
             with (zipfile.Path(zip_file) / "collective_criteria_scores.csv").open(mode="rb") as collective_scores_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.collective_scores = pd.read_csv(collective_scores_file, keep_default_na=False)
-            
+
             with (zipfile.Path(zip_file) / "individual_criteria_scores.csv").open(mode="rb") as individual_scores_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.individual_scores = pd.read_csv(individual_scores_file, keep_default_na=False)
-                
 
     @classmethod
     def download(cls) -> "TournesolInputFromPublicDataset":
@@ -197,3 +208,16 @@ class TournesolInputFromPublicDataset(TournesolInput):
     ) -> Optional[pd.DataFrame]:
         # TODO: read contributor scores from individual_scores.csv
         return None
+
+    def get_vouches(self):
+        vouchers = self.vouchers[
+            self.vouchers.by_username.isin(self.username_to_user_id.index)
+            & self.vouchers.to_username.isin(self.username_to_user_id.index)
+        ]
+        return pd.DataFrame(
+            {
+                "voucher": vouchers.by_username.map(self.username_to_user_id),
+                "vouchee": vouchers.to_username.map(self.username_to_user_id),
+                "vouch": vouchers.value,
+            }
+        )
