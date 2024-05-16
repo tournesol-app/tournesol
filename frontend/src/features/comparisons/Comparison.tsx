@@ -26,7 +26,7 @@ import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
-import CriteriaButtonsScoreReview from './CriteriaButtonsScoreReview';
+import CriteriaButtonsScoreReview from './inputs/CriteriaButtonsScoreReview';
 import ComparisonInputStrategy, {
   ratedWithInputButtons,
 } from './ComparisonInputStrategy';

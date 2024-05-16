@@ -10,8 +10,8 @@ import {
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import { isMobileDevice } from 'src/utils/extension';
 
-import ComparisonCriteriaButtons from './ComparisonCriteriaButtons';
-import { BUTTON_SCORE_MAX } from './ComparisonCriterionButtons';
+import CriteriaButtons from './inputs/CriteriaButtons';
+import { BUTTON_SCORE_MAX } from './inputs/CriterionButtons';
 import { SLIDER_SCORE_MAX } from './CriteriaSlider';
 
 interface ComparisonInputStrategyProps {
@@ -80,7 +80,7 @@ const ComparisonInputStrategy = ({
   return (
     <>
       {buttonsUsed || fallBackToButtons ? (
-        <ComparisonCriteriaButtons
+        <CriteriaButtons
           uidA={uidA || ''}
           uidB={uidB || ''}
           onSubmit={onSubmit}

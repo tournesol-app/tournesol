@@ -1,10 +1,12 @@
 import React from 'react';
 
 import { Box, Zoom } from '@mui/material';
+
 import { CriteriaIcon } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import { ComparisonRequest } from 'src/services/openapi';
-import { scoreButtons } from './ComparisonCriterionButtons';
+
+import { scoreButtons } from './CriterionButtons';
 
 interface CriteriaButtonsScoreReviewProps {
   initialComparison: ComparisonRequest | null;

@@ -11,7 +11,7 @@ import {
 import { Add, Balance } from '@mui/icons-material';
 
 import { CriteriaIcon } from 'src/components';
-import { CriteriaLabel } from './CriteriaSlider';
+import { CriteriaLabel } from 'src/features/comparisons/CriteriaSlider';
 
 export const BUTTON_SCORE_MAX = 2;
 const BUTTON_SCORE_STEP = 1;
@@ -24,7 +24,7 @@ interface ScoreButtonProps {
   onClick: (score: number) => Promise<void>;
 }
 
-interface ComparisonCriterionButtonsProps {
+interface CriterionButtonsProps {
   critName: string;
   critLabel: string;
   givenScore?: number;
@@ -105,14 +105,8 @@ const ScoreButton = ({
   );
 };
 
-const ComparisonCriterionButtons = React.forwardRef(function (
-  {
-    critName,
-    critLabel,
-    givenScore,
-    disabled,
-    onClick,
-  }: ComparisonCriterionButtonsProps,
+const CriterionButtons = React.forwardRef(function (
+  { critName, critLabel, givenScore, disabled, onClick }: CriterionButtonsProps,
   ref
 ) {
   return (
@@ -142,6 +136,6 @@ const ComparisonCriterionButtons = React.forwardRef(function (
   );
 });
 
-ComparisonCriterionButtons.displayName = 'CriterionComparisonButtons';
+CriterionButtons.displayName = 'CriterionButtons';
 
-export default ComparisonCriterionButtons;
+export default CriterionButtons;

@@ -1,33 +1,32 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
 import { Box, IconButton, Slide } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
-import ComparisonCriterionButtons, {
-  BUTTON_SCORE_MAX,
-} from 'src/features/comparisons/ComparisonCriterionButtons';
 import { useCurrentPoll } from 'src/hooks';
 import { ComparisonRequest } from 'src/services/openapi';
-import { useTranslation } from 'react-i18next';
+
+import CriterionButtons, { BUTTON_SCORE_MAX } from './CriterionButtons';
 
 const SWIPE_TIMEOUT = 225;
 const SWIPE_VELOCITY: number | Vector2 = [0.25, 0.25];
 
-interface ComparisonCriteriaButtonsProps {
+interface CriteriaButtonsProps {
   uidA: string;
   uidB: string;
   initialComparison: ComparisonRequest | null;
   onSubmit: (c: ComparisonRequest, partialUpdate?: boolean) => Promise<void>;
 }
 
-const ComparisonCriteriaButtons = ({
+const CriteriaButtons = ({
   uidA,
   uidB,
   initialComparison,
   onSubmit,
-}: ComparisonCriteriaButtonsProps) => {
+}: CriteriaButtonsProps) => {
   const { t } = useTranslation();
   const { criterias, name: pollName, options } = useCurrentPoll();
   const mainCriterionName = options?.mainCriterionName;
@@ -155,7 +154,7 @@ const ComparisonCriteriaButtons = ({
         onExiting={() => setDisableScoreButtons(true)}
         timeout={SWIPE_TIMEOUT}
       >
-        <ComparisonCriterionButtons
+        <CriterionButtons
           critName={criterion.name}
           critLabel={criterion.label}
           givenScore={criterionScore?.score}
@@ -177,4 +176,4 @@ const ComparisonCriteriaButtons = ({
   );
 };
 
-export default ComparisonCriteriaButtons;
+export default CriteriaButtons;
