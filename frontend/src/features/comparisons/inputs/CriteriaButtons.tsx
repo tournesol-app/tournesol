@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
@@ -7,7 +8,9 @@ import { Box, IconButton, Slide } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks';
-import { ComparisonRequest } from 'src/services/openapi';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
+
+import { ComparisonRequest, PollCriteria } from 'src/services/openapi';
 
 import CriterionButtons, { BUTTON_SCORE_MAX } from './CriterionButtons';
 
@@ -28,8 +31,32 @@ const CriteriaButtons = ({
   onSubmit,
 }: CriteriaButtonsProps) => {
   const { t } = useTranslation();
-  const { criterias, name: pollName, options } = useCurrentPoll();
+  const { criterias: pollCriteria, name: pollName, options } = useCurrentPoll();
   const mainCriterionName = options?.mainCriterionName;
+
+  const userSettings = useSelector(selectSettings)?.settings;
+  const orderedByPreferences = userSettings.videos?.comparison__criteria_order;
+
+  // Order the displayed criteria according to the user's preferences.
+  const displayedCriteria = useMemo(() => {
+    const remainingCriteria = [...pollCriteria];
+    const results = [remainingCriteria[0]];
+    remainingCriteria.shift();
+
+    if (orderedByPreferences != undefined) {
+      orderedByPreferences.forEach((critName) => {
+        const found = remainingCriteria.findIndex(
+          (pollCrit) => pollCrit.name === critName
+        );
+
+        if (found !== -1) {
+          results.push(remainingCriteria.splice(found, 1)[0]);
+        }
+      });
+    }
+
+    return results.concat(remainingCriteria);
+  }, [orderedByPreferences, pollCriteria]);
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
@@ -40,7 +67,7 @@ const CriteriaButtons = ({
     undefined
   );
 
-  const criterion = criterias[critPosition];
+  const criterion = displayedCriteria[critPosition];
   const criterionScore = initialComparison?.criteria_scores.find(
     (crit) => crit.criteria === criterion.name
   );
@@ -55,11 +82,11 @@ const CriteriaButtons = ({
   const onSlideExited = async () => {
     if (slideDirection === 'up') {
       setCritPosition(
-        critPosition - 1 >= 0 ? critPosition - 1 : criterias.length - 1
+        critPosition - 1 >= 0 ? critPosition - 1 : pollCriteria.length - 1
       );
     } else {
       setCritPosition(
-        critPosition + 1 < criterias.length ? critPosition + 1 : 0
+        critPosition + 1 < pollCriteria.length ? critPosition + 1 : 0
       );
     }
 
