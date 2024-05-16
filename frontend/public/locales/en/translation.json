@@ -29,8 +29,8 @@
     "nbContributors_other": "{{count}} contributors",
     "criteriaRatedHigh": "Rated high:",
     "criteriaRatedLow": "Rated low:",
-    "nbViews": "{{nbViews}} views",
     "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
+    "nbViews": "{{nbViews}} views",
     "nComparisonsByYou_one": "{{count}} comparison by you",
     "nComparisonsByYou_other": "{{count}} comparisons by you",
     "notYetComparedByYou": "Not yet compared by you",
@@ -93,10 +93,6 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
     "comparisonCriteria": "Comparison criteria"
   },
-  "comparisonCriteriaButtons": {
-    "previousQualityCriterion": "Previous quality criterion",
-    "nextQualityCriterion": "Next quality criterion"
-  },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - The Tournesol association would like to give you some context.",
     "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - The Tournesol association would like to give you some context.",
@@ -107,10 +103,17 @@
     "hideHelp": "Hide the help",
     "showHelp": "Show help for comparisons"
   },
+  "comparisonInputStrategy": {
+    "thisComparisonWasMadeOnAMobileDevice": "This comparison was made on a mobile device. The mobile interface exceptionally replaces the usual interface."
+  },
   "comparisons": {
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
+  "comparisonCriteriaButtons": {
+    "nextQualityCriterion": "Next quality criterion",
+    "previousQualityCriterion": "Previous quality criterion"
+  },
   "comparisonSeries": {
     "skipTheSeries": "Skip the series"
   },

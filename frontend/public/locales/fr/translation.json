@@ -31,8 +31,8 @@
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté haut:",
     "criteriaRatedLow": "Noté bas:",
-    "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+    "nbViews": "{{nbViews}} vues",
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
     "nComparisonsByYou_many": "{{count}} comparaisons par vous",
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
@@ -97,10 +97,6 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
     "comparisonCriteria": "Critères de comparaison"
   },
-  "comparisonCriteriaButtons": {
-    "previousQualityCriterion": "Critère de qualité précédent",
-    "nextQualityCriterion": "Critère de qualité suivant"
-  },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - L'association Tournesol souhaite vous apporter du contexte.",
     "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - L'association Tournesol souhaite vous apporter du contexte.",
@@ -111,10 +107,17 @@
     "hideHelp": "Cacher l'aide",
     "showHelp": "Montrer l'aide pour les comparaisons"
   },
+  "comparisonInputStrategy": {
+    "thisComparisonWasMadeOnAMobileDevice": "Cette comparaison a été faite sur un périphérique mobile. L'interface mobile remplace exceptionnellement l'interface habituelle."
+  },
   "comparisons": {
     "goToComparison": "Voir la comparaison"
   },
   "submit": "enregistrer",
+  "comparisonCriteriaButtons": {
+    "nextQualityCriterion": "Critère de qualité suivant",
+    "previousQualityCriterion": "Critère de qualité précédent"
+  },
   "comparisonSeries": {
     "skipTheSeries": "Passer la série"
   },

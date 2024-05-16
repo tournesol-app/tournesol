@@ -1,6 +1,7 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Box, Paper } from '@mui/material';
+import { Alert, Box, Paper } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
 import {
@@ -50,6 +51,7 @@ const ComparisonInputStrategy = ({
   onSubmit,
   isComparisonPublic,
 }: ComparisonInputStrategyProps) => {
+  const { t } = useTranslation();
   const { options } = useCurrentPoll();
 
   const mainScoreMax = getCriterionScoreMax(
@@ -65,15 +67,24 @@ const ComparisonInputStrategy = ({
   return (
     <>
       {buttonsUsed || fallBackToButtons ? (
-        <Box display="flex" flexDirection="column" rowGap={1}>
-          <CriteriaButtons
-            uidA={uidA || ''}
-            uidB={uidB || ''}
-            onSubmit={onSubmit}
-            initialComparison={initialComparison}
-          />
-          <CriteriaButtonsScoreReview initialComparison={initialComparison} />
-        </Box>
+        <>
+          {!isMobileDevice() && (
+            <Alert icon={false} severity="info">
+              {t(
+                'comparisonInputStrategy.thisComparisonWasMadeOnAMobileDevice'
+              )}
+            </Alert>
+          )}
+          <Box display="flex" flexDirection="column" rowGap={1}>
+            <CriteriaButtons
+              uidA={uidA || ''}
+              uidB={uidB || ''}
+              onSubmit={onSubmit}
+              initialComparison={initialComparison}
+            />
+            <CriteriaButtonsScoreReview initialComparison={initialComparison} />
+          </Box>
+        </>
       ) : (
         <Paper sx={{ py: 2 }}>
           <ComparisonSliders
