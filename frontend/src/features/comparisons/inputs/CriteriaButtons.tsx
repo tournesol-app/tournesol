@@ -10,7 +10,7 @@ import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 
-import { ComparisonRequest, PollCriteria } from 'src/services/openapi';
+import { ComparisonRequest } from 'src/services/openapi';
 
 import CriterionButtons, { BUTTON_SCORE_MAX } from './CriterionButtons';
 
@@ -155,13 +155,7 @@ const CriteriaButtons = ({
   };
 
   return (
-    <Box
-      {...bindDrag()}
-      sx={{ touchAction: 'pan-x' }}
-      display="flex"
-      flexDirection="column"
-      rowGap={1}
-    >
+    <Box display="flex" flexDirection="column" rowGap={1}>
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
           <IconButton
@@ -181,13 +175,15 @@ const CriteriaButtons = ({
         onExiting={() => setDisableScoreButtons(true)}
         timeout={SWIPE_TIMEOUT}
       >
-        <CriterionButtons
-          critName={criterion.name}
-          critLabel={criterion.label}
-          givenScore={criterionScore?.score}
-          disabled={disableScoreButtons}
-          onClick={patchScore}
-        />
+        <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
+          <CriterionButtons
+            critName={criterion.name}
+            critLabel={criterion.label}
+            givenScore={criterionScore?.score}
+            disabled={disableScoreButtons}
+            onClick={patchScore}
+          />
+        </Box>
       </Slide>
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
