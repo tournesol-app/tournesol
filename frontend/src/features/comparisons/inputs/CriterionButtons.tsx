@@ -118,7 +118,11 @@ const CriterionButtons = React.forwardRef(function (
             <CriteriaLabel criteria={critName} criteriaLabel={critLabel} />
           </Typography>
         </Box>
-        <Box display="flex" justifyContent="space-between" width="100%">
+        <Box
+          width="100%"
+          display="flex"
+          sx={{ justifyContent: { xs: 'space-between', md: 'space-around' } }}
+        >
           {scoreButtons.map((btn, idx) => (
             <ScoreButton
               key={`criterion_button_${idx}`}

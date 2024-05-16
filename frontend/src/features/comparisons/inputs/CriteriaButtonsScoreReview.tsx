@@ -31,7 +31,11 @@ const CriteriaButtonsScoreReview = ({
   if (!initialComparison?.criteria_scores) return <></>;
 
   return (
-    <Box display="flex" justifyContent="space-between" px={1}>
+    <Box
+      px={1}
+      display="flex"
+      sx={{ justifyContent: { xs: 'space-between', md: 'space-around' } }}
+    >
       {scoreButtons.map((scoreBtn) => (
         <Box
           key={scoreBtn.score}
