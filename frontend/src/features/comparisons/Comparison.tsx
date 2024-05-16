@@ -26,10 +26,8 @@ import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
-import CriteriaButtonsScoreReview from './inputs/CriteriaButtonsScoreReview';
-import ComparisonInputStrategy, {
-  ratedWithInputButtons,
-} from './ComparisonInputStrategy';
+import ComparisonInputStrategy from './ComparisonInputStrategy';
+import ComparisonScoreReviewStrategy from './ComparisonScoreReviewStrategy';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -92,7 +90,7 @@ const Comparison = ({
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
-  const { name: pollName, options } = useCurrentPoll();
+  const { name: pollName } = useCurrentPoll();
 
   const initializeWithSuggestions = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,11 +110,6 @@ const Comparison = ({
     uid: uidB,
     rating: null,
   });
-
-  const ratedWithButtons = ratedWithInputButtons(
-    initialComparison?.criteria_scores,
-    options?.mainCriterionName
-  );
 
   const onChange = useCallback(
     (vidKey: 'vidA' | 'vidB') => (newValue: SelectorValue) => {
@@ -383,12 +376,11 @@ const Comparison = ({
             </Box>
           ) : null}
         </Grid>
-        {/* TODO: create a component similar to ComparisonInputStrategy */}
-        {ratedWithButtons && (
-          <Grid item xs>
-            <CriteriaButtonsScoreReview initialComparison={initialComparison} />
-          </Grid>
-        )}
+        <Grid item xs sx={{ '&:empty': { display: 'none' } }}>
+          <ComparisonScoreReviewStrategy
+            initialComparison={initialComparison}
+          />
+        </Grid>
       </Grid>
     </>
   );

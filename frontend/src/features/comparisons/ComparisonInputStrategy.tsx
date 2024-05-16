@@ -22,22 +22,6 @@ interface ComparisonInputStrategyProps {
   isComparisonPublic: boolean;
 }
 
-export const ratedWithInputButtons = (
-  criteriaScores?: ComparisonCriteriaScoreRequest[],
-  mainCriterion?: string
-) => {
-  if (criteriaScores == undefined || mainCriterion == undefined) {
-    return false;
-  }
-
-  const found = criteriaScores.find(
-    (crit) =>
-      crit.criteria === mainCriterion && crit.score_max === BUTTON_SCORE_MAX
-  );
-
-  return found != undefined;
-};
-
 export const getCriterionScoreMax = (
   criteriaScores?: ComparisonCriteriaScoreRequest[],
   mainCriterion?: string
