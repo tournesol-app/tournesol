@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Paper } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
 import {
@@ -13,6 +13,7 @@ import { isMobileDevice } from 'src/utils/extension';
 import CriteriaButtons from './inputs/CriteriaButtons';
 import { BUTTON_SCORE_MAX } from './inputs/CriterionButtons';
 import { SLIDER_SCORE_MAX } from './CriteriaSlider';
+import CriteriaButtonsScoreReview from './inputs/CriteriaButtonsScoreReview';
 
 interface ComparisonInputStrategyProps {
   uidA: string;
@@ -64,12 +65,15 @@ const ComparisonInputStrategy = ({
   return (
     <>
       {buttonsUsed || fallBackToButtons ? (
-        <CriteriaButtons
-          uidA={uidA || ''}
-          uidB={uidB || ''}
-          onSubmit={onSubmit}
-          initialComparison={initialComparison}
-        />
+        <Box display="flex" flexDirection="column" rowGap={1}>
+          <CriteriaButtons
+            uidA={uidA || ''}
+            uidB={uidB || ''}
+            onSubmit={onSubmit}
+            initialComparison={initialComparison}
+          />
+          <CriteriaButtonsScoreReview initialComparison={initialComparison} />
+        </Box>
       ) : (
         <Paper sx={{ py: 2 }}>
           <ComparisonSliders

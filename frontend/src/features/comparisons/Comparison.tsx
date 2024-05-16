@@ -27,7 +27,6 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
 import ComparisonInputStrategy from './ComparisonInputStrategy';
-import ComparisonScoreReviewStrategy from './ComparisonScoreReviewStrategy';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -375,11 +374,6 @@ const Comparison = ({
               <CircularProgress color="secondary" />
             </Box>
           ) : null}
-        </Grid>
-        <Grid item xs sx={{ '&:empty': { display: 'none' } }}>
-          <ComparisonScoreReviewStrategy
-            initialComparison={initialComparison}
-          />
         </Grid>
       </Grid>
     </>
