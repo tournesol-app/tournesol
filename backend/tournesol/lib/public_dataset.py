@@ -291,7 +291,7 @@ def write_comparisons_file(
         "criteria",
         "score",
         "score_max",
-        "week_date"
+        "week_date",
     ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
@@ -413,7 +413,9 @@ def write_vouchers_file(write_target):
             "to_username": voucher.to.username,
             "value": voucher.value,
         }
-        for voucher in Voucher.objects.filter(is_public=True)
-        .select_related("by", "to")
-        .order_by("by__username", "to__username")
+        for voucher in (
+            Voucher.objects.filter(is_public=True, by__is_active=True, to__is_active=True)
+            .select_related("by", "to")
+            .order_by("by__username", "to__username")
+        )
     )
