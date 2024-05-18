@@ -124,6 +124,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         for _step in range(self.n_steps):
             lbfgs.step(closure)
 
+        # TODO: uncertainty definition is no longer equivalent with `GeneralizedBradleyTerry`
         uncertainties = [
             self.hessian_diagonal_element(entity, solution, comparisons)
             for entity in range(len(entities))
