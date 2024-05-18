@@ -30,8 +30,9 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         """
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
-    
+
     @property
+    @abstractmethod
     def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
         """ The beauty of the generalized Bradley-Terry model is that it suffices
         to specify its cumulant generating function derivative to fully define it,
@@ -46,23 +47,26 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         -------
         out: float
         """
-        raise NotImplementedError
-    
+
+    @property
     @abstractmethod
-    def cumulant_generating_function_second_derivative(self, score_diff: float) -> float:
-        """ We estimate uncertainty by the flatness of the negative log likelihood,
-        which is directly given by the second derivative of the cumulant generating function.
-        
-        Parameters
-        ----------
-        score_diff: float
-            Score difference
-            
-        Returns
-        -------
-        out: float
+    def loss_function(self) -> Callable[[npt.NDArray, npt.NDArray, float], float]:
+        """The loss function definition is used only to compute uncertainties.
         """
-        pass
+
+    @cached_property
+    def loss_increase_to_solve(self):
+        """The root of this function is used to compute asymetric uncertainties
+        by looking for the delta for which the loss is increased by 1.
+        """
+        loss_function = self.loss_function
+
+        @njit
+        def f(delta, theta_diff, r, coord_indicator, loss_actual, norm2_actual, solution_actual):
+            norm2 = norm2_actual - solution_actual**2 + (solution_actual + delta) ** 2
+            return loss_function(theta_diff + delta * coord_indicator, r, norm2) - loss_actual - 1.0
+
+        return f
 
     @cached_property
     def update_coordinate_function(self):
@@ -101,16 +105,16 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         """
         entities = list(set(comparisons["entity_a"]) | set(comparisons["entity_b"]))
         entity_coordinates = { entity: c for c, entity in enumerate(entities) }
-        
+
         comparisons_dict = self.comparisons_dict(comparisons, entity_coordinates)
-        
+
         init_solution = np.zeros(len(entities))
         if initialization is not None:
             for (entity_id, entity_coord) in entity_coordinates.items():
                 entity_init_values = initialization(entity_id)
                 if entity_init_values is not None:
                     init_solution[entity_coord] = entity_init_values[0]
-        
+
         updated_coordinates = list() if updated_entities is None else [
             entity_coordinates[entity] for entity in updated_entities
         ]
@@ -121,7 +125,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                 sol[indices],
                 comparisons_bis
             )
-        
+
         solution = coordinate_descent(
             self.update_coordinate_function,
             get_args=get_derivative_args,
@@ -129,18 +133,45 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             updated_coordinates=updated_coordinates,
             error=self.convergence_error,
         )
-        
-        uncertainties = [ 
-            self.hessian_diagonal_element(coordinate, solution, comparisons_dict[coordinate][0])
-            for coordinate in range(len(entities))
-        ]
-        
+
+        comparisons = comparisons.assign(
+            entity_a_coord=comparisons["entity_a"].map(entity_coordinates),
+            entity_b_coord=comparisons['entity_b'].map(entity_coordinates),
+        )
+        score_diff = solution[comparisons["entity_a_coord"]] - solution[comparisons["entity_b_coord"]]
+        r_actual = (comparisons["comparison"] / comparisons["comparison_max"]).to_numpy()
+
+        uncertainties_left = np.empty_like(solution)
+        uncertainties_right = np.empty_like(solution)
+        norm2_actual = (solution ** 2).sum()
+        loss_actual = self.loss_function(score_diff, r_actual, norm2_actual)
+
+        for coordinate, solution_coord in enumerate(solution):
+            comparison_indicator = (
+                (comparisons["entity_a_coord"] == coordinate).astype(int)
+                - (comparisons["entity_b_coord"] == coordinate).astype(int)
+            ).to_numpy()
+            uncertainties_left[coordinate] = -1 * njit_brentq(
+                self.loss_increase_to_solve,
+                args=(score_diff, r_actual, comparison_indicator, loss_actual, norm2_actual, solution_coord),
+                xtol=self.convergence_error,
+                a=-1.0,
+                b=0.0,
+                ascending=False,
+            )
+            uncertainties_right[coordinate] = njit_brentq(
+                self.loss_increase_to_solve,
+                args=(score_diff, r_actual, comparison_indicator, loss_actual, norm2_actual, solution_coord),
+                xtol=self.convergence_error,
+                a=0.0,
+                b=1.0
+            )
+
         model = DirectScoringModel()
-        for coordinate in range(len(solution)):
-            model[entities[coordinate]] = solution[coordinate], uncertainties[coordinate]
-        
+        for coord in range(len(solution)):
+            model[entities[coord]] = solution[coord], uncertainties_left[coord], uncertainties_right[coord]
         return model
-        
+
     def comparisons_dict(self, comparisons, entity_coordinates) -> dict[int, tuple[npt.NDArray, npt.NDArray]]:
         comparisons = (
             comparisons[
@@ -176,7 +207,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             coord: (group["entity_b"].to_numpy(),  group["comparison"].to_numpy())
             for (coord, group) in comparisons_sym.groupby("entity_a")
         }  # type: ignore
-            
+
     @cached_property
     def partial_derivative(self):
         """ Computes the partial derivative along a coordinate, 
@@ -203,23 +234,9 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                 )
             )
         return njit_partial_derivative
-    
-    def hessian_diagonal_element(
-        self, 
-        coordinate: int,
-        solution: np.ndarray,
-        comparisons_indices: np.ndarray,
-    ) -> float:
-        """ Computes the second partial derivative """
-        result = 1 / self.prior_std_dev ** 2
-        for coordinate_bis in comparisons_indices:
-            score_diff = solution[coordinate] - solution[coordinate_bis]
-            result += self.cumulant_generating_function_second_derivative(score_diff)
-        return result
 
 
 class UniformGBT(GeneralizedBradleyTerry):
-
     def __init__(
         self,
         prior_std_dev: float = 7,
@@ -239,6 +256,18 @@ class UniformGBT(GeneralizedBradleyTerry):
         self.cumulant_generating_function_error = cumulant_generating_function_error
 
     @cached_property
+    def loss_function(self):
+        prior_std_dev = self.prior_std_dev
+
+        @njit
+        def loss(score_diff, r, norm2):
+            return (np.log(np.sinh(score_diff) / score_diff) + r * score_diff).sum() + norm2 / (
+                2 * prior_std_dev**2
+            )
+
+        return loss
+
+    @cached_property
     def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
         tolerance = self.cumulant_generating_function_error
 
@@ -251,23 +280,6 @@ class UniformGBT(GeneralizedBradleyTerry):
             )
 
         return f
-
-    def cumulant_generating_function_second_derivative(self, score_diff: float) -> float:
-        """We estimate uncertainty by the flatness of the negative log likelihood,
-        which is directly given by the second derivative of the cumulant generating function.
-
-        Parameters
-        ----------
-        score_diff: float
-            Score difference
-
-        Returns
-        -------
-        out: float
-        """
-        if np.abs(score_diff) < self.cumulant_generating_function_error:
-            return (1 / 3) - (score_diff**2 / 15)
-        return 1 - (1 / np.tanh(score_diff) ** 2) + (1 / score_diff**2)
 
     def to_json(self):
         return type(self).__name__, dict(

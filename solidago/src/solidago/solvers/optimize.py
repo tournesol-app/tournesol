@@ -41,7 +41,7 @@ def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
 
 
 @njit
-def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a: float=-1.0, b: float=1.0) -> float:
+def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, a: float=-1.0, b: float=1.0, ascending=True) -> float:
     """ `Accelerated brentq. Requires f to be itself jitted via numba.
     Essentially, numba optimizes the execution by running an optimized compilation
     of the function when it is first called, and by then running the compiled function.
@@ -52,10 +52,16 @@ def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a:
     f : jitted and callable
         Python function returning a number.  `f` must be continuous.
     """
-    while f(a, *args) > 0:
-        a = a - 2 * (b-a)
-    while f(b, *args) < 0:
-        b = b + 2 * (b-a)
+    if ascending:
+        while f(a, *args) > 0:
+            a = a - 2 * (b-a)
+        while f(b, *args) < 0:
+            b = b + 2 * (b-a)
+    else:
+        while f(a, *args) < 0:
+            a = a - 2 * (b-a)
+        while f(b, *args) > 0:
+            b = b + 2 * (b-a)
 
     if xtol <= 0:
         raise ValueError("xtol is too small (<= 0)")
@@ -134,7 +140,7 @@ def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, disp=True, a:
             fcur = f(xcur, *args)
             funcalls += 1
 
-    if disp and status == _ECONVERR:
+    if status == _ECONVERR:
         raise RuntimeError("Failed to converge")
 
     return root  # type: ignore
