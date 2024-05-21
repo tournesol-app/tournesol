@@ -103,7 +103,7 @@
     "hideHelp": "Hide the help",
     "showHelp": "Show help for comparisons"
   },
-  "comparisonInputStrategy": {
+  "comparisonInput": {
     "thisComparisonWasMadeOnAMobileDevice": "This comparison was made on a mobile device. The mobile interface exceptionally replaces the usual interface.",
     "thisComparisonWasMadeOnAComputer": "This comparison was made on a computer. It cannot be modified on a mobile device."
   },

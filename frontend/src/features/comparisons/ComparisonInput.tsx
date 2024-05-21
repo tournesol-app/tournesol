@@ -16,7 +16,7 @@ import { BUTTON_SCORE_MAX } from './inputs/CriterionButtons';
 import { SLIDER_SCORE_MAX } from './CriteriaSlider';
 import CriteriaButtonsScoreReview from './inputs/CriteriaButtonsScoreReview';
 
-interface ComparisonInputStrategyProps {
+interface ComparisonInputProps {
   uidA: string;
   uidB: string;
   initialComparison: ComparisonRequest | null;
@@ -41,13 +41,13 @@ export const getCriterionScoreMax = (
   return main.score_max;
 };
 
-const ComparisonInputStrategy = ({
+const ComparisonInput = ({
   uidA,
   uidB,
   initialComparison,
   onSubmit,
   isComparisonPublic,
-}: ComparisonInputStrategyProps) => {
+}: ComparisonInputProps) => {
   const { t } = useTranslation();
   const { options } = useCurrentPoll();
 
@@ -68,9 +68,7 @@ const ComparisonInputStrategy = ({
         <>
           {!mobileDevice && (
             <Alert icon={false} severity="info">
-              {t(
-                'comparisonInputStrategy.thisComparisonWasMadeOnAMobileDevice'
-              )}
+              {t('comparisonInput.thisComparisonWasMadeOnAMobileDevice')}
             </Alert>
           )}
           <Box display="flex" flexDirection="column" rowGap={1}>
@@ -87,7 +85,7 @@ const ComparisonInputStrategy = ({
         <>
           {mobileDevice && (
             <Alert icon={false} severity="info">
-              {t('comparisonInputStrategy.thisComparisonWasMadeOnAComputer')}
+              {t('comparisonInput.thisComparisonWasMadeOnAComputer')}
             </Alert>
           )}
           <Paper sx={{ py: 2 }}>
@@ -106,4 +104,4 @@ const ComparisonInputStrategy = ({
   );
 };
 
-export default ComparisonInputStrategy;
+export default ComparisonInput;

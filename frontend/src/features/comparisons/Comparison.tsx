@@ -26,7 +26,7 @@ import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
-import ComparisonInputStrategy from './ComparisonInputStrategy';
+import ComparisonInput from './ComparisonInput';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -357,7 +357,7 @@ const Comparison = ({
                 <CircularProgress color="secondary" />
               </Box>
             ) : (
-              <ComparisonInputStrategy
+              <ComparisonInput
                 uidA={uidA || ''}
                 uidB={uidB || ''}
                 onSubmit={onSubmitComparison}

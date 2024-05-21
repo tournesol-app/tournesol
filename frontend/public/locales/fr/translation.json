@@ -107,7 +107,7 @@
     "hideHelp": "Cacher l'aide",
     "showHelp": "Montrer l'aide pour les comparaisons"
   },
-  "comparisonInputStrategy": {
+  "comparisonInput": {
     "thisComparisonWasMadeOnAMobileDevice": "Cette comparaison a été faite sur un périphérique mobile. L'interface mobile remplace exceptionnellement l'interface habituelle.",
     "thisComparisonWasMadeOnAComputer": "Cette comparaison a été faite sur un ordinateur. Elle ne peut pas être modifiée sur un périphérique mobile."
   },
