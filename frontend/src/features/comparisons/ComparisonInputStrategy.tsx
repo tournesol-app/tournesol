@@ -32,16 +32,13 @@ export const getCriterionScoreMax = (
     return false;
   }
 
-  const found = criteriaScores.find(
-    (crit) =>
-      crit.criteria === mainCriterion && crit.score_max === BUTTON_SCORE_MAX
-  );
+  const main = criteriaScores.find((crit) => crit.criteria === mainCriterion);
 
-  if (found == undefined) {
+  if (main == undefined) {
     return undefined;
   }
 
-  return found.score_max;
+  return main.score_max;
 };
 
 const ComparisonInputStrategy = ({
@@ -59,16 +56,17 @@ const ComparisonInputStrategy = ({
     options?.mainCriterionName
   );
 
+  // TODO: decide if isMobileDevice() is the correct method to use.
+  const mobileDevice = isMobileDevice();
   const buttonsUsed = mainScoreMax == BUTTON_SCORE_MAX;
   const slidersUsed = mainScoreMax == SLIDER_SCORE_MAX;
-  // TODO: decide if isMobileDevice() is the correct method to use
-  const fallBackToButtons = !buttonsUsed && !slidersUsed && isMobileDevice();
+  const fallBackToButtons = !buttonsUsed && !slidersUsed && mobileDevice;
 
   return (
     <>
       {buttonsUsed || fallBackToButtons ? (
         <>
-          {!isMobileDevice() && (
+          {!mobileDevice && (
             <Alert icon={false} severity="info">
               {t(
                 'comparisonInputStrategy.thisComparisonWasMadeOnAMobileDevice'
@@ -86,15 +84,23 @@ const ComparisonInputStrategy = ({
           </Box>
         </>
       ) : (
-        <Paper sx={{ py: 2 }}>
-          <ComparisonSliders
-            submit={onSubmit}
-            initialComparison={initialComparison}
-            uidA={uidA || ''}
-            uidB={uidB || ''}
-            isComparisonPublic={isComparisonPublic}
-          />
-        </Paper>
+        <>
+          {mobileDevice && (
+            <Alert icon={false} severity="info">
+              {t('comparisonInputStrategy.thisComparisonWasMadeOnAComputer')}
+            </Alert>
+          )}
+          <Paper sx={{ py: 2 }}>
+            <ComparisonSliders
+              submit={onSubmit}
+              initialComparison={initialComparison}
+              uidA={uidA || ''}
+              uidB={uidB || ''}
+              isComparisonPublic={isComparisonPublic}
+              readOnly={mobileDevice}
+            />
+          </Paper>
+        </>
       )}
     </>
   );
