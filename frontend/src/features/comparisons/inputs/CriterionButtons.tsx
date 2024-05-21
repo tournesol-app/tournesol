@@ -79,7 +79,6 @@ const ScoreButton = ({
     <IconButton
       disabled={disabled}
       color="secondary"
-      aria-label="todo"
       onClick={() => onClick(score)}
       sx={{
         borderRadius: '4px',

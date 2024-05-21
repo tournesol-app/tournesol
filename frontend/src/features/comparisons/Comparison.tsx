@@ -9,7 +9,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { CircularProgress, Grid, Card, Box } from '@mui/material';
+import { Box, Card, CircularProgress, Grid } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import {

@@ -24,12 +24,12 @@ interface ComparisonInputProps {
   isComparisonPublic: boolean;
 }
 
-export const getCriterionScoreMax = (
+const getCriterionScoreMax = (
   criteriaScores?: ComparisonCriteriaScoreRequest[],
   mainCriterion?: string
-) => {
+): number | undefined => {
   if (criteriaScores == undefined || mainCriterion == undefined) {
-    return false;
+    return undefined;
   }
 
   const main = criteriaScores.find((crit) => crit.criteria === mainCriterion);
@@ -41,6 +41,10 @@ export const getCriterionScoreMax = (
   return main.score_max;
 };
 
+/**
+ * A component displaying different comparison inputs depending to the user's
+ * device.
+ */
 const ComparisonInput = ({
   uidA,
   uidB,
