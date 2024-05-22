@@ -16,6 +16,7 @@ import {
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
 } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
+import { isMobileDevice } from 'src/utils/extension';
 import { PollUserSettingsKeys } from 'src/utils/types';
 
 const displayTutorial = (
@@ -131,7 +132,9 @@ const ComparisonPage = () => {
   const dialogActions = tutorialDialogActions
     ? tutorialDialogActions(t)
     : undefined;
-  const tipsTutorialContent = tutorialTips ? tutorialTips(t) : undefined;
+  const tipsTutorialContent = tutorialTips
+    ? tutorialTips(t, isMobileDevice())
+    : undefined;
 
   // User's settings.
   const userSettings = useSelector(selectSettings).settings;

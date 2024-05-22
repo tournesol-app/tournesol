@@ -1161,7 +1161,9 @@
       "tutorial": {
         "title1": "Comparer deux vidéos 🌻",
         "message1": {
+          "p10mobile": "Après avoir regardé les vidéos, votez pour celle qui dévrait être largement recommandée en utilisant les boutons de comparaison au dessous.",
           "p10": "Après avoir regardé les vidéos, déplacez le curseur principal vers la vidéo qui, selon vous, devrait être largement recommandée. Enregistrez quand votre choix est fait.",
+          "p20mobile": "Si votre avis est tranché, utilisez les boutons aux extrémités. Si vous trouvez les deux vidéos similaires, utilisez le bouton \"égal\" du milieu.",
           "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait se rapprocher du centre."
         },
         "title2": "Faire des comparaisons aide la science 🔬",

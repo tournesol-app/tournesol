@@ -1151,7 +1151,9 @@
       "tutorial": {
         "title1": "Comparing two videos 🌻",
         "message1": {
+          "p10mobile": "After watching the videos, vote for the video that should be largely recommended using the buttons below.",
           "p10": "After watching the videos, move the main handle to the video that should be largely recommended according to you. Save once you've made your choice.",
+          "p20mobile": "If your preference is strong, use the buttons at the ends. If you find the two videos similar, use the \"equal\" button in the middle.",
           "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity. If you find the videos similar, the handle should remain close to the center."
         },
         "title2": "Making comparisons helps science 🔬",
