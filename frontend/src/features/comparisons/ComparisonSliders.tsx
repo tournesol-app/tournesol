@@ -327,7 +327,7 @@ const ComparisonSliders = ({
           )}
         </Box>
         <Button
-          disabled={disableSubmit || !isPollActive}
+          disabled={disableSubmit || readOnly || !isPollActive}
           variant="contained"
           color="primary"
           size="large"
