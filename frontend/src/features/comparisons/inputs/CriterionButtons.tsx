@@ -8,7 +8,12 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Add, Balance } from '@mui/icons-material';
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
+} from '@mui/icons-material';
 
 import { CriteriaIcon } from 'src/components';
 import { CriteriaLabel } from 'src/features/comparisons/CriteriaSlider';
@@ -35,33 +40,23 @@ interface CriterionButtonsProps {
 export const scoreButtons = [
   {
     score: -BUTTON_SCORE_MAX,
-    icons: (
-      <>
-        <Add />
-        <Add />
-      </>
-    ),
+    icons: <KeyboardDoubleArrowLeft />,
   },
   {
     score: -BUTTON_SCORE_STEP,
-    icons: <Add />,
+    icons: <KeyboardArrowLeft />,
   },
   {
     score: 0,
-    icons: <Balance />,
+    icons: '=',
   },
   {
     score: BUTTON_SCORE_STEP,
-    icons: <Add />,
+    icons: <KeyboardArrowRight />,
   },
   {
     score: BUTTON_SCORE_MAX,
-    icons: (
-      <>
-        <Add />
-        <Add />
-      </>
-    ),
+    icons: <KeyboardDoubleArrowRight />,
   },
 ];
 
@@ -81,6 +76,7 @@ const ScoreButton = ({
       color="secondary"
       onClick={() => onClick(score)}
       sx={{
+        minWidth: '38.8px',
         borderRadius: '4px',
         backgroundColor: selected ? theme.palette.primary.main : 'grey.200',
         color: selected ? 'white' : undefined,
