@@ -96,13 +96,20 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
   };
 };
 
-export const getTutorialTips = (t: TFunction): OrderedTips => {
+export const getTutorialTips = (
+  t: TFunction,
+  isMobile = false
+): OrderedTips => {
   return {
     '0': {
       title: t('videos.tips.tutorial.title1'),
       messages: [
-        t('videos.tips.tutorial.message1.p10'),
-        t('videos.tips.tutorial.message1.p20'),
+        isMobile
+          ? t('videos.tips.tutorial.message1.p10mobile')
+          : t('videos.tips.tutorial.message1.p10'),
+        isMobile
+          ? t('videos.tips.tutorial.message1.p20mobile')
+          : t('videos.tips.tutorial.message1.p20'),
       ],
     },
     '1': {
