@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDrag } from '@use-gesture/react';
@@ -8,6 +8,7 @@ import { Box, IconButton, Slide } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks';
+import { TutorialContext } from 'src/features/comparisonSeries/TutorialContext';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 
 import { ComparisonRequest } from 'src/services/openapi';
@@ -31,6 +32,8 @@ const CriteriaButtons = ({
   onSubmit,
 }: CriteriaButtonsProps) => {
   const { t } = useTranslation();
+  const tutorial = useContext(TutorialContext);
+
   const { criterias: pollCriteria, name: pollName, options } = useCurrentPoll();
   const mainCriterionName = options?.mainCriterionName;
 
@@ -72,7 +75,8 @@ const CriteriaButtons = ({
     (crit) => crit.criteria === criterion.name
   );
   const navigationDisabled =
-    criterion.name === mainCriterionName && criterionScore == undefined;
+    tutorial.isActive ||
+    (criterion.name === mainCriterionName && criterionScore == undefined);
 
   const onSlideEntered = () => {
     setDisableScoreButtons(false);
@@ -80,16 +84,19 @@ const CriteriaButtons = ({
   };
 
   const onSlideExited = async () => {
-    if (slideDirection === 'up') {
-      setCritPosition(
-        critPosition - 1 >= 0 ? critPosition - 1 : pollCriteria.length - 1
-      );
-    } else {
-      setCritPosition(
-        critPosition + 1 < pollCriteria.length ? critPosition + 1 : 0
-      );
+    let nextCritPosition = critPosition;
+
+    if (!tutorial.isActive) {
+      if (slideDirection === 'up') {
+        nextCritPosition =
+          critPosition - 1 >= 0 ? critPosition - 1 : pollCriteria.length - 1;
+      } else {
+        nextCritPosition =
+          critPosition + 1 < pollCriteria.length ? critPosition + 1 : 0;
+      }
     }
 
+    setCritPosition(nextCritPosition);
     setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
 
     if (submittedScore === undefined) {
