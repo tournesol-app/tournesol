@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
-import { Box, IconButton, Slide } from '@mui/material';
+import { Box, Fade, IconButton, Slide } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks';
@@ -15,7 +15,7 @@ import { ComparisonRequest } from 'src/services/openapi';
 
 import CriterionButtons, { BUTTON_SCORE_MAX } from './CriterionButtons';
 
-const SWIPE_TIMEOUT = 160;
+const SWIPE_TIMEOUT = 210;
 const SWIPE_VELOCITY: number | Vector2 = [0.25, 0.25];
 
 interface CriteriaButtonsProps {
@@ -235,15 +235,21 @@ const CriteriaButtons = ({
         timeout={SWIPE_TIMEOUT}
         container={containerRef.current}
       >
-        <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
-          <CriterionButtons
-            critName={criterion.name}
-            critLabel={criterion.label}
-            givenScore={criterionScore?.score}
-            disabled={disableScoreButtons}
-            onClick={patchScore}
-          />
-        </Box>
+        {/* A div is required between Slide and Fade to prevent them from
+            cancelling each other transition. */}
+        <div>
+          <Fade in={slideIn} appear={true} timeout={SWIPE_TIMEOUT}>
+            <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
+              <CriterionButtons
+                critName={criterion.name}
+                critLabel={criterion.label}
+                givenScore={criterionScore?.score}
+                disabled={disableScoreButtons}
+                onClick={patchScore}
+              />
+            </Box>
+          </Fade>
+        </div>
       </Slide>
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
