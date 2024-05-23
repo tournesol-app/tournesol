@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDrag } from '@use-gesture/react';
@@ -15,7 +15,7 @@ import { ComparisonRequest } from 'src/services/openapi';
 
 import CriterionButtons, { BUTTON_SCORE_MAX } from './CriterionButtons';
 
-const SWIPE_TIMEOUT = 225;
+const SWIPE_TIMEOUT = 160;
 const SWIPE_VELOCITY: number | Vector2 = [0.25, 0.25];
 
 interface CriteriaButtonsProps {
@@ -45,8 +45,9 @@ const CriteriaButtons = ({
   onSubmit,
 }: CriteriaButtonsProps) => {
   const { t } = useTranslation();
-  const tutorial = useContext(TutorialContext);
+  const containerRef = useRef<HTMLElement>(null);
 
+  const tutorial = useContext(TutorialContext);
   const { criterias: pollCriteria, name: pollName, options } = useCurrentPoll();
   const mainCriterionName = options?.mainCriterionName;
 
@@ -212,7 +213,7 @@ const CriteriaButtons = ({
   };
 
   return (
-    <Box display="flex" flexDirection="column" rowGap={1}>
+    <Box display="flex" flexDirection="column" rowGap={1} ref={containerRef}>
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
           <IconButton
@@ -232,6 +233,7 @@ const CriteriaButtons = ({
         onExited={onSlideExited}
         onExiting={() => setDisableScoreButtons(true)}
         timeout={SWIPE_TIMEOUT}
+        container={containerRef.current}
       >
         <Box {...bindDrag()} sx={{ touchAction: 'pan-x' }}>
           <CriterionButtons

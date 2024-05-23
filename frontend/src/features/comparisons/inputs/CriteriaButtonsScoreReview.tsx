@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Zoom } from '@mui/material';
+import { Box, Zoom, useTheme } from '@mui/material';
 
 import { CriteriaIcon } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
@@ -15,6 +15,7 @@ interface CriteriaButtonsScoreReviewProps {
 const CriteriaButtonsScoreReview = ({
   initialComparison,
 }: CriteriaButtonsScoreReviewProps) => {
+  const theme = useTheme();
   const { criterias } = useCurrentPoll();
 
   const orderedCriteriaScores = criterias
@@ -35,6 +36,8 @@ const CriteriaButtonsScoreReview = ({
       px={1}
       display="flex"
       sx={{ justifyContent: { xs: 'space-between', md: 'space-around' } }}
+      // Allow the CriterionButtons to slide behind this component.
+      zIndex={theme.zIndex.comparisonElevation1}
     >
       {scoreButtons.map((scoreBtn) => (
         <Box

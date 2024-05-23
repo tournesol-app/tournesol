@@ -9,7 +9,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { Box, Card, CircularProgress, Grid } from '@mui/material';
+import { Box, Card, CircularProgress, Grid, useTheme } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import {
@@ -86,6 +86,7 @@ const Comparison = ({
   const { t, i18n } = useTranslation();
   const currentLang = i18n.resolvedLanguage;
 
+  const theme = useTheme();
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
@@ -297,7 +298,14 @@ const Comparison = ({
 
   return (
     <>
-      <Grid container gap={1} mb={1} maxWidth={COMPARISON_MAX_WIDTH}>
+      <Grid
+        container
+        gap={1}
+        mb={1}
+        maxWidth={COMPARISON_MAX_WIDTH}
+        // Allow the CriterionButtons to slide behind the entity selectors.
+        zIndex={theme.zIndex.comparisonElevation1}
+      >
         <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
           <EntitySelector
             alignment="left"

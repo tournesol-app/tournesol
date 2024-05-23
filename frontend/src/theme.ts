@@ -16,6 +16,7 @@ declare module '@mui/material/styles' {
   }
 
   interface ZIndex {
+    comparisonElevation1: number;
     videoCardDuration: number;
   }
 }
@@ -81,7 +82,8 @@ export const theme = createTheme({
     ].join(','),
   },
   zIndex: {
-    videoCardDuration: 1,
+    comparisonElevation1: 2,
+    videoCardDuration: 3,
   },
   components: {
     MuiInputBase: {
