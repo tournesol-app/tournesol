@@ -1168,7 +1168,9 @@
         },
         "title2": "Faire des comparaisons aide la science 🔬",
         "message2": {
+          "p10mobile": "Chaque comparaison aide Tournesol à améliorer ses recommandations et sa base de données publique.",
           "p10": "Chaque comparaison aide Tournesol à améliorer ses recommandations et sa base de données publique. Essayez maintenant de dérouler et d'utiliser les critères optionnels.",
+          "p20mobile": "Après quelques comparaisons de nouveaux critères optionnels vous serons proposés. Il vous sera aussi possible de modifier toutes vos comparaisons depuis votre page Mes comparaisons.",
           "p20": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant. Il vous sera possible de modifier ultérieurement vos comparaisons depuis votre page Mes comparaisons."
         },
         "title3": "Comment fonctionne Tournesol ? 🤖",

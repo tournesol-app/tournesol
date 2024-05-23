@@ -98,16 +98,16 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
 
 export const getTutorialTips = (
   t: TFunction,
-  isMobile = false
+  pointerCoarse = false
 ): OrderedTips => {
   return {
     '0': {
       title: t('videos.tips.tutorial.title1'),
       messages: [
-        isMobile
+        pointerCoarse
           ? t('videos.tips.tutorial.message1.p10mobile')
           : t('videos.tips.tutorial.message1.p10'),
-        isMobile
+        pointerCoarse
           ? t('videos.tips.tutorial.message1.p20mobile')
           : t('videos.tips.tutorial.message1.p20'),
       ],

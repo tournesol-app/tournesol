@@ -1158,8 +1158,10 @@
         },
         "title2": "Making comparisons helps science 🔬",
         "message2": {
+          "p10mobile": "Each comparison helps Tournesol improve its recommendations and its open database.",
           "p10": "Each comparison helps Tournesol improve its recommendations and its open database. Try to unfold and use the optional criteria now.",
-          "p20": "You can always choose to not vote on an optional criterion by unchecking it. You will be able to edit all your comparisons from your page My comparisons."
+          "p20mobile": "After a few comparisons, new optional criteria will be displayed. You will also be able to edit all your comparisons from the page My Comparisons.",
+          "p20": "You can always choose to not vote on an optional criterion by unchecking it. You will be able to edit all your comparisons from the page My comparisons."
         },
         "title3": "How does Tournesol work? 🤖",
         "message3": {
