@@ -110,9 +110,10 @@ const CriteriaButtons = ({
       }
     }
 
+    setCritPosition(nextCritPosition);
+    setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
+
     if (submittedScore === undefined) {
-      setCritPosition(nextCritPosition);
-      setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
       setSlideIn(true);
       return;
     }
@@ -131,26 +132,7 @@ const CriteriaButtons = ({
     };
 
     try {
-      const currentCritScore = initialComparison?.criteria_scores.find(
-        (crit) => crit.criteria === criterion.name
-      );
-
-      if (
-        criterion.name !== mainCriterionName &&
-        initialComparison?.criteria_scores &&
-        submittedScore === currentCritScore?.score
-      ) {
-        comparisonRequest.criteria_scores = removeCriteria(
-          initialComparison,
-          criterion.name
-        );
-
-        await onSubmit(comparisonRequest, false);
-      } else {
-        setCritPosition(nextCritPosition);
-        setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
-        await onSubmit(comparisonRequest, true);
-      }
+      await onSubmit(comparisonRequest, true);
     } catch {
       setCritPosition(critPosition);
     } finally {
@@ -184,14 +166,49 @@ const CriteriaButtons = ({
     { swipe: { velocity: SWIPE_VELOCITY } }
   );
 
-  const patchScore = async (score: number) => {
-    if (slideIn === false) {
+  const sameScoreGiven = (score: number) => {
+    const currentCritScore = initialComparison?.criteria_scores.find(
+      (crit) => crit.criteria === criterion.name
+    );
+
+    return score === currentCritScore?.score;
+  };
+
+  const clearScore = async () => {
+    if (
+      !initialComparison?.criteria_scores ||
+      initialComparison.criteria_scores.length === 0
+    ) {
       return;
     }
 
-    setSlideDirection('down');
-    setSlideIn(false);
-    setSubmittedScore(score);
+    const comparisonRequest = {
+      pollName: pollName,
+      entity_a: { uid: uidA },
+      entity_b: { uid: uidB },
+      criteria_scores: removeCriteria(initialComparison, criterion.name),
+    };
+
+    setDisableScoreButtons(true);
+    try {
+      await onSubmit(comparisonRequest, false);
+    } finally {
+      setDisableScoreButtons(false);
+    }
+  };
+
+  const patchScore = async (score: number) => {
+    if (slideIn === false || disableScoreButtons) {
+      return;
+    }
+
+    if (sameScoreGiven(score) && criterion.name !== mainCriterionName) {
+      clearScore();
+    } else {
+      setSlideDirection('down');
+      setSubmittedScore(score);
+      setSlideIn(false);
+    }
   };
 
   return (
@@ -201,6 +218,7 @@ const CriteriaButtons = ({
           <IconButton
             aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
             onClick={() => moveWithoutPatching('down')}
+            disabled={disableScoreButtons}
           >
             <ArrowDropUp />
           </IconButton>
@@ -230,6 +248,7 @@ const CriteriaButtons = ({
           <IconButton
             aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
             onClick={() => moveWithoutPatching('up')}
+            disabled={disableScoreButtons}
           >
             <ArrowDropDown />
           </IconButton>
