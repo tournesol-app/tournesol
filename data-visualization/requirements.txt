@@ -6,4 +6,4 @@ matplotlib==3.3.4
 pillow==10.3.0
 plotly==5.5.0
 scikit-learn==1.0.1
-requests==2.31.0
+requests==2.32.0
