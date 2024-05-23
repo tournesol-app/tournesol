@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -16,7 +16,6 @@ import {
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
 } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
-import { isMobileDevice } from 'src/utils/extension';
 import { PollUserSettingsKeys } from 'src/utils/types';
 
 const displayTutorial = (
@@ -67,6 +66,7 @@ export const ComparisonsCountContext =
  */
 const ComparisonPage = () => {
   const { t } = useTranslation();
+  const pointerCoarse = useMediaQuery('(pointer:coarse)');
 
   const {
     options,
@@ -133,7 +133,7 @@ const ComparisonPage = () => {
     ? tutorialDialogActions(t)
     : undefined;
   const tipsTutorialContent = tutorialTips
-    ? tutorialTips(t, isMobileDevice())
+    ? tutorialTips(t, pointerCoarse)
     : undefined;
 
   // User's settings.
