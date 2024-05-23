@@ -153,7 +153,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                 self.loss_increase_to_solve,
                 args=(score_diff, r_actual, comparison_indicator, ll_actual),
                 xtol=self.convergence_error,
-                a=-1.0,
+                a=-1e6,
                 b=0.0,
                 ascending=False,
             )
@@ -162,7 +162,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                 args=(score_diff, r_actual, comparison_indicator, ll_actual),
                 xtol=self.convergence_error,
                 a=0.0,
-                b=1.0
+                b=1e6,
             )
 
         model = DirectScoringModel()
@@ -171,16 +171,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         return model
 
     def comparisons_dict(self, comparisons, entity_coordinates) -> dict[int, tuple[npt.NDArray, npt.NDArray]]:
-        comparisons = (
-            comparisons[
-                ["entity_a","entity_b","comparison", "comparison_max"]
-            ]
-            .assign(
-                pair=comparisons.apply(lambda c: {c["entity_a"], c["entity_b"]}, axis=1)
-            )
-            .drop_duplicates("pair", keep="last")
-            .drop(columns="pair")
-        )
+        comparisons = comparisons[["entity_a","entity_b","comparison", "comparison_max"]]
         comparisons_sym = pd.concat(
             [
                 comparisons,

@@ -3,6 +3,7 @@ from typing import Optional
 
 import pandas as pd
 import numpy as np
+from scipy.optimize import brentq
 
 try:
     import torch
@@ -21,7 +22,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         self,
         prior_std_dev: float = 7,
         convergence_error: float = 1e-5,
-        n_steps: int = 3,
+        n_steps: int = 1,
     ):
         """
 
@@ -100,10 +101,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                 entity_a=comparisons["entity_a"].map(entity_coordinates),
                 entity_b=comparisons["entity_b"].map(entity_coordinates),
                 comparison=comparisons["comparison"] / comparisons["comparison_max"],
-                pair=comparisons.apply(lambda c: {c["entity_a"], c["entity_b"]}, axis=1),
             )
-            .drop_duplicates("pair", keep="last")
-            .drop(columns="pair")
         )
 
         solution = torch.normal(
@@ -124,48 +122,52 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         for _step in range(self.n_steps):
             lbfgs.step(closure)
 
-        # TODO: uncertainty definition is no longer equivalent with `GeneralizedBradleyTerry`
-        uncertainties = [
-            self.hessian_diagonal_element(entity, solution, comparisons)
-            for entity in range(len(entities))
-        ]
+        ll_actual = self.loss(solution, comparisons, with_regularization=False).detach()
+        def loss_increase_to_solve(delta, coord):
+            solution_with_delta = solution.detach().clone()
+            solution_with_delta[coord] += delta
+            return self.loss(
+                solution_with_delta,
+                comparisons,
+                with_regularization=False
+            ) - ll_actual - 1.0
 
         model = DirectScoringModel()
         for coordinate in range(len(solution)):
+            uncertainty_left: float = -1 * brentq(
+                loss_increase_to_solve,
+                args=(coordinate,),
+                a=-1e6,
+                b=0.0,
+                xtol=self.convergence_error,
+            )  # type: ignore
+            uncertainty_right: float = brentq(
+                loss_increase_to_solve,
+                args=(coordinate,),
+                a=0.0,
+                b=1e6,
+                xtol=self.convergence_error,
+            )  # type: ignore
             model[entities[coordinate]] = (
-                solution[coordinate].detach().numpy(),
-                uncertainties[coordinate],
+                solution[coordinate].item(),
+                uncertainty_left,
+                uncertainty_right,
             )
         return model
         
-    def loss(self, solution, comparisons) -> torch.Tensor:
+    def loss(self, solution, comparisons, with_regularization=True) -> torch.Tensor:
         score_diff = (
             solution[comparisons["entity_b"].to_numpy()] 
             - solution[comparisons["entity_a"].to_numpy()]
         )
-        return (
-            torch.sum(solution**2) / (2 * self.prior_std_dev**2)
-            + self.cumulant_generating_function(score_diff).sum()
+        loss = (
+            self.cumulant_generating_function(score_diff).sum()
             - (score_diff * torch.from_numpy(comparisons["comparison"].to_numpy())).sum()
         )
+        if with_regularization:
+            loss += torch.sum(solution**2) / (2 * self.prior_std_dev**2)
+        return loss
     
-    def hessian_diagonal_element(
-        self,
-        entity: int,
-        solution: torch.Tensor,
-        comparisons: pd.DataFrame,
-    ) -> float:
-        """Computes the second partial derivative"""
-        result = 1 / self.prior_std_dev**2
-        c = comparisons[(comparisons["entity_a"] == entity) | (comparisons["entity_b"] == entity)]
-        for row in c.itertuples():
-            score_diff = (
-                solution[row.entity_b]
-                - solution[row.entity_a]
-            )
-            result += self.cumulant_generating_function_second_derivative(score_diff.detach())
-        return result
-
 
 class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
     def __init__(
@@ -174,7 +176,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         comparison_max: float = 10,
         convergence_error: float = 1e-5,
         cumulant_generating_function_error: float = 1e-5,
-        n_steps: int = 3,
+        n_steps: int = 1,
     ):
         """
         Parameters
