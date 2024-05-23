@@ -115,8 +115,12 @@ export const getTutorialTips = (
     '1': {
       title: t('videos.tips.tutorial.title2'),
       messages: [
-        t('videos.tips.tutorial.message2.p10'),
-        t('videos.tips.tutorial.message2.p20'),
+        pointerCoarse
+          ? t('videos.tips.tutorial.message2.p10mobile')
+          : t('videos.tips.tutorial.message2.p10'),
+        pointerCoarse
+          ? t('videos.tips.tutorial.message2.p20mobile')
+          : t('videos.tips.tutorial.message2.p20'),
       ],
     },
     '2': {
