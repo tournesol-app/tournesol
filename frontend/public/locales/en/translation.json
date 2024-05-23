@@ -1165,7 +1165,7 @@
         },
         "title3": "How does Tournesol work? 🤖",
         "message3": {
-          "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on the main criterion.",
+          "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences. The higher this score is, the more the community thinks the video should be largely recommended."
         },
         "title4": "Thank you for these first contributions ❤️",
