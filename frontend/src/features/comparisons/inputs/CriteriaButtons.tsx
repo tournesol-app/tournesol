@@ -25,6 +25,19 @@ interface CriteriaButtonsProps {
   onSubmit: (c: ComparisonRequest, partialUpdate?: boolean) => Promise<void>;
 }
 
+const removeCriteria = (
+  initialComparison: ComparisonRequest,
+  submittedCrit: string
+) => {
+  const index = initialComparison.criteria_scores.findIndex(
+    (crit) => crit.criteria === submittedCrit
+  );
+  if (index !== -1) {
+    initialComparison.criteria_scores.splice(index, 1);
+  }
+  return [...initialComparison.criteria_scores];
+};
+
 const CriteriaButtons = ({
   uidA,
   uidB,
@@ -86,6 +99,7 @@ const CriteriaButtons = ({
   const onSlideExited = async () => {
     let nextCritPosition = critPosition;
 
+    // Display only the main criterion during the tutorial.
     if (!tutorial.isActive) {
       if (slideDirection === 'up') {
         nextCritPosition =
@@ -96,10 +110,9 @@ const CriteriaButtons = ({
       }
     }
 
-    setCritPosition(nextCritPosition);
-    setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
-
     if (submittedScore === undefined) {
+      setCritPosition(nextCritPosition);
+      setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
       setSlideIn(true);
       return;
     }
@@ -118,7 +131,26 @@ const CriteriaButtons = ({
     };
 
     try {
-      await onSubmit(comparisonRequest, true);
+      const currentCritScore = initialComparison?.criteria_scores.find(
+        (crit) => crit.criteria === criterion.name
+      );
+
+      if (
+        criterion.name !== mainCriterionName &&
+        initialComparison?.criteria_scores &&
+        submittedScore === currentCritScore?.score
+      ) {
+        comparisonRequest.criteria_scores = removeCriteria(
+          initialComparison,
+          criterion.name
+        );
+
+        await onSubmit(comparisonRequest, false);
+      } else {
+        setCritPosition(nextCritPosition);
+        setSlideDirection(slideDirection === 'up' ? 'down' : 'up');
+        await onSubmit(comparisonRequest, true);
+      }
     } catch {
       setCritPosition(critPosition);
     } finally {
@@ -156,6 +188,7 @@ const CriteriaButtons = ({
     if (slideIn === false) {
       return;
     }
+
     setSlideDirection('down');
     setSlideIn(false);
     setSubmittedScore(score);
