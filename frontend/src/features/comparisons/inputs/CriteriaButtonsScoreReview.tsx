@@ -3,10 +3,10 @@ import React from 'react';
 import { Box, Zoom, useTheme } from '@mui/material';
 
 import { CriteriaIcon } from 'src/components';
-import { useCurrentPoll } from 'src/hooks';
 import { ComparisonRequest } from 'src/services/openapi';
 
 import { scoreButtons } from './CriterionButtons';
+import { useOrderedCriteria } from 'src/hooks/useOrderedCriteria';
 
 interface CriteriaButtonsScoreReviewProps {
   initialComparison: ComparisonRequest | null;
@@ -16,9 +16,9 @@ const CriteriaButtonsScoreReview = ({
   initialComparison,
 }: CriteriaButtonsScoreReviewProps) => {
   const theme = useTheme();
-  const { criterias } = useCurrentPoll();
+  const orderedCriteria = useOrderedCriteria();
 
-  const orderedCriteriaScores = criterias
+  const displayedCriteriaScores = orderedCriteria
     .map((criterion) => {
       const ratedCrit = initialComparison?.criteria_scores.find(
         (crit) => crit.criteria === criterion.name
@@ -51,7 +51,7 @@ const CriteriaButtonsScoreReview = ({
             {scoreBtn.icons}
           </Box>
 
-          {orderedCriteriaScores.map((crit) => {
+          {displayedCriteriaScores.map((crit) => {
             if (crit == undefined) return;
             if (crit.score !== scoreBtn.score) return;
 

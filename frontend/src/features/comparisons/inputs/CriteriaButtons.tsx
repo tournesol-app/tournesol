@@ -1,6 +1,5 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
@@ -9,13 +8,13 @@ import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks';
 import { TutorialContext } from 'src/features/comparisonSeries/TutorialContext';
-import { selectSettings } from 'src/features/settings/userSettingsSlice';
 
 import { ComparisonRequest } from 'src/services/openapi';
 
 import CriterionButtons, { BUTTON_SCORE_MAX } from './CriterionButtons';
+import { useOrderedCriteria } from 'src/hooks/useOrderedCriteria';
 
-const SWIPE_TIMEOUT = 210;
+const SWIPE_TIMEOUT = 240;
 const SWIPE_VELOCITY: number | Vector2 = [0.25, 0.25];
 
 interface CriteriaButtonsProps {
@@ -48,32 +47,9 @@ const CriteriaButtons = ({
   const containerRef = useRef<HTMLElement>(null);
 
   const tutorial = useContext(TutorialContext);
-  const { criterias: pollCriteria, name: pollName, options } = useCurrentPoll();
+  const { name: pollName, options } = useCurrentPoll();
   const mainCriterionName = options?.mainCriterionName;
-
-  const userSettings = useSelector(selectSettings)?.settings;
-  const orderedByPreferences = userSettings.videos?.comparison__criteria_order;
-
-  // Order the displayed criteria according to the user's preferences.
-  const displayedCriteria = useMemo(() => {
-    const remainingCriteria = [...pollCriteria];
-    const results = [remainingCriteria[0]];
-    remainingCriteria.shift();
-
-    if (orderedByPreferences != undefined) {
-      orderedByPreferences.forEach((critName) => {
-        const found = remainingCriteria.findIndex(
-          (pollCrit) => pollCrit.name === critName
-        );
-
-        if (found !== -1) {
-          results.push(remainingCriteria.splice(found, 1)[0]);
-        }
-      });
-    }
-
-    return results.concat(remainingCriteria);
-  }, [orderedByPreferences, pollCriteria]);
+  const displayedCriteria = useOrderedCriteria();
 
   const [slideIn, setSlideIn] = useState(true);
   const [slideDirection, setSlideDirection] = useState<'up' | 'down'>('down');
@@ -104,10 +80,12 @@ const CriteriaButtons = ({
     if (!tutorial.isActive) {
       if (slideDirection === 'up') {
         nextCritPosition =
-          critPosition - 1 >= 0 ? critPosition - 1 : pollCriteria.length - 1;
+          critPosition - 1 >= 0
+            ? critPosition - 1
+            : displayedCriteria.length - 1;
       } else {
         nextCritPosition =
-          critPosition + 1 < pollCriteria.length ? critPosition + 1 : 0;
+          critPosition + 1 < displayedCriteria.length ? critPosition + 1 : 0;
       }
     }
 
