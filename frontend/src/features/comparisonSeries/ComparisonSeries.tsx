@@ -21,8 +21,6 @@ import { getSkippedBy, setSkippedBy } from 'src/utils/comparisonSeries/skip';
 import { isMobileDevice } from 'src/utils/extension';
 import { scrollToTop } from 'src/utils/ui';
 
-import { TutorialContext } from './TutorialContext';
-
 const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
 
 // This constant controls the render of the series, if the `length` prop of
@@ -362,9 +360,7 @@ const ComparisonSeries = ({
         </Container>
       )}
       {!initializing.current && (
-        <TutorialContext.Provider value={{ isActive: isTutorial }}>
-          <Comparison afterSubmitCallback={afterSubmitCallback} />
-        </TutorialContext.Provider>
+        <Comparison afterSubmitCallback={afterSubmitCallback} />
       )}
     </>
   );

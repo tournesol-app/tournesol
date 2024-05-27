@@ -8,6 +8,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
+import { TutorialContext } from 'src/features/comparisonSeries/TutorialContext';
 import CollectiveGoalWeeklyProgress from 'src/features/goals/CollectiveGoalWeeklyProgress';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import Tips from 'src/features/tips/Tips';
@@ -181,7 +182,7 @@ const ComparisonPage = () => {
               comparisonsCount,
               userComparisonsRetrieved
             ) ? (
-              <>
+              <TutorialContext.Provider value={{ isActive: true }}>
                 <Tips
                   content={tipsTutorialContent}
                   step={comparisonsCount}
@@ -200,7 +201,7 @@ const ComparisonPage = () => {
                   keepUIDsAfterRedirect={keepUIDsAfterRedirect}
                   resumable={true}
                 />
-              </>
+              </TutorialContext.Provider>
             ) : (
               <>
                 {displayWeeklyCollectiveGoal(
