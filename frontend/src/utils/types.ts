@@ -127,9 +127,9 @@ export type SelectablePoll = {
   tutorialDialogActions?: (t: TFunction) => {
     [key: string]: { action: React.ReactNode };
   };
-  // if `pointerCoarse` is true, the tips related to the mobile interface
+  // if `pointerFine` is false, the tips related to the mobile interface
   // should be returned
-  tutorialTips?: (t: TFunction, pointerCoarse?: boolean) => OrderedTips;
+  tutorialTips?: (t: TFunction, pointerFine?: boolean) => OrderedTips;
   // redirect to this page after the last comparison is submitted
   tutorialRedirectTo?: string;
   // if true, the two UIDs present in the URL will be kept after the redirection

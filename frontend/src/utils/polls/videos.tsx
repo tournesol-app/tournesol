@@ -98,29 +98,29 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
 
 export const getTutorialTips = (
   t: TFunction,
-  pointerCoarse = false
+  pointerFine = true
 ): OrderedTips => {
   return {
     '0': {
       title: t('videos.tips.tutorial.title1'),
       messages: [
-        pointerCoarse
-          ? t('videos.tips.tutorial.message1.p10mobile')
-          : t('videos.tips.tutorial.message1.p10'),
-        pointerCoarse
-          ? t('videos.tips.tutorial.message1.p20mobile')
-          : t('videos.tips.tutorial.message1.p20'),
+        pointerFine
+          ? t('videos.tips.tutorial.message1.p10')
+          : t('videos.tips.tutorial.message1.p10mobile'),
+        pointerFine
+          ? t('videos.tips.tutorial.message1.p20')
+          : t('videos.tips.tutorial.message1.p20mobile'),
       ],
     },
     '1': {
       title: t('videos.tips.tutorial.title2'),
       messages: [
-        pointerCoarse
-          ? t('videos.tips.tutorial.message2.p10mobile')
-          : t('videos.tips.tutorial.message2.p10'),
-        pointerCoarse
-          ? t('videos.tips.tutorial.message2.p20mobile')
-          : t('videos.tips.tutorial.message2.p20'),
+        pointerFine
+          ? t('videos.tips.tutorial.message2.p10')
+          : t('videos.tips.tutorial.message2.p10mobile'),
+        pointerFine
+          ? t('videos.tips.tutorial.message2.p20')
+          : t('videos.tips.tutorial.message2.p20mobile'),
       ],
     },
     '2': {

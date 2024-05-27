@@ -53,7 +53,7 @@ const ComparisonInput = ({
 }: ComparisonInputProps) => {
   const { t } = useTranslation();
   const { options } = useCurrentPoll();
-  const pointerCoarse = useMediaQuery('(pointer:coarse)');
+  const pointerFine = useMediaQuery('(pointer:fine)', { noSsr: true });
 
   const mainScoreMax = getCriterionScoreMax(
     initialComparison?.criteria_scores,
@@ -62,13 +62,13 @@ const ComparisonInput = ({
 
   const buttonsUsed = mainScoreMax == BUTTON_SCORE_MAX;
   const slidersUsed = mainScoreMax == SLIDER_SCORE_MAX;
-  const fallBackToButtons = !buttonsUsed && !slidersUsed && pointerCoarse;
+  const fallBackToButtons = !buttonsUsed && !slidersUsed && !pointerFine;
 
   return (
     <>
       {buttonsUsed || fallBackToButtons ? (
         <>
-          {!pointerCoarse && (
+          {pointerFine && (
             <Alert icon={false} severity="info">
               {t('comparisonInput.thisComparisonWasMadeOnAMobileDevice')}
             </Alert>
@@ -85,7 +85,7 @@ const ComparisonInput = ({
         </>
       ) : (
         <>
-          {pointerCoarse && (
+          {!pointerFine && (
             <Alert icon={false} severity="info">
               {t('comparisonInput.thisComparisonWasMadeOnAComputer')}
             </Alert>
@@ -97,7 +97,7 @@ const ComparisonInput = ({
               uidA={uidA || ''}
               uidB={uidB || ''}
               isComparisonPublic={isComparisonPublic}
-              readOnly={pointerCoarse}
+              readOnly={!pointerFine}
             />
           </Paper>
         </>

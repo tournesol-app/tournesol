@@ -67,7 +67,7 @@ export const ComparisonsCountContext =
  */
 const ComparisonPage = () => {
   const { t } = useTranslation();
-  const pointerCoarse = useMediaQuery('(pointer:coarse)');
+  const pointerFine = useMediaQuery('(pointer:fine)', { noSsr: true });
 
   const {
     options,
@@ -134,7 +134,7 @@ const ComparisonPage = () => {
     ? tutorialDialogActions(t)
     : undefined;
   const tipsTutorialContent = tutorialTips
-    ? tutorialTips(t, pointerCoarse)
+    ? tutorialTips(t, pointerFine)
     : undefined;
 
   // User's settings.
