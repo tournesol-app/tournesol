@@ -16,7 +16,7 @@ import { BeforeInstallPromptEvent } from '../../pwaPrompt';
 // Allow to position contents like the footer relatively to the top of the
 // page.
 export const topBarHeight = 80;
-export const topBarHeightSm = 54;
+export const topBarHeightSm = 62;
 
 interface Props {
   beforeInstallPromptEvent?: BeforeInstallPromptEvent;
@@ -44,7 +44,7 @@ const TopBar = ({ beforeInstallPromptEvent }: Props) => {
           alignItems: 'center',
           justifyContent: 'center',
           height: isSmallScreen ? topBarHeightSm : topBarHeight,
-          padding: '4px !important',
+          padding: '0 8px !important',
         }}
       >
         <Grid container sx={{ width: '100%' }} alignItems="center">
