@@ -16,7 +16,7 @@ import { BeforeInstallPromptEvent } from '../../pwaPrompt';
 // Allow to position contents like the footer relatively to the top of the
 // page.
 export const topBarHeight = 80;
-export const topBarHeightSm = 66.25;
+export const topBarHeightSm = 54;
 
 interface Props {
   beforeInstallPromptEvent?: BeforeInstallPromptEvent;

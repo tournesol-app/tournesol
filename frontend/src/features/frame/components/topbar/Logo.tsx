@@ -1,13 +1,9 @@
 import React from 'react';
 
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import { Menu } from '@mui/icons-material';
+import { Grid, IconButton, Typography } from '@mui/material';
 
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
-import PollSelector from './PollSelector';
-import { polls } from 'src/utils/constants';
 
 const Logo = () => {
   const drawerOpen = useAppSelector(selectFrame);
@@ -16,22 +12,32 @@ const Logo = () => {
   return (
     <Grid
       item
-      md={4}
-      xs={'auto'}
-      marginRight="auto"
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}
+      xs
+      display="flex"
+      flexDirection="row"
+      alignItems="center"
+      columnGap={1}
     >
       <IconButton
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
         size="large"
+        sx={{
+          p: 0,
+          pl: 1,
+        }}
       >
-        <Menu />
+        <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
       </IconButton>
-      <PollSelector polls={polls} />
+      <Typography
+        variant="h1"
+        fontFamily="Poppins-Bold"
+        fontSize="1.5em"
+        fontWeight="bold"
+        lineHeight={1}
+        display={{ xs: 'none', md: 'initial' }}
+      >
+        Tournesol
+      </Typography>
     </Grid>
   );
 };
