@@ -31,8 +31,8 @@
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté haut:",
     "criteriaRatedLow": "Noté bas:",
-    "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+    "nbViews": "{{nbViews}} vues",
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
     "nComparisonsByYou_many": "{{count}} comparaisons par vous",
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
@@ -619,6 +619,9 @@
     "ratedCandidates": "Candidats notés",
     "activatedAccounts": "Comptes activés",
     "comparisons": "Comparaisons"
+  },
+  "statsSection": {
+    "statistics": "Statistiques"
   },
   "tip": {
     "less": "Moins",
