@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import makeStyles from '@mui/styles/makeStyles';
-import { Box, Theme } from '@mui/material';
-import TopBar, {
-  topBarHeight,
-  topBarHeightSm,
-} from './components/topbar/TopBar';
+import { Box } from '@mui/material';
+import TopBar, { topBarHeight } from './components/topbar/TopBar';
 import Footer from './components/footer/Footer';
 import SideBar from './components/sidebar/SideBar';
 import StorageError from './components/StorageError';
@@ -13,22 +10,19 @@ import { BeforeInstallPromptEvent } from './pwaPrompt';
 
 const isEmbedded = Boolean(new URLSearchParams(location.search).get('embed'));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({
   sideBarContainer: {
     position: 'relative',
     display: 'flex',
     flexDirection: 'row',
     height: `calc(100% - ${topBarHeight}px)`,
-    [theme.breakpoints.down('md')]: {
-      height: `calc(100% - ${topBarHeightSm}px)`,
-    },
   },
   main: {
     flexGrow: 1,
     overflow: 'auto',
     height: '100%',
   },
-}));
+});
 
 const EmbeddedTopBar = () => (
   <Box

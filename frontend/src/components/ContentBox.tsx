@@ -1,10 +1,7 @@
 import React from 'react';
-import { Box, Container, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Container } from '@mui/material';
 
-import {
-  topBarHeight,
-  topBarHeightSm,
-} from 'src/features/frame/components/topbar/TopBar';
+import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 
 interface Props {
   maxWidth?: false | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -24,10 +21,6 @@ const ContentBox = ({
   maxWidth = false,
   noMinPaddingX = false,
 }: Props) => {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const contentHeight = isSmallScreen ? topBarHeightSm : topBarHeight;
-
   if (!children) {
     return null;
   }
@@ -38,7 +31,7 @@ const ContentBox = ({
       py={2}
       // Push the global footer away, to avoid displaying it in the middle
       // of the screen.
-      minHeight={`calc(100vh - ${contentHeight}px)`}
+      minHeight={`calc(100vh - ${topBarHeight}px)`}
     >
       <Container maxWidth={maxWidth} disableGutters>
         {children}
