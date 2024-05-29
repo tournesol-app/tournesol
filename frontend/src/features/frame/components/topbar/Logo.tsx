@@ -29,7 +29,10 @@ const Logo = () => {
           px: '6px',
           py: '6px',
           border: '1px solid rgba(0, 0, 0, 0.12)',
-          backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          backgroundColor: 'rgba(29, 26, 20, 0.08)',
+          '&:hover': {
+            backgroundColor: 'rgba(29, 26, 20, 0.16)',
+          },
         }}
       >
         <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
