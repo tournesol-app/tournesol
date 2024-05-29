@@ -22,8 +22,10 @@ const Logo = () => {
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
         size="large"
         sx={{
-          p: 0,
-          pl: 1,
+          px: '6px',
+          py: '6px',
+          border: '1px solid rgba(0, 0, 0, 0.12)',
+          backgroundColor: 'rgba(0, 0, 0, 0.04)',
         }}
       >
         <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
