@@ -2,10 +2,14 @@ import React from 'react';
 
 import { Grid, IconButton, Typography } from '@mui/material';
 
+import { useAppSelector, useAppDispatch } from 'src/app/hooks';
+import { InternalLink } from 'src/components';
+import { useCurrentPoll } from 'src/hooks';
+
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
-import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 
 const Logo = () => {
+  const { baseUrl: pollHome } = useCurrentPoll();
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
 
@@ -38,7 +42,9 @@ const Logo = () => {
         lineHeight={1}
         display={{ xs: 'none', md: 'initial' }}
       >
-        Tournesol
+        <InternalLink to={pollHome || '/'} color="text.primary">
+          Tournesol
+        </InternalLink>
       </Typography>
     </Grid>
   );
