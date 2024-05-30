@@ -39,29 +39,28 @@ const Logo = () => {
       >
         <Menu />
       </IconButton>
-      <Typography
-        variant="h1"
-        fontFamily="Poppins-Bold"
-        fontSize="1.5em"
-        fontWeight="bold"
-        lineHeight={1}
-      >
+      <InternalLink to={pollHome || '/'} color="text.primary">
         <Box
           display="flex"
           alignItems="center"
           justifyContent="center"
           columnGap={1}
         >
-          <InternalLink to={pollHome || '/'}>
-            <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
-          </InternalLink>
+          <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
+
           {mediumScreen && (
-            <InternalLink to={pollHome || '/'} color="text.primary">
+            <Typography
+              variant="h1"
+              fontFamily="Poppins-Bold"
+              fontSize="1.5em"
+              fontWeight="bold"
+              lineHeight={1}
+            >
               Tournesol
-            </InternalLink>
+            </Typography>
           )}
         </Box>
-      </Typography>
+      </InternalLink>
     </Grid>
   );
 };
