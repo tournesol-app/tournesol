@@ -1,6 +1,14 @@
 import React from 'react';
 
-import { Grid, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Grid,
+  IconButton,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import { Menu } from '@mui/icons-material';
 
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { InternalLink } from 'src/components';
@@ -12,6 +20,9 @@ const Logo = () => {
   const { baseUrl: pollHome } = useCurrentPoll();
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
+
+  const theme = useTheme();
+  const mediumScreen = useMediaQuery(theme.breakpoints.up('md'));
 
   return (
     <Grid
@@ -25,17 +36,8 @@ const Logo = () => {
       <IconButton
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
         size="large"
-        sx={{
-          px: '6px',
-          py: '6px',
-          border: '1px solid rgba(0, 0, 0, 0.12)',
-          backgroundColor: 'rgba(29, 26, 20, 0.08)',
-          '&:hover': {
-            backgroundColor: 'rgba(29, 26, 20, 0.16)',
-          },
-        }}
       >
-        <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
+        <Menu />
       </IconButton>
       <Typography
         variant="h1"
@@ -43,10 +45,17 @@ const Logo = () => {
         fontSize="1.5em"
         fontWeight="bold"
         lineHeight={1}
-        display={{ xs: 'none', md: 'initial' }}
       >
         <InternalLink to={pollHome || '/'} color="text.primary">
-          Tournesol
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            columnGap={1}
+          >
+            <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
+            {mediumScreen && 'Tournesol'}
+          </Box>
         </InternalLink>
       </Typography>
     </Grid>
