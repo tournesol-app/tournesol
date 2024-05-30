@@ -44,6 +44,7 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     comparison_ui__weekly_collective_goal_display = serializers.ChoiceField(
         choices=COMPONENT_DISPLAY_STATE, allow_blank=True, required=False
     )
+    comparison_ui__weekly_collective_goal_mobile = serializers.BooleanField(required=False)
 
     rate_later__auto_remove = serializers.IntegerField(required=False)
 

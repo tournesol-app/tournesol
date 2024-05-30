@@ -30,6 +30,8 @@ interface VideosPollUserSettingsFormProps {
   setCompUiWeeklyColGoalDisplay: (
     target: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum
   ) => void;
+  compUiWeeklyColGoalMobile: boolean;
+  setCompUiWeeklyColGoalMobile: (target: boolean) => void;
   displayedCriteria: string[];
   setDisplayedCriteria: (target: string[]) => void;
   rateLaterAutoRemoval: number;
@@ -57,6 +59,8 @@ const VideosPollUserSettingsForm = ({
   setCompAutoSelectEntities,
   compUiWeeklyColGoalDisplay,
   setCompUiWeeklyColGoalDisplay,
+  compUiWeeklyColGoalMobile,
+  setCompUiWeeklyColGoalMobile,
   displayedCriteria,
   setDisplayedCriteria,
   rateLaterAutoRemoval,
@@ -89,14 +93,25 @@ const VideosPollUserSettingsForm = ({
           pollName={pollName}
         />
       </Grid>
-      <Grid item>
-        <BooleanField
-          scope={pollName}
-          name="comparison__auto_select_entities"
-          label={t('pollUserSettingsForm.letTournesolSuggestElements')}
-          value={compAutoSelectEntities}
-          onChange={setCompAutoSelectEntities}
-        />
+      <Grid item container spacing={1} direction="column" alignItems="stretch">
+        <Grid item>
+          <BooleanField
+            scope={pollName}
+            name="comparison_ui__weekly_collective_goal_mobile"
+            label={t('pollUserSettingsForm.displayCollectiveGoalOnMobile')}
+            value={compUiWeeklyColGoalMobile}
+            onChange={setCompUiWeeklyColGoalMobile}
+          />
+        </Grid>
+        <Grid item>
+          <BooleanField
+            scope={pollName}
+            name="comparison__auto_select_entities"
+            label={t('pollUserSettingsForm.letTournesolSuggestElements')}
+            value={compAutoSelectEntities}
+            onChange={setCompAutoSelectEntities}
+          />
+        </Grid>
       </Grid>
       {/*
           Ideally the following field could be displayed under the title
