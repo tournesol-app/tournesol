@@ -46,17 +46,21 @@ const Logo = () => {
         fontWeight="bold"
         lineHeight={1}
       >
-        <InternalLink to={pollHome || '/'} color="text.primary">
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            columnGap={1}
-          >
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          columnGap={1}
+        >
+          <InternalLink to={pollHome || '/'}>
             <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
-            {mediumScreen && 'Tournesol'}
-          </Box>
-        </InternalLink>
+          </InternalLink>
+          {mediumScreen && (
+            <InternalLink to={pollHome || '/'} color="text.primary">
+              Tournesol
+            </InternalLink>
+          )}
+        </Box>
       </Typography>
     </Grid>
   );
