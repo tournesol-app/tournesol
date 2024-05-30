@@ -7,7 +7,7 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 # pylint: skip-file
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Literal
 
 import numpy as np
 from numba import njit
@@ -41,23 +41,31 @@ def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
 
 
 @njit
-def njit_brentq(f, args=(), xtol=_xtol, rtol=_rtol, maxiter=_iter, a: float=-1.0, b: float=1.0, ascending=True) -> float:
+def njit_brentq(
+    f,
+    args=(),
+    xtol=_xtol,
+    rtol=_rtol,
+    maxiter=_iter,
+    a: float=-1.0,
+    b: float=1.0,
+    extend_bounds: Literal["ascending", "descending", "no"] = "ascending",
+) -> float:
     """ `Accelerated brentq. Requires f to be itself jitted via numba.
     Essentially, numba optimizes the execution by running an optimized compilation
     of the function when it is first called, and by then running the compiled function.
-    
     
     Parameters
     ----------
     f : jitted and callable
         Python function returning a number.  `f` must be continuous.
     """
-    if ascending:
+    if extend_bounds == "ascending":
         while f(a, *args) > 0:
             a = a - 2 * (b-a)
         while f(b, *args) < 0:
             b = b + 2 * (b-a)
-    else:
+    elif extend_bounds == "descending":
         while f(a, *args) < 0:
             a = a - 2 * (b-a)
         while f(b, *args) > 0:

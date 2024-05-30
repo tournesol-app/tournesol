@@ -118,32 +118,32 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         model = DirectScoringModel()
         for coordinate in range(len(solution)):
             mask = ((comparisons_np[0] == coordinate) | (comparisons_np[1] == coordinate))
-            comp = tuple(a[mask] for a in comparisons_np)
-            ll_actual = self.loss(solution, comp, with_regularization=False).item()
+            comparisons_np_subset = tuple(arr[mask] for arr in comparisons_np)
+            ll_solution = self.loss(solution, comparisons_np_subset, with_regularization=False).item()
 
             try:
                 uncertainty_left = -1 * dichotomy.solve(
                     loss_with_delta,
-                    value=ll_actual + 1,
-                    args=(comp, coordinate),
-                    xmin=-1e3,
+                    value=ll_solution + 1,
+                    args=(comparisons_np_subset, coordinate),
+                    xmin=-self.MAX_UNCERTAINTY,
                     xmax=0.0,
                     error=1e-1,
                 )
             except ValueError:
-                uncertainty_left = 700.65
+                uncertainty_left = self.MAX_UNCERTAINTY
 
             try:
                 uncertainty_right = dichotomy.solve(
                     loss_with_delta,
-                    value=ll_actual + 1,
-                    args=(comp, coordinate),
+                    value=ll_solution + 1,
+                    args=(comparisons_np_subset, coordinate),
                     xmin=0.0,
-                    xmax=1e3,
+                    xmax=self.MAX_UNCERTAINTY,
                     error=1e-1,
                 )
             except ValueError:
-                uncertainty_right = 700.65
+                uncertainty_right = self.MAX_UNCERTAINTY
 
             model[entities[coordinate]] = (
                 solution[coordinate].item(),

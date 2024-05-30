@@ -149,21 +149,29 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                 (comparisons["entity_a_coord"] == coordinate).astype(int)
                 - (comparisons["entity_b_coord"] == coordinate).astype(int)
             ).to_numpy()
-            uncertainties_left[coordinate] = -1 * njit_brentq(
-                self.loss_increase_to_solve,
-                args=(score_diff, r_actual, comparison_indicator, ll_actual),
-                xtol=self.convergence_error,
-                a=-1e6,
-                b=0.0,
-                ascending=False,
-            )
-            uncertainties_right[coordinate] = njit_brentq(
-                self.loss_increase_to_solve,
-                args=(score_diff, r_actual, comparison_indicator, ll_actual),
-                xtol=self.convergence_error,
-                a=0.0,
-                b=1e6,
-            )
+            try:
+                uncertainties_left[coordinate] = -1 * njit_brentq(
+                    self.loss_increase_to_solve,
+                    args=(score_diff, r_actual, comparison_indicator, ll_actual),
+                    xtol=1e-2,
+                    a=-self.MAX_UNCERTAINTY,
+                    b=0.0,
+                    extend_bounds="no",
+                )
+            except ValueError:
+                uncertainties_left[coordinate] = self.MAX_UNCERTAINTY
+
+            try:
+                uncertainties_right[coordinate] = njit_brentq(
+                    self.loss_increase_to_solve,
+                    args=(score_diff, r_actual, comparison_indicator, ll_actual),
+                    xtol=1e-2,
+                    a=0.0,
+                    b=self.MAX_UNCERTAINTY,
+                    extend_bounds="no",
+                )
+            except ValueError:
+                uncertainties_right[coordinate] = self.MAX_UNCERTAINTY
 
         model = DirectScoringModel()
         for coord in range(len(solution)):
@@ -248,7 +256,15 @@ class UniformGBT(GeneralizedBradleyTerry):
     def log_likelihood_function(self):
         @njit
         def f(score_diff, r):
-            return (np.log(np.sinh(score_diff) / score_diff) + r * score_diff).sum()
+            score_diff_abs = np.abs(score_diff)
+            return (
+                np.where(
+                    score_diff_abs < 20.0,
+                    np.log(np.sinh(score_diff) / score_diff),
+                    score_diff_abs - np.log(2) - np.log(score_diff_abs)
+                )
+                + r * score_diff
+            ).sum()
         return f
 
     @cached_property
