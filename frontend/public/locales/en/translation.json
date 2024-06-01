@@ -619,6 +619,9 @@
     "activatedAccounts": "Activated accounts",
     "comparisons": "Comparisons"
   },
+  "statsSection": {
+    "statistics": "Statistics"
+  },
   "tip": {
     "less": "Less",
     "showMore": "Show more ..."

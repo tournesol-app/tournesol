@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Box, Grid, IconButton } from '@mui/material';
-import { Close, Search } from '@mui/icons-material';
+import { Search, Undo } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import AccountInfo from './AccountInfo';
@@ -40,7 +40,7 @@ const TopBarMobile = () => {
                 aria-label="Close the searchbar"
                 onClick={() => searchOpeningHandler(false)}
               >
-                <Close />
+                <Undo />
               </IconButton>
             </Box>
           </Grid>

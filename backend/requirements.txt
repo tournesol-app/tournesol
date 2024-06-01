@@ -55,7 +55,7 @@ google-auth-httplib2==0.1.0
 matplotlib==3.7.2
 # requests is used to trigger a few external tools such as Discord or fetch
 # information 
-requests==2.31.0
+requests==2.32.2
 # Used for the twitter bots
 tweepy==4.14.0
 # dotenv for .env file
