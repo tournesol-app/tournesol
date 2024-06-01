@@ -293,7 +293,7 @@ const Comparison = ({
     }
 
     // Lower the alert display time to 1600 ms to save space on mobile devices.
-    showSuccessAlert(t('comparison.successfullySubmitted'), 1600);
+    showSuccessAlert(t('comparison.ok'), 1200);
   };
 
   return (

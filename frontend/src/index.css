@@ -43,6 +43,11 @@ html.embedded .SnackbarContainer-root.belowTopBar {
      page content. */
   top: 4px;
 }
+@media (max-width: 600px) {
+  .SnackbarContainer-root.belowTopBar {
+    width: auto;
+  }
+}
 
 
 /* pkg: @mui/material */
