@@ -57,12 +57,11 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         """
 
     @cached_property
-    def loss_increase_to_solve(self):
-        """
-        This function is a convex negative log likelihood, translated such 
-        that its minimum has a constant negative value at `delta=0`. The 
-        roots of this function are used to compute the uncertainties 
-        intervals. If it has only a single root, then uncertainty on the 
+    def translated_negative_log_likelihood(self):
+        """This function is a convex negative log likelihood, translated such
+        that its minimum has a constant negative value at `delta=0`. The
+        roots of this function are used to compute the uncertainties
+        intervals. If it has only a single root, then uncertainty on the
         other side is considered infinite.
         """
         ll_function = self.log_likelihood_function
@@ -162,7 +161,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             ).to_numpy()
             try:
                 uncertainties_left[coordinate] = -1 * njit_brentq(
-                    self.loss_increase_to_solve,
+                    self.translated_negative_log_likelihood,
                     args=(score_diff, r_actual, comparison_indicator, ll_actual),
                     xtol=1e-2,
                     a=-self.MAX_UNCERTAINTY,
@@ -174,7 +173,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
             try:
                 uncertainties_right[coordinate] = njit_brentq(
-                    self.loss_increase_to_solve,
+                    self.translated_negative_log_likelihood,
                     args=(score_diff, r_actual, comparison_indicator, ll_actual),
                     xtol=1e-2,
                     a=0.0,
