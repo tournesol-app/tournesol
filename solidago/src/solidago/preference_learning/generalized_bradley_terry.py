@@ -56,8 +56,12 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
     @cached_property
     def loss_increase_to_solve(self):
-        """The root of this function is used to compute asymetric uncertainties
-        by looking for the delta for which the loss is increased by 1.
+        """
+        This function is a convex negative log likelihood, translated such 
+        that its minimum has a constant negative value at `delta=0`. The 
+        roots of this function are used to compute the uncertainties 
+        intervals. If it has only a single root, then uncertainty on the 
+        other side is considered infinite.
         """
         ll_function = self.log_likelihood_function
 
