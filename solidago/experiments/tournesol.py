@@ -96,12 +96,9 @@ for c in criteria:
     vouches = pipeline_objects["vouches"]
     all_entities = pipeline_objects["entities"]
     privacy = pipeline_objects["privacy"]
-    judgments = pipeline_objects["judgements"]
+    judgments = pipeline_objects["judgments"]
 
     users = pipeline.trust_propagation(users, vouches)
-    
-    judgments = inputs.get_judgments(c)
-    
     voting_rights[c], entities[c] = pipeline.voting_rights(users, all_entities, vouches, privacy)
     user_models = pipeline.preference_learning(judgments, users, entities[c])
     scaled_user_models[c] = pipeline.scaling(user_models, users, entities[c], voting_rights[c], privacy)
