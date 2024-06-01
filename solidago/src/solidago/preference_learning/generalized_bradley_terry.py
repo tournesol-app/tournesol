@@ -18,6 +18,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         self, 
         prior_std_dev: float=7,
         convergence_error: float=1e-5,
+        high_likelihood_range_threshold = 1.0,
     ):
         """
         
@@ -30,6 +31,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         """
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
+        self.high_likelihood_range_threshold = high_likelihood_range_threshold
 
     @property
     @abstractmethod
@@ -64,10 +66,15 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         other side is considered infinite.
         """
         ll_function = self.log_likelihood_function
+        high_likelihood_range_threshold = self.high_likelihood_range_threshold
 
         @njit
         def f(delta, theta_diff, r, coord_indicator, ll_actual):
-            return ll_function(theta_diff + delta * coord_indicator, r) - ll_actual - 1.0
+            return (
+                ll_function(theta_diff + delta * coord_indicator, r)
+                - ll_actual
+                - high_likelihood_range_threshold
+            )
 
         return f
 

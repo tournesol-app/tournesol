@@ -22,6 +22,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         prior_std_dev: float = 7,
         convergence_error: float = 1e-5,
         max_iter: int = 100,
+        high_likelihood_range_threshold = 1.0,
     ):
         """
 
@@ -35,6 +36,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
         self.max_iter = max_iter
+        self.high_likelihood_range_threshold = high_likelihood_range_threshold
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     @abstractmethod
@@ -124,7 +126,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             try:
                 uncertainty_left = -1 * dichotomy.solve(
                     loss_with_delta,
-                    value=ll_solution + 1,
+                    value=ll_solution + self.high_likelihood_range_threshold,
                     args=(comparisons_np_subset, coordinate),
                     xmin=-self.MAX_UNCERTAINTY,
                     xmax=0.0,
@@ -136,7 +138,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             try:
                 uncertainty_right = dichotomy.solve(
                     loss_with_delta,
-                    value=ll_solution + 1,
+                    value=ll_solution + self.high_likelihood_range_threshold,
                     args=(comparisons_np_subset, coordinate),
                     xmin=0.0,
                     xmax=self.MAX_UNCERTAINTY,
