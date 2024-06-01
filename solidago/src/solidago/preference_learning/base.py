@@ -27,7 +27,6 @@ class PreferenceLearning(ABC):
         Parameters
         ----------
         judgments:
-            May contain different forms of judgments, 
             May contain different forms of judgments,
             but most likely will contain "comparisons" and/or "assessments"
         entities: DataFrame with columns
@@ -84,7 +83,7 @@ class PreferenceLearning(ABC):
         new_judgments:
             New judgments
             This allows to prioritize coordinate descent, starting with newly evaluated entities
-            
+
         Returns
         -------
         model: ScoringModel
