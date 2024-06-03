@@ -57,6 +57,58 @@ class TournesolInput(ABC):
     ) -> Optional[pd.DataFrame]:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_vouches(self):
+        """Fetch data about vouches shared between users
+
+        Returns:
+        - DataFrame with columns
+            * `voucher`: int, user_id of the user who gives the vouch
+            * `vouchee`: int, user_id of the user who receives the vouch
+            * `vouch`: float, value of this vouch
+        """
+        raise NotImplementedError
+
+    def get_users(self):
+        users = self.ratings_properties.groupby("user_id").first()[["trust_score"]]
+        users["is_pretrusted"] = users["trust_score"] >= 0.8
+        return users
+
+    def get_pipeline_kwargs(self, criterion: str):
+        ratings_properties = self.ratings_properties
+        users = self.get_users()
+        vouches = self.get_vouches()
+        comparisons = self.get_comparisons(criteria=criterion)
+        entities_ids = set(comparisons["entity_a"].unique()) | set(
+            comparisons["entity_b"].unique()
+        )
+        entities = pd.DataFrame(index=list(entities_ids))
+
+        privacy = PrivacySettings()
+        user_entity_pairs = set(
+            comparisons[["user_id", "entity_a"]].itertuples(index=False, name=None)
+        ).union(comparisons[["user_id", "entity_b"]].itertuples(index=False, name=None))
+        for rating in ratings_properties.itertuples():
+            if (rating.user_id, rating.entity_id) in user_entity_pairs:
+                privacy[(rating.user_id, rating.entity_id)] = not rating.is_public
+
+        judgments = DataFrameJudgments(
+            comparisons=comparisons.rename(
+                columns={
+                    "score": "comparison",
+                    "score_max": "comparison_max",
+                }
+            )
+        )
+
+        return {
+            "users": users,
+            "vouches": vouches,
+            "entities": entities,
+            "privacy": privacy,
+            "judgments": judgments,
+        }
+
 
 class TournesolInputFromPublicDataset(TournesolInput):
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
@@ -72,14 +124,18 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 self.comparisons = pd.read_csv(comparison_file, keep_default_na=False)
                 self.entity_id_to_video_id = pd.Series(
                     list(set(self.comparisons.video_a) | set(self.comparisons.video_b)),
-                    name="video_id"
+                    name="video_id",
                 )
                 video_id_to_entity_id = {
                     video_id: entity_id
                     for (entity_id, video_id) in self.entity_id_to_video_id.items()
                 }
-                self.comparisons["entity_a"] = self.comparisons["video_a"].map(video_id_to_entity_id)
-                self.comparisons["entity_b"] = self.comparisons["video_b"].map(video_id_to_entity_id)
+                self.comparisons["entity_a"] = self.comparisons["video_a"].map(
+                    video_id_to_entity_id
+                )
+                self.comparisons["entity_b"] = self.comparisons["video_b"].map(
+                    video_id_to_entity_id
+                )
                 self.comparisons.drop(columns=["video_a", "video_b"], inplace=True)
 
             with (zipfile.Path(zip_file) / "users.csv").open(mode="rb") as users_file:
@@ -90,26 +146,25 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # Fill trust_score on newly created users for which it was not computed yet
                 self.users.trust_score = pd.to_numeric(self.users.trust_score).fillna(0.0)
 
-            username_to_user_id = pd.Series(
+            self.username_to_user_id = pd.Series(
                 data=self.users.index, index=self.users["public_username"]
             )
-            self.comparisons = self.comparisons.join(username_to_user_id, on="public_username")
-            
+            self.comparisons = self.comparisons.join(self.username_to_user_id, on="public_username")
+
             with (zipfile.Path(zip_file) / "vouchers.csv").open(mode="rb") as vouchers_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.vouchers = pd.read_csv(vouchers_file, keep_default_na=False)
-            
+
             with (zipfile.Path(zip_file) / "collective_criteria_scores.csv").open(mode="rb") as collective_scores_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.collective_scores = pd.read_csv(collective_scores_file, keep_default_na=False)
-            
+
             with (zipfile.Path(zip_file) / "individual_criteria_scores.csv").open(mode="rb") as individual_scores_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.individual_scores = pd.read_csv(individual_scores_file, keep_default_na=False)
-                
 
     @classmethod
     def download(cls) -> "TournesolInputFromPublicDataset":
@@ -153,27 +208,16 @@ class TournesolInputFromPublicDataset(TournesolInput):
     ) -> Optional[pd.DataFrame]:
         # TODO: read contributor scores from individual_scores.csv
         return None
-        
-    def get_pipeline_objects(self):
-        users = self.users
-        users = users.assign(is_pretrusted=(users["trust_score"] >= 0.8))
-        vouches = pd.DataFrame(columns=["voucher", "vouchee", "vouch"])
-        entities_indices = set(self.comparisons["entity_a"]) | set(self.comparisons["entity_b"])
-        entities = pd.DataFrame(index=list(entities_indices))
-        entities.index.name = "entity_id"
-        privacy = PrivacySettings()
-        for (user_id, entity_id) in set(
-            self.comparisons[["user_id", "entity_a"]].itertuples(index=False, name=None)
-        ).union(
-            self.comparisons[["user_id", "entity_b"]].itertuples(index=False, name=None)
-        ):
-            privacy[user_id, entity_id] = False
-        return users, vouches, entities, privacy
-    
-    def get_judgments(self, criterion):
-        comparisons = self.comparisons
-        if criterion is not None:
-            comparisons = comparisons[comparisons["criteria"] == criterion]
-        comparisons = comparisons.rename(columns={"score": "comparison"})
-        comparisons = comparisons.assign(comparison_max=[10] * len(comparisons))
-        return DataFrameJudgments(comparisons=comparisons)
+
+    def get_vouches(self):
+        vouchers = self.vouchers[
+            self.vouchers.by_username.isin(self.username_to_user_id.index)
+            & self.vouchers.to_username.isin(self.username_to_user_id.index)
+        ]
+        return pd.DataFrame(
+            {
+                "voucher": vouchers.by_username.map(self.username_to_user_id),
+                "vouchee": vouchers.to_username.map(self.username_to_user_id),
+                "vouch": vouchers.value,
+            }
+        )

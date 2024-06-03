@@ -14,6 +14,7 @@ from tournesol.models import (
     ContributorScaling,
     Entity,
 )
+from vouch.models import Voucher
 
 
 class MlInputFromDb(TournesolInput):
@@ -189,3 +190,14 @@ class MlInputFromDb(TournesolInput):
 
         dtf = pd.DataFrame(values)
         return dtf[["user_id", "entity", "criteria", "raw_score"]]
+
+    def get_vouches(self):
+        values = Voucher.objects.filter(
+            by__is_active=True,
+            to__is_active=True,
+        ).values(
+            voucher="by__id",
+            vouchee="to__id",
+            vouch="value",
+        )
+        return pd.DataFrame(values)
