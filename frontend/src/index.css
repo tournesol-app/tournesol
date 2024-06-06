@@ -1,8 +1,10 @@
 html {
+  /* disable the pull-to-refresh gesture on Safari */
   overscroll-behavior-y: none;
 }
 
 body {
+  /* disable the pull-to-refresh gesture */
   overscroll-behavior-y: contain;
 }
 
