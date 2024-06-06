@@ -340,7 +340,7 @@ describe('Comparison page', () => {
       cy.get('button#expert_submit_btn').click();
       cy.contains('edit comparison', {matchCase: false})
         .should('be.visible');
-      cy.contains('OK', {matchCase: false})
+      cy.contains('successfully submitted', {matchCase: false})
         .should('be.visible');
     });
 
@@ -375,7 +375,7 @@ describe('Comparison page', () => {
       cy.get('button#expert_submit_btn').click();
       cy.contains('edit comparison', {matchCase: false})
         .should('be.visible');
-      cy.contains('OK', {matchCase: false})
+      cy.contains('successfully submitted', {matchCase: false})
         .should('be.visible');
     });
 

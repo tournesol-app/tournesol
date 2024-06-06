@@ -9,7 +9,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { Box, Card, CircularProgress, Grid, useTheme } from '@mui/material';
+import {
+  Box,
+  Card,
+  CircularProgress,
+  Grid,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import {
@@ -87,6 +94,8 @@ const Comparison = ({
   const currentLang = i18n.resolvedLanguage;
 
   const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
@@ -292,8 +301,11 @@ const Comparison = ({
       setSelectorB((value) => ({ ...value, ratingIsExpired: true }));
     }
 
-    // Lower the alert display time to 1600 ms to save space on mobile devices.
-    showSuccessAlert(t('comparison.ok'), 1200);
+    if (smallScreen) {
+      showSuccessAlert(t('comparison.ok'), 1200);
+    } else {
+      showSuccessAlert(t('comparison.successfullySubmitted'));
+    }
   };
 
   return (
