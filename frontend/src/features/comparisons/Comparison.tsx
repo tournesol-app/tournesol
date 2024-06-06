@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
@@ -27,6 +28,7 @@ import {
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
@@ -99,7 +101,9 @@ const Comparison = ({
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
-  const { name: pollName } = useCurrentPoll();
+
+  const { name: pollName, options } = useCurrentPoll();
+  const mainCriterion = options?.mainCriterionName;
 
   const initializeWithSuggestions = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -145,6 +149,17 @@ const Comparison = ({
 
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
   const onChangeB = useMemo(() => onChange('vidB'), [onChange]);
+
+  const userSettings = useSelector(selectSettings)?.settings;
+  const orderedByPreferences =
+    userSettings.videos?.comparison__criteria_order ?? [];
+
+  const orderedCriteriaRated =
+    [mainCriterion, ...orderedByPreferences].every((orderedCrit) =>
+      initialComparison?.criteria_scores.find(
+        (critScore) => critScore.criteria === orderedCrit
+      )
+    ) ?? false;
 
   /**
    * Automatically initialize the first comparison if the autoFill parameters
@@ -325,6 +340,7 @@ const Comparison = ({
             onChange={onChangeA}
             otherUid={uidB}
             history={selectorAHistory.current}
+            orderedCriteriaRated={orderedCriteriaRated}
           />
         </Grid>
         <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
@@ -334,6 +350,7 @@ const Comparison = ({
             onChange={onChangeB}
             otherUid={uidA}
             history={selectorBHistory.current}
+            orderedCriteriaRated={orderedCriteriaRated}
           />
         </Grid>
       </Grid>

@@ -150,6 +150,9 @@
     "closeSearch": "Close search",
     "search": "Search"
   },
+  "entitySelectorControls": {
+    "next": "next"
+  },
   "tabsBox": {
     "subsample": "An ordered sample of your personal ranking. The elements you recommend the most appear first.",
     "compared": "Compared videos appear here.",

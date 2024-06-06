@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Grid } from '@mui/material';
 
@@ -14,6 +15,7 @@ interface EntitySelectorControlsProps {
   inputValue: string | null;
   history?: SuggestionHistory;
   disabled: boolean;
+  orderedCriteriaRated?: boolean;
   onAutoClick: () => Promise<void>;
   onEntitySelect: (uid: string) => void;
 }
@@ -25,9 +27,12 @@ const EntitySelectorControls = ({
   inputValue,
   history,
   disabled,
+  orderedCriteriaRated = false,
   onAutoClick,
   onEntitySelect,
 }: EntitySelectorControlsProps) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       display="flex"
@@ -59,7 +64,16 @@ const EntitySelectorControls = ({
           />
         </Grid>
         <Grid item>
-          <AutoEntityButton disabled={disabled} onClick={onAutoClick} />
+          <AutoEntityButton
+            disabled={disabled}
+            onClick={onAutoClick}
+            compactLabel={
+              orderedCriteriaRated
+                ? t('entitySelectorControls.next')
+                : undefined
+            }
+            compactLabelLoc={alignment === 'left' ? 'right' : 'left'}
+          />
         </Grid>
       </Grid>
     </Box>

@@ -155,6 +155,9 @@
     "closeSearch": "Fermer la recherche",
     "search": "Rechercher"
   },
+  "entitySelectorControls": {
+    "next": "suivant"
+  },
   "tabsBox": {
     "subsample": "Un extrait ordonné de votre classement personnel. Les éléments que vous recommandez le plus apparaissent en premier.",
     "compared": "Les vidéos que vous avez comparées apparaissent ici.",

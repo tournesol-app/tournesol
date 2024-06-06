@@ -43,6 +43,9 @@ interface Props {
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
   history?: SuggestionHistory;
+  // Should be true when the default displayed criteria configured by the user
+  // have been rated.
+  orderedCriteriaRated?: boolean;
 }
 
 export interface SelectorValue {
@@ -61,6 +64,7 @@ const EntitySelector = ({
   otherUid,
   variant = 'regular',
   history,
+  orderedCriteriaRated = false,
 }: Props) => {
   const { isLoggedIn } = useLoginState();
 
@@ -74,6 +78,7 @@ const EntitySelector = ({
           alignment={alignment}
           variant={variant}
           history={history}
+          orderedCriteriaRated={orderedCriteriaRated}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -124,6 +129,7 @@ const EntitySelectorInnerAuth = ({
   alignment,
   variant,
   history,
+  orderedCriteriaRated,
 }: Props) => {
   const theme = useTheme();
   const smallScreen = useMediaQuery(
@@ -346,6 +352,7 @@ const EntitySelectorInnerAuth = ({
             disabled={loading}
             onAutoClick={slideUp}
             onEntitySelect={handleChange}
+            orderedCriteriaRated={orderedCriteriaRated}
           />
         </Box>
       )}
@@ -464,6 +471,7 @@ const EntitySelectorInnerAuth = ({
             disabled={loading}
             onAutoClick={slideUp}
             onEntitySelect={handleChange}
+            orderedCriteriaRated={orderedCriteriaRated}
           />
         </Box>
       )}
