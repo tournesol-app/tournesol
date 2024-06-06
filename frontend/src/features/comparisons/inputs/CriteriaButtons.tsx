@@ -192,18 +192,20 @@ const CriteriaButtons = ({
 
   return (
     <Box display="flex" flexDirection="column" rowGap={1} ref={containerRef}>
-      {!navigationDisabled && (
-        <Box display="flex" justifyContent="center">
-          <IconButton
-            color="secondary"
-            aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
-            onClick={() => moveWithoutPatching('down')}
-            disabled={disableScoreButtons}
-          >
-            <ArrowDropUp />
-          </IconButton>
-        </Box>
-      )}
+      <Box
+        display="flex"
+        justifyContent="center"
+        visibility={navigationDisabled ? 'hidden' : 'visible'}
+      >
+        <IconButton
+          color="secondary"
+          aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
+          onClick={() => moveWithoutPatching('down')}
+          disabled={disableScoreButtons || navigationDisabled}
+        >
+          <ArrowDropUp />
+        </IconButton>
+      </Box>
       <Slide
         in={slideIn}
         appear={false}
@@ -230,18 +232,21 @@ const CriteriaButtons = ({
           </Fade>
         </div>
       </Slide>
-      {!navigationDisabled && (
-        <Box display="flex" justifyContent="center">
-          <IconButton
-            color="secondary"
-            aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
-            onClick={() => moveWithoutPatching('up')}
-            disabled={disableScoreButtons}
-          >
-            <ArrowDropDown />
-          </IconButton>
-        </Box>
-      )}
+
+      <Box
+        display="flex"
+        justifyContent="center"
+        visibility={navigationDisabled ? 'hidden' : 'visible'}
+      >
+        <IconButton
+          color="secondary"
+          aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
+          onClick={() => moveWithoutPatching('up')}
+          disabled={disableScoreButtons || navigationDisabled}
+        >
+          <ArrowDropDown />
+        </IconButton>
+      </Box>
     </Box>
   );
 };
