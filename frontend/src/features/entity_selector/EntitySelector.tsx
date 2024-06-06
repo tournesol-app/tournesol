@@ -3,8 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
+import {
+  Box,
+  Grid,
+  Slide,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Box, Grid, Slide, Typography } from '@mui/material';
 
 import { useCurrentPoll, useEntityAvailable, useLoginState } from 'src/hooks';
 import { ENTITY_AVAILABILITY } from 'src/hooks/useEntityAvailable';
@@ -21,6 +28,7 @@ import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntitySelectButton from './EntitySelectButton';
+import EntitySelectorControls from './EntitySelectorControls';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
 
@@ -118,6 +126,11 @@ const EntitySelectorInnerAuth = ({
   history,
 }: Props) => {
   const theme = useTheme();
+  const smallScreen = useMediaQuery(
+    (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
+    { noSsr: true }
+  );
+
   const { t } = useTranslation();
   const { name: pollName, options } = useCurrentPoll();
 
@@ -322,41 +335,18 @@ const EntitySelectorInnerAuth = ({
 
   return (
     <>
-      {showEntityInput && (
-        <Box
-          mb={{ xs: '4px', sm: 1 }}
-          display="flex"
-          flexDirection={
-            uid
-              ? alignment === 'left'
-                ? 'row'
-                : 'row-reverse'
-              : alignment !== 'left'
-              ? 'row'
-              : 'row-reverse'
-          }
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Grid
-            container
-            spacing={1}
-            display={uid ? 'flex' : 'none'}
-            direction={alignment === 'left' ? 'row' : 'row-reverse'}
-            justifyContent={{ xs: 'space-around', sm: 'flex-start' }}
-          >
-            <Grid item>
-              <EntitySelectButton
-                value={inputValue || uid || ''}
-                onChange={handleChange}
-                otherUid={otherUid}
-                history={history}
-              />
-            </Grid>
-            <Grid item>
-              <AutoEntityButton disabled={loading} onClick={slideUp} />
-            </Grid>
-          </Grid>
+      {showEntityInput && !smallScreen && (
+        <Box mb={1}>
+          <EntitySelectorControls
+            alignment={alignment}
+            uid={uid}
+            otherUid={otherUid}
+            inputValue={inputValue}
+            history={history}
+            disabled={loading}
+            onAutoClick={slideUp}
+            onEntitySelect={handleChange}
+          />
         </Box>
       )}
       <Slide
@@ -463,6 +453,20 @@ const EntitySelectorInnerAuth = ({
           )}
         </Box>
       </Slide>
+      {showEntityInput && smallScreen && (
+        <Box mt={1}>
+          <EntitySelectorControls
+            alignment={alignment}
+            uid={uid}
+            otherUid={otherUid}
+            inputValue={inputValue}
+            history={history}
+            disabled={loading}
+            onAutoClick={slideUp}
+            onEntitySelect={handleChange}
+          />
+        </Box>
+      )}
     </>
   );
 };

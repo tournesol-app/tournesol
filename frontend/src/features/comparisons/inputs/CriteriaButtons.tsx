@@ -195,6 +195,7 @@ const CriteriaButtons = ({
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
           <IconButton
+            color="secondary"
             aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
             onClick={() => moveWithoutPatching('down')}
             disabled={disableScoreButtons}
@@ -232,6 +233,7 @@ const CriteriaButtons = ({
       {!navigationDisabled && (
         <Box display="flex" justifyContent="center">
           <IconButton
+            color="secondary"
             aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
             onClick={() => moveWithoutPatching('up')}
             disabled={disableScoreButtons}
