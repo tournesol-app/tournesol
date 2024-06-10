@@ -23,6 +23,7 @@ import {
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 import CriteriaSlider, { SLIDER_SCORE_MAX } from './CriteriaSlider';
+import ItemsAreSimilar from './ItemsAreSimilar';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -206,14 +207,7 @@ const ComparisonSliders = ({
   };
 
   if (uidA == uidB) {
-    return (
-      <div className={classes.root}>
-        <Typography sx={{ textAlign: 'center' }}>
-          {t('comparison.itemsAreSimilar')}
-          {' 🌻'}
-        </Typography>
-      </div>
-    );
+    return <ItemsAreSimilar />;
   }
 
   return (

@@ -7,6 +7,7 @@ import { Box, Fade, IconButton, Slide } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks';
+import ItemsAreSimilar from 'src/features/comparisons/ItemsAreSimilar';
 import { TutorialContext } from 'src/features/comparisonSeries/TutorialContext';
 
 import { ComparisonRequest } from 'src/services/openapi';
@@ -189,6 +190,14 @@ const CriteriaButtons = ({
       setSlideIn(false);
     }
   };
+
+  if (uidA == uidB) {
+    return (
+      <Box mt={2}>
+        <ItemsAreSimilar />
+      </Box>
+    );
+  }
 
   return (
     <Box display="flex" flexDirection="column" rowGap={1} ref={containerRef}>
