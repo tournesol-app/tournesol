@@ -33,6 +33,7 @@ import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import ComparisonActionBar from './ComparisonActionBar';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
 import ComparisonInput from './ComparisonInput';
@@ -413,6 +414,18 @@ const Comparison = ({
           ) : null}
         </Grid>
       </Grid>
+
+      <Box mt={2} width="100%" maxWidth={COMPARISON_MAX_WIDTH}>
+        <ComparisonActionBar
+          uidA={uidA}
+          uidB={uidB}
+          afterDeletion={() => {
+            setSelectorA({ uid: uidA, rating: null });
+            setSelectorB({ uid: uidB, rating: null });
+            setInitialComparison(null);
+          }}
+        />
+      </Box>
     </>
   );
 };

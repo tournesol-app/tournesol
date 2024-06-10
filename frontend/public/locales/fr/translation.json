@@ -85,7 +85,6 @@
   "comparison": {
     "ok": "OK",
     "successfullySubmitted": "Comparaison bien enregistrée.",
-    "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
     "changeOneItem": "Changez l'un des deux éléments pour faire une nouvelle comparaison.",
@@ -93,10 +92,20 @@
     "comparisonInPublicDataAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
     "editComparison": "Modifier la comparaison",
     "criteriaSkipped": "ignoré",
+    "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "submitAComparison": "Soumettre une comparaison",
     "inactivePoll": "Ce scrutin est fermé.",
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
     "comparisonCriteria": "Critères de comparaison"
+  },
+  "comparisonActionBar": {
+    "comparisonDeleted": "Comparaison supprimée.",
+    "errorOccurredCannotDeleteComparison": "Désolé, une erreur est survenue. Impossible de supprimer la comparaison.",
+    "youHaventComparedTheseItemsYet": "Vous n'avez pas encore comparé ces éléments.",
+    "deleteComparison": "Supprimer la comparaison",
+    "areYouSure": "Êtes-vous sûr·e ?",
+    "theScoresGivenToTheCriteriaWillBeDeleted": "Les scores donnés à chaque critère seront supprimés définitivement.",
+    "back": "Retour"
   },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - L'association Tournesol souhaite vous apporter du contexte.",
