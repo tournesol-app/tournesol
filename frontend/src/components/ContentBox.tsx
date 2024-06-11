@@ -27,6 +27,7 @@ const ContentBox = ({
 
   return (
     <Box
+      position="relative"
       px={[noMinPaddingX ? 0 : 2, 2, 3]}
       py={2}
       // Push the global footer away, to avoid displaying it in the middle

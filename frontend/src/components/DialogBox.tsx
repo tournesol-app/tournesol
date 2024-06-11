@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Box, Button, Dialog, DialogTitle } from '@mui/material';
+import { ButtonOwnProps } from '@mui/material/Button/Button';
 
 interface DialogProps {
   title: string;
@@ -8,6 +10,8 @@ interface DialogProps {
   open: boolean;
   onClose: () => void;
   additionalActionButton?: React.ReactNode;
+  mainActionColor?: ButtonOwnProps['color'];
+  mainActionCallback?: () => void;
 }
 
 /**
@@ -20,6 +24,8 @@ const DialogBox = ({
   title,
   content,
   additionalActionButton,
+  mainActionColor = 'primary',
+  mainActionCallback,
 }: DialogProps) => {
   const { t } = useTranslation();
 
@@ -42,7 +48,11 @@ const DialogBox = ({
         <Box>{content}</Box>
         <Box display="flex" justifyContent="flex-end" gap={1}>
           {additionalActionButton}
-          <Button variant="contained" onClick={handleClose}>
+          <Button
+            variant="contained"
+            color={mainActionColor}
+            onClick={mainActionCallback ?? handleClose}
+          >
             {t('dialogBox.continue')}
           </Button>
         </Box>

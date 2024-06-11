@@ -81,7 +81,6 @@
   "comparison": {
     "ok": "OK",
     "successfullySubmitted": "Comparison successfully submitted.",
-    "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
     "removeOptionalCriterias": "Remove optional criteria",
     "addOptionalCriterias": "Add optional criteria",
     "changeOneItem": "Change one of the items to submit a new comparison",
@@ -89,10 +88,20 @@
     "comparisonInPublicDataAfterSubmission": "After submission, this comparison will be included in the public data.",
     "editComparison": "Edit comparison",
     "criteriaSkipped": "skipped",
+    "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
     "submitAComparison": "Submit a comparison",
     "inactivePoll": "This poll is closed.",
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
     "comparisonCriteria": "Comparison criteria"
+  },
+  "comparisonActionBar": {
+    "comparisonDeleted": "Comparison deleted.",
+    "errorOccurredCannotDeleteComparison": "Sorry, an error has occurred. Cannot delete the comparison.",
+    "youHaventComparedTheseItemsYet": "You haven't compared these items yet.",
+    "deleteComparison": "Delete comparison",
+    "areYouSure": "Are you sure?",
+    "theScoresGivenToTheCriteriaWillBeDeleted": "The scores given to the criteria will be permanently deleted.",
+    "back": "Back"
   },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - The Tournesol association would like to give you some context.",
