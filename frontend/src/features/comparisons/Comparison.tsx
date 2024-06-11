@@ -15,6 +15,7 @@ import {
   Card,
   CircularProgress,
   Grid,
+  Theme,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -97,7 +98,10 @@ const Comparison = ({
   const currentLang = i18n.resolvedLanguage;
 
   const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const smallScreen = useMediaQuery(
+    (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
+    { noSsr: true }
+  );
 
   const history = useHistory();
   const location = useLocation();
@@ -372,6 +376,19 @@ const Comparison = ({
         >
           <ComparisonHelper />
         </Grid>
+        {!smallScreen && (
+          <Grid item xs={12}>
+            <ComparisonActionBar
+              uidA={uidA}
+              uidB={uidB}
+              afterDeletion={() => {
+                setSelectorA({ uid: uidA, rating: null });
+                setSelectorB({ uid: uidB, rating: null });
+                setInitialComparison(null);
+              }}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} sx={{ '&:empty': { display: 'none' } }}>
           <ComparisonEntityContexts
             selectorA={selectorA}
@@ -414,18 +431,6 @@ const Comparison = ({
           ) : null}
         </Grid>
       </Grid>
-
-      <Box mt={2} width="100%" maxWidth={COMPARISON_MAX_WIDTH}>
-        <ComparisonActionBar
-          uidA={uidA}
-          uidB={uidB}
-          afterDeletion={() => {
-            setSelectorA({ uid: uidA, rating: null });
-            setSelectorB({ uid: uidB, rating: null });
-            setInitialComparison(null);
-          }}
-        />
-      </Box>
     </>
   );
 };
