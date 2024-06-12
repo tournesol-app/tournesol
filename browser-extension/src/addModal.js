@@ -148,8 +148,9 @@ function hideModal() {
     return false;
   }
 
-  // Stop all video players.
-  iframe.src = iframe.src;
+  // Prevent videos from continuing to play in the background when the iframe
+  // is hidden.
+  iframe.src = '';
   modal.style.display = EXT_MODAL_INVISIBLE_STATE;
   return true;
 }
