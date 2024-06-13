@@ -884,6 +884,10 @@
   "faqEntryList": {
     "questionURLCopied": "URL de la question copiée."
   },
+  "feedForYou": {
+    "forYou": "Pour vous",
+    "noItems": ""
+  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",

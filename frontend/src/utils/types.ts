@@ -50,6 +50,7 @@ export enum RouteID {
   // public and collective routes
   Home = 'home',
   FeedCollectiveRecommendations = 'feedCollectiveRecommendations',
+  FeedForYou = 'feedForYou',
   CollectiveRecommendations = 'collectiveRecommendations',
   EntityAnalysis = 'entityAnalysis',
   FAQ = 'FAQ',

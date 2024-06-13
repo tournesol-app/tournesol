@@ -875,6 +875,10 @@
   "faqEntryList": {
     "questionURLCopied": "Question's URL copied."
   },
+  "feedForYou": {
+    "forYou": "For you",
+    "noItems": ""
+  },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol is used to compare multiple types of alternatives. See the list below and choose the Tournesol that is best for you:",
