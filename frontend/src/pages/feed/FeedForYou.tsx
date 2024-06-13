@@ -3,12 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
+import { Alert, Box, IconButton } from '@mui/material';
+import { Search } from '@mui/icons-material';
+
 import {
   ContentBox,
   ContentHeader,
   LoaderWrapper,
   Pagination,
 } from 'src/components';
+import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import EntityList from 'src/features/entities/EntityList';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useCurrentPoll } from 'src/hooks';
@@ -78,13 +82,30 @@ const FeedForYou = () => {
     <>
       <ContentHeader title={t('feedForYou.forYou')} />
       <ContentBox noMinPaddingX maxWidth="lg">
+        <Box
+          px={{ xs: 2, sm: 0 }}
+          mb={1}
+          display="flex"
+          justifyContent="flex-end"
+          columnGap={2}
+        >
+          {/* Create a component similar to PreferencesIconButtonLink */}
+          <IconButton color="secondary" disabled>
+            <Search />
+          </IconButton>
+          <PreferencesIconButtonLink hash="#feed-foryou" />
+        </Box>
+        {entities.count === 0 && (
+          <Box mb={1} px={{ xs: 2, sm: 0 }}>
+            <Alert severity="info">
+              {t('feedForYou.thisPageDisplaysItemsAccordingToYourFilters')}
+            </Alert>
+          </Box>
+        )}
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
-            emptyMessage={
-              // todo: invite the users to change their settings
-              isLoading ? '' : t('feedForYou.noItems')
-            }
+            emptyMessage={isLoading ? '' : t('feedForYou.noItems')}
           />
         </LoaderWrapper>
         {!isLoading && (entities.count ?? 0) > 0 && (

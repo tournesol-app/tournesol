@@ -877,7 +877,8 @@
   },
   "feedForYou": {
     "forYou": "For you",
-    "noItems": ""
+    "noItems": "There doesn't seem to be anything to display at the moment.",
+    "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above."
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
