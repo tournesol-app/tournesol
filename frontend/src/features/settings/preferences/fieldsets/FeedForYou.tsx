@@ -1,9 +1,11 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Alert, Grid, Typography } from '@mui/material';
+import { Alert, Grid } from '@mui/material';
 
 import { BlankEnum, FeedForyou_dateEnum } from 'src/services/openapi';
+import SettingsHeading from 'src/features/settings/preferences/SettingsHeading';
+
 import FeedForYouDate from '../fields/FeedForYouDate';
 import BooleanField from '../fields/generics/BooleanField';
 
@@ -30,9 +32,10 @@ const FeedForYou = ({
   return (
     <>
       <Grid item>
-        <Typography id={`${pollName}-feed-foryou`} variant="h5">
-          {t('pollUserSettingsForm.feedForYou')}
-        </Typography>
+        <SettingsHeading
+          id={`${pollName}-feed-foryou`}
+          text={t('pollUserSettingsForm.feedForYou')}
+        />
       </Grid>
       <Grid item>
         <Alert severity="info">
