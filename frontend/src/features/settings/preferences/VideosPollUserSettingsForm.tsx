@@ -151,6 +151,17 @@ const VideosPollUserSettingsForm = ({
         </Grid>
       </Grid>
       <Grid container spacing={4} direction="column" alignItems="stretch">
+        <FeedForYou
+          pollName={pollName}
+          forYouUnsafe={forYouUnsafe}
+          setForYouUnsafe={setForYouUnsafe}
+          forYouExcludeCompared={forYouExcludeCompared}
+          setForYouExcludeCompared={setForYouExcludeCompared}
+          forYouUploadDate={forYouUploadDate}
+          setForYouUploadDate={setForYouUploadDate}
+        />
+      </Grid>
+      <Grid container spacing={4} direction="column" alignItems="stretch">
         <Grid item>
           <SettingsHeading
             id="rate_later"
@@ -179,17 +190,6 @@ const VideosPollUserSettingsForm = ({
             onChange={setRecoDefaultLanguages}
           />
         </Grid>
-      </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
-        <FeedForYou
-          pollName={pollName}
-          forYouUnsafe={forYouUnsafe}
-          setForYouUnsafe={setForYouUnsafe}
-          forYouExcludeCompared={forYouExcludeCompared}
-          setForYouExcludeCompared={setForYouExcludeCompared}
-          forYouUploadDate={forYouUploadDate}
-          setForYouUploadDate={setForYouUploadDate}
-        />
       </Grid>
     </Box>
   );
