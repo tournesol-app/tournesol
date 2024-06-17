@@ -1,7 +1,7 @@
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
-import { Alert, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 import {
   ApiError,
@@ -17,7 +17,7 @@ import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
-import FeedForYouDate from './fields/FeedForYouDate';
+import FeedForYou from './fieldsets/FeedForYou';
 
 interface VideosPollUserSettingsFormProps {
   extSearchRecommendation: boolean;
@@ -161,51 +161,16 @@ const VideosPollUserSettingsForm = ({
           onChange={setRecoDefaultLanguages}
         />
       </Grid>
-      <Grid item>
-        <Typography id="feed-foryou" variant="h5">
-          {t('pollUserSettingsForm.feedForYou')}
-        </Typography>
-      </Grid>
-      <Grid item>
-        <Alert severity="info">
-          <Trans
-            t={t}
-            i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
-          >
-            Customize <strong>the default search filters</strong> according to
-            your own preferences. Those filters are applied{' '}
-            <strong>only</strong> when you access the recommendations from the{' '}
-            <strong>main menu</strong>.
-          </Trans>
-        </Alert>
-      </Grid>
-      <Grid item>
-        <FeedForYouDate
-          value={forYouUploadDate}
-          onChange={setForYouUploadDate}
-          pollName={pollName}
-        />
-      </Grid>
-      <Grid item container spacing={1} direction="column" alignItems="stretch">
-        <Grid item>
-          <BooleanField
-            scope={pollName}
-            name="feed_foryou__unsafe"
-            label={t('videosUserSettingsForm.feed.unsafe')}
-            value={forYouUnsafe}
-            onChange={setForYouUnsafe}
-          />
-        </Grid>
-        <Grid item>
-          <BooleanField
-            scope={pollName}
-            name="feed_foryou__exclude_compared_entities"
-            label={t('videosUserSettingsForm.feed.excludeCompared')}
-            value={forYouExcludeCompared}
-            onChange={setForYouExcludeCompared}
-          />
-        </Grid>
-      </Grid>
+
+      <FeedForYou
+        pollName={pollName}
+        forYouUnsafe={forYouUnsafe}
+        setForYouUnsafe={setForYouUnsafe}
+        forYouExcludeCompared={forYouExcludeCompared}
+        setForYouExcludeCompared={setForYouExcludeCompared}
+        forYouUploadDate={forYouUploadDate}
+        setForYouUploadDate={setForYouUploadDate}
+      />
     </Grid>
   );
 };

@@ -88,7 +88,7 @@ const FeedForYou = () => {
           <IconButton color="secondary" disabled>
             <Search />
           </IconButton>
-          <PreferencesIconButtonLink hash="#feed-foryou" />
+          <PreferencesIconButtonLink hash={`#${pollName}-feed-foryou`} />
         </Box>
         {!isLoading && entities.count === 0 && (
           <Box mb={1} px={{ xs: 2, sm: 0 }}>
