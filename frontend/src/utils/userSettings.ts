@@ -111,8 +111,6 @@ export const buildVideosFeedForYouSearchParams = (
 ) => {
   const advancedFilters: string[] = [];
 
-  console.log(userSettings);
-
   if (userSettings?.feed_foryou__unsafe) {
     advancedFilters.push('unsafe');
   }
