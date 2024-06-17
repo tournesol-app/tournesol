@@ -204,6 +204,7 @@ export const polls: Array<SelectablePoll> = [
     defaultAnonEntityActions: [],
     defaultRecoLanguageDiscovery: true,
     defaultRecoSearchParams: 'date=Month',
+    defaultFiltersFeedForYou: 'date=Month&advanced=exclude_compared',
     allowPublicPersonalRecommendations: true,
     mainCriterionName: 'largely_recommended',
     displayOrder: 10,

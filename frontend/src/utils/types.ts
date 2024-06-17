@@ -98,6 +98,9 @@ export type SelectablePoll = {
   // the recommendation link. can be date=Month to retrieve the entities
   // uploaded during the last month for instance
   defaultRecoSearchParams?: string;
+  // default filters used by the feed For You, formatted as URL search
+  // parameters
+  defaultFiltersFeedForYou?: string;
   // enable or disable the public personal recommendations feature.
   allowPublicPersonalRecommendations?: boolean;
   displayOrder: number;

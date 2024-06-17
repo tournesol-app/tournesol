@@ -1,5 +1,6 @@
 import {
   BlankEnum,
+  FeedForyou_dateEnum,
   Notifications_langEnum,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
@@ -10,11 +11,11 @@ import { YOUTUBE_POLL_NAME } from './constants';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
- * Cast the value of the setting recommendations__default_date to a value
- * expected by the recommendations' search filter 'date'.
+ * Cast the value of the setting recommendations__default_date (or similar) to
+ * a value expected by the recommendations' search filter 'date'.
  */
 const recoDefaultDateToSearchFilter = (
-  setting: Recommendations_defaultDateEnum | BlankEnum
+  setting: FeedForyou_dateEnum | Recommendations_defaultDateEnum | BlankEnum
 ): string => {
   if (setting === Recommendations_defaultDateEnum.ALL_TIME) {
     return '';
@@ -102,4 +103,58 @@ export const resolvedLangToNotificationsLang = (
   }
 
   return Notifications_langEnum.EN;
+};
+
+export const buildVideosFeedForYouSearchParams = (
+  searchParams: URLSearchParams,
+  userSettings: VideosPollUserSettings | undefined
+) => {
+  const advancedFilters: string[] = [];
+
+  console.log(userSettings);
+
+  if (userSettings?.feed_foryou__unsafe) {
+    advancedFilters.push('unsafe');
+  }
+  if (userSettings?.feed_foryou__exclude_compared_entities) {
+    advancedFilters.push('exclude_compared');
+  }
+
+  if (advancedFilters.length > 0) {
+    searchParams.set('advanced', advancedFilters.join(','));
+  }
+
+  if (userSettings?.feed_foryou__date != undefined) {
+    searchParams.set(
+      'date',
+      recoDefaultDateToSearchFilter(userSettings.feed_foryou__date)
+    );
+  }
+
+  if (userSettings?.recommendations__default_languages != undefined) {
+    searchParams.set(
+      'language',
+      recoDefaultLanguagesToSearchFilter(
+        userSettings.recommendations__default_languages
+      )
+    );
+  }
+};
+
+export const getFiltersFeedForYou = (
+  pollName: string,
+  pollOptions: SelectablePoll | undefined,
+  userSettings: TournesolUserSettings
+): URLSearchParams => {
+  const searchParams = new URLSearchParams(
+    pollOptions?.defaultFiltersFeedForYou
+  );
+
+  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
+
+  if (pollName === YOUTUBE_POLL_NAME) {
+    buildVideosFeedForYouSearchParams(searchParams, userPollSettings);
+  }
+
+  return searchParams;
 };

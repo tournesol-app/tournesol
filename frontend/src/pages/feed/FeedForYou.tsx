@@ -18,7 +18,7 @@ import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useCurrentPoll } from 'src/hooks';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
-import { getDefaultRecommendationsSearchParams } from 'src/utils/userSettings';
+import { getFiltersFeedForYou } from 'src/utils/userSettings';
 
 const ENTITIES_LIMIT = 20;
 
@@ -32,13 +32,8 @@ const FeedForYou = () => {
 
   const { name: pollName, criterias, options } = useCurrentPoll();
   const userSettings = useSelector(selectSettings).settings;
-  const userPreferences: string = useMemo(() => {
-    // todo: load the default values for the feed For You instead
-    return getDefaultRecommendationsSearchParams(
-      pollName,
-      options,
-      userSettings
-    );
+  const userPreferences: URLSearchParams = useMemo(() => {
+    return getFiltersFeedForYou(pollName, options, userSettings);
   }, [pollName, options, userSettings]);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -95,7 +90,7 @@ const FeedForYou = () => {
           </IconButton>
           <PreferencesIconButtonLink hash="#feed-foryou" />
         </Box>
-        {entities.count === 0 && (
+        {!isLoading && entities.count === 0 && (
           <Box mb={1} px={{ xs: 2, sm: 0 }}>
             <Alert severity="info">
               {t('feedForYou.thisPageDisplaysItemsAccordingToYourFilters')}
