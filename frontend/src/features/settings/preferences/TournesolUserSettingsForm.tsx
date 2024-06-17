@@ -20,8 +20,8 @@ import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  FeedForyou_dateEnum,
   Notifications_langEnum,
-  Recommendations_defaultDateEnum,
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
@@ -122,19 +122,18 @@ const TournesolUserSettingsForm = () => {
     Array<string>
   >(initialLanguages());
 
-  // Recommendations (page)
-  const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
-    pollSettings?.recommendations__default_unsafe ?? false
+  // Feed: For You
+  const [forYouUnsafe, setForYouUnsafe] = useState(
+    pollSettings?.feed_foryou__unsafe ?? false
   );
-  const [recoDefaultExcludeCompared, setRecoDefaultExcludeCompared] = useState(
-    pollSettings?.recommendations__default_exclude_compared_entities ?? false
+  // XXX should be initialized from the poll config
+  const [forYouExcludeCompared, setForYouExcludeCompared] = useState(
+    pollSettings?.feed_foryou__exclude_compared_entities ?? true
   );
-  const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
-    Recommendations_defaultDateEnum | BlankEnum
-  >(
-    pollSettings?.recommendations__default_date ??
-      Recommendations_defaultDateEnum.MONTH
-  );
+  // XXX should be initialized from the poll config
+  const [forYouUploadDate, setForYouUploadDate] = useState<
+    FeedForyou_dateEnum | BlankEnum
+  >(pollSettings?.feed_foryou__date ?? FeedForyou_dateEnum.MONTH);
 
   useEffect(() => {
     if (!generalSettings && !pollSettings) {
@@ -193,21 +192,18 @@ const TournesolUserSettingsForm = () => {
       setRecoDefaultLanguages(pollSettings.recommendations__default_languages);
     }
 
-    if (pollSettings?.recommendations__default_unsafe != undefined) {
-      setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
+    if (pollSettings?.feed_foryou__unsafe != undefined) {
+      setForYouUnsafe(pollSettings.feed_foryou__unsafe);
     }
 
-    if (
-      pollSettings?.recommendations__default_exclude_compared_entities !=
-      undefined
-    ) {
-      setRecoDefaultExcludeCompared(
-        pollSettings.recommendations__default_exclude_compared_entities
+    if (pollSettings?.feed_foryou__exclude_compared_entities != undefined) {
+      setForYouExcludeCompared(
+        pollSettings.feed_foryou__exclude_compared_entities
       );
     }
 
-    if (pollSettings?.recommendations__default_date != undefined) {
-      setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
+    if (pollSettings?.feed_foryou__date != undefined) {
+      setForYouUploadDate(pollSettings.feed_foryou__date);
     }
   }, [generalSettings, pollSettings]);
 
@@ -235,10 +231,9 @@ const TournesolUserSettingsForm = () => {
             extension__search_reco: extSearchRecommendation,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_languages: recoDefaultLanguages,
-            recommendations__default_date: recoDefaultUploadDate,
-            recommendations__default_unsafe: recoDefaultUnsafe,
-            recommendations__default_exclude_compared_entities:
-              recoDefaultExcludeCompared,
+            feed_foryou__date: forYouUploadDate,
+            feed_foryou__unsafe: forYouUnsafe,
+            feed_foryou__exclude_compared_entities: forYouExcludeCompared,
           },
         },
       }).catch((reason: ApiError) => {
@@ -300,12 +295,12 @@ const TournesolUserSettingsForm = () => {
             setRateLaterAutoRemoval={setRateLaterAutoRemoval}
             recoDefaultLanguages={recoDefaultLanguages}
             setRecoDefaultLanguages={setRecoDefaultLanguages}
-            recoDefaultUnsafe={recoDefaultUnsafe}
-            setRecoDefaultUnsafe={setRecoDefaultUnsafe}
-            recoDefaultExcludeCompared={recoDefaultExcludeCompared}
-            setRecoDefaultExcludeCompared={setRecoDefaultExcludeCompared}
-            recoDefaultUploadDate={recoDefaultUploadDate}
-            setRecoDefaultUploadDate={setRecoDefaultUploadDate}
+            forYouUnsafe={forYouUnsafe}
+            setForYouUnsafe={setForYouUnsafe}
+            forYouExcludeCompared={forYouExcludeCompared}
+            setForYouExcludeCompared={setForYouExcludeCompared}
+            forYouUploadDate={forYouUploadDate}
+            setForYouUploadDate={setForYouUploadDate}
             apiErrors={apiErrors}
           />
         </SettingsSection>

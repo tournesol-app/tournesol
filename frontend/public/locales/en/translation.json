@@ -515,8 +515,22 @@
     "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Rate-later list",
     "recommendations": "Recommendations (stream)",
-    "recommendationsPage": "Recommendations page",
+    "feedForYou": "Feed: for you",
     "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>."
+  },
+  "videosUserSettingsForm": {
+    "foryou": {
+      "uploadDate": "Upload date"
+    },
+    "recommendations": {
+      "defaultUploadDate": "Default value of the uploaded date filter",
+      "defaultLanguages": "Videos languages",
+      "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)"
+    },
+    "feed": {
+      "unsafe": "Display by default the items having a negative score and those with few contributors.",
+      "excludeCompared": "Exclude by default the videos that you have already compared."
+    }
   },
   "generalUserSettingsForm": {
     "notificationsEmailNewFeatures": "I want to be informed of new features (~ 1 per month).",
@@ -579,15 +593,6 @@
     "uk": "Ukrainian",
     "ur": "Urdu",
     "vi": "Vietnamese"
-  },
-  "videosUserSettingsForm": {
-    "recommendations": {
-      "defaultUploadDate": "Default value of the uploaded date filter",
-      "defaultLanguages": "Videos languages",
-      "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)",
-      "defaultUnsafe": "Display by default the items having a negative score and those with few contributors.",
-      "defaultExcludeCompared": "Exclude by default the videos that you have already compared."
-    }
   },
   "preferences": {
     "generalPreferences": "General preferences",
@@ -877,8 +882,8 @@
   },
   "feedForYou": {
     "forYou": "For you",
-    "noItems": "There doesn't seem to be anything to display at the moment.",
-    "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above."
+    "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above.",
+    "noItems": "There doesn't seem to be anything to display at the moment."
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",

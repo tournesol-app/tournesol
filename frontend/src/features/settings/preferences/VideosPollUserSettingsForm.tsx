@@ -7,7 +7,7 @@ import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
-  Recommendations_defaultDateEnum,
+  FeedForyou_dateEnum,
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
@@ -17,7 +17,7 @@ import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
-import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
+import FeedForYouDate from './fields/FeedForYouDate';
 
 interface VideosPollUserSettingsFormProps {
   extSearchRecommendation: boolean;
@@ -38,14 +38,12 @@ interface VideosPollUserSettingsFormProps {
   setRateLaterAutoRemoval: (number: number) => void;
   recoDefaultLanguages: string[];
   setRecoDefaultLanguages: (target: string[]) => void;
-  recoDefaultUnsafe: boolean;
-  setRecoDefaultUnsafe: (target: boolean) => void;
-  recoDefaultExcludeCompared: boolean;
-  setRecoDefaultExcludeCompared: (target: boolean) => void;
-  recoDefaultUploadDate: Recommendations_defaultDateEnum | BlankEnum;
-  setRecoDefaultUploadDate: (
-    target: Recommendations_defaultDateEnum | BlankEnum
-  ) => void;
+  forYouUnsafe: boolean;
+  setForYouUnsafe: (target: boolean) => void;
+  forYouExcludeCompared: boolean;
+  setForYouExcludeCompared: (target: boolean) => void;
+  forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
+  setForYouUploadDate: (target: FeedForyou_dateEnum | BlankEnum) => void;
   apiErrors: ApiError | null;
 }
 
@@ -67,12 +65,12 @@ const VideosPollUserSettingsForm = ({
   setRateLaterAutoRemoval,
   recoDefaultLanguages,
   setRecoDefaultLanguages,
-  recoDefaultUnsafe,
-  setRecoDefaultUnsafe,
-  recoDefaultExcludeCompared,
-  setRecoDefaultExcludeCompared,
-  recoDefaultUploadDate,
-  setRecoDefaultUploadDate,
+  forYouUnsafe,
+  setForYouUnsafe,
+  forYouExcludeCompared,
+  setForYouExcludeCompared,
+  forYouUploadDate,
+  setForYouUploadDate,
   apiErrors,
 }: VideosPollUserSettingsFormProps) => {
   const pollName = YOUTUBE_POLL_NAME;
@@ -164,8 +162,8 @@ const VideosPollUserSettingsForm = ({
         />
       </Grid>
       <Grid item>
-        <Typography id="recommendations_page" variant="h5">
-          {t('pollUserSettingsForm.recommendationsPage')}
+        <Typography id="feed-foryou" variant="h5">
+          {t('pollUserSettingsForm.feedForYou')}
         </Typography>
       </Grid>
       <Grid item>
@@ -182,9 +180,9 @@ const VideosPollUserSettingsForm = ({
         </Alert>
       </Grid>
       <Grid item>
-        <RecommendationsDefaultDate
-          value={recoDefaultUploadDate}
-          onChange={setRecoDefaultUploadDate}
+        <FeedForYouDate
+          value={forYouUploadDate}
+          onChange={setForYouUploadDate}
           pollName={pollName}
         />
       </Grid>
@@ -192,21 +190,19 @@ const VideosPollUserSettingsForm = ({
         <Grid item>
           <BooleanField
             scope={pollName}
-            name="recommendations__default_unsafe"
-            label={t('videosUserSettingsForm.recommendations.defaultUnsafe')}
-            value={recoDefaultUnsafe}
-            onChange={setRecoDefaultUnsafe}
+            name="feed_foryou__unsafe"
+            label={t('videosUserSettingsForm.feed.unsafe')}
+            value={forYouUnsafe}
+            onChange={setForYouUnsafe}
           />
         </Grid>
         <Grid item>
           <BooleanField
             scope={pollName}
-            name="recommendations__default_exclude_compared_entities"
-            label={t(
-              'videosUserSettingsForm.recommendations.defaultExcludeCompared'
-            )}
-            value={recoDefaultExcludeCompared}
-            onChange={setRecoDefaultExcludeCompared}
+            name="feed_foryou__exclude_compared_entities"
+            label={t('videosUserSettingsForm.feed.excludeCompared')}
+            value={forYouExcludeCompared}
+            onChange={setForYouExcludeCompared}
           />
         </Grid>
       </Grid>

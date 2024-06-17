@@ -524,8 +524,22 @@
     "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Liste à comparer plus tard",
     "recommendations": "Recommandations (flux)",
-    "recommendationsPage": "Recommandations (page)",
+    "feedForYou": "Flux: pour vous",
     "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
+  },
+  "videosUserSettingsForm": {
+    "foryou": {
+      "uploadDate": "Date de mise en ligne"
+    },
+    "recommendations": {
+      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
+      "defaultLanguages": "Langues des vidéos",
+      "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)"
+    },
+    "feed": {
+      "unsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices.",
+      "excludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
+    }
   },
   "generalUserSettingsForm": {
     "notificationsEmailNewFeatures": "Je veux être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
@@ -588,15 +602,6 @@
     "uk": "Ukrainien",
     "ur": "Ourdou",
     "vi": "Vietnamien"
-  },
-  "videosUserSettingsForm": {
-    "recommendations": {
-      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
-      "defaultLanguages": "Langues des vidéos",
-      "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)",
-      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices.",
-      "defaultExcludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
-    }
   },
   "preferences": {
     "generalPreferences": "Préférences générales",
@@ -886,8 +891,8 @@
   },
   "feedForYou": {
     "forYou": "Pour vous",
-    "noItems": "Il semblerait qu'il n'y ait pas d'élément à afficher pour l'instant.",
-    "thisPageDisplaysItemsAccordingToYourFilters": "Cette page affiche des éléments en fonction de vos filtres personnels. Vous pouvez les modifier en cliquant sur l'icône d'engrenage ci-dessus."
+    "thisPageDisplaysItemsAccordingToYourFilters": "Cette page affiche des éléments en fonction de vos filtres personnels. Vous pouvez les modifier en cliquant sur l'icône d'engrenage ci-dessus.",
+    "noItems": "Il semblerait qu'il n'y ait pas d'élément à afficher pour l'instant."
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
