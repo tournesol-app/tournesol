@@ -506,6 +506,8 @@
     "embeddedOnly": "Extension only",
     "never": "Never",
     "displayTheTheWeeklyCollectiveGoal": "Display the weekly collective goal",
+    "feedForYou": "Feed: For you",
+    "customizeItemsRecommendedInTheFeedForYou": "Customize items appearing in the feed For you.",
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
     "updatePreferences": "Update preferences",
@@ -514,9 +516,7 @@
     "letTournesolSuggestElements": "Let Tournesol suggest elements to compare when opening the comparison interface.",
     "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Rate-later list",
-    "recommendations": "Recommendations (stream)",
-    "feedForYou": "Feed: for you",
-    "customizeYourDefaultSearchFilter": "Customize <1>the default search filters</1> according to your own preferences. Those filters are applied <4>only</4> when you access the recommendations from the <7>main menu</7>."
+    "recommendations": "Recommendations (stream)"
   },
   "videosUserSettingsForm": {
     "foryou": {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { Alert, Grid } from '@mui/material';
 
@@ -39,15 +39,7 @@ const FeedForYou = ({
       </Grid>
       <Grid item>
         <Alert severity="info">
-          <Trans
-            t={t}
-            i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
-          >
-            Customize <strong>the default search filters</strong> according to
-            your own preferences. Those filters are applied{' '}
-            <strong>only</strong> when you access the recommendations from the{' '}
-            <strong>main menu</strong>.
-          </Trans>
+          {t('pollUserSettingsForm.customizeItemsRecommendedInTheFeedForYou')}
         </Alert>
       </Grid>
       <Grid item>
