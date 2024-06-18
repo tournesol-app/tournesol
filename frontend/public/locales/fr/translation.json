@@ -517,7 +517,6 @@
     "embeddedOnly": "Seulement dans l'extension",
     "never": "Jamais",
     "displayTheTheWeeklyCollectiveGoal": "Affichage de l'objectif collectif hebdomadaire",
-    "customizeItemsRecommendedInTheFeedForYou": "Personnalisez les éléments qui apparaissent dans le flux Pour vous.",
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "updatePreferences": "Mettre à jour les préférences",
@@ -536,10 +535,11 @@
         "excludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
       },
       "forYou": {
-        "feedForYou": "Flux - Pour vous"
+        "feedForYou": "Flux - Pour vous",
+        "customizeItemsAppearingInTheFeedForYou": "Personnalisez les éléments qui apparaissent dans le flux Pour vous."
       },
       "topItems": {
-        "feedTopVideos": "Flux - Top videos",
+        "feedTopVideos": "Flux - Top vidéos",
         "topVideosLanguages": "Langues des top vidéos",
         "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner."
       }
@@ -1120,7 +1120,7 @@
   },
   "feedTopItems": {
     "videos": {
-      "title": "Top videos"
+      "title": "Top vidéos"
     },
     "generic": {
       "results": "Résultats"

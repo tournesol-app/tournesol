@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Alert, Grid } from '@mui/material';
 
-import { BlankEnum, FeedForyou_dateEnum } from 'src/services/openapi';
 import SettingsHeading from 'src/features/settings/preferences/SettingsHeading';
+import { BlankEnum, FeedForyou_dateEnum } from 'src/services/openapi';
 
 import FeedForYouDate from '../fields/FeedForYouDate';
 import BooleanField from '../fields/generics/BooleanField';
@@ -39,14 +39,16 @@ const FeedForYou = ({
       </Grid>
       <Grid item>
         <Alert severity="info">
-          {t('pollUserSettingsForm.customizeItemsRecommendedInTheFeedForYou')}
+          {t(
+            'videosUserSettingsForm.feed.forYou.customizeItemsAppearingInTheFeedForYou'
+          )}
         </Alert>
       </Grid>
       <Grid item>
         <FeedForYouDate
+          pollName={pollName}
           value={forYouUploadDate}
           onChange={setForYouUploadDate}
-          pollName={pollName}
         />
       </Grid>
       <Grid item container spacing={1} direction="column" alignItems="stretch">

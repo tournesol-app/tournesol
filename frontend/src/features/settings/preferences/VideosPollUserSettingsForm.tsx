@@ -158,7 +158,7 @@ const VideosPollUserSettingsForm = ({
       <Grid container spacing={4} direction="column" alignItems="stretch">
         <Grid item>
           <SettingsHeading
-            id={`${pollName}-feed-topitems`}
+            id={`${pollName}-feed-top`}
             text={t('videosUserSettingsForm.feed.topItems.feedTopVideos')}
           />
         </Grid>
