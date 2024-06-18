@@ -18,3 +18,4 @@ export { default as MenuButton } from './MenuButton';
 export { default as LanguageSelector } from './LanguageSelector';
 export { default as CriteriaIcon } from './CriteriaIcon';
 export { default as TitledPaper } from './TitledPaper';
+export { default as PreferencesIconButtonLink } from './buttons/PreferencesIconButtonLink';

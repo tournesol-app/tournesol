@@ -294,6 +294,7 @@
     "homeAriaLabel": "Link to the home page",
     "feedTopItemsAriaLabel": "Link to the collective ranking",
     "forYou": "For you",
+    "recommendationsAriaLabel": "Link to the collective ranking",
     "compare": "Compare 🌻",
     "compareAriaLabel": "Link to the comparison page",
     "myComparisons": "My comparisons",
@@ -883,7 +884,9 @@
   },
   "feedForYou": {
     "forYou": "For you",
-    "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above.",
+    "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above."
+  },
+  "entityList": {
     "noItems": "There doesn't seem to be anything to display at the moment."
   },
   "home": {

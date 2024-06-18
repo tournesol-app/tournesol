@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { Alert, Box, IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
 import {
@@ -11,18 +10,17 @@ import {
   ContentHeader,
   LoaderWrapper,
   Pagination,
+  PreferencesIconButtonLink,
 } from 'src/components';
-import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
-import EntityList from 'src/features/entities/EntityList';
-import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useCurrentPoll } from 'src/hooks';
+import EntityList from 'src/features/entities/EntityList';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
-import { getFiltersFeedForYou } from 'src/utils/userSettings';
+import { getFeedTopItemsPageName } from 'src/utils/constants';
 
 const ENTITIES_LIMIT = 20;
 
-const FeedForYou = () => {
+const FeedTopItems = () => {
   const { t } = useTranslation();
 
   const history = useHistory();
@@ -31,10 +29,6 @@ const FeedForYou = () => {
   const offset = Number(searchParams.get('offset') || 0);
 
   const { name: pollName, criterias, options } = useCurrentPoll();
-  const userSettings = useSelector(selectSettings).settings;
-  const userPreferences: URLSearchParams = useMemo(() => {
-    return getFiltersFeedForYou(pollName, options, userSettings);
-  }, [pollName, options, userSettings]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [entities, setEntities] = useState<PaginatedRecommendationList>({
@@ -48,7 +42,7 @@ const FeedForYou = () => {
   };
 
   useEffect(() => {
-    const searchString = new URLSearchParams(userPreferences);
+    const searchString = new URLSearchParams();
     searchString.append('offset', offset.toString());
 
     const fetchEntities = async () => {
@@ -71,11 +65,11 @@ const FeedForYou = () => {
     };
 
     fetchEntities();
-  }, [criterias, offset, options, pollName, userPreferences]);
+  }, [criterias, offset, options, pollName]);
 
   return (
     <>
-      <ContentHeader title={t('feedForYou.forYou')} />
+      <ContentHeader title={getFeedTopItemsPageName(t, pollName)} />
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box
           px={{ xs: 2, sm: 0 }}
@@ -88,15 +82,8 @@ const FeedForYou = () => {
           <IconButton color="secondary" disabled>
             <Search />
           </IconButton>
-          <PreferencesIconButtonLink hash={`#${pollName}-feed-foryou`} />
+          <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
         </Box>
-        {!isLoading && entities.count === 0 && (
-          <Box mb={1} px={{ xs: 2, sm: 0 }}>
-            <Alert severity="info">
-              {t('feedForYou.thisPageDisplaysItemsAccordingToYourFilters')}
-            </Alert>
-          </Box>
-        )}
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
@@ -116,4 +103,4 @@ const FeedForYou = () => {
   );
 };
 
-export default FeedForYou;
+export default FeedTopItems;

@@ -301,6 +301,7 @@
     "homeAriaLabel": "Lien vers la page d'accueil",
     "feedTopItemsAriaLabel": "Lien vers le classement collectif",
     "forYou": "Pour vous",
+    "recommendationsAriaLabel": "Lien vers le classement collectif",
     "compare": "Comparer 🌻",
     "compareAriaLabel": "Lien vers la page comparer",
     "myComparisons": "Mes comparaisons",
@@ -892,7 +893,9 @@
   },
   "feedForYou": {
     "forYou": "Pour vous",
-    "thisPageDisplaysItemsAccordingToYourFilters": "Cette page affiche des éléments en fonction de vos filtres personnels. Vous pouvez les modifier en cliquant sur l'icône d'engrenage ci-dessus.",
+    "thisPageDisplaysItemsAccordingToYourFilters": "Cette page affiche des éléments en fonction de vos filtres personnels. Vous pouvez les modifier en cliquant sur l'icône d'engrenage ci-dessus."
+  },
+  "entityList": {
     "noItems": "Il semblerait qu'il n'y ait pas d'élément à afficher pour l'instant."
   },
   "home": {

@@ -63,7 +63,7 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.FeedTopItems,
       url: 'feed/top',
       page: FeedTopItems,
-      type: PrivateRoute,
+      type: PublicRoute,
     },
     {
       id: RouteID.FeedForYou,
