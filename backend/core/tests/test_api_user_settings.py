@@ -20,6 +20,7 @@ class UserSettingsDetailTestCase(TestCase):
                 "feed_foryou__languages": ["en"],
                 "feed_foryou__date": "Week",
                 "feed_foryou__unsafe": False,
+                "feed_topitems__languages": ["en", "fr"],
             }
         }
 
@@ -56,6 +57,7 @@ class UserSettingsDetailTestCase(TestCase):
                 "feed_foryou__date": "WEEK",
                 "feed_foryou__exclude_compared_entities": False,
                 "feed_foryou__unsafe": False,
+                "feed_topitems__languages": ["en", "fr"],
             },
         }
         self.user.settings = new_settings

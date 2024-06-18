@@ -14,6 +14,7 @@ import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import BooleanField from './fields/generics/BooleanField';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
+import ItemsLanguages from './fields/ItemsLanguages';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
@@ -45,6 +46,8 @@ interface VideosPollUserSettingsFormProps {
   setForYouExcludeCompared: (target: boolean) => void;
   forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
   setForYouUploadDate: (target: FeedForyou_dateEnum | BlankEnum) => void;
+  topVideosLanguages: string[];
+  setTopVideosLangauges: (target: string[]) => void;
   apiErrors: ApiError | null;
 }
 
@@ -72,6 +75,8 @@ const VideosPollUserSettingsForm = ({
   setForYouExcludeCompared,
   forYouUploadDate,
   setForYouUploadDate,
+  topVideosLanguages,
+  setTopVideosLangauges,
   apiErrors,
 }: VideosPollUserSettingsFormProps) => {
   const pollName = YOUTUBE_POLL_NAME;
@@ -147,6 +152,24 @@ const VideosPollUserSettingsForm = ({
             value={extSearchRecommendation}
             onChange={setExtSearchRecommendation}
             pollName={pollName}
+          />
+        </Grid>
+      </Grid>
+      <Grid container spacing={4} direction="column" alignItems="stretch">
+        <Grid item>
+          <SettingsHeading
+            id={`${pollName}-feed-topitems`}
+            text={t('videosUserSettingsForm.feed.topItems.feedTopVideos')}
+          />
+        </Grid>
+        <Grid item>
+          <ItemsLanguages
+            label={t('videosUserSettingsForm.feed.topItems.topVideosLanguages')}
+            helpText={t(
+              'videosUserSettingsForm.feed.topItems.keepEmptyToSelectAllLang'
+            )}
+            value={topVideosLanguages}
+            onChange={setTopVideosLangauges}
           />
         </Grid>
       </Grid>

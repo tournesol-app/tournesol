@@ -43,7 +43,7 @@ const FeedForYouDate = ({ value, onChange, pollName }: FeedForYouDateProps) => {
         id={`label_${pollName}_feed_foryou__default_date`}
         color="secondary"
       >
-        {t('videosUserSettingsForm.foryou.uploadDate')}
+        {t('videosUserSettingsForm.feed.generic.uploadDate')}
       </InputLabel>
       <Select
         size="small"

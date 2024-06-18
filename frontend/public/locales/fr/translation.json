@@ -517,7 +517,6 @@
     "embeddedOnly": "Seulement dans l'extension",
     "never": "Jamais",
     "displayTheTheWeeklyCollectiveGoal": "Affichage de l'objectif collectif hebdomadaire",
-    "feedForYou": "Flux - Pour vous",
     "customizeItemsRecommendedInTheFeedForYou": "Personnalisez les éléments qui apparaissent dans le flux Pour vous.",
     "errorOccurredDuringPreferencesUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour vos préférences.",
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
@@ -530,17 +529,25 @@
     "recommendations": "Recommandations (flux)"
   },
   "videosUserSettingsForm": {
-    "foryou": {
-      "uploadDate": "Date de mise en ligne"
+    "feed": {
+      "generic": {
+        "uploadDate": "Date de mise en ligne",
+        "unsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices.",
+        "excludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
+      },
+      "forYou": {
+        "feedForYou": "Flux - Pour vous"
+      },
+      "topItems": {
+        "feedTopVideos": "Flux - Top videos",
+        "topVideosLanguages": "Langues des top vidéos",
+        "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner."
+      }
     },
     "recommendations": {
       "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
       "defaultLanguages": "Langues des vidéos",
       "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)"
-    },
-    "feed": {
-      "unsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices.",
-      "excludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
     }
   },
   "generalUserSettingsForm": {

@@ -115,6 +115,10 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
     feed_foryou__unsafe = serializers.BooleanField(required=False)
     feed_foryou__exclude_compared_entities = serializers.BooleanField(required=False)
 
+    feed_topitems__languages = serializers.ListField(
+        child=serializers.CharField(), allow_empty=True, required=False
+    )
+
     def _validate_languages(self, default_languages):
         for lang in default_languages:
             if lang not in ACCEPTED_LANGUAGE_CODES:
@@ -126,6 +130,9 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         return self._validate_languages(default_languages)
 
     def validate_feed_foryou__languages(self, default_languages):
+        return self._validate_languages(default_languages)
+
+    def validate_feed_topitems__languages(self, default_languages):
         return self._validate_languages(default_languages)
 
 

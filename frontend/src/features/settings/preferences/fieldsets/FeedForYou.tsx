@@ -34,7 +34,7 @@ const FeedForYou = ({
       <Grid item>
         <SettingsHeading
           id={`${pollName}-feed-foryou`}
-          text={t('pollUserSettingsForm.feedForYou')}
+          text={t('videosUserSettingsForm.feed.forYou.feedForYou')}
         />
       </Grid>
       <Grid item>
@@ -54,7 +54,7 @@ const FeedForYou = ({
           <BooleanField
             scope={pollName}
             name="feed_foryou__unsafe"
-            label={t('videosUserSettingsForm.feed.unsafe')}
+            label={t('videosUserSettingsForm.feed.generic.unsafe')}
             value={forYouUnsafe}
             onChange={setForYouUnsafe}
           />
@@ -63,7 +63,7 @@ const FeedForYou = ({
           <BooleanField
             scope={pollName}
             name="feed_foryou__exclude_compared_entities"
-            label={t('videosUserSettingsForm.feed.excludeCompared')}
+            label={t('videosUserSettingsForm.feed.generic.excludeCompared')}
             value={forYouExcludeCompared}
             onChange={setForYouExcludeCompared}
           />

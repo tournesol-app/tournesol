@@ -107,15 +107,19 @@ class VideosPollUserSettingsSerializerTestCase(TestCase):
     TestCase of the `VideosPollUserSettingsSerializer` serializer.
     """
 
-    def test_validate_feed_foryou__languages(self):
+    def test_validate_feed__languages(self):
         """
-        The `validate_feed_foryou__languages` setting must raise
+        The `validate_feed_foryou__languages` setting and similar must raise
         an error for unknown languages.
         """
 
         # Also test the deprecated `recommendations__default_languages`
         # setting, until its removal.
-        for setting in ["feed_foryou__languages", "recommendations__default_languages"]:
+        for setting in [
+            "feed_foryou__languages",
+            "feed_topitems__languages",
+            "recommendations__default_languages"
+        ]:
 
             serializer = VideosPollUserSettingsSerializer(
                 data={setting: []}

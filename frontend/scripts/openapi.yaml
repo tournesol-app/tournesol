@@ -4991,6 +4991,10 @@ components:
           type: boolean
         feed_foryou__exclude_compared_entities:
           type: boolean
+        feed_topitems__languages:
+          type: array
+          items:
+            type: string
     VideosPollUserSettingsRequest:
       type: object
       description: |-
@@ -5043,6 +5047,11 @@ components:
           type: boolean
         feed_foryou__exclude_compared_entities:
           type: boolean
+        feed_topitems__languages:
+          type: array
+          items:
+            type: string
+            minLength: 1
   securitySchemes:
     cookieAuth:
       type: apiKey

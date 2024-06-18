@@ -508,7 +508,6 @@
     "embeddedOnly": "Extension only",
     "never": "Never",
     "displayTheTheWeeklyCollectiveGoal": "Display the weekly collective goal",
-    "feedForYou": "Feed - For you",
     "customizeItemsRecommendedInTheFeedForYou": "Customize items appearing in the feed For you.",
     "errorOccurredDuringPreferencesUpdate": "Sorry, an error has occurred, cannot update your preferences.",
     "preferencesUpdatedSuccessfully": "Preferences updated successfully.",
@@ -521,17 +520,25 @@
     "recommendations": "Recommendations (stream)"
   },
   "videosUserSettingsForm": {
-    "foryou": {
-      "uploadDate": "Upload date"
+    "feed": {
+      "generic": {
+        "uploadDate": "Upload date",
+        "unsafe": "Display by default the items having a negative score and those with few contributors.",
+        "excludeCompared": "Exclude by default the videos that you have already compared."
+      },
+      "forYou": {
+        "feedForYou": "Feed - For you"
+      },
+      "topItems": {
+        "feedTopVideos": "Feed - Top videos",
+        "topVideosLanguages": "Top videos languages",
+        "keepEmptyToSelectAllLang": "Keep empty to select all languages."
+      }
     },
     "recommendations": {
       "defaultUploadDate": "Default value of the uploaded date filter",
       "defaultLanguages": "Videos languages",
       "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)"
-    },
-    "feed": {
-      "unsafe": "Display by default the items having a negative score and those with few contributors.",
-      "excludeCompared": "Exclude by default the videos that you have already compared."
     }
   },
   "generalUserSettingsForm": {

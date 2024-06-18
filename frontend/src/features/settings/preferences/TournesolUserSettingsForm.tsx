@@ -135,6 +135,11 @@ const TournesolUserSettingsForm = () => {
     FeedForyou_dateEnum | BlankEnum
   >(pollSettings?.feed_foryou__date ?? FeedForyou_dateEnum.MONTH);
 
+  // Feed: Top videos
+  const [topVideosLanguages, setTopVideosLanguages] = useState<Array<string>>(
+    initialLanguages()
+  );
+
   useEffect(() => {
     if (!generalSettings && !pollSettings) {
       return;
@@ -205,6 +210,10 @@ const TournesolUserSettingsForm = () => {
     if (pollSettings?.feed_foryou__date != undefined) {
       setForYouUploadDate(pollSettings.feed_foryou__date);
     }
+
+    if (pollSettings?.feed_topitems__languages != undefined) {
+      setTopVideosLanguages(pollSettings.feed_topitems__languages);
+    }
   }, [generalSettings, pollSettings]);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -234,6 +243,7 @@ const TournesolUserSettingsForm = () => {
             feed_foryou__date: forYouUploadDate,
             feed_foryou__unsafe: forYouUnsafe,
             feed_foryou__exclude_compared_entities: forYouExcludeCompared,
+            feed_topitems__languages: topVideosLanguages,
           },
         },
       }).catch((reason: ApiError) => {
@@ -301,6 +311,8 @@ const TournesolUserSettingsForm = () => {
             setForYouExcludeCompared={setForYouExcludeCompared}
             forYouUploadDate={forYouUploadDate}
             setForYouUploadDate={setForYouUploadDate}
+            topVideosLanguages={topVideosLanguages}
+            setTopVideosLangauges={setTopVideosLanguages}
             apiErrors={apiErrors}
           />
         </SettingsSection>
