@@ -152,6 +152,15 @@ export const getRecommendationPageName = (
   }
 };
 
+export const getFeedTopItemsPageName = (t: TFunction, pollName: string) => {
+  switch (pollName) {
+    case YOUTUBE_POLL_NAME:
+      return t('feedTopItems.videos.title');
+    default:
+      return t('feedTopItems.generic.results');
+  }
+};
+
 /**
  * User settings.
  *
@@ -181,6 +190,8 @@ export const polls: Array<SelectablePoll> = [
           mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
           disabledRouteIds: [
+            RouteID.FeedTopItems,
+            RouteID.FeedForYou,
             RouteID.MyRateLaterList,
             RouteID.MyComparedItems,
             RouteID.Criteria,

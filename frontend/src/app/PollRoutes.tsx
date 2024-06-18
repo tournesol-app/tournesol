@@ -15,6 +15,7 @@ import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
 import FeedCollectiveRecommendations from 'src/pages/feed/FeedCollectiveRecommendations';
 import FeedForYou from 'src/pages/feed/FeedForYou';
+import FeedTopItems from 'src/pages/feed/FeedTopItems';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { RouteID } from 'src/utils/types';
@@ -57,6 +58,12 @@ const PollRoutes = ({ pollName }: Props) => {
       url: '',
       page: HomePage,
       type: PublicRoute,
+    },
+    {
+      id: RouteID.FeedTopItems,
+      url: 'feed/top',
+      page: FeedTopItems,
+      type: PrivateRoute,
     },
     {
       id: RouteID.FeedForYou,

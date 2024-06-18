@@ -292,7 +292,7 @@
   "menu": {
     "home": "Home",
     "homeAriaLabel": "Link to the home page",
-    "recommendationsAriaLabel": "Link to the recommendations page",
+    "feedTopItemsAriaLabel": "Link to the collective ranking",
     "forYou": "For you",
     "compare": "Compare 🌻",
     "compareAriaLabel": "Link to the comparison page",
@@ -1097,6 +1097,14 @@
   "videoMetadata": {
     "duration": "Duration",
     "publication_date": "Publication date"
+  },
+  "feedTopItems": {
+    "videos": {
+      "title": "Top videos"
+    },
+    "generic": {
+      "results": "Results"
+    }
   },
   "presidentielle2022": {
     "dialogs": {

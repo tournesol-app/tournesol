@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import { useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -37,13 +36,13 @@ import {
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import {
+  getFeedTopItemsPageName,
   getRecommendationPageName,
+  PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
-import { getDefaultRecommendationsSearchParams } from 'src/utils/userSettings';
 
 import { closeDrawer } from '../../drawerOpenSlice';
 import { BeforeInstallPromptEvent } from '../../pwaPrompt';
@@ -107,7 +106,6 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const userSettings = useSelector(selectSettings)?.settings;
   const { name: pollName, options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
@@ -129,16 +127,11 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       ariaLabel: t('menu.homeAriaLabel'),
     },
     {
-      id: RouteID.CollectiveRecommendations,
-      targetUrl: `${path}recommendations${getDefaultRecommendationsSearchParams(
-        pollName,
-        options,
-        userSettings
-      )}`,
-      IconComponent:
-        pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
-      displayText: getRecommendationPageName(t, pollName),
-      ariaLabel: t('menu.recommendationsAriaLabel'),
+      id: RouteID.FeedTopItems,
+      targetUrl: `${path}feed/top`,
+      IconComponent: EmojiEventsIcon,
+      displayText: getFeedTopItemsPageName(t, pollName),
+      ariaLabel: t('menu.feedTopItemsAriaLabel'),
     },
     {
       id: RouteID.FeedForYou,
@@ -147,6 +140,14 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
         pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
       displayText: t('menu.forYou'),
       ariaLabel: t('menu.forYou'),
+    },
+    {
+      id: RouteID.CollectiveRecommendations,
+      targetUrl: `${path}recommendations`,
+      IconComponent: TableRowsIcon,
+      displayText: getRecommendationPageName(t, pollName),
+      ariaLabel: t('menu.recommendationsAriaLabel'),
+      onlyForPolls: [PRESIDENTIELLE_2022_POLL_NAME],
     },
     { displayText: 'divider_1' },
     {
@@ -240,10 +241,20 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
         }}
       >
         {menuItems.map(
-          ({ id, targetUrl, IconComponent, displayText, ariaLabel }) => {
+          ({
+            id,
+            targetUrl,
+            IconComponent,
+            displayText,
+            ariaLabel,
+            onlyForPolls,
+          }) => {
             if (!IconComponent || !targetUrl)
               return <Divider key={displayText} />;
             if (id && disabledItems.includes(id)) {
+              return;
+            }
+            if (onlyForPolls != undefined && !onlyForPolls.includes(pollName)) {
               return;
             }
 

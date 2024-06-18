@@ -49,8 +49,12 @@ export type VideoObject = Video | VideoSerializerWithCriteria;
 export enum RouteID {
   // public and collective routes
   Home = 'home',
-  FeedCollectiveRecommendations = 'feedCollectiveRecommendations',
+  // new feeds
   FeedForYou = 'feedForYou',
+  FeedTopItems = 'feedTopItems',
+  // deprecated feed: should be deleted
+  FeedCollectiveRecommendations = 'feedCollectiveRecommendations',
+  // depracated feed, replaced by FeedTopItems, should redirect to FeedTopItems
   CollectiveRecommendations = 'collectiveRecommendations',
   EntityAnalysis = 'entityAnalysis',
   FAQ = 'FAQ',
@@ -110,7 +114,7 @@ export type SelectablePoll = {
   mainCriterionName: string;
   // the path used as URL prefix, must include leading and trailing slash
   path: string;
-  // a list route id that will be disable in `PollRoutes` and `SideBar`
+  // a list of route id that will be disabled in `PollRoutes` and `SideBar`
   disabledRouteIds?: Array<RouteID>;
   iconComponent: SvgIconComponent;
   withSearchBar: boolean;
