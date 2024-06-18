@@ -140,6 +140,14 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       displayText: getRecommendationPageName(t, pollName),
       ariaLabel: t('menu.recommendationsAriaLabel'),
     },
+    {
+      id: RouteID.FeedForYou,
+      targetUrl: `${path}feed/foryou`,
+      IconComponent:
+        pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
+      displayText: t('menu.forYou'),
+      ariaLabel: t('menu.forYou'),
+    },
     { displayText: 'divider_1' },
     {
       id: RouteID.Comparison,
