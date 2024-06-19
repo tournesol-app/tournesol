@@ -14,12 +14,12 @@ import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import BooleanField from './fields/generics/BooleanField';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
 import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
-import ItemsLanguages from './fields/ItemsLanguages';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
 import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 import FeedForYou from './fieldsets/FeedForYou';
 import SettingsHeading from './SettingsHeading';
+import FeedTopItems from './fieldsets/FeedTopItems';
 
 interface VideosPollUserSettingsFormProps {
   extSearchRecommendation: boolean;
@@ -160,26 +160,15 @@ const VideosPollUserSettingsForm = ({
         </Grid>
       </Grid>
       <Grid container spacing={4} direction="column" alignItems="stretch">
-        <Grid item>
-          <SettingsHeading
-            id={`${pollName}-feed-top`}
-            text={t('videosUserSettingsForm.feed.topItems.feedTopVideos')}
-          />
-        </Grid>
-        <Grid item>
-          <ItemsLanguages
-            label={t('videosUserSettingsForm.feed.topItems.topVideosLanguages')}
-            helpText={t(
-              'videosUserSettingsForm.feed.topItems.keepEmptyToSelectAllLang'
-            )}
-            value={topVideosLanguages}
-            onChange={setTopVideosLangauges}
-          />
-        </Grid>
+        <FeedTopItems
+          scope={pollName}
+          topItemsLanguages={topVideosLanguages}
+          setTopItemsLangauges={setTopVideosLangauges}
+        />
       </Grid>
       <Grid container spacing={4} direction="column" alignItems="stretch">
         <FeedForYou
-          pollName={pollName}
+          scope={pollName}
           forYouLanguages={forYouLanguages}
           setForYouLanguages={setForYouLanguages}
           forYouUploadDate={forYouUploadDate}

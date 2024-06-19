@@ -6,12 +6,12 @@ import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { BlankEnum, FeedForyou_dateEnum } from 'src/services/openapi';
 
 interface FeedForYouDateProps {
+  scope: string;
   value: FeedForyou_dateEnum | BlankEnum;
   onChange: (target: FeedForyou_dateEnum | BlankEnum) => void;
-  pollName: string;
 }
 
-const FeedForYouDate = ({ value, onChange, pollName }: FeedForYouDateProps) => {
+const FeedForYouDate = ({ scope, value, onChange }: FeedForYouDateProps) => {
   const { t } = useTranslation();
 
   const settingChoices = [
@@ -40,7 +40,7 @@ const FeedForYouDate = ({ value, onChange, pollName }: FeedForYouDateProps) => {
   return (
     <FormControl fullWidth>
       <InputLabel
-        id={`label_${pollName}_feed_foryou__default_date`}
+        id={`label_${scope}_feed_foryou__default_date`}
         color="secondary"
       >
         {t('videosUserSettingsForm.feed.generic.uploadDate')}
@@ -48,15 +48,15 @@ const FeedForYouDate = ({ value, onChange, pollName }: FeedForYouDateProps) => {
       <Select
         size="small"
         color="secondary"
-        id={`${pollName}_feed_foryou__default_date`}
-        labelId={`label_${pollName}_feed_foryou__default_date`}
+        id={`${scope}_feed_foryou__default_date`}
+        labelId={`label_${scope}_feed_foryou__default_date`}
         value={value}
         label={t('videosUserSettingsForm.recommendations.defaultUploadDate')}
         onChange={(event) =>
           onChange(event.target.value as FeedForyou_dateEnum | BlankEnum)
         }
         inputProps={{
-          'data-testid': `${pollName}_feed_foryou__default_date`,
+          'data-testid': `${scope}_feed_foryou__default_date`,
         }}
       >
         {settingChoices.map((item) => (

@@ -11,7 +11,7 @@ import ItemsLanguages from '../fields/ItemsLanguages';
 import BooleanField from '../fields/generics/BooleanField';
 
 interface FeedForYouProps {
-  pollName: string;
+  scope: string;
   forYouLanguages: string[];
   setForYouLanguages: (target: string[]) => void;
   forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
@@ -23,7 +23,7 @@ interface FeedForYouProps {
 }
 
 const FeedForYou = ({
-  pollName,
+  scope,
   forYouLanguages,
   setForYouLanguages,
   forYouUploadDate,
@@ -38,7 +38,7 @@ const FeedForYou = ({
     <>
       <Grid item>
         <SettingsHeading
-          id={`${pollName}-feed-foryou`}
+          id={`${scope}-feed-foryou`}
           text={t('videosUserSettingsForm.feed.forYou.feedForYou')}
         />
       </Grid>
@@ -61,7 +61,7 @@ const FeedForYou = ({
       </Grid>
       <Grid item>
         <FeedForYouDate
-          pollName={pollName}
+          scope={scope}
           value={forYouUploadDate}
           onChange={setForYouUploadDate}
         />
@@ -69,7 +69,7 @@ const FeedForYou = ({
       <Grid item container spacing={1} direction="column" alignItems="stretch">
         <Grid item>
           <BooleanField
-            scope={pollName}
+            scope={scope}
             name="feed_foryou__unsafe"
             label={t('videosUserSettingsForm.feed.generic.unsafe')}
             value={forYouUnsafe}
@@ -78,7 +78,7 @@ const FeedForYou = ({
         </Grid>
         <Grid item>
           <BooleanField
-            scope={pollName}
+            scope={scope}
             name="feed_foryou__exclude_compared_entities"
             label={t('videosUserSettingsForm.feed.generic.excludeCompared')}
             value={forYouExcludeCompared}
