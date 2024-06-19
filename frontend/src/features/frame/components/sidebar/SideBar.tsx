@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +37,7 @@ import {
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import {
   getFeedTopItemsPageName,
   getRecommendationPageName,
@@ -43,6 +45,7 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
+import { getFeedTopItemsSearchParams } from 'src/utils/userSettings';
 
 import { closeDrawer } from '../../drawerOpenSlice';
 import { BeforeInstallPromptEvent } from '../../pwaPrompt';
@@ -110,6 +113,8 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
 
+  const userSettings = useSelector(selectSettings).settings;
+
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -128,7 +133,10 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
     },
     {
       id: RouteID.FeedTopItems,
-      targetUrl: `${path}feed/top`,
+      targetUrl: `${path}feed/top${getFeedTopItemsSearchParams(
+        pollName,
+        userSettings
+      )}`,
       IconComponent: EmojiEventsIcon,
       displayText: getFeedTopItemsPageName(t, pollName),
       ariaLabel: t('menu.feedTopItemsAriaLabel'),

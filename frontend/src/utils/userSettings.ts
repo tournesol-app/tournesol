@@ -11,8 +11,30 @@ import { YOUTUBE_POLL_NAME } from './constants';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
- * Cast the value of the setting feed_foryou__default_date (or similar) to
- * a value expected by the search filter 'date'.
+ * Cast `lang` to a value of `Notifications_langEnum` if possible, else
+ * return Notifications_langEnum.EN.
+ */
+export const resolvedLangToNotificationsLang = (
+  lang: string | undefined
+): Notifications_langEnum => {
+  if (!lang) {
+    return Notifications_langEnum.EN;
+  }
+
+  if (
+    Object.values(Notifications_langEnum)
+      .map((x) => String(x))
+      .includes(lang)
+  ) {
+    return lang as Notifications_langEnum;
+  }
+
+  return Notifications_langEnum.EN;
+};
+
+/**
+ * Cast the value of the setting feed_foryou__date (or similar) to a value
+ * expected by the search filter 'date'.
  */
 const settingDateToSearchFilter = (
   setting: FeedForyou_dateEnum | Recommendations_defaultDateEnum | BlankEnum
@@ -30,6 +52,83 @@ const settingDateToSearchFilter = (
  */
 const settingLanguagesToSearchFilter = (setting: string[]): string => {
   return setting.join(',');
+};
+
+export const buildVideosFeedForYouSearchParams = (
+  searchParams: URLSearchParams,
+  userSettings: VideosPollUserSettings | undefined
+) => {
+  const advancedFilters: string[] = [];
+
+  if (userSettings?.feed_foryou__unsafe) {
+    advancedFilters.push('unsafe');
+  }
+  if (userSettings?.feed_foryou__exclude_compared_entities) {
+    advancedFilters.push('exclude_compared');
+  }
+
+  if (advancedFilters.length > 0) {
+    searchParams.set('advanced', advancedFilters.join(','));
+  }
+
+  if (userSettings?.feed_foryou__date != undefined) {
+    searchParams.set(
+      'date',
+      settingDateToSearchFilter(userSettings.feed_foryou__date)
+    );
+  }
+
+  if (userSettings?.feed_foryou__languages != undefined) {
+    searchParams.set(
+      'language',
+      settingLanguagesToSearchFilter(userSettings.feed_foryou__languages)
+    );
+  }
+};
+
+export const getFiltersFeedForYou = (
+  pollName: string,
+  pollOptions: SelectablePoll | undefined,
+  userSettings: TournesolUserSettings
+): URLSearchParams => {
+  const searchParams = new URLSearchParams(
+    pollOptions?.defaultFiltersFeedForYou
+  );
+
+  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
+
+  if (pollName === YOUTUBE_POLL_NAME) {
+    buildVideosFeedForYouSearchParams(searchParams, userPollSettings);
+  }
+
+  return searchParams;
+};
+
+export const buildVideosFeedTopItemsSearchParams = (
+  searchParams: URLSearchParams,
+  userSettings: VideosPollUserSettings | undefined
+) => {
+  if (userSettings?.feed_topitems__languages != undefined) {
+    searchParams.set(
+      'language',
+      settingLanguagesToSearchFilter(userSettings.feed_topitems__languages)
+    );
+  }
+};
+
+export const getFeedTopItemsSearchParams = (
+  pollName: string,
+  userSettings: TournesolUserSettings
+) => {
+  const searchParams = new URLSearchParams();
+  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
+
+  if (pollName === YOUTUBE_POLL_NAME) {
+    buildVideosFeedTopItemsSearchParams(searchParams, userPollSettings);
+  }
+
+  const strSearchParams = searchParams.toString();
+  return searchParams ? '?' + strSearchParams : '';
 };
 
 export const buildVideosDefaultRecoSearchParams = (
@@ -81,76 +180,4 @@ export const getDefaultRecommendationsSearchParams = (
 
   const strSearchParams = searchParams.toString();
   return searchParams ? '?' + strSearchParams : '';
-};
-
-/**
- * Cast `lang` to a value of `Notifications_langEnum` if possible, else
- * return Notifications_langEnum.EN.
- */
-export const resolvedLangToNotificationsLang = (
-  lang: string | undefined
-): Notifications_langEnum => {
-  if (!lang) {
-    return Notifications_langEnum.EN;
-  }
-
-  if (
-    Object.values(Notifications_langEnum)
-      .map((x) => String(x))
-      .includes(lang)
-  ) {
-    return lang as Notifications_langEnum;
-  }
-
-  return Notifications_langEnum.EN;
-};
-
-export const buildVideosFeedForYouSearchParams = (
-  searchParams: URLSearchParams,
-  userSettings: VideosPollUserSettings | undefined
-) => {
-  const advancedFilters: string[] = [];
-
-  if (userSettings?.feed_foryou__unsafe) {
-    advancedFilters.push('unsafe');
-  }
-  if (userSettings?.feed_foryou__exclude_compared_entities) {
-    advancedFilters.push('exclude_compared');
-  }
-
-  if (advancedFilters.length > 0) {
-    searchParams.set('advanced', advancedFilters.join(','));
-  }
-
-  if (userSettings?.feed_foryou__date != undefined) {
-    searchParams.set(
-      'date',
-      settingDateToSearchFilter(userSettings.feed_foryou__date)
-    );
-  }
-
-  if (userSettings?.feed_foryou__languages != undefined) {
-    searchParams.set(
-      'language',
-      settingLanguagesToSearchFilter(userSettings.feed_foryou__languages)
-    );
-  }
-};
-
-export const getFiltersFeedForYou = (
-  pollName: string,
-  pollOptions: SelectablePoll | undefined,
-  userSettings: TournesolUserSettings
-): URLSearchParams => {
-  const searchParams = new URLSearchParams(
-    pollOptions?.defaultFiltersFeedForYou
-  );
-
-  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
-
-  if (pollName === YOUTUBE_POLL_NAME) {
-    buildVideosFeedForYouSearchParams(searchParams, userPollSettings);
-  }
-
-  return searchParams;
 };
