@@ -86,7 +86,7 @@ export const buildVideosFeedForYouSearchParams = (
   }
 };
 
-export const getFiltersFeedForYou = (
+export const getFeedForYouDefaultSearchParams = (
   pollName: string,
   pollOptions: SelectablePoll | undefined,
   userSettings: TournesolUserSettings

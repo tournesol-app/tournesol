@@ -18,7 +18,7 @@ import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useCurrentPoll } from 'src/hooks';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
-import { getFiltersFeedForYou } from 'src/utils/userSettings';
+import { getFeedForYouDefaultSearchParams } from 'src/utils/userSettings';
 
 const ENTITIES_LIMIT = 20;
 
@@ -33,7 +33,7 @@ const FeedForYou = () => {
   const { name: pollName, criterias, options } = useCurrentPoll();
   const userSettings = useSelector(selectSettings).settings;
   const userPreferences: URLSearchParams = useMemo(() => {
-    return getFiltersFeedForYou(pollName, options, userSettings);
+    return getFeedForYouDefaultSearchParams(pollName, options, userSettings);
   }, [pollName, options, userSettings]);
 
   const [isLoading, setIsLoading] = useState(true);
