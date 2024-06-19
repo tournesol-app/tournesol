@@ -11,13 +11,13 @@ import { YOUTUBE_POLL_NAME } from './constants';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
- * Cast the value of the setting recommendations__default_date (or similar) to
- * a value expected by the recommendations' search filter 'date'.
+ * Cast the value of the setting feed_foryou__default_date (or similar) to
+ * a value expected by the search filter 'date'.
  */
-const recoDefaultDateToSearchFilter = (
+const settingDateToSearchFilter = (
   setting: FeedForyou_dateEnum | Recommendations_defaultDateEnum | BlankEnum
 ): string => {
-  if (setting === Recommendations_defaultDateEnum.ALL_TIME) {
+  if (setting === FeedForyou_dateEnum.ALL_TIME) {
     return '';
   }
 
@@ -25,10 +25,10 @@ const recoDefaultDateToSearchFilter = (
 };
 
 /**
- * Cast the value of the setting recommendations__default_languages to a value
- * expected by the recommendations' search filter 'language'.
+ * Cast the value of the setting feed_foryou__languages (or similar) to a
+ * value expected by the search filter 'language'.
  */
-const recoDefaultLanguagesToSearchFilter = (setting: string[]): string => {
+const settingLanguagesToSearchFilter = (setting: string[]): string => {
   return setting.join(',');
 };
 
@@ -50,14 +50,14 @@ export const buildVideosDefaultRecoSearchParams = (
   if (userSettings?.recommendations__default_date != undefined) {
     searchParams.set(
       'date',
-      recoDefaultDateToSearchFilter(userSettings.recommendations__default_date)
+      settingDateToSearchFilter(userSettings.recommendations__default_date)
     );
   }
 
   if (userSettings?.recommendations__default_languages != undefined) {
     searchParams.set(
       'language',
-      recoDefaultLanguagesToSearchFilter(
+      settingLanguagesToSearchFilter(
         userSettings.recommendations__default_languages
       )
     );
@@ -125,16 +125,14 @@ export const buildVideosFeedForYouSearchParams = (
   if (userSettings?.feed_foryou__date != undefined) {
     searchParams.set(
       'date',
-      recoDefaultDateToSearchFilter(userSettings.feed_foryou__date)
+      settingDateToSearchFilter(userSettings.feed_foryou__date)
     );
   }
 
-  if (userSettings?.recommendations__default_languages != undefined) {
+  if (userSettings?.feed_foryou__languages != undefined) {
     searchParams.set(
       'language',
-      recoDefaultLanguagesToSearchFilter(
-        userSettings.recommendations__default_languages
-      )
+      settingLanguagesToSearchFilter(userSettings.feed_foryou__languages)
     );
   }
 };

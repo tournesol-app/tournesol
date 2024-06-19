@@ -536,7 +536,9 @@
       },
       "forYou": {
         "feedForYou": "Flux - Pour vous",
-        "customizeItemsAppearingInTheFeedForYou": "Personnalisez les éléments qui apparaissent dans le flux Pour vous."
+        "customizeItemsAppearingInTheFeedForYou": "Personnalisez les éléments qui apparaissent dans le flux Pour vous.",
+        "forYouVideosLanguages": "Langues des vidéos Pour vous",
+        "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)"
       },
       "topItems": {
         "feedTopVideos": "Flux - Top vidéos",

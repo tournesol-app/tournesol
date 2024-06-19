@@ -40,12 +40,14 @@ interface VideosPollUserSettingsFormProps {
   setRateLaterAutoRemoval: (number: number) => void;
   recoDefaultLanguages: string[];
   setRecoDefaultLanguages: (target: string[]) => void;
+  forYouLanguages: string[];
+  setForYouLanguages: (target: string[]) => void;
+  forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
+  setForYouUploadDate: (target: FeedForyou_dateEnum | BlankEnum) => void;
   forYouUnsafe: boolean;
   setForYouUnsafe: (target: boolean) => void;
   forYouExcludeCompared: boolean;
   setForYouExcludeCompared: (target: boolean) => void;
-  forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
-  setForYouUploadDate: (target: FeedForyou_dateEnum | BlankEnum) => void;
   topVideosLanguages: string[];
   setTopVideosLangauges: (target: string[]) => void;
   apiErrors: ApiError | null;
@@ -69,12 +71,14 @@ const VideosPollUserSettingsForm = ({
   setRateLaterAutoRemoval,
   recoDefaultLanguages,
   setRecoDefaultLanguages,
+  forYouLanguages,
+  setForYouLanguages,
+  forYouUploadDate,
+  setForYouUploadDate,
   forYouUnsafe,
   setForYouUnsafe,
   forYouExcludeCompared,
   setForYouExcludeCompared,
-  forYouUploadDate,
-  setForYouUploadDate,
   topVideosLanguages,
   setTopVideosLangauges,
   apiErrors,
@@ -176,12 +180,14 @@ const VideosPollUserSettingsForm = ({
       <Grid container spacing={4} direction="column" alignItems="stretch">
         <FeedForYou
           pollName={pollName}
+          forYouLanguages={forYouLanguages}
+          setForYouLanguages={setForYouLanguages}
+          forYouUploadDate={forYouUploadDate}
+          setForYouUploadDate={setForYouUploadDate}
           forYouUnsafe={forYouUnsafe}
           setForYouUnsafe={setForYouUnsafe}
           forYouExcludeCompared={forYouExcludeCompared}
           setForYouExcludeCompared={setForYouExcludeCompared}
-          forYouUploadDate={forYouUploadDate}
-          setForYouUploadDate={setForYouUploadDate}
         />
       </Grid>
       <Grid container spacing={4} direction="column" alignItems="stretch">

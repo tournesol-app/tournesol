@@ -527,7 +527,9 @@
       },
       "forYou": {
         "feedForYou": "Feed - For you",
-        "customizeItemsAppearingInTheFeedForYou": "Customize items appearing in the feed For you."
+        "customizeItemsAppearingInTheFeedForYou": "Customize items appearing in the feed For you.",
+        "forYouVideosLanguages": "Languages of the videos For you",
+        "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)"
       },
       "topItems": {
         "feedTopVideos": "Feed - Top videos",

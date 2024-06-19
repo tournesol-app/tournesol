@@ -7,26 +7,31 @@ import SettingsHeading from 'src/features/settings/preferences/SettingsHeading';
 import { BlankEnum, FeedForyou_dateEnum } from 'src/services/openapi';
 
 import FeedForYouDate from '../fields/FeedForYouDate';
+import ItemsLanguages from '../fields/ItemsLanguages';
 import BooleanField from '../fields/generics/BooleanField';
 
 interface FeedForYouProps {
   pollName: string;
+  forYouLanguages: string[];
+  setForYouLanguages: (target: string[]) => void;
+  forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
+  setForYouUploadDate: (target: FeedForyou_dateEnum | BlankEnum) => void;
   forYouUnsafe: boolean;
   setForYouUnsafe: (target: boolean) => void;
   forYouExcludeCompared: boolean;
   setForYouExcludeCompared: (target: boolean) => void;
-  forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
-  setForYouUploadDate: (target: FeedForyou_dateEnum | BlankEnum) => void;
 }
 
 const FeedForYou = ({
   pollName,
+  forYouLanguages,
+  setForYouLanguages,
+  forYouUploadDate,
+  setForYouUploadDate,
   forYouUnsafe,
   setForYouUnsafe,
   forYouExcludeCompared,
   setForYouExcludeCompared,
-  forYouUploadDate,
-  setForYouUploadDate,
 }: FeedForYouProps) => {
   const { t } = useTranslation();
   return (
@@ -43,6 +48,16 @@ const FeedForYou = ({
             'videosUserSettingsForm.feed.forYou.customizeItemsAppearingInTheFeedForYou'
           )}
         </Alert>
+      </Grid>
+      <Grid item>
+        <ItemsLanguages
+          label={t('videosUserSettingsForm.feed.forYou.forYouVideosLanguages')}
+          helpText={t(
+            'videosUserSettingsForm.feed.forYou.keepEmptyToSelectAllLang'
+          )}
+          value={forYouLanguages}
+          onChange={setForYouLanguages}
+        />
       </Grid>
       <Grid item>
         <FeedForYouDate

@@ -123,6 +123,16 @@ const TournesolUserSettingsForm = () => {
   >(initialLanguages());
 
   // Feed: For You
+  // XXX init with browser languages
+  const [forYouLanguages, setForYouLanguages] = useState<Array<string>>(
+    initialLanguages()
+  );
+
+  // XXX should be initialized from the poll config
+  const [forYouUploadDate, setForYouUploadDate] = useState<
+    FeedForyou_dateEnum | BlankEnum
+  >(pollSettings?.feed_foryou__date ?? FeedForyou_dateEnum.MONTH);
+
   const [forYouUnsafe, setForYouUnsafe] = useState(
     pollSettings?.feed_foryou__unsafe ?? false
   );
@@ -130,12 +140,9 @@ const TournesolUserSettingsForm = () => {
   const [forYouExcludeCompared, setForYouExcludeCompared] = useState(
     pollSettings?.feed_foryou__exclude_compared_entities ?? true
   );
-  // XXX should be initialized from the poll config
-  const [forYouUploadDate, setForYouUploadDate] = useState<
-    FeedForyou_dateEnum | BlankEnum
-  >(pollSettings?.feed_foryou__date ?? FeedForyou_dateEnum.MONTH);
 
   // Feed: Top videos
+  // XXX init with the filter languages of the page TopItems
   const [topVideosLanguages, setTopVideosLanguages] = useState<Array<string>>(
     initialLanguages()
   );
@@ -240,6 +247,7 @@ const TournesolUserSettingsForm = () => {
             extension__search_reco: extSearchRecommendation,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_languages: recoDefaultLanguages,
+            feed_foryou__languages: forYouLanguages,
             feed_foryou__date: forYouUploadDate,
             feed_foryou__unsafe: forYouUnsafe,
             feed_foryou__exclude_compared_entities: forYouExcludeCompared,
@@ -305,12 +313,14 @@ const TournesolUserSettingsForm = () => {
             setRateLaterAutoRemoval={setRateLaterAutoRemoval}
             recoDefaultLanguages={recoDefaultLanguages}
             setRecoDefaultLanguages={setRecoDefaultLanguages}
+            forYouLanguages={forYouLanguages}
+            setForYouLanguages={setForYouLanguages}
+            forYouUploadDate={forYouUploadDate}
+            setForYouUploadDate={setForYouUploadDate}
             forYouUnsafe={forYouUnsafe}
             setForYouUnsafe={setForYouUnsafe}
             forYouExcludeCompared={forYouExcludeCompared}
             setForYouExcludeCompared={setForYouExcludeCompared}
-            forYouUploadDate={forYouUploadDate}
-            setForYouUploadDate={setForYouUploadDate}
             topVideosLanguages={topVideosLanguages}
             setTopVideosLangauges={setTopVideosLanguages}
             apiErrors={apiErrors}
