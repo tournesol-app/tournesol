@@ -116,11 +116,15 @@ export const buildVideosFeedTopItemsSearchParams = (
   }
 };
 
-export const getFeedTopItemsSearchParams = (
+export const getFeedTopItemsDefaultSearchParams = (
   pollName: string,
+  pollOptions: SelectablePoll | undefined,
   userSettings: TournesolUserSettings
 ) => {
-  const searchParams = new URLSearchParams();
+  const searchParams = new URLSearchParams(
+    pollOptions?.defaultFiltersFeedTopItems
+  );
+
   const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
 
   if (pollName === YOUTUBE_POLL_NAME) {

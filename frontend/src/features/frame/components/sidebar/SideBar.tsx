@@ -45,7 +45,7 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
-import { getFeedTopItemsSearchParams } from 'src/utils/userSettings';
+import { getFeedTopItemsDefaultSearchParams } from 'src/utils/userSettings';
 
 import { closeDrawer } from '../../drawerOpenSlice';
 import { BeforeInstallPromptEvent } from '../../pwaPrompt';
@@ -133,8 +133,9 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
     },
     {
       id: RouteID.FeedTopItems,
-      targetUrl: `${path}feed/top${getFeedTopItemsSearchParams(
+      targetUrl: `${path}feed/top${getFeedTopItemsDefaultSearchParams(
         pollName,
+        options,
         userSettings
       )}`,
       IconComponent: EmojiEventsIcon,

@@ -102,6 +102,10 @@ export type SelectablePoll = {
   // the recommendation link. can be date=Month to retrieve the entities
   // uploaded during the last month for instance
   defaultRecoSearchParams?: string;
+  // default URL search parameters set by the `SideBar` when a user clicks on
+  // the top items link. can be date=Month to retrieve the entities
+  // uploaded during the last month for instance
+  defaultFiltersFeedTopItems?: string;
   // default filters used by the feed For You, formatted as URL search
   // parameters
   defaultFiltersFeedForYou?: string;
