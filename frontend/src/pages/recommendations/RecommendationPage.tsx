@@ -172,7 +172,7 @@ function RecommendationsPage() {
             <Grid item xs={12}>
               {/* Unsafe filter is not available when fetching personal recommendations */}
               <SearchFilter
-                showAdvancedFilter={!displayPersonalRecommendations}
+                disableAdvanced={displayPersonalRecommendations}
                 extraActions={
                   <>
                     <ShareMenuButton isIcon />

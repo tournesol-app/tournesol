@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { Box, IconButton } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { Box } from '@mui/material';
 
 import {
   ContentBox,
@@ -14,9 +14,18 @@ import {
 } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
+import ShareMenuButton from 'src/features/menus/ShareMenuButton';
+import SearchFilter from 'src/features/recommendation/SearchFilter';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
 import { getFeedTopItemsPageName } from 'src/utils/constants';
+import { PollUserSettingsKeys } from 'src/utils/types';
+import {
+  loadRecommendationsLanguages,
+  recommendationsLanguagesFromNavigator,
+  saveRecommendationsLanguages,
+} from 'src/utils/recommendationsLanguages';
 
 const ENTITIES_LIMIT = 20;
 
@@ -29,6 +38,11 @@ const FeedTopItems = () => {
   const offset = Number(searchParams.get('offset') || 0);
 
   const { name: pollName, criterias, options } = useCurrentPoll();
+  const autoLangDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
+
+  const userSettings = useSelector(selectSettings).settings;
+  const preferredLanguages =
+    userSettings?.[pollName as PollUserSettingsKeys]?.feed_topitems__languages;
 
   const [isLoading, setIsLoading] = useState(true);
   const [entities, setEntities] = useState<PaginatedRecommendationList>({
@@ -42,12 +56,34 @@ const FeedTopItems = () => {
   };
 
   useEffect(() => {
-    const searchString = new URLSearchParams();
-    searchString.append('offset', offset.toString());
+    // `searchParams` is defined as a mutable object outside of this effect.
+    // It's safer to recreate it here, instead of adding a dependency to the
+    // current effect.
+    const searchString = new URLSearchParams(location.search);
+    searchString.set('offset', offset.toString());
+
+    if (autoLangDiscovery && searchString.get('language') === null) {
+      let loadedLanguages = preferredLanguages?.join(',') ?? null;
+
+      if (loadedLanguages === null) {
+        // TODO: load from a != local storage key?
+        // TODO: any reason to keep this logic? the browser extension?
+        loadedLanguages = loadRecommendationsLanguages();
+      }
+
+      if (loadedLanguages === null) {
+        loadedLanguages = recommendationsLanguagesFromNavigator();
+        // TODO: save as a != local storage key?
+        saveRecommendationsLanguages(loadedLanguages);
+      }
+
+      searchString.set('language', loadedLanguages);
+      history.replace({ search: searchString.toString() });
+      return;
+    }
 
     const fetchEntities = async () => {
       setIsLoading(true);
-
       try {
         const newEntities = await getRecommendations(
           pollName,
@@ -65,24 +101,33 @@ const FeedTopItems = () => {
     };
 
     fetchEntities();
-  }, [criterias, offset, options, pollName]);
+  }, [
+    autoLangDiscovery,
+    criterias,
+    history,
+    location.search,
+    offset,
+    options,
+    preferredLanguages,
+    pollName,
+  ]);
 
   return (
     <>
       <ContentHeader title={getFeedTopItemsPageName(t, pollName)} />
       <ContentBox noMinPaddingX maxWidth="lg">
-        <Box
-          px={{ xs: 2, sm: 0 }}
-          mb={1}
-          display="flex"
-          justifyContent="flex-end"
-          columnGap={2}
-        >
-          {/* Create a component similar to PreferencesIconButtonLink */}
-          <IconButton color="secondary" disabled>
-            <Search />
-          </IconButton>
-          <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
+        <Box mb={4} px={{ xs: 2, sm: 0 }}>
+          <SearchFilter
+            disableAdvanced
+            disableCriteria
+            disableDuration
+            extraActions={
+              <>
+                <ShareMenuButton isIcon />
+                <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
+              </>
+            }
+          />
         </Box>
         <LoaderWrapper isLoading={isLoading}>
           <EntityList

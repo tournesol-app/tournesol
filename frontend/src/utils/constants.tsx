@@ -22,7 +22,7 @@ const PRESIDENTIELLE_2022_ENABLED =
 const UID_DELIMITER = ':';
 export const UID_YT_NAMESPACE = 'yt' + UID_DELIMITER;
 
-export const recommendationFilters = {
+export const pollVideosFilters = {
   date: 'date',
   language: 'language',
   uploader: 'uploader',
@@ -38,7 +38,7 @@ export const recommendationFilters = {
   backfire_risk: 'backfire_risk',
 };
 
-export const defaultRecommendationFilters = {
+export const pollVideosInitialFilters = {
   date: null,
   language: null,
   uploader: null,
