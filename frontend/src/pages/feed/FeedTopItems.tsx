@@ -19,7 +19,10 @@ import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
-import { getFeedTopItemsPageName } from 'src/utils/constants';
+import {
+  getFeedTopItemsPageName,
+  pollVideosFilters,
+} from 'src/utils/constants';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import {
   loadRecommendationsLanguages,
@@ -28,6 +31,22 @@ import {
 } from 'src/utils/recommendationsLanguages';
 
 const ENTITIES_LIMIT = 20;
+const ALLOWED_SEARCH_PARAMS = [
+  pollVideosFilters.date,
+  pollVideosFilters.language,
+  'offset',
+];
+
+const sanitizeSearchParams = (
+  searchParams: URLSearchParams,
+  allowList: string[]
+) => {
+  for (const key of [...searchParams.keys()]) {
+    if (!allowList.includes(key)) {
+      searchParams.delete(key);
+    }
+  }
+};
 
 const FeedTopItems = () => {
   const { t } = useTranslation();
@@ -81,6 +100,8 @@ const FeedTopItems = () => {
       history.replace({ search: searchString.toString() });
       return;
     }
+
+    sanitizeSearchParams(searchString, ALLOWED_SEARCH_PARAMS);
 
     const fetchEntities = async () => {
       setIsLoading(true);
