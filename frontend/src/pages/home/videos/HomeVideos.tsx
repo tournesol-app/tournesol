@@ -9,7 +9,6 @@ import WebsiteBanners from 'src/features/banners/WebsiteBanners';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import TitleSection from 'src/pages/home/TitleSection';
-import PollListSection from 'src/pages/home/PollListSection';
 import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
@@ -110,11 +109,8 @@ const HomeVideosPage = () => {
         <Grid2 sx={homeSectionSx}>
           <ResearchSection />
         </Grid2>
-        <Grid2 sx={homeSectionSx} bgcolor="rgba(0, 0, 0, 0.08)">
+        <Grid2 sx={homeSectionSx}>
           <UsageStatsSection />
-        </Grid2>
-        <Grid2 sx={homeSectionSx} display="flex" justifyContent="center">
-          <PollListSection />
         </Grid2>
       </Grid2>
     </>

@@ -29,6 +29,7 @@ import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
   YT_DEFAULT_AUTO_SELECT_ENTITIES,
+  YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE,
 } from 'src/utils/constants';
 import {
   initRecommendationsLanguages,
@@ -106,6 +107,11 @@ const TournesolUserSettingsForm = () => {
       ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
   );
 
+  const [compUiWeeklyColGoalMobile, setCompUiWeeklyColGoalMobile] = useState(
+    pollSettings?.comparison_ui__weekly_collective_goal_mobile ??
+      YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE
+  );
+
   // Rate-later settings
   const [rateLaterAutoRemoval, setRateLaterAutoRemoval] = useState(
     pollSettings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL
@@ -156,6 +162,14 @@ const TournesolUserSettingsForm = () => {
     ) {
       setCompUiWeeklyColGoalDisplay(
         pollSettings?.comparison_ui__weekly_collective_goal_display
+      );
+    }
+
+    if (
+      pollSettings?.comparison_ui__weekly_collective_goal_mobile != undefined
+    ) {
+      setCompUiWeeklyColGoalMobile(
+        pollSettings?.comparison_ui__weekly_collective_goal_mobile
       );
     }
 
@@ -216,6 +230,8 @@ const TournesolUserSettingsForm = () => {
             comparison__auto_select_entities: autoSelectEntities,
             comparison_ui__weekly_collective_goal_display:
               compUiWeeklyColGoalDisplay,
+            comparison_ui__weekly_collective_goal_mobile:
+              compUiWeeklyColGoalMobile,
             extension__search_reco: extSearchRecommendation,
             rate_later__auto_remove: rateLaterAutoRemoval,
             recommendations__default_languages: recoDefaultLanguages,
@@ -276,6 +292,8 @@ const TournesolUserSettingsForm = () => {
             setCompAutoSelectEntities={setAutoSelectEntities}
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}
             setCompUiWeeklyColGoalDisplay={setCompUiWeeklyColGoalDisplay}
+            compUiWeeklyColGoalMobile={compUiWeeklyColGoalMobile}
+            setCompUiWeeklyColGoalMobile={setCompUiWeeklyColGoalMobile}
             displayedCriteria={displayedCriteria}
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}

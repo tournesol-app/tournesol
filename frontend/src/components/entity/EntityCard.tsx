@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import {
   Box,
   Collapse,
@@ -36,7 +37,10 @@ import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
 import EntityContextChip from './EntityContextChip';
 import EntityImagery from './EntityImagery';
-import EntityMetadata, { VideoMetadata } from './EntityMetadata';
+import EntityMetadata, {
+  EntityMetadataVariant,
+  VideoMetadata,
+} from './EntityMetadata';
 import EntityIndividualScores from './EntityIndividualScores';
 import { entityCardMainSx } from './style';
 
@@ -245,11 +249,13 @@ export const RowEntityCard = ({
   withLink = false,
   individualScores,
   displayEntityContextChip = true,
+  metadataVariant,
 }: {
   result: EntityResult;
   withLink?: boolean;
   individualScores?: ContributorCriteriaScore[];
   displayEntityContextChip?: boolean;
+  metadataVariant?: EntityMetadataVariant;
 }) => {
   const entity = result.entity;
   return (
@@ -286,6 +292,7 @@ export const RowEntityCard = ({
             uploader={entity.metadata.uploader}
             publicationDate={entity.metadata.publication_date}
             withLinks={false}
+            variant={metadataVariant}
           />
         )}
 

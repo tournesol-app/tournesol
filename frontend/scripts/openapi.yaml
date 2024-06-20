@@ -4714,6 +4714,8 @@ components:
           oneOf:
           - $ref: '#/components/schemas/ComparisonUi_weeklyCollectiveGoalDisplayEnum'
           - $ref: '#/components/schemas/BlankEnum'
+        comparison_ui__weekly_collective_goal_mobile:
+          type: boolean
         rate_later__auto_remove:
           type: integer
         extension__search_reco:
@@ -4750,6 +4752,8 @@ components:
           oneOf:
           - $ref: '#/components/schemas/ComparisonUi_weeklyCollectiveGoalDisplayEnum'
           - $ref: '#/components/schemas/BlankEnum'
+        comparison_ui__weekly_collective_goal_mobile:
+          type: boolean
         rate_later__auto_remove:
           type: integer
         extension__search_reco:

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -16,6 +16,7 @@ import {
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
 } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
+import { YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE } from 'src/utils/constants';
 import { PollUserSettingsKeys } from 'src/utils/types';
 
 const displayTutorial = (
@@ -28,8 +29,14 @@ const displayTutorial = (
 
 const displayWeeklyCollectiveGoal = (
   userPreference: ComparisonUi_weeklyCollectiveGoalDisplayEnum | BlankEnum,
-  isEmbedded: boolean
+  isEmbedded: boolean,
+  userPrefDisplayOnMobile: boolean,
+  isSmallScreen: boolean
 ) => {
+  if (isSmallScreen) {
+    return userPrefDisplayOnMobile;
+  }
+
   const displayWhenEembedded = [
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS,
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.EMBEDDED_ONLY,
@@ -73,6 +80,9 @@ const ComparisonPage = () => {
     active: pollActive,
     name: pollName,
   } = useCurrentPoll();
+
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -141,6 +151,11 @@ const ComparisonPage = () => {
       ?.comparison_ui__weekly_collective_goal_display ??
     ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS;
 
+  const weeklyCollectiveGoalMobile =
+    userSettings?.[pollName as PollUserSettingsKeys]
+      ?.comparison_ui__weekly_collective_goal_mobile ??
+    YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE;
+
   const autoSelectEntities =
     userSettings?.[pollName as PollUserSettingsKeys]
       ?.comparison__auto_select_entities ??
@@ -202,7 +217,9 @@ const ComparisonPage = () => {
               <>
                 {displayWeeklyCollectiveGoal(
                   weeklyCollectiveGoalDisplay,
-                  isEmbedded
+                  isEmbedded,
+                  weeklyCollectiveGoalMobile,
+                  smallScreen
                 ) && <CollectiveGoalWeeklyProgress />}
                 <ComparisonsCountContext.Provider
                   value={{ comparisonsCount: comparisonsCount }}
