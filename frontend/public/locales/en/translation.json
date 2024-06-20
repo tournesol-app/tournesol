@@ -533,6 +533,7 @@
       },
       "topItems": {
         "feedTopVideos": "Feed - Top videos",
+        "customizeItemsAppearingInTheFeedTopVideos": "Customize items appearing in the feed Top videos.",
         "topVideosLanguages": "Top videos languages",
         "keepEmptyToSelectAllLang": "Keep empty to select all languages."
       }

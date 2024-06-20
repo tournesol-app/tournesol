@@ -30,7 +30,7 @@ const FeedTopItems = ({
       <Grid item>
         <Alert severity="info">
           {t(
-            'videosUserSettingsForm.feed.forYou.customizeItemsAppearingInTheFeedForYou'
+            'videosUserSettingsForm.feed.topItems.customizeItemsAppearingInTheFeedTopVideos'
           )}
         </Alert>
       </Grid>

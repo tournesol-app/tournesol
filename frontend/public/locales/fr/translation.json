@@ -542,6 +542,7 @@
       },
       "topItems": {
         "feedTopVideos": "Flux - Top vidéos",
+        "customizeItemsAppearingInTheFeedTopVideos": "Personnalisez les éléments qui apparaissent dans le flux Top vidéos.",
         "topVideosLanguages": "Langues des top vidéos",
         "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner."
       }
