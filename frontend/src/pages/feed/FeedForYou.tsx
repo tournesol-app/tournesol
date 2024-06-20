@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { Alert, Box, IconButton } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { Alert, Box } from '@mui/material';
 
 import {
   ContentBox,
   ContentHeader,
   LoaderWrapper,
   Pagination,
+  PreferencesIconButtonLink,
+  SearchIconButtonLink,
 } from 'src/components';
-import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import EntityList from 'src/features/entities/EntityList';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useCurrentPoll } from 'src/hooks';
@@ -82,12 +82,9 @@ const FeedForYou = () => {
           mb={1}
           display="flex"
           justifyContent="flex-end"
-          columnGap={2}
+          gap={1}
         >
-          {/* Create a component similar to PreferencesIconButtonLink */}
-          <IconButton color="secondary" disabled>
-            <Search />
-          </IconButton>
+          <SearchIconButtonLink />
           <PreferencesIconButtonLink hash={`#${pollName}-feed-foryou`} />
         </Box>
         {!isLoading && entities.count === 0 && (

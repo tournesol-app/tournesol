@@ -11,18 +11,15 @@ import {
   LoaderWrapper,
   Pagination,
   PreferencesIconButtonLink,
-  SearchIconButtonLink,
 } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
+import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
-import {
-  getFeedTopItemsPageName,
-  pollVideosFilters,
-} from 'src/utils/constants';
+import { getFeedTopItemsPageName } from 'src/utils/constants';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import {
   loadRecommendationsLanguages,
@@ -31,24 +28,8 @@ import {
 } from 'src/utils/recommendationsLanguages';
 
 const ENTITIES_LIMIT = 20;
-const ALLOWED_SEARCH_PARAMS = [
-  pollVideosFilters.date,
-  pollVideosFilters.language,
-  'offset',
-];
 
-const sanitizeSearchParams = (
-  searchParams: URLSearchParams,
-  allowList: string[]
-) => {
-  for (const key of [...searchParams.keys()]) {
-    if (!allowList.includes(key)) {
-      searchParams.delete(key);
-    }
-  }
-};
-
-const FeedTopItems = () => {
+const SearchPage = () => {
   const { t } = useTranslation();
 
   const history = useHistory();
@@ -101,8 +82,6 @@ const FeedTopItems = () => {
       return;
     }
 
-    sanitizeSearchParams(searchString, ALLOWED_SEARCH_PARAMS);
-
     const fetchEntities = async () => {
       setIsLoading(true);
       try {
@@ -139,14 +118,11 @@ const FeedTopItems = () => {
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box mb={4} px={{ xs: 2, sm: 0 }}>
           <SearchFilter
-            disableAdvanced
-            disableCriteria
-            disableDuration
             extraActions={
-              <Box display="flex" gap={1}>
-                <SearchIconButtonLink />
-                <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
-              </Box>
+              <>
+                <ShareMenuButton isIcon />
+                <PreferencesIconButtonLink hash={`#${pollName}-search`} />
+              </>
             }
           />
         </Box>
@@ -169,4 +145,4 @@ const FeedTopItems = () => {
   );
 };
 
-export default FeedTopItems;
+export default SearchPage;

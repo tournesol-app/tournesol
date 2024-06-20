@@ -192,6 +192,7 @@ export const polls: Array<SelectablePoll> = [
           disabledRouteIds: [
             RouteID.FeedTopItems,
             RouteID.FeedForYou,
+            RouteID.Search,
             RouteID.MyRateLaterList,
             RouteID.MyComparedItems,
             RouteID.Criteria,

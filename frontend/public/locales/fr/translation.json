@@ -6,6 +6,9 @@
   "preferencesIconButtonLink": {
     "linkToThePreferencesPage": "Lien vers la page des préférences"
   },
+  "searchButtonLink": {
+    "linkToTheSearchPage": "Lien vers la page de recherche"
+  },
   "components": {
     "filtersButton": "filtres"
   },

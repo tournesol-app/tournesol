@@ -131,6 +131,7 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       displayText: t('menu.home'),
       ariaLabel: t('menu.homeAriaLabel'),
     },
+    { displayText: 'divider_1' },
     {
       id: RouteID.FeedTopItems,
       targetUrl: `${path}feed/top${getFeedTopItemsDefaultSearchParams(
@@ -158,7 +159,7 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       ariaLabel: t('menu.recommendationsAriaLabel'),
       onlyForPolls: [PRESIDENTIELLE_2022_POLL_NAME],
     },
-    { displayText: 'divider_1' },
+    { displayText: 'divider_2' },
     {
       id: RouteID.Comparison,
       targetUrl: `${path}comparison`,
@@ -194,7 +195,7 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       displayText: t('menu.myResults'),
       ariaLabel: t('menu.myFeedbackAriaLabel'),
     },
-    { displayText: 'divider_2' },
+    { displayText: 'divider_3' },
     {
       id: RouteID.FAQ,
       targetUrl: '/faq',

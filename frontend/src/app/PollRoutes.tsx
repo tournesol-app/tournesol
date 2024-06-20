@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { Switch, useRouteMatch } from 'react-router-dom';
+
 import { Box, CircularProgress } from '@mui/material';
+
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import PublicRoute from 'src/features/login/PublicRoute';
 import PrivateRoute from 'src/features/login/PrivateRoute';
 import PageNotFound from 'src/pages/404/PageNotFound';
@@ -17,7 +20,7 @@ import FeedCollectiveRecommendations from 'src/pages/feed/FeedCollectiveRecommen
 import FeedForYou from 'src/pages/feed/FeedForYou';
 import FeedTopItems from 'src/pages/feed/FeedTopItems';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import SearchPage from 'src/pages/search/SearchPage';
 import { RouteID } from 'src/utils/types';
 
 interface Props {
@@ -70,6 +73,12 @@ const PollRoutes = ({ pollName }: Props) => {
       url: 'feed/foryou',
       page: FeedForYou,
       type: PrivateRoute,
+    },
+    {
+      id: RouteID.Search,
+      url: 'search',
+      page: SearchPage,
+      type: PublicRoute,
     },
     {
       id: RouteID.FeedCollectiveRecommendations,
