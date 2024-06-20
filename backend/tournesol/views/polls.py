@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Case, F, Sum, When
+from django.db.models import Case, F, Prefetch, Sum, When
 from django.shortcuts import get_object_or_404
 from django.utils.cache import patch_vary_headers
 from django.utils.decorators import method_decorator
@@ -14,7 +14,7 @@ from drf_spectacular.utils import (
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
-from tournesol.models import Comparison, Entity, Poll
+from tournesol.models import Comparison, CriteriaRank, Entity, Poll
 from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
@@ -246,7 +246,14 @@ class PollsView(RetrieveAPIView):
     """
 
     permission_classes = []
-    queryset = Poll.objects.prefetch_related("criteriarank_set__criteria")
+    queryset = Poll.objects.prefetch_related(
+        Prefetch(
+            "criteriarank_set",
+            queryset=CriteriaRank.objects.select_related("criteria").prefetch_related(
+                "criteria__locales"
+            ),
+        )
+    )
     lookup_field = "name"
     serializer_class = PollSerializer
 

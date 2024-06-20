@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -28,10 +28,17 @@ class PollsTestCase(TestCase):
     TestCase of the PollsView API.
     """
 
+    @override_settings(
+        # Use dummy cache to disable throttling when counting db queries
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_anonymous_can_read(self):
         """An anonymous user can read a poll with its translated criteria."""
         client = APIClient(HTTP_ACCEPT_LANGUAGE="fr")
-        response = client.get("/polls/videos/")
+
+        with self.assertNumQueries(3):
+            response = client.get("/polls/videos/")
+
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(response_data["name"], "videos")
@@ -709,7 +716,6 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         results = response.data["results"]
         self.assertEqual(len(results), 1)
         self.assertSetEqual(set(e["entity"]["uid"] for e in results), {self.video_4.uid})
-
 
 
 class PollsEntityTestCase(TestCase):
