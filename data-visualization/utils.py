@@ -1,5 +1,6 @@
 import io
 from multiprocessing.pool import ThreadPool
+import threading
 import zipfile
 
 import pandas as pd
@@ -42,6 +43,8 @@ DATASET_URL = "https://api.tournesol.app/exports/all/"
 # URL to get YouTube thumbnail in high quality
 thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
 
+thread_local_storage = threading.local()
+
 
 @st.cache_data
 def set_df():
@@ -50,11 +53,8 @@ def set_df():
     r = requests.get(DATASET_URL)
     z = zipfile.ZipFile(io.BytesIO(r.content))
 
-    for file in z.namelist():
-        if "comparisons.csv" in file:
-            with z.open(file) as f:
-                df_tmp = pd.read_csv(f)
-                break
+    with z.open("comparisons.csv") as f:
+        df_tmp = pd.read_csv(f)
 
     index = ["video_a", "video_b", "public_username", "week_date"]
     for idx in index + ["criteria"]:
@@ -79,7 +79,11 @@ def get_criterion_score(row, name):
 
 
 def get_url_json(url):
-    return requests.get(url).json()
+    if not hasattr(thread_local_storage, "session"):
+        thread_local_storage.session = requests.Session()
+    response = thread_local_storage.session.get(url)
+    response.raise_for_status()
+    return response.json()
 
 
 def get_tournesol_reco(limit: int, offset: int):
@@ -104,32 +108,31 @@ def api_get_tournesol_df():
     limit = 2000
 
     response = get_tournesol_reco(limit, 0)
-    df = pd.DataFrame.from_dict(response["results"])
+    results = response["results"]
+    total_count = response["count"]
 
-    reco_urls = [
-        f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}&unsafe=true"
-        for offset in range(limit, 100_000, limit)
-    ]
-
+    reco_params = [(limit, offset) for offset in range(limit, total_count, limit)]
     with ThreadPool(10) as pool:
-        for result in pool.map(get_url_json, reco_urls):
+        for result in pool.starmap(get_tournesol_reco, reco_params):
             if not result["results"]:
                 continue
+            results.extend(result["results"])
 
-            df = pd.concat(
-                [df, pd.DataFrame.from_dict(result["results"])], ignore_index=True
-            )
-
-    df["video_id"] = df.apply(lambda x: get_metadata(x, "video_id"), axis=1)
-    df["name"] = df.apply(lambda x: get_metadata(x, "name"), axis=1)
-    df["description"] = df.apply(lambda x: get_metadata(x, "description"), axis=1)
-    df["views"] = df.apply(lambda x: get_metadata(x, "views"), axis=1)
-    df["duration"] = df.apply(lambda x: get_metadata(x, "duration"), axis=1)
-    df["language"] = df.apply(lambda x: get_metadata(x, "language"), axis=1)
-    df["uploader"] = df.apply(lambda x: get_metadata(x, "uploader"), axis=1)
-    df["n_contributors"] = df.apply(lambda x: get_collective_n_contributor(x), axis=1)
-
-    for crit in CRITERIA:
-        df[crit] = df.apply(lambda x: get_criterion_score(x, crit), axis=1)
-
-    return df
+    return pd.DataFrame(
+        [
+            {
+                meta: get_metadata(x, meta)
+                for meta in [
+                    "video_id",
+                    "name",
+                    "views",
+                    "duration",
+                    "language",
+                    "uploader",
+                ]
+            }
+            | {"n_contributors": get_collective_n_contributor(x)}
+            | {crit: get_criterion_score(x, crit) for crit in CRITERIA}
+            for x in results
+        ]
+    )
