@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: 
-          fetch-tags: true
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -46,7 +46,7 @@ jobs:
 
       - name: Error message
         if: failure()
-        run: |
+        run: >
           curl
           -F 'payload_json={"username": "ExtensionBot",
           "content": "Problem with the build of browser extension version **${{ env.ext_version }}**.\n

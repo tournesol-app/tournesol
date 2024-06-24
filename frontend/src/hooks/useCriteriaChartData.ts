@@ -1,9 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import {
-  VideoSerializerWithCriteria,
-  Recommendation,
-  EntityCriteriaScore,
-} from 'src/services/openapi';
+import { Recommendation, EntityCriteriaScore } from 'src/services/openapi';
 import usePersonalCriteriaScores from 'src/hooks/usePersonalCriteriaScores';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
@@ -40,16 +36,13 @@ interface ScoreByCriterion {
 }
 
 const useCriteriaChartData = ({
-  video,
   reco,
 }: {
-  video?: VideoSerializerWithCriteria;
-  reco?: Recommendation;
+  reco: Recommendation;
 }): UseCriteriaChartDataValue => {
   const criteriaScores: Array<EntityCriteriaScore> = useMemo(
-    () =>
-      video?.criteria_scores || reco?.collective_rating?.criteria_scores || [],
-    [video, reco]
+    () => reco?.collective_rating?.criteria_scores || [],
+    [reco]
   );
   const shouldDisplayChart = criteriaScores && criteriaScores.length > 0;
 

@@ -48,3 +48,7 @@ class VideoEntityTypeTestCase(TestCase):
             last_metadata_request_at=time_ago(days=5)
         )
         self.assertFalse(VideoEntity(video).metadata_needs_to_be_refreshed())
+
+    def test_metadata_views_stored_on_64bits(self, mock_request):
+        video = VideoFactory(metadata__views=9_000_000_000)
+        self.assertEqual(video.metadata["views"], 9_000_000_000)

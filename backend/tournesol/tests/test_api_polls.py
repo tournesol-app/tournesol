@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -28,10 +28,17 @@ class PollsTestCase(TestCase):
     TestCase of the PollsView API.
     """
 
+    @override_settings(
+        # Use dummy cache to disable throttling when counting db queries
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_anonymous_can_read(self):
         """An anonymous user can read a poll with its translated criteria."""
         client = APIClient(HTTP_ACCEPT_LANGUAGE="fr")
-        response = client.get("/polls/videos/")
+
+        with self.assertNumQueries(3):
+            response = client.get("/polls/videos/")
+
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(response_data["name"], "videos")
@@ -347,7 +354,7 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 3)
 
-    def test_anonymous_can_list_unsafe_recommendations(self):
+    def test_anon_can_list_unsafe_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/?unsafe=true")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 4)
@@ -364,10 +371,30 @@ class PollsRecommendationsTestCase(TestCase):
             }
         )
 
-    def test_anonymous_can_list_with_offset(self):
+    def test_anon_can_list_with_limit(self):
         """
-        An anonymous user can list a subset of videos by using the `offset`
-        query parameter.
+        An anonymous user can list a subset of recommendations by using the
+        `limit` query parameter.
+        """
+        response = self.client.get("/polls/videos/recommendations/?limit=1")
+        results = response.data["results"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(results[0]["collective_rating"]["tournesol_score"], 44.0)
+
+        response = self.client.get("/polls/videos/recommendations/?limit=2")
+        results = response.data["results"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(results[0]["collective_rating"]["tournesol_score"], 44.0)
+        self.assertEqual(results[1]["collective_rating"]["tournesol_score"], 33.0)
+
+    def test_anon_can_list_with_offset(self):
+        """
+        An anonymous user can list a subset of recommendations by using the
+        `offset` query parameter.
         """
         response = self.client.get("/polls/videos/recommendations/?offset=2")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -482,6 +509,24 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(resp.data["count"], 0)
         self.assertEqual(resp.data["results"], [])
 
+    def test_anon_can_list_videos_filtered_by_date(self):
+        response = self.client.get(
+            "/polls/videos/recommendations/?date_lte=2021-01-03T00:00:00.000Z"
+        )
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["entity"]["uid"], self.video_3.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video_2.uid)
+
+        response = self.client.get(
+            "/polls/videos/recommendations/?date_gte=2021-01-03T00:00:00.000Z"
+        )
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["entity"]["uid"], self.video_4.uid)
+
     def test_anon_cannot_use_forbidden_strings_in_metadata_filter(self):
         response = self.client.get("/polls/videos/recommendations/?metadata[__]=10")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -573,7 +618,7 @@ class PollsRecommendationsTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_can_list_recommendations_with_score_mode(self):
+    def test_can_list_reco_with_score_mode(self):
         response = self.client.get(
             "/polls/videos/recommendations/?score_mode=all_equal&weights[reliability]=10&weights[importance]=10&weights[largely_recommended]=0"
         )
@@ -589,13 +634,38 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(results[2]["entity"]["uid"], self.video_2.uid)
         self.assertEqual(results[2]["recommendation_metadata"]["total_score"], -2.0)
 
-    def test_can_list_recommendations_with_mehestan_default_weights(self):
+    def test_can_list_reco_with_mehestan_default_weights(self):
         response = self.client.get(
             "/polls/videos/recommendations/"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.data["results"]
         self.assertEqual(len(results), 3)
+
+    def test_users_can_search_video_by_tags(self):
+        """
+        Users can perform a full text search in the videos' tags.
+        """
+        self.video_1.metadata["tags"] = ["tag 1", "tag 2", "tag 3"]
+        self.video_1.save()
+        self.video_2.metadata["tags"] = ["tag 4"]
+        self.video_2.save()
+
+        response = self.client.get("/polls/videos/recommendations/?search=tag")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], self.video_2.uid)
+
+        self.video_3.metadata["tags"] = ["tag 5"]
+        self.video_3.save()
+
+        cache.clear()
+        response = self.client.get("/polls/videos/recommendations/?search=tag")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(response.data["results"][0]["entity"]["uid"], self.video_3.uid)
+        self.assertEqual(response.data["results"][1]["entity"]["uid"], self.video_2.uid)
 
 
 class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
@@ -711,7 +781,6 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         self.assertSetEqual(set(e["entity"]["uid"] for e in results), {self.video_4.uid})
 
 
-
 class PollsEntityTestCase(TestCase):
     """
     TestCase of the PollsEntityView API.
@@ -770,6 +839,16 @@ class PollsEntityTestCase(TestCase):
         self.assertIn("total_score", data["recommendation_metadata"])
         self.assertIn("criteria_scores", data["collective_rating"])
 
+
+    def test_users_can_read_entity_without_score(self):
+        self.video_1.all_poll_ratings.all().delete()
+
+        response = self.client.get(f"/polls/videos/entities/{self.video_1.uid}")
+        data = response.data
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["entity"]["uid"], self.video_1.uid)
+        self.assertEqual(data["collective_rating"], None)
 
     def test_users_read_404_if_uid_doesnt_exist(self):
         # anonymous user
