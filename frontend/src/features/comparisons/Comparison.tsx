@@ -5,11 +5,19 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
-import { CircularProgress, Grid, Card } from '@mui/material';
+import {
+  Box,
+  Card,
+  CircularProgress,
+  Grid,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import {
@@ -17,16 +25,17 @@ import {
   ComparisonRequest,
   ApiError,
 } from 'src/services/openapi';
-import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
+import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
+import ComparisonInput from './ComparisonInput';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -36,6 +45,8 @@ const LEGACY_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'videoA',
   vidB: 'videoB',
 };
+
+const COMPARISON_MAX_WIDTH = '880px';
 
 const getUidsFromLocation = (location: Location) => {
   const searchParams = new URLSearchParams(location.search);
@@ -84,10 +95,15 @@ const Comparison = ({
   const { t, i18n } = useTranslation();
   const currentLang = i18n.resolvedLanguage;
 
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
-  const { name: pollName } = useCurrentPoll();
+
+  const { name: pollName, options } = useCurrentPoll();
+  const mainCriterion = options?.mainCriterionName;
 
   const initializeWithSuggestions = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -133,6 +149,17 @@ const Comparison = ({
 
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
   const onChangeB = useMemo(() => onChange('vidB'), [onChange]);
+
+  const userSettings = useSelector(selectSettings)?.settings;
+  const orderedByPreferences =
+    userSettings.videos?.comparison__criteria_order ?? [];
+
+  const orderedCriteriaRated =
+    [mainCriterion, ...orderedByPreferences].every((orderedCrit) =>
+      initialComparison?.criteria_scores.find(
+        (critScore) => critScore.criteria === orderedCrit
+      )
+    ) ?? false;
 
   /**
    * Automatically initialize the first comparison if the autoFill parameters
@@ -231,16 +258,30 @@ const Comparison = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLang]);
 
-  const onSubmitComparison = async (c: ComparisonRequest) => {
+  const onSubmitComparison = async (
+    c: ComparisonRequest,
+    partialUpdate?: boolean
+  ) => {
     try {
       if (initialComparison) {
         const { entity_a, entity_b, criteria_scores, duration_ms } = c;
-        await UsersService.usersMeComparisonsUpdate({
-          pollName,
-          uidA: entity_a.uid,
-          uidB: entity_b.uid,
-          requestBody: { criteria_scores, duration_ms },
-        });
+
+        if (partialUpdate === true) {
+          const resp = await UsersService.usersMeComparisonsPartialUpdate({
+            pollName,
+            uidA: entity_a.uid,
+            uidB: entity_b.uid,
+            requestBody: { criteria_scores, duration_ms },
+          });
+          setInitialComparison(resp);
+        } else {
+          await UsersService.usersMeComparisonsUpdate({
+            pollName,
+            uidA: entity_a.uid,
+            uidB: entity_b.uid,
+            requestBody: { criteria_scores, duration_ms },
+          });
+        }
       } else {
         await UsersService.usersMeComparisonsCreate({
           pollName,
@@ -275,84 +316,104 @@ const Comparison = ({
       setSelectorB((value) => ({ ...value, ratingIsExpired: true }));
     }
 
-    showSuccessAlert(t('comparison.successfullySubmitted'));
+    if (smallScreen) {
+      showSuccessAlert(t('comparison.ok'), 1200);
+    } else {
+      showSuccessAlert(t('comparison.successfullySubmitted'));
+    }
   };
 
   return (
-    <Grid container maxWidth="880px" gap={1}>
-      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
-        <EntitySelector
-          alignment="left"
-          value={selectorA}
-          onChange={onChangeA}
-          otherUid={uidB}
-          history={selectorAHistory.current}
-        />
-      </Grid>
-      <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
-        <EntitySelector
-          alignment="right"
-          value={selectorB}
-          onChange={onChangeB}
-          otherUid={uidA}
-          history={selectorBHistory.current}
-        />
-      </Grid>
+    <>
       <Grid
-        item
-        xs={12}
-        sx={{
-          mt: 1,
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-          '&:empty': {
-            display: 'none',
-          },
-        }}
-        component={Card}
-        elevation={2}
+        container
+        gap={1}
+        mb={1}
+        maxWidth={COMPARISON_MAX_WIDTH}
+        // Allow the CriterionButtons to slide behind the entity selectors.
+        zIndex={theme.zIndex.comparisonElevation1}
       >
-        <ComparisonHelper />
+        <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
+          <EntitySelector
+            alignment="left"
+            value={selectorA}
+            onChange={onChangeA}
+            otherUid={uidB}
+            history={selectorAHistory.current}
+            orderedCriteriaRated={orderedCriteriaRated}
+          />
+        </Grid>
+        <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
+          <EntitySelector
+            alignment="right"
+            value={selectorB}
+            onChange={onChangeB}
+            otherUid={uidA}
+            history={selectorBHistory.current}
+            orderedCriteriaRated={orderedCriteriaRated}
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12} sx={{ '&:empty': { display: 'none' } }}>
-        <ComparisonEntityContexts selectorA={selectorA} selectorB={selectorB} />
+      <Grid container gap={1} maxWidth={COMPARISON_MAX_WIDTH}>
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          alignItems="center"
+          flexDirection="column"
+          sx={{
+            '&:empty': {
+              display: 'none',
+            },
+          }}
+          component={Card}
+          elevation={2}
+        >
+          <ComparisonHelper />
+        </Grid>
+        <Grid item xs={12} sx={{ '&:empty': { display: 'none' } }}>
+          <ComparisonEntityContexts
+            selectorA={selectorA}
+            selectorB={selectorB}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          alignItems="stretch"
+          flexDirection="column"
+          gap={1}
+          sx={{
+            '&:empty': { display: 'none' },
+          }}
+        >
+          {selectorA.rating && selectorB.rating ? (
+            isLoading ? (
+              <Box display="flex" justifyContent="center">
+                <CircularProgress color="secondary" />
+              </Box>
+            ) : (
+              <ComparisonInput
+                uidA={uidA || ''}
+                uidB={uidB || ''}
+                onSubmit={onSubmitComparison}
+                initialComparison={initialComparison}
+                isComparisonPublic={
+                  selectorA.rating.individual_rating.is_public &&
+                  selectorB.rating.individual_rating.is_public
+                }
+              />
+            )
+          ) : selectorA.uid && selectorB.uid ? (
+            // Entities are selected but ratings are not loaded yet
+            <Box display="flex" justifyContent="center">
+              <CircularProgress color="secondary" />
+            </Box>
+          ) : null}
+        </Grid>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        sx={{
-          marginTop: 2,
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-          py: 3,
-          '&:empty': { display: 'none' },
-        }}
-        component={Card}
-        elevation={2}
-      >
-        {selectorA.rating && selectorB.rating ? (
-          isLoading ? (
-            <CircularProgress color="secondary" />
-          ) : (
-            <ComparisonSliders
-              submit={onSubmitComparison}
-              initialComparison={initialComparison}
-              uidA={uidA || ''}
-              uidB={uidB || ''}
-              isComparisonPublic={
-                selectorA.rating.individual_rating.is_public &&
-                selectorB.rating.individual_rating.is_public
-              }
-            />
-          )
-        ) : selectorA.uid && selectorB.uid ? (
-          // Entities are selected but ratings are not loaded yet
-          <CircularProgress color="secondary" />
-        ) : null}
-      </Grid>
-    </Grid>
+    </>
   );
 };
 
