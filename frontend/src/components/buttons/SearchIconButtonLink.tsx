@@ -6,12 +6,13 @@ import { Search } from '@mui/icons-material';
 
 import { InternalLink } from 'src/components';
 
-const SearchIconButtonLink = () => {
+const SearchIconButtonLink = ({ params = '' }: { params?: string }) => {
   const { t } = useTranslation();
+  const searchParams = params ? '?' + params : '';
 
   return (
     <InternalLink
-      to={`/search`}
+      to={`/search${searchParams}`}
       ariaLabel={t('searchButtonLink.linkToTheSearchPage')}
     >
       <IconButton color="secondary">

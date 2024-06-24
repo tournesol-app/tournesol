@@ -37,7 +37,7 @@ const ALLOWED_SEARCH_PARAMS = [
   'offset',
 ];
 
-const sanitizeSearchParams = (
+const filterAllowedParams = (
   searchParams: URLSearchParams,
   allowList: string[]
 ) => {
@@ -46,6 +46,8 @@ const sanitizeSearchParams = (
       searchParams.delete(key);
     }
   }
+
+  return searchParams;
 };
 
 const FeedTopItems = () => {
@@ -101,7 +103,7 @@ const FeedTopItems = () => {
       return;
     }
 
-    sanitizeSearchParams(searchString, ALLOWED_SEARCH_PARAMS);
+    filterAllowedParams(searchString, ALLOWED_SEARCH_PARAMS);
 
     const fetchEntities = async () => {
       setIsLoading(true);
@@ -144,7 +146,12 @@ const FeedTopItems = () => {
             disableDuration
             extraActions={
               <Box display="flex" gap={1}>
-                <SearchIconButtonLink />
+                <SearchIconButtonLink
+                  params={filterAllowedParams(
+                    new URLSearchParams(location.search),
+                    ALLOWED_SEARCH_PARAMS
+                  ).toString()}
+                />
                 <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
               </Box>
             }
