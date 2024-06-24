@@ -135,6 +135,16 @@ const FeedTopItems = () => {
     pollName,
   ]);
 
+  const makeSearchPageSearchParams = () => {
+    const searchPageSearchParams = filterAllowedParams(
+      new URLSearchParams(location.search),
+      ALLOWED_SEARCH_PARAMS
+    );
+    searchPageSearchParams.set('back', location.pathname);
+    searchPageSearchParams.set('offset', offset.toString());
+    return searchPageSearchParams;
+  };
+
   return (
     <>
       <ContentHeader title={getFeedTopItemsPageName(t, pollName)} />
@@ -147,10 +157,7 @@ const FeedTopItems = () => {
             extraActions={
               <Box display="flex" gap={1}>
                 <SearchIconButtonLink
-                  params={filterAllowedParams(
-                    new URLSearchParams(location.search),
-                    ALLOWED_SEARCH_PARAMS
-                  ).toString()}
+                  params={makeSearchPageSearchParams().toString()}
                 />
                 <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
               </Box>

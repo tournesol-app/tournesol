@@ -75,6 +75,7 @@ const FeedForYou = () => {
 
   const makeSearchPageSearchParams = () => {
     const searchPageSearchParams = new URLSearchParams(userPreferences);
+    searchPageSearchParams.set('back', location.pathname);
     searchPageSearchParams.set('offset', offset.toString());
     return searchPageSearchParams;
   };

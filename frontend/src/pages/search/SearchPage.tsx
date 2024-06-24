@@ -12,6 +12,7 @@ import {
   Pagination,
   PreferencesIconButtonLink,
 } from 'src/components';
+import BackIconButton from 'src/components/buttons/BackIconButton';
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
@@ -112,6 +113,12 @@ const SearchPage = () => {
     pollName,
   ]);
 
+  const createBackButtonPath = () => {
+    return searchParams.get('back') ?? '';
+  };
+
+  const backButtonPath = createBackButtonPath();
+
   return (
     <>
       <ContentHeader title={getFeedTopItemsPageName(t, pollName)} />
@@ -119,10 +126,11 @@ const SearchPage = () => {
         <Box mb={4} px={{ xs: 2, sm: 0 }}>
           <SearchFilter
             extraActions={
-              <>
+              <Box display="flex" gap={1}>
                 <ShareMenuButton isIcon />
+                {backButtonPath && <BackIconButton path={backButtonPath} />}
                 <PreferencesIconButtonLink hash={`#${pollName}-search`} />
-              </>
+              </Box>
             }
           />
         </Box>
