@@ -60,11 +60,11 @@ export const buildVideosFeedForYouSearchParams = (
 ) => {
   const advancedFilters: string[] = [];
 
-  if (userSettings?.feed_foryou__unsafe) {
-    advancedFilters.push('unsafe');
-  }
   if (userSettings?.feed_foryou__exclude_compared_entities) {
     advancedFilters.push('exclude_compared');
+  }
+  if (userSettings?.feed_foryou__unsafe) {
+    advancedFilters.push('unsafe');
   }
 
   if (advancedFilters.length > 0) {

@@ -73,6 +73,12 @@ const FeedForYou = () => {
     fetchEntities();
   }, [criterias, offset, options, pollName, userPreferences]);
 
+  const makeSearchPageSearchParams = () => {
+    const searchPageSearchParams = new URLSearchParams(userPreferences);
+    searchPageSearchParams.set('offset', offset.toString());
+    return searchPageSearchParams;
+  };
+
   return (
     <>
       <ContentHeader title={t('feedForYou.forYou')} />
@@ -84,7 +90,9 @@ const FeedForYou = () => {
           justifyContent="flex-end"
           gap={1}
         >
-          <SearchIconButtonLink />
+          <SearchIconButtonLink
+            params={makeSearchPageSearchParams().toString()}
+          />
           <PreferencesIconButtonLink hash={`#${pollName}-feed-foryou`} />
         </Box>
         {!isLoading && entities.count === 0 && (
