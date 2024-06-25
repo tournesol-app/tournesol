@@ -55,20 +55,22 @@ def add_users_growth_plot():
         start=df.week_date.min(), end=df.week_date.max(), freq="W-MON"
     ).to_list()  # List of all weeks
 
-    # Cut data before 2022 (nothing interresting there)
+    # Cut data before 2022 (nothing interesting there)
     df = df[df.week_date >= datetime(2022, 1, 1)]
 
     # Number of new users for every week_date
     new_users = df.groupby("public_username").first().groupby("week_date").size()
 
-    # Number of users who stopped using the platform
-    # Shift weeks by 1 in the future (consider them quitting the first week they didnt compare anything)
-    # Ignore last month (consider users having done comparison in the last month as still active)
+    # Number of users who stopped using the platform.
+    # Shift weeks by 1 in the future (consider them quitting the first week
+    # they didn't compare anything). Ignore last month (consider users having
+    # done comparison in the last month as still active).
     quit_users = (
         df.groupby("public_username").last().groupby("week_date").size().shift(1).drop(weeks[-4:])
     )
 
-    # Cumulative Number of active users for every week_date (users that are counted in new but not yet in quit)
+    # Cumulative number of active users for every week_date (users that are
+    # counted in new but not yet in quit).
     week_active = (new_users - quit_users).cumsum()
 
     # Number of total users per date (cumulative)
