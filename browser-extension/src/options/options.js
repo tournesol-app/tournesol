@@ -8,8 +8,8 @@
  */
 
 import { frontendUrl } from '../config.js';
+import { getRecomendationsFallbackLanguages } from '../utils.js';
 
-const DEFAULT_RECO_LANG = ['en'];
 // This delay is designed to be few miliseconds slower than our CSS fadeOut
 // animation to let the success message disappear before re-enabling the
 // submit button. Don't make it faster than the fadeOut animation.
@@ -47,20 +47,6 @@ const displayFeedback = (type) => {
  *
  */
 
-const loadLegacyRecommendationsLanguages = () => {
-  return new Promise((resolve) => {
-    try {
-      chrome.storage.local.get(
-        'recommendationsLanguages',
-        ({ recommendationsLanguages }) => resolve(recommendationsLanguages)
-      );
-    } catch (reason) {
-      console.error(reason);
-      resolve();
-    }
-  });
-};
-
 const loadLegacySearchState = () => {
   return new Promise((resolve) => {
     try {
@@ -81,7 +67,7 @@ const loadLegacySearchState = () => {
 const loadLocalPreferences = async () => {
   let error = false;
 
-  const legacyRecoLangs = await loadLegacyRecommendationsLanguages();
+  const fallbackLangs = getRecomendationsFallbackLanguages();
   const legacySearchReco = await loadLegacySearchState();
 
   try {
@@ -97,9 +83,7 @@ const loadLocalPreferences = async () => {
       'recommendations__default_languages',
       (settings) => {
         const languages =
-          settings?.recommendations__default_languages ??
-          legacyRecoLangs?.split(',') ??
-          DEFAULT_RECO_LANG;
+          settings?.recommendations__default_languages ?? fallbackLangs;
 
         document
           .querySelectorAll(

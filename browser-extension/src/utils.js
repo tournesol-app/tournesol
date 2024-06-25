@@ -167,13 +167,14 @@ const getObjectFromLocalStorage = async (key, default_ = null) => {
  *
  */
 
+const DEFAULT_RECO_LANG = 'en';
 const LEGACY_SETTINGS_MAP = {
   extension__search_reco: 'searchEnabled',
 };
 
-const getRecomendationsFallbackLanguages = () => {
+export const getRecomendationsFallbackLanguages = () => {
   const navLang = navigator.language.split('-')[0].toLowerCase();
-  return ['en', 'fr'].includes(navLang) ? [navLang] : ['en'];
+  return ['en', 'fr'].includes(navLang) ? [navLang] : [DEFAULT_RECO_LANG];
 };
 
 const getRecommendationsLanguagesFromStorage = async (default_) => {
@@ -183,32 +184,17 @@ const getRecommendationsLanguagesFromStorage = async (default_) => {
   );
 };
 
-const getRecommendationsLanguagesFromLegacyStorage = async () => {
-  const langs = await getObjectFromLocalStorage('recommendationsLanguages');
-
-  if (langs == null) {
-    return null;
-  }
-
-  return langs.split(',');
-};
-
 /**
  * The languages are retrieved following this priority order:
  *
  *  1. user's local settings
- *  2. else, the lagacy extension storage key
- *  3. else, the navigator.language
- *  4. else, the English language code is returned
+ *  2. else, the navigator.language
+ *  3. else, the English language code is returned
  */
 const getRecommendationsLanguagesAnonymous = async () => {
   const fallbackLangs = getRecomendationsFallbackLanguages();
 
-  const legacyLangs = await getRecommendationsLanguagesFromLegacyStorage();
-
-  const languages = await getRecommendationsLanguagesFromStorage(
-    legacyLangs ?? fallbackLangs
-  );
+  const languages = await getRecommendationsLanguagesFromStorage(fallbackLangs);
 
   return languages;
 };
@@ -233,10 +219,6 @@ export const getRecommendationsLanguagesAuthenticated = async () => {
   }
 
   languages = settings.body?.videos?.recommendations__default_languages ?? null;
-
-  if (languages == null) {
-    languages = await getRecommendationsLanguagesFromLegacyStorage();
-  }
 
   if (languages == null) {
     languages = getRecomendationsFallbackLanguages();
