@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next';
+import { someLangsAreSupported } from 'src/i18n';
 import { uniq } from 'src/utils/array';
 
 export const recommendationsLanguages: {
@@ -78,6 +79,17 @@ export const getLanguageName = (t: TFunction, language: string) => {
   return labelFunction(t);
 };
 
+export const initRecoLanguages = (poll: string, feed: string): string => {
+  const languages = loadRecoLanguagesFromLocalStorage(poll, feed);
+
+  if (languages === null) {
+    return getRecoFallbackLanguages();
+  }
+
+  return languages;
+};
+
+// deprecated: to remove
 export const saveRecommendationsLanguages = (value: string) => {
   localStorage.setItem('recommendationsLanguages', value);
   const event = new CustomEvent('tournesol:recommendationsLanguagesChange', {
@@ -86,16 +98,7 @@ export const saveRecommendationsLanguages = (value: string) => {
   document.dispatchEvent(event);
 };
 
-export const initRecommendationsLanguages = (): string => {
-  const languages = loadRecommendationsLanguages();
-
-  if (languages === null) {
-    return recommendationsLanguagesFromNavigator();
-  }
-
-  return languages;
-};
-
+// deprecated: to remove
 export const loadRecommendationsLanguages = (): string | null =>
   localStorage.getItem('recommendationsLanguages');
 
@@ -108,3 +111,24 @@ export const recommendationsLanguagesFromNavigator = (): string =>
         availableRecommendationsLanguages.includes(language)
       )
   ).join(',');
+
+export const loadRecoLanguagesFromLocalStorage = (
+  poll: string,
+  feed: string
+): string | null => localStorage.getItem(`${poll}:${feed}:languages`);
+
+export const saveRecoLanguagesToLocalStorage = (
+  poll: string,
+  feed: string,
+  value: string
+) => localStorage.setItem(`${poll}:${feed}:languages`, value);
+
+export const getRecoFallbackLanguages = () => {
+  const languages = recommendationsLanguagesFromNavigator();
+
+  if (!someLangsAreSupported(languages.split(','))) {
+    return languages + ',en';
+  }
+
+  return languages;
+};

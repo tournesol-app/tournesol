@@ -19,7 +19,6 @@ import {
   pollVideosInitialFilters,
 } from 'src/utils/constants';
 import { ScoreModeEnum } from 'src/utils/api/recommendations';
-import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 
 /**
  * Filter options for Videos recommendations
@@ -33,11 +32,13 @@ function SearchFilter({
   disableAdvanced = false,
   disableCriteria = false,
   disableDuration = false,
+  onLanguagesChange,
 }: {
   extraActions?: React.ReactNode;
   disableAdvanced?: boolean;
   disableCriteria?: boolean;
   disableDuration?: boolean;
+  onLanguagesChange?: (value: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
@@ -56,10 +57,13 @@ function SearchFilter({
 
   const handleLanguageChange = useCallback(
     (value: string) => {
-      saveRecommendationsLanguages(value);
+      if (onLanguagesChange) {
+        onLanguagesChange(value);
+      }
+
       setFilter(pollVideosFilters.language, value);
     },
-    [setFilter]
+    [setFilter, onLanguagesChange]
   );
 
   const setFilterCallback = useCallback(

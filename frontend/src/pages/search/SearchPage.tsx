@@ -23,11 +23,6 @@ import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
 import { getFeedTopItemsPageName } from 'src/utils/constants';
 import { PollUserSettingsKeys } from 'src/utils/types';
-import {
-  loadRecommendationsLanguages,
-  recommendationsLanguagesFromNavigator,
-  saveRecommendationsLanguages,
-} from 'src/utils/recommendationsLanguages';
 
 const ENTITIES_LIMIT = 20;
 
@@ -40,7 +35,6 @@ const SearchPage = () => {
   const offset = Number(searchParams.get('offset') || 0);
 
   const { name: pollName, criterias, options } = useCurrentPoll();
-  const autoLangDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
   const loginState = useSelector(selectLogin);
   const userSettings = useSelector(selectSettings).settings;
@@ -65,22 +59,8 @@ const SearchPage = () => {
     const searchString = new URLSearchParams(location.search);
     searchString.set('offset', offset.toString());
 
-    if (autoLangDiscovery && searchString.get('language') === null) {
-      let loadedLanguages = preferredLanguages?.join(',') ?? null;
-
-      if (loadedLanguages === null) {
-        // TODO: load from a != local storage key?
-        // TODO: any reason to keep this logic? the browser extension?
-        loadedLanguages = loadRecommendationsLanguages();
-      }
-
-      if (loadedLanguages === null) {
-        loadedLanguages = recommendationsLanguagesFromNavigator();
-        // TODO: save as a != local storage key?
-        saveRecommendationsLanguages(loadedLanguages);
-      }
-
-      searchString.set('language', loadedLanguages);
+    if (searchString.get('language') === null) {
+      searchString.set('language', '');
       history.replace({ search: searchString.toString() });
       return;
     }
@@ -105,7 +85,6 @@ const SearchPage = () => {
 
     fetchEntities();
   }, [
-    autoLangDiscovery,
     criterias,
     history,
     location.search,

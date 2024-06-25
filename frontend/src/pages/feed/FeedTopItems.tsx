@@ -26,17 +26,18 @@ import {
 } from 'src/utils/constants';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import {
-  loadRecommendationsLanguages,
-  recommendationsLanguagesFromNavigator,
-  saveRecommendationsLanguages,
+  getRecoFallbackLanguages,
+  loadRecoLanguagesFromLocalStorage,
+  saveRecoLanguagesToLocalStorage,
 } from 'src/utils/recommendationsLanguages';
 
-const ENTITIES_LIMIT = 20;
 const ALLOWED_SEARCH_PARAMS = [
   pollVideosFilters.date,
   pollVideosFilters.language,
   'offset',
 ];
+const ENTITIES_LIMIT = 20;
+export const FEED_LANG_KEY = 'top-items';
 
 const filterAllowedParams = (
   searchParams: URLSearchParams,
@@ -103,15 +104,19 @@ const FeedTopItems = () => {
       let loadedLanguages = preferredLanguages?.join(',') ?? null;
 
       if (loadedLanguages === null) {
-        // TODO: load from a != local storage key?
-        // TODO: any reason to keep this logic? the browser extension?
-        loadedLanguages = loadRecommendationsLanguages();
+        loadedLanguages = loadRecoLanguagesFromLocalStorage(
+          pollName,
+          FEED_LANG_KEY
+        );
       }
 
       if (loadedLanguages === null) {
-        loadedLanguages = recommendationsLanguagesFromNavigator();
-        // TODO: save as a != local storage key?
-        saveRecommendationsLanguages(loadedLanguages);
+        loadedLanguages = getRecoFallbackLanguages();
+        saveRecoLanguagesToLocalStorage(
+          pollName,
+          FEED_LANG_KEY,
+          loadedLanguages
+        );
       }
 
       searchString.set('language', loadedLanguages);
@@ -176,6 +181,9 @@ const FeedTopItems = () => {
                 />
                 <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
               </Box>
+            }
+            onLanguagesChange={(langs) =>
+              saveRecoLanguagesToLocalStorage(pollName, FEED_LANG_KEY, langs)
             }
           />
         </Box>

@@ -10,8 +10,13 @@ import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
-import { useNotifications, useScrollToLocation } from 'src/hooks';
+import {
+  useCurrentPoll,
+  useNotifications,
+  useScrollToLocation,
+} from 'src/hooks';
 import { theme } from 'src/theme';
+import { FEED_LANG_KEY as FEED_TOPITEMS_LANG_KEY } from 'src/pages/feed/FeedTopItems';
 import {
   mainSectionGridSpacing,
   subSectionBreakpoints,
@@ -31,18 +36,10 @@ import {
   YT_DEFAULT_AUTO_SELECT_ENTITIES,
   YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE,
 } from 'src/utils/constants';
-import {
-  initRecommendationsLanguages,
-  saveRecommendationsLanguages,
-} from 'src/utils/recommendationsLanguages';
+import { initRecoLanguages } from 'src/utils/recommendationsLanguages';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
-
-const initialLanguages = () => {
-  const languages = initRecommendationsLanguages();
-  return languages ? languages.split(',') : [];
-};
 
 /**
  * Display a form allowing the logged users to update all their Tournesol
@@ -53,6 +50,8 @@ const TournesolUserSettingsForm = () => {
 
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
+
+  const { name: pollName } = useCurrentPoll();
 
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
@@ -117,16 +116,9 @@ const TournesolUserSettingsForm = () => {
     pollSettings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
-  // Recommendations (stream)
-  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
-    Array<string>
-  >(initialLanguages());
-
   // Feed: For You
-  // XXX init with browser languages
-  const [forYouLanguages, setForYouLanguages] = useState<Array<string>>(
-    initialLanguages()
-  );
+  // XXX init with the browser langauges
+  const [forYouLanguages, setForYouLanguages] = useState<Array<string>>([]);
 
   // XXX should be initialized from the poll config
   const [forYouUploadDate, setForYouUploadDate] = useState<
@@ -142,9 +134,8 @@ const TournesolUserSettingsForm = () => {
   );
 
   // Feed: Top videos
-  // XXX init with the filter languages of the page TopItems
   const [topItemsLanguages, setTopItemsLanguages] = useState<Array<string>>(
-    initialLanguages()
+    initRecoLanguages(pollName, FEED_TOPITEMS_LANG_KEY)?.split(',') ?? []
   );
 
   useEffect(() => {
@@ -200,10 +191,6 @@ const TournesolUserSettingsForm = () => {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
 
-    if (pollSettings?.recommendations__default_languages != undefined) {
-      setRecoDefaultLanguages(pollSettings.recommendations__default_languages);
-    }
-
     if (pollSettings?.feed_foryou__unsafe != undefined) {
       setForYouUnsafe(pollSettings.feed_foryou__unsafe);
     }
@@ -227,8 +214,6 @@ const TournesolUserSettingsForm = () => {
     event.preventDefault();
     setDisabled(true);
 
-    saveRecommendationsLanguages(recoDefaultLanguages.join(','));
-
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
         requestBody: {
@@ -246,7 +231,6 @@ const TournesolUserSettingsForm = () => {
               compUiWeeklyColGoalMobile,
             extension__search_reco: extSearchRecommendation,
             rate_later__auto_remove: rateLaterAutoRemoval,
-            recommendations__default_languages: recoDefaultLanguages,
             feed_foryou__languages: forYouLanguages,
             feed_foryou__date: forYouUploadDate,
             feed_foryou__unsafe: forYouUnsafe,
@@ -311,8 +295,6 @@ const TournesolUserSettingsForm = () => {
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}
             setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-            recoDefaultLanguages={recoDefaultLanguages}
-            setRecoDefaultLanguages={setRecoDefaultLanguages}
             forYouLanguages={forYouLanguages}
             setForYouLanguages={setForYouLanguages}
             forYouUploadDate={forYouUploadDate}

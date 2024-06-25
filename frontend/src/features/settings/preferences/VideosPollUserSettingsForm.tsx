@@ -16,7 +16,6 @@ import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCrit
 import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
-import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
 import FeedForYou from './fieldsets/FeedForYou';
 import SettingsHeading from './SettingsHeading';
 import FeedTopItems from './fieldsets/FeedTopItems';
@@ -38,8 +37,6 @@ interface VideosPollUserSettingsFormProps {
   setDisplayedCriteria: (target: string[]) => void;
   rateLaterAutoRemoval: number;
   setRateLaterAutoRemoval: (number: number) => void;
-  recoDefaultLanguages: string[];
-  setRecoDefaultLanguages: (target: string[]) => void;
   forYouLanguages: string[];
   setForYouLanguages: (target: string[]) => void;
   forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
@@ -69,8 +66,6 @@ const VideosPollUserSettingsForm = ({
   setDisplayedCriteria,
   rateLaterAutoRemoval,
   setRateLaterAutoRemoval,
-  recoDefaultLanguages,
-  setRecoDefaultLanguages,
   forYouLanguages,
   setForYouLanguages,
   forYouUploadDate,
@@ -200,12 +195,6 @@ const VideosPollUserSettingsForm = ({
           <SettingsHeading
             id="recommendations"
             text={t('pollUserSettingsForm.recommendations')}
-          />
-        </Grid>
-        <Grid item>
-          <RecommendationsDefaultLanguage
-            value={recoDefaultLanguages}
-            onChange={setRecoDefaultLanguages}
           />
         </Grid>
       </Grid>
