@@ -15,6 +15,7 @@ import {
 import BackIconButton from 'src/components/buttons/BackIconButton';
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
+import { selectLogin } from 'src/features/login/loginSlice';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
@@ -41,6 +42,7 @@ const SearchPage = () => {
   const { name: pollName, criterias, options } = useCurrentPoll();
   const autoLangDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
+  const loginState = useSelector(selectLogin);
   const userSettings = useSelector(selectSettings).settings;
   const preferredLanguages =
     userSettings?.[pollName as PollUserSettingsKeys]?.feed_topitems__languages;
@@ -114,7 +116,14 @@ const SearchPage = () => {
   ]);
 
   const createBackButtonPath = () => {
-    return searchParams.get('back') ?? '';
+    const backPath = loginState.backPath;
+    const backParams = loginState.backParams;
+
+    if (!backPath) {
+      return '';
+    }
+
+    return backParams ? backPath + '?' + backParams : backPath;
   };
 
   const backButtonPath = createBackButtonPath();

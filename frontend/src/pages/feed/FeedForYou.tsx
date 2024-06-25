@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { Alert, Box } from '@mui/material';
@@ -14,6 +14,7 @@ import {
   SearchIconButtonLink,
 } from 'src/components';
 import EntityList from 'src/features/entities/EntityList';
+import { updateBackNagivation } from 'src/features/login/loginSlice';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useCurrentPoll } from 'src/hooks';
 import { PaginatedRecommendationList } from 'src/services/openapi';
@@ -24,6 +25,7 @@ const ENTITIES_LIMIT = 20;
 
 const FeedForYou = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const history = useHistory();
   const location = useLocation();
@@ -46,6 +48,15 @@ const FeedForYou = () => {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
   };
+
+  useEffect(() => {
+    dispatch(
+      updateBackNagivation({
+        backPath: location.pathname,
+        backParams: '',
+      })
+    );
+  }, [dispatch, location.pathname]);
 
   useEffect(() => {
     const searchString = new URLSearchParams(userPreferences);
@@ -75,7 +86,6 @@ const FeedForYou = () => {
 
   const makeSearchPageSearchParams = () => {
     const searchPageSearchParams = new URLSearchParams(userPreferences);
-    searchPageSearchParams.set('back', location.pathname);
     searchPageSearchParams.set('offset', offset.toString());
     return searchPageSearchParams;
   };

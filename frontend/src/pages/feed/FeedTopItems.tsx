@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { Box } from '@mui/material';
@@ -15,6 +15,7 @@ import {
 } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
+import { updateBackNagivation } from 'src/features/login/loginSlice';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { PaginatedRecommendationList } from 'src/services/openapi';
@@ -52,6 +53,7 @@ const filterAllowedParams = (
 
 const FeedTopItems = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const history = useHistory();
   const location = useLocation();
@@ -75,6 +77,20 @@ const FeedTopItems = () => {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
   };
+
+  useEffect(() => {
+    const currentParams = filterAllowedParams(
+      new URLSearchParams(location.search),
+      ALLOWED_SEARCH_PARAMS
+    );
+
+    dispatch(
+      updateBackNagivation({
+        backPath: location.pathname,
+        backParams: currentParams.toString(),
+      })
+    );
+  }, [dispatch, location.pathname, location.search]);
 
   useEffect(() => {
     // `searchParams` is defined as a mutable object outside of this effect.
@@ -140,7 +156,6 @@ const FeedTopItems = () => {
       new URLSearchParams(location.search),
       ALLOWED_SEARCH_PARAMS
     );
-    searchPageSearchParams.set('back', location.pathname);
     searchPageSearchParams.set('offset', offset.toString());
     return searchPageSearchParams;
   };
