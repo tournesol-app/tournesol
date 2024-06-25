@@ -51,6 +51,10 @@ export const loginSlice = createSlice({
       state.backPath = action.payload.backPath;
       state.backParams = action.payload.backParams;
     },
+    clearBackNavigation: (state: LoginState) => {
+      state.backPath = undefined;
+      state.backParams = undefined;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -93,7 +97,11 @@ export const loginSlice = createSlice({
 });
 
 export const selectLogin = (state: RootState) => state.token;
-export const { logout, updateUsername, updateBackNagivation } =
-  loginSlice.actions;
+export const {
+  clearBackNavigation,
+  logout,
+  updateUsername,
+  updateBackNagivation,
+} = loginSlice.actions;
 
 export default loginSlice.reducer;
