@@ -35,6 +35,9 @@ def add_users_growth_plot():
     """
     Display the number of new users, active users and total users per week
     """
+
+    st.markdown("#### Active contributors")
+
     df:pd.DataFrame = st.session_state.df
 
     # Prepare dataframe for needed data
@@ -66,7 +69,7 @@ def add_users_growth_plot():
         dtf = pd.merge(dtf, subdf.to_frame(name=name), on="week_date")
 
     # Plot
-    fig = px.line(dtf, x='week_date', y=[name for name,_ in sub_dfs], log_y=True, title="Tournesol active users", labels={'value': 'Users', 'week_date': 'Week'})
+    fig = px.line(dtf, x='week_date', y=[name for name,_ in sub_dfs], log_y=True, labels={'value': 'Users', 'week_date': 'Week'})
     st.plotly_chart(fig)
 
 
