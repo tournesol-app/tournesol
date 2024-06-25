@@ -10,11 +10,12 @@ List of concepts:
         A public comparison between two videos involves one or more quality criteria.
 """
 
+from datetime import datetime
+
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 from utils import set_df
-from datetime import datetime
-import plotly.express as px 
 
 st.set_page_config(
     page_title="Tournesol - Community evolution",
@@ -31,6 +32,7 @@ assert (
     st.session_state.df.week_date.is_monotonic_increasing
 ), "dataframe should be ordered by increasing date"
 
+
 def add_users_growth_plot():
     """
     Display the number of new users, active users and total users per week
@@ -38,38 +40,54 @@ def add_users_growth_plot():
 
     st.markdown("#### Active contributors")
 
-    df:pd.DataFrame = st.session_state.df
+    df: pd.DataFrame = st.session_state.df
 
     # Prepare dataframe for needed data
-    df = df.drop_duplicates(subset=["public_username", "week_date"])[['public_username', 'week_date']].reset_index(drop=True) # Keep only needed data, remove duplicates
-    df.week_date = pd.to_datetime(df.week_date, infer_datetime_format=True, utc=True).astype("datetime64[ns]") # Convert dates to sortable dates
-    weeks = pd.date_range(start=df.week_date.min(), end=df.week_date.max(), freq="W-MON").to_list() # List of all weeks
+    df = df.drop_duplicates(subset=["public_username", "week_date"])[
+        ["public_username", "week_date"]
+    ].reset_index(
+        drop=True
+    )  # Keep only needed data, remove duplicates
+    df.week_date = pd.to_datetime(df.week_date, infer_datetime_format=True, utc=True).astype(
+        "datetime64[ns]"
+    )  # Convert dates to sortable dates
+    weeks = pd.date_range(
+        start=df.week_date.min(), end=df.week_date.max(), freq="W-MON"
+    ).to_list()  # List of all weeks
 
     # Cut data before 2022 (nothing interresting there)
     df = df[df.week_date >= datetime(2022, 1, 1)]
 
     # Number of new users for every week_date
     new_users = df.groupby("public_username").first().groupby("week_date").size()
-    
+
     # Number of users who stopped using the platform
     # Shift weeks by 1 in the future (consider them quitting the first week they didnt compare anything)
     # Ignore last month (consider users having done comparison in the last month as still active)
-    quit_users = df.groupby("public_username").last().groupby("week_date").size().shift(1).drop(weeks[-4:])
+    quit_users = (
+        df.groupby("public_username").last().groupby("week_date").size().shift(1).drop(weeks[-4:])
+    )
 
     # Cumulative Number of active users for every week_date (users that are counted in new but not yet in quit)
     week_active = (new_users - quit_users).cumsum()
-    
+
     # Number of total users per date (cumulative)
     total_users = df.groupby("week_date").size().cumsum()
 
     # Merge previous computed series into one, by week_date
     sub_dfs = [("New users", new_users), ("Active users", week_active), ("All users", total_users)]
     dtf = pd.DataFrame({"week_date": weeks}).reset_index()
-    for name,subdf in sub_dfs:
+    for name, subdf in sub_dfs:
         dtf = pd.merge(dtf, subdf.to_frame(name=name), on="week_date")
 
     # Plot
-    fig = px.line(dtf, x='week_date', y=[name for name,_ in sub_dfs], log_y=True, labels={'value': 'Users', 'week_date': 'Week'})
+    fig = px.line(
+        dtf,
+        x="week_date",
+        y=[name for name, _ in sub_dfs],
+        log_y=True,
+        labels={"value": "Users", "week_date": "Week"},
+    )
     st.plotly_chart(fig)
 
 
@@ -92,7 +110,7 @@ def add_contributors_evolution():
         st.plotly_chart(fig)
 
     with total_tab:
-        fig = (df.groupby("public_username").first().groupby("week_date").size().cumsum().plot())
+        fig = df.groupby("public_username").first().groupby("week_date").size().cumsum().plot()
         fig.update_xaxes(title="Week")
         fig.update_yaxes(title="Total number of public contributors")
         fig.update_layout(showlegend=False)
