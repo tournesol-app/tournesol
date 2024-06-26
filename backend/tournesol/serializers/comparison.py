@@ -176,8 +176,6 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
                 poll, ent_contexts, ret["entity_b"]["metadata"]
             )
 
-        ret.move_to_end("entity_b", last=False)
-        ret.move_to_end("entity_a", last=False)
         return ret
 
     def to_internal_value(self, data):
