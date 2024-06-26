@@ -38,6 +38,7 @@ const SearchPage = () => {
 
   const loginState = useSelector(selectLogin);
   const userSettings = useSelector(selectSettings).settings;
+
   const preferredLanguages =
     userSettings?.[pollName as PollUserSettingsKeys]?.feed_topitems__languages;
 

@@ -98,7 +98,7 @@ export const buildVideosFeedForYouSearchParams = (
 export const getFeedForYouDefaultSearchParams = (
   pollName: string,
   pollOptions: SelectablePoll | undefined,
-  userSettings: TournesolUserSettings,
+  userSettings: TournesolUserSettings | undefined,
   langsDiscovery = false
 ): URLSearchParams => {
   const searchParams = new URLSearchParams(
@@ -140,7 +140,7 @@ export const buildVideosFeedTopItemsSearchParams = (
 export const getFeedTopItemsDefaultSearchParams = (
   pollName: string,
   pollOptions: SelectablePoll | undefined,
-  userSettings: TournesolUserSettings,
+  userSettings: TournesolUserSettings | undefined,
   langsDiscovery = false
 ) => {
   const searchParams = new URLSearchParams(

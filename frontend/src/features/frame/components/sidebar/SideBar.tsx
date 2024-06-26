@@ -114,7 +114,7 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
   const disabledItems = options?.disabledRouteIds ?? [];
   const langsAutoDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
-  const userSettings = useSelector(selectSettings).settings;
+  const userSettings = useSelector(selectSettings)?.settings;
 
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
