@@ -14,6 +14,7 @@ import EntityAnalysisPage from 'src/pages/entities/EntityAnalysisPage';
 import HomePage from 'src/pages/home/Home';
 import ProofByKeywordPage from 'src/pages/me/proof/ProofByKeywordPage';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
+import RecommendationsPageRedirect from 'src/pages/recommendations/RecommendationPageRedirect';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
 import FeedCollectiveRecommendations from 'src/pages/feed/FeedCollectiveRecommendations';
@@ -89,7 +90,7 @@ const PollRoutes = ({ pollName }: Props) => {
     {
       id: RouteID.CollectiveRecommendations,
       url: 'recommendations',
-      page: RecommendationPage,
+      page: RecommendationsPageRedirect,
       type: PublicRoute,
     },
     {

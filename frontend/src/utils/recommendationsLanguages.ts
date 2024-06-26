@@ -2,6 +2,8 @@ import { TFunction } from 'react-i18next';
 import { someLangsAreSupported } from 'src/i18n';
 import { uniq } from 'src/utils/array';
 
+const FALLBACK_LANG = 'en';
+
 export const recommendationsLanguages: {
   [language: string]: (t: TFunction) => string;
 } = {
@@ -127,7 +129,7 @@ export const getRecoFallbackLanguages = () => {
   const languages = recommendationsLanguagesFromNavigator();
 
   if (!someLangsAreSupported(languages.split(','))) {
-    return languages + ',en';
+    return languages + `,${FALLBACK_LANG}`;
   }
 
   return languages;
