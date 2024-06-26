@@ -17,7 +17,6 @@ import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import RecommendationsPageRedirect from 'src/pages/recommendations/RecommendationPageRedirect';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
-import FeedCollectiveRecommendations from 'src/pages/feed/FeedCollectiveRecommendations';
 import FeedForYou from 'src/pages/feed/FeedForYou';
 import FeedTopItems from 'src/pages/feed/FeedTopItems';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
@@ -79,12 +78,6 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.Search,
       url: 'search',
       page: SearchPage,
-      type: PublicRoute,
-    },
-    {
-      id: RouteID.FeedCollectiveRecommendations,
-      url: 'feed/recommendations',
-      page: FeedCollectiveRecommendations,
       type: PublicRoute,
     },
     {

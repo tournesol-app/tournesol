@@ -10,11 +10,7 @@ import {
   replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
-import {
-  useCurrentPoll,
-  useNotifications,
-  useScrollToLocation,
-} from 'src/hooks';
+import { useNotifications, useScrollToLocation } from 'src/hooks';
 import { theme } from 'src/theme';
 import { FEED_LANG_KEY as FEED_TOPITEMS_LANG_KEY } from 'src/pages/feed/FeedTopItems';
 import {
@@ -54,8 +50,6 @@ const TournesolUserSettingsForm = () => {
 
   const dispatch = useDispatch();
   const { showSuccessAlert, showErrorAlert } = useNotifications();
-
-  const { name: pollName } = useCurrentPoll();
 
   const [disabled, setDisabled] = useState(false);
   const [apiErrors, setApiErrors] = useState<ApiError | null>(null);
@@ -197,7 +191,8 @@ const TournesolUserSettingsForm = () => {
     if (pollSettings?.feed_foryou__languages != undefined) {
       setForYouLanguages(pollSettings?.feed_foryou__languages);
     } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
-      setForYouLanguages(initRecoLanguages().split(','));
+      const forYouLangs = initRecoLanguages();
+      setForYouLanguages(forYouLangs ? forYouLangs.split(',') : []);
     }
 
     if (pollSettings?.feed_foryou__unsafe != undefined) {
@@ -217,14 +212,18 @@ const TournesolUserSettingsForm = () => {
     if (pollSettings?.feed_topitems__languages != undefined) {
       setTopItemsLanguages(pollSettings.feed_topitems__languages);
     } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
-      setTopItemsLanguages(
-        initRecoLanguagesWithLocalStorage(
-          pollName,
-          FEED_TOPITEMS_LANG_KEY
-        )?.split(',') ?? []
+      const topItemsLangs = initRecoLanguagesWithLocalStorage(
+        YOUTUBE_POLL_NAME,
+        FEED_TOPITEMS_LANG_KEY
       );
+
+      setTopItemsLanguages(topItemsLangs ? topItemsLangs.split(',') : []);
     }
-  }, [generalSettings, pollSettings]);
+  }, [
+    generalSettings,
+    pollSettings,
+    youtubePoll?.defaultRecoLanguageDiscovery,
+  ]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
