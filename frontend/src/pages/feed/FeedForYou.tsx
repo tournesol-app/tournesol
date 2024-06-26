@@ -33,10 +33,17 @@ const FeedForYou = () => {
   const offset = Number(searchParams.get('offset') || 0);
 
   const { name: pollName, criterias, options } = useCurrentPoll();
+  const langsAutoDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
   const userSettings = useSelector(selectSettings).settings;
+
   const userPreferences: URLSearchParams = useMemo(() => {
-    return getFeedForYouDefaultSearchParams(pollName, options, userSettings);
-  }, [pollName, options, userSettings]);
+    return getFeedForYouDefaultSearchParams(
+      pollName,
+      options,
+      userSettings,
+      langsAutoDiscovery
+    );
+  }, [langsAutoDiscovery, options, pollName, userSettings]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [entities, setEntities] = useState<PaginatedRecommendationList>({

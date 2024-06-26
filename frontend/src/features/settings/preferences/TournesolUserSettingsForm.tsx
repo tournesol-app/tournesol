@@ -35,8 +35,12 @@ import {
   YOUTUBE_POLL_NAME,
   YT_DEFAULT_AUTO_SELECT_ENTITIES,
   YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE,
+  polls,
 } from 'src/utils/constants';
-import { initRecoLanguages } from 'src/utils/recommendationsLanguages';
+import {
+  initRecoLanguages,
+  initRecoLanguagesWithLocalStorage,
+} from 'src/utils/recommendationsLanguages';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
@@ -59,6 +63,8 @@ const TournesolUserSettingsForm = () => {
   const userSettings = useSelector(selectSettings).settings;
   const generalSettings = userSettings?.general;
   const pollSettings = userSettings?.videos;
+
+  const youtubePoll = polls.find((p) => p.name === YOUTUBE_POLL_NAME);
 
   useScrollToLocation();
 
@@ -117,7 +123,6 @@ const TournesolUserSettingsForm = () => {
   );
 
   // Feed: For You
-  // XXX init with the browser langauges
   const [forYouLanguages, setForYouLanguages] = useState<Array<string>>([]);
 
   // XXX should be initialized from the poll config
@@ -134,9 +139,7 @@ const TournesolUserSettingsForm = () => {
   );
 
   // Feed: Top videos
-  const [topItemsLanguages, setTopItemsLanguages] = useState<Array<string>>(
-    initRecoLanguages(pollName, FEED_TOPITEMS_LANG_KEY)?.split(',') ?? []
-  );
+  const [topItemsLanguages, setTopItemsLanguages] = useState<Array<string>>([]);
 
   useEffect(() => {
     if (!generalSettings && !pollSettings) {
@@ -191,6 +194,12 @@ const TournesolUserSettingsForm = () => {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
 
+    if (pollSettings?.feed_foryou__languages != undefined) {
+      setForYouLanguages(pollSettings?.feed_foryou__languages);
+    } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
+      setForYouLanguages(initRecoLanguages().split(','));
+    }
+
     if (pollSettings?.feed_foryou__unsafe != undefined) {
       setForYouUnsafe(pollSettings.feed_foryou__unsafe);
     }
@@ -207,6 +216,13 @@ const TournesolUserSettingsForm = () => {
 
     if (pollSettings?.feed_topitems__languages != undefined) {
       setTopItemsLanguages(pollSettings.feed_topitems__languages);
+    } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
+      setTopItemsLanguages(
+        initRecoLanguagesWithLocalStorage(
+          pollName,
+          FEED_TOPITEMS_LANG_KEY
+        )?.split(',') ?? []
+      );
     }
   }, [generalSettings, pollSettings]);
 

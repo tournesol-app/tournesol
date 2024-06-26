@@ -7,7 +7,13 @@ import {
   VideosPollUserSettings,
 } from 'src/services/openapi';
 
+import { FEED_LANG_KEY as FEED_TOPITEMS_LANG_KEY } from 'src/pages/feed/FeedTopItems';
+
 import { YOUTUBE_POLL_NAME } from './constants';
+import {
+  initRecoLanguages,
+  initRecoLanguagesWithLocalStorage,
+} from './recommendationsLanguages';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
 
 /**
@@ -56,7 +62,8 @@ const settingLanguagesToSearchFilter = (setting: string[]): string => {
 
 export const buildVideosFeedForYouSearchParams = (
   searchParams: URLSearchParams,
-  userSettings: VideosPollUserSettings | undefined
+  userSettings: VideosPollUserSettings | undefined,
+  langsDiscovery = false
 ) => {
   const advancedFilters: string[] = [];
 
@@ -83,13 +90,16 @@ export const buildVideosFeedForYouSearchParams = (
       'language',
       settingLanguagesToSearchFilter(userSettings.feed_foryou__languages)
     );
+  } else if (langsDiscovery) {
+    searchParams.set('language', initRecoLanguages());
   }
 };
 
 export const getFeedForYouDefaultSearchParams = (
   pollName: string,
   pollOptions: SelectablePoll | undefined,
-  userSettings: TournesolUserSettings
+  userSettings: TournesolUserSettings,
+  langsDiscovery = false
 ): URLSearchParams => {
   const searchParams = new URLSearchParams(
     pollOptions?.defaultFiltersFeedForYou
@@ -98,20 +108,31 @@ export const getFeedForYouDefaultSearchParams = (
   const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
 
   if (pollName === YOUTUBE_POLL_NAME) {
-    buildVideosFeedForYouSearchParams(searchParams, userPollSettings);
+    buildVideosFeedForYouSearchParams(
+      searchParams,
+      userPollSettings,
+      langsDiscovery
+    );
   }
 
   return searchParams;
 };
 
 export const buildVideosFeedTopItemsSearchParams = (
+  pollName: string,
   searchParams: URLSearchParams,
-  userSettings: VideosPollUserSettings | undefined
+  userSettings: VideosPollUserSettings | undefined,
+  langsDiscovery = false
 ) => {
   if (userSettings?.feed_topitems__languages != undefined) {
     searchParams.set(
       'language',
       settingLanguagesToSearchFilter(userSettings.feed_topitems__languages)
+    );
+  } else if (langsDiscovery) {
+    searchParams.set(
+      'language',
+      initRecoLanguagesWithLocalStorage(pollName, FEED_TOPITEMS_LANG_KEY)
     );
   }
 };
@@ -119,7 +140,8 @@ export const buildVideosFeedTopItemsSearchParams = (
 export const getFeedTopItemsDefaultSearchParams = (
   pollName: string,
   pollOptions: SelectablePoll | undefined,
-  userSettings: TournesolUserSettings
+  userSettings: TournesolUserSettings,
+  langsDiscovery = false
 ) => {
   const searchParams = new URLSearchParams(
     pollOptions?.defaultFiltersFeedTopItems
@@ -128,7 +150,12 @@ export const getFeedTopItemsDefaultSearchParams = (
   const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
 
   if (pollName === YOUTUBE_POLL_NAME) {
-    buildVideosFeedTopItemsSearchParams(searchParams, userPollSettings);
+    buildVideosFeedTopItemsSearchParams(
+      pollName,
+      searchParams,
+      userPollSettings,
+      langsDiscovery
+    );
   }
 
   const strSearchParams = searchParams.toString();

@@ -26,8 +26,7 @@ import {
 } from 'src/utils/constants';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import {
-  getRecoFallbackLanguages,
-  loadRecoLanguagesFromLocalStorage,
+  initRecoLanguagesWithLocalStorage,
   saveRecoLanguagesToLocalStorage,
 } from 'src/utils/recommendationsLanguages';
 
@@ -62,7 +61,7 @@ const FeedTopItems = () => {
   const offset = Number(searchParams.get('offset') || 0);
 
   const { name: pollName, criterias, options } = useCurrentPoll();
-  const autoLangDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
+  const langsAutoDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
   const userSettings = useSelector(selectSettings).settings;
   const preferredLanguages =
@@ -100,22 +99,13 @@ const FeedTopItems = () => {
     const searchString = new URLSearchParams(location.search);
     searchString.set('offset', offset.toString());
 
-    if (autoLangDiscovery && searchString.get('language') === null) {
+    if (langsAutoDiscovery && searchString.get('language') === null) {
       let loadedLanguages = preferredLanguages?.join(',') ?? null;
 
       if (loadedLanguages === null) {
-        loadedLanguages = loadRecoLanguagesFromLocalStorage(
+        loadedLanguages = initRecoLanguagesWithLocalStorage(
           pollName,
           FEED_LANG_KEY
-        );
-      }
-
-      if (loadedLanguages === null) {
-        loadedLanguages = getRecoFallbackLanguages();
-        saveRecoLanguagesToLocalStorage(
-          pollName,
-          FEED_LANG_KEY,
-          loadedLanguages
         );
       }
 
@@ -146,7 +136,7 @@ const FeedTopItems = () => {
 
     fetchEntities();
   }, [
-    autoLangDiscovery,
+    langsAutoDiscovery,
     criterias,
     history,
     location.search,

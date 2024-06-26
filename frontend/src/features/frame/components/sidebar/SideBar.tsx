@@ -112,6 +112,7 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
   const { name: pollName, options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
+  const langsAutoDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
   const userSettings = useSelector(selectSettings).settings;
 
@@ -137,7 +138,8 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       targetUrl: `${path}feed/top${getFeedTopItemsDefaultSearchParams(
         pollName,
         options,
-        userSettings
+        userSettings,
+        langsAutoDiscovery
       )}`,
       IconComponent: EmojiEventsIcon,
       displayText: getFeedTopItemsPageName(t, pollName),

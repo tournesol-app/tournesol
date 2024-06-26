@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
-import { getRecoFallbackLanguages } from 'src/utils/recommendationsLanguages';
+import { initRecoLanguages } from 'src/utils/recommendationsLanguages';
 import { PollUserSettingsKeys } from 'src/utils/types';
 
 export const usePreferredLanguages = ({ pollName }: { pollName: string }) => {
@@ -8,7 +8,7 @@ export const usePreferredLanguages = ({ pollName }: { pollName: string }) => {
   let preferredLanguages =
     userSettings?.[pollName as PollUserSettingsKeys]?.feed_foryou__languages;
 
-  preferredLanguages ??= getRecoFallbackLanguages().split(',');
+  preferredLanguages ??= initRecoLanguages().split(',');
 
   return preferredLanguages;
 };

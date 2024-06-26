@@ -81,16 +81,6 @@ export const getLanguageName = (t: TFunction, language: string) => {
   return labelFunction(t);
 };
 
-export const initRecoLanguages = (poll: string, feed: string): string => {
-  const languages = loadRecoLanguagesFromLocalStorage(poll, feed);
-
-  if (languages === null) {
-    return getRecoFallbackLanguages();
-  }
-
-  return languages;
-};
-
 // deprecated: to remove
 export const saveRecommendationsLanguages = (value: string) => {
   localStorage.setItem('recommendationsLanguages', value);
@@ -125,11 +115,32 @@ export const saveRecoLanguagesToLocalStorage = (
   value: string
 ) => localStorage.setItem(`${poll}:${feed}:languages`, value);
 
-export const getRecoFallbackLanguages = () => {
+/**
+ * Return the recommendations languages that should be used for anonymous and
+ * authenticated users that have not defined their preferred languages yet.
+ */
+export const initRecoLanguages = (): string => {
   const languages = recommendationsLanguagesFromNavigator();
 
   if (!someLangsAreSupported(languages.split(','))) {
     return languages + `,${FALLBACK_LANG}`;
+  }
+
+  return languages;
+};
+
+/**
+ * Return the same languages as `initRecoLanguages`, but check the browser
+ * local storage first.
+ */
+export const initRecoLanguagesWithLocalStorage = (
+  poll: string,
+  feed: string
+): string => {
+  const languages = loadRecoLanguagesFromLocalStorage(poll, feed);
+
+  if (languages === null) {
+    return initRecoLanguages();
   }
 
   return languages;
