@@ -39,24 +39,21 @@ const FeedForYouDate = ({ scope, value, onChange }: FeedForYouDateProps) => {
 
   return (
     <FormControl fullWidth>
-      <InputLabel
-        id={`label_${scope}_feed_foryou__default_date`}
-        color="secondary"
-      >
+      <InputLabel id={`label_${scope}_feed_foryou__date`} color="secondary">
         {t('videosUserSettingsForm.feed.generic.uploadDate')}
       </InputLabel>
       <Select
         size="small"
         color="secondary"
-        id={`${scope}_feed_foryou__default_date`}
-        labelId={`label_${scope}_feed_foryou__default_date`}
+        id={`${scope}_feed_foryou__date`}
+        labelId={`label_${scope}_feed_foryou__date`}
         value={value}
         label={t('videosUserSettingsForm.recommendations.defaultUploadDate')}
         onChange={(event) =>
           onChange(event.target.value as FeedForyou_dateEnum | BlankEnum)
         }
         inputProps={{
-          'data-testid': `${scope}_feed_foryou__default_date`,
+          'data-testid': `${scope}_feed_foryou__date`,
         }}
       >
         {settingChoices.map((item) => (

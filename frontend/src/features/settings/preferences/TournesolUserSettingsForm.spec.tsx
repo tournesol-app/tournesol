@@ -17,9 +17,9 @@ import { LoginState } from 'src/features/login/LoginState.model';
 import { initialState } from 'src/features/login/loginSlice';
 import {
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  FeedForyou_dateEnum,
   Notifications_langEnum,
   OpenAPI,
-  Recommendations_defaultDateEnum,
   TournesolUserSettings,
 } from 'src/services/openapi';
 
@@ -85,7 +85,7 @@ describe('GenericPollUserSettingsForm', () => {
           videos: {
             rate_later__auto_remove: 16,
             comparison_ui__weekly_collective_goal_display: 'NEVER',
-            recommendations__default_unsafe: true,
+            feed_foryou__unsafe: true,
           },
           general: {
             notifications_email__research: true,
@@ -153,12 +153,8 @@ describe('GenericPollUserSettingsForm', () => {
     const rateLaterAutoRemove = screen.getByTestId(
       'videos_rate_later__auto_remove'
     );
-    const recommendationsDefaultDate = screen.getByTestId(
-      'videos_recommendations__default_date'
-    );
-    const recommendationsDefaultUnsafe = screen.getByTestId(
-      'videos_recommendations__default_unsafe'
-    );
+    const feedForYouDate = screen.getByTestId('videos_feed_foryou__date');
+    const feedForYouUnsafe = screen.getByTestId('videos_feed_foryou__unsafe');
 
     const submit = screen.getByRole('button', { name: /update/i });
 
@@ -168,8 +164,8 @@ describe('GenericPollUserSettingsForm', () => {
       notificationsEmailNewFeatures,
       notificationsLang,
       rateLaterAutoRemove,
-      recommendationsDefaultDate,
-      recommendationsDefaultUnsafe,
+      feedForYouDate,
+      feedForYouUnsafe,
       rendered,
       storeDispatchSpy,
       submit,
@@ -192,8 +188,8 @@ describe('GenericPollUserSettingsForm', () => {
         notificationsEmailNewFeatures,
         notificationsLang,
         rateLaterAutoRemove,
-        recommendationsDefaultDate,
-        recommendationsDefaultUnsafe,
+        feedForYouDate,
+        feedForYouUnsafe,
         submit,
       } = await setup();
 
@@ -209,10 +205,8 @@ describe('GenericPollUserSettingsForm', () => {
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
       );
-      expect(recommendationsDefaultDate).toHaveValue(
-        Recommendations_defaultDateEnum.MONTH
-      );
-      expect(recommendationsDefaultUnsafe).toHaveProperty('checked', false);
+      expect(feedForYouDate).toHaveValue(FeedForyou_dateEnum.MONTH);
+      expect(feedForYouUnsafe).toHaveProperty('checked', false);
 
       fireEvent.click(notificationsEmailResearch);
       fireEvent.click(notificationsEmailNewFeatures);
@@ -220,10 +214,10 @@ describe('GenericPollUserSettingsForm', () => {
       fireEvent.change(compUiWeeklyColGoalDisplay, {
         target: { value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER },
       });
-      fireEvent.change(recommendationsDefaultDate, {
-        target: { value: Recommendations_defaultDateEnum.ALL_TIME },
+      fireEvent.change(feedForYouDate, {
+        target: { value: FeedForyou_dateEnum.ALL_TIME },
       });
-      fireEvent.click(recommendationsDefaultUnsafe);
+      fireEvent.click(feedForYouUnsafe);
 
       expect(submit).toBeEnabled();
 
@@ -237,10 +231,8 @@ describe('GenericPollUserSettingsForm', () => {
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER
       );
-      expect(recommendationsDefaultDate).toHaveValue(
-        Recommendations_defaultDateEnum.ALL_TIME
-      );
-      expect(recommendationsDefaultUnsafe).toHaveProperty('checked', true);
+      expect(feedForYouDate).toHaveValue(FeedForyou_dateEnum.ALL_TIME);
+      expect(feedForYouUnsafe).toHaveProperty('checked', true);
       expect(submit).toBeEnabled();
     });
 
@@ -253,7 +245,7 @@ describe('GenericPollUserSettingsForm', () => {
     it("calls the store's dispatch function after a submit", async () => {
       const {
         rateLaterAutoRemove,
-        recommendationsDefaultUnsafe,
+        feedForYouUnsafe,
         notificationsEmailResearch,
         notificationsEmailNewFeatures,
         storeDispatchSpy,
@@ -264,7 +256,7 @@ describe('GenericPollUserSettingsForm', () => {
       fireEvent.click(notificationsEmailResearch);
       fireEvent.click(notificationsEmailNewFeatures);
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
-      fireEvent.click(recommendationsDefaultUnsafe);
+      fireEvent.click(feedForYouUnsafe);
 
       await act(async () => {
         fireEvent.click(submit);
@@ -282,7 +274,7 @@ describe('GenericPollUserSettingsForm', () => {
             comparison_ui__weekly_collective_goal_display:
               ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
             rate_later__auto_remove: 16,
-            recommendations__default_unsafe: true,
+            feed_foryou__unsafe: true,
           },
         },
       });
