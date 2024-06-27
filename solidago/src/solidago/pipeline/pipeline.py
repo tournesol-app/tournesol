@@ -16,6 +16,7 @@ from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShif
 from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
 
+from solidago.pipeline.inputs import TournesolInput
 from solidago.pipeline.outputs import PipelineOutput
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class Pipeline:
         aggregation: Aggregation = DefaultPipeline.aggregation,
         post_process: PostProcess = DefaultPipeline.post_process,
     ):
-        """ Instantiates the pipeline components.
+        """Instantiates the pipeline components.
         
         Parameters
         ----------
@@ -118,7 +119,22 @@ class Pipeline:
             aggregation=aggregation_from_json(json["aggregation"]),
             post_process=post_process_from_json(json["post_process"]),
         )
-        
+
+    def run(
+        self,
+        input: TournesolInput,
+        criterion: str,
+        output: Optional[PipelineOutput] = None
+    ):
+        # TODO: criterion should be managed by TournesolInput
+
+        # TODO: read existing individual scores from input
+        # to pass `init_user_models`
+        return self(
+            **input.get_pipeline_kwargs(criterion),
+            output=output,
+        )
+
     def __call__(
         self,
         users: pd.DataFrame,
@@ -148,8 +164,6 @@ class Pipeline:
             judgments[user] must yield the judgment data provided by the user
         init_user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        skip_set: set[int]
-            Steps that are skipped in the pipeline
             
         Returns
         -------
@@ -229,8 +243,8 @@ class Pipeline:
             post_process=self.post_process.to_json()
         )
         
+    @staticmethod
     def save_individual_scalings(
-        self,
         user_models: dict[int, ScaledScoringModel],
         output: PipelineOutput,
     ):
@@ -251,8 +265,8 @@ class Pipeline:
         )
         output.save_individual_scalings(scalings_df)
 
+    @staticmethod
     def save_individual_scores(
-        self,
         user_scorings: dict[int, ScoringModel],
         raw_user_scorings: dict[int, ScoringModel],
         voting_rights: VotingRights,

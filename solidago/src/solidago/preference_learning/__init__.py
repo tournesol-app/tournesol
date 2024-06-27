@@ -1,4 +1,4 @@
-""" Step 3 of the pipeline.
+""" **Step 3 of the pipeline**
     
 Preference learning infers, for each user and based on their data,
 a model of the user's preferences.
@@ -13,3 +13,6 @@ try:
     from .lbfgs_generalized_bradley_terry import LBFGSUniformGBT
 except RuntimeError:
     pass
+
+
+__all__ = ["PreferenceLearning", "UniformGBT", "LBFGSUniformGBT"]
