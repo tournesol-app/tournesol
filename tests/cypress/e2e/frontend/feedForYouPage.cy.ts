@@ -1,8 +1,15 @@
 describe('Page - For you', () => {
+
+  const username = "test-feed-foryou-page";
+
   const login = () => {
-    cy.focused().type('user');
+    cy.focused().type(username);
     cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
   }
+
+  beforeEach(() => {
+    cy.recreateUser(username, `${username}@example.org`, "tournesol");
+  });
 
   describe('Poll - videos', () => {
 
@@ -23,17 +30,21 @@ describe('Page - For you', () => {
       });
     });
 
-    /*
     describe('Pagination', () => {
-      it('displays the pagination', () => {
+      it("doesn't display pagination when there is no items", () => {
         cy.visit('/feed/foryou');
-        cy.contains('button', '< -10', {matchCase: false}).should('exist');
-        cy.contains('button', '< -1', {matchCase: false}).should('exist');
-        cy.contains('button', '+1 >', {matchCase: false}).should('exist');
-        cy.contains('button', '+10 >', {matchCase: false}).should('exist');
+        login();
+        cy.contains('button', '< -10', {matchCase: false}).should('not.exist');
+        cy.contains('button', '< -1', {matchCase: false}).should('not.exist');
+        cy.contains('button', '+1 >', {matchCase: false}).should('not.exist');
+        cy.contains('button', '+10 >', {matchCase: false}).should('not.exist');
+
+        cy.contains(
+          "There doesn't seem to be anything to display at the moment.",
+          {matchCase: false}
+        ).should('be.visible');
       });
     });
-    */
 
     describe('Action bar', () => {
       it('displays links to Search and Preferences', () => {
