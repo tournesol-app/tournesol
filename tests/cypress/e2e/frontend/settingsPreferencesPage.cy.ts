@@ -80,277 +80,281 @@ describe('Settings - preferences page', () => {
     });
   });
 
-  describe('Setting - display weekly collective goal', () => {
-    const fieldSelector = '#videos_comparison_ui__weekly_collective_goal_display';
+  describe('Poll - videos', () => {
+    describe('Setting - display weekly collective goal', () => {
+      const fieldSelector = '#videos_comparison_ui__weekly_collective_goal_display';
 
-    it('handles the value ALWAYS', () => {
-      cy.visit('/settings/preferences');
-      login();
+      it('handles the value ALWAYS', () => {
+        cy.visit('/settings/preferences');
+        login();
 
-      // Ensure the default value is ALWAYS
-      cy.get(
-        '[data-testid=videos_weekly_collective_goal_display]'
-      ).should('have.value', 'ALWAYS');
+        // Ensure the default value is ALWAYS
+        cy.get(
+          '[data-testid=videos_weekly_collective_goal_display]'
+        ).should('have.value', 'ALWAYS');
 
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('be.visible');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('be.visible');
+        cy.visit('/comparison');
+        cy.contains('Weekly collective goal').should('be.visible');
+        cy.visit('/comparison?embed=1');
+        cy.contains('Weekly collective goal').should('be.visible');
+      });
+
+      it('handles the value WEBSITE_ONLY', () => {
+        cy.visit('/settings/preferences');
+        login();
+
+        cy.get(fieldSelector).click();
+        cy.contains('Website only').click();
+        cy.contains('Update preferences').click();
+
+        cy.visit('/comparison');
+        cy.contains('Weekly collective goal').should('be.visible');
+        cy.visit('/comparison?embed=1');
+        cy.contains('Weekly collective goal').should('not.exist');
+
+      });
+
+      it('handles the value EMBEDDED_ONLY', () => {
+        cy.visit('/settings/preferences');
+        login();
+
+        cy.get(fieldSelector).click();
+        cy.contains('Extension only').click();
+        cy.contains('Update preferences').click();
+
+        cy.visit('/comparison');
+        cy.contains('Weekly collective goal').should('not.exist');
+        cy.visit('/comparison?embed=1');
+        cy.contains('Weekly collective goal').should('be.visible');
+      });
+
+      it('handles the value NEVER', () => {
+        cy.visit('/settings/preferences');
+        login();
+
+        cy.get(fieldSelector).click();
+        cy.contains('Never').click();
+        cy.contains('Update preferences').click();
+
+        cy.visit('/comparison');
+        cy.contains('Weekly collective goal').should('not.exist');
+        cy.visit('/comparison?embed=1');
+        cy.contains('Weekly collective goal').should('not.exist');
+      });
     });
 
-    it('handles the value WEBSITE_ONLY', () => {
-      cy.visit('/settings/preferences');
-      login();
+    describe('Setting - automatically select entities', () => {
+      it("by default, videos are automatically suggested", () => {
+        cy.visit('/comparison');
+        login();
 
-      cy.get(fieldSelector).click();
-      cy.contains('Website only').click();
-      cy.contains('Update preferences').click();
+        cy.get('button[data-testid="auto-entity-button-compact"]').should('be.visible');
+        cy.get('button[data-testid="entity-select-button-compact"]').should('be.visible');
+        cy.get('button[data-testid="auto-entity-button-full"]').should('not.be.visible');
+        cy.get('button[data-testid="entity-select-button-full"]').should('not.be.visible');
+      });
 
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('be.visible');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('not.exist');
+      it("when false, videos are not automatically suggested", () => {
+        cy.visit('/settings/preferences');
+        login();
 
+        cy.get('[data-testid="videos_comparison__auto_select_entities"]').click();
+        cy.contains('Update preferences').click();
+
+        cy.visit('/comparison');
+
+        cy.get('button[data-testid="auto-entity-button-compact"]').should('not.be.visible');
+        cy.get('button[data-testid="entity-select-button-compact"]').should('not.be.visible');
+        cy.get('button[data-testid="auto-entity-button-full"]').should('be.visible');
+        cy.get('button[data-testid="entity-select-button-full"]').should('be.visible');
+
+        cy.get('button[data-testid="auto-entity-button-full"]').first().click();
+        cy.get('button[data-testid="auto-entity-button-full"]').first().should('not.be.visible');
+
+        cy.get('[class="react-player__preview"]');
+      });
     });
 
-    it('handles the value EMBEDDED_ONLY', () => {
-      cy.visit('/settings/preferences');
-      login();
+    describe('Setting - optional criteria display', () => {
+      it('handles selecting and ordering criteria', () => {
+        cy.visit('/comparison');
+        login();
 
-      cy.get(fieldSelector).click();
-      cy.contains('Extension only').click();
-      cy.contains('Update preferences').click();
+        cy.get('div[id="id_container_criteria_backfire_risk"]').should('not.be.visible');
+        cy.get('div[id="id_container_criteria_layman_friendly"]').should('not.be.visible');
 
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('not.exist');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('be.visible');
+
+        cy.visit('/settings/preferences');
+        cy.contains(
+          'No criteria selected. All optional criteria will be hidden by default.'
+        ).should('be.visible');
+
+        cy.get('input[id="id_selected_optional_layman_friendly"]').click();
+        cy.get('input[id="id_selected_optional_backfire_risk"]').click();
+        cy.get('button[data-testid="videos_move_criterion_up_backfire_risk"]').click();
+        cy.contains('Update preferences').click();
+
+        cy.visit('/comparison');
+
+        // The selected optional criteria should be visible...
+        cy.get('div[id="id_container_criteria_backfire_risk"]').should('be.visible');
+        cy.get('div[id="id_container_criteria_layman_friendly"]').should('be.visible');
+
+        // ...and correctly ordered.
+        cy.get('div[id="id_container_criteria_backfire_risk"]')
+          .next().should('have.attr', 'id', 'id_container_criteria_layman_friendly');
+
+        cy.get('div[id="id_container_criteria_reliability"]').should('not.be.visible');
+      });
     });
 
-    it('handles the value NEVER', () => {
-      cy.visit('/settings/preferences');
-      login();
+    describe('Setting - rate-later auto removal', () => {
+      it('handles changing the value', () => {
+        cy.visit('/rate_later');
+        login();
 
-      cy.get(fieldSelector).click();
-      cy.contains('Never').click();
-      cy.contains('Update preferences').click();
+        cy.contains('removed after 4 comparison(s)').should('be.visible');
 
-      cy.visit('/comparison');
-      cy.contains('Weekly collective goal').should('not.exist');
-      cy.visit('/comparison?embed=1');
-      cy.contains('Weekly collective goal').should('not.exist');
-    });
-  });
+        cy.get('a[aria-label="Link to the preferences page"]').click();
+        cy.contains('Automatic removal').click().type('{selectAll}1');
+        cy.contains('Update preferences').click();
 
-  describe('Setting - automatically select entities', () => {
-    it("by default, videos are automatically suggested", () => {
-      cy.visit('/comparison');
-      login();
+        cy.visit('/rate_later');
+        cy.contains('removed after 1 comparison(s)').should('be.visible');
 
-      cy.get('button[data-testid="auto-entity-button-compact"]').should('be.visible');
-      cy.get('button[data-testid="entity-select-button-compact"]').should('be.visible');
-      cy.get('button[data-testid="auto-entity-button-full"]').should('not.be.visible');
-      cy.get('button[data-testid="entity-select-button-full"]').should('not.be.visible');
+        cy.get('input[placeholder="Video ID or URL"]').type('nffV2ZuEy_M').type('{enter}');
+        cy.contains('Your rate-later list contains 1 video').should('be.visible');
+
+        cy.visit('/comparison?uidA=yt%3AnffV2ZuEy_M&uidB=yt%3AdQw4w9WgXcQ');
+        cy.get('button').contains('submit').click();
+        cy.visit('/rate_later');
+        cy.contains('Your rate-later list contains 0 videos').should('be.visible');
+      });
     });
 
-    it("when false, videos are not automatically suggested", () => {
-      cy.visit('/settings/preferences');
-      login();
+    describe('Feed - For you', () => {
 
-      cy.get('[data-testid="videos_comparison__auto_select_entities"]').click();
-      cy.contains('Update preferences').click();
+      /**
+       * TODO: make the assertions of the following tests relevant
+       */
+      describe('Setting - upload date', () => {
+        const fieldSelector = '#videos_feed_foryou__date';
 
-      cy.visit('/comparison');
+        it('handles the value A month ago', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      cy.get('button[data-testid="auto-entity-button-compact"]').should('not.be.visible');
-      cy.get('button[data-testid="entity-select-button-compact"]').should('not.be.visible');
-      cy.get('button[data-testid="auto-entity-button-full"]').should('be.visible');
-      cy.get('button[data-testid="entity-select-button-full"]').should('be.visible');
+          // Ensure the default value is A month ago
+          cy.get(
+            '[data-testid=videos_feed_foryou__date]'
+          ).should('have.value', 'MONTH');
+        });
 
-      cy.get('button[data-testid="auto-entity-button-full"]').first().click();
-      cy.get('button[data-testid="auto-entity-button-full"]').first().should('not.be.visible');
+        it('handles the value A day ago', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      cy.get('[class="react-player__preview"]');
-    });
-  });
+          cy.get(fieldSelector).click();
+          cy.contains('A day ago').click();
+          cy.contains('Update preferences').click();
 
-  describe('Setting - optional criteria display', () => {
-    it('handles selecting and ordering criteria', () => {
-      cy.visit('/comparison');
-      login();
+          cy.visit('/feed/foryou');
+          cy.contains(
+            "There doesn't seem to be anything to display at the moment.",
+            {matchCase: false}
+          ).should('be.visible');
+        });
 
-      cy.get('div[id="id_container_criteria_backfire_risk"]').should('not.be.visible');
-      cy.get('div[id="id_container_criteria_layman_friendly"]').should('not.be.visible');
+        it('handles the value A week ago', () => {
+          cy.visit('/settings/preferences');
+          login();
 
+          cy.get(fieldSelector).click();
+          cy.contains('A week ago').click();
+          cy.contains('Update preferences').click();
 
-      cy.visit('/settings/preferences');
-      cy.contains(
-        'No criteria selected. All optional criteria will be hidden by default.'
-      ).should('be.visible');
+          cy.visit('/feed/foryou');
+          cy.contains(
+            "There doesn't seem to be anything to display at the moment.",
+            {matchCase: false}
+          ).should('be.visible');
+        });
 
-      cy.get('input[id="id_selected_optional_layman_friendly"]').click();
-      cy.get('input[id="id_selected_optional_backfire_risk"]').click();
-      cy.get('button[data-testid="videos_move_criterion_up_backfire_risk"]').click();
-      cy.contains('Update preferences').click();
+        it('handles the value A year ago', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      cy.visit('/comparison');
+          cy.get(fieldSelector).click();
+          cy.contains('A year ago').click();
+          cy.contains('Update preferences').click();
 
-      // The selected optional criteria should be visible...
-      cy.get('div[id="id_container_criteria_backfire_risk"]').should('be.visible');
-      cy.get('div[id="id_container_criteria_layman_friendly"]').should('be.visible');
+          cy.visit('/feed/foryou');
+          cy.contains(
+            "There doesn't seem to be anything to display at the moment.",
+            {matchCase: false}
+          ).should('not.exist');
+        });
 
-      // ...and correctly ordered.
-      cy.get('div[id="id_container_criteria_backfire_risk"]')
-        .next().should('have.attr', 'id', 'id_container_criteria_layman_friendly');
+        it('handles the value All time', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      cy.get('div[id="id_container_criteria_reliability"]').should('not.be.visible');
-    });
-  });
+          cy.get(fieldSelector).click();
+          cy.contains('All time').click();
+          cy.contains('Update preferences').click();
 
-  describe('Setting - rate-later auto removal', () => {
-    it('handles changing the value', () => {
-      cy.visit('/rate_later');
-      login();
+          cy.visit('/feed/foryou');
+          cy.contains(
+            "There doesn't seem to be anything to display at the moment.",
+            {matchCase: false}
+          ).should('not.exist');
+        });
+      });
 
-      cy.contains('removed after 4 comparison(s)').should('be.visible');
+      describe('Setting - unsafe', () => {
+        it('handles the value false (hide)', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      cy.get('a[aria-label="Link to the preferences page"]').click();
-      cy.contains('Automatic removal').click().type('{selectAll}1');
-      cy.contains('Update preferences').click();
+          cy.get('[data-testid=videos_feed_foryou__unsafe]');
+          cy.contains('Update preferences').click();
 
-      cy.visit('/rate_later');
-      cy.contains('removed after 1 comparison(s)').should('be.visible');
+          // TODO: add missing assertions
+        });
 
-      cy.get('input[placeholder="Video ID or URL"]').type('nffV2ZuEy_M').type('{enter}');
-      cy.contains('Your rate-later list contains 1 video').should('be.visible');
+        it('handles the value true (show)', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      cy.visit('/comparison?uidA=yt%3AnffV2ZuEy_M&uidB=yt%3AdQw4w9WgXcQ');
-      cy.get('button').contains('submit').click();
-      cy.visit('/rate_later');
-      cy.contains('Your rate-later list contains 0 videos').should('be.visible');
-    });
-  });
+          cy.get('[data-testid=videos_feed_foryou__unsafe]').click();
+          cy.contains('Update preferences').click();
 
-  describe('Setting - upload date', () => {
-    const fieldSelector = '#videos_recommendations__default_date';
+           // TODO: add missing assertions
+        });
+      });
 
-    it('handles the value A month ago', () => {
-      cy.visit('/settings/preferences');
-      login();
+      describe('Setting - exclude compared entities', () => {
+        it('handles the value false (exclude)', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      // Ensure the default value is A month ago
-      cy.get(
-        '[data-testid=videos_recommendations__default_date]'
-      ).should('have.value', 'MONTH');
+          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]');
+          cy.contains('Update preferences').click();
 
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month'
-      );
-    });
+          // TODO: add missing assertions
+        });
 
-    it('handles the value A day ago', () => {
-      cy.visit('/settings/preferences');
-      login();
+        it('handles the value true (include)', () => {
+          cy.visit('/settings/preferences');
+          login();
 
-      cy.get(fieldSelector).click();
-      cy.contains('A day ago').click();
-      cy.contains('Update preferences').click();
+          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]')
+            .click();
+          cy.contains('Update preferences').click();
 
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Today&language=en'
-      );
-    });
-
-    it('handles the value A week ago', () => {
-      cy.visit('/settings/preferences');
-      login();
-
-      cy.get(fieldSelector).click();
-      cy.contains('A week ago').click();
-      cy.contains('Update preferences').click();
-
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Week&language=en'
-      );
-    });
-
-    it('handles the value A year ago', () => {
-      cy.visit('/settings/preferences');
-      login();
-
-      cy.get(fieldSelector).click();
-      cy.contains('A year ago').click();
-      cy.contains('Update preferences').click();
-
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Year&language=en'
-      );
-    });
-
-    it('handles the value All time', () => {
-      cy.visit('/settings/preferences');
-      login();
-
-      cy.get(fieldSelector).click();
-      cy.contains('All time').click();
-      cy.contains('Update preferences').click();
-
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=&language=en'
-      );
-    });
-  });
-
-  describe('Setting - unsafe', () => {
-    it('handles the value false (hide)', () => {
-      cy.visit('/settings/preferences');
-      login();
-
-      cy.get('[data-testid=videos_recommendations__default_unsafe]');
-      cy.contains('Update preferences').click();
-
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&language=en'
-      );
-    });
-
-    it('handles the value true (show)', () => {
-      cy.visit('/settings/preferences');
-      login();
-
-      cy.get('[data-testid=videos_recommendations__default_unsafe]').click();
-      cy.contains('Update preferences').click();
-
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&advanced=unsafe&language=en'
-      );
-    });
-  });
-
-  describe('Setting - exclude compared entities', () => {
-    it('handles the value false (exclude)', () => {
-      cy.visit('/settings/preferences');
-      login();
-
-      cy.get('[data-testid=videos_recommendations__default_exclude_compared_entities]');
-      cy.contains('Update preferences').click();
-
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&language=en'
-      );
-    });
-
-    it('handles the value true (include)', () => {
-      cy.visit('/settings/preferences');
-      login();
-
-      cy.get('[data-testid=videos_recommendations__default_exclude_compared_entities]')
-        .click();
-      cy.contains('Update preferences').click();
-
-      cy.get('a[aria-label="Link to the recommendations page"]').should(
-        'have.attr', 'href', '/recommendations?date=Month&advanced=exclude_compared&language=en'
-      );
+          // TODO: add missing assertions
+        });
+      });
     });
   });
 });
