@@ -94,9 +94,11 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         ),
     )
 
-    # Settings starting with `recommendations__` are deprecated and will be
-    # replaced by `feed_foryou__` and `feed_topvideos__`.
-
+    # Settings starting with `recommendations__` are deprecated.
+    #
+    # They are kept for backward compatibility, mainly for older versions of
+    # the browser extension. They are replaced by settings dedicated to
+    # specific recommendation feeds.
     recommendations__default_date = serializers.ChoiceField(
         choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
     )
