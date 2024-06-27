@@ -190,14 +190,6 @@ const VideosPollUserSettingsForm = ({
           />
         </Grid>
       </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
-        <Grid item>
-          <SettingsHeading
-            id="recommendations"
-            text={t('pollUserSettingsForm.recommendations')}
-          />
-        </Grid>
-      </Grid>
     </Box>
   );
 };

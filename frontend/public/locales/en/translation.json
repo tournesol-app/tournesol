@@ -1,4 +1,7 @@
 {
+  "backIconButton": {
+    "backToThePreviousPage": "Back to the previous page"
+  },
   "copyUriToClipboard": {
     "copy": "Copy URI",
     "copied": "Copied!"
@@ -518,8 +521,7 @@
     "displayCollectiveGoalOnMobile": "Display the weekly collective goal on mobile devices.",
     "letTournesolSuggestElements": "Let Tournesol suggest elements to compare when opening the comparison interface.",
     "extensionYoutube": "Extension (YouTube)",
-    "rateLater": "Rate-later list",
-    "recommendations": "Recommendations (stream)"
+    "rateLater": "Rate-later list"
   },
   "videosUserSettingsForm": {
     "feed": {
@@ -542,9 +544,7 @@
       }
     },
     "recommendations": {
-      "defaultUploadDate": "Default value of the uploaded date filter",
-      "defaultLanguages": "Videos languages",
-      "keepEmptyToSelectAllLang": "Keep empty to select all languages. (Also used by the browser extension.)"
+      "defaultUploadDate": "Default value of the uploaded date filter"
     }
   },
   "generalUserSettingsForm": {
