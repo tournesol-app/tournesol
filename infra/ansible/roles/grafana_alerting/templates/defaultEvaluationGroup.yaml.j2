@@ -26,34 +26,6 @@ groups:
                 maxDataPoints: 43200
                 queryType: range
                 refId: A
-            - refId: C
-              relativeTimeRange:
-                from: 1200
-                to: 0
-              datasourceUid: __expr__
-              model:
-                conditions:
-                    - evaluator:
-                        params:
-                            - 0.5
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                            - C
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                datasource:
-                    type: __expr__
-                    uid: __expr__
-                expression: B
-                intervalMs: 1000
-                maxDataPoints: 43200
-                refId: C
-                type: threshold
             - refId: B
               relativeTimeRange:
                 from: 1200
@@ -81,16 +53,43 @@ groups:
                 expression: A
                 intervalMs: 1000
                 maxDataPoints: 43200
-                reducer: mean
+                reducer: last
                 refId: B
                 settings:
-                    mode: dropNN
+                    mode: replaceNN
+                    replaceWithValue: 0
                 type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.5
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
           dashboardUid: {{grafana.dashboard_alerting_uid}}
           panelId: 7
           noDataState: OK
           execErrState: Error
-          for: 0s
+          for: 6m
           annotations:
             __dashboardUid__: {{grafana.dashboard_alerting_uid}}
             __panelId__: "7"
