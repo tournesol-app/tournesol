@@ -180,7 +180,9 @@ const FeedTopItems = () => {
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
-            emptyMessage={isLoading ? '' : t('entityList.noItems')}
+            emptyMessage={
+              isLoading ? '' : t('entityList.noItemsMatchYourSearchCriteria')
+            }
           />
         </LoaderWrapper>
         {!isLoading && (entities.count ?? 0) > 0 && (

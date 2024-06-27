@@ -909,7 +909,8 @@
     "thisPageDisplaysItemsAccordingToYourFilters": "Cette page affiche des éléments en fonction de vos filtres personnels. Vous pouvez les modifier en cliquant sur l'icône d'engrenage ci-dessus."
   },
   "entityList": {
-    "noItems": "Il semblerait qu'il n'y ait pas d'élément à afficher pour l'instant."
+    "noItems": "Il semblerait qu'il n'y ait pas d'élément à afficher pour l'instant.",
+    "noItemsMatchYourSearchCriteria": "Aucun élément ne correspond à vos critères de recherche."
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",

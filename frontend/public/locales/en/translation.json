@@ -900,7 +900,8 @@
     "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above."
   },
   "entityList": {
-    "noItems": "There doesn't seem to be anything to display at the moment."
+    "noItems": "There doesn't seem to be anything to display at the moment.",
+    "noItemsMatchYourSearchCriteria": "No item matches your search criteria."
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
