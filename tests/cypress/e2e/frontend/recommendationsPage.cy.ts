@@ -15,9 +15,9 @@ describe('Recommendations page', () => {
       it('sets default languages properly and backward navigation works', () => {
         cy.visit('/');
         cy.location('pathname').should('equal', '/');
-        cy.contains('Recommendations').click();
+        cy.visit('/recommendations');
         cy.contains('Filters', {matchCase: false}).should('be.visible');
-        cy.location('search').should('contain', 'language=en');
+        cy.location('search').should('contain', 'language=');
         cy.go('back');
         cy.location('pathname').should('equal', '/');
       });
@@ -25,7 +25,7 @@ describe('Recommendations page', () => {
       it('expand filters and backward navigation works', () => {
         cy.visit('/');
         cy.location('pathname').should('equal', '/');
-        cy.contains('Recommendations').click();
+        cy.visit('/recommendations');
         cy.contains('Filters', {matchCase: false}).click();
         cy.contains('Duration (minutes)', {matchCase: false}).should('be.visible');
         cy.go('back');
@@ -34,8 +34,7 @@ describe('Recommendations page', () => {
 
       describe('Filter - upload date', () => {
         it('must propose 5 timedelta', () => {
-          cy.visit('/');
-          cy.contains('Recommendations').click();
+          cy.visit('/recommendations');
 
           cy.contains('Filters', {matchCase: false}).click();
           cy.contains('Uploaded', {matchCase: false}).should('be.visible');
@@ -46,17 +45,31 @@ describe('Recommendations page', () => {
           cy.contains('All time', {matchCase: false}).should('be.visible');
         });
 
-        it('must filter by month by default ', () => {
-          cy.visit('/');
-          cy.contains('Recommendations').click();
-
-          // The month filter must appear in the URL.
-          cy.location('search').should('contain', 'date=Month');
-
+        it('must filter by all time by default ', () => {
+          cy.visit('/recommendations');
           cy.contains('Filters', {matchCase: false}).click();
-          // The month input must be checked.
+          cy.contains('All time', {matchCase: false}).should('be.visible');
+          cy.get('input[type=checkbox][name=""]').should('be.checked');
+        });
+
+        it('shows no videos for 1 day ago', () => {
+          cy.visit('/recommendations?advanced=unsafe');
+          cy.contains('Filters', {matchCase: false}).click();
+          cy.contains('A day ago', {matchCase: false}).should('be.visible');
+          cy.get('input[type=checkbox][name="Today"]').check();
+          cy.get('input[type=checkbox][name="Today"]').should('be.checked');
+          cy.contains('No video matches your search criteria.', {matchCase: false}).should('be.visible');
+        });
+
+        it('allows to filter: a month ago', () => {
+          cy.visit('/recommendations?advanced=unsafe');
+          cy.contains('Filters', {matchCase: false}).click();
+
           cy.contains('A month ago', {matchCase: false}).should('be.visible');
+          cy.contains('A month ago', {matchCase: false}).click();
           cy.get('input[type=checkbox][name=Month]').should('be.checked');
+          cy.get('input[type=checkbox][name=""]').should('not.be.checked');
+          cy.contains('No video matches your search criteria.', {matchCase: false}).should('be.visible');
         });
 
         it('allows to filter: a year ago', () => {
@@ -71,26 +84,6 @@ describe('Recommendations page', () => {
           cy.location('search').should('contain', 'date=Year');
           cy.contains('No video corresponds to your search criteria.', {matchCase: false}).should('not.exist');
         });
-
-        it('shows no videos for 1 day ago', () => {
-          cy.visit('/recommendations?advanced=unsafe');
-          cy.contains('Filters', {matchCase: false}).click();
-          cy.contains('A day ago', {matchCase: false}).should('be.visible');
-          cy.get('input[type=checkbox][name="Today"]').check();
-          cy.get('input[type=checkbox][name="Today"]').should('be.checked');
-          cy.contains('No video matches your search criteria.', {matchCase: false}).should('be.visible');
-        });
-
-        it('allows to filter: all time', () => {
-          cy.visit('/recommendations?advanced=unsafe');
-          cy.contains('Filters', {matchCase: false}).click();
-
-          cy.contains('A year ago', {matchCase: false}).should('be.visible');
-          cy.contains('All time', {matchCase: false}).click();
-          cy.get('input[type=checkbox][name=""]').should('be.checked');
-          cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
-          cy.contains('No video matches your search criteria.', {matchCase: false}).should('not.exist');
-        })
       });
     });
     describe('List of recommendations', () => {

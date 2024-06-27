@@ -32,6 +32,8 @@ function RecommendationsPage() {
   const history = useHistory();
   const location = useLocation();
   const { baseUrl, name: pollName, criterias, options } = useCurrentPoll();
+  const langsAutoDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
+
   const [isLoading, setIsLoading] = useState(true);
 
   const allowPublicPersonalRecommendations =
@@ -76,6 +78,16 @@ function RecommendationsPage() {
     }
     locationSearchRef.current = location.search;
 
+    // `searchParams` is defined as a mutable object outside of this
+    // effect. So it's safer to recreate it here, instead of adding
+    // a dependency to the current effect.
+    const searchParams = new URLSearchParams(location.search);
+    if (langsAutoDiscovery && searchParams.get('language') === null) {
+      searchParams.set('language', '');
+      history.replace({ search: searchParams.toString() });
+      return;
+    }
+
     const fetchEntities = async () => {
       setIsLoading(true);
 
@@ -110,6 +122,7 @@ function RecommendationsPage() {
     criterias,
     displayPersonalRecommendations,
     history,
+    langsAutoDiscovery,
     location.search,
     options,
     pollName,
