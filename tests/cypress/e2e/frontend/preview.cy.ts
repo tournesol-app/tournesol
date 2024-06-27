@@ -1,6 +1,6 @@
 describe('Preview of Recommendations page via API', () => {
   it('supports a preview of a recommendations page with filters', () => {
-    cy.visit('/recommendations');
+    cy.visit('/recommendations?language=en');
     cy.contains('Filters', { matchCase: false }).click();
     cy.contains('A week ago', { matchCase: false }).click();
     cy.url().then(url => {
@@ -17,5 +17,5 @@ describe('Preview of Recommendations page via API', () => {
         }
       )
     });
-  })
+  });
 })
