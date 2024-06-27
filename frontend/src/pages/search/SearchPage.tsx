@@ -18,11 +18,9 @@ import EntityList from 'src/features/entities/EntityList';
 import { selectLogin } from 'src/features/login/loginSlice';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
-import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
 import { getFeedTopItemsPageName } from 'src/utils/constants';
-import { PollUserSettingsKeys } from 'src/utils/types';
 
 const ENTITIES_LIMIT = 20;
 
@@ -35,12 +33,7 @@ const SearchPage = () => {
   const offset = Number(searchParams.get('offset') || 0);
 
   const { name: pollName, criterias, options } = useCurrentPoll();
-
   const loginState = useSelector(selectLogin);
-  const userSettings = useSelector(selectSettings).settings;
-
-  const preferredLanguages =
-    userSettings?.[pollName as PollUserSettingsKeys]?.feed_topitems__languages;
 
   const [isLoading, setIsLoading] = useState(true);
   const [entities, setEntities] = useState<PaginatedRecommendationList>({
@@ -85,15 +78,7 @@ const SearchPage = () => {
     };
 
     fetchEntities();
-  }, [
-    criterias,
-    history,
-    location.search,
-    offset,
-    options,
-    preferredLanguages,
-    pollName,
-  ]);
+  }, [criterias, history, location.search, offset, options, pollName]);
 
   const createBackButtonPath = () => {
     const backPath = loginState.backPath;
