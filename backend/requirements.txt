@@ -23,7 +23,7 @@ django-rest-registration==0.8.2
 django-sql-utils==0.6.1
 # Django REST Framework is used for most of the API routes
 # https://github.com/encode/django-rest-framework
-djangorestframework==3.14.0
+djangorestframework==3.15.2
 # Used to generate OpenAPI documentation exposed by Swagger UI
 # See https://github.com/tfranzel/drf-spectacular
 drf-spectacular==0.26.5
