@@ -19,6 +19,21 @@ describe('Page - Top items', () => {
       });
     });
 
+    describe('Action bar', () => {
+      it('displays links to Search and Preferences', () => {
+        cy.visit('/feed/top');
+        cy.get('a[data-testid="icon-link-to-search-page"]').click();
+        cy.location('pathname').should('equal', '/search');
+
+        cy.get('a[data-testid="icon-link-back-to-previous-page"]').click();
+
+        cy.location('pathname').should('equal', '/feed/top');
+        cy.get('a[data-testid="icon-link-to-preferences-page"]').click();
+        cy.location('pathname').should('equal', '/login');
+      });
+    });
+
+
     describe('Search filters', () => {
       it('sets default languages properly and backward navigation works', () => {
         cy.visit('/');

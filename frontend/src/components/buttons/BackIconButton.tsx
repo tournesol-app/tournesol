@@ -22,6 +22,7 @@ const BackIconButton = ({ path = '' }: { path: string }) => {
     <InternalLink
       to={path}
       ariaLabel={t('backIconButton.backToThePreviousPage')}
+      data-testid="icon-link-back-to-previous-page"
     >
       <IconButton color="secondary">
         <Undo />

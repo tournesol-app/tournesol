@@ -14,6 +14,7 @@ const SearchIconButtonLink = ({ params = '' }: { params?: string }) => {
     <InternalLink
       to={`/search${searchParams}`}
       ariaLabel={t('searchButtonLink.linkToTheSearchPage')}
+      data-testid="icon-link-to-search-page"
     >
       <IconButton color="secondary">
         <Search />
