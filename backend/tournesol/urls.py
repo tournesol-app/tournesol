@@ -229,7 +229,7 @@ urlpatterns = [
         name="website_preview_faq",
     ),
     # This route show the preview for the recommendations page
-    # after preview/recommendations route rewrite the url paramaters
+    # after preview/recommendations route rewrite the url parameters
     # to match backend parameters and redirect
     path(
         "preview/_recommendations/",
@@ -237,6 +237,12 @@ urlpatterns = [
         name="website_preview_recommendations_internal",
     ),
     # This route rewrite the url for the recommendations page preview
+    re_path(
+        r"^preview/search/?$",
+        get_preview_recommendations_redirect_params,
+        name="website_preview_search_redirect",
+    ),
+    # kept for backward compatibility, replaced by preview/search/
     re_path(
         r"^preview/recommendations/?$",
         get_preview_recommendations_redirect_params,
