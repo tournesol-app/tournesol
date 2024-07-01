@@ -138,7 +138,7 @@ urlpatterns = [
     path(
         "users/me/suggestions/<str:poll_name>/tocompare/",
         SuggestionsToCompare.as_view(),
-        name="suggestions_me_to_compare"
+        name="suggestions_me_to_compare",
     ),
     # Sub-samples API
     path(
@@ -228,22 +228,26 @@ urlpatterns = [
         DynamicWebsitePreviewFAQ.as_view(),
         name="website_preview_faq",
     ),
-    # This route show the preview for the recommendations page
-    # after preview/recommendations route rewrite the url parameters
-    # to match backend parameters and redirect
+    # This route creates the preview of an entity list.
     path(
         "preview/_recommendations/",
         DynamicWebsitePreviewRecommendations.as_view(),
         name="website_preview_recommendations_internal",
     ),
-    # This route rewrite the url for the recommendations page preview
+    # These routes rewrite the URL parameters to match those used by the
+    # recommendations of the polls API.
     re_path(
         r"^preview/search/?$",
         get_preview_recommendations_redirect_params,
         name="website_preview_search_redirect",
     ),
-    # kept for backward compatibility, replaced by preview/search/
     re_path(
+        r"^preview/feed/top/?$",
+        get_preview_recommendations_redirect_params,
+        name="website_preview_feed_topitems_redirect",
+    ),
+    re_path(
+        # kept for backward compatibility, replaced by preview/search/
         r"^preview/recommendations/?$",
         get_preview_recommendations_redirect_params,
         name="website_preview_recommendations_redirect",

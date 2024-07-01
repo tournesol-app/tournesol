@@ -456,6 +456,7 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
         self.preview_internal_url = "/preview/_recommendations"
         self.preview_urls = [
             "/preview/search",
+            "/preview/feed/top"
             "/preview/recommendations",
         ]
 

@@ -51,7 +51,9 @@ DATE_PARAM_TO_SECONDS_MAX_AGE = {
 def get_preview_recommendations_redirect_params(request):
     """
     Preview of a Recommendations page.
-    Returns HTTP redirection to transform the query parameters into the format used by the backend.
+
+    Returns a HTTP redirection to format the query parameters to match those
+    used by the polls API.
     """
     # pylint: disable=too-many-branches
     params = request.GET
