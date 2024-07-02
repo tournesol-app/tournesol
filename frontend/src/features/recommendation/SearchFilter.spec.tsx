@@ -74,7 +74,11 @@ describe('Filters feature', () => {
             <StyledEngineProvider injectFirst>
               <ThemeProvider theme={theme}>
                 <PollProvider>
-                  <SearchFilter />
+                  <SearchFilter
+                    onLanguagesChange={(langs) =>
+                      localStorage.setItem('languages', langs)
+                    }
+                  />
                 </PollProvider>
               </ThemeProvider>
             </StyledEngineProvider>
@@ -180,8 +184,7 @@ describe('Filters feature', () => {
       search: 'language=' + encodeURIComponent(expectInUrl),
     });
 
-    // TODO: update this line, new functions replace `loadRecommendationsLanguages`
-    //expect(loadRecommendationsLanguages()).toEqual(expectInUrl);
+    expect(localStorage.getItem('languages')).toEqual(expectInUrl);
   }
 
   it('Can open and close the filters menu', async () => {
