@@ -125,10 +125,5 @@ export const initRecoLanguagesWithLocalStorage = (
   feed: string
 ): string => {
   const languages = loadRecoLanguagesFromLocalStorage(poll, feed);
-
-  if (languages === null) {
-    return initRecoLanguages();
-  }
-
-  return languages;
+  return languages === null ? initRecoLanguages() : languages;
 };
