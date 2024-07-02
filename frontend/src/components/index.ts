@@ -18,5 +18,7 @@ export { default as MenuButton } from './MenuButton';
 export { default as LanguageSelector } from './LanguageSelector';
 export { default as CriteriaIcon } from './CriteriaIcon';
 export { default as TitledPaper } from './TitledPaper';
+
+export { default as BackIconButton } from './buttons/BackIconButton';
 export { default as PreferencesIconButtonLink } from './buttons/PreferencesIconButtonLink';
 export { default as SearchIconButtonLink } from './buttons/SearchIconButtonLink';

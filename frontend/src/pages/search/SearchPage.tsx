@@ -6,13 +6,13 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 
 import {
+  BackIconButton,
   ContentBox,
   ContentHeader,
   LoaderWrapper,
   Pagination,
   PreferencesIconButtonLink,
 } from 'src/components';
-import BackIconButton from 'src/components/buttons/BackIconButton';
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
 import { selectLogin } from 'src/features/login/loginSlice';
