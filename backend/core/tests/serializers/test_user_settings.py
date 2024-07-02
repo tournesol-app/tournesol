@@ -148,9 +148,9 @@ class VideosPollUserSettingsSerializerTestCase(TestCase):
             self.assertEqual(serializer.is_valid(), False)
             self.assertIn(setting, serializer.errors)
 
-    def test_validate_feed_foryou__default_date(self):
+    def test_validate_feed_foryou__date(self):
         """
-        The `validate_feed_foryou__default_date` setting must accept only
+        The `validate_feed_foryou__date` setting must accept only
         a specific set of date.
         """
 
