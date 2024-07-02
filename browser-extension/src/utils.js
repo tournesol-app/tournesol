@@ -218,7 +218,7 @@ export const getRecommendationsLanguagesAuthenticated = async () => {
     return await getRecommendationsLanguagesAnonymous();
   }
 
-  languages = settings.body?.videos?.recommendations__default_languages ?? null;
+  languages = settings.body?.videos?.feed_foryou__languages ?? null;
 
   if (languages == null) {
     languages = getRecomendationsFallbackLanguages();
