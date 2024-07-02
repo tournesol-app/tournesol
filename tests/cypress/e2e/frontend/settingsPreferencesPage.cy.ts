@@ -312,24 +312,45 @@ describe('Settings - preferences page', () => {
       });
 
       describe('Setting - unsafe', () => {
+        const videosForYouDateSelector = '#videos_feed_foryou__date';
+
         it('handles the value false (hide)', () => {
           cy.visit('/settings/preferences');
           login();
 
-          cy.get('[data-testid=videos_feed_foryou__unsafe]');
+          cy.get(videosForYouDateSelector).click();
+          cy.contains('All time').click();
+
           cy.contains('Update preferences').click();
 
-          // TODO: add missing assertions
+          cy.visit('/feed/foryou');
+          cy.get('[aria-label="pagination navigation"] button').last().click();
+          cy.get('[data-testid="video-card-overall-score"]').last().trigger("mouseover");
+
+          cy.contains(
+            "The score of this video is below the recommendability threshold defined by Tournesol.",
+            {matchCase: false}
+          ).should('not.exist');
         });
 
         it('handles the value true (show)', () => {
           cy.visit('/settings/preferences');
           login();
 
+          cy.get(videosForYouDateSelector).click();
+          cy.contains('All time').click();
+
           cy.get('[data-testid=videos_feed_foryou__unsafe]').click();
           cy.contains('Update preferences').click();
 
-           // TODO: add missing assertions
+          cy.visit('/feed/foryou');
+          cy.get('[aria-label="pagination navigation"] button').last().click();
+          cy.get('[data-testid="video-card-overall-score"]').last().trigger("mouseover");
+
+          cy.contains(
+            "The score of this video is below the recommendability threshold defined by Tournesol.",
+            {matchCase: false}
+          ).should('be.visible');
         });
       });
 
