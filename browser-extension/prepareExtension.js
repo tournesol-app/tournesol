@@ -124,10 +124,7 @@ const manifest = {
         production: ['https://tournesol.app/*'],
         'dev-env': ['http://localhost:3000/*'],
       }),
-      js: [
-        'fetchTournesolToken.js',
-        'fetchTournesolRecommendationsLanguages.js',
-      ],
+      js: ['fetchTournesolToken.js'],
       run_at: 'document_end',
       all_frames: true,
     },

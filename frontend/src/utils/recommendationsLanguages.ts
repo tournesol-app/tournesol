@@ -1,5 +1,8 @@
 import { TFunction } from 'react-i18next';
+import { someLangsAreSupported } from 'src/i18n';
 import { uniq } from 'src/utils/array';
+
+const FALLBACK_LANG = 'en';
 
 export const recommendationsLanguages: {
   [language: string]: (t: TFunction) => string;
@@ -78,27 +81,6 @@ export const getLanguageName = (t: TFunction, language: string) => {
   return labelFunction(t);
 };
 
-export const saveRecommendationsLanguages = (value: string) => {
-  localStorage.setItem('recommendationsLanguages', value);
-  const event = new CustomEvent('tournesol:recommendationsLanguagesChange', {
-    detail: { recommendationsLanguages: value },
-  });
-  document.dispatchEvent(event);
-};
-
-export const initRecommendationsLanguages = (): string => {
-  const languages = loadRecommendationsLanguages();
-
-  if (languages === null) {
-    return recommendationsLanguagesFromNavigator();
-  }
-
-  return languages;
-};
-
-export const loadRecommendationsLanguages = (): string | null =>
-  localStorage.getItem('recommendationsLanguages');
-
 export const recommendationsLanguagesFromNavigator = (): string =>
   // This function also exists in the browser extension so it should be updated there too if it changes here.
   uniq(
@@ -108,3 +90,40 @@ export const recommendationsLanguagesFromNavigator = (): string =>
         availableRecommendationsLanguages.includes(language)
       )
   ).join(',');
+
+export const loadRecoLanguagesFromLocalStorage = (
+  poll: string,
+  feed: string
+): string | null => localStorage.getItem(`${poll}:${feed}:languages`);
+
+export const saveRecoLanguagesToLocalStorage = (
+  poll: string,
+  feed: string,
+  value: string
+) => localStorage.setItem(`${poll}:${feed}:languages`, value);
+
+/**
+ * Return the recommendations languages that should be used for anonymous and
+ * authenticated users that have not defined their preferred languages yet.
+ */
+export const initRecoLanguages = (): string => {
+  const languages = recommendationsLanguagesFromNavigator();
+
+  if (!someLangsAreSupported(languages.split(','))) {
+    return languages + `,${FALLBACK_LANG}`;
+  }
+
+  return languages;
+};
+
+/**
+ * Return the same languages as `initRecoLanguages`, but check the browser
+ * local storage first.
+ */
+export const initRecoLanguagesWithLocalStorage = (
+  poll: string,
+  feed: string
+): string => {
+  const languages = loadRecoLanguagesFromLocalStorage(poll, feed);
+  return languages === null ? initRecoLanguages() : languages;
+};

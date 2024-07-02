@@ -12,6 +12,7 @@ import {
 } from 'src/features/settings/userSettingsSlice';
 import { useNotifications, useScrollToLocation } from 'src/hooks';
 import { theme } from 'src/theme';
+import { FEED_LANG_KEY as FEED_TOPITEMS_LANG_KEY } from 'src/pages/feed/FeedTopItems';
 import {
   mainSectionGridSpacing,
   subSectionBreakpoints,
@@ -20,8 +21,8 @@ import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  FeedForyou_dateEnum,
   Notifications_langEnum,
-  Recommendations_defaultDateEnum,
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
@@ -30,19 +31,15 @@ import {
   YOUTUBE_POLL_NAME,
   YT_DEFAULT_AUTO_SELECT_ENTITIES,
   YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE,
+  polls,
 } from 'src/utils/constants';
 import {
-  initRecommendationsLanguages,
-  saveRecommendationsLanguages,
+  initRecoLanguages,
+  initRecoLanguagesWithLocalStorage,
 } from 'src/utils/recommendationsLanguages';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
-
-const initialLanguages = () => {
-  const languages = initRecommendationsLanguages();
-  return languages ? languages.split(',') : [];
-};
 
 /**
  * Display a form allowing the logged users to update all their Tournesol
@@ -60,6 +57,8 @@ const TournesolUserSettingsForm = () => {
   const userSettings = useSelector(selectSettings).settings;
   const generalSettings = userSettings?.general;
   const pollSettings = userSettings?.videos;
+
+  const youtubePoll = polls.find((p) => p.name === YOUTUBE_POLL_NAME);
 
   useScrollToLocation();
 
@@ -117,24 +116,24 @@ const TournesolUserSettingsForm = () => {
     pollSettings?.rate_later__auto_remove ?? DEFAULT_RATE_LATER_AUTO_REMOVAL
   );
 
-  // Recommendations (stream)
-  const [recoDefaultLanguages, setRecoDefaultLanguages] = useState<
-    Array<string>
-  >(initialLanguages());
+  // Feed: For You
+  const [forYouLanguages, setForYouLanguages] = useState<Array<string>>([]);
 
-  // Recommendations (page)
-  const [recoDefaultUnsafe, setRecoDefaultUnsafe] = useState(
-    pollSettings?.recommendations__default_unsafe ?? false
+  // XXX should be initialized from the poll config
+  const [forYouUploadDate, setForYouUploadDate] = useState<
+    FeedForyou_dateEnum | BlankEnum
+  >(pollSettings?.feed_foryou__date ?? FeedForyou_dateEnum.MONTH);
+
+  const [forYouUnsafe, setForYouUnsafe] = useState(
+    pollSettings?.feed_foryou__unsafe ?? false
   );
-  const [recoDefaultExcludeCompared, setRecoDefaultExcludeCompared] = useState(
-    pollSettings?.recommendations__default_exclude_compared_entities ?? false
+  // XXX should be initialized from the poll config
+  const [forYouExcludeCompared, setForYouExcludeCompared] = useState(
+    pollSettings?.feed_foryou__exclude_compared_entities ?? true
   );
-  const [recoDefaultUploadDate, setRecoDefaultUploadDate] = useState<
-    Recommendations_defaultDateEnum | BlankEnum
-  >(
-    pollSettings?.recommendations__default_date ??
-      Recommendations_defaultDateEnum.MONTH
-  );
+
+  // Feed: Top videos
+  const [topItemsLanguages, setTopItemsLanguages] = useState<Array<string>>([]);
 
   useEffect(() => {
     if (!generalSettings && !pollSettings) {
@@ -189,33 +188,46 @@ const TournesolUserSettingsForm = () => {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
 
-    if (pollSettings?.recommendations__default_languages != undefined) {
-      setRecoDefaultLanguages(pollSettings.recommendations__default_languages);
+    if (pollSettings?.feed_foryou__languages != undefined) {
+      setForYouLanguages(pollSettings?.feed_foryou__languages);
+    } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
+      const forYouLangs = initRecoLanguages();
+      setForYouLanguages(forYouLangs ? forYouLangs.split(',') : []);
     }
 
-    if (pollSettings?.recommendations__default_unsafe != undefined) {
-      setRecoDefaultUnsafe(pollSettings.recommendations__default_unsafe);
+    if (pollSettings?.feed_foryou__unsafe != undefined) {
+      setForYouUnsafe(pollSettings.feed_foryou__unsafe);
     }
 
-    if (
-      pollSettings?.recommendations__default_exclude_compared_entities !=
-      undefined
-    ) {
-      setRecoDefaultExcludeCompared(
-        pollSettings.recommendations__default_exclude_compared_entities
+    if (pollSettings?.feed_foryou__exclude_compared_entities != undefined) {
+      setForYouExcludeCompared(
+        pollSettings.feed_foryou__exclude_compared_entities
       );
     }
 
-    if (pollSettings?.recommendations__default_date != undefined) {
-      setRecoDefaultUploadDate(pollSettings.recommendations__default_date);
+    if (pollSettings?.feed_foryou__date != undefined) {
+      setForYouUploadDate(pollSettings.feed_foryou__date);
     }
-  }, [generalSettings, pollSettings]);
+
+    if (pollSettings?.feed_topitems__languages != undefined) {
+      setTopItemsLanguages(pollSettings.feed_topitems__languages);
+    } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
+      const topItemsLangs = initRecoLanguagesWithLocalStorage(
+        YOUTUBE_POLL_NAME,
+        FEED_TOPITEMS_LANG_KEY
+      );
+
+      setTopItemsLanguages(topItemsLangs ? topItemsLangs.split(',') : []);
+    }
+  }, [
+    generalSettings,
+    pollSettings,
+    youtubePoll?.defaultRecoLanguageDiscovery,
+  ]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setDisabled(true);
-
-    saveRecommendationsLanguages(recoDefaultLanguages.join(','));
 
     const response: void | TournesolUserSettings =
       await UsersService.usersMeSettingsPartialUpdate({
@@ -234,11 +246,11 @@ const TournesolUserSettingsForm = () => {
               compUiWeeklyColGoalMobile,
             extension__search_reco: extSearchRecommendation,
             rate_later__auto_remove: rateLaterAutoRemoval,
-            recommendations__default_languages: recoDefaultLanguages,
-            recommendations__default_date: recoDefaultUploadDate,
-            recommendations__default_unsafe: recoDefaultUnsafe,
-            recommendations__default_exclude_compared_entities:
-              recoDefaultExcludeCompared,
+            feed_foryou__languages: forYouLanguages,
+            feed_foryou__date: forYouUploadDate,
+            feed_foryou__unsafe: forYouUnsafe,
+            feed_foryou__exclude_compared_entities: forYouExcludeCompared,
+            feed_topitems__languages: topItemsLanguages,
           },
         },
       }).catch((reason: ApiError) => {
@@ -298,14 +310,16 @@ const TournesolUserSettingsForm = () => {
             setDisplayedCriteria={setDisplayedCriteria}
             rateLaterAutoRemoval={rateLaterAutoRemoval}
             setRateLaterAutoRemoval={setRateLaterAutoRemoval}
-            recoDefaultLanguages={recoDefaultLanguages}
-            setRecoDefaultLanguages={setRecoDefaultLanguages}
-            recoDefaultUnsafe={recoDefaultUnsafe}
-            setRecoDefaultUnsafe={setRecoDefaultUnsafe}
-            recoDefaultExcludeCompared={recoDefaultExcludeCompared}
-            setRecoDefaultExcludeCompared={setRecoDefaultExcludeCompared}
-            recoDefaultUploadDate={recoDefaultUploadDate}
-            setRecoDefaultUploadDate={setRecoDefaultUploadDate}
+            forYouLanguages={forYouLanguages}
+            setForYouLanguages={setForYouLanguages}
+            forYouUploadDate={forYouUploadDate}
+            setForYouUploadDate={setForYouUploadDate}
+            forYouUnsafe={forYouUnsafe}
+            setForYouUnsafe={setForYouUnsafe}
+            forYouExcludeCompared={forYouExcludeCompared}
+            setForYouExcludeCompared={setForYouExcludeCompared}
+            topVideosLanguages={topItemsLanguages}
+            setTopVideosLangauges={setTopItemsLanguages}
             apiErrors={apiErrors}
           />
         </SettingsSection>
