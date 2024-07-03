@@ -58,7 +58,7 @@ describe('Recommendations page', () => {
           cy.contains('A day ago', {matchCase: false}).should('be.visible');
           cy.get('input[type=checkbox][name="Today"]').check();
           cy.get('input[type=checkbox][name="Today"]').should('be.checked');
-          cy.contains('No video matches your search criteria.', {matchCase: false}).should('be.visible');
+          cy.contains('No item matches your search filters.', {matchCase: false}).should('be.visible');
         });
 
         it('allows to filter: a month ago', () => {
@@ -69,7 +69,7 @@ describe('Recommendations page', () => {
           cy.contains('A month ago', {matchCase: false}).click();
           cy.get('input[type=checkbox][name=Month]').should('be.checked');
           cy.get('input[type=checkbox][name=""]').should('not.be.checked');
-          cy.contains('No video matches your search criteria.', {matchCase: false}).should('be.visible');
+          cy.contains('No item matches your search filters.', {matchCase: false}).should('be.visible');
         });
 
         it('allows to filter: a year ago', () => {
@@ -82,7 +82,7 @@ describe('Recommendations page', () => {
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
 
           cy.location('search').should('contain', 'date=Year');
-          cy.contains('No video corresponds to your search criteria.', {matchCase: false}).should('not.exist');
+          cy.contains('No item matches your search filters.', {matchCase: false}).should('not.exist');
         });
       });
     });

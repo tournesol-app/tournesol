@@ -22,6 +22,8 @@ describe('Page - Top items', () => {
     describe('Action bar', () => {
       it('displays links to Search and Preferences', () => {
         cy.visit('/feed/top');
+
+        cy.get('button[aria-label="Share button"]').should('be.visible');
         cy.get('a[data-testid="icon-link-to-search-page"]').click();
         cy.location('pathname').should('equal', '/search');
 
@@ -90,7 +92,7 @@ describe('Page - Top items', () => {
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
 
           cy.location('search').should('contain', 'date=Year');
-          cy.contains('No video corresponds to your search criteria.', {matchCase: false}).should('not.exist');
+          cy.contains('No item matches your search filters.', {matchCase: false}).should('not.exist');
         });
 
         it('shows no videos for 1 day ago', () => {
@@ -100,7 +102,7 @@ describe('Page - Top items', () => {
           cy.contains('A day ago', {matchCase: false}).should('be.visible');
           cy.get('input[type=checkbox][name="Today"]').check();
           cy.get('input[type=checkbox][name="Today"]').should('be.checked');
-          cy.contains('No item matches your search criteria.', {matchCase: false}).should('be.visible');
+          cy.contains('No item matches your search filters.', {matchCase: false}).should('be.visible');
         });
 
         it('allows to filter: all time', () => {
@@ -111,7 +113,7 @@ describe('Page - Top items', () => {
           cy.contains('All time', {matchCase: false}).click();
           cy.get('input[type=checkbox][name=""]').should('be.checked');
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
-          cy.contains('No item matches your search criteria.', {matchCase: false}).should('not.exist');
+          cy.contains('No item matches your search filters.', {matchCase: false}).should('not.exist');
         });
       });
     });

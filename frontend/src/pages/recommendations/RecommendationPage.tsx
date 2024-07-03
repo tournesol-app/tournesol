@@ -161,7 +161,7 @@ function RecommendationsPage() {
           <EntityList
             entities={entities.results}
             emptyMessage={
-              isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
+              isLoading ? '' : t('entityList.noItemMatchesYourFilters')
             }
           />
         </LoaderWrapper>
