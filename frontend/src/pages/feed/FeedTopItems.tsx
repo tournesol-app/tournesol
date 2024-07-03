@@ -16,6 +16,7 @@ import {
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
 import { updateBackNagivation } from 'src/features/login/loginSlice';
+import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { PaginatedRecommendationList } from 'src/services/openapi';
@@ -169,6 +170,7 @@ const FeedTopItems = () => {
             disableDuration
             extraActions={
               <Box display="flex" gap={1}>
+                <ShareMenuButton isIcon />
                 <SearchIconButtonLink
                   params={makeSearchPageSearchParams().toString()}
                 />
