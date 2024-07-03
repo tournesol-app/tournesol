@@ -157,7 +157,10 @@ const FeedTopItems = () => {
 
   return (
     <>
-      <ContentHeader title={getFeedTopItemsPageName(t, pollName)} />
+      <ContentHeader
+        title={getFeedTopItemsPageName(t, pollName)}
+        subtitle={t('feedTopItems.generic.recommendedByTheCommunity')}
+      />
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box mb={4} px={{ xs: 2, sm: 0 }}>
           <SearchFilter
@@ -180,9 +183,7 @@ const FeedTopItems = () => {
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
-            emptyMessage={
-              isLoading ? '' : t('entityList.noItemsMatchYourSearchCriteria')
-            }
+            emptyMessage={isLoading ? '' : t('entityList.noItems')}
           />
         </LoaderWrapper>
         {!isLoading && (entities.count ?? 0) > 0 && (

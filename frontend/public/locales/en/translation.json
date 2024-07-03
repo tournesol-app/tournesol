@@ -897,11 +897,21 @@
   },
   "feedForYou": {
     "forYou": "For you",
+    "accordingToYourPreferences": "According to <2>your preferences</2>",
     "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above."
   },
   "entityList": {
     "noItems": "There doesn't seem to be anything to display at the moment.",
     "noItemsMatchYourSearchCriteria": "No item matches your search criteria."
+  },
+  "feedTopItems": {
+    "generic": {
+      "recommendedByTheCommunity": "Recommended by the community",
+      "results": "Results"
+    },
+    "videos": {
+      "title": "Top videos"
+    }
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
@@ -1060,6 +1070,10 @@
     }
   },
   "noVideoCorrespondsToSearchCriterias": "No video matches your search criteria.",
+  "searchPage": {
+    "search": "Search",
+    "exploreTheRecommendationsUsingSearchFilters": "Explore the recommendations using search filters"
+  },
   "profile": "Profile",
   "signup": {
     "oneLastStep": "One last step",
@@ -1114,14 +1128,6 @@
   "videoMetadata": {
     "duration": "Duration",
     "publication_date": "Publication date"
-  },
-  "feedTopItems": {
-    "videos": {
-      "title": "Top videos"
-    },
-    "generic": {
-      "results": "Results"
-    }
   },
   "presidentielle2022": {
     "dialogs": {

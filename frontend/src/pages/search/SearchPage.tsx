@@ -20,7 +20,6 @@ import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { PaginatedRecommendationList } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
-import { getFeedTopItemsPageName } from 'src/utils/constants';
 
 const ENTITIES_LIMIT = 20;
 
@@ -95,7 +94,10 @@ const SearchPage = () => {
 
   return (
     <>
-      <ContentHeader title={getFeedTopItemsPageName(t, pollName)} />
+      <ContentHeader
+        title={t('searchPage.search')}
+        subtitle={t('searchPage.exploreTheRecommendationsUsingSearchFilters')}
+      />
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box mb={4} px={{ xs: 2, sm: 0 }}>
           <SearchFilter

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ import { Alert, Box } from '@mui/material';
 import {
   ContentBox,
   ContentHeader,
+  InternalLink,
   LoaderWrapper,
   Pagination,
   PreferencesIconButtonLink,
@@ -99,7 +100,17 @@ const FeedForYou = () => {
 
   return (
     <>
-      <ContentHeader title={t('feedForYou.forYou')} />
+      <ContentHeader
+        title={t('feedForYou.forYou')}
+        subtitle={
+          <Trans t={t} i18nKey="feedForYou.accordingToYourPreferences">
+            According to{' '}
+            <InternalLink to={`/settings/preferences#${pollName}-feed-foryou`}>
+              your preferences
+            </InternalLink>
+          </Trans>
+        }
+      />
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box
           px={{ xs: 2, sm: 0 }}
