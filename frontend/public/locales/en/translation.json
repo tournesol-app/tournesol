@@ -902,7 +902,7 @@
   },
   "entityList": {
     "noItems": "There doesn't seem to be anything to display at the moment.",
-    "noItemsMatchYourSearchCriteria": "No item matches your search criteria."
+    "noItemMatchesYourFilters": "No item matches your search filters."
   },
   "feedTopItems": {
     "generic": {

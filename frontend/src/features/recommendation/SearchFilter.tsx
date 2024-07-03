@@ -28,19 +28,21 @@ import { ScoreModeEnum } from 'src/utils/api/recommendations';
  * and 'pollVideosInitialFilters'.
  */
 function SearchFilter({
+  appearExpanded = false,
   extraActions,
   disableAdvanced = false,
   disableCriteria = false,
   disableDuration = false,
   onLanguagesChange,
 }: {
+  appearExpanded?: boolean;
   extraActions?: React.ReactNode;
   disableAdvanced?: boolean;
   disableCriteria?: boolean;
   disableDuration?: boolean;
   onLanguagesChange?: (value: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(appearExpanded);
   const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
 
   const { name: pollName } = useCurrentPoll();

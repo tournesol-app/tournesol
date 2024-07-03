@@ -911,7 +911,7 @@
   },
   "entityList": {
     "noItems": "Il semblerait qu'il n'y ait pas d'élément à afficher pour l'instant.",
-    "noItemsMatchYourSearchCriteria": "Aucun élément ne correspond à vos critères de recherche."
+    "noItemMatchesYourFilters": "Aucun élément ne correspond à vos filtres de recherche."
   },
   "feedTopItems": {
     "generic": {

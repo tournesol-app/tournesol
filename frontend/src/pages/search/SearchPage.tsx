@@ -101,6 +101,7 @@ const SearchPage = () => {
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box mb={4} px={{ xs: 2, sm: 0 }}>
           <SearchFilter
+            appearExpanded
             extraActions={
               <Box display="flex" gap={1}>
                 <ShareMenuButton isIcon />
@@ -113,7 +114,9 @@ const SearchPage = () => {
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
-            emptyMessage={isLoading ? '' : t('entityList.noItems')}
+            emptyMessage={
+              isLoading ? '' : t('entityList.noItemMatchesYourFilters')
+            }
           />
         </LoaderWrapper>
         {!isLoading && (entities.count ?? 0) > 0 && (
