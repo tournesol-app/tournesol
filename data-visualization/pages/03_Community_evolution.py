@@ -10,7 +10,7 @@ List of concepts:
         A public comparison between two videos involves one or more quality criteria.
 """
 
-from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 import pandas as pd
 import plotly.express as px
@@ -33,62 +33,65 @@ assert (
 ), "dataframe should be ordered by increasing date"
 
 
-def add_users_growth_plot():
+
+def add_users_age_plot():
     """
-    Display the number of new users, active users and total users per week
+    Display the number of contributors per week, grouped by age.
     """
 
-    st.markdown("#### Active contributors")
+    st.markdown("#### Participating contributors per age")
 
     df: pd.DataFrame = st.session_state.df
 
     # Prepare dataframe for needed data
-    df = df.drop_duplicates(subset=["public_username", "week_date"])[
-        ["public_username", "week_date"]
-    ].reset_index(
-        drop=True
-    )  # Keep only needed data, remove duplicates
-    df.week_date = pd.to_datetime(df.week_date, infer_datetime_format=True, utc=True).astype(
-        "datetime64[ns]"
-    )  # Convert dates to sortable dates
-    weeks = pd.date_range(
-        start=df.week_date.min(), end=df.week_date.max(), freq="W-MON"
-    ).to_list()  # List of all weeks
+    df = df.drop_duplicates(subset=["public_username", "week_date"])[["public_username", "week_date"]].reset_index(drop=True)  # Keep only needed data, remove duplicates
+    df.week_date = pd.to_datetime(df.week_date, infer_datetime_format=True, utc=True).astype("datetime64[ns]")  # Convert dates to sortable dates
+    weeks = pd.date_range(start=df.week_date.min(), end=df.week_date.max(), freq="W-MON").to_list()  # List of all weeks
 
-    # Cut data before 2022 (nothing interesting there)
-    df = df[df.week_date >= datetime(2022, 1, 1)]
+    # Categories: One category for every season between min(week_date) and max(week_date) (season is a 3 month period)
+    seasons =pd.date_range(
+        start=df.week_date.min().replace(month=1, day=1),
+        end=df.week_date.max(),
+        freq="3M",
+    ).to_list()
 
-    # Number of new users for every week_date
-    new_users = df.groupby("public_username").first().groupby("week_date").size()
+    # For every season, create a new dataframe
+    sub_dfs = []
 
-    # Number of users who stopped using the platform.
-    # Shift weeks by 1 in the future (consider them quitting the first week
-    # they didn't compare anything). Ignore last month (consider users having
-    # done comparison in the last month as still active).
-    quit_users = (
-        df.groupby("public_username").last().groupby("week_date").size().shift(1).drop(weeks[-4:])
-    )
+    # Generate a new dataframe, with for each public_username, assign the season of their first comparison
+    users_seasons = df.groupby("public_username", as_index=False).min().rename(columns={'week_date': 'first_week'})
+    last_user_weeks = df.groupby("public_username", as_index=False).max().rename(columns={'week_date': 'last_week'})
+    users_seasons['last_week'] = last_user_weeks['last_week']
 
-    # Cumulative number of active users for every week_date (users that are
-    # counted in new but not yet in quit).
-    week_active = (new_users - quit_users).cumsum()
+    # Add new column in users_season, with value is the minimum season such as the week_date is greater than the season date
+    users_seasons["season"] = users_seasons.first_week.apply(lambda first_week: max((s for s in seasons if s <= first_week), default=seasons[0])).reindex()
+    # If user min week_date is same as user max week_date, change its season by 'single week'
+    users_seasons.loc[users_seasons.loc[users_seasons.first_week.eq(users_seasons.last_week)].index, "season"] = "single week"
+    seasons_users = users_seasons.groupby("season")['public_username'].aggregate(list).to_dict()
 
-    # Number of total users per date (cumulative)
-    total_users = df.groupby("week_date").size().cumsum()
+    for s in seasons_users:
+        # Filter df to keep only users of season s
+        season_df = df.loc[df.public_username.isin(seasons_users[s])].groupby('week_date').public_username.nunique()
+
+        if s == 'single week':
+            sub_dfs.append(('= last comparison date', season_df))
+        else:
+            category = s.strftime("%Y %b") + " to " + (s + relativedelta(months=2)).strftime("%b")
+            sub_dfs.append((category, season_df))
 
     # Merge previous computed series into one, by week_date
-    sub_dfs = [("New users", new_users), ("Active users", week_active), ("All users", total_users)]
     dtf = pd.DataFrame({"week_date": weeks}).reset_index()
     for name, subdf in sub_dfs:
-        dtf = pd.merge(dtf, subdf.to_frame(name=name), on="week_date")
+        dtf = pd.merge(dtf, subdf.to_frame(name=name), on="week_date", how='left').fillna(0)
 
     # Plot
-    fig = px.line(
+    fig = px.bar(
         dtf,
         x="week_date",
         y=[name for name, _ in sub_dfs],
-        log_y=True,
-        labels={"value": "Users", "week_date": "Week"},
+        labels={"value": "Users", "week_date": "Week", "variable": "First comparison date"},
+        color_discrete_sequence=px.colors.sample_colorscale("turbo", samplepoints=len(sub_dfs)),
+        color_discrete_map={'= last comparison date': 'grey'},
     )
     st.plotly_chart(fig)
 
@@ -147,6 +150,6 @@ def add_comparisons_evolution():
 
 pd.options.plotting.backend = "plotly"
 
-add_users_growth_plot()
 add_contributors_evolution()
 add_comparisons_evolution()
+add_users_age_plot()
