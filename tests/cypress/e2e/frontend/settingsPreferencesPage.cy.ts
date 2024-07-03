@@ -233,13 +233,12 @@ describe('Settings - preferences page', () => {
     });
 
     describe('Feed - For you', () => {
+      const videosForYouDateSelector = '#videos_feed_foryou__date';
 
       /**
        * TODO: make the assertions of the following tests relevant
        */
       describe('Setting - upload date', () => {
-        const fieldSelector = '#videos_feed_foryou__date';
-
         it('handles the value A month ago', () => {
           cy.visit('/settings/preferences');
           login();
@@ -254,7 +253,7 @@ describe('Settings - preferences page', () => {
           cy.visit('/settings/preferences');
           login();
 
-          cy.get(fieldSelector).click();
+          cy.get(videosForYouDateSelector).click();
           cy.contains('A day ago').click();
           cy.contains('Update preferences').click();
 
@@ -269,7 +268,7 @@ describe('Settings - preferences page', () => {
           cy.visit('/settings/preferences');
           login();
 
-          cy.get(fieldSelector).click();
+          cy.get(videosForYouDateSelector).click();
           cy.contains('A week ago').click();
           cy.contains('Update preferences').click();
 
@@ -284,7 +283,7 @@ describe('Settings - preferences page', () => {
           cy.visit('/settings/preferences');
           login();
 
-          cy.get(fieldSelector).click();
+          cy.get(videosForYouDateSelector).click();
           cy.contains('A year ago').click();
           cy.contains('Update preferences').click();
 
@@ -299,7 +298,7 @@ describe('Settings - preferences page', () => {
           cy.visit('/settings/preferences');
           login();
 
-          cy.get(fieldSelector).click();
+          cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
           cy.contains('Update preferences').click();
 
@@ -355,25 +354,66 @@ describe('Settings - preferences page', () => {
       });
 
       describe('Setting - exclude compared entities', () => {
-        it('handles the value false (exclude)', () => {
+        it('handles the value false (include)', () => {
           cy.visit('/settings/preferences');
           login();
 
+          cy.get(videosForYouDateSelector).click();
+          cy.contains('All time').click();
+          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]').click();
+          cy.contains('Update preferences').click();
+
+          cy.visit('/feed/foryou');
+          cy.get('[data-testid="video-card-info"] h5')
+            .first()
+            .invoke('attr', 'title').then((videoTitle) =>{
+
+              cy.get('[aria-label="Compare now"').first().click();
+              cy.get('button#expert_submit_btn').click();
+
+              // Change an additional setting to not receive a cached response
+              // from the API in the feed For you.
+              cy.visit('/settings/preferences');
+              cy.get('[data-testid=videos_feed_foryou__unsafe]').click();
+              cy.contains('Update preferences').click();
+
+              cy.visit('/feed/foryou');
+              cy.get('[data-testid="video-card-info"] h5')
+                .first()
+                .invoke('attr', 'title')
+                .should('eq', videoTitle);
+            });
+        });
+
+        it('handles the value true (exclude)', () => {
+          cy.visit('/settings/preferences');
+          login();
+
+          cy.get(videosForYouDateSelector).click();
+          cy.contains('All time').click();
           cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]');
           cy.contains('Update preferences').click();
 
-          // TODO: add missing assertions
-        });
+          cy.visit('/feed/foryou');
+          cy.get('[data-testid="video-card-info"] h5')
+            .first()
+            .invoke('attr', 'title').then((videoTitle) => {
 
-        it('handles the value true (include)', () => {
-          cy.visit('/settings/preferences');
-          login();
+              cy.get('[aria-label="Compare now"').first().click();
+              cy.get('button#expert_submit_btn').click();
 
-          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]')
-            .click();
-          cy.contains('Update preferences').click();
+              // Change an additional setting to not receive a cached response
+              // from the API in the feed For you.
+              cy.visit('/settings/preferences');
+              cy.get('[data-testid=videos_feed_foryou__unsafe]').click();
+              cy.contains('Update preferences').click();
 
-          // TODO: add missing assertions
+              cy.visit('/feed/foryou');
+              cy.get('[data-testid="video-card-info"] h5')
+                .first()
+                .invoke('attr', 'title')
+                .should('not.eq', videoTitle);
+          });
         });
       });
     });
