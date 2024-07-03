@@ -235,20 +235,7 @@ describe('Settings - preferences page', () => {
     describe('Feed - For you', () => {
       const videosForYouDateSelector = '#videos_feed_foryou__date';
 
-      /**
-       * TODO: make the assertions of the following tests relevant
-       */
       describe('Setting - upload date', () => {
-        it('handles the value A month ago', () => {
-          cy.visit('/settings/preferences');
-          login();
-
-          // Ensure the default value is A month ago
-          cy.get(
-            '[data-testid=videos_feed_foryou__date]'
-          ).should('have.value', 'MONTH');
-        });
-
         it('handles the value A day ago', () => {
           cy.visit('/settings/preferences');
           login();
@@ -271,6 +258,22 @@ describe('Settings - preferences page', () => {
           cy.get(videosForYouDateSelector).click();
           cy.contains('A week ago').click();
           cy.contains('Update preferences').click();
+
+          cy.visit('/feed/foryou');
+          cy.contains(
+            "There doesn't seem to be anything to display at the moment.",
+            {matchCase: false}
+          ).should('be.visible');
+        });
+
+        it('handles the value A month ago', () => {
+          cy.visit('/settings/preferences');
+          login();
+
+          // Ensure the default value is A month ago
+          cy.get(
+            '[data-testid=videos_feed_foryou__date]'
+          ).should('have.value', 'MONTH');
 
           cy.visit('/feed/foryou');
           cy.contains(
