@@ -59,6 +59,9 @@ const TournesolUserSettingsForm = () => {
   const pollSettings = userSettings?.videos;
 
   const youtubePoll = polls.find((p) => p.name === YOUTUBE_POLL_NAME);
+  const ytDefaultFiltersFeedForYou = new URLSearchParams(
+    youtubePoll?.defaultFiltersFeedForYou
+  );
 
   useScrollToLocation();
 
@@ -127,9 +130,14 @@ const TournesolUserSettingsForm = () => {
   const [forYouUnsafe, setForYouUnsafe] = useState(
     pollSettings?.feed_foryou__unsafe ?? false
   );
-  // XXX should be initialized from the poll config
+
   const [forYouExcludeCompared, setForYouExcludeCompared] = useState(
-    pollSettings?.feed_foryou__exclude_compared_entities ?? true
+    pollSettings?.feed_foryou__exclude_compared_entities ??
+      ytDefaultFiltersFeedForYou
+        .get('advanced')
+        ?.split(',')
+        .includes('exclude_compared') ??
+      true
   );
 
   // Feed: Top videos
