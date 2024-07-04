@@ -67,7 +67,10 @@ export const buildVideosFeedForYouSearchParams = (
 ) => {
   const advancedFilters: string[] = [];
 
-  if (userSettings?.feed_foryou__exclude_compared_entities) {
+  if (
+    userSettings?.feed_foryou__exclude_compared_entities == undefined ||
+    userSettings?.feed_foryou__exclude_compared_entities == true
+  ) {
     advancedFilters.push('exclude_compared');
   }
   if (userSettings?.feed_foryou__unsafe) {
