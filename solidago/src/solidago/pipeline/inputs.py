@@ -52,9 +52,18 @@ class TournesolInput(ABC):
     @abstractmethod
     def get_individual_scores(
         self,
-        criteria: Optional[str] = None,
         user_id: Optional[int] = None,
-    ) -> Optional[pd.DataFrame]:
+        entity_id: Optional[str] = None,
+        criteria: Optional[str] = None,
+    ) -> pd.DataFrame:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_collective_scores(
+        self,
+        entity_id: Optional[str] = None,
+        criteria: Optional[str] = None,
+    ) -> pd.DataFrame:
         raise NotImplementedError
 
     @abstractmethod
@@ -118,26 +127,6 @@ class TournesolInputFromPublicDataset(TournesolInput):
             dataset_zip, _headers = urlretrieve(dataset_zip)  # nosec B310
 
         with zipfile.ZipFile(dataset_zip) as zip_file:
-            with (zipfile.Path(zip_file) / "comparisons.csv").open(mode="rb") as comparison_file:
-                # keep_default_na=False is required otherwise some public usernames
-                # such as "NA" are converted to float NaN.
-                self.comparisons = pd.read_csv(comparison_file, keep_default_na=False)
-                self.entity_id_to_video_id = pd.Series(
-                    list(set(self.comparisons.video_a) | set(self.comparisons.video_b)),
-                    name="video_id",
-                )
-                video_id_to_entity_id = {
-                    video_id: entity_id
-                    for (entity_id, video_id) in self.entity_id_to_video_id.items()
-                }
-                self.comparisons["entity_a"] = self.comparisons["video_a"].map(
-                    video_id_to_entity_id
-                )
-                self.comparisons["entity_b"] = self.comparisons["video_b"].map(
-                    video_id_to_entity_id
-                )
-                self.comparisons.drop(columns=["video_a", "video_b"], inplace=True)
-
             with (zipfile.Path(zip_file) / "users.csv").open(mode="rb") as users_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
@@ -146,10 +135,40 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # Fill trust_score on newly created users for which it was not computed yet
                 self.users.trust_score = pd.to_numeric(self.users.trust_score).fillna(0.0)
 
-            self.username_to_user_id = pd.Series(
-                data=self.users.index, index=self.users["public_username"]
-            )
-            self.comparisons = self.comparisons.join(self.username_to_user_id, on="public_username")
+                self.username_to_user_id = pd.Series(
+                    data=self.users.index, index=self.users["public_username"]
+                )
+
+            with (zipfile.Path(zip_file) / "comparisons.csv").open(mode="rb") as comparison_file:
+                # keep_default_na=False is required otherwise some public usernames
+                # such as "NA" are converted to float NaN.
+                self.comparisons = pd.read_csv(comparison_file, keep_default_na=False)
+                self.entity_id_to_video_id = pd.Series(
+                    list(set(self.comparisons.video_a) | set(self.comparisons.video_b)),
+                    name="video_id",
+                )
+                self.video_id_to_entity_id = {
+                    video_id: entity_id
+                    for (entity_id, video_id) in self.entity_id_to_video_id.items()
+                }
+                self.comparisons["entity_a"] = self.comparisons["video_a"].map(
+                    self.video_id_to_entity_id
+                )
+                self.comparisons["entity_b"] = self.comparisons["video_b"].map(
+                    self.video_id_to_entity_id
+                )
+                self.comparisons.drop(columns=["video_a", "video_b"], inplace=True)
+                self.comparisons = self.comparisons.join(
+                    self.username_to_user_id, on="public_username"
+                )
+
+                # List of all groups of public_username,criteria,entity_id present in comparisons
+                user_entity_criteria_pairs = pd.concat([
+                    self.comparisons[["public_username", "entity_a", "criteria"]]
+                        .rename(columns={"entity_a": "entity_id"}),
+                    self.comparisons[["public_username", "entity_b", "criteria"]]
+                        .rename(columns={"entity_b": "entity_id"})
+                ])  # Will contain duplicates not to be removed
 
             with (zipfile.Path(zip_file) / "vouchers.csv").open(mode="rb") as vouchers_file:
                 # keep_default_na=False is required otherwise some public usernames
@@ -160,11 +179,56 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.collective_scores = pd.read_csv(collective_scores_file, keep_default_na=False)
+                # Convert video to entity_id
+                self.collective_scores["entity_id"] = self.collective_scores["video"].map(
+                    self.video_id_to_entity_id
+                )
+                self.collective_scores.drop(columns=["video"], inplace=True)
+
+                # Add a column "comparisons", as the number of comparisons made to this video
+                self.collective_scores["comparisons"] = self.collective_scores.merge(
+                    user_entity_criteria_pairs
+                        .groupby(["entity_id", "criteria"])
+                        .size()
+                        .reset_index(name="comparisons"),
+                    how="left",  # Keep all data from collective_criteria_scores in same order
+                    on=["entity_id", "criteria"],
+                )["comparisons"]
+
+                # Add a column "users", as the number of different users who have rated this video
+                self.collective_scores["users"] = self.collective_scores.merge(
+                    user_entity_criteria_pairs
+                        .groupby(["entity_id", "criteria"])
+                        .public_username
+                        .nunique()
+                        .reset_index(name="users"),
+                    how="left",  # Keep all data from collective_criteria_scores in same order
+                    on=["entity_id", "criteria"],
+                )["users"]
 
             with (zipfile.Path(zip_file) / "individual_criteria_scores.csv").open(mode="rb") as individual_scores_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.individual_scores = pd.read_csv(individual_scores_file, keep_default_na=False)
+                # Convert video to entity_id
+                self.individual_scores["entity_id"] = self.individual_scores["video"].map(
+                    self.video_id_to_entity_id
+                )
+                self.individual_scores.drop(columns=["video"], inplace=True)
+
+                # Append as a new column the number of comparison made for every user,video,criteria
+                self.individual_scores["comparisons"] = self.individual_scores.merge(
+                    user_entity_criteria_pairs
+                        .groupby(["public_username", "entity_id", "criteria"])
+                        .size()
+                        .reset_index(name="comparisons"),
+                    how="left",  # Keep all data from collective_criteria_scores in same order
+                    on=["public_username", "entity_id", "criteria"],
+                )["comparisons"]
+                self.individual_scores = self.individual_scores.join(
+                    self.username_to_user_id,
+                    on="public_username"
+                )
 
     @classmethod
     def download(cls) -> "TournesolInputFromPublicDataset":
@@ -180,7 +244,15 @@ class TournesolInputFromPublicDataset(TournesolInput):
         if "score_max" not in dtf:
             # For compatibility with older datasets
             dtf["score_max"] = 10
-        return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"]]
+        return dtf[[
+            "user_id",
+            "entity_a",
+            "entity_b",
+            "criteria",
+            "score",
+            "score_max",
+            "weight"
+        ]]
 
     @cached_property
     def ratings_properties(self):
@@ -203,11 +275,38 @@ class TournesolInputFromPublicDataset(TournesolInput):
 
     def get_individual_scores(
         self,
-        criteria: Optional[str] = None,
         user_id: Optional[int] = None,
-    ) -> Optional[pd.DataFrame]:
-        # TODO: read contributor scores from individual_scores.csv
-        return None
+        entity_id: Optional[str] = None,
+        criteria: Optional[str] = None,
+    ) -> pd.DataFrame:
+        dtf = self.individual_scores
+        if criteria is not None:
+            dtf = dtf[dtf.criteria == criteria]
+        if user_id is not None:
+            dtf = dtf[dtf.user_id == user_id]
+        if entity_id is not None:
+            dtf = dtf[dtf.entity_id == entity_id]
+        return dtf[[
+            "user_id",
+            "entity_id",
+            "criteria",
+            "score",
+            "uncertainty",
+            "voting_right",
+            "comparisons"
+        ]]
+
+    def get_collective_scores(
+        self,
+        entity_id: Optional[str] = None,
+        criteria: Optional[str] = None,
+    ) -> pd.DataFrame:
+        dtf = self.collective_scores
+        if criteria is not None:
+            dtf = dtf[dtf.criteria == criteria]
+        if entity_id is not None:
+            dtf = dtf[dtf.entity_id == entity_id]
+        return dtf[["entity_id", "criteria", "score", "uncertainty", "users", "comparisons"]]
 
     def get_vouches(self):
         vouchers = self.vouchers[
