@@ -122,7 +122,7 @@ const TournesolUserSettingsForm = () => {
   // Feed: For You
   const [forYouLanguages, setForYouLanguages] = useState<Array<string>>([]);
 
-  // XXX should be initialized from the poll config
+  // TODO: it should be initialized by the config defaultFiltersFeedForYou
   const [forYouUploadDate, setForYouUploadDate] = useState<
     FeedForyou_dateEnum | BlankEnum
   >(pollSettings?.feed_foryou__date ?? FeedForyou_dateEnum.MONTH);

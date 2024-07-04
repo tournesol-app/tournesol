@@ -67,16 +67,23 @@ export const buildVideosFeedForYouSearchParams = (
 ) => {
   const advancedFilters = new Set(searchParams.get('advanced')?.split(','));
 
-  if (userSettings?.feed_foryou__exclude_compared_entities) {
-    advancedFilters.add('exclude_compared');
-  }
-  if (userSettings?.feed_foryou__unsafe == undefined) {
-    advancedFilters.add('unsafe');
+  if (userSettings?.feed_foryou__exclude_compared_entities != undefined) {
+    if (userSettings.feed_foryou__exclude_compared_entities === true) {
+      advancedFilters.add('exclude_compared');
+    } else {
+      advancedFilters.delete('exclude_compared');
+    }
   }
 
-  if (advancedFilters.size > 0) {
-    searchParams.set('advanced', Array.from(advancedFilters).join(','));
+  if (userSettings?.feed_foryou__unsafe != undefined) {
+    if (userSettings.feed_foryou__unsafe === true) {
+      advancedFilters.add('unsafe');
+    } else {
+      advancedFilters.delete('unsafe');
+    }
   }
+
+  searchParams.set('advanced', Array.from(advancedFilters).join(','));
 
   if (userSettings?.feed_foryou__date != undefined) {
     searchParams.set(
