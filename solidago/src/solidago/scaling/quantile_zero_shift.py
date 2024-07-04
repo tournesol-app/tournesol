@@ -20,17 +20,17 @@ class QuantileZeroShift(Scaling):
         self.zero_quantile = zero_quantile
         self.lipschitz = lipschitz
         self.error = error
-    
+
     def __call__(
-        self, 
+        self,
         user_models: dict[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame,
         voting_rights: VotingRights,
-        privacy: PrivacySettings
+        privacy: PrivacySettings,
     ) -> dict[int, ScaledScoringModel]:
-        """ Returns scaled user models
-        
+        """Returns scaled user models
+
         Parameters
         ----------
         user_models: dict[int, ScoringModel]
@@ -50,21 +50,31 @@ class QuantileZeroShift(Scaling):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        votes, scores, lefts, rights = list(), list(), list(), list()
-        for user in user_models:
-            for entity in user_models[user].scored_entities(entities):
-                output = user_models[user](entity, entities.loc[entity])
-                votes.append(voting_rights[user, entity])
+        weights = []
+        scores, lefts, rights = [], [], []
+        for user_id, user_model in user_models.items():
+            n_entities = 0
+            for entity_id, output in user_model.iter_entities(entities):
+                n_entities += 1
                 scores.append(output[0])
                 lefts.append(output[1])
                 rights.append(output[2])
-        
-        shift = - qr_quantile(self.lipschitz, self.zero_quantile, np.array(scores), 
-            np.array(votes), np.array(lefts), np.array(rights), error=self.error)
-        
+            if n_entities > 0:
+                weights.extend([1 / n_entities] * n_entities)
+
+        shift = -qr_quantile(
+            lipschitz=self.lipschitz,
+            quantile=self.zero_quantile,
+            values=np.array(scores),
+            voting_rights=np.array(weights),
+            left_uncertainties=np.array(lefts),
+            right_uncertainties=np.array(rights),
+            error=self.error,
+        )
+
         return {
-            user: ScaledScoringModel(user_models[user], translation=shift)
-            for user in user_models
+            user: ScaledScoringModel(user_model, translation=shift)
+            for (user, user_model) in user_models.items()
         }
 
     def to_json(self):
