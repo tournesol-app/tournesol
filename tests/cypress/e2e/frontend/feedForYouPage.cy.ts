@@ -11,6 +11,10 @@ describe('Page - For you', () => {
     cy.recreateUser(username, `${username}@example.org`, "tournesol");
   });
 
+  after(() => {
+    cy.deleteUser(username);
+  });
+
   describe('Poll - videos', () => {
 
     describe('General', () => {

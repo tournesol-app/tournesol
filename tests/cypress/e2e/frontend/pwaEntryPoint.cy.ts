@@ -5,6 +5,10 @@ describe('PWA - entry point', () => {
     cy.recreateUser(username, `${username}@example.com`, "tournesol");
   });
 
+  after(() => {
+    cy.deleteUser(username);
+  });
+
   const login = () => {
     cy.focused().type(username);
     cy.get('input[name="password"]').click().type("tournesol").type('{enter}');

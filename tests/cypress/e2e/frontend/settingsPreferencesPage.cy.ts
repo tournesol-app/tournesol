@@ -61,7 +61,8 @@ describe('Settings - preferences page', () => {
 
   afterEach(() => {
     deleteComparisons();
-  })
+    cy.deleteUser(username);
+  });
 
   const login = () => {
     cy.focused().type('test-preferences-page');
