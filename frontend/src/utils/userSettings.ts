@@ -65,20 +65,17 @@ export const buildVideosFeedForYouSearchParams = (
   userSettings: VideosPollUserSettings | undefined,
   langsDiscovery = false
 ) => {
-  const advancedFilters: string[] = [];
+  const advancedFilters = new Set(searchParams.get('advanced')?.split(','));
 
-  if (
-    userSettings?.feed_foryou__exclude_compared_entities == undefined ||
-    userSettings?.feed_foryou__exclude_compared_entities == true
-  ) {
-    advancedFilters.push('exclude_compared');
+  if (userSettings?.feed_foryou__exclude_compared_entities) {
+    advancedFilters.add('exclude_compared');
   }
-  if (userSettings?.feed_foryou__unsafe) {
-    advancedFilters.push('unsafe');
+  if (userSettings?.feed_foryou__unsafe == undefined) {
+    advancedFilters.add('unsafe');
   }
 
-  if (advancedFilters.length > 0) {
-    searchParams.set('advanced', advancedFilters.join(','));
+  if (advancedFilters.size > 0) {
+    searchParams.set('advanced', Array.from(advancedFilters).join(','));
   }
 
   if (userSettings?.feed_foryou__date != undefined) {
