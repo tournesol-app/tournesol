@@ -60,6 +60,7 @@ describe('Settings - preferences page', () => {
 
 
   afterEach(() => {
+    cy.apiTruncateCacheTable();
     deleteComparisons();
     cy.deleteUser(username);
   });

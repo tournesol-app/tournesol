@@ -4,5 +4,6 @@ declare namespace Cypress {
       getEmailLink(): Chainable<string>
       recreateUser(username: string, email: string, password: string): Chainable<any>
       deleteUser(username: string): Chainable<any>
+      apiTruncateCacheTable(): Chainable<any>
   }
 }
