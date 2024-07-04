@@ -46,6 +46,7 @@ export type EntityObject = RelatedEntity | EntityNoExtraField;
 export enum RouteID {
   // public and collective routes
   Home = 'home',
+  PwaEntryPoint = 'pwaEntryPoint',
   // new feeds
   FeedForYou = 'feedForYou',
   FeedTopItems = 'feedTopItems',

@@ -27,6 +27,11 @@ describe('Page - For you', () => {
 
         cy.contains('For you').click();
         cy.location('pathname').should('equal', '/feed/foryou');
+        cy.contains('According to your preferences').should('be.visible');
+
+        cy.contains('your preferences').click();
+        cy.location('pathname').should('equal', '/settings/preferences');
+        cy.location('hash').should('equal', '#videos-feed-foryou');
       });
     });
 
@@ -59,6 +64,7 @@ describe('Page - For you', () => {
         cy.location('pathname').should('equal', '/feed/foryou');
         cy.get('a[data-testid="icon-link-to-preferences-page"]').click();
         cy.location('pathname').should('equal', '/settings/preferences');
+        cy.location('hash').should('equal', '#videos-feed-foryou');
       });
     });
 

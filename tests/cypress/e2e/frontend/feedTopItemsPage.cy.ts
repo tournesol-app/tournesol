@@ -6,6 +6,7 @@ describe('Page - Top items', () => {
         cy.visit('/');
         cy.contains('Top videos').click();
         cy.location('pathname').should('equal', '/feed/top');
+        cy.contains('Recommended by the community').should('be.visible');
       });
     });
 

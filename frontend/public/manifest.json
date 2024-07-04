@@ -32,7 +32,7 @@
   ],
   "id": "/",
   "scope": "/",
-  "start_url": "/feed/top?date=Month&utm_source=pwa",
+  "start_url": "/pwa/start?utm_source=pwa",
   "display": "standalone",
   "theme_color": "#ffc800",
   "background_color": "#a09b87",

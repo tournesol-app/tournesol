@@ -6,6 +6,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import PublicRoute from 'src/features/login/PublicRoute';
 import PrivateRoute from 'src/features/login/PrivateRoute';
+import PwaEntryPoint from 'src/features/pwa/PwaEntryPoint';
 import PageNotFound from 'src/pages/404/PageNotFound';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
 import CriteriaPage from 'src/pages/criteria/CriteriaPage';
@@ -59,6 +60,12 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.Home,
       url: '',
       page: HomePage,
+      type: PublicRoute,
+    },
+    {
+      id: RouteID.PwaEntryPoint,
+      url: 'pwa/start',
+      page: PwaEntryPoint,
       type: PublicRoute,
     },
     {
