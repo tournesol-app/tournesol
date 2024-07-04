@@ -265,12 +265,17 @@ class UniformGBT(GeneralizedBradleyTerry):
             score_diff_abs = np.abs(score_diff)
             return (
                 np.where(
-                    score_diff_abs < 20.0,
-                    np.log(np.sinh(score_diff) / score_diff),
-                    score_diff_abs - np.log(2) - np.log(score_diff_abs)
+                    score_diff_abs > 0,
+                    np.where(
+                        score_diff_abs < 20.0,
+                        np.log(np.sinh(score_diff) / score_diff),
+                        score_diff_abs - np.log(2) - np.log(score_diff_abs),
+                    ),
+                    0.0,
                 )
                 + r * score_diff
             ).sum()
+
         return f
 
     @cached_property

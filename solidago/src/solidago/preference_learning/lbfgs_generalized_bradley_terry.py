@@ -99,8 +99,9 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
         lbfgs = torch.optim.LBFGS(
             (solution,),
-            max_iter=100,
-            tolerance_change=self.convergence_error
+            max_iter=self.max_iter,
+            tolerance_change=self.convergence_error,
+            line_search_fn="strong_wolfe",
         )
 
         def closure():
@@ -110,7 +111,13 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             return loss
 
         lbfgs.step(closure)  # type: ignore
+
+        # TODO: check lbfgs state to check if max_iter was reached
+
         solution = solution.detach()
+
+        if solution.isnan().any():
+            raise Exception(f"Nan in solution, state: {lbfgs.state_dict()}")
 
         def loss_with_delta(delta, comparisons, coord):
             solution_with_delta = solution.clone()
