@@ -107,7 +107,7 @@ describe('Page - Top items', () => {
         });
 
         it('allows to filter: all time', () => {
-          cy.visit('/recommendations?advanced=unsafe');
+          cy.visit('/feed/top?advanced=unsafe');
           cy.contains('Filters', {matchCase: false}).click();
 
           cy.contains('A year ago', {matchCase: false}).should('be.visible');

@@ -83,7 +83,7 @@ const HomeVideosPage = () => {
                   color="primary"
                   variant="contained"
                   component={Link}
-                  to={`${baseUrl}/recommendations`}
+                  to={`${baseUrl}/search`}
                   sx={{
                     px: 4,
                     fontSize: '120%',
