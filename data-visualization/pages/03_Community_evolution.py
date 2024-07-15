@@ -93,7 +93,11 @@ def add_comparisons_evolution_grouped_by_contributors_age():
     Display the number of active contributors per week, grouped by age.
     """
 
-    st.markdown("#### Active contributors per age")
+    st.markdown("#### Active contributors grouped by age")
+    st.info(
+        "An active contributor is a user who makes at least one public comparison during a given"
+        " period of time.",
+    )
 
     df = st.session_state.df
 
