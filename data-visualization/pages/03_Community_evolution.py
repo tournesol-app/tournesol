@@ -101,33 +101,29 @@ def add_comparisons_evolution_grouped_by_contributors_age():
 
     df = st.session_state.df
 
+    # Keep only the required data, remove duplicates.
     df = df.drop_duplicates(subset=["public_username", "week_date"])[
         ["public_username", "week_date"]
-    ].reset_index(
-        drop=True
-    )  # Keep only the required data, remove duplicates.
+    ].reset_index(drop=True)
 
-    df.week_date = pd.to_datetime(df.week_date, infer_datetime_format=True, utc=True).astype(
-        "datetime64[ns]"
-    )  # Convert dates to sortable dates.
+    # Categorize week_date to make them orderable.
+    df.week_date = df.week_date.cat.as_ordered()
+    overall_first_week = df.week_date.min()
+    overall_last_week = df.week_date.max()
 
-    weeks = pd.date_range(
-        start=df.week_date.min(), end=df.week_date.max(), freq="W-MON"
-    ).to_list()  # List of all weeks.
-
-    # Categories: one category for each season between min(week_date) and max(week_date). A season
-    # is a period of 3 months.
+    # Categories: one category for each season between min(week_date) and max(week_date).
+    # A season is a period of 3 months.
     seasons = pd.date_range(
-        start=df.week_date.min().replace(month=1, day=1),
-        end=df.week_date.max(),
+        start=f"{overall_first_week[:4]}-01-01",
+        end=overall_last_week,
         freq="3M",
     ).to_list()
 
     # For each season, create a new dataframe.
     sub_dfs = []
 
-    # Generate a new dataframe. For each public_username, assign the season of their first public
-    # comparison.
+    # Generate a new dataframe. For each public_username, 
+    # assign the season of their first public comparison.
     users_seasons = (
         df.groupby("public_username", as_index=False)
         .min()
@@ -143,10 +139,11 @@ def add_comparisons_evolution_grouped_by_contributors_age():
     # Add new column in users_seasons. The value is the minimum season such as the week_date is
     # greater than the season date.
     users_seasons["season"] = users_seasons.first_week.apply(
-        lambda first_week: max((s for s in seasons if s <= first_week), default=seasons[0])
+        lambda first_week: max((s for s in seasons if s.isoformat() <= first_week), default=seasons[0])
     ).reindex()
 
-    # If user min week_date is same as user max week_date, change its season by 'single week'.
+    # If user min week_date is same as user max week_date, change its season by 'single week'
+    # to differentiate them as they make a large group.
     users_seasons.loc[
         users_seasons.loc[users_seasons.first_week.eq(users_seasons.last_week)].index, "season"
     ] = "single week"
@@ -167,9 +164,9 @@ def add_comparisons_evolution_grouped_by_contributors_age():
             sub_dfs.append((category, season_df))
 
     # Merge previous computed series into one, by week_date.
-    dtf = pd.DataFrame({"week_date": weeks}).reset_index()
+    dtf = pd.DataFrame({"week_date": []}).reset_index()
     for name, sub_df in sub_dfs:
-        dtf = pd.merge(dtf, sub_df.to_frame(name=name), on="week_date", how="left").fillna(0)
+        dtf = pd.merge(dtf, sub_df.to_frame(name=name), on="week_date", how="outer").fillna(0)
 
     fig = px.bar(
         dtf,
@@ -183,6 +180,7 @@ def add_comparisons_evolution_grouped_by_contributors_age():
         color_discrete_sequence=px.colors.sample_colorscale("turbo", samplepoints=len(sub_dfs)),
         color_discrete_map={"= last comparison date": "grey"},
     )
+    fig.update_layout(legend={'traceorder': 'reversed'})
     st.plotly_chart(fig)
 
 
