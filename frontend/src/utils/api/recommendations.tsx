@@ -32,6 +32,7 @@ const overwriteDateURLParameter = (
   params: URLSearchParams
 ): void => {
   if (pollName === YOUTUBE_POLL_NAME) {
+    const date = params.get('date');
     const conversionTime = new Map();
     const dayInMillisecs = 1000 * 60 * 60 * 24;
 
@@ -43,13 +44,12 @@ const overwriteDateURLParameter = (
     conversionTime.set('Month', dayInMillisecs * 31);
     conversionTime.set('Year', dayInMillisecs * 365);
 
-    const date = params.get('date');
-    if (['Today', 'Week', 'Month', 'Year'].includes(date ?? 'Any')) {
+    if (conversionTime.has(date)) {
       params.delete('date');
 
       if (date != 'Any') {
         const param_date = new Date(Date.now() - conversionTime.get(date));
-        // we truncate minutes, seconds and ms from the date in order to benefit
+        // We truncate minutes, seconds and ms from the date in order to benefit
         // from caching at the API level.
         param_date.setMinutes(0, 0, 0);
         params.append('date_gte', param_date.toISOString());
