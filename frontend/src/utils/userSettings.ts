@@ -53,6 +53,22 @@ const settingDateToSearchFilter = (
 };
 
 /**
+ * Cast the value of a date filter to a value expected by the setting
+ * feed_foryou__date.
+ */
+export const searchFilterToSettingDate = (
+  filter: string | null
+): FeedForyou_dateEnum | BlankEnum => {
+  if (filter == null) {
+    return FeedForyou_dateEnum.ALL_TIME;
+  }
+
+  const setting =
+    FeedForyou_dateEnum[filter.toUpperCase() as FeedForyou_dateEnum];
+  return setting === undefined ? FeedForyou_dateEnum.ALL_TIME : setting;
+};
+
+/**
  * Cast the value of the setting feed_foryou__languages (or similar) to a
  * value expected by the search filter 'language'.
  */

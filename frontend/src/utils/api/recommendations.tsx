@@ -43,8 +43,8 @@ const overwriteDateURLParameter = (
     conversionTime.set('Month', dayInMillisecs * 31);
     conversionTime.set('Year', dayInMillisecs * 365);
 
-    if (params.get('date')) {
-      const date = params.get('date');
+    const date = params.get('date');
+    if (['Today', 'Week', 'Month', 'Year'].includes(date ?? 'Any')) {
       params.delete('date');
 
       if (date != 'Any') {

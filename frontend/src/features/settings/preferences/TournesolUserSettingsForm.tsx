@@ -37,6 +37,7 @@ import {
   initRecoLanguages,
   initRecoLanguagesWithLocalStorage,
 } from 'src/utils/recommendationsLanguages';
+import { searchFilterToSettingDate } from 'src/utils/userSettings';
 
 import GeneralUserSettingsForm from './GeneralUserSettingsForm';
 import VideosPollUserSettingsForm from './VideosPollUserSettingsForm';
@@ -122,10 +123,12 @@ const TournesolUserSettingsForm = () => {
   // Feed: For You
   const [forYouLanguages, setForYouLanguages] = useState<Array<string>>([]);
 
-  // TODO: it should be initialized by the config defaultFiltersFeedForYou
   const [forYouUploadDate, setForYouUploadDate] = useState<
     FeedForyou_dateEnum | BlankEnum
-  >(pollSettings?.feed_foryou__date ?? FeedForyou_dateEnum.MONTH);
+  >(
+    pollSettings?.feed_foryou__date ??
+      searchFilterToSettingDate(ytDefaultFiltersFeedForYou.get('date'))
+  );
 
   const [forYouUnsafe, setForYouUnsafe] = useState(
     pollSettings?.feed_foryou__unsafe ?? false
