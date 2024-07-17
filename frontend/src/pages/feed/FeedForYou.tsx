@@ -47,6 +47,7 @@ const FeedForYou = () => {
   }, [langsAutoDiscovery, options, pollName, userSettings]);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState(false);
   const [entities, setEntities] = useState<PaginatedRecommendationList>({
     count: 0,
     results: [],
@@ -82,8 +83,10 @@ const FeedForYou = () => {
           options
         );
         setEntities(newEntities);
-      } catch {
-        // todo: display a message
+        setLoadingError(false);
+      } catch (error) {
+        console.error(error);
+        setLoadingError(true);
       } finally {
         setIsLoading(false);
       }
@@ -126,9 +129,15 @@ const FeedForYou = () => {
         </Box>
         {!isLoading && entities.count === 0 && (
           <Box mb={1} px={{ xs: 2, sm: 0 }}>
-            <Alert severity="info">
-              {t('feedForYou.thisPageDisplaysItemsAccordingToYourFilters')}
-            </Alert>
+            {loadingError ? (
+              <Alert severity="warning">
+                {t('feedForYou.errorOnLoadingTryAgainLater')}
+              </Alert>
+            ) : (
+              <Alert severity="info">
+                {t('feedForYou.thisPageDisplaysItemsAccordingToYourFilters')}
+              </Alert>
+            )}
           </Box>
         )}
         <LoaderWrapper isLoading={isLoading}>

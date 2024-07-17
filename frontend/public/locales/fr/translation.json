@@ -907,6 +907,7 @@
   "feedForYou": {
     "forYou": "Pour vous",
     "accordingToYourPreferences": "Selon <2>vos préférences</2>",
+    "errorOnLoadingTryAgainLater": "Une erreur est survenue lors du chargement des résultats. Réessayez plus tard ou contactez un administrateur si le problème persiste.",
     "thisPageDisplaysItemsAccordingToYourFilters": "Cette page affiche des éléments en fonction de vos filtres personnels. Vous pouvez les modifier en cliquant sur l'icône d'engrenage ci-dessus."
   },
   "entityList": {

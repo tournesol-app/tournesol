@@ -898,6 +898,7 @@
   "feedForYou": {
     "forYou": "For you",
     "accordingToYourPreferences": "According to <2>your preferences</2>",
+    "errorOnLoadingTryAgainLater": "An error occurred while loading the results. Try again later or contact an administrator if the problem persists.",
     "thisPageDisplaysItemsAccordingToYourFilters": "This page displays items according to your personal filters. You can change them by clicking on the gear icon above."
   },
   "entityList": {
