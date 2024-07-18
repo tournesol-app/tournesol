@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { Box } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 
 import {
   BackIconButton,
@@ -35,6 +35,7 @@ const SearchPage = () => {
   const loginState = useSelector(selectLogin);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState(false);
   const [entities, setEntities] = useState<PaginatedRecommendationList>({
     count: 0,
     results: [],
@@ -69,8 +70,10 @@ const SearchPage = () => {
           options
         );
         setEntities(newEntities);
-      } catch {
-        // todo: display a message
+        setLoadingError(false);
+      } catch (error) {
+        console.log(error);
+        setLoadingError(true);
       } finally {
         setIsLoading(false);
       }
@@ -111,6 +114,13 @@ const SearchPage = () => {
             }
           />
         </Box>
+        {loadingError && !isLoading && entities.count === 0 && (
+          <Box mb={1} px={{ xs: 2, sm: 0 }}>
+            <Alert severity="warning">
+              {t('genericError.errorOnLoadingTryAgainLater')}
+            </Alert>
+          </Box>
+        )}
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
