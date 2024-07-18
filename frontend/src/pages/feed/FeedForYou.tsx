@@ -131,7 +131,7 @@ const FeedForYou = () => {
           <Box mb={1} px={{ xs: 2, sm: 0 }}>
             {loadingError ? (
               <Alert severity="warning">
-                {t('feedForYou.errorOnLoadingTryAgainLater')}
+                {t('genericError.errorOnLoadingTryAgainLater')}
               </Alert>
             ) : (
               <Alert severity="info">

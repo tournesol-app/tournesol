@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { Box } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 
 import {
   ContentBox,
@@ -69,6 +69,7 @@ const FeedTopItems = () => {
     userSettings?.[pollName as PollUserSettingsKeys]?.feed_topitems__languages;
 
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState(false);
   const [entities, setEntities] = useState<PaginatedRecommendationList>({
     count: 0,
     results: [],
@@ -128,8 +129,10 @@ const FeedTopItems = () => {
           options
         );
         setEntities(newEntities);
-      } catch {
-        // todo: display a message
+        setLoadingError(false);
+      } catch (error) {
+        console.error(error);
+        setLoadingError(true);
       } finally {
         setIsLoading(false);
       }
@@ -182,6 +185,13 @@ const FeedTopItems = () => {
             }
           />
         </Box>
+        {loadingError && !isLoading && entities.count === 0 && (
+          <Box mb={1} px={{ xs: 2, sm: 0 }}>
+            <Alert severity="warning">
+              {t('genericError.errorOnLoadingTryAgainLater')}
+            </Alert>
+          </Box>
+        )}
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
