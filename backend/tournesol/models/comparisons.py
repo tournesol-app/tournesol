@@ -5,6 +5,7 @@ Models for Tournesol's main functions related to contributor's comparisons
 import uuid
 
 import computed_property
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, ObjectDoesNotExist, Q
@@ -147,7 +148,7 @@ class ComparisonCriteriaScore(models.Model):
     def __str__(self):
         return f"{self.comparison}/{self.criteria}/{self.score}"
 
-    def save(self, *args, **kwargs):
+    def _validate_score_max(self):
         if self.score_max is None:
             raise TypeError("The value of score_max cannot be None.")
 
@@ -159,4 +160,13 @@ class ComparisonCriteriaScore(models.Model):
                 f"The absolute value of the score {self.score} given to the criterion "
                 f"{self.criteria} can't be greater than the value of score_max {self.score_max}."
             )
+
+    def clean(self):
+        try:
+            self._validate_score_max()
+        except (TypeError, ValueError) as err:
+            raise ValidationError({"score_max":  err.args[0]})
+
+    def save(self, *args, **kwargs):
+        self._validate_score_max()
         return super().save(*args, **kwargs)
