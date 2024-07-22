@@ -38,13 +38,13 @@ class Comparison(models.Model):
         related_name="comparisons"
     )
     entity_1 = models.ForeignKey(
-        'Entity',
+        "Entity",
         on_delete=models.CASCADE,
         related_name="comparisons_entity_1",
         help_text="Left entity to compare",
     )
     entity_2 = models.ForeignKey(
-        'Entity',
+        "Entity",
         on_delete=models.CASCADE,
         related_name="comparisons_entity_2",
         help_text="Right entity to compare",
@@ -165,7 +165,7 @@ class ComparisonCriteriaScore(models.Model):
         try:
             self._validate_score_max()
         except (TypeError, ValueError) as err:
-            raise ValidationError({"score_max":  err.args[0]})
+            raise ValidationError({"score_max": err.args[0]}) from err
 
     def save(self, *args, **kwargs):
         self._validate_score_max()
