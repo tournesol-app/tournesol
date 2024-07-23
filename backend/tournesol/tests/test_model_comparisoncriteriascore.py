@@ -103,51 +103,51 @@ class ComparisonCriteriaScoreTestCase(TestCase):
         The method `clean` should call the method `_validate_score_max` and
         transform its exceptions into `ValidationError`.
         """
-        score_test = ComparisonCriteriaScore(
-            comparison=self.comparison,
-            criteria=self.poll.main_criteria,
-            score=11,
-            score_max=10,
-        )
-
-        score_test._validate_score_max = Mock()
-        score_test.clean()
-        score_test._validate_score_max.assert_called_once()
-
-        # The exceptions raised by _validate_score_max should be transformed
-        # into `ValidationError` by the method `clean`.
-        expected_exceptions = [TypeError("oops"), ValueError("oops")]
-        for exception in expected_exceptions:
-            score_test._validate_score_max = Mock(side_effect=exception)
-
-            with self.assertRaises(ValidationError):
-                score_test.clean()
-
-        # All other exceptions should not be transformed.
-        score_test._validate_score_max = Mock(side_effect=KeyError)
-        with self.assertRaises(KeyError):
-            score_test.clean()
-
-    def test_save_calls_validate_score_max(self):
-        """
-        The method `save` should call the method `_validate_score_max`.
-        """
-        score_test = ComparisonCriteriaScore(
+        score = ComparisonCriteriaScore(
             comparison=self.comparison,
             criteria=self.poll.main_criteria,
             score=10,
             score_max=10,
         )
 
-        score_test._validate_score_max = Mock()
-        score_test.save()
-        score_test._validate_score_max.assert_called_once()
+        score._validate_score_max = Mock()
+        score.clean()
+        score._validate_score_max.assert_called_once()
+
+        # The exceptions raised by _validate_score_max should be transformed
+        # into `ValidationError` by the method `clean`.
+        expected_exceptions = [TypeError("oops"), ValueError("oops")]
+        for exception in expected_exceptions:
+            score._validate_score_max = Mock(side_effect=exception)
+
+            with self.assertRaises(ValidationError):
+                score.clean()
+
+        # All other exceptions should not be transformed.
+        score._validate_score_max = Mock(side_effect=KeyError)
+        with self.assertRaises(KeyError):
+            score.clean()
+
+    def test_save_calls_validate_score_max(self):
+        """
+        The method `save` should call the method `_validate_score_max`.
+        """
+        score = ComparisonCriteriaScore(
+            comparison=self.comparison,
+            criteria=self.poll.main_criteria,
+            score=10,
+            score_max=10,
+        )
+
+        score._validate_score_max = Mock()
+        score.save()
+        score._validate_score_max.assert_called_once()
 
         # All exceptions raised by _validate_score_max should not be
         # transformed by `save`.
         expected_exceptions = [KeyError, TypeError, ValueError]
         for exception in expected_exceptions:
-            score_test._validate_score_max = Mock(side_effect=exception)
+            score._validate_score_max = Mock(side_effect=exception)
 
             with self.assertRaises(exception):
-                score_test.save()
+                score.save()
