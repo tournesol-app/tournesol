@@ -131,5 +131,17 @@
   "closeIconAlt": {
     "message": "Icône de fermeture",
     "description": "Texte alternatif à l'icône de fermeture de la bannière"
+  },
+  "rateNowButtonLabel": {
+    "message": "Comparer",
+    "description": "Label du bouton affiché sur les pages de vidéo."
+  },
+  "rateLaterButtonLabel": {
+    "message": "Plus Tard",
+    "description": "Label du bouton affiché sur les pages de vidéo."
+  },
+  "watchOnTournesolButtonLabel": {
+    "message": "Regarder sur Tournesol",
+    "description": "Label du bouton affiché sur les pages de vidéo."
   }
 }
