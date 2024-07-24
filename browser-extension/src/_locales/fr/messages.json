@@ -140,6 +140,10 @@
     "message": "Plus Tard",
     "description": "Label du bouton affiché sur les pages de vidéo."
   },
+  "rateLaterButtonSuccessLabel": {
+    "message": "Ajoutée !",
+    "description": "Ça remplace le texte du bouton Plus Tard après un ajout réussi."
+  },
   "watchOnTournesolButtonLabel": {
     "message": "Regarder sur Tournesol",
     "description": "Label du bouton affiché sur les pages de vidéo."

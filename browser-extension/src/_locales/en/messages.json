@@ -142,6 +142,10 @@
     "message": "Rate Later",
     "description": "Label of the button displayed on video pages."
   },
+  "rateLaterButtonSuccessLabel": {
+    "message": "Added!",
+    "description": "It replaces the Rate Later button label after a successful add."
+  },
   "watchOnTournesolButtonLabel": {
     "message": "Watch on Tournesol",
     "description": "Label of the button displayed on video pages."
