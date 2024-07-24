@@ -164,7 +164,9 @@ function addVideoButtons() {
               },
               (data) => {
                 if (data.success) {
-                  setRateLaterButtonLabel(chrome.i18n.getMessage('rateLaterButtonSuccessLabel'));
+                  setRateLaterButtonLabel(
+                    chrome.i18n.getMessage('rateLaterButtonSuccessLabel')
+                  );
                   setRateLaterButtonIcon(
                     chrome.runtime.getURL('images/checkmark.svg')
                   );
