@@ -103,10 +103,10 @@ class ExportProofOfVote(TestCase):
         self.assertEqual(
             csv_lines[1],
             [
-                "3",
+                str(user.id),
                 "non_staff",
                 "non_staff@example.org",
                 "1",
-                "00003:Lrxt5_dGEG_rfOuGgxabsqJoF7rZL0ViIY0vygX36zo",
+                self.default_poll.get_user_proof(user.id, "proof_of_vote"),
             ]
         )
