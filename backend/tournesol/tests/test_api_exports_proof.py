@@ -32,8 +32,8 @@ class ExportProofOfVote(TestCase):
         An authenticated non-administrator user should not be able to download the proof of vote.
         """
         user = User.objects.create_user(
-            username="non_saff",
-            email="non_staff@example.org",
+            username="test_non_saff",
+            email="test_non_saff@example.org",
             is_active=True,
             is_staff=False,
         )
@@ -47,8 +47,8 @@ class ExportProofOfVote(TestCase):
         An authenticated administrator user should be able to download an empty proof of vote.
         """
         user = User.objects.create_user(
-            username="non_staff",
-            email="non_staff@example.org",
+            username="test_staff",
+            email="test_staff@example.org",
             is_active=True,
             is_staff=True,
         )
@@ -76,8 +76,8 @@ class ExportProofOfVote(TestCase):
         An authenticated administrator user should be able to download the proof of vote.
         """
         user = User.objects.create_user(
-            username="non_staff",
-            email="non_staff@example.org",
+            username="test_staff",
+            email="test_staff@example.org",
             is_active=True,
             is_staff=True,
         )
@@ -104,8 +104,8 @@ class ExportProofOfVote(TestCase):
             csv_lines[1],
             [
                 str(user.id),
-                "non_staff",
-                "non_staff@example.org",
+                "test_staff",
+                "test_staff@example.org",
                 "1",
                 self.default_poll.get_user_proof(user.id, "proof_of_vote"),
             ]
