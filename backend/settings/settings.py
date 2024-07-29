@@ -127,6 +127,7 @@ REST_REGISTRATION = {
     "VERIFICATION_FROM_EMAIL": "noreply@tournesol.app",
     "REGISTER_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/register/body.html",
+        "text_body": "accounts/register/body.txt",
         "subject": "accounts/register/subject.txt",
     },
     "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES": {
