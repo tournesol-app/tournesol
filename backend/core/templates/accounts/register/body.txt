@@ -8,4 +8,5 @@
 {% blocktranslate %}If you have not created an account on the Tournesol platform, you can ignore this e-mail.
 Non-activated accounts are automatically deleted after few days.{% endblocktranslate %}
 
+--
 {% translate "The Tournesol team" %}

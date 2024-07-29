@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-29 13:52+0000\n"
+"POT-Creation-Date: 2024-07-29 15:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -168,7 +168,9 @@ msgstr ""
 "Les comptes non-activés sont automatiquement supprimés après quelques jours."
 
 #: core/templates/accounts/register/body.html:21
-#: core/templates/accounts/register/body.txt:11
+#: core/templates/accounts/register/body.txt:12
+#: core/templates/accounts/reset_password/body.html:17
+#: core/templates/accounts/reset_password/body.txt:9
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
 #: core/templates/core/no_contrib_email/body_no_contrib.txt:26
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:24
@@ -208,7 +210,13 @@ msgstr "Votre adresse e-mail est déjà utilisée sur Tournesol"
 msgid "Please verify new e-mail on Tournesol"
 msgstr "Veuillez confirmer votre nouvelle adresse e-mail sur Tournesol"
 
-#: core/templates/accounts/reset_password/body.html:6
+#: core/templates/accounts/reset_password/body.html:11
+#: core/templates/accounts/reset_password/body.txt:2
+msgid "Password reset"
+msgstr "Réinitialisation de mot de passe"
+
+#: core/templates/accounts/reset_password/body.html:14
+#: core/templates/accounts/reset_password/body.txt:4
 msgid "You can reset your password on Tournesol by clicking on this link:"
 msgstr ""
 "Vous pouvez réinitialiser votre mot de passe sur Tournesol en cliquant sur "
@@ -362,8 +370,3 @@ msgstr ""
 #: core/templates/core/no_contrib_email/body_signup_contrib.txt:17
 msgid "Which videos can I compare? 🤔"
 msgstr "Quelles vidéos puis-je comparer ? 🤔"
-
-#~ msgid "Please verify your Tournesol account by clicking on this link:"
-#~ msgstr ""
-#~ "Veuillez confirmer la création de votre compte Tournesol en cliquant sur "
-#~ "ce lien:"
