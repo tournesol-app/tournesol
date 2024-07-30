@@ -132,6 +132,7 @@ REST_REGISTRATION = {
     },
     "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/register_email/body.html",
+        "text_body": "accounts/register_email/body.txt",
         "subject": "accounts/register_email/subject.txt",
     },
     "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES": {
