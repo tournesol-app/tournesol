@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-30 09:44+0000\n"
+"POT-Creation-Date: 2024-07-30 09:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,7 +164,7 @@ msgid ""
 "Non-activated accounts are automatically deleted after few days."
 msgstr ""
 "Si vous n'avez pas créé de compte sur la plateforme Tournesol, vous "
-"pouvezignorer cet email.\n"
+"pouvez ignorer cet email.\n"
 "Les comptes non-activés sont automatiquement supprimés après quelques jours."
 
 #: core/templates/accounts/register/body.html:21
@@ -179,8 +179,8 @@ msgstr ""
 msgid "The Tournesol team"
 msgstr "L'équipe Tournesol"
 
-#: core/templates/accounts/register/subject.txt:2
-msgid "Please verify your Tournesol account"
+#: core/templates/accounts/register/subject.txt:1
+msgid "Verify your Tournesol account"
 msgstr "Activation de votre compte Tournesol"
 
 #: core/templates/accounts/register_email/body.html:11
@@ -216,8 +216,8 @@ msgid "Your e-mail is already in use on Tournesol"
 msgstr "Votre adresse e-mail est déjà utilisée sur Tournesol"
 
 #: core/templates/accounts/register_email/subject.txt:5
-msgid "Please verify new e-mail on Tournesol"
-msgstr "Veuillez confirmer votre nouvelle adresse e-mail sur Tournesol"
+msgid "Verify your new e-mail on Tournesol"
+msgstr "Activez votre nouvelle adresse email sur Tournesol"
 
 #: core/templates/accounts/reset_password/body.html:11
 #: core/templates/accounts/reset_password/body.txt:1
@@ -231,8 +231,8 @@ msgstr ""
 "Vous pouvez réinitialiser votre mot de passe sur Tournesol en cliquant sur "
 "ce lien:"
 
-#: core/templates/accounts/reset_password/subject.txt:2
-msgid "Tournesol Password Reset"
+#: core/templates/accounts/reset_password/subject.txt:1
+msgid "Tournesol password reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
 #: core/templates/core/no_contrib_email/_body_footer.inc.html:3
