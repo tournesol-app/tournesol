@@ -1,6 +1,7 @@
 - hosts: tournesol
   roles:
     - repository
+    - well_known.frontend
     - django
     - frontend
   become: true

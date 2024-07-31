@@ -26,6 +26,10 @@ server {
 
     error_page 503 /maintenance/index.html;
 
+    location /.well-known/ {
+        alias /srv/tournesol-frontend-wellknown/;
+    }
+
     location / {
         {% if maintenance %}
             return 503;

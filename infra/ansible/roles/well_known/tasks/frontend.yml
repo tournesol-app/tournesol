@@ -1,0 +1,27 @@
+# well-known URI for the Tournesol front end
+#
+# These tasks create the well-known folder and ressources.
+#
+# [DOC]
+#
+#   - https://datatracker.ietf.org/doc/html/rfc8615
+#   - https://datatracker.ietf.org/doc/html/rfc9116
+#
+# [REQUIREMENTS]
+#
+# They depend on other tasks like:
+#
+#   - nginx
+#
+
+- name: Create front end's well-known dir
+  file:
+    path: /srv/tournesol-frontend-wellknown
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Copy security.txt to front end's well-known dir
+  template:
+    src: frontend-security.txt.j2
+    dest: /srv/tournesol-frontend-wellknown/security.txt
