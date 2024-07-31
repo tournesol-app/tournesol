@@ -8,7 +8,7 @@
     - users
     - postgresql
     - nginx
-    - well_known.frontend
+    - well_known/frontend
     - repository
     - django
     - monitoring
