@@ -95,7 +95,7 @@ Thank you very much!
 
 ## Security
 
-To report security vulnerabilities follow our [security policy](./.github/SECURITY.md).
+To report security vulnerabilities follow our [security policy](./SECURITY.md).
 
 ## Copyright & Licenses
 
