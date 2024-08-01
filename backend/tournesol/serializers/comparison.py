@@ -21,6 +21,17 @@ class ComparisonCriteriaScoreSerializer(ModelSerializer):
             )
         return value
 
+    def validate(self, data):
+        try:
+            ComparisonCriteriaScore.validate_score_max(
+                data["score"],
+                data["score_max"],
+                data["criteria"],
+            )
+        except (TypeError, ValueError) as err:
+            raise ValidationError({"score_max": err.args[0]}) from err
+        return data
+
 
 class ComparisonSerializerMixin:
     def format_entity_contexts(self, poll, contexts, metadata):
