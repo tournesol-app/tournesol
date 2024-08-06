@@ -27,6 +27,7 @@ import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fie
 import { useNotifications } from 'src/hooks';
 import { AccountsService, ApiError } from 'src/services/openapi';
 import { TRACKED_EVENTS, trackEvent } from 'src/utils/analytics';
+import { scrollToTop } from 'src/utils/ui';
 import { resolvedLangToNotificationsLang } from 'src/utils/userSettings';
 
 const SignupSuccess = ({ email }: { email: string }) => {
@@ -131,6 +132,7 @@ const Signup = () => {
       });
       setSuccessEmailAddress(createdUser.email || '');
       trackEvent(TRACKED_EVENTS.signup, { props: { state: 'created' } });
+      scrollToTop('smooth');
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {
