@@ -21,16 +21,16 @@ class ComparisonCriteriaScoreSerializer(ModelSerializer):
             )
         return value
 
-    def validate(self, data):
+    def validate(self, attrs):
         try:
             ComparisonCriteriaScore.validate_score_max(
-                data["score"],
-                data["score_max"],
-                data["criteria"],
+                attrs["score"],
+                attrs["score_max"],
+                attrs["criteria"],
             )
         except (TypeError, ValueError) as err:
             raise ValidationError({"score_max": err.args[0]}) from err
-        return data
+        return attrs
 
 
 class ComparisonSerializerMixin:
