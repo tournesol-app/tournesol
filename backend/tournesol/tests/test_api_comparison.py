@@ -578,8 +578,8 @@ class ComparisonApiTestCase(TestCase):
 
     def test_authenticated_cant_create_invalid_score_max(self):
         """
-        An authenticated user can't create a comparison with a criterion
-        having a score > to score_max.
+        An authenticated user can't create a comparison with a criterion whose
+        score is higher than score_max.
         """
         initial_comparisons_nbr = Comparison.objects.all().count()
         data = deepcopy(self.non_existing_comparison)
@@ -1086,8 +1086,8 @@ class ComparisonApiTestCase(TestCase):
 
     def test_authenticated_cant_patch_invalid_score_max(self):
         """
-        An authenticated user can't patch the score of a criterion with value
-        superior to score_max.
+        An authenticated user can't patch the score of a criterion with a
+        value higher than score_max.
         """
         self.client.force_authenticate(user=self.user)
         self.comparisons[0].criteria_scores.all().delete()
