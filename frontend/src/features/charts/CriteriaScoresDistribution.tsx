@@ -118,6 +118,10 @@ const CriteriaScoresDistributionChart = ({
         />
         <YAxis
           domain={[0, yMax]}
+          // Only display a tick for integer steps.
+          tickCount={
+            typeof yMax === 'number' && yMax <= 5 ? yMax + 1 : undefined
+          }
           label={{
             value: t('criteriaScoresDistribution.numberOfRatings'),
             angle: -90,
