@@ -4,8 +4,8 @@ import Grid from '@mui/material/Grid';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import AccountInfo from './AccountInfo';
-import Search from './Search';
 import Logo from './Logo';
+import Search from './Search';
 
 const TopBarDesktop = () => {
   const { options } = useCurrentPoll();
@@ -13,7 +13,7 @@ const TopBarDesktop = () => {
   return (
     <>
       <Logo />
-      <Grid item md={4}>
+      <Grid item xs>
         {options?.withSearchBar && <Search />}
       </Grid>
       <AccountInfo />

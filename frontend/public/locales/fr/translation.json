@@ -31,8 +31,8 @@
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté haut:",
     "criteriaRatedLow": "Noté bas:",
-    "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+    "nbViews": "{{nbViews}} vues",
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
     "nComparisonsByYou_many": "{{count}} comparaisons par vous",
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
@@ -519,6 +519,7 @@
     "preferencesUpdatedSuccessfully": "Préférences mises à jour avec succès.",
     "updatePreferences": "Mettre à jour les préférences",
     "comparisonPage": "Comparaison (page)",
+    "displayCollectiveGoalOnMobile": "Afficher l'objectif collectif hebdomadaire sur les périphériques mobiles.",
     "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
     "extensionYoutube": "Extension (YouTube)",
     "rateLater": "Liste à comparer plus tard",
@@ -619,6 +620,9 @@
     "ratedCandidates": "Candidats notés",
     "activatedAccounts": "Comptes activés",
     "comparisons": "Comparaisons"
+  },
+  "statsSection": {
+    "statistics": "Statistiques"
   },
   "tip": {
     "less": "Moins",

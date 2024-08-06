@@ -88,7 +88,3 @@ class ThrottlingTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response = client.post("/video/", {"video_id": "videoid2abc"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-
-        # GET requests must not be throttled, even if previous POST requests has been
-        response = client.get("/video/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)

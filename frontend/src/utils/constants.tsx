@@ -164,6 +164,8 @@ export const DEFAULT_RATE_LATER_AUTO_REMOVAL = 4;
 
 export const YT_DEFAULT_AUTO_SELECT_ENTITIES = true;
 
+export const YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE = false;
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.

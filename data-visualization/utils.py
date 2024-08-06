@@ -1,4 +1,6 @@
 import io
+from multiprocessing.pool import ThreadPool
+import threading
 import zipfile
 
 import pandas as pd
@@ -41,6 +43,8 @@ DATASET_URL = "https://api.tournesol.app/exports/all/"
 # URL to get YouTube thumbnail in high quality
 thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
 
+thread_local_storage = threading.local()
+
 
 @st.cache_data
 def set_df():
@@ -49,11 +53,8 @@ def set_df():
     r = requests.get(DATASET_URL)
     z = zipfile.ZipFile(io.BytesIO(r.content))
 
-    for file in z.namelist():
-        if "comparisons.csv" in file:
-            with z.open(file) as f:
-                df_tmp = pd.read_csv(f)
-                break
+    with z.open("comparisons.csv") as f:
+        df_tmp = pd.read_csv(f)
 
     index = ["video_a", "video_b", "public_username", "week_date"]
     for idx in index + ["criteria"]:
@@ -71,25 +72,67 @@ def get_unique_video_list(df):
     return list(set(df["video_a"]) | set(df["video_b"]))
 
 
-def get_score(row, crit):
-    for item in row["criteria_scores"]:
-        if item["criteria"] == crit:
+def get_criterion_score(row, name):
+    for item in row["collective_rating"]["criteria_scores"]:
+        if item["criteria"] == name:
             return item["score"]
 
 
+def get_url_json(url):
+    if not hasattr(thread_local_storage, "session"):
+        thread_local_storage.session = requests.Session()
+    response = thread_local_storage.session.get(url)
+    response.raise_for_status()
+    return response.json()
+
+
+def get_tournesol_reco(limit: int, offset: int):
+    return get_url_json(
+        f"https://api.tournesol.app/polls/videos/recommendations/?limit={limit}&offset={offset}&unsafe=true"
+    )
+
+
+def get_metadata(row, metadata):
+    return row["entity"]["metadata"][metadata]
+
+
+def get_collective_n_contributor(row):
+    return row["collective_rating"]["n_contributors"]
+
+
 @st.cache_data
-def api_get_tournesol_scores():
-    """Get a dataframe with all videos from tournesol.."""
+def api_get_tournesol_df():
+    """
+    Return a DataFrame created from the Tournesol recommendations.
+    """
+    limit = 2000
 
-    response = requests.get(
-        f"https://api.tournesol.app/video/?limit=99999&unsafe=true"
-    ).json()
+    response = get_tournesol_reco(limit, 0)
+    results = response["results"]
+    total_count = response["count"]
 
-    df = pd.DataFrame.from_dict(response["results"])
+    reco_params = [(limit, offset) for offset in range(limit, total_count, limit)]
+    with ThreadPool(10) as pool:
+        for result in pool.starmap(get_tournesol_reco, reco_params):
+            if not result["results"]:
+                continue
+            results.extend(result["results"])
 
-    for crit in CRITERIA:
-        df[crit] = df.apply(lambda x: get_score(x, crit), axis=1)
-
-    df.drop(columns=["criteria_scores"], inplace=True)
-
-    return df
+    return pd.DataFrame(
+        [
+            {
+                meta: get_metadata(x, meta)
+                for meta in [
+                    "video_id",
+                    "name",
+                    "views",
+                    "duration",
+                    "language",
+                    "uploader",
+                ]
+            }
+            | {"n_contributors": get_collective_n_contributor(x)}
+            | {crit: get_criterion_score(x, crit) for crit in CRITERIA}
+            for x in results
+        ]
+    )

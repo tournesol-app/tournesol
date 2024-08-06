@@ -3,7 +3,7 @@
 
 # Full stack Web Framework used for Tournesol's backend
 # https://docs.djangoproject.com
-Django==4.2.11
+Django==4.2.14
 # Used for fields computed on save for Django models
 # See https://github.com/brechin/django-computed-property/
 django-computed-property==0.3.0
@@ -23,7 +23,7 @@ django-rest-registration==0.8.2
 django-sql-utils==0.6.1
 # Django REST Framework is used for most of the API routes
 # https://github.com/encode/django-rest-framework
-djangorestframework==3.14.0
+djangorestframework==3.15.2
 # Used to generate OpenAPI documentation exposed by Swagger UI
 # See https://github.com/tfranzel/drf-spectacular
 drf-spectacular==0.26.5
@@ -55,7 +55,7 @@ google-auth-httplib2==0.1.0
 matplotlib==3.7.2
 # requests is used to trigger a few external tools such as Discord or fetch
 # information 
-requests==2.31.0
+requests==2.32.2
 # Used for the twitter bots
 tweepy==4.14.0
 # dotenv for .env file

@@ -83,8 +83,9 @@ function initTournesolModal() {
     // hide the modal on click
     document.onclick = function (event) {
       const expectedModal = document.getElementById(EXT_MODAL_ID);
+
       if (event.target === expectedModal) {
-        expectedModal.style.display = EXT_MODAL_INVISIBLE_STATE;
+        hideModal();
       }
     };
 
@@ -141,10 +142,15 @@ function displayModal({ src, height } = {}) {
 
 function hideModal() {
   const modal = document.getElementById(EXT_MODAL_ID);
+  const iframe = document.getElementById(IFRAME_TOURNESOL_ID);
+
   if (!modal) {
     return false;
   }
 
+  // Prevent videos from continuing to play in the background when the iframe
+  // is hidden.
+  iframe.src = '';
   modal.style.display = EXT_MODAL_INVISIBLE_STATE;
   return true;
 }
