@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, ObjectDoesNotExist, Q
+from django.utils.translation import gettext_lazy as _
 
 from core.models import User
 
@@ -151,15 +152,18 @@ class ComparisonCriteriaScore(models.Model):
     @staticmethod
     def validate_score_max(score: float, score_max: int, criterion: str):
         if score_max is None:
-            raise TypeError("The value of score_max cannot be None.")
+            raise TypeError(_("The value of score_max cannot be None."))
 
         if score_max <= 0:
-            raise ValueError("The value of score_max must be greater than or equal to 1.")
+            raise ValueError(_("The value of score_max must be greater than or equal to 1."))
 
         if abs(score) > score_max:
             raise ValueError(
-                f"The absolute value of the score {score} given to the criterion "
-                f"{criterion} can't be greater than the value of score_max {score_max}."
+                _(
+                    "The absolute value of the score %(score)s given to the criterion "
+                    "%(criterion)s can't be greater than the value of score_max %(score_max)s."
+                )
+                % {"score": score, "criterion": criterion, "score_max": score_max}
             )
 
     def clean(self):

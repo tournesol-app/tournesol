@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-18 15:23+0000\n"
+"POT-Creation-Date: 2024-08-06 08:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +34,23 @@ msgstr "Oui"
 #: tournesol/admin.py:378
 msgid "No"
 msgstr "Non"
+
+#: tournesol/models/comparisons.py:155
+msgid "The value of score_max cannot be None."
+msgstr "La valeur de score_max ne peut pas être None."
+
+#: tournesol/models/comparisons.py:158
+msgid "The value of score_max must be greater than or equal to 1."
+msgstr "La valeur de score_max doit être supérieure ou égale à 1."
+
+#: tournesol/models/comparisons.py:163
+#, python-format
+msgid ""
+"The absolute value of the score %(score)s given to the criterion "
+"%(criterion)s can't be greater than the value of score_max %(score_max)s."
+msgstr ""
+"La valeur absolue du score %(score)s donnée au critère "
+"%(criterion)s ne peut pas être supérieure à la valeur de score_max %(score_max)s."
 
 #: tournesol/serializers/rate_later.py:60
 msgid "The entity is already in the rate-later list of this poll."
