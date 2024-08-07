@@ -118,7 +118,7 @@ function addVideoButtons() {
       if (items.access_token) {
         addVideoButton({
           id: 'tournseol-watch-button',
-          label: 'Watch on Tournesol',
+          label: chrome.i18n.getMessage('watchOnTournesolButtonLabel'),
           iconSrc: chrome.runtime.getURL('images/watch.svg'),
           onClick: () => {
             window.open(
@@ -131,7 +131,7 @@ function addVideoButtons() {
 
       addVideoButton({
         id: 'tournesol-rate-now-button',
-        label: 'Rate Now',
+        label: chrome.i18n.getMessage('rateNowButtonLabel'),
         iconSrc: chrome.runtime.getURL('images/compare.svg'),
         onClick: () => {
           chrome.runtime.sendMessage({
@@ -150,7 +150,7 @@ function addVideoButtons() {
         setIcon: setRateLaterButtonIcon,
       } = addVideoButton({
         id: 'tournesol-rate-later-button',
-        label: 'Rate Later',
+        label: chrome.i18n.getMessage('rateLaterButtonLabel'),
         iconSrc: chrome.runtime.getURL('images/add.svg'),
         iconClass: 'tournesol-rate-later',
         onClick: () => {
@@ -164,7 +164,9 @@ function addVideoButtons() {
               },
               (data) => {
                 if (data.success) {
-                  setRateLaterButtonLabel('Added!');
+                  setRateLaterButtonLabel(
+                    chrome.i18n.getMessage('rateLaterButtonSuccessLabel')
+                  );
                   setRateLaterButtonIcon(
                     chrome.runtime.getURL('images/checkmark.svg')
                   );

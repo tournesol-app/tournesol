@@ -1,0 +1,8 @@
+{% load i18n %}{% translate "Password reset" %}
+
+{% translate "You can reset your password on Tournesol by clicking on this link:" %}
+
+{{ verification_url | safe }}
+
+--
+{% translate "The Tournesol team" %}

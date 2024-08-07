@@ -127,14 +127,17 @@ REST_REGISTRATION = {
     "VERIFICATION_FROM_EMAIL": "noreply@tournesol.app",
     "REGISTER_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/register/body.html",
+        "text_body": "accounts/register/body.txt",
         "subject": "accounts/register/subject.txt",
     },
     "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/register_email/body.html",
+        "text_body": "accounts/register_email/body.txt",
         "subject": "accounts/register_email/subject.txt",
     },
     "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/reset_password/body.html",
+        "text_body": "accounts/reset_password/body.txt",
         "subject": "accounts/reset_password/subject.txt",
     },
     "VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER": "rest_registration.utils.html.convert_html_to_text",

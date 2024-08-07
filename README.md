@@ -48,6 +48,7 @@ us on [Discord][tournesol-discord-join].
  - [Structure of the repository](#structure-of-the-repository)
  - [Set-up](#set-up)
  - [Contributing](#contributing)
+ - [Security](#security)
  - [Copyright & Licenses](#copyright--licenses)
 
 ## Structure of the repository
@@ -91,6 +92,10 @@ The code source of the project exists thanks to
 [all people who generously took the time to contribute][tournesol-github-contributors].
 
 Thank you very much!
+
+## Security
+
+To report security vulnerabilities follow our [security policy](./SECURITY.md).
 
 ## Copyright & Licenses
 
