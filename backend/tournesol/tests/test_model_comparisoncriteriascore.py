@@ -55,24 +55,44 @@ class ComparisonCriteriaScoreTestCase(TestCase):
 
         # The score cannot be greater than score_max.
         with self.assertRaises(ValueError):
-            score_test._validate_score_max()
+            score_test.validate_score_max(
+                score=score_test.score,
+                score_max=score_test.score_max,
+                criterion=score_test.criteria,
+            )
 
         score_test.score = -11
         # The absolute value of the score cannot be greater than score_max.
         with self.assertRaises(ValueError):
-            score_test._validate_score_max()
+            score_test.validate_score_max(
+                score=score_test.score,
+                score_max=score_test.score_max,
+                criterion=score_test.criteria,
+            )
 
         # The score can be zero.
         score_test.score = 0
-        score_test._validate_score_max()
+        score_test.validate_score_max(
+            score=score_test.score,
+            score_max=score_test.score_max,
+            criterion=score_test.criteria,
+        )
 
         # The score can be equal to the score_max.
         score_test.score = score_test.score_max
-        score_test._validate_score_max()
+        score_test.validate_score_max(
+            score=score_test.score,
+            score_max=score_test.score_max,
+            criterion=score_test.criteria,
+        )
 
         # The absolute value of the score can be lesser than score_max.
         score_test.score = -1
-        score_test._validate_score_max()
+        score_test.validate_score_max(
+            score=score_test.score,
+            score_max=score_test.score_max,
+            criterion=score_test.criteria,
+        )
 
         score_max_test = ComparisonCriteriaScore(
             comparison=self.comparison,
@@ -83,24 +103,40 @@ class ComparisonCriteriaScoreTestCase(TestCase):
 
         # score_max cannot be None.
         with self.assertRaises(TypeError):
-            score_max_test._validate_score_max()
+            score_max_test.validate_score_max(
+                score=score_max_test.score,
+                score_max=score_max_test.score_max,
+                criterion=score_max_test.criteria,
+            )
 
         score_max_test.score_max = 0
         # score_max cannot be zero.
         with self.assertRaises(ValueError):
-            score_max_test._validate_score_max()
+            score_max_test.validate_score_max(
+                score=score_max_test.score,
+                score_max=score_max_test.score_max,
+                criterion=score_max_test.criteria,
+            )
 
         score_max_test.score_max = -10
         # score_max cannot be negative.
         with self.assertRaises(ValueError):
-            score_max_test._validate_score_max()
+            score_max_test.validate_score_max(
+                score=score_max_test.score,
+                score_max=score_max_test.score_max,
+                criterion=score_max_test.criteria,
+            )
 
         score_max_test.score_max = 10
-        score_max_test._validate_score_max()
+        score_max_test.validate_score_max(
+            score=score_max_test.score,
+            score_max=score_max_test.score_max,
+            criterion=score_max_test.criteria,
+        )
 
     def test_clean_calls_validate_score_max(self):
         """
-        The method `clean` should call the method `_validate_score_max` and
+        The method `clean` should call the method `validate_score_max` and
         transform its exceptions into `ValidationError`.
         """
         score = ComparisonCriteriaScore(
@@ -110,27 +146,27 @@ class ComparisonCriteriaScoreTestCase(TestCase):
             score_max=10,
         )
 
-        score._validate_score_max = Mock()
+        score.validate_score_max = Mock()
         score.clean()
-        score._validate_score_max.assert_called_once()
+        score.validate_score_max.assert_called_once()
 
-        # The exceptions raised by _validate_score_max should be transformed
+        # The exceptions raised by validate_score_max should be transformed
         # into `ValidationError` by the method `clean`.
         expected_exceptions = [TypeError("oops"), ValueError("oops")]
         for exception in expected_exceptions:
-            score._validate_score_max = Mock(side_effect=exception)
+            score.validate_score_max = Mock(side_effect=exception)
 
             with self.assertRaises(ValidationError):
                 score.clean()
 
         # All other exceptions should not be transformed.
-        score._validate_score_max = Mock(side_effect=KeyError)
+        score.validate_score_max = Mock(side_effect=KeyError)
         with self.assertRaises(KeyError):
             score.clean()
 
     def test_save_calls_validate_score_max(self):
         """
-        The method `save` should call the method `_validate_score_max`.
+        The method `save` should call the method `validate_score_max`.
         """
         score = ComparisonCriteriaScore(
             comparison=self.comparison,
@@ -139,15 +175,15 @@ class ComparisonCriteriaScoreTestCase(TestCase):
             score_max=10,
         )
 
-        score._validate_score_max = Mock()
+        score.validate_score_max = Mock()
         score.save()
-        score._validate_score_max.assert_called_once()
+        score.validate_score_max.assert_called_once()
 
-        # All exceptions raised by _validate_score_max should not be
+        # All exceptions raised by validate_score_max should not be
         # transformed by `save`.
         expected_exceptions = [KeyError, TypeError, ValueError]
         for exception in expected_exceptions:
-            score._validate_score_max = Mock(side_effect=exception)
+            score.validate_score_max = Mock(side_effect=exception)
 
             with self.assertRaises(exception):
                 score.save()
