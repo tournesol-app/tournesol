@@ -13,29 +13,36 @@ import UploaderFilter from './UploaderFilter';
 import AdvancedFilter from './AdvancedFilter';
 import ScoreModeFilter from './ScoreModeFilter';
 import {
-  recommendationFilters,
-  defaultRecommendationFilters,
   YOUTUBE_POLL_NAME,
   PRESIDENTIELLE_2022_POLL_NAME,
+  pollVideosFilters,
+  pollVideosInitialFilters,
 } from 'src/utils/constants';
 import { ScoreModeEnum } from 'src/utils/api/recommendations';
-import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 
 /**
  * Filter options for Videos recommendations
  *
  * The "filters" button has a badge when one of its filter is enabled with a non-default value.
- * When adding a new filter, it needs to be defined in constants 'recommendationFilters'
- * and 'defaultRecommendationsFilters'.
+ * When adding a new filter, it needs to be defined in constants 'pollVideosFilters'
+ * and 'pollVideosInitialFilters'.
  */
 function SearchFilter({
-  showAdvancedFilter = true,
+  appearExpanded = false,
   extraActions,
+  disableAdvanced = false,
+  disableCriteria = false,
+  disableDuration = false,
+  onLanguagesChange,
 }: {
-  showAdvancedFilter?: boolean;
+  appearExpanded?: boolean;
   extraActions?: React.ReactNode;
+  disableAdvanced?: boolean;
+  disableCriteria?: boolean;
+  disableDuration?: boolean;
+  onLanguagesChange?: (value: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(appearExpanded);
   const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
 
   const { name: pollName } = useCurrentPoll();
@@ -45,17 +52,20 @@ function SearchFilter({
   };
 
   const isFilterActive = () =>
-    Object.entries(defaultRecommendationFilters).some(
+    Object.entries(pollVideosInitialFilters).some(
       ([key, defaultValue]) =>
         ![null, '', defaultValue].includes(filterParams.get(key))
     );
 
   const handleLanguageChange = useCallback(
     (value: string) => {
-      saveRecommendationsLanguages(value);
-      setFilter(recommendationFilters.language, value);
+      if (onLanguagesChange) {
+        onLanguagesChange(value);
+      }
+
+      setFilter(pollVideosFilters.language, value);
     },
-    [setFilter]
+    [setFilter, onLanguagesChange]
   );
 
   const setFilterCallback = useCallback(
@@ -75,11 +85,11 @@ function SearchFilter({
         <Box color="secondary.main">{extraActions}</Box>
       </Box>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {filterParams.get(recommendationFilters.uploader) && (
+        {filterParams.get(pollVideosFilters.uploader) && (
           <Box marginBottom={1}>
             <UploaderFilter
-              value={filterParams.get(recommendationFilters.uploader) ?? ''}
-              onDelete={() => setFilter(recommendationFilters.uploader, null)}
+              value={filterParams.get(pollVideosFilters.uploader) ?? ''}
+              onDelete={() => setFilter(pollVideosFilters.uploader, null)}
             />
           </Box>
         )}
@@ -94,12 +104,10 @@ function SearchFilter({
                 data-testid="search-date-and-advanced-filter"
               >
                 <DateFilter
-                  value={filterParams.get(recommendationFilters.date) ?? ''}
-                  onChange={(value) =>
-                    setFilter(recommendationFilters.date, value)
-                  }
+                  value={filterParams.get(pollVideosFilters.date) ?? ''}
+                  onChange={(value) => setFilter(pollVideosFilters.date, value)}
                 />
-                {showAdvancedFilter && (
+                {!disableAdvanced && (
                   <Box mt={2}>
                     <AdvancedFilter
                       value={filterParams.get('advanced') ?? ''}
@@ -116,22 +124,26 @@ function SearchFilter({
                 data-testid="search-language-filter"
               >
                 <LanguageFilter
-                  value={filterParams.get(recommendationFilters.language) ?? ''}
+                  value={filterParams.get(pollVideosFilters.language) ?? ''}
                   onChange={handleLanguageChange}
                 />
-                <Box mt={2}>
-                  <DurationFilter
-                    valueMax={filterParams.get('duration_lte') ?? ''}
-                    valueMin={filterParams.get('duration_gte') ?? ''}
-                    onChangeCallback={setFilterCallback}
-                  />
-                </Box>
+                {!disableDuration && (
+                  <Box mt={2}>
+                    <DurationFilter
+                      valueMax={filterParams.get('duration_lte') ?? ''}
+                      valueMin={filterParams.get('duration_gte') ?? ''}
+                      onChangeCallback={setFilterCallback}
+                    />
+                  </Box>
+                )}
               </Grid>
             </>
           )}
-          <Grid item xs={12} sm={12} md={6}>
-            <CriteriaFilter setFilter={setFilter} />
-          </Grid>
+          {!disableCriteria && (
+            <Grid item xs={12} sm={12} md={6}>
+              <CriteriaFilter setFilter={setFilter} />
+            </Grid>
+          )}
           {pollName == PRESIDENTIELLE_2022_POLL_NAME && (
             <Grid item xs={12} sm={4}>
               <ScoreModeFilter

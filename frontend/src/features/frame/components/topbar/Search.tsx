@@ -72,7 +72,7 @@ const Search = () => {
     if (videoId) {
       history.push('/entities/yt:' + videoId.toString());
     } else {
-      history.push('/recommendations?' + searchParams.toString());
+      history.push('/search?' + searchParams.toString());
     }
   };
 

@@ -56,22 +56,22 @@ const booksToReadAndOfferFr = [
 const videosToWatchAndShareEn = [
   {
     text: 'Science4All (english)',
-    href: 'https://tournesol.app/recommendations?language=&uploader=Science4All+%28english%29',
+    href: 'https://tournesol.app/search?language=&uploader=Science4All+%28english%29',
   },
 ];
 
 const videosToWatchAndShareFr = [
   {
     text: 'ApresLaBiere',
-    href: 'https://tournesol.app/recommendations?language=&uploader=ApresLaBiere',
+    href: 'https://tournesol.app/search?language=&uploader=ApresLaBiere',
   },
   {
     text: 'La Fabrique Sociale',
-    href: 'https://tournesol.app/recommendations?language=&uploader=La%20Fabrique%20Sociale',
+    href: 'https://tournesol.app/search?language=&uploader=La%20Fabrique%20Sociale',
   },
   {
     text: 'Science4All',
-    href: 'https://tournesol.app/recommendations?language=&uploader=Science4All',
+    href: 'https://tournesol.app/search?language=&uploader=Science4All',
   },
 ];
 

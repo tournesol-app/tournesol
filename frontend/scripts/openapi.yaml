@@ -3334,6 +3334,20 @@ components:
       - answer
       - name
       - question
+    FeedForyou_dateEnum:
+      enum:
+      - TODAY
+      - WEEK
+      - MONTH
+      - YEAR
+      - ALL_TIME
+      type: string
+      description: |-
+        * `TODAY` - today
+        * `WEEK` - week
+        * `MONTH` - month
+        * `YEAR` - year
+        * `ALL_TIME` - all_time
     GeneralUserSettings:
       type: object
       description: The general user settings that are not related to Tournesol polls.
@@ -4734,6 +4748,22 @@ components:
           type: boolean
         recommendations__default_exclude_compared_entities:
           type: boolean
+        feed_foryou__date:
+          oneOf:
+          - $ref: '#/components/schemas/FeedForyou_dateEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        feed_foryou__languages:
+          type: array
+          items:
+            type: string
+        feed_foryou__unsafe:
+          type: boolean
+        feed_foryou__exclude_compared_entities:
+          type: boolean
+        feed_topitems__languages:
+          type: array
+          items:
+            type: string
     VideosPollUserSettingsRequest:
       type: object
       description: |-
@@ -4773,6 +4803,24 @@ components:
           type: boolean
         recommendations__default_exclude_compared_entities:
           type: boolean
+        feed_foryou__date:
+          oneOf:
+          - $ref: '#/components/schemas/FeedForyou_dateEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        feed_foryou__languages:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        feed_foryou__unsafe:
+          type: boolean
+        feed_foryou__exclude_compared_entities:
+          type: boolean
+        feed_topitems__languages:
+          type: array
+          items:
+            type: string
+            minLength: 1
   securitySchemes:
     cookieAuth:
       type: apiKey
