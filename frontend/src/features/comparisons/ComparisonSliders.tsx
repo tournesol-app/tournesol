@@ -23,6 +23,7 @@ import {
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 import CriteriaSlider, { SLIDER_SCORE_MAX } from './CriteriaSlider';
+import ItemsAreSimilar from './ItemsAreSimilar';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -58,12 +59,14 @@ const ComparisonSliders = ({
   uidA,
   uidB,
   isComparisonPublic,
+  readOnly = false,
 }: {
   submit: (c: ComparisonRequest) => Promise<void>;
   initialComparison: ComparisonRequest | null;
   uidA: string;
   uidB: string;
   isComparisonPublic?: boolean;
+  readOnly?: boolean;
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -204,14 +207,7 @@ const ComparisonSliders = ({
   };
 
   if (uidA == uidB) {
-    return (
-      <div className={classes.root}>
-        <Typography sx={{ textAlign: 'center' }}>
-          {t('comparison.itemsAreSimilar')}
-          {' 🌻'}
-        </Typography>
-      </div>
-    );
+    return <ItemsAreSimilar />;
   }
 
   return (
@@ -225,7 +221,7 @@ const ComparisonSliders = ({
               criteria={criteria.name}
               criteriaLabel={criteria.label}
               criteriaValue={criteriaValues[criteria.name]}
-              disabled={submitted}
+              disabled={readOnly || submitted}
               handleSliderChange={handleSliderChange}
             />
           ))}
@@ -244,7 +240,7 @@ const ComparisonSliders = ({
                   criterionName
                 }
                 criteriaValue={criteriaValues[criterionName]}
-                disabled={submitted}
+                disabled={readOnly || submitted}
                 handleSliderChange={handleSliderChange}
               />
             ))}
@@ -255,26 +251,28 @@ const ComparisonSliders = ({
             return critAlwaysDisplayed?.includes(optCriterion.name);
           }) && (
           <>
-            <Button
-              fullWidth
-              disabled={
-                !criterias.some((c) => isCollapsed(c, critAlwaysDisplayed))
-              }
-              onClick={handleCollapseCriterias}
-              startIcon={
-                showOptionalCriterias ? <ExpandLess /> : <ExpandMore />
-              }
-              size="medium"
-              color="secondary"
-              sx={{
-                marginBottom: '8px',
-                color: showOptionalCriterias ? 'red' : '',
-              }}
-            >
-              {showOptionalCriterias
-                ? t('comparison.removeOptionalCriterias')
-                : t('comparison.addOptionalCriterias')}
-            </Button>
+            {!readOnly && (
+              <Button
+                fullWidth
+                disabled={
+                  !criterias.some((c) => isCollapsed(c, critAlwaysDisplayed))
+                }
+                onClick={handleCollapseCriterias}
+                startIcon={
+                  showOptionalCriterias ? <ExpandLess /> : <ExpandMore />
+                }
+                size="medium"
+                color="secondary"
+                sx={{
+                  marginBottom: '8px',
+                  color: showOptionalCriterias ? 'red' : '',
+                }}
+              >
+                {showOptionalCriterias
+                  ? t('comparison.removeOptionalCriterias')
+                  : t('comparison.addOptionalCriterias')}
+              </Button>
+            )}
 
             <Collapse
               in={showOptionalCriterias}
@@ -289,7 +287,7 @@ const ComparisonSliders = ({
                     criteria={criteria.name}
                     criteriaLabel={criteria.label}
                     criteriaValue={criteriaValues[criteria.name]}
-                    disabled={submitted}
+                    disabled={readOnly || submitted}
                     handleSliderChange={handleSliderChange}
                   />
                 ))}
@@ -323,7 +321,7 @@ const ComparisonSliders = ({
           )}
         </Box>
         <Button
-          disabled={disableSubmit || !isPollActive}
+          disabled={disableSubmit || readOnly || !isPollActive}
           variant="contained"
           color="primary"
           size="large"

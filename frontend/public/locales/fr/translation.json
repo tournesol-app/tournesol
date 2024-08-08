@@ -83,6 +83,7 @@
     "title": "Distribution des scores par critère"
   },
   "comparison": {
+    "ok": "OK",
     "successfullySubmitted": "Comparaison bien enregistrée.",
     "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
@@ -107,10 +108,18 @@
     "hideHelp": "Cacher l'aide",
     "showHelp": "Montrer l'aide pour les comparaisons"
   },
+  "comparisonInput": {
+    "thisComparisonWasMadeOnAMobileDevice": "Cette comparaison a été faite sur un périphérique mobile. L'interface mobile remplace exceptionnellement l'interface habituelle.",
+    "thisComparisonWasMadeOnAComputer": "Cette comparaison a été faite sur un ordinateur. Elle ne peut pas être modifiée sur un périphérique mobile."
+  },
   "comparisons": {
     "goToComparison": "Voir la comparaison"
   },
   "submit": "enregistrer",
+  "comparisonCriteriaButtons": {
+    "nextQualityCriterion": "Critère de qualité suivant",
+    "previousQualityCriterion": "Critère de qualité précédent"
+  },
   "comparisonSeries": {
     "skipTheSeries": "Passer la série"
   },
@@ -145,6 +154,9 @@
     "searchByTextOrPasteUrl": "Rechercher par texte ou URL",
     "closeSearch": "Fermer la recherche",
     "search": "Rechercher"
+  },
+  "entitySelectorControls": {
+    "next": "suivant"
   },
   "tabsBox": {
     "subsample": "Un extrait ordonné de votre classement personnel. Les éléments que vous recommandez le plus apparaissent en premier.",
@@ -1158,12 +1170,16 @@
         "title1": "Comparer deux vidéos 🌻",
         "message1": {
           "p10": "Après avoir regardé les vidéos, déplacez le curseur principal vers la vidéo qui, selon vous, devrait être largement recommandée. Enregistrez quand votre choix est fait.",
-          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait se rapprocher du centre."
+          "p10mobile": "Après avoir regardé les vidéos, votez pour celle qui dévrait être largement recommandée en utilisant les boutons de comparaison au dessous.",
+          "p20": "Plus votre avis est tranché sur un critère, plus le curseur devrait être proche de l'extrémité. Si vous trouvez les vidéos similaires, le curseur devrait se rapprocher du centre.",
+          "p20mobile": "Si votre avis est tranché, utilisez les boutons aux extrémités. Si vous trouvez les deux vidéos similaires, utilisez le bouton \"égal\" du milieu."
         },
         "title2": "Faire des comparaisons aide la science 🔬",
         "message2": {
           "p10": "Chaque comparaison aide Tournesol à améliorer ses recommandations et sa base de données publique. Essayez maintenant de dérouler et d'utiliser les critères optionnels.",
-          "p20": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant. Il vous sera possible de modifier ultérieurement vos comparaisons depuis votre page Mes comparaisons."
+          "p10mobile": "Chaque comparaison aide Tournesol à améliorer ses recommandations et sa base de données publique.",
+          "p20": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant. Il vous sera possible de modifier ultérieurement vos comparaisons depuis votre page Mes comparaisons.",
+          "p20mobile": "Après quelques comparaisons de nouveaux critères optionnels vous serons proposés. Il vous sera aussi possible de modifier toutes vos comparaisons depuis votre page Mes comparaisons."
         },
         "title3": "Comment fonctionne Tournesol ? 🤖",
         "message3": {

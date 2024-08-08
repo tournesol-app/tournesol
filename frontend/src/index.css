@@ -1,4 +1,10 @@
+html {
+  /* disable the pull-to-refresh gesture on Safari */
+  overscroll-behavior-y: none;
+}
+
 body {
+  /* disable the pull-to-refresh gesture */
   overscroll-behavior-y: contain;
 }
 
@@ -42,6 +48,11 @@ html.embedded .SnackbarContainer-root.belowTopBar {
      snackbar into the empty page title bar in order to avoid shadowing any
      page content. */
   top: 4px;
+}
+@media (max-width: 600px) {
+  .SnackbarContainer-root.belowTopBar {
+    width: auto;
+  }
 }
 
 
