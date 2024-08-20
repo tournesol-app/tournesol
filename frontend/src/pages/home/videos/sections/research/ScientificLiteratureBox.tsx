@@ -84,6 +84,13 @@ const ScientificLiteratureBox = () => {
       icon: MenuBook,
     },
     {
+      name: 'Should YouTube make recommendations for the climate?',
+      authors:
+        'Martin Gibert, Lê-Nguyên Hoang, Maxime Lambrecht (2024). Ethics and Information Technology.',
+      url: 'https://link.springer.com/article/10.1007/s10676-024-09784-4',
+      icon: MenuBook,
+    },
+    {
       name: ' Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons',
       authors:
         'Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang, Oscar Villemaud (2024). AAAI.',
