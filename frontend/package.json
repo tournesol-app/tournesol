@@ -17,7 +17,7 @@
     "@types/react-router-dom": "^5.1.8",
     "@use-gesture/react": "^10.3.1",
     "i18next": "^22.4.0",
-    "i18next-browser-languagedetector": "^7.0.1",
+    "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.1.1",
     "linkify-string": "^4.1",
     "linkifyjs": "^4.1",
@@ -65,7 +65,7 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.1",
-    "i18next-parser": "^7.7.0",
+    "i18next-parser": "^9",
     "jsdom": "^22.1.0",
     "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.3.2",
@@ -88,7 +88,6 @@
     ]
   },
   "resolutions": {
-    "@types/react": "^17",
-    "i18next-parser/**/glob-parent": "^5.1.2"
+    "@types/react": "^17"
   }
 }
