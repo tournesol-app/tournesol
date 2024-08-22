@@ -202,13 +202,13 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         """
         score_diff_abs = score_diff.abs()
         return torch.where(
-            score_diff_abs > 0,
+            score_diff_abs > 1e-1,
             torch.where(
                 score_diff_abs < 20.0,
                 (torch.sinh(score_diff) / score_diff).log(),
                 score_diff_abs - np.log(2) - score_diff_abs.log(),
             ),
-            0.0,
+            score_diff_abs ** 2 / 6 - score_diff_abs ** 4 / 180,
         )
 
     def to_json(self):

@@ -9,14 +9,14 @@ from solidago.solvers.optimize import njit_brentq as brentq
 
 @njit
 def qr_quantile(
-    lipschitz: float, 
+    lipschitz: float,
     quantile: float,
     values: npt.NDArray,
     voting_rights: Union[npt.NDArray, float]=1.0,
     left_uncertainties: Optional[npt.NDArray]=None,
     right_uncertainties: Optional[npt.NDArray]=None,
     default_value: float=0,
-    error: float=1e-5
+    error: float=1e-5,
 ) -> float:
     """ Computes the quadratically regularized quantile, an estimate of 
     the quantile of values,weighted by voting_rights, given left and right 

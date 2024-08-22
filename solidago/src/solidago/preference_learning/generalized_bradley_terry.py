@@ -265,13 +265,13 @@ class UniformGBT(GeneralizedBradleyTerry):
             score_diff_abs = np.abs(score_diff)
             return (
                 np.where(
-                    score_diff_abs > 0,
+                    score_diff_abs > 1e-1,
                     np.where(
                         score_diff_abs < 20.0,
                         np.log(np.sinh(score_diff) / score_diff),
                         score_diff_abs - np.log(2) - np.log(score_diff_abs),
                     ),
-                    0.0,
+                    score_diff_abs ** 2 / 6 - score_diff_abs ** 4 / 180,
                 )
                 + r * score_diff
             ).sum()
