@@ -1,7 +1,11 @@
 server {
     # if no Host match, close the connection to prevent host spoofing
     listen 80 default_server;
-    listen 443 ssl default_server;
+
+    # On port 443 it would be cleaner to use "ssl" with "ssl_reject_handshake on;"
+    # but that requires Nginx >= 1.19.4. Instead the default server use HTTP only.
+    listen 443 default_server;
+
     return 444;
 }
 
