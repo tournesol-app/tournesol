@@ -1,6 +1,7 @@
 server {
     # if no Host match, close the connection to prevent host spoofing
     listen 80 default_server;
+    listen 443 ssl default_server;
     return 444;
 }
 
