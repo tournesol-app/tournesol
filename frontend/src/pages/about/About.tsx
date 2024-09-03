@@ -300,7 +300,7 @@ const AboutPage = () => {
               name="Romain"
               image="/people/Tournecat.jpeg"
               institution=""
-              role="Main Developer"
+              role="Developer"
               title=""
               job="Senior Software Engineer"
             />
@@ -320,7 +320,7 @@ const AboutPage = () => {
           <Grid item xs={12} sm={4} className={classes.container}>
             <CoreTeamCard
               name="Titouan Lustin"
-              image="/people/Titouan.png"
+              image="/people/Titouan.jpg"
               institution="UTC"
               title="Master of Science"
               role="Communication & Events"
@@ -343,7 +343,7 @@ const AboutPage = () => {
             <CoreTeamCard
               name="Jean-Lou"
               image="/people/JeanLou.jpg"
-              institution="Association Tournesol"
+              institution="AprèsLaBière"
               title=""
               role="Communication & Events"
               job="Journalist & Youtuber"
