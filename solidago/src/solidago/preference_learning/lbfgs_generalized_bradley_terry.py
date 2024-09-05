@@ -87,7 +87,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         )
 
         solution = torch.normal(
-            0, 1, (len(entities),), requires_grad=True, dtype=torch.float32, device=self.device
+            0, 1, (len(entities),), requires_grad=True, dtype=torch.float64, device=self.device
         )
 
         if initialization is not None:
