@@ -41,7 +41,7 @@ class Scaling:
         """
         raise NotImplementedError
 
-    def to_json(self):
+    def to_json(self) -> tuple:
         return (type(self).__name__, )        
 
     def __str__(self):

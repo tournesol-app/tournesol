@@ -879,6 +879,6 @@ def _aggregate(
         right_uncertainties=np.array(uncertainties),
         default_dev=default_dev,
         error=error,
-        median=value
+        median=value if aggregator is qr_median else None,
     )
     return value, uncertainty

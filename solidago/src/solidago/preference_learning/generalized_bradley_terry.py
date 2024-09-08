@@ -249,13 +249,18 @@ class UniformGBT(GeneralizedBradleyTerry):
         prior_std_dev: float = 7,
         convergence_error: float = 1e-5,
         cumulant_generating_function_error: float = 1e-5,
+        high_likelihood_range_threshold: float = 1.0,
     ):
         """
 
         Parameters (TODO)
         ----------
         """
-        super().__init__(prior_std_dev, convergence_error)
+        super().__init__(
+            prior_std_dev,
+            convergence_error,
+            high_likelihood_range_threshold=high_likelihood_range_threshold
+        )
         self.cumulant_generating_function_error = cumulant_generating_function_error
 
     @cached_property
@@ -297,6 +302,7 @@ class UniformGBT(GeneralizedBradleyTerry):
             prior_std_dev=self.prior_std_dev,
             convergence_error=self.convergence_error,
             cumulant_generating_function_error=self.cumulant_generating_function_error,
+            high_likelihood_range_threshold=self.high_likelihood_range_threshold,
         )
 
     def __str__(self):

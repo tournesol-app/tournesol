@@ -180,12 +180,18 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         convergence_error: float = 1e-5,
         cumulant_generating_function_error: float = 1e-5,
         max_iter: int = 100,
+        high_likelihood_range_threshold: float = 1.0,
     ):
         """
         Parameters (TODO)
         ----------
         """
-        super().__init__(prior_std_dev, convergence_error, max_iter=max_iter)
+        super().__init__(
+            prior_std_dev,
+            convergence_error,
+            max_iter=max_iter,
+            high_likelihood_range_threshold=high_likelihood_range_threshold,
+        )
         self.cumulant_generating_function_error = cumulant_generating_function_error
 
     def cumulant_generating_function(self, score_diff: torch.Tensor) -> torch.Tensor:
@@ -216,6 +222,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
             prior_std_dev=self.prior_std_dev,
             convergence_error=self.convergence_error,
             cumulant_generating_function_error=self.cumulant_generating_function_error,
+            high_likelihood_range_threshold=self.high_likelihood_range_threshold,
         )
 
     def __str__(self):

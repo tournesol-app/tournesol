@@ -5,10 +5,9 @@ import numpy as np
 
 from solidago.voting_rights import VotingRights
 from solidago.privacy_settings import PrivacySettings
-from solidago.judgments import DataFrameJudgments
 from solidago.scoring_model import DirectScoringModel, ScaledScoringModel
 
-from solidago.scaling import ScalingCompose, Mehestan, QuantileZeroShift
+from solidago.scaling import Mehestan
 
 from solidago.scaling.mehestan import (Mehestan, _aggregate_user_comparisons, _aggregate)
 
