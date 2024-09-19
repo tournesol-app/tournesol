@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box } from '@mui/material';
+import { storage } from 'src/app/localStorage';
 import TopBar, { topBarHeight } from './components/topbar/TopBar';
 import Footer from './components/footer/Footer';
 import SideBar from './components/sidebar/SideBar';
@@ -52,12 +53,7 @@ const hasLocalStorageAccess = async () => {
   if (hasStorageAccess != null) {
     return hasStorageAccess;
   }
-  try {
-    localStorage;
-    return true;
-  } catch (err) {
-    return false;
-  }
+  return storage != null;
 };
 
 const applyEmbeddedStyle = () => {
