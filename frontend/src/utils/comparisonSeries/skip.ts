@@ -1,3 +1,5 @@
+import { storage } from 'src/app/localStorage';
+
 /**
  * The day we will have different components using the skippedBy state, we
  * should consider using Redux instead of our custom localstorage accessors.
@@ -16,9 +18,9 @@ const skippedByIsEmpty = (skippedBy: string) => {
  * @param username The username of the user.
  */
 export const setSkippedBy = (skipKey: string, username: string) => {
-  const skippedBy = localStorage.getItem(skipKey) ?? INITAL_SKIPPED_BY;
-  let users: Array<string>;
+  const skippedBy = storage?.getItem(skipKey) ?? INITAL_SKIPPED_BY;
 
+  let users: Array<string>;
   if (skippedByIsEmpty(skippedBy)) {
     users = [];
   } else {
@@ -29,7 +31,7 @@ export const setSkippedBy = (skipKey: string, username: string) => {
     users.push(username);
   }
 
-  localStorage.setItem(skipKey, users.join(','));
+  storage?.setItem(skipKey, users.join(','));
 };
 
 /**
@@ -37,17 +39,12 @@ export const setSkippedBy = (skipKey: string, username: string) => {
  * skipped by the user.
  */
 export const getSkippedBy = (skipKey: string, username: string): boolean => {
-  const skippedBy = localStorage.getItem(skipKey) ?? INITAL_SKIPPED_BY;
+  const skippedBy = storage?.getItem(skipKey) ?? INITAL_SKIPPED_BY;
 
   if (skippedByIsEmpty(skippedBy)) {
     return false;
   }
 
   const users = skippedBy.split(',');
-
-  if (users.includes(username)) {
-    return true;
-  }
-
-  return false;
+  return users.includes(username);
 };

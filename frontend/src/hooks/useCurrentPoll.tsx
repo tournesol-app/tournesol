@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { storage } from 'src/app/localStorage';
 import { PollsService, Poll } from 'src/services/openapi';
 import { LAST_POLL_NAME_STORAGE_KEY, polls } from 'src/utils/constants';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
@@ -71,9 +72,7 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Persist the last poll in localStorage for future sessions (after signup, etc.)
-    if (localStorage) {
-      localStorage.setItem(LAST_POLL_NAME_STORAGE_KEY, contextValue.name);
-    }
+    storage?.setItem(LAST_POLL_NAME_STORAGE_KEY, contextValue.name);
   }, [contextValue.name]);
 
   useEffect(() => {
