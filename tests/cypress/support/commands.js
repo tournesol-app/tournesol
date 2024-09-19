@@ -50,10 +50,3 @@ from core.models import User
 User.objects.filter(username='${username}').delete()
 "`)
 )
-
-Cypress.Commands.add('apiTruncateCacheTable', () => {
-  return cy.exec(`docker exec tournesol-dev-api python manage.py shell --command="
-from django.core.cache import cache
-cache.clear()
-"`);
-});

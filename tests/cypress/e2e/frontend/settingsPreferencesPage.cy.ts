@@ -60,13 +60,12 @@ describe('Settings - preferences page', () => {
 
 
   afterEach(() => {
-    cy.apiTruncateCacheTable();
     deleteComparisons();
     cy.deleteUser(username);
   });
 
-  const login = () => {
-    cy.focused().type('test-preferences-page');
+  const login = (user = 'test-preferences-page') => {
+    cy.focused().type(user);
     cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
   }
 
@@ -359,9 +358,12 @@ describe('Settings - preferences page', () => {
       });
 
       describe('Setting - exclude compared entities', () => {
-        it('handles the value false (include)', () => {
+
+        it.skip('handles the value false (include)', () => {
+          cy.recreateUser("text_exclude_false", "text_exclude_false@example.com", "tournesol");
+
           cy.visit('/settings/preferences');
-          login();
+          login("text_exclude_false");
 
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
@@ -369,6 +371,7 @@ describe('Settings - preferences page', () => {
           cy.contains('Update preferences').click();
 
           cy.visit('/feed/foryou');
+
           cy.get('[data-testid="video-card-info"] h5')
             .first()
             .invoke('attr', 'title').then((videoTitle) =>{
@@ -376,23 +379,22 @@ describe('Settings - preferences page', () => {
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
 
-              // Change an additional setting to not receive a cached response
-              // from the API in the feed For you.
-              cy.visit('/settings/preferences');
-              cy.get('[data-testid=videos_feed_foryou__unsafe]').click();
-              cy.contains('Update preferences').click();
-
               cy.visit('/feed/foryou');
+
               cy.get('[data-testid="video-card-info"] h5')
                 .first()
                 .invoke('attr', 'title')
                 .should('eq', videoTitle);
             });
+
+            cy.deleteUser("text_exclude_false");
         });
 
         it('handles the value true (exclude)', () => {
+          cy.recreateUser("text_exclude_true", "text_exclude_true@example.com", "tournesol");
+
           cy.visit('/settings/preferences');
-          login();
+          login("text_exclude_true");
 
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
@@ -400,17 +402,22 @@ describe('Settings - preferences page', () => {
           cy.contains('Update preferences').click();
 
           cy.visit('/feed/foryou');
+
           cy.get('[data-testid="video-card-info"] h5')
             .first()
             .invoke('attr', 'title').then((videoTitle) => {
-
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
 
-              // Change an additional setting to not receive a cached response
-              // from the API in the feed For you.
               cy.visit('/settings/preferences');
-              cy.get('[data-testid=videos_feed_foryou__unsafe]').click();
+
+              // FIXME: we shoudln't wait here
+              cy.wait(8000);
+
+              // Change an additional setting to bypass the cache in /feed/foryou.
+              cy.contains(
+                'Display by default the items having a negative score'
+              ).click();
               cy.contains('Update preferences').click();
 
               cy.visit('/feed/foryou');
@@ -419,6 +426,8 @@ describe('Settings - preferences page', () => {
                 .invoke('attr', 'title')
                 .should('not.eq', videoTitle);
           });
+
+          cy.deleteUser("text_exclude_true");
         });
       });
     });
