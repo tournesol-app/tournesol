@@ -5,7 +5,7 @@ function getLocalStorage() {
     localStorage.removeItem(key);
     return localStorage;
   } catch (e) {
-    console.error(`Cannot to use localstorage: ${e}`);
+    console.error(`Cannot use localstorage: ${e}`);
     return null;
   }
 }
