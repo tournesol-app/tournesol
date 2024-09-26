@@ -88,7 +88,7 @@ const RecommendationsSection = () => {
               <Button
                 variant="contained"
                 component={Link}
-                to={`/recommendations?date=${seeMoreDate}`}
+                to={`/search?date=${seeMoreDate}`}
               >
                 {t('recommendationsSection.seeMore')}
               </Button>
