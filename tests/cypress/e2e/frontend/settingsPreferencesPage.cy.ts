@@ -358,9 +358,11 @@ describe('Settings - preferences page', () => {
       });
 
       describe('Setting - exclude compared entities', () => {
-
         it('handles the value false (include)', () => {
           cy.recreateUser('test_exclude_false', 'test_exclude_false@example.com', 'tournesol');
+
+          cy.intercept('http://localhost:8000/polls/videos/recommendations/*')
+            .as('recommendationsRetrievedFromAPI');
 
           cy.intercept('http://localhost:8000/users/me/settings/')
             .as('settingsRetrievedFromAPI');
@@ -394,6 +396,7 @@ describe('Settings - preferences page', () => {
               cy.contains('Update preferences').click();
 
               cy.visit('/feed/foryou');
+              cy.wait('@recommendationsRetrievedFromAPI');
 
               cy.get('[data-testid="video-card-info"] h5')
                 .first()
@@ -406,6 +409,9 @@ describe('Settings - preferences page', () => {
 
         it('handles the value true (exclude)', () => {
           cy.recreateUser('test_exclude_true', 'test_exclude_true@example.com', 'tournesol');
+
+          cy.intercept('http://localhost:8000/polls/videos/recommendations/*')
+            .as('recommendationsRetrievedFromAPI');
 
           cy.intercept('http://localhost:8000/users/me/settings/')
             .as('settingsRetrievedFromAPI');
@@ -439,6 +445,8 @@ describe('Settings - preferences page', () => {
               cy.contains('Update preferences').click();
 
               cy.visit('/feed/foryou');
+              cy.wait('@recommendationsRetrievedFromAPI');
+
               cy.get('[data-testid="video-card-info"] h5')
                 .first()
                 .invoke('attr', 'title')
