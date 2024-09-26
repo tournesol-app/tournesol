@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next';
+import { storage } from 'src/app/localStorage';
 import { someLangsAreSupported } from 'src/i18n';
 import { uniq } from 'src/utils/array';
 
@@ -94,13 +95,13 @@ export const recommendationsLanguagesFromNavigator = (): string =>
 export const loadRecoLanguagesFromLocalStorage = (
   poll: string,
   feed: string
-): string | null => localStorage.getItem(`${poll}:${feed}:languages`);
+): string | null => storage?.getItem(`${poll}:${feed}:languages`) || null;
 
 export const saveRecoLanguagesToLocalStorage = (
   poll: string,
   feed: string,
   value: string
-) => localStorage.setItem(`${poll}:${feed}:languages`, value);
+) => storage?.setItem(`${poll}:${feed}:languages`, value);
 
 /**
  * Return the recommendations languages that should be used for anonymous and

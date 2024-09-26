@@ -48,7 +48,7 @@ services:
         condition: service_healthy
 
   front:
-    image: node:18-bullseye-slim
+    image: node:18.20-bullseye-slim
     container_name: tournesol-dev-front
     working_dir: /frontend
     entrypoint: bash -c

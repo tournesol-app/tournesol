@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
+import { storage } from 'src/app/localStorage';
 import { LAST_POLL_NAME_STORAGE_KEY, polls } from 'src/utils/constants';
 import { useCurrentPoll } from './useCurrentPoll';
 
-const lastSessionPollName = localStorage?.getItem(LAST_POLL_NAME_STORAGE_KEY);
+const lastSessionPollName = storage?.getItem(LAST_POLL_NAME_STORAGE_KEY);
 
 const useLastPoll = () => {
   // Hook that will activate the last poll that was persisted

@@ -31,7 +31,7 @@ jobs:
           spec: "cypress/e2e/browser-extension/**/*"
           config: baseUrl=https://www.youtube.com
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
@@ -62,7 +62,7 @@ jobs:
         working-directory: ./dev-env
         run: docker-compose logs -t --tail=300
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots

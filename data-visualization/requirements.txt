@@ -1,4 +1,4 @@
-streamlit==1.35.0
+streamlit==1.37.0
 numpy==1.24.2
 pandas==1.5.3
 seaborn==0.11.1

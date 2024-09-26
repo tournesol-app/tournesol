@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, ObjectDoesNotExist, Q
+from django.utils.translation import gettext_lazy as _
 
 from core.models import User
 
@@ -148,25 +149,29 @@ class ComparisonCriteriaScore(models.Model):
     def __str__(self):
         return f"{self.comparison}/{self.criteria}/{self.score}"
 
-    def _validate_score_max(self):
-        if self.score_max is None:
-            raise TypeError("The value of score_max cannot be None.")
+    @staticmethod
+    def validate_score_max(score: float, score_max: int, criterion: str):
+        if score_max is None:
+            raise TypeError(_("The value of score_max cannot be None."))
 
-        if self.score_max <= 0:
-            raise ValueError("The value of score_max must be greater than or equal to 1.")
+        if score_max <= 0:
+            raise ValueError(_("The value of score_max must be greater than or equal to 1."))
 
-        if abs(self.score) > self.score_max:
+        if abs(score) > score_max:
             raise ValueError(
-                f"The absolute value of the score {self.score} given to the criterion "
-                f"{self.criteria} can't be greater than the value of score_max {self.score_max}."
+                _(
+                    "The absolute value of the score %(score)s given to the criterion "
+                    "%(criterion)s can't be greater than the value of score_max %(score_max)s."
+                )
+                % {"score": score, "criterion": criterion, "score_max": score_max}
             )
 
     def clean(self):
         try:
-            self._validate_score_max()
+            self.validate_score_max(self.score, self.score_max, self.criteria)
         except (TypeError, ValueError) as err:
             raise ValidationError({"score_max": err.args[0]}) from err
 
     def save(self, *args, **kwargs):
-        self._validate_score_max()
+        self.validate_score_max(self.score, self.score_max, self.criteria)
         return super().save(*args, **kwargs)
