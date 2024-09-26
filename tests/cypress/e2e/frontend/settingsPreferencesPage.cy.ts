@@ -360,11 +360,17 @@ describe('Settings - preferences page', () => {
       describe('Setting - exclude compared entities', () => {
 
         it('handles the value false (include)', () => {
-          cy.recreateUser("text_exclude_false", "text_exclude_false@example.com", "tournesol");
+          cy.recreateUser('test_exclude_false', 'test_exclude_false@example.com', 'tournesol');
 
-          cy.visit('/settings/preferences');
-          login("text_exclude_false");
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
 
+          cy.visit('/login');
+          login('test_exclude_false');
+          cy.contains('test_exclude_false').click();
+          cy.get('[data-testid="settings-preferences"]').click();
+
+          cy.wait('@settingsRetrievedFromAPI');
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
           cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]').click();
@@ -379,14 +385,12 @@ describe('Settings - preferences page', () => {
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
 
-              cy.visit('/settings/preferences');
+              cy.contains('test_exclude_false').click();
+              cy.get('[data-testid="settings-preferences"]').click();
+              cy.wait('@settingsRetrievedFromAPI');
 
               // Change an additional setting to bypass the cache in /feed/foryou.
-
-              // FIXME: sometimes the checkbox is checked and unchecked just after.
-              cy.contains(
-                'Display by default the items having a negative score'
-              ).click();
+              cy.get('[data-testid="videos_feed_foryou__unsafe"]').check();
               cy.contains('Update preferences').click();
 
               cy.visit('/feed/foryou');
@@ -397,15 +401,21 @@ describe('Settings - preferences page', () => {
                 .should('eq', videoTitle);
             });
 
-            cy.deleteUser("text_exclude_false");
+            cy.deleteUser('test_exclude_false');
         });
 
         it('handles the value true (exclude)', () => {
-          cy.recreateUser("text_exclude_true", "text_exclude_true@example.com", "tournesol");
+          cy.recreateUser('test_exclude_true', 'test_exclude_true@example.com', 'tournesol');
 
-          cy.visit('/settings/preferences');
-          login("text_exclude_true");
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
 
+          cy.visit('/login');
+          login('test_exclude_true');
+          cy.contains('test_exclude_true').click();
+          cy.get('[data-testid="settings-preferences"]').click();
+
+          cy.wait('@settingsRetrievedFromAPI');
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
           cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]');
@@ -416,17 +426,16 @@ describe('Settings - preferences page', () => {
           cy.get('[data-testid="video-card-info"] h5')
             .first()
             .invoke('attr', 'title').then((videoTitle) => {
+
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
 
-              cy.visit('/settings/preferences');
+              cy.contains('test_exclude_true').click();
+              cy.get('[data-testid="settings-preferences"]').click();
+              cy.wait('@settingsRetrievedFromAPI');
 
               // Change an additional setting to bypass the cache in /feed/foryou.
-
-              // FIXME: sometimes the checkbox is checked and unchecked just after.
-              cy.contains(
-                'Display by default the items having a negative score'
-              ).click();
+              cy.get('[data-testid="videos_feed_foryou__unsafe"]').check();
               cy.contains('Update preferences').click();
 
               cy.visit('/feed/foryou');
@@ -436,7 +445,7 @@ describe('Settings - preferences page', () => {
                 .should('not.eq', videoTitle);
           });
 
-          cy.deleteUser("text_exclude_true");
+          cy.deleteUser('test_exclude_true');
         });
       });
     });
