@@ -112,12 +112,13 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
         lbfgs.step(closure)  # type: ignore
 
-        # TODO: check lbfgs state to check if max_iter was reached
+        n_iter = lbfgs.state_dict()["state"][0]["n_iter"]
+        if n_iter >= self.max_iter:
+            raise RuntimeError(f"LBFGS failed to converge in {n_iter} iteratiions")
 
         solution = solution.detach()
-
         if solution.isnan().any():
-            raise Exception(f"Nan in solution, state: {lbfgs.state_dict()}")
+            raise RuntimeError(f"Nan in solution, state: {lbfgs.state_dict()}")
 
         def loss_with_delta(delta, comparisons, coord):
             solution_with_delta = solution.clone()
