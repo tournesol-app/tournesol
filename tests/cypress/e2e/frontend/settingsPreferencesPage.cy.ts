@@ -359,7 +359,7 @@ describe('Settings - preferences page', () => {
 
       describe('Setting - exclude compared entities', () => {
 
-        it.skip('handles the value false (include)', () => {
+        it('handles the value false (include)', () => {
           cy.recreateUser("text_exclude_false", "text_exclude_false@example.com", "tournesol");
 
           cy.visit('/settings/preferences');
@@ -374,10 +374,20 @@ describe('Settings - preferences page', () => {
 
           cy.get('[data-testid="video-card-info"] h5')
             .first()
-            .invoke('attr', 'title').then((videoTitle) =>{
+            .invoke('attr', 'title').then((videoTitle) => {
 
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
+
+              cy.visit('/settings/preferences');
+
+              // Change an additional setting to bypass the cache in /feed/foryou.
+
+              // FIXME: sometimes the checkbox is checked and unchecked just after.
+              cy.contains(
+                'Display by default the items having a negative score'
+              ).click();
+              cy.contains('Update preferences').click();
 
               cy.visit('/feed/foryou');
 
@@ -411,10 +421,9 @@ describe('Settings - preferences page', () => {
 
               cy.visit('/settings/preferences');
 
-              // FIXME: we shoudln't wait here
-              cy.wait(8000);
-
               // Change an additional setting to bypass the cache in /feed/foryou.
+
+              // FIXME: sometimes the checkbox is checked and unchecked just after.
               cy.contains(
                 'Display by default the items having a negative score'
               ).click();
