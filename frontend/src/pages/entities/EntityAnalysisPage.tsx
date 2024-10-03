@@ -14,6 +14,7 @@ import {
   VideoService,
 } from 'src/services/openapi';
 import {
+  getEntityMetadataName,
   getPollName,
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
@@ -35,15 +36,17 @@ const createPageTitle = (
   pollName: string,
   entity: RelatedEntity
 ): string | undefined => {
-  if (pollName === YOUTUBE_POLL_NAME) {
-    if (entity.metadata.name) {
-      return `Tournesol / ${getPollName(t, pollName)} / ${
-        entity.metadata.name
-      }`;
-    }
+  const entityName = getEntityMetadataName(pollName, entity);
+  if (!entityName) {
+    return undefined;
   }
 
-  return undefined;
+  switch (pollName) {
+    case YOUTUBE_POLL_NAME:
+      return `Tournesol / ${getPollName(t, pollName)} / ${entityName}`;
+    default:
+      return undefined;
+  }
 };
 
 const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
