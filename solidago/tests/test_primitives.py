@@ -11,8 +11,8 @@ from solidago.primitives import (
 
 def test_qrmedian_resilience():
     median = qr_median(
-        lipschitz=1,
-        voting_rights=1,
+        lipschitz=1.0,
+        voting_rights=1.0,
         values=np.array([-10.0, 5.0, 10.0]),
         left_uncertainties=np.array([1e-3, 1e-7, 1e-3]),
         right_uncertainties=np.array([1e-5, 1e-3, 1e-4]),
@@ -61,7 +61,7 @@ def test_qr_quantile_zero_uncertainty_incorrect_prior():
 
 def test_qr_quantile_high_uncertainty():
     quantile = qr_quantile(
-        lipschitz=1,
+        lipschitz=1.0,
         quantile=0.5,
         voting_rights=1.0,
         values=np.array([1.0, 2.0, 6.0, 9.0]),
@@ -76,13 +76,13 @@ def test_qr_quantile_high_uncertainty():
 @pytest.mark.parametrize(
     "lipshitz,w,x,delta,quantile,expected_result",
     [
-        (0.1, np.array([0.1]), np.array([0]), np.array([0.1]), 0.5, 0),
-        (0.1, np.array([0.1]), np.array([0]), np.array([0.1]), 0.1, 0),
-        (0.1, np.array([0.1]), np.array([0]), np.array([0.1]), 0.9, 0),
-        (0.1, np.array([1] * 1000), np.array([-1] * 500 + [1] * 500), np.array([0.1] * 1000), 0.10, -0.986816),
-        (0.1, np.array([1] * 1000), np.array([-1] * 100 + [1] * 900), np.array([1e-6] * 1000), 0.10, 0.),
-        (10000, np.array([1] * 1000), np.array([-1] * 102 + [1] * 898), np.array([1e-6] * 1000), 0.01, -1),
-        (1e12, np.array([1000] * 1000), np.arange(1000, 2000, 1), np.array([1e-6] * 1000), 0.90, 1899.1817),
+        (0.1, np.array([0.1]), np.array([0.]), np.array([0.1]), 0.5, 0),
+        (0.1, np.array([0.1]), np.array([0.]), np.array([0.1]), 0.1, 0),
+        (0.1, np.array([0.1]), np.array([0.]), np.array([0.1]), 0.9, 0),
+        (0.1, np.array([1.] * 1000), np.array([-1.] * 500 + [1.] * 500), np.array([0.1] * 1000), 0.10, -0.986816),
+        (0.1, np.array([1.] * 1000), np.array([-1.] * 100 + [1.] * 900), np.array([1e-6] * 1000), 0.10, 0.),
+        (10000., np.array([1.] * 1000), np.array([-1.] * 102 + [1.] * 898), np.array([1e-6] * 1000), 0.01, -1.),
+        (1e12, np.array([1000.] * 1000), np.arange(1000., 2000, 1), np.array([1e-6] * 1000), 0.90, 1899.1817),
     ]
 )
 def test_qr_quantile_returns_expected_results(lipshitz,w,x,delta,quantile,expected_result):
@@ -100,8 +100,8 @@ def test_qr_quantile_returns_expected_results(lipshitz,w,x,delta,quantile,expect
 
 def test_qr_standard_deviation():
     standard_deviation = qr_standard_deviation(
-        lipschitz=1,
-        values=np.array([-4, -2, 0, 2, 4]),
+        lipschitz=1.0,
+        values=np.array([-4.0, -2.0, 0.0, 2.0, 4.0]),
         quantile_dev=0.5,
     )
     assert standard_deviation == pytest.approx(2, abs=1e-3)

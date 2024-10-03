@@ -16,7 +16,7 @@ from .comparison_learning import ComparisonBasedPreferenceLearning
 class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
     def __init__(
         self, 
-        prior_std_dev: float=7,
+        prior_std_dev: float=7.0,
         convergence_error: float=1e-5,
         high_likelihood_range_threshold = 1.0,
     ):
@@ -246,7 +246,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 class UniformGBT(GeneralizedBradleyTerry):
     def __init__(
         self,
-        prior_std_dev: float = 7,
+        prior_std_dev: float = 7.0,
         convergence_error: float = 1e-5,
         cumulant_generating_function_error: float = 1e-5,
         high_likelihood_range_threshold: float = 1.0,

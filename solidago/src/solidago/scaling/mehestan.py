@@ -24,7 +24,7 @@ class Mehestan(Scaling):
     def __init__(
         self, 
         lipschitz=0.1, 
-        min_activity=10, 
+        min_activity=10.0,
         n_scalers_max=100, 
         privacy_penalty=0.5,
         user_comparison_lipschitz=10.0,
@@ -523,7 +523,7 @@ class Mehestan(Scaling):
         return {
             u: _aggregate(self.lipschitz / (8 * (1e-9 + model_norms[u])), 
                 voting_rights[u], ratios[u], uncertainties[u], 
-                default_value=1, default_dev=0.8, error=self.error)
+                default_value=1.0, default_dev=0.8, error=self.error)
             for u in voting_rights
         }
 
@@ -643,7 +643,7 @@ class Mehestan(Scaling):
         return {
             u: _aggregate(self.lipschitz / 8, 
                 voting_rights[u], diffs[u], uncertainties[u], 
-                default_value=0, default_dev=1, 
+                default_value=0.0, default_dev=1.0,
                 error=self.error, aggregator=lipschitz_resilient_mean)
             for u in voting_rights
         }
@@ -718,7 +718,7 @@ def _computer_user_activities(
     activities: dict[int, float]
         activities[user] is a measure of user's trustworthy activeness.
     """
-    results = 0
+    results = 0.0
     entity_ids = set(entities.index)
     
     for entity_id, (score, left, right) in user_model.iter_entities():
@@ -846,7 +846,7 @@ def _aggregate(
     default_value: float,
     error: float=1e-5,
     aggregator: Callable = qr_median,
-    default_dev: float=1,
+    default_dev: float=1.0,
 ) -> tuple[float, float]:
     """ Computes the multiplicators of users with given user_ratios
     
