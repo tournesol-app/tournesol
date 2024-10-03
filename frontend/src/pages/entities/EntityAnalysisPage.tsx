@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
@@ -10,9 +10,12 @@ import {
   ApiError,
   PollsService,
   Recommendation,
+  RelatedEntity,
   VideoService,
 } from 'src/services/openapi';
 import {
+  getEntityMetadataName,
+  getPollName,
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
@@ -27,6 +30,24 @@ const VideoAnalysis = React.lazy(() =>
     default: VideoAnalysis,
   }))
 );
+
+const createPageTitle = (
+  t: TFunction,
+  pollName: string,
+  entity: RelatedEntity
+): string | undefined => {
+  const entityName = getEntityMetadataName(pollName, entity);
+  if (!entityName) {
+    return undefined;
+  }
+
+  switch (pollName) {
+    case YOUTUBE_POLL_NAME:
+      return `Tournesol / ${getPollName(t, pollName)} / ${entityName}`;
+    default:
+      return undefined;
+  }
+};
 
 const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
   const { t } = useTranslation();
@@ -75,7 +96,7 @@ const EntityAnalysisPage = () => {
   const { name: pollName } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
 
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentLang = i18n.resolvedLanguage;
 
   const [entity, setEntity] = useState<Recommendation>();
@@ -121,6 +142,11 @@ const EntityAnalysisPage = () => {
       try {
         const entity = await getEntityWithPollStats();
         setEntity(entity);
+
+        const title = createPageTitle(t, pollName, entity.entity);
+        if (title) {
+          document.title = title;
+        }
       } catch (error) {
         const reason: ApiError = error;
         if (reason.status === 404 && createVideo) {
@@ -136,6 +162,7 @@ const EntityAnalysisPage = () => {
     getEntity().finally(() => {
       setIsLoading(false);
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLang, pollName, uid]);
 
