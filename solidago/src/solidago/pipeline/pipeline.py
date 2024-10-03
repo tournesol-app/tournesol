@@ -192,6 +192,7 @@ class Pipeline:
         logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
         # FIXME: `privacy` may contain (user, entity) even if user has expressed no judgement
         # about the entity. These users should not be given a voting right on the entity.
+        # For now, irrelevant privacy values are excluded in `input.get_pipeline_kwargs()`
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
         start_step3 = timeit.default_timer()
         logger.info(f"Pipeline 2. Terminated in {np.round(start_step3 - start_step2, 2)} seconds")
@@ -299,9 +300,10 @@ class Pipeline:
             _, left_unc, right_unc = raw_scoring
             return left_unc + right_unc
 
-        scores_df["raw_score"] = scores_df.apply(get_raw_score, axis=1)
-        scores_df["raw_uncertainty"] = scores_df.apply(get_raw_uncertainty, axis=1)
-        output.save_individual_scores(scores_df)
+        if len(scores_df) > 0:
+            scores_df["raw_score"] = scores_df.apply(get_raw_score, axis=1)
+            scores_df["raw_uncertainty"] = scores_df.apply(get_raw_uncertainty, axis=1)
+            output.save_individual_scores(scores_df)
 
 
 def trust_propagation_from_json(json):

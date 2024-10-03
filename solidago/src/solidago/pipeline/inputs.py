@@ -70,9 +70,7 @@ class TournesolInput(ABC):
         raise NotImplementedError
 
     def get_users(self):
-        users = self.ratings_properties.groupby("user_id").first()[["trust_score"]]
-        users["is_pretrusted"] = users["trust_score"] >= 0.8
-        return users
+        raise NotImplementedError
 
     def get_pipeline_kwargs(self, criterion: str):
         ratings_properties = self.ratings_properties
@@ -221,3 +219,8 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 "vouch": vouchers.value,
             }
         )
+
+    def get_users(self):
+        users = self.ratings_properties.groupby("user_id").first()[["trust_score"]]
+        users["is_pretrusted"] = users["trust_score"] >= 0.8
+        return users

@@ -2,7 +2,7 @@ from functools import cached_property
 from typing import Optional
 
 import pandas as pd
-from django.db.models import Case, F, QuerySet, When
+from django.db.models import Case, F, Q, QuerySet, When
 from django.db.models.expressions import RawSQL
 from solidago.pipeline import TournesolInput
 
@@ -196,8 +196,24 @@ class MlInputFromDb(TournesolInput):
             by__is_active=True,
             to__is_active=True,
         ).values(
-            voucher="by__id",
-            vouchee="to__id",
-            vouch="value",
+            voucher=F("by__id"),
+            vouchee=F("to__id"),
+            vouch=F("value"),
         )
-        return pd.DataFrame(values)
+        return pd.DataFrame(values, columns=["voucher", "vouchee", "vouch"])
+
+    def get_users(self):
+        values = (
+            User.objects
+            .filter(is_active=True)
+            .annotate(is_pretrusted=Q(pk__in=User.with_trusted_email()))
+            .values(
+                "is_pretrusted",
+                "trust_score",
+                user_id=F("id"),
+            )
+        )
+        return pd.DataFrame(
+            data=values,
+            columns=["user_id", "is_pretrusted", "trust_score"],
+        ).set_index("user_id")

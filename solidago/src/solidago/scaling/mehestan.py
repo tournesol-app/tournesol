@@ -160,7 +160,7 @@ class Mehestan(Scaling):
         activities = self.compute_activities(user_models, entities, users, privacy)
         index_to_user = { index: user for index, user in enumerate(users.index) }
         np_activities = np.array([
-            activities[index_to_user[index]]
+            activities.get(index_to_user[index], 0.0)
             for index in range(len(users))
         ])
         argsort = np.argsort(np_activities)
@@ -300,11 +300,12 @@ class Mehestan(Scaling):
                 user_id,  # type: ignore
                 user_models[user_id],  # type: ignore
                 entities,
-                user.get("trust_score", 1.0),  # type: ignore
+                trust_score,  # type: ignore
                 privacy,
                 self.privacy_penalty
             )
-            for (user_id, user) in users.iterrows()
+            for (user_id, trust_score) in users["trust_score"].items()
+            if user_id in user_models
         }
 
     ############################################
@@ -724,6 +725,8 @@ def _computer_user_activities(
         if entity_id not in entity_ids:
             continue
         if score <= left and score >= -right:
+            # Uncertainty interval contains 0
+            # Sign of score is uncertain.
             continue
         added_quantity = 1.0
         if privacy is not None and privacy[user, entity_id]:

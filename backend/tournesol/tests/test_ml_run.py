@@ -140,6 +140,11 @@ class TestMlTrain(TransactionTestCase):
 
     def test_individual_scaling_are_computed(self):
         # User 1 will belong to calibration users (as the most active trusted user)
+        # FIXME: this is no longer true with the pipeline:
+        # calibration user are determined based on "trustworthy activeness"
+        # which combines trust_score, privacy settings, and uncertainty interval
+        # on individual scores.
+
         user1 = UserFactory(email="user@verified.test")
         user2 = UserFactory()
 
@@ -159,18 +164,17 @@ class TestMlTrain(TransactionTestCase):
 
         # Check scaling values for user1
         calibration_scaling = ContributorScaling.objects.get(user=user1)
-        self.assertAlmostEqual(calibration_scaling.scale, 1.0)
-        self.assertAlmostEqual(calibration_scaling.translation, 0.0)
-        # Scaling uncertainties are also defined for scaling calibration users
-        self.assertAlmostEqual(calibration_scaling.scale_uncertainty, 1.0)
-        self.assertAlmostEqual(calibration_scaling.translation_uncertainty, 1.0)
+        self.assertAlmostEqual(calibration_scaling.scale, 1.0, delta=0.1)
+        self.assertAlmostEqual(calibration_scaling.translation, 0.25, delta=0.1)
+        self.assertAlmostEqual(calibration_scaling.scale_uncertainty, 0.0)
+        self.assertAlmostEqual(calibration_scaling.translation_uncertainty, 0.0)
 
         # Check scaling values for user2
         scaling = ContributorScaling.objects.get(user=user2)
-        self.assertAlmostEqual(scaling.scale, 1.0)
-        self.assertAlmostEqual(scaling.translation, 0.0)
-        self.assertAlmostEqual(scaling.scale_uncertainty, 1.0)
-        self.assertAlmostEqual(scaling.translation_uncertainty, 1.0)
+        self.assertAlmostEqual(scaling.scale, 1.0, delta=0.1)
+        self.assertAlmostEqual(scaling.translation, 0.25, delta=0.1)
+        self.assertAlmostEqual(scaling.scale_uncertainty, 0.0)
+        self.assertAlmostEqual(scaling.translation_uncertainty, 0.0)
 
     def test_tournesol_scores_different_trust(self):
         # 10 pretrusted users

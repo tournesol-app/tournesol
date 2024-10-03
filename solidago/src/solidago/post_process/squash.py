@@ -8,7 +8,7 @@ from solidago.scoring_model import ScoringModel, PostProcessedScoringModel
 
 
 class Squash(PostProcess):
-    def __init__(self, score_max: float = 100):
+    def __init__(self, score_max: float = 100.0):
         self.score_max = score_max
     
     def __call__(
