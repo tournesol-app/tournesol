@@ -11,5 +11,5 @@ from .base import Scaling
 from .compose import ScalingCompose
 from .no_scaling import NoScaling
 from .mehestan import Mehestan
-from .quantile_zero_shift import QuantileZeroShift
+from .quantile_zero_shift import QuantileShift, QuantileZeroShift
 from .standardize import Standardize

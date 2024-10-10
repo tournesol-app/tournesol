@@ -13,7 +13,7 @@ def test_score_shift_when_all_scores_are_equal():
     ))
     tau = estimate_positive_score_shift(
         scaled_individual_scores,
-        W=1,
+        W=1.0,
         quantile=0.05
     )
     assert tau == pytest.approx(12.12)
@@ -27,7 +27,7 @@ def test_all_users_equal_voting_right_for_score_shift():
     ))
     tau = estimate_positive_score_shift(
         scaled_individual_scores,
-        W=1,
+        W=1.0,
         quantile=1/3
     )
     assert tau == pytest.approx(0, abs=1e-4)

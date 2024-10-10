@@ -41,7 +41,7 @@ def test_qtlstd_qrmed_invariance(test):
     the multiplicative scales of input user models, as long as it is the same for all users.
     """
     td = importlib.import_module(f"data.data_{test}")
-    aggregation = StandardizedQrMedian(dev_quantile=0.9, lipschitz=1000., error=1e-5)
+    aggregation = StandardizedQrMedian(dev_quantile=0.9, lipschitz=10000., error=1e-7)
     user_models, global_model = aggregation(
         td.voting_rights,
         td.standardized_models,

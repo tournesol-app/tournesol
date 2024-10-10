@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Mapping, Optional
 
 import numpy as np
 import pandas as pd
@@ -24,7 +24,7 @@ class Mehestan(Scaling):
     def __init__(
         self, 
         lipschitz=0.1, 
-        min_activity=10, 
+        min_activity=10.0,
         n_scalers_max=100, 
         privacy_penalty=0.5,
         user_comparison_lipschitz=10.0,
@@ -71,7 +71,7 @@ class Mehestan(Scaling):
 
     def __call__(
         self, 
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         users: pd.DataFrame,
         entities: pd.DataFrame,
         voting_rights: Optional[VotingRights] = None,
@@ -112,7 +112,8 @@ class Mehestan(Scaling):
         logger.info(f"Mehestan 1. Terminated in {int(end_step1 - start)} seconds")
 
         logger.info("Mehestan 2. Collaborative scaling of scalers")
-        scaled_models = self.scale_scalers(user_models, scalers, entities, privacy)
+        scaler_user_models = {u: m for u,m in user_models.items() if u in scalers.index}
+        scaled_models = self.scale_scalers(scaler_user_models, scalers, entities, privacy)
         end_step2 = timeit.default_timer()
         logger.info(f"Mehestan 2. Terminated in {int(end_step2 - end_step1)} seconds")
 
@@ -134,7 +135,7 @@ class Mehestan(Scaling):
 
     def compute_scalers(
         self,
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         entities: pd.DataFrame,
         users: pd.DataFrame,
         privacy: Optional[PrivacySettings],
@@ -160,7 +161,7 @@ class Mehestan(Scaling):
         activities = self.compute_activities(user_models, entities, users, privacy)
         index_to_user = { index: user for index, user in enumerate(users.index) }
         np_activities = np.array([
-            activities[index_to_user[index]]
+            activities.get(index_to_user[index], 0.0)
             for index in range(len(users))
         ])
         argsort = np.argsort(np_activities)
@@ -177,8 +178,7 @@ class Mehestan(Scaling):
         end2a = timeit.default_timer()
         logger.info(f"    Mehestan 2a. Model norms in {int(end2a - start)} seconds")
 
-        entity_ratios = self.compute_entity_ratios(user_models, user_models, 
-             entities, scalers, scalers, privacy)
+        entity_ratios = self.compute_entity_ratios(user_models, user_models, entities, privacy)
         end2b = timeit.default_timer()
         logger.info(f"    Mehestan 2b. Entity ratios in {int(end2b - end2a)} seconds")
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
@@ -193,8 +193,9 @@ class Mehestan(Scaling):
         end2d = timeit.default_timer()
         logger.info(f"    Mehestan 2d. Multiplicators in {int(end2d - end2c)} seconds")
 
-        entity_diffs = self.compute_entity_diffs(user_models, user_models, scalers, scalers, 
-            entities, privacy, multiplicators)
+        entity_diffs = self.compute_entity_diffs(
+            user_models, user_models, entities, privacy, multiplicators
+        )
         end2e = timeit.default_timer()
         logger.info(f"    Mehestan 2e. Entity diffs in {int(end2e - end2d)} seconds")
         diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
@@ -209,30 +210,33 @@ class Mehestan(Scaling):
 
         return { 
             u: ScaledScoringModel(
-                base_model=user_models[u], 
+                base_model=model,
                 multiplicator=multiplicators[u][0], 
                 translation=translations[u][0],
                 multiplicator_left_uncertainty=multiplicators[u][1], 
                 multiplicator_right_uncertainty=multiplicators[u][1], 
                 translation_left_uncertainty=translations[u][1],
                 translation_right_uncertainty=translations[u][1]
-            ) for u in scalers.index
+            ) for u, model in user_models.items()
         }
 
-    def scale_non_scalers(self, user_models, nonscalers, entities, scalers, scaled_models, privacy):
+    def scale_non_scalers(
+        self, user_models, nonscalers, entities, scalers, scaled_models, privacy
+    ):
         start = timeit.default_timer()
         model_norms = self.compute_model_norms(user_models, nonscalers, entities, privacy)
         end2a = timeit.default_timer()
         logger.info(f"    Mehestan 3a. Model norms in {int(end2a - start)} seconds")
 
         end3a = timeit.default_timer()
-        entity_ratios = self.compute_entity_ratios(user_models, scaled_models, entities,
-            nonscalers, scalers, privacy)
+        nonscaler_models = {u: m for (u, m) in user_models.items() if u in nonscalers.index}
+        entity_ratios = self.compute_entity_ratios(
+            nonscaler_models, scaled_models, entities, privacy
+        )
         end3b = timeit.default_timer()
         logger.info(f"    Mehestan 3b. Entity ratios in {int(end3b - end3a)} seconds")
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
-            scalers, entity_ratios, 
-            error=self.error, lipschitz=self.user_comparison_lipschitz
+            scalers, entity_ratios, error=self.error, lipschitz=self.user_comparison_lipschitz
         )
         end3c = timeit.default_timer()
         logger.info(f"    Mehestan 3c. Aggregate ratios in {int(end3c - end3b)} seconds")
@@ -242,8 +246,9 @@ class Mehestan(Scaling):
         end3d = timeit.default_timer()
         logger.info(f"    Mehestan 3d. Multiplicators in {int(end3d - end3c)} seconds")
 
-        entity_diffs = self.compute_entity_diffs(user_models, scaled_models, nonscalers, scalers, 
-            entities, privacy, multiplicators)
+        entity_diffs = self.compute_entity_diffs(
+            nonscaler_models, scaled_models, entities, privacy, multiplicators
+        )
         end3e = timeit.default_timer()
         logger.info(f"    Mehestan 3e. Entity diffs in {int(end3e - end3d)} seconds")
         diff_voting_rights, diffs, diff_uncertainties = _aggregate_user_comparisons(
@@ -255,16 +260,17 @@ class Mehestan(Scaling):
         end3g = timeit.default_timer()
         logger.info(f"    Mehestan 3g. Translations in {int(end3g - end3f)} seconds")
 
-        return scaled_models | { 
+        return scaled_models | {
             u: ScaledScoringModel(
-                base_model=user_models[u], 
-                multiplicator=multiplicators[u][0], 
+                base_model=model,
+                multiplicator=multiplicators[u][0],
                 translation=translations[u][0],
-                multiplicator_left_uncertainty=multiplicators[u][1], 
-                multiplicator_right_uncertainty=multiplicators[u][1], 
+                multiplicator_left_uncertainty=multiplicators[u][1],
+                multiplicator_right_uncertainty=multiplicators[u][1],
                 translation_left_uncertainty=translations[u][1],
-                translation_right_uncertainty=translations[u][1]
-            ) for u in nonscalers.index
+                translation_right_uncertainty=translations[u][1],
+            )
+            for u, model in nonscaler_models.items()
         }
 
     ############################################
@@ -273,7 +279,7 @@ class Mehestan(Scaling):
 
     def compute_activities(
         self,
-        user_models: dict[int, ScoringModel],
+        user_models: Mapping[int, ScoringModel],
         entities: pd.DataFrame,
         users: pd.DataFrame,
         privacy: Optional[PrivacySettings],
@@ -300,11 +306,12 @@ class Mehestan(Scaling):
                 user_id,  # type: ignore
                 user_models[user_id],  # type: ignore
                 entities,
-                user.get("trust_score", 1.0),  # type: ignore
+                trust_score,  # type: ignore
                 privacy,
                 self.privacy_penalty
             )
-            for (user_id, user) in users.iterrows()
+            for (user_id, trust_score) in users["trust_score"].items()
+            if user_id in user_models
         }
 
     ############################################
@@ -349,6 +356,7 @@ class Mehestan(Scaling):
                 self.privacy_penalty
             )
             for user in users.index
+            if user in user_models
         }
 
     def compute_entity_ratios(
@@ -356,8 +364,6 @@ class Mehestan(Scaling):
         scalee_models: dict[int, ScoringModel],
         scaler_models: dict[int, ScoringModel],
         entities: pd.DataFrame,
-        scalees: pd.DataFrame, 
-        scalers: pd.DataFrame,
         privacy: PrivacySettings
     ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
         """ Computes the ratios of score differences, with uncertainties,
@@ -388,28 +394,28 @@ class Mehestan(Scaling):
         user_entity_ratios = dict()
         entities_ids = set(entities.index)
 
-        for u in scalees.index:
+        for u, u_model in scalee_models.items():
             user_entity_ratios[u] = dict()
-            u_entities = entities_ids & scalee_models[u].scored_entities()
+            u_entities = entities_ids & u_model.scored_entities()
             if len(u_entities) == 0:
                 continue
 
-            for v in scalers.index:
+            for v, v_model in scaler_models.items():
                 if u == v:
                     user_entity_ratios[u][v] = [1.], [1.], [0.], [0.]
                     continue
 
-                uv_entities = list(u_entities & scaler_models[v].scored_entities())
+                uv_entities = list(u_entities & v_model.scored_entities())
                 if len(entities) <= 1:
                     continue
                 elif len(entities) <= 100:
                     ratios = self.load_all_ratios(u, v, uv_entities, entities, 
-                        scalee_models[u], scaler_models[v], privacy)
+                        u_model, v_model, privacy)
                     if ratios is not None:
                         user_entity_ratios[u][v] = ratios
                 else:
                     ratios = self.sample_ratios(u, v, uv_entities, entities, 
-                        scalee_models[u], scaler_models[v], privacy)
+                        u_model, v_model, privacy)
                     if ratios is not None:
                         user_entity_ratios[u][v] = ratios
 
@@ -522,7 +528,7 @@ class Mehestan(Scaling):
         return {
             u: _aggregate(self.lipschitz / (8 * (1e-9 + model_norms[u])), 
                 voting_rights[u], ratios[u], uncertainties[u], 
-                default_value=1, default_dev=0.8, error=self.error)
+                default_value=1.0, default_dev=0.8, error=self.error)
             for u in voting_rights
         }
 
@@ -534,8 +540,6 @@ class Mehestan(Scaling):
         self, 
         scalee_models: dict[int, ScoringModel],
         scaler_models: dict[int, ScoringModel],
-        scalees: pd.DataFrame, 
-        scalers: pd.DataFrame, 
         entities: pd.DataFrame,
         privacy: PrivacySettings,
         multiplicators: dict[int, tuple[float, float]]
@@ -569,22 +573,22 @@ class Mehestan(Scaling):
         differences = dict()
         entities_ids = set(entities.index)
 
-        for u in scalees.index:
-            u_entities = entities_ids & scalee_models[u].scored_entities()
+        for u, u_model in scalee_models.items():
+            u_entities = entities_ids & u_model.scored_entities()
             differences[u] = dict()
-            for v in scalers.index:
+            for v, v_model in scaler_models.items():
                 if u == v:
                     differences[u][v] = [0.], [1.], [0.], [0.]
                     continue
 
-                uv_entities = u_entities & scaler_models[v].scored_entities()
+                uv_entities = u_entities & v_model.scored_entities()
                 if len(entities) == 0:
                     continue
 
                 differences[u][v] = list(), list(), list(), list()              
                 for e in uv_entities:
-                    score_u, left_u, right_u = scalee_models[u](e, entities.loc[e])
-                    score_v, left_v, right_v = scaler_models[v](e, entities.loc[e])
+                    score_u, left_u, right_u = u_model(e, entities.loc[e])
+                    score_v, left_v, right_v = v_model(e, entities.loc[e])
 
                     uve_voting_right = 1
                     if privacy is not None and privacy[u, e]:
@@ -642,7 +646,7 @@ class Mehestan(Scaling):
         return {
             u: _aggregate(self.lipschitz / 8, 
                 voting_rights[u], diffs[u], uncertainties[u], 
-                default_value=0, default_dev=1, 
+                default_value=0.0, default_dev=1.0,
                 error=self.error, aggregator=lipschitz_resilient_mean)
             for u in voting_rights
         }
@@ -717,13 +721,17 @@ def _computer_user_activities(
     activities: dict[int, float]
         activities[user] is a measure of user's trustworthy activeness.
     """
-    results = 0
+    if trust_score <= 0.0:
+        return 0.0
+
+    results = 0.0
     entity_ids = set(entities.index)
-    
     for entity_id, (score, left, right) in user_model.iter_entities():
         if entity_id not in entity_ids:
             continue
         if score <= left and score >= -right:
+            # Uncertainty interval contains 0
+            # Sign of score is uncertain.
             continue
         added_quantity = 1.0
         if privacy is not None and privacy[user, entity_id]:
@@ -843,7 +851,7 @@ def _aggregate(
     default_value: float,
     error: float=1e-5,
     aggregator: Callable = qr_median,
-    default_dev: float=1,
+    default_dev: float=1.0,
 ) -> tuple[float, float]:
     """ Computes the multiplicators of users with given user_ratios
     
@@ -879,6 +887,6 @@ def _aggregate(
         right_uncertainties=np.array(uncertainties),
         default_dev=default_dev,
         error=error,
-        median=value
+        median=value if aggregator is qr_median else None,
     )
     return value, uncertainty

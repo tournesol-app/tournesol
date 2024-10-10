@@ -89,12 +89,12 @@ class ScaledScoringModel(ScoringModel):
     def __init__(
         self, 
         base_model: ScoringModel, 
-        multiplicator: float=1, 
-        translation: float=0,
-        multiplicator_left_uncertainty: float=0, 
-        multiplicator_right_uncertainty: float=0, 
-        translation_left_uncertainty: float=0,
-        translation_right_uncertainty: float=0
+        multiplicator: float=1.0,
+        translation: float=0.0,
+        multiplicator_left_uncertainty: float=0.0,
+        multiplicator_right_uncertainty: float=0.0,
+        translation_left_uncertainty: float=0.0,
+        translation_right_uncertainty: float=0.0,
     ):
         """ When base_model is itself a scaled scoring model, 
         the scalings are aggregated, so that the base model is actually

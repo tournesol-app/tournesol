@@ -4,9 +4,9 @@ import numpy as np
 from .base import Aggregation
 
 from solidago.voting_rights import VotingRights
-from solidago.scoring_model import ScoringModel, DirectScoringModel, ScaledScoringModel
+from solidago.scoring_model import ScoringModel, DirectScoringModel
 
-from solidago.primitives import qr_quantile, qr_standard_deviation, qr_uncertainty
+from solidago.primitives import qr_quantile, qr_uncertainty
 
 
 class EntitywiseQrQuantile(Aggregation):
@@ -56,8 +56,7 @@ class EntitywiseQrQuantile(Aggregation):
         df = _get_user_scores(voting_rights, user_models, entities)
         global_scores = DirectScoringModel()
         
-        for entity, _ in entities.iterrows():
-            dfe = df[df["entity_id"] == entity]
+        for entity_id, dfe in df.groupby("entity_id"):
             score = qr_quantile(
                 self.lipschitz, 
                 self.quantile, 
@@ -73,11 +72,11 @@ class EntitywiseQrQuantile(Aggregation):
                 np.array(dfe["voting_rights"]), 
                 np.array(dfe["left_uncertainties"]),
                 np.array(dfe["right_uncertainties"]),
-                default_dev = 1,
+                default_dev = 1.0,
                 error = self.error,
-                median = score,
+                median = score if self.quantile == 0.5 else None,
             )
-            global_scores[entity] = score, uncertainty
+            global_scores[entity_id] = score, uncertainty
                 
         return user_models, global_scores
         
