@@ -721,9 +721,11 @@ def _computer_user_activities(
     activities: dict[int, float]
         activities[user] is a measure of user's trustworthy activeness.
     """
+    if trust_score <= 0.0:
+        return 0.0
+
     results = 0.0
     entity_ids = set(entities.index)
-    
     for entity_id, (score, left, right) in user_model.iter_entities():
         if entity_id not in entity_ids:
             continue

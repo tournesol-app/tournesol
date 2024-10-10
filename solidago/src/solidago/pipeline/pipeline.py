@@ -190,7 +190,7 @@ class Pipeline:
             output.save_trust_scores(trusts=users)
             
         logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
-        # FIXME: `privacy` may contain (user, entity) even if user has expressed no judgement
+        # WARNING: `privacy` may contain (user, entity) even if user has expressed no judgement
         # about the entity. These users should not be given a voting right on the entity.
         # For now, irrelevant privacy values are excluded in `input.get_pipeline_kwargs()`
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
