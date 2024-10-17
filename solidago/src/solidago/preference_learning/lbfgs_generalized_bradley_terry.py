@@ -86,10 +86,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             (comparisons["comparison"] / comparisons["comparison_max"]).to_numpy()
         )
 
-        solution = torch.normal(
-            0, 1, (len(entities),), requires_grad=True, dtype=torch.float64, device=self.device
-        )
-
+        solution = np.random.normal(0.0, 1.0, size=len(entities))
         if initialization is not None:
             for (entity_id, values) in initialization.iter_entities():
                 entity_coord = entity_coordinates.get(entity_id)
@@ -97,6 +94,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                     score, _left, _right = values
                     solution[entity_coord] = score
 
+        solution = torch.tensor(solution, requires_grad=True, device=self.device)
         lbfgs = torch.optim.LBFGS(
             (solution,),
             max_iter=self.max_iter,
@@ -114,7 +112,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
         n_iter = lbfgs.state_dict()["state"][0]["n_iter"]
         if n_iter >= self.max_iter:
-            raise RuntimeError(f"LBFGS failed to converge in {n_iter} iteratiions")
+            raise RuntimeError(f"LBFGS failed to converge in {n_iter} iterations")
 
         solution = solution.detach()
         if solution.isnan().any():

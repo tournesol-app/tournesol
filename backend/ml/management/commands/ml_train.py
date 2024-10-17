@@ -36,7 +36,7 @@ def get_solidago_pipeline(run_trust_propagation: bool = True):
             convergence_error=1e-5,
             cumulant_generating_function_error=1e-5,
             high_likelihood_range_threshold=0.25,
-            # max_iter=100,
+            # max_iter=300,
         ),
         scaling=ScalingCompose(
             Mehestan(),
