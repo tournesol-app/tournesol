@@ -39,8 +39,8 @@ class NormalUserModel(UserModel):
         zipf_compare: float=1.5,
         poisson_compare: float=30.0,
         n_comparisons_per_entity: float=3.0,
-        multiplicator_std_dev: float=0,
-        engagement_bias_std_dev: float=0,
+        multiplicator_std_dev: float=0.0,
+        engagement_bias_std_dev: float=0.0,
         svd_mean: list[float]=[3, 0, 0], 
         svd_dimension: Optional[int]=None,
     ):
@@ -57,8 +57,8 @@ class NormalUserModel(UserModel):
         zipf_compare: float=1.5,
         poisson_compare: float=30.0,
         n_comparisons_per_entity: float=3.0,
-        multiplicator_std_dev: float=0,
-        engagement_bias_std_dev: float=0,
+        multiplicator_std_dev: float=0.0,
+        engagement_bias_std_dev: float=0.0,
         svd_mean: mean of the svd representation,
         svd_dimension: int or None (default),
         """

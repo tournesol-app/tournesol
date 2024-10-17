@@ -57,7 +57,7 @@ class AffineOvertrust(VotingRightsAssignment):
             * overtrust (float)
         """
         voting_rights = VotingRights()
-        if len(users) == 0:
+        if len(users) == 0 or len(entities) == 0:
             return voting_rights, entities
 
         trust_scores = users["trust_score"]
@@ -65,7 +65,10 @@ class AffineOvertrust(VotingRightsAssignment):
         for e in entities.index:
             user_ids = privacy.users(e)
             privacy_weights = pd.Series(
-                {u: self.privacy_penalty if privacy[u, e] else 1.0 for u in user_ids}
+                {
+                    u: self.privacy_penalty if privacy[u, e] else 1.0
+                    for u in user_ids
+                }
             )
             (voting_rights_series, cumulative_trust, min_voting_right, overtrust) = (
                 self.compute_entity_voting_rights(
@@ -178,11 +181,10 @@ class AffineOvertrust(VotingRightsAssignment):
         ----------
         max_overtrust: float
             Maximal overtrust allowed for entity_id
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
+        trust_scores:
+            trust score values per user
         privacy_weights: dict[int, float]
-            privacy_weights[u] is the privacy weight of user u
+            privacy weight per user
 
         Returns
         -------

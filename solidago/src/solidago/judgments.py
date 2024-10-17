@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import pandas as pd
 
 class Judgments(ABC):
     @abstractmethod
-    def __getitem__(self, user: int) -> dict[str, pd.DataFrame]:
+    def __getitem__(self, user: int) -> Optional[dict[str, pd.DataFrame]]:
         """ Returns user's judgments that can be used to infer a user model
         
         Parameters
@@ -22,8 +23,8 @@ class Judgments(ABC):
 class DataFrameJudgments(Judgments):
     def __init__(
         self, 
-        comparisons: pd.DataFrame = None, 
-        assessments: pd.DataFrame = None
+        comparisons: Optional[pd.DataFrame] = None,
+        assessments: Optional[pd.DataFrame] = None,
     ):
         """ Instantiates judgments from all contributors, based on dataframes
         
@@ -41,22 +42,28 @@ class DataFrameJudgments(Judgments):
             * `assessment`
             * `assessment_type`
         """
-        self.comparisons = comparisons
         if comparisons is None:
             self.comparisons = pd.DataFrame(columns=[
                 "user_id", "entity_a", "entity_b", "comparison", "comparison_max"
             ])
+        else:
+            self.comparisons = comparisons
             
-        self.assessments = assessments
         if assessments is None:
             self.assessments = pd.DataFrame(columns=[
                 "user_id", "entity_id", "assessment", "assessment_type"
             ])
+        else:
+            self.assessments = assessments
         
     def __getitem__(self, user: int):
+        comparisons = self.comparisons[self.comparisons["user_id"] == user]
+        assessments = self.assessments[self.assessments["user_id"] == user]
+        if len(comparisons) == 0 and len(assessments) == 0:
+            return None
         return dict(
-            comparisons=self.comparisons[self.comparisons["user_id"] == user],
-            assessments=self.assessments[self.assessments["user_id"] == user]
+            comparisons=comparisons,
+            assessments=assessments,
         )        
         
 

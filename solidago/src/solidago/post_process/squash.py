@@ -8,7 +8,7 @@ from solidago.scoring_model import ScoringModel, PostProcessedScoringModel
 
 
 class Squash(PostProcess):
-    def __init__(self, score_max: float = 100):
+    def __init__(self, score_max: float = 100.0):
         self.score_max = score_max
     
     def __call__(
@@ -16,7 +16,7 @@ class Squash(PostProcess):
         user_models: Mapping[int, ScoringModel],
         global_model: ScoringModel,
         entities: Optional[pd.DataFrame] = None
-    ) -> tuple[dict[int, ScoringModel], ScoringModel]:
+    ) -> tuple[Mapping[int, ScoringModel], ScoringModel]:
         """ Post-processes user models and global models,
         typically to yield human-readible scores
         
@@ -39,7 +39,6 @@ class Squash(PostProcess):
             for u in user_models
         }
         squashed_global_model = PostProcessedScoringModel(global_model, squash)
-        
         return squashed_user_models, squashed_global_model
 
     def to_json(self):

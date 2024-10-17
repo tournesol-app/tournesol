@@ -105,12 +105,12 @@ class Command(BaseCommand):
                     entity_1=videos[entity_a],
                     entity_2=videos[entity_b],
                 )
-                for _, values in rows.iterrows():
+                for values in rows.itertuples(index=False):
                     ComparisonCriteriaScore.objects.create(
                         comparison=comparison,
-                        criteria=values["criteria"],
-                        score=values["score"],
-                        score_max=values["score_max"],
+                        criteria=values.criteria,
+                        score=values.score,
+                        score_max=values.score_max,
                     )
                 nb_comparisons += 1
             print(f"Created {nb_comparisons} comparisons")

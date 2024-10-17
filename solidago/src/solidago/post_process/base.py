@@ -13,7 +13,7 @@ class PostProcess(ABC):
         user_models: Mapping[int, ScoringModel],
         global_model: ScoringModel,
         entities: pd.DataFrame
-    ) -> tuple[dict[int, ScoringModel], ScoringModel]:
+    ) -> tuple[Mapping[int, ScoringModel], ScoringModel]:
         """ Post-processes user models and global models,
         typically to yield human-readible scores
         
@@ -31,5 +31,5 @@ class PostProcess(ABC):
         """
         raise NotImplementedError
         
-    def to_json(self):
+    def to_json(self) -> tuple:
         return (type(self).__name__, )
