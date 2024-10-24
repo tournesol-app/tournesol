@@ -49,9 +49,10 @@ const permissions = [
   // with version > 3.5.2.
   // These permissions can be removed as soon as we are confident
   // the next release works as expected.
-  'webRequest',
-  'webRequestBlocking',
-  ...selectValue(manifestVersion, { 2: [], 3: ['scripting'] }),
+  ...selectValue(manifestVersion, {
+    2: ['webRequest', 'webRequestBlocking'],
+    3: ['scripting'],
+  }),
 ];
 
 const allPermissions = selectValue(manifestVersion, {

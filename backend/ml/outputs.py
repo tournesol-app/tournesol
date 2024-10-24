@@ -176,8 +176,10 @@ class TournesolPollOutput(PipelineOutput):
         scores: pd.DataFrame,
         score_mode="default",
     ):
-        scores_iterator = scores[["entity_id", "score", "uncertainty"]].itertuples(index=False)
+        if len(scores) == 0:
+            return
 
+        scores_iterator = scores[["entity_id", "score", "uncertainty"]].itertuples(index=False)
         with transaction.atomic():
             EntityCriteriaScore.objects.filter(
                 poll=self.poll,

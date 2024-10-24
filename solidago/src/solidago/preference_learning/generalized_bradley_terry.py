@@ -16,7 +16,7 @@ from .comparison_learning import ComparisonBasedPreferenceLearning
 class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
     def __init__(
         self, 
-        prior_std_dev: float=7,
+        prior_std_dev: float=7.0,
         convergence_error: float=1e-5,
         high_likelihood_range_threshold = 1.0,
     ):
@@ -246,16 +246,21 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 class UniformGBT(GeneralizedBradleyTerry):
     def __init__(
         self,
-        prior_std_dev: float = 7,
+        prior_std_dev: float = 7.0,
         convergence_error: float = 1e-5,
         cumulant_generating_function_error: float = 1e-5,
+        high_likelihood_range_threshold: float = 1.0,
     ):
         """
 
         Parameters (TODO)
         ----------
         """
-        super().__init__(prior_std_dev, convergence_error)
+        super().__init__(
+            prior_std_dev,
+            convergence_error,
+            high_likelihood_range_threshold=high_likelihood_range_threshold
+        )
         self.cumulant_generating_function_error = cumulant_generating_function_error
 
     @cached_property
@@ -265,13 +270,13 @@ class UniformGBT(GeneralizedBradleyTerry):
             score_diff_abs = np.abs(score_diff)
             return (
                 np.where(
-                    score_diff_abs > 0,
+                    score_diff_abs > 1e-1,
                     np.where(
                         score_diff_abs < 20.0,
                         np.log(np.sinh(score_diff) / score_diff),
                         score_diff_abs - np.log(2) - np.log(score_diff_abs),
                     ),
-                    0.0,
+                    score_diff_abs ** 2 / 6 - score_diff_abs ** 4 / 180,
                 )
                 + r * score_diff
             ).sum()
@@ -297,6 +302,7 @@ class UniformGBT(GeneralizedBradleyTerry):
             prior_std_dev=self.prior_std_dev,
             convergence_error=self.convergence_error,
             cumulant_generating_function_error=self.cumulant_generating_function_error,
+            high_likelihood_range_threshold=self.high_likelihood_range_threshold,
         )
 
     def __str__(self):

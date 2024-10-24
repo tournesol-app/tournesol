@@ -48,6 +48,8 @@ class UserSettingsDetailTestCase(TestCase):
             "videos": {
                 "comparison__auto_select_entities": True,
                 "comparison__criteria_order": ["reliability"],
+                "comparison_ui__weekly_collective_goal_display": "WEBSITE_ONLY",
+                "comparison_ui__weekly_collective_goal_mobile": True,
                 "extension__search_reco": True,
                 "rate_later__auto_remove": 99,
                 "recommendations__default_languages": ["en"],

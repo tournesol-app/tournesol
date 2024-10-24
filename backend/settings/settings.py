@@ -127,14 +127,17 @@ REST_REGISTRATION = {
     "VERIFICATION_FROM_EMAIL": "noreply@tournesol.app",
     "REGISTER_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/register/body.html",
+        "text_body": "accounts/register/body.txt",
         "subject": "accounts/register/subject.txt",
     },
     "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/register_email/body.html",
+        "text_body": "accounts/register_email/body.txt",
         "subject": "accounts/register_email/subject.txt",
     },
     "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES": {
         "html_body": "accounts/reset_password/body.html",
+        "text_body": "accounts/reset_password/body.txt",
         "subject": "accounts/reset_password/subject.txt",
     },
     "VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER": "rest_registration.utils.html.convert_html_to_text",
@@ -361,6 +364,11 @@ DISCORD_CHANNEL_WEBHOOKS = server_settings.get("DISCORD_CHANNEL_WEBHOOKS", {})
 
 TWITTERBOT_CREDENTIALS = server_settings.get("TWITTERBOT_CREDENTIALS", {})
 
+if "DJANGO_LOG_LEVEL" in os.environ:
+    DJANGO_LOG_LEVEL = os.environ["DJANGO_LOG_LEVEL"]
+else:
+    DJANGO_LOG_LEVEL = server_settings.get("DJANGO_LOG_LEVEL", "INFO")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -371,7 +379,7 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
+        "level": DJANGO_LOG_LEVEL,
     },
     "loggers": {
         "factory": {

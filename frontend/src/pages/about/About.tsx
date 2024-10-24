@@ -266,7 +266,7 @@ const AboutPage = () => {
             <CoreTeamCard
               name="Lê Nguyên Hoang"
               image="/people/Le.jpeg"
-              institution=""
+              institution="Calicarpa"
               role={t('about.rolePresident')}
               title="Dr. in Mathematics"
               job="AI Researcher and Communicator"
@@ -280,7 +280,7 @@ const AboutPage = () => {
               institution="Oracle Labs"
               role={t('about.roleTreasurer')}
               title="Dr. in Computer Science"
-              job="Software engineer"
+              job="Machine Learning Engineer"
             />
           </Grid>
 
@@ -288,10 +288,10 @@ const AboutPage = () => {
             <CoreTeamCard
               name="Aidan Jungo"
               image="/people/Aidan.jpg"
-              institution="CFS Engineering SA"
+              institution="CFF"
               role={t('about.roleSecretary')}
               title="Master of Science"
-              job="Research Scientist"
+              job="Project Manager"
             />
           </Grid>
 
@@ -300,8 +300,8 @@ const AboutPage = () => {
               name="Romain"
               image="/people/Tournecat.jpeg"
               institution=""
-              role="Association employee"
-              title="Cat lover"
+              role="Developer"
+              title=""
               job="Senior Software Engineer"
             />
           </Grid>
@@ -310,10 +310,43 @@ const AboutPage = () => {
             <CoreTeamCard
               name="Adrien Matissart"
               image="/people/Adrien.jpeg"
-              institution="Association Tournesol"
-              title=""
-              role=""
+              institution="Akselos"
+              title="Master of Science"
+              role="Technical Lead"
               job="Senior Software Engineer"
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <CoreTeamCard
+              name="Titouan Lustin"
+              image="/people/Titouan.jpg"
+              institution="UTC"
+              title="Master of Science"
+              role="Communication & Events"
+              job="Engineer"
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <CoreTeamCard
+              name="Victor Fersing"
+              image="/people/Victor.jpg"
+              institution="La Fabrique Sociale"
+              title=""
+              role="Communication & Events"
+              job="Youtuber"
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <CoreTeamCard
+              name="Jean-Lou"
+              image="/people/JeanLou.jpg"
+              institution="AprèsLaBière"
+              title=""
+              role="Communication & Events"
+              job="Journalist & Youtuber"
             />
           </Grid>
         </Grid>

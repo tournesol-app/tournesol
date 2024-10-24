@@ -86,10 +86,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             (comparisons["comparison"] / comparisons["comparison_max"]).to_numpy()
         )
 
-        solution = torch.normal(
-            0, 1, (len(entities),), requires_grad=True, dtype=torch.float32, device=self.device
-        )
-
+        solution = np.random.normal(0.0, 1.0, size=len(entities))
         if initialization is not None:
             for (entity_id, values) in initialization.iter_entities():
                 entity_coord = entity_coordinates.get(entity_id)
@@ -97,6 +94,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                     score, _left, _right = values
                     solution[entity_coord] = score
 
+        solution = torch.tensor(solution, requires_grad=True, device=self.device)
         lbfgs = torch.optim.LBFGS(
             (solution,),
             max_iter=self.max_iter,
@@ -112,12 +110,13 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
         lbfgs.step(closure)  # type: ignore
 
-        # TODO: check lbfgs state to check if max_iter was reached
+        n_iter = lbfgs.state_dict()["state"][0]["n_iter"]
+        if n_iter >= self.max_iter:
+            raise RuntimeError(f"LBFGS failed to converge in {n_iter} iterations")
 
         solution = solution.detach()
-
         if solution.isnan().any():
-            raise Exception(f"Nan in solution, state: {lbfgs.state_dict()}")
+            raise RuntimeError(f"Nan in solution, state: {lbfgs.state_dict()}")
 
         def loss_with_delta(delta, comparisons, coord):
             solution_with_delta = solution.clone()
@@ -180,12 +179,18 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         convergence_error: float = 1e-5,
         cumulant_generating_function_error: float = 1e-5,
         max_iter: int = 100,
+        high_likelihood_range_threshold: float = 1.0,
     ):
         """
         Parameters (TODO)
         ----------
         """
-        super().__init__(prior_std_dev, convergence_error, max_iter=max_iter)
+        super().__init__(
+            prior_std_dev,
+            convergence_error,
+            max_iter=max_iter,
+            high_likelihood_range_threshold=high_likelihood_range_threshold,
+        )
         self.cumulant_generating_function_error = cumulant_generating_function_error
 
     def cumulant_generating_function(self, score_diff: torch.Tensor) -> torch.Tensor:
@@ -202,13 +207,13 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
         """
         score_diff_abs = score_diff.abs()
         return torch.where(
-            score_diff_abs > 0,
+            score_diff_abs > 1e-1,
             torch.where(
                 score_diff_abs < 20.0,
                 (torch.sinh(score_diff) / score_diff).log(),
                 score_diff_abs - np.log(2) - score_diff_abs.log(),
             ),
-            0.0,
+            score_diff_abs ** 2 / 6 - score_diff_abs ** 4 / 180,
         )
 
     def to_json(self):
@@ -216,6 +221,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry):
             prior_std_dev=self.prior_std_dev,
             convergence_error=self.convergence_error,
             cumulant_generating_function_error=self.cumulant_generating_function_error,
+            high_likelihood_range_threshold=self.high_likelihood_range_threshold,
         )
 
     def __str__(self):

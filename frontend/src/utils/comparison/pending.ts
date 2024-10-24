@@ -1,3 +1,4 @@
+import { storage } from 'src/app/localStorage';
 import { PollCriteria } from 'src/services/openapi';
 import { CriteriaValuesType } from 'src/utils/types';
 
@@ -53,20 +54,20 @@ export const setPendingRating = (
   criterion: string,
   rating: number
 ) => {
-  let pending = localStorage.getItem(PENDING_NS);
-
+  if (!storage) {
+    return;
+  }
+  let pending = storage.getItem(PENDING_NS);
   if (pending == null) {
     pending = initPending();
   }
 
   if (keyIsInvalid(poll, uidA, uidB, criterion)) {
-    return null;
+    return;
   }
-
   const pendingJSON = JSON.parse(pending);
   pendingJSON[makePendingKey(poll, uidA, uidB, criterion)] = rating;
-
-  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+  storage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
 };
 
 /**
@@ -83,10 +84,12 @@ export const getPendingRating = (
   uidA: string,
   uidB: string,
   criterion: string,
-  pop?: boolean
+  pop = false
 ): number | null => {
-  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
-
+  if (!storage) {
+    return null;
+  }
+  const pending = storage.getItem(PENDING_NS) ?? initPending();
   if (pendingIsEmpty(pending)) {
     return null;
   }
@@ -97,12 +100,11 @@ export const getPendingRating = (
 
   const pendingJSON = JSON.parse(pending);
   const pendingKey = makePendingKey(poll, uidA, uidB, criterion);
-
   const rating = pendingJSON[pendingKey];
 
   if (pop) {
     delete pendingJSON[pendingKey];
-    localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+    storage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
   }
 
   return rating ?? null;
@@ -121,7 +123,10 @@ export const clearPendingRating = (
   uidB: string,
   criterion: string
 ) => {
-  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
+  if (!storage) {
+    return;
+  }
+  const pending = storage.getItem(PENDING_NS) ?? initPending();
 
   if (pendingIsEmpty(pending)) {
     return;
@@ -133,7 +138,7 @@ export const clearPendingRating = (
 
   const pendingJSON = JSON.parse(pending);
   delete pendingJSON[makePendingKey(poll, uidA, uidB, criterion)];
-  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+  storage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
 };
 
 /**
@@ -150,11 +155,10 @@ export const getAllPendingRatings = (
   uidA: string,
   uidB: string,
   criterias: PollCriteria[],
-  pop?: boolean
+  pop = false
 ): CriteriaValuesType => {
   const pendingCriteria: CriteriaValuesType = {};
-
-  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
+  const pending = storage?.getItem(PENDING_NS) ?? initPending();
 
   if (pendingIsEmpty(pending)) {
     return {};
@@ -183,7 +187,7 @@ export const getAllPendingRatings = (
     }
   });
 
-  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+  storage?.setItem(PENDING_NS, JSON.stringify(pendingJSON));
   return pendingCriteria;
 };
 
@@ -200,7 +204,10 @@ export const clearAllPendingRatings = (
   uidB: string,
   criterias: PollCriteria[]
 ) => {
-  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
+  if (!storage) {
+    return;
+  }
+  const pending = storage.getItem(PENDING_NS) ?? initPending();
 
   if (pendingIsEmpty(pending)) {
     return;
@@ -216,13 +223,13 @@ export const clearAllPendingRatings = (
 
   const pendingJSON = JSON.parse(pending);
 
-  criterias.map((criterion) => {
+  criterias.forEach((criterion) => {
     delete pendingJSON[makePendingKey(poll, uidA, uidB, criterion.name)];
   });
 
-  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+  storage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
 };
 
 export const resetPendingRatings = () => {
-  localStorage.setItem(PENDING_NS, initPending());
+  storage?.setItem(PENDING_NS, initPending());
 };

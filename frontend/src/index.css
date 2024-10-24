@@ -33,13 +33,14 @@ code {
 
 /* pkg: notistack */
 .SnackbarContainer-root.belowTopBar {
-  /* display alerts below the top bar, to avoid hiding buttons */
-  top: 80px;
+  /* Display alerts below the top bar, to avoid hiding buttons. This value
+     should be greater or equal to the top bar height. */
+  top: 62px;
 }
 html.embedded .SnackbarContainer-root.belowTopBar {
-  /* when the site is embedded in the browser extension iframe, we move the
+  /* When the site is embedded in the browser extension iframe, we move the
      snackbar into the empty page title bar in order to avoid shadowing any
-     page content */
+     page content. */
   top: 4px;
 }
 

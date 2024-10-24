@@ -1,0 +1,8 @@
+# Report security issues and vulnerabilities here:
+Contact: mailto:security@tournesol.app
+
+# If the date has passed please inform us by email.
+Expires: 2025-08-01T00:00:00.000Z
+
+Preferred-Languages: en,fr
+Canonical: https://tournesol.app/.well-known/security.txt

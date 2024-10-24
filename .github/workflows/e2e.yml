@@ -12,18 +12,18 @@ jobs:
   e2e-browser-extension:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
       - name: Prepare extension
         working-directory: browser-extension
         run: |
-          node prepareExtension.js
+          EXTENSION_BROWSER=chrome MANIFEST_VERSION=3 yarn configure
 
-      - uses: cypress-io/github-action@v5
+      - uses: cypress-io/github-action@v6
         with:
           working-directory: tests
           browser: chrome
@@ -31,7 +31,7 @@ jobs:
           spec: "cypress/e2e/browser-extension/**/*"
           config: baseUrl=https://www.youtube.com
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
@@ -40,18 +40,18 @@ jobs:
   e2e-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Start dev env
         run: ./dev-env/run-docker-compose.sh
         env:
           FRONTEND_START_SCRIPT: "start:e2e"
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - uses: cypress-io/github-action@v5
+      - uses: cypress-io/github-action@v6
         with:
           working-directory: tests
           browser: chrome
@@ -62,7 +62,7 @@ jobs:
         working-directory: ./dev-env
         run: docker-compose logs -t --tail=300
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots

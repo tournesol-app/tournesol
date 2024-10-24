@@ -1,0 +1,11 @@
+{% load i18n %}{% translate "Welcome to Tournesol" %}
+
+{% translate "To activate your account, please verify your e-mail address by clicking on this link:" %}
+
+{{ verification_url | safe }}
+
+{% blocktranslate %}If you have not created an account on the Tournesol platform, you can ignore this e-mail.
+Non-activated accounts are automatically deleted after a few days.{% endblocktranslate %}
+
+--
+{% translate "The Tournesol team" %}

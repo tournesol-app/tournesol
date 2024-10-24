@@ -66,7 +66,11 @@ const EntitySearchResultsList = ({
                 key={res.entity.uid}
                 onClick={onSelect && (() => onSelect(res.entity.uid))}
               >
-                <RowEntityCard key={res.entity.uid} result={res} />
+                <RowEntityCard
+                  key={res.entity.uid}
+                  result={res}
+                  metadataVariant="uploaderOnly"
+                />
               </li>
             ))}
           </ul>

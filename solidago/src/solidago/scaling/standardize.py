@@ -44,7 +44,7 @@ class Standardize(Scaling):
             voting_rights=w.to_numpy(),
             left_uncertainties=df["left_uncertainties"].to_numpy(),
             right_uncertainties=df["right_uncertainties"].to_numpy(),
-            default_dev=1,
+            default_dev=1.0,
             error=self.error,
         )
 

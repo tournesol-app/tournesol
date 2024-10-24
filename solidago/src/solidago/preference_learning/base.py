@@ -56,7 +56,10 @@ class PreferenceLearning(ABC):
             if initialization is not None:
                 init_model = initialization.get(user)
             new_judg = None if new_judgments is None else new_judgments[user]
-            user_models[user] = self.user_learn(judgments[user], entities, init_model, new_judg)
+            user_judgments = judgments[user]
+            if user_judgments is None:
+                continue
+            user_models[user] = self.user_learn(user_judgments, entities, init_model, new_judg)
         return user_models
 
     @abstractmethod
@@ -90,7 +93,7 @@ class PreferenceLearning(ABC):
         """
         raise NotImplementedError
 
-    def to_json(self):
+    def to_json(self) -> tuple:
         return (type(self).__name__,)
 
     def __str__(self):

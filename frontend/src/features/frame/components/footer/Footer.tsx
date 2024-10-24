@@ -5,6 +5,8 @@ import { Box, useMediaQuery } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import FooterSection from 'src/features/frame/components/footer/FooterSection';
+import { theme } from 'src/theme';
+import { getPollName, polls } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import {
   linkedInTournesolUrl,
@@ -24,13 +26,19 @@ import {
   tournesolTalksYTPlaylist,
   youtubeTournesolUrl,
 } from 'src/utils/url';
-import { theme } from 'src/theme';
 
 const Footer = () => {
   const apiUrl = import.meta.env.REACT_APP_API_URL;
 
   const { t, i18n } = useTranslation();
   const currentLanguage = i18n.resolvedLanguage;
+
+  const linksToPolls = polls.map((poll) => {
+    return {
+      name: `Tournesol ${getPollName(t, poll.name)}`,
+      to: poll.path,
+    };
+  });
 
   const footerSections = [
     {
@@ -120,6 +128,7 @@ const Footer = () => {
           name: t('footer.takeAction'),
           to: '/actions',
         },
+        ...linksToPolls,
       ],
       trailingDivider: false,
     },

@@ -576,6 +576,28 @@ class ComparisonApiTestCase(TestCase):
             initial_comparisons_nbr + 1,
         )
 
+    def test_authenticated_cant_create_invalid_score_max(self):
+        """
+        An authenticated user can't create a comparison with a criterion whose
+        score is higher than score_max.
+        """
+        initial_comparisons_nbr = Comparison.objects.all().count()
+        data = deepcopy(self.non_existing_comparison)
+        data["criteria_scores"][0]["score"] = 10
+        data["criteria_scores"][0]["score_max"] = 5
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(
+            self.comparisons_base_url,
+            data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            Comparison.objects.all().count(),
+            initial_comparisons_nbr,
+        )
+
     def test_anonymous_cant_list(self):
         """
         An anonymous user can't list its comparisons.
@@ -988,6 +1010,7 @@ class ComparisonApiTestCase(TestCase):
                     {
                         "criteria": optional,
                         "score": 4,
+                        "score_max": 8,
                     }
                 ]
             },
@@ -1060,6 +1083,41 @@ class ComparisonApiTestCase(TestCase):
                 {"criteria": "pedagogy", "score": 5.0, "score_max": 9, "weight": 1.0},
             ],
         )
+
+    def test_authenticated_cant_patch_invalid_score_max(self):
+        """
+        An authenticated user can't patch the score of a criterion with a
+        value higher than score_max.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.comparisons[0].criteria_scores.all().delete()
+
+        ComparisonCriteriaScore.objects.create(
+            comparison=self.comparisons[0],
+            criteria="largely_recommended",
+            score=8,
+            score_max=10,
+        )
+
+        response = self.client.patch(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._uid_01,
+                self._uid_02,
+            ),
+            data={
+                "criteria_scores": [
+                    {
+                        "criteria": "largely_recommended",
+                        "score": 10,
+                        "score_max": 8,
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_anonymous_cant_delete(self):
         """
