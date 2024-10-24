@@ -53,17 +53,17 @@ class TournesolInput(ABC):
     def get_individual_scores(
         self,
         user_id: Optional[int] = None,
-        entity_id: Optional[str] = None,
         criteria: Optional[str] = None,
     ) -> pd.DataFrame:
-        raise NotImplementedError
+        """Fetch data about previously computed individual scores
 
-    @abstractmethod
-    def get_collective_scores(
-        self,
-        entity_id: Optional[str] = None,
-        criteria: Optional[str] = None,
-    ) -> pd.DataFrame:
+        Returns:
+        - DataFrame with columns
+            * `user_id`: int
+            * `entity_id`: int
+            * `criteria`: str
+            * `score`: float
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -118,6 +118,26 @@ class TournesolInput(ABC):
             "judgments": judgments,
         }
 
+    def get_comparisons_counts(
+        self, criteria: Optional[str] = None, user_id: Optional[int] = None
+    ):
+        comparisons = self.get_comparisons(criteria=criteria, user_id=user_id)
+        return (
+            pd.concat(
+                [
+                    comparisons[["user_id", "entity_a", "criteria"]].rename(
+                        columns={"entity_a": "entity_id"}
+                    ),
+                    comparisons[["user_id", "entity_b", "criteria"]].rename(
+                        columns={"entity_b": "entity_id"}
+                    ),
+                ]
+            )
+            .groupby(["user_id", "entity_id", "criteria"])
+            .size()
+            .reset_index(name="n_comparisons")
+        )
+
 
 class TournesolInputFromPublicDataset(TournesolInput):
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
@@ -135,100 +155,62 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # Fill trust_score on newly created users for which it was not computed yet
                 self.users.trust_score = pd.to_numeric(self.users.trust_score).fillna(0.0)
 
-                self.username_to_user_id = pd.Series(
-                    data=self.users.index, index=self.users["public_username"]
-                )
+            with (zipfile.Path(zip_file) / "collective_criteria_scores.csv").open(mode="rb") as collective_scores_file:
+                # keep_default_na=False is required otherwise some public usernames
+                # such as "NA" are converted to float NaN.
+                collective_scores = pd.read_csv(collective_scores_file, keep_default_na=False)
 
             with (zipfile.Path(zip_file) / "comparisons.csv").open(mode="rb") as comparison_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
-                self.comparisons = pd.read_csv(comparison_file, keep_default_na=False)
-                self.entity_id_to_video_id = pd.Series(
-                    list(set(self.comparisons.video_a) | set(self.comparisons.video_b)),
-                    name="video_id",
-                )
-                self.video_id_to_entity_id = {
-                    video_id: entity_id
-                    for (entity_id, video_id) in self.entity_id_to_video_id.items()
-                }
-                self.comparisons["entity_a"] = self.comparisons["video_a"].map(
-                    self.video_id_to_entity_id
-                )
-                self.comparisons["entity_b"] = self.comparisons["video_b"].map(
-                    self.video_id_to_entity_id
-                )
-                self.comparisons.drop(columns=["video_a", "video_b"], inplace=True)
-                self.comparisons = self.comparisons.join(
-                    self.username_to_user_id, on="public_username"
-                )
-
-                # List of all groups of public_username,criteria,entity_id present in comparisons
-                user_entity_criteria_pairs = pd.concat([
-                    self.comparisons[["public_username", "entity_a", "criteria"]]
-                        .rename(columns={"entity_a": "entity_id"}),
-                    self.comparisons[["public_username", "entity_b", "criteria"]]
-                        .rename(columns={"entity_b": "entity_id"})
-                ])  # Will contain duplicates not to be removed
+                comparisons = pd.read_csv(comparison_file, keep_default_na=False)
 
             with (zipfile.Path(zip_file) / "vouchers.csv").open(mode="rb") as vouchers_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
                 self.vouchers = pd.read_csv(vouchers_file, keep_default_na=False)
 
-            with (zipfile.Path(zip_file) / "collective_criteria_scores.csv").open(mode="rb") as collective_scores_file:
+            self.username_to_user_id = pd.Series(
+                data=self.users.index,
+                index=self.users["public_username"],
+            )
+
+            self.entity_id_to_video_id = pd.Series(
+                sorted(
+                    set(comparisons.video_a)
+                    | set(comparisons.video_b)
+                    | set(collective_scores.video)
+                ),
+                name="video_id",
+            )
+
+            self.video_id_to_entity_id = {
+                video_id: entity_id
+                for (entity_id, video_id) in self.entity_id_to_video_id.items()
+            }
+
+            # Convert video ids (str) to entity ids (int)
+            self.collective_scores = collective_scores.assign(
+                entity_id=collective_scores["video"].map(self.video_id_to_entity_id)
+            ).drop(columns=["video"])
+
+            self.comparisons = comparisons.assign(
+                entity_a=comparisons["video_a"].map(self.video_id_to_entity_id),
+                entity_b=comparisons["video_b"].map(self.video_id_to_entity_id),
+                user_id=comparisons["public_username"].map(self.username_to_user_id),
+            ).drop(columns=["video_a", "video_b"])
+
+            with (zipfile.Path(zip_file) / "individual_criteria_scores.csv").open(
+                mode="rb"
+            ) as individual_scores_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
-                self.collective_scores = pd.read_csv(collective_scores_file, keep_default_na=False)
-                # Convert video to entity_id
-                self.collective_scores["entity_id"] = self.collective_scores["video"].map(
-                    self.video_id_to_entity_id
-                )
-                self.collective_scores.drop(columns=["video"], inplace=True)
-
-                # Add a column "comparisons", as the number of comparisons made to this video
-                self.collective_scores["comparisons"] = self.collective_scores.merge(
-                    user_entity_criteria_pairs
-                        .groupby(["entity_id", "criteria"])
-                        .size()
-                        .reset_index(name="comparisons"),
-                    how="left",  # Keep all data from collective_criteria_scores in same order
-                    on=["entity_id", "criteria"],
-                )["comparisons"]
-
-                # Add a column "users", as the number of different users who have rated this video
-                self.collective_scores["users"] = self.collective_scores.merge(
-                    user_entity_criteria_pairs
-                        .groupby(["entity_id", "criteria"])
-                        .public_username
-                        .nunique()
-                        .reset_index(name="users"),
-                    how="left",  # Keep all data from collective_criteria_scores in same order
-                    on=["entity_id", "criteria"],
-                )["users"]
-
-            with (zipfile.Path(zip_file) / "individual_criteria_scores.csv").open(mode="rb") as individual_scores_file:
-                # keep_default_na=False is required otherwise some public usernames
-                # such as "NA" are converted to float NaN.
-                self.individual_scores = pd.read_csv(individual_scores_file, keep_default_na=False)
-                # Convert video to entity_id
-                self.individual_scores["entity_id"] = self.individual_scores["video"].map(
-                    self.video_id_to_entity_id
-                )
-                self.individual_scores.drop(columns=["video"], inplace=True)
-
-                # Append as a new column the number of comparison made for every user,video,criteria
-                self.individual_scores["comparisons"] = self.individual_scores.merge(
-                    user_entity_criteria_pairs
-                        .groupby(["public_username", "entity_id", "criteria"])
-                        .size()
-                        .reset_index(name="comparisons"),
-                    how="left",  # Keep all data from collective_criteria_scores in same order
-                    on=["public_username", "entity_id", "criteria"],
-                )["comparisons"]
-                self.individual_scores = self.individual_scores.join(
-                    self.username_to_user_id,
-                    on="public_username"
-                )
+                individual_scores = pd.read_csv(individual_scores_file, keep_default_na=False)
+                # Convert usernames and video_id to user_id and entity_id
+                self.individual_scores = individual_scores.assign(
+                    entity_id=individual_scores["video"].map(self.video_id_to_entity_id),
+                    user_id=individual_scores["public_username"].map(self.username_to_user_id),
+                ).drop(columns=["public_username", "video"])
 
     @classmethod
     def download(cls) -> "TournesolInputFromPublicDataset":
@@ -275,35 +257,63 @@ class TournesolInputFromPublicDataset(TournesolInput):
 
     def get_individual_scores(
         self,
-        criteria: Optional[str] = None,
         user_id: Optional[int] = None,
+        criteria: Optional[str] = None,
+        with_n_comparisons = False,
     ) -> pd.DataFrame:
         dtf = self.individual_scores
         if criteria is not None:
             dtf = dtf[dtf.criteria == criteria]
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
-        return dtf[[
+
+        dtf = dtf[[
             "user_id",
             "entity_id",
             "criteria",
             "score",
             "uncertainty",
             "voting_right",
-            "comparisons"
         ]]
+
+        if with_n_comparisons:
+            comparison_counts = self.get_comparisons_counts(user_id=user_id, criteria=criteria)
+            dtf = dtf.merge(
+                comparison_counts,
+                how="left",
+                on=["user_id", "entity_id", "criteria"]
+            )
+
+        return dtf
 
     def get_collective_scores(
         self,
         entity_id: Optional[str] = None,
         criteria: Optional[str] = None,
     ) -> pd.DataFrame:
-        dtf = self.collective_scores
+        dtf: pd.DataFrame = self.collective_scores
         if criteria is not None:
-            dtf = dtf[dtf.criteria == criteria]
+            dtf = dtf[dtf["criteria"] == criteria]
         if entity_id is not None:
-            dtf = dtf[dtf.entity_id == entity_id]
-        return dtf[["entity_id", "criteria", "score", "uncertainty", "users", "comparisons"]]
+            dtf = dtf[dtf["entity_id"] == entity_id]
+
+        counts = (
+            self.get_comparisons_counts(criteria=criteria)
+            .groupby(["criteria", "entity_id"])
+            .agg(
+                n_comparisons=("n_comparisons", "sum"),
+                n_users=("user_id", "nunique"),
+            )
+        )
+
+        return (
+            dtf.join(counts, how="left", on=["criteria", "entity_id"])
+            # Entities that have been comparated privately only
+            # will not appear in comparisons.csv. That's why we need
+            # to fill for missing values here.
+            .fillna({"n_comparisons": 0, "n_users": 0})
+            .astype({"n_comparisons": "int64", "n_users": "int64"})
+        )
 
     def get_vouches(self):
         vouchers = self.vouchers[
