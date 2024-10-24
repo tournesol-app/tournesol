@@ -5,7 +5,11 @@ import { Link, useParams } from 'react-router-dom';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import {
+  useCurrentPoll,
+  useLoginState,
+  useRestorePreviousTitle,
+} from 'src/hooks';
 import {
   ApiError,
   PollsService,
@@ -102,6 +106,8 @@ const EntityAnalysisPage = () => {
   const [entity, setEntity] = useState<Recommendation>();
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<ApiError>();
+
+  useRestorePreviousTitle();
 
   const tryToCreateVideo = async () => {
     if (pollName !== YOUTUBE_POLL_NAME) {
