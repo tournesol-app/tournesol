@@ -50,6 +50,7 @@ def test_tournesol_get_individual_scores():
     found = dataset.get_individual_scores(
         criteria="importance",
         user_id=user_id,
+        with_n_comparisons=True,
     )
     assert len(found) == 1123
     as_dict = found.to_dict(orient="records")[0]
@@ -60,7 +61,7 @@ def test_tournesol_get_individual_scores():
         'score': 82.81,
         'uncertainty': 24.37,
         'voting_right': 1.0,
-        'comparisons': 10,
+        'n_comparisons': 10,
     }
 
 
@@ -91,6 +92,6 @@ def test_tournesol_get_collective_scores():
         'criteria': 'importance',
         'score': 18.22,
         'uncertainty': 60.09,
-        'users': 3,
-        'comparisons': 12,
+        'n_users': 3,
+        'n_comparisons': 12,
     }
