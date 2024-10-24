@@ -16,6 +16,8 @@ import {
 } from './polls/videos';
 import { SelectablePoll, RouteID } from './types';
 
+export const DEFAULT_DOCUMENT_TITLE = 'Tournesol';
+
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
 const PRESIDENTIELLE_2022_ENABLED =

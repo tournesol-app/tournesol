@@ -14,6 +14,7 @@ import {
   VideoService,
 } from 'src/services/openapi';
 import {
+  DEFAULT_DOCUMENT_TITLE,
   getEntityMetadataName,
   getPollName,
   PRESIDENTIELLE_2022_POLL_NAME,
@@ -102,7 +103,7 @@ const EntityAnalysisPage = () => {
   const [entity, setEntity] = useState<Recommendation>();
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<ApiError>();
-  const [pageTitle, setPageTitle] = useState('Tournesol');
+  const [pageTitle, setPageTitle] = useState(DEFAULT_DOCUMENT_TITLE);
 
   useDocumentTitle(pageTitle);
 

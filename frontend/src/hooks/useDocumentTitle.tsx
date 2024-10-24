@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { DEFAULT_DOCUMENT_TITLE } from 'src/utils/constants';
 
 export const useDocumentTitle = (pageTitle: string) => {
-  const [previousTitle] = useState(document.title);
-
   useEffect(() => {
     document.title = pageTitle;
   }, [pageTitle]);
 
   useEffect(() => {
     return () => {
-      document.title = previousTitle;
+      document.title = DEFAULT_DOCUMENT_TITLE;
     };
-  }, [previousTitle]);
+  }, []);
 };
