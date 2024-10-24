@@ -8,4 +8,4 @@ export { useRefreshSettings } from './useRefreshSettings';
 export { useScrollToLocation } from './useScrollToLocation';
 export { useStats } from './useStats';
 export { usePreferredLanguages } from './usePreferredLanguages';
-export { useRestorePreviousTitle } from './useRestorePreviousTitle';
+export { useDocumentTitle } from './useDocumentTitle';

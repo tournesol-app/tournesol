@@ -5,11 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
-import {
-  useCurrentPoll,
-  useLoginState,
-  useRestorePreviousTitle,
-} from 'src/hooks';
+import { useCurrentPoll, useLoginState, useDocumentTitle } from 'src/hooks';
 import {
   ApiError,
   PollsService,
@@ -106,8 +102,18 @@ const EntityAnalysisPage = () => {
   const [entity, setEntity] = useState<Recommendation>();
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<ApiError>();
+  const [pageTitle, setPageTitle] = useState('Tournesol');
 
-  useRestorePreviousTitle();
+  useDocumentTitle(pageTitle);
+
+  useEffect(() => {
+    if (entity) {
+      const title = createPageTitle(t, pollName, entity.entity);
+      if (title) {
+        setPageTitle(title);
+      }
+    }
+  }, [currentLang, entity, pollName, t]);
 
   const tryToCreateVideo = async () => {
     if (pollName !== YOUTUBE_POLL_NAME) {
@@ -148,11 +154,6 @@ const EntityAnalysisPage = () => {
       try {
         const entity = await getEntityWithPollStats();
         setEntity(entity);
-
-        const title = createPageTitle(t, pollName, entity.entity);
-        if (title) {
-          document.title = title;
-        }
       } catch (error) {
         const reason: ApiError = error;
         if (reason.status === 404 && createVideo) {
