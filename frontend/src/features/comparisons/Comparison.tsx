@@ -24,7 +24,6 @@ import EntitySelector, {
 import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 import {
-  DEFAULT_DOCUMENT_TITLE,
   getEntityMetadataName,
   getPollName,
   UID_YT_NAMESPACE,
@@ -126,7 +125,9 @@ const Comparison = ({
     rating: null,
   });
 
-  const [pageTitle, setPageTitle] = useState(DEFAULT_DOCUMENT_TITLE);
+  const [pageTitle, setPageTitle] = useState(
+    `${t('comparison.newComparison')}`
+  );
   useDocumentTitle(pageTitle);
 
   useEffect(() => {
@@ -138,7 +139,7 @@ const Comparison = ({
         setPageTitle(title);
       }
     } else {
-      setPageTitle(DEFAULT_DOCUMENT_TITLE);
+      setPageTitle(`${t('comparison.newComparison')}`);
     }
   }, [pollName, selectorA.rating?.entity, selectorB.rating?.entity, t]);
 

@@ -83,6 +83,7 @@
     "title": "Distribution des scores par critère"
   },
   "comparison": {
+    "newComparison": "Nouvelle comparaison",
     "successfullySubmitted": "Comparaison bien enregistrée.",
     "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
