@@ -73,7 +73,9 @@ const createPageTitle = (
     return null;
   }
 
-  return `${nameA} -VS- ${nameB} | Tournesol: ${getPollName(t, pollName)}`;
+  const titleA = nameA.length <= 32 ? nameA : `${nameA.substring(0, 32)}…`;
+  const titleB = nameB.length <= 32 ? nameB : `${nameB.substring(0, 32)}…`;
+  return `${titleA} •VS• ${titleB} | Tournesol: ${getPollName(t, pollName)}`;
 };
 
 interface Props {
