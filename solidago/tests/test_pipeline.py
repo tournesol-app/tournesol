@@ -44,38 +44,19 @@ def test_tournesol_get_individual_scores():
     assert len(dataset.get_individual_scores(
             user_id=dataset.username_to_user_id["aidjango"]
         )) == 4379
-    assert len(dataset.get_individual_scores(
-            entity_id=dataset.video_id_to_entity_id["dBap_Lp-0oc"]
-        )) == 5
-
-    # Test multiple filters
-    assert len(dataset.get_individual_scores(
-            criteria="importance",
-            user_id=dataset.username_to_user_id["biscuissec"]
-        )) == 1493
-    assert len(dataset.get_individual_scores(
-            criteria="largely_recommended",
-            entity_id=dataset.video_id_to_entity_id["zItOqgnSvi8"]
-        )) == 2
-    assert len(dataset.get_individual_scores(
-            user_id=dataset.username_to_user_id["amatissart"],
-            entity_id=dataset.video_id_to_entity_id["BTUVUg9RQSg"]
-        )) == 1
 
     # Test all filters
     user_id = dataset.username_to_user_id["le_science4all"]
-    entity_id = dataset.video_id_to_entity_id["03dTJ4nXkXw"]
     found = dataset.get_individual_scores(
         criteria="importance",
         user_id=user_id,
-        entity_id=entity_id
     )
-    assert len(found) == 1
+    assert len(found) == 1123
     as_dict = found.to_dict(orient="records")[0]
     assert as_dict == {
         'user_id': user_id,
-        'entity_id': entity_id,
         'criteria': 'importance',
+        'entity_id': dataset.video_id_to_entity_id["03dTJ4nXkXw"],
         'score': 82.81,
         'uncertainty': 24.37,
         'voting_right': 1.0,

@@ -275,17 +275,14 @@ class TournesolInputFromPublicDataset(TournesolInput):
 
     def get_individual_scores(
         self,
-        user_id: Optional[int] = None,
-        entity_id: Optional[str] = None,
         criteria: Optional[str] = None,
+        user_id: Optional[int] = None,
     ) -> pd.DataFrame:
         dtf = self.individual_scores
         if criteria is not None:
             dtf = dtf[dtf.criteria == criteria]
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
-        if entity_id is not None:
-            dtf = dtf[dtf.entity_id == entity_id]
         return dtf[[
             "user_id",
             "entity_id",
