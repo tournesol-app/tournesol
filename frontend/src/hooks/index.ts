@@ -1,4 +1,5 @@
 export { useCurrentPoll } from './useCurrentPoll';
+export { useDocumentTitle } from './useDocumentTitle';
 export { useEntityAvailable } from './useEntityAvailable';
 export { useSearchParams } from './useSearchParams';
 export { useLoginState } from './useLoginState';
@@ -8,4 +9,3 @@ export { useRefreshSettings } from './useRefreshSettings';
 export { useScrollToLocation } from './useScrollToLocation';
 export { useStats } from './useStats';
 export { usePreferredLanguages } from './usePreferredLanguages';
-export { useDocumentTitle } from './useDocumentTitle';
