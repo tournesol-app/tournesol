@@ -1,7 +1,4 @@
-import {
-  recommendationsLanguagesFromNavigator,
-  saveRecommendationsLanguages,
-} from './recommendationsLanguages';
+import { recommendationsLanguagesFromNavigator } from './recommendationsLanguages';
 
 describe('recommendationsLanguagesFromNavigator', () => {
   const testCases = [
@@ -23,21 +20,4 @@ describe('recommendationsLanguagesFromNavigator', () => {
       expect(recommendationsLanguagesFromNavigator()).toEqual(expected);
     })
   );
-});
-
-describe('saveRecommendationsLanguages', () => {
-  it('dispatches an event for the extension', () => {
-    const eventHandler = vi.fn((event) => {
-      const { detail } = event;
-      expect(detail).toEqual({ recommendationsLanguages: 'fr,de' });
-    });
-    document.addEventListener(
-      'tournesol:recommendationsLanguagesChange',
-      eventHandler
-    );
-
-    saveRecommendationsLanguages('fr,de');
-
-    expect(eventHandler).toHaveBeenCalledTimes(1);
-  });
 });

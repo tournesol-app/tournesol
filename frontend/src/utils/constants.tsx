@@ -22,7 +22,7 @@ const PRESIDENTIELLE_2022_ENABLED =
 const UID_DELIMITER = ':';
 export const UID_YT_NAMESPACE = 'yt' + UID_DELIMITER;
 
-export const recommendationFilters = {
+export const pollVideosFilters = {
   date: 'date',
   language: 'language',
   uploader: 'uploader',
@@ -38,7 +38,7 @@ export const recommendationFilters = {
   backfire_risk: 'backfire_risk',
 };
 
-export const defaultRecommendationFilters = {
+export const pollVideosInitialFilters = {
   date: null,
   language: null,
   uploader: null,
@@ -152,6 +152,15 @@ export const getRecommendationPageName = (
   }
 };
 
+export const getFeedTopItemsPageName = (t: TFunction, pollName: string) => {
+  switch (pollName) {
+    case YOUTUBE_POLL_NAME:
+      return t('feedTopItems.videos.title');
+    default:
+      return t('feedTopItems.generic.results');
+  }
+};
+
 /**
  * User settings.
  *
@@ -181,6 +190,9 @@ export const polls: Array<SelectablePoll> = [
           mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
           disabledRouteIds: [
+            RouteID.FeedTopItems,
+            RouteID.FeedForYou,
+            RouteID.Search,
             RouteID.MyRateLaterList,
             RouteID.MyComparedItems,
             RouteID.Criteria,
@@ -204,6 +216,8 @@ export const polls: Array<SelectablePoll> = [
     defaultAnonEntityActions: [],
     defaultRecoLanguageDiscovery: true,
     defaultRecoSearchParams: 'date=Month',
+    defaultFiltersFeedTopItems: 'date=Month',
+    defaultFiltersFeedForYou: 'date=Month&advanced=exclude_compared',
     allowPublicPersonalRecommendations: true,
     mainCriterionName: 'largely_recommended',
     displayOrder: 10,

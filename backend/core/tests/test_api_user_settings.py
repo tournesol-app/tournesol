@@ -17,9 +17,10 @@ class UserSettingsDetailTestCase(TestCase):
             "videos": {
                 "comparison__criteria_order": ["reliability"],
                 "rate_later__auto_remove": 16,
-                "recommendation__default_languages": ["en"],
-                "recommendation__default_date": "Week",
-                "recommendation__default_unsafe": False,
+                "feed_foryou__languages": ["en"],
+                "feed_foryou__date": "Week",
+                "feed_foryou__unsafe": False,
+                "feed_topitems__languages": ["en", "fr"],
             }
         }
 
@@ -52,10 +53,11 @@ class UserSettingsDetailTestCase(TestCase):
                 "comparison_ui__weekly_collective_goal_mobile": True,
                 "extension__search_reco": True,
                 "rate_later__auto_remove": 99,
-                "recommendations__default_languages": ["en"],
-                "recommendations__default_date": "WEEK",
-                "recommendations__default_exclude_compared_entities": False,
-                "recommendations__default_unsafe": False,
+                "feed_foryou__languages": ["en"],
+                "feed_foryou__date": "WEEK",
+                "feed_foryou__exclude_compared_entities": False,
+                "feed_foryou__unsafe": False,
+                "feed_topitems__languages": ["en", "fr"],
             },
         }
         self.user.settings = new_settings
