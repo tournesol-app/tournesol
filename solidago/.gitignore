@@ -1,3 +1,4 @@
+/devenv/
 /dist/
 **__pycache__/
 .flake8/
