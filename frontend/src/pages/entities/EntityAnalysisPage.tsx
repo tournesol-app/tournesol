@@ -47,7 +47,7 @@ const createPageTitle = (
 
   switch (pollName) {
     case YOUTUBE_POLL_NAME:
-      return `Tournesol / ${getPollName(t, pollName)} / ${entityName}`;
+      return `${entityName} | Tournesol: ${getPollName(t, pollName)}`;
     default:
       return undefined;
   }
