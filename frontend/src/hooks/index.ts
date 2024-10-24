@@ -1,4 +1,5 @@
 export { useCurrentPoll } from './useCurrentPoll';
+export { useDocumentTitle } from './useDocumentTitle';
 export { useEntityAvailable } from './useEntityAvailable';
 export { useSearchParams } from './useSearchParams';
 export { useLoginState } from './useLoginState';

@@ -79,6 +79,7 @@
     "title": "Criteria scores distribution"
   },
   "comparison": {
+    "newComparison": "New comparison",
     "successfullySubmitted": "The comparison has been successfully submitted.",
     "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
     "removeOptionalCriterias": "Remove optional criteria",
