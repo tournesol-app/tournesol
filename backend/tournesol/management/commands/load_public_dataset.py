@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 for values in rows.itertuples(index=False):
                     ComparisonCriteriaScore.objects.create(
                         comparison=comparison,
-                        criteria=values.criteria,
+                        criteria=values.criterion,
                         score=values.score,
                         score_max=values.score_max,
                     )

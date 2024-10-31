@@ -58,13 +58,13 @@ class MlInputFromDb(TournesolInput):
             n_compared_entities__gte=self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE,
         ).order_by("-n_compared_entities")[: self.MAX_SCALING_CALIBRATION_USERS]
 
-    def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
+    def get_comparisons(self, criterion=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll_name,
             comparison__user__is_active=True,
         )
-        if criteria is not None:
-            scores_queryset = scores_queryset.filter(criteria=criteria)
+        if criterion is not None:
+            scores_queryset = scores_queryset.filter(criteria=criterion)
 
         if user_id is not None:
             scores_queryset = scores_queryset.filter(comparison__user_id=user_id)
@@ -72,8 +72,8 @@ class MlInputFromDb(TournesolInput):
         values = scores_queryset.values(
             "score",
             "score_max",
-            "criteria",
             "weight",
+            criterion=F("criteria"),
             entity_a=F("comparison__entity_1_id"),
             entity_b=F("comparison__entity_2_id"),
             user_id=F("comparison__user_id"),
@@ -81,7 +81,7 @@ class MlInputFromDb(TournesolInput):
         if len(values) > 0:
             dtf = pd.DataFrame(values)
             return dtf[
-                ["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"]
+                ["user_id", "entity_a", "entity_b", "criterion", "score", "score_max", "weight"]
             ]
 
         return pd.DataFrame(
@@ -89,7 +89,7 @@ class MlInputFromDb(TournesolInput):
                 "user_id",
                 "entity_a",
                 "entity_b",
-                "criteria",
+                "criterion",
                 "score",
                 "score_max",
                 "weight",
@@ -136,7 +136,7 @@ class MlInputFromDb(TournesolInput):
         Returns:
         - ratings_df: DataFrame with columns
             * `user_id`: int
-            * `criteria`: str
+            * `criterion`: str
             * `scale`: float
             * `scale_uncertainty`: float
             * `translation`: float
@@ -148,17 +148,18 @@ class MlInputFromDb(TournesolInput):
             scalings = scalings.filter(user_id=user_id)
         values = scalings.values(
             "user_id",
-            "criteria",
             "scale",
             "scale_uncertainty",
             "translation",
             "translation_uncertainty",
+            criterion=F("criteria"),
+
         )
         if len(values) == 0:
             return pd.DataFrame(
                 columns=[
                     "user_id",
-                    "criteria",
+                    "criterion",
                     "scale",
                     "scale_uncertainty",
                     "translation",
@@ -168,28 +169,28 @@ class MlInputFromDb(TournesolInput):
         return pd.DataFrame(values)
 
     def get_individual_scores(
-        self, user_id: Optional[int] = None, criteria: Optional[str] = None,
+        self, user_id: Optional[int] = None, criterion: Optional[str] = None,
     ) -> pd.DataFrame:
         scores_queryset = ContributorRatingCriteriaScore.objects.filter(
             contributor_rating__poll__name=self.poll_name,
             contributor_rating__user__is_active=True,
         )
-        if criteria is not None:
-            scores_queryset = scores_queryset.filter(criteria=criteria)
+        if criterion is not None:
+            scores_queryset = scores_queryset.filter(criteria=criterion)
         if user_id is not None:
             scores_queryset = scores_queryset.filter(contributor_rating__user_id=user_id)
 
         values = scores_queryset.values(
             "raw_score",
-            "criteria",
+            criterion=F("criteria"),
             entity_id=F("contributor_rating__entity_id"),
             user_id=F("contributor_rating__user_id"),
         )
         if len(values) == 0:
-            return pd.DataFrame(columns=["user_id", "entity_id", "criteria", "raw_score"])
+            return pd.DataFrame(columns=["user_id", "entity_id", "criterion", "raw_score"])
 
         dtf = pd.DataFrame(values)
-        return dtf[["user_id", "entity_id", "criteria", "raw_score"]]
+        return dtf[["user_id", "entity_id", "criterion", "raw_score"]]
 
     def get_vouches(self):
         values = Voucher.objects.filter(

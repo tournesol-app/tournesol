@@ -30,7 +30,7 @@ class TournesolInput(ABC):
     @abstractmethod
     def get_comparisons(
         self,
-        criteria: Optional[str] = None,
+        criterion: Optional[str] = None,
         user_id: Optional[int] = None,
     ) -> pd.DataFrame:
         """Fetch data about comparisons submitted by users
@@ -40,7 +40,7 @@ class TournesolInput(ABC):
             * `user_id`: int
             * `entity_a`: int or str
             * `entity_b`: int or str
-            * `criteria`: str
+            * `criterion`: str
             * `score`: float
             * `score_max`: int
             * `weight`: float
@@ -66,7 +66,7 @@ class TournesolInput(ABC):
     def get_individual_scores(
         self,
         user_id: Optional[int] = None,
-        criteria: Optional[str] = None,
+        criterion: Optional[str] = None,
     ) -> pd.DataFrame:
         """Fetch data about previously computed individual scores
 
@@ -74,7 +74,7 @@ class TournesolInput(ABC):
         - DataFrame with columns
             * `user_id`: int
             * `entity_id`: int
-            * `criteria`: str
+            * `criterion`: str
             * `score`: float
             * `raw_score`: float (optional column)
         """
@@ -101,7 +101,7 @@ class TournesolInput(ABC):
         ratings_properties = self.ratings_properties
         users = self.get_users()
         vouches = self.get_vouches()
-        comparisons = self.get_comparisons(criteria=criterion)
+        comparisons = self.get_comparisons(criterion=criterion)
         entities_ids = set(comparisons["entity_a"].unique()) | set(
             comparisons["entity_b"].unique()
         )
@@ -124,7 +124,7 @@ class TournesolInput(ABC):
             )
         )
 
-        individual_scores = self.get_individual_scores(criteria=criterion)
+        individual_scores = self.get_individual_scores(criterion=criterion)
         if "raw_score" in individual_scores:
             init_user_models = {
                 user_id: DirectScoringModel(
@@ -145,21 +145,21 @@ class TournesolInput(ABC):
         }
 
     def get_comparisons_counts(
-        self, criteria: Optional[str] = None, user_id: Optional[int] = None
+        self, criterion: Optional[str] = None, user_id: Optional[int] = None
     ):
-        comparisons = self.get_comparisons(criteria=criteria, user_id=user_id)
+        comparisons = self.get_comparisons(criterion=criterion, user_id=user_id)
         return (
             pd.concat(
                 [
-                    comparisons[["user_id", "entity_a", "criteria"]].rename(
+                    comparisons[["user_id", "entity_a", "criterion"]].rename(
                         columns={"entity_a": "entity_id"}
                     ),
-                    comparisons[["user_id", "entity_b", "criteria"]].rename(
+                    comparisons[["user_id", "entity_b", "criterion"]].rename(
                         columns={"entity_b": "entity_id"}
                     ),
                 ]
             )
-            .groupby(["user_id", "entity_id", "criteria"])
+            .groupby(["user_id", "entity_id", "criterion"])
             .size()
             .reset_index(name="n_comparisons")
         )
@@ -181,15 +181,21 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # Fill trust_score on newly created users for which it was not computed yet
                 self.users.trust_score = pd.to_numeric(self.users.trust_score).fillna(0.0)
 
-            with (zipfile.Path(zip_file) / "collective_criteria_scores.csv").open(mode="rb") as collective_scores_file:
+            with (zipfile.Path(zip_file) / "collective_criteria_scores.csv").open(
+                mode="rb"
+            ) as collective_scores_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
-                collective_scores = pd.read_csv(collective_scores_file, keep_default_na=False)
+                collective_scores = pd.read_csv(
+                    collective_scores_file, keep_default_na=False
+                ).rename(columns={"criteria": "criterion"})
 
             with (zipfile.Path(zip_file) / "comparisons.csv").open(mode="rb") as comparison_file:
                 # keep_default_na=False is required otherwise some public usernames
                 # such as "NA" are converted to float NaN.
-                comparisons = pd.read_csv(comparison_file, keep_default_na=False)
+                comparisons = pd.read_csv(comparison_file, keep_default_na=False).rename(
+                    columns={"criteria": "criterion"}
+                )
 
             with (zipfile.Path(zip_file) / "vouchers.csv").open(mode="rb") as vouchers_file:
                 # keep_default_na=False is required otherwise some public usernames
@@ -233,19 +239,23 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 # such as "NA" are converted to float NaN.
                 individual_scores = pd.read_csv(individual_scores_file, keep_default_na=False)
                 # Convert usernames and video_id to user_id and entity_id
-                self.individual_scores = individual_scores.assign(
-                    entity_id=individual_scores["video"].map(self.video_id_to_entity_id),
-                    user_id=individual_scores["public_username"].map(self.username_to_user_id),
-                ).drop(columns=["public_username", "video"])
+                self.individual_scores = (
+                    individual_scores.assign(
+                        entity_id=individual_scores["video"].map(self.video_id_to_entity_id),
+                        user_id=individual_scores["public_username"].map(self.username_to_user_id),
+                    )
+                    .rename(columns={"criteria": "criterion"})
+                    .drop(columns=["public_username", "video"])
+                )
 
     @classmethod
     def download(cls) -> "TournesolInputFromPublicDataset":
         return cls(dataset_zip="https://api.tournesol.app/exports/all")
 
-    def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
+    def get_comparisons(self, criterion=None, user_id=None) -> pd.DataFrame:
         dtf = self.comparisons.copy(deep=False)
-        if criteria is not None:
-            dtf = dtf[dtf.criteria == criteria]
+        if criterion is not None:
+            dtf = dtf[dtf.criterion == criterion]
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
         dtf["weight"] = 1
@@ -256,7 +266,7 @@ class TournesolInputFromPublicDataset(TournesolInput):
             "user_id",
             "entity_a",
             "entity_b",
-            "criteria",
+            "criterion",
             "score",
             "score_max",
             "weight"
@@ -284,30 +294,30 @@ class TournesolInputFromPublicDataset(TournesolInput):
     def get_individual_scores(
         self,
         user_id: Optional[int] = None,
-        criteria: Optional[str] = None,
+        criterion: Optional[str] = None,
         with_n_comparisons = False,
     ) -> pd.DataFrame:
         dtf = self.individual_scores
-        if criteria is not None:
-            dtf = dtf[dtf.criteria == criteria]
+        if criterion is not None:
+            dtf = dtf[dtf.criterion == criterion]
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
 
         dtf = dtf[[
             "user_id",
             "entity_id",
-            "criteria",
+            "criterion",
             "score",
             "uncertainty",
             "voting_right",
         ]]
 
         if with_n_comparisons:
-            comparison_counts = self.get_comparisons_counts(user_id=user_id, criteria=criteria)
+            comparison_counts = self.get_comparisons_counts(user_id=user_id, criterion=criterion)
             dtf = dtf.merge(
                 comparison_counts,
                 how="left",
-                on=["user_id", "entity_id", "criteria"]
+                on=["user_id", "entity_id", "criterion"]
             )
 
         return dtf
@@ -315,17 +325,17 @@ class TournesolInputFromPublicDataset(TournesolInput):
     def get_collective_scores(
         self,
         entity_id: Optional[str] = None,
-        criteria: Optional[str] = None,
+        criterion: Optional[str] = None,
     ) -> pd.DataFrame:
         dtf: pd.DataFrame = self.collective_scores
-        if criteria is not None:
-            dtf = dtf[dtf["criteria"] == criteria]
+        if criterion is not None:
+            dtf = dtf[dtf["criterion"] == criterion]
         if entity_id is not None:
             dtf = dtf[dtf["entity_id"] == entity_id]
 
         counts = (
-            self.get_comparisons_counts(criteria=criteria)
-            .groupby(["criteria", "entity_id"])
+            self.get_comparisons_counts(criterion=criterion)
+            .groupby(["criterion", "entity_id"])
             .agg(
                 n_comparisons=("n_comparisons", "sum"),
                 n_users=("user_id", "nunique"),
@@ -333,7 +343,7 @@ class TournesolInputFromPublicDataset(TournesolInput):
         )
 
         return (
-            dtf.join(counts, how="left", on=["criteria", "entity_id"])
+            dtf.join(counts, how="left", on=["criterion", "entity_id"])
             # Entities that have been compared privately only
             # will not appear in comparisons.csv. That's why we need
             # to fill for missing values here.

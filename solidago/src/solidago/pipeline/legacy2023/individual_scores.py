@@ -12,7 +12,7 @@ def get_individual_scores(
     parameters: PipelineParameters,
     single_user_id: Optional[int] = None,
 ) -> pd.DataFrame:
-    comparisons_df = input.get_comparisons(criteria=criteria, user_id=single_user_id)
+    comparisons_df = input.get_comparisons(criterion=criteria, user_id=single_user_id)
     # Legacy pipeline assumes all comparisons use the same 'score_max'
     score_max_series = comparisons_df.pop("score_max")
     if score_max_series.nunique() > 1:
@@ -21,9 +21,7 @@ def get_individual_scores(
             f"Found {dict(score_max_series.value_counts())}"
         )
 
-    individual_scores = input.get_individual_scores(
-        criteria=criteria, user_id=single_user_id
-    )
+    individual_scores = input.get_individual_scores(criterion=criteria, user_id=single_user_id)
     if individual_scores is not None and "raw_score" in individual_scores:
         initial_contributor_scores = individual_scores.groupby("user_id")
     else:

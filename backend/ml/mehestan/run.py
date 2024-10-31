@@ -21,15 +21,15 @@ logger = logging.getLogger(__name__)
 def update_user_scores(poll: Poll, user: User):
     params = MehestanParameters()
     ml_input = MlInputFromDb(poll_name=poll.name)
-    for criteria in poll.criterias_list:
-        output = TournesolPollOutput(poll_name=poll.name, criterion=criteria)
+    for criterion in poll.criterias_list:
+        output = TournesolPollOutput(poll_name=poll.name, criterion=criterion)
         scores = get_individual_scores(
             ml_input,
-            criteria,
+            criterion,
             parameters=params,
             single_user_id=user.pk,
         )
-        scores["criteria"] = criteria
+        scores["criterion"] = criterion
         scores.rename(
             columns={
                 "score": "raw_score",

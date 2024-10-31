@@ -257,7 +257,7 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
         contributor_scores: DataFrame with columns:
             user_id: int
             entity_id: int
-            criteria: str
+            criterion: str
             raw_score: float
             raw_uncertainty: float
 
@@ -270,9 +270,9 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
         return contributor_scores
 
     ml_input = MlInputFromDb(poll_name=poll.name)
-    scalings = ml_input.get_user_scalings().set_index(["user_id", "criteria"])
+    scalings = ml_input.get_user_scalings().set_index(["user_id", "criterion"])
     contributor_scores = contributor_scores.join(
-        scalings, on=["user_id", "criteria"], how="left"
+        scalings, on=["user_id", "criterion"], how="left"
     )
     contributor_scores["scale"].fillna(1, inplace=True)
     contributor_scores["translation"].fillna(0, inplace=True)
