@@ -227,6 +227,8 @@ class VoucherGivenListAPIViewTestCase(TestCase):
         results = response.data
         self.assertEqual(len(results), 2)
 
+        # Vouchers should be sorted in ascending order of the recipient's
+        # username.
         self.assertDictEqual(
             results[0],
             {
@@ -297,6 +299,8 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
         results = response.data
         self.assertEqual(len(results), 2)
 
+        # Vouchers should be sorted in ascending order of the issuer's
+        # username.
         self.assertDictEqual(
             results[0],
             {

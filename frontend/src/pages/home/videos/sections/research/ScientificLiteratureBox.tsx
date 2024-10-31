@@ -25,6 +25,7 @@ import {
   Newspaper,
   Headphones,
   SwapHoriz,
+  OndemandVideo,
 } from '@mui/icons-material';
 import TitledPaper from 'src/components/TitledPaper';
 
@@ -81,6 +82,13 @@ const ScientificLiteratureBox = () => {
         'Ben Crulis, Mariame Tighanimine, Isabela Constantin, Anastasiia Kucherenko, Alexandre Maurer, ' +
         'Felix Grimberg, Vlad Nitu, Chris Vossen, Sébastien Rouault, El-Mahdi El-Mhamdi (2021). ArXiV.',
       url: 'https://arxiv.org/abs/2107.07334',
+      icon: MenuBook,
+    },
+    {
+      name: 'Should YouTube make recommendations for the climate?',
+      authors:
+        'Martin Gibert, Lê-Nguyên Hoang, Maxime Lambrecht (2024). Ethics and Information Technology.',
+      url: 'https://link.springer.com/article/10.1007/s10676-024-09784-4',
       icon: MenuBook,
     },
     {
@@ -180,6 +188,24 @@ const ScientificLiteratureBox = () => {
   ];
 
   const inTheMedia = [
+    {
+      name: "Tournesol, une application pour repliquer face à la crise de l'information",
+      authors: 'Jean-Philippe Peyrache (2024). La Brèche n°9',
+      url: 'https://journal-labreche.fr/lisez-la-breche-n-9-en-numerique/',
+      icon: Newspaper,
+    },
+    {
+      name: "L'IA va-t-elle nous aider ou nous remplacer ? «Libé» fait débattre deux experts, Fatie Toko et Lê Nguyên Hoang",
+      authors: 'Gurvan Kristanadjaja (2024). Libération',
+      url: 'https://www.liberation.fr/idees-et-debats/lia-va-t-elle-nous-aider-ou-nous-remplacer-libe-fait-debattre-deux-experts-fatie-toko-et-le-nguyen-hoang-20240503_SK4TJBSNW5C3FA4RV2SW3ZES2M/',
+      icon: Newspaper,
+    },
+    {
+      name: 'IA : les algorithmes dirigent-ils le monde ? Le point de vue de Lê Nguyen Hoang',
+      authors: 'Thimothée Dhellemmes (2024). Le Figaro',
+      url: 'https://video.lefigaro.fr/figaro/video/intelligence-artificielle-les-algorithmes-dirigent-ils-le-monde/',
+      icon: OndemandVideo,
+    },
     {
       name: 'Les grands modèles de langage : quels risques ? Échange avec Lê Nguyên Hoang.',
       authors: 'Paroles de (2023). Conseil national du numérique.',

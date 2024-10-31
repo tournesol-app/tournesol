@@ -31,10 +31,13 @@ def sample_correlation(n_users, n_entities, seed, generative_model, pipeline) ->
     users, voting_rights, user_models, global_model = pipeline(*data)
     
     truth = entities["svd0"]
-    estimate = [global_model(e, row)[0] for e, row in entities.iterrows()]
+    estimate = [
+        global_model(e, row)[0] if global_model(e, row) is not None else 0.
+        for e, row in entities.iterrows()
+    ]
     return np.corrcoef(truth, estimate)[0, 1]
     
-def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeline, thread=True):
+def sample_n_correlations(n_users, n_entities, n_seeds, generative_model, pipeline, thread=False):
     if not thread:
         return [
             sample_correlation(n_users, n_entities, seed, generative_model, pipeline) 

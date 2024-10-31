@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 from .base import Scaling
 
@@ -20,7 +19,7 @@ class Standardize(Scaling):
         self.dev_quantile = dev_quantile
         self.lipschitz = lipschitz
         self.error = error
-    
+
     def __call__(
         self, 
         user_models: dict[int, ScoringModel],
@@ -29,25 +28,26 @@ class Standardize(Scaling):
         voting_rights: VotingRights,
         privacy: PrivacySettings
     ):
-        df = _get_user_scores(voting_rights, user_models, entities)
+        df = _get_user_scores(user_models, entities)
         std_dev = self._compute_std_dev(df)
         return {
-            user: ScaledScoringModel(user_models[user], 1/std_dev)
-            for user in user_models
+            user: ScaledScoringModel(user_model, multiplicator=1/std_dev)
+            for (user, user_model) in user_models.items()
         }
-    
+
     def _compute_std_dev(self, df):
+        w = 1 / df.groupby("user_id")["scores"].transform("size")
         return qr_standard_deviation(
-            lipschitz=self.lipschitz, 
-            values=np.array(df["scores"]), 
+            lipschitz=self.lipschitz,
+            values=df["scores"].to_numpy(),
             quantile_dev=self.dev_quantile,
-            voting_rights=np.array(df["voting_rights"]), 
-            left_uncertainties=np.array(df["left_uncertainties"]), 
-            right_uncertainties=np.array(df["right_uncertainties"]), 
-            default_dev=1, 
-            error=self.error
+            voting_rights=w.to_numpy(),
+            left_uncertainties=df["left_uncertainties"].to_numpy(),
+            right_uncertainties=df["right_uncertainties"].to_numpy(),
+            default_dev=1.0,
+            error=self.error,
         )
-    
+
     def to_json(self):
         return type(self).__name__, dict(dev_quantile=self.dev_quantile, 
             lipschitz=self.lipschitz, error=self.error)
@@ -57,29 +57,24 @@ class Standardize(Scaling):
         prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
         return f"{type(self).__name__}({prop})"
 
-def _get_user_scores(
-    voting_rights: VotingRights,
-    user_models: dict[int, ScoringModel],
-    entities: pd.DataFrame
-):
-    user_list, entity_list, voting_right_list = list(), list(), list()
+
+def _get_user_scores(user_models: dict[int, ScoringModel], entities: pd.DataFrame):
+    user_list, entity_list = list(), list()
     scores, lefts, rights = list(), list(), list()
     for user_id, scoring_model in user_models.items():
-        for entity in scoring_model.scored_entities(entities):
+        for entity_id, output in scoring_model.iter_entities(entities):
             user_list.append(user_id)
-            entity_list.append(entity)
-            voting_right_list.append(voting_rights[user_id, entity])
-            output = scoring_model(entity, entities.loc[entity])
+            entity_list.append(entity_id)
             scores.append(output[0])
             lefts.append(output[1])
             rights.append(output[2])
-                
-    return pd.DataFrame(dict(
-        user_id=user_list,
-        entity_id=entity_list,
-        voting_rights=voting_right_list,
-        scores=scores,
-        left_uncertainties=lefts,
-        right_uncertainties=rights,
-    ))
-    
+
+    return pd.DataFrame(
+        dict(
+            user_id=user_list,
+            entity_id=entity_list,
+            scores=scores,
+            left_uncertainties=lefts,
+            right_uncertainties=rights,
+        )
+    )

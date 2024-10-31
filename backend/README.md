@@ -67,9 +67,9 @@ Django application; and how to install and configure a PostgreSQL server.
 - Create a python env and install the requirements
   `pip install -r requirements.txt`
 
-- Install migrations on database `python manage.py migrate`
-
 - Create the database cache `python manage.py createcachetable`
+
+- Install migrations on database `python manage.py migrate`
 
 - Create superuser `python manage.py createsuperuser`
 

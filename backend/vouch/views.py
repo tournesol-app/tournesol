@@ -44,7 +44,7 @@ class VoucherGivenListAPIView(generics.ListAPIView):
         return Voucher.objects.filter(
             by=self.request.user,
             to__is_active=True,
-        )
+        ).order_by('to__username')
 
 
 @extend_schema_view(

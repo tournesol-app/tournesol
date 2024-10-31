@@ -1,2 +1,1 @@
-{% load i18n %}
-{% translate "Tournesol Password Reset" %}
+{% load i18n %}🌻 {% translate "Tournesol password reset" %}

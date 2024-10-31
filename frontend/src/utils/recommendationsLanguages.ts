@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next';
+import { storage } from 'src/app/localStorage';
 import { uniq } from 'src/utils/array';
 
 export const recommendationsLanguages: {
@@ -79,7 +80,7 @@ export const getLanguageName = (t: TFunction, language: string) => {
 };
 
 export const saveRecommendationsLanguages = (value: string) => {
-  localStorage.setItem('recommendationsLanguages', value);
+  storage?.setItem('recommendationsLanguages', value);
   const event = new CustomEvent('tournesol:recommendationsLanguagesChange', {
     detail: { recommendationsLanguages: value },
   });
@@ -96,8 +97,9 @@ export const initRecommendationsLanguages = (): string => {
   return languages;
 };
 
-export const loadRecommendationsLanguages = (): string | null =>
-  localStorage.getItem('recommendationsLanguages');
+export const loadRecommendationsLanguages = (): string | null => {
+  return storage?.getItem('recommendationsLanguages') ?? null;
+};
 
 export const recommendationsLanguagesFromNavigator = (): string =>
   // This function also exists in the browser extension so it should be updated there too if it changes here.

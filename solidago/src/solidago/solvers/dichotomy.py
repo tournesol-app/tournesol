@@ -4,11 +4,12 @@ import numpy as np
 
 
 def solve(
-    f: Callable[[float], float],
+    f: Callable[..., float],
     value: float = 0,
     xmin: float = 0,
     xmax: float = 1,
     error: float = 1e-6,
+    args = (),
 ):
     """Solves for f(x) == value, using dichotomy search
     May return an error if f(xmin) * f(xmax) > 0
@@ -29,7 +30,7 @@ def solve(
     -------
     out: float
     """
-    ymin, ymax = f(xmin) - value, f(xmax) - value
+    ymin, ymax = f(xmin, *args) - value, f(xmax, *args) - value
     if ymin * ymax > 0:
         raise ValueError(f"No solution to f(x)={value} was found in [{xmin}, {xmax}]")
 
@@ -40,7 +41,7 @@ def solve(
     n_iterations = int(np.ceil(np.log2(delta / error)))
     for _ in range(n_iterations):
         x = (xmin + xmax) / 2
-        y = f(x) - value
+        y = f(x, *args) - value
         if y == 0:
             return x
         if ymin * y < 0:

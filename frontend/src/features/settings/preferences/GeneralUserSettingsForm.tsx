@@ -1,13 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, AlertTitle, Grid, Typography } from '@mui/material';
+import { Alert, AlertTitle, Grid } from '@mui/material';
 
 import { Notifications_langEnum } from 'src/services/openapi';
 
 import NotificationsEmailResearch from './fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from './fields/NotificationsEmailNewFeatures';
 import NotificationsLang from './fields/NotificationsLang';
+import SettingsHeading from './SettingsHeading';
 
 interface GeneralSettingsFormProps {
   notificationsLang: Notifications_langEnum;
@@ -35,9 +36,10 @@ const GeneralUserSettingsForm = ({
   return (
     <Grid container spacing={4} direction="column" alignItems="stretch">
       <Grid item>
-        <Typography id="notifications" variant="h5">
-          {t('generalUserSettingsForm.emailNotifications')}
-        </Typography>
+        <SettingsHeading
+          id="notifications"
+          text={t('generalUserSettingsForm.emailNotifications')}
+        />
       </Grid>
       <Grid item>
         <Alert severity="info">

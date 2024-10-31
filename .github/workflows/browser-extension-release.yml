@@ -16,10 +16,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with: 
           fetch-depth: 0
-      - uses: actions/setup-node@v2
+
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -40,22 +41,23 @@ jobs:
       - name: Build browser extension
         if: ${{ env.tag_exist == 0 }}
         run: |
-          ./build.sh
+          EXTENSION_BROWSER=firefox MANIFEST_VERSION=2 ./build.sh -o tournesol_extension_firefox.zip
+          EXTENSION_BROWSER=chrome MANIFEST_VERSION=3 ./build.sh -o tournesol_extension_chrome.zip
 
       - name: Error message
         if: failure()
-        run: |
+        run: >
           curl
           -F 'payload_json={"username": "ExtensionBot",
           "content": "Problem with the build of browser extension version **${{ env.ext_version }}**.\n
           More detail: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
           ${{ secrets.DISCORD_BROWSER_EXTENSION_WEBHOOK_URL }}
           
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ env.tag_exist == 0 }}
         with:
-          name: browser-extension-zipfile
-          path: browser-extension/tournesol_extension.zip
+          name: browser-extension-zipfiles
+          path: browser-extension/tournesol_extension*.zip
 
       - name: Send zip file on Discord
         if: ${{ env.tag_exist == 0 }}
@@ -64,5 +66,6 @@ jobs:
           -F 'payload_json={"username": "ExtensionBot",
           "content": "The browser extension version **${{ env.ext_version }}** has been built.\n
           More detail: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
-          -F "file1=@tournesol_extension.zip"
+          -F "files[0]=@tournesol_extension_firefox.zip"
+          -F "files[1]=@tournesol_extension_chrome.zip"
           ${{ secrets.DISCORD_BROWSER_EXTENSION_WEBHOOK_URL }}

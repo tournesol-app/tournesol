@@ -3,13 +3,14 @@ import pandas as pd
 import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
+
 from utils import (
     CRITERI_EXT,
     CRITERIA,
     MSG_NO_DATA,
     MSG_NOT_ENOUGH_DATA,
     TCOLOR,
-    api_get_tournesol_scores,
+    api_get_tournesol_df,
     thumbnail_url,
 )
 
@@ -47,7 +48,7 @@ def add_sidebar_select_channels():
     min_contributor = st.sidebar.number_input(
         "Minimum number of contributors to be included", value=3, min_value=1
     )
-    df = df[df["rating_n_contributors"] >= min_contributor]
+    df = df[df["n_contributors"] >= min_contributor]
 
     st.session_state.df_scores = df
     st.session_state.all_uploaders = all_uploaders
@@ -218,8 +219,8 @@ def add_expander_detailed_correlation():
 
 st.title("Videos and channels (computed scores)")
 
-# Load public dataset (the function is cached to not overload the API)
-st.session_state.df_scores = api_get_tournesol_scores()
+# Load the recommendations (the function is cached to not overload the API)
+st.session_state.df_scores = api_get_tournesol_df()
 
 # Select uploaders
 add_sidebar_select_channels()

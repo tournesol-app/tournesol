@@ -1,9 +1,10 @@
-streamlit==1.30.0
+streamlit==1.37.0
 numpy==1.24.2
 pandas==1.5.3
 seaborn==0.11.1
 matplotlib==3.3.4
 pillow==10.3.0
 plotly==5.5.0
-scikit-learn==1.0.1
+scikit-learn==1.5.0
 requests==2.32.0
+python-dateutil==2.9.0.post0

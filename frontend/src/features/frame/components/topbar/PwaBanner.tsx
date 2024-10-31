@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { storage } from 'src/app/localStorage';
 import { BeforeInstallPromptEvent } from '../../pwaPrompt';
 import { Avatar, Button, Grid, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -6,12 +7,11 @@ import { useTranslation } from 'react-i18next';
 const pwaBannerIgnoredKey = 'pwaBannerIgnoredAt';
 
 const hasPwaBannerBeenIgnored = () => {
-  try {
-    const value = localStorage.getItem(pwaBannerIgnoredKey);
-    return value != null;
-  } catch {
+  if (!storage) {
+    // Avoid showing the banner when ignore action can't be persisted
     return true;
   }
+  return storage.getItem(pwaBannerIgnoredKey) != null;
 };
 
 interface Props {
@@ -53,7 +53,7 @@ const PwaBanner = ({ beforeInstallPromptEvent }: Props) => {
           color="inherit"
           onClick={() => {
             setPwaBannerVisible(false);
-            localStorage.setItem(pwaBannerIgnoredKey, new Date().toISOString());
+            storage?.setItem(pwaBannerIgnoredKey, new Date().toISOString());
           }}
         >
           {t('pwaBanner.ignore')}
