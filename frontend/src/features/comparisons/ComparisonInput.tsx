@@ -61,7 +61,7 @@ const ComparisonInput = ({
               onSubmit={onSubmit}
               initialComparison={initialComparison}
             />
-            <Divider />
+            <Divider variant="middle" />
             <CriteriaButtonsScoreReview initialComparison={initialComparison} />
           </Box>
         </>
