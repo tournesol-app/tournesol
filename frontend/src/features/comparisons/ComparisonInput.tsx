@@ -1,19 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Paper, useMediaQuery } from '@mui/material';
+import { Alert, Box, Divider, Paper, useMediaQuery } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
-import {
-  ComparisonCriteriaScoreRequest,
-  ComparisonRequest,
-} from 'src/services/openapi';
+import { ComparisonRequest } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 
 import CriteriaButtons from './inputs/CriteriaButtons';
 import { BUTTON_SCORE_MAX } from './inputs/CriterionButtons';
 import { SLIDER_SCORE_MAX } from './CriteriaSlider';
 import CriteriaButtonsScoreReview from './inputs/CriteriaButtonsScoreReview';
+import { getCriterionScoreMax } from 'src/utils/criteria';
 
 interface ComparisonInputProps {
   uidA: string;
@@ -22,23 +20,6 @@ interface ComparisonInputProps {
   onSubmit: (c: ComparisonRequest, partialUpdate?: boolean) => Promise<void>;
   isComparisonPublic: boolean;
 }
-
-const getCriterionScoreMax = (
-  criteriaScores?: ComparisonCriteriaScoreRequest[],
-  mainCriterion?: string
-): number | undefined => {
-  if (criteriaScores == undefined || mainCriterion == undefined) {
-    return undefined;
-  }
-
-  const main = criteriaScores.find((crit) => crit.criteria === mainCriterion);
-
-  if (main == undefined) {
-    return undefined;
-  }
-
-  return main.score_max;
-};
 
 /**
  * A component displaying different comparison inputs depending to the user's
@@ -80,6 +61,7 @@ const ComparisonInput = ({
               onSubmit={onSubmit}
               initialComparison={initialComparison}
             />
+            <Divider />
             <CriteriaButtonsScoreReview initialComparison={initialComparison} />
           </Box>
         </>
