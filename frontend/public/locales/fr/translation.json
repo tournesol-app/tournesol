@@ -83,9 +83,9 @@
     "title": "Distribution des scores par critère"
   },
   "comparison": {
+    "newComparison": "Nouvelle comparaison",
     "ok": "OK",
     "successfullySubmitted": "Comparaison bien enregistrée.",
-    "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
     "changeOneItem": "Changez l'un des deux éléments pour faire une nouvelle comparaison.",
@@ -93,6 +93,7 @@
     "comparisonInPublicDataAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
     "editComparison": "Modifier la comparaison",
     "criteriaSkipped": "ignoré",
+    "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "submitAComparison": "Soumettre une comparaison",
     "inactivePoll": "Ce scrutin est fermé.",
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
@@ -617,8 +618,8 @@
     "preferences": "Préférences"
   },
   "poll": {
-    "videos": "vidéos",
-    "presidential2022": "présidentielle FR 2022",
+    "videos": "Vidéos",
+    "presidential2022": "Présidentielle FR 2022",
     "entityCandidate": "candidat",
     "entityVideo": "vidéo"
   },

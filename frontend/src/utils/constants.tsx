@@ -1,6 +1,8 @@
 import { TFunction } from 'react-i18next';
 import { YouTube, HowToVote } from '@mui/icons-material';
 
+import { RelatedEntity } from 'src/services/openapi';
+
 import { AddToRateLaterList, CompareNowAction } from './action';
 import {
   getAllCandidates,
@@ -13,6 +15,8 @@ import {
   getTutorialDialogActions as getVideosTutorialDialogActions,
 } from './polls/videos';
 import { SelectablePoll, RouteID } from './types';
+
+export const DEFAULT_DOCUMENT_TITLE = 'Tournesol';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -107,6 +111,18 @@ export const getEntityName = (t: TFunction, pollName: string) => {
       return t('poll.entityVideo');
     default:
       return pollName;
+  }
+};
+
+export const getEntityMetadataName = (
+  pollName: string,
+  entity: RelatedEntity
+): string | undefined => {
+  switch (pollName) {
+    case YOUTUBE_POLL_NAME:
+      return entity.metadata.name;
+    default:
+      return undefined;
   }
 };
 

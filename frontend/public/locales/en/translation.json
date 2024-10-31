@@ -79,9 +79,9 @@
     "title": "Criteria scores distribution"
   },
   "comparison": {
+    "newComparison": "New comparison",
     "ok": "OK",
     "successfullySubmitted": "Comparison successfully submitted.",
-    "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
     "removeOptionalCriterias": "Remove optional criteria",
     "addOptionalCriterias": "Add optional criteria",
     "changeOneItem": "Change one of the items to submit a new comparison",
@@ -89,6 +89,7 @@
     "comparisonInPublicDataAfterSubmission": "After submission, this comparison will be included in the public data.",
     "editComparison": "Edit comparison",
     "criteriaSkipped": "skipped",
+    "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
     "submitAComparison": "Submit a comparison",
     "inactivePoll": "This poll is closed.",
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
@@ -608,8 +609,8 @@
     "preferences": "Preferences"
   },
   "poll": {
-    "videos": "videos",
-    "presidential2022": "election FR 2022",
+    "videos": "Videos",
+    "presidential2022": "Election FR 2022",
     "entityCandidate": "candidate",
     "entityVideo": "video"
   },
