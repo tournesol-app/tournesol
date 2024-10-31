@@ -11,6 +11,18 @@ from solidago.judgments import DataFrameJudgments
 
 
 class TournesolInput(ABC):
+    """
+    An abstract base class for handling input data of Solidago pipeline.
+
+    This class provides an interface for retrieving and processing comparison data,
+    user ratings, individual scores, and vouches.
+
+    Notes
+    -----
+    This is an abstract base class that must be subclassed and have its abstract
+    methods implemented to provide concrete data retrieval functionality.
+    """
+
     SCALING_CALIBRATION_MIN_TRUST_SCORE = 0.1
     MAX_SCALING_CALIBRATION_USERS = 100
 
