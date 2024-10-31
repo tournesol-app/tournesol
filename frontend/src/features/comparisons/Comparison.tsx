@@ -6,12 +6,12 @@ import React, {
   useState,
 } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { Location } from 'history';
 
 import { CircularProgress, Grid, Card } from '@mui/material';
 
-import { useNotifications } from 'src/hooks';
+import { useDocumentTitle, useNotifications } from 'src/hooks';
 import {
   UsersService,
   ComparisonRequest,
@@ -23,7 +23,11 @@ import EntitySelector, {
 } from 'src/features/entity_selector/EntitySelector';
 import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
-import { UID_YT_NAMESPACE } from 'src/utils/constants';
+import {
+  getEntityMetadataName,
+  getPollName,
+  UID_YT_NAMESPACE,
+} from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
@@ -57,6 +61,21 @@ const getUidsFromLocation = (location: Location) => {
     uidA,
     uidB,
   };
+};
+
+const createPageTitle = (
+  t: TFunction,
+  pollName: string,
+  nameA?: string,
+  nameB?: string
+): string | null => {
+  if (!nameA || !nameB) {
+    return null;
+  }
+
+  const titleA = nameA.length <= 32 ? nameA : `${nameA.substring(0, 32)}…`;
+  const titleB = nameB.length <= 32 ? nameB : `${nameB.substring(0, 32)}…`;
+  return `${titleA} 🆚 ${titleB} | Tournesol ${getPollName(t, pollName)}`;
 };
 
 interface Props {
@@ -107,6 +126,24 @@ const Comparison = ({
     uid: uidB,
     rating: null,
   });
+
+  const [pageTitle, setPageTitle] = useState(
+    `${t('comparison.newComparison')}`
+  );
+  useDocumentTitle(pageTitle);
+
+  useEffect(() => {
+    if (selectorA.rating?.entity && selectorB.rating?.entity) {
+      const nameA = getEntityMetadataName(pollName, selectorA.rating?.entity);
+      const nameB = getEntityMetadataName(pollName, selectorB.rating?.entity);
+      const title = createPageTitle(t, pollName, nameA, nameB);
+      if (title) {
+        setPageTitle(title);
+      }
+    } else {
+      setPageTitle(`${t('comparison.newComparison')}`);
+    }
+  }, [pollName, selectorA.rating?.entity, selectorB.rating?.entity, t]);
 
   const onChange = useCallback(
     (vidKey: 'vidA' | 'vidB') => (newValue: SelectorValue) => {

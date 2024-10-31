@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { useCurrentPoll, useLoginState, useDocumentTitle } from 'src/hooks';
 import {
   ApiError,
   PollsService,
   Recommendation,
+  RelatedEntity,
   VideoService,
 } from 'src/services/openapi';
 import {
+  DEFAULT_DOCUMENT_TITLE,
+  getEntityMetadataName,
+  getPollName,
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
@@ -27,6 +31,24 @@ const VideoAnalysis = React.lazy(() =>
     default: VideoAnalysis,
   }))
 );
+
+const createPageTitle = (
+  t: TFunction,
+  pollName: string,
+  entity: RelatedEntity
+): string | undefined => {
+  const entityName = getEntityMetadataName(pollName, entity);
+  if (!entityName) {
+    return undefined;
+  }
+
+  switch (pollName) {
+    case YOUTUBE_POLL_NAME:
+      return `${entityName} | Tournesol ${getPollName(t, pollName)}`;
+    default:
+      return undefined;
+  }
+};
 
 const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
   const { t } = useTranslation();
@@ -75,12 +97,24 @@ const EntityAnalysisPage = () => {
   const { name: pollName } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
 
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentLang = i18n.resolvedLanguage;
 
   const [entity, setEntity] = useState<Recommendation>();
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<ApiError>();
+  const [pageTitle, setPageTitle] = useState(DEFAULT_DOCUMENT_TITLE);
+
+  useDocumentTitle(pageTitle);
+
+  useEffect(() => {
+    if (entity) {
+      const title = createPageTitle(t, pollName, entity.entity);
+      if (title) {
+        setPageTitle(title);
+      }
+    }
+  }, [currentLang, entity, pollName, t]);
 
   const tryToCreateVideo = async () => {
     if (pollName !== YOUTUBE_POLL_NAME) {
@@ -136,6 +170,7 @@ const EntityAnalysisPage = () => {
     getEntity().finally(() => {
       setIsLoading(false);
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLang, pollName, uid]);
 
