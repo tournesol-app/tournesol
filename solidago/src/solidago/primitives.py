@@ -9,14 +9,14 @@ from solidago.solvers.optimize import njit_brentq as brentq
 
 @njit
 def qr_quantile(
-    lipschitz: float, 
+    lipschitz: float,
     quantile: float,
     values: npt.NDArray,
     voting_rights: Union[npt.NDArray, float]=1.0,
     left_uncertainties: Optional[npt.NDArray]=None,
     right_uncertainties: Optional[npt.NDArray]=None,
-    default_value: float=0,
-    error: float=1e-5
+    default_value: float=0.0,
+    error: float=1e-5,
 ) -> float:
     """ Computes the quadratically regularized quantile, an estimate of 
     the quantile of values,weighted by voting_rights, given left and right 
@@ -85,25 +85,30 @@ def _qr_quantile_loss_derivative(
     """Computes the derivative of the loss associated to qr_quantile"""
     regularization = (variable - default_value) / lipschitz
 
-    if quantile == 0.5:
-        quantile_term = 0.0
-    elif isinstance(voting_rights, (int, float)):
-        quantile_term = (1.0 - 2.0 * quantile) * voting_rights * len(values)
-    else:
-        quantile_term = (1.0 - 2.0 * quantile) * np.sum(voting_rights)
-
     deltas = variable - values
     uncertainties_2 = left_uncertainties_2 * (deltas < 0) + right_uncertainties_2 * (deltas > 0) + spacing
     forces = voting_rights * deltas / np.sqrt(uncertainties_2 + deltas**2)
+    
+    if quantile == 0.5:
+        return regularization + forces.sum()
+    
+    left_strength = min(1.0, quantile / (1-quantile))
+    right_strength = min(1.0, (1-quantile) / quantile)
+    
+    forces = np.where(
+        forces < 0,
+        forces * left_strength,
+        forces * right_strength,
+    )
 
-    return regularization + quantile_term + forces.sum()
+    return regularization + forces.sum()
 
 
 @njit
 def qr_median(
     lipschitz: float,
     values: npt.NDArray,
-    voting_rights: Union[npt.NDArray, float] = 1,
+    voting_rights: Union[npt.NDArray, float] = 1.0,
     left_uncertainties: Optional[npt.NDArray] = None,
     right_uncertainties: Optional[npt.NDArray] = None,
     default_value: float = 0.0,
@@ -256,7 +261,7 @@ def clip_mean(
 def lipschitz_resilient_mean(
     lipschitz: float,
     values: npt.NDArray,
-    voting_rights: Union[npt.NDArray, float] = 1.0,
+    voting_rights: Union[npt.NDArray[np.float64], float] = 1.0,
     left_uncertainties: Optional[npt.NDArray] = None,
     right_uncertainties: Optional[npt.NDArray] = None,
     default_value: float = 0.0,
@@ -293,11 +298,11 @@ def lipschitz_resilient_mean(
     if len(values) == 0:
         return default_value
 
-    if isinstance(voting_rights, float):
+    if isinstance(voting_rights, (float, int)):
         voting_rights = np.full(values.shape, voting_rights)
 
     total_voting_rights = np.sum(voting_rights)
-    if total_voting_rights == 0:
+    if total_voting_rights == 0.0:
         return default_value
 
     return clip_mean(

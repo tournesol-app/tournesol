@@ -85,7 +85,6 @@ class StandardizedQrQuantile(Aggregation):
                 np.array(dfe["right_uncertainties"]),
                 default_dev = 1,
                 error = self.error,
-                median = score,
             )
             global_scores[entity_id] = score, uncertainty
         return scaled_models, global_scores

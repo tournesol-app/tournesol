@@ -364,6 +364,11 @@ DISCORD_CHANNEL_WEBHOOKS = server_settings.get("DISCORD_CHANNEL_WEBHOOKS", {})
 
 TWITTERBOT_CREDENTIALS = server_settings.get("TWITTERBOT_CREDENTIALS", {})
 
+if "DJANGO_LOG_LEVEL" in os.environ:
+    DJANGO_LOG_LEVEL = os.environ["DJANGO_LOG_LEVEL"]
+else:
+    DJANGO_LOG_LEVEL = server_settings.get("DJANGO_LOG_LEVEL", "INFO")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -374,7 +379,7 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
+        "level": DJANGO_LOG_LEVEL,
     },
     "loggers": {
         "factory": {

@@ -16,6 +16,7 @@ from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShif
 from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
 
+from solidago.pipeline.inputs import TournesolInput
 from solidago.pipeline.outputs import PipelineOutput
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class DefaultPipeline:
     scaling: Scaling = ScalingCompose(
         Mehestan(
             lipschitz=0.1,
-            min_activity=10,
+            min_activity=10.0,
             n_scalers_max=100,
             privacy_penalty=0.5,
             p_norm_for_multiplicative_resilience=4.0,
@@ -82,7 +83,7 @@ class Pipeline:
         aggregation: Aggregation = DefaultPipeline.aggregation,
         post_process: PostProcess = DefaultPipeline.post_process,
     ):
-        """ Instantiates the pipeline components.
+        """Instantiates the pipeline components.
         
         Parameters
         ----------
@@ -118,7 +119,22 @@ class Pipeline:
             aggregation=aggregation_from_json(json["aggregation"]),
             post_process=post_process_from_json(json["post_process"]),
         )
-        
+
+    def run(
+        self,
+        input: TournesolInput,
+        criterion: str,
+        output: Optional[PipelineOutput] = None
+    ):
+        # TODO: criterion should be managed by TournesolInput
+
+        # TODO: read existing individual scores from input
+        # to pass `init_user_models`
+        return self(
+            **input.get_pipeline_kwargs(criterion),
+            output=output,
+        )
+
     def __call__(
         self,
         users: pd.DataFrame,
@@ -148,8 +164,6 @@ class Pipeline:
             judgments[user] must yield the judgment data provided by the user
         init_user_models: dict[int, ScoringModel]
             user_models[user] is the user's model
-        skip_set: set[int]
-            Steps that are skipped in the pipeline
             
         Returns
         -------
@@ -176,8 +190,9 @@ class Pipeline:
             output.save_trust_scores(trusts=users)
             
         logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
-        # FIXME: `privacy` may contain (user, entity) even if user has expressed no judgement
+        # WARNING: `privacy` may contain (user, entity) even if user has expressed no judgement
         # about the entity. These users should not be given a voting right on the entity.
+        # For now, irrelevant privacy values are excluded in `input.get_pipeline_kwargs()`
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
         start_step3 = timeit.default_timer()
         logger.info(f"Pipeline 2. Terminated in {np.round(start_step3 - start_step2, 2)} seconds")
@@ -229,8 +244,8 @@ class Pipeline:
             post_process=self.post_process.to_json()
         )
         
+    @staticmethod
     def save_individual_scalings(
-        self,
         user_models: dict[int, ScaledScoringModel],
         output: PipelineOutput,
     ):
@@ -251,8 +266,8 @@ class Pipeline:
         )
         output.save_individual_scalings(scalings_df)
 
+    @staticmethod
     def save_individual_scores(
-        self,
         user_scorings: dict[int, ScoringModel],
         raw_user_scorings: dict[int, ScoringModel],
         voting_rights: VotingRights,
@@ -285,9 +300,10 @@ class Pipeline:
             _, left_unc, right_unc = raw_scoring
             return left_unc + right_unc
 
-        scores_df["raw_score"] = scores_df.apply(get_raw_score, axis=1)
-        scores_df["raw_uncertainty"] = scores_df.apply(get_raw_uncertainty, axis=1)
-        output.save_individual_scores(scores_df)
+        if len(scores_df) > 0:
+            scores_df["raw_score"] = scores_df.apply(get_raw_score, axis=1)
+            scores_df["raw_uncertainty"] = scores_df.apply(get_raw_uncertainty, axis=1)
+            output.save_individual_scores(scores_df)
 
 
 def trust_propagation_from_json(json):
