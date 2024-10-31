@@ -8,6 +8,7 @@ import pandas as pd
 
 from solidago.privacy_settings import PrivacySettings
 from solidago.judgments import DataFrameJudgments
+from solidago.scoring_model import DirectScoringModel
 
 
 class TournesolInput(ABC):
@@ -75,6 +76,7 @@ class TournesolInput(ABC):
             * `entity_id`: int
             * `criteria`: str
             * `score`: float
+            * `raw_score`: float (optional column)
         """
         raise NotImplementedError
 
@@ -122,12 +124,24 @@ class TournesolInput(ABC):
             )
         )
 
+        individual_scores = self.get_individual_scores(criteria=criterion)
+        if "raw_score" in individual_scores:
+            init_user_models = {
+                user_id: DirectScoringModel(
+                    {row.entity_id: (row.raw_score, 0.0, 0.0) for row in user_df.itertuples()}
+                )
+                for (user_id, user_df) in individual_scores.groupby("user_id")
+            }
+        else:
+            init_user_models = None
+
         return {
             "users": users,
             "vouches": vouches,
             "entities": entities,
             "privacy": privacy,
             "judgments": judgments,
+            "init_user_models": init_user_models,
         }
 
     def get_comparisons_counts(

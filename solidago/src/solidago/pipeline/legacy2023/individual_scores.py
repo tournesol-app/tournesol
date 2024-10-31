@@ -21,11 +21,13 @@ def get_individual_scores(
             f"Found {dict(score_max_series.value_counts())}"
         )
 
-    initial_contributor_scores = input.get_individual_scores(
+    individual_scores = input.get_individual_scores(
         criteria=criteria, user_id=single_user_id
     )
-    if initial_contributor_scores is not None:
-        initial_contributor_scores = initial_contributor_scores.groupby("user_id")
+    if individual_scores is not None and "raw_score" in individual_scores:
+        initial_contributor_scores = individual_scores.groupby("user_id")
+    else:
+        initial_contributor_scores = None
 
     individual_scores = []
     for user_id, user_comparisons in comparisons_df.groupby("user_id"):
@@ -35,7 +37,7 @@ def get_individual_scores(
             try:
                 contributor_score_df = initial_contributor_scores.get_group(user_id)
                 initial_entity_scores = pd.Series(
-                    data=contributor_score_df.raw_score, index=contributor_score_df.entity
+                    data=contributor_score_df.raw_score, index=contributor_score_df.entity_id
                 )
             except KeyError:
                 initial_entity_scores = None

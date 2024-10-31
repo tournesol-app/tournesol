@@ -168,7 +168,7 @@ class MlInputFromDb(TournesolInput):
         return pd.DataFrame(values)
 
     def get_individual_scores(
-        self, criteria: Optional[str] = None, user_id: Optional[int] = None
+        self, user_id: Optional[int] = None, criteria: Optional[str] = None,
     ) -> pd.DataFrame:
         scores_queryset = ContributorRatingCriteriaScore.objects.filter(
             contributor_rating__poll__name=self.poll_name,
@@ -182,14 +182,14 @@ class MlInputFromDb(TournesolInput):
         values = scores_queryset.values(
             "raw_score",
             "criteria",
-            entity=F("contributor_rating__entity_id"),
+            entity_id=F("contributor_rating__entity_id"),
             user_id=F("contributor_rating__user_id"),
         )
         if len(values) == 0:
-            return pd.DataFrame(columns=["user_id", "entity", "criteria", "raw_score"])
+            return pd.DataFrame(columns=["user_id", "entity_id", "criteria", "raw_score"])
 
         dtf = pd.DataFrame(values)
-        return dtf[["user_id", "entity", "criteria", "raw_score"]]
+        return dtf[["user_id", "entity_id", "criteria", "raw_score"]]
 
     def get_vouches(self):
         values = Voucher.objects.filter(
