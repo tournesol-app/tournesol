@@ -308,7 +308,7 @@ class TournesolInputFromPublicDataset(TournesolInput):
 
         return (
             dtf.join(counts, how="left", on=["criteria", "entity_id"])
-            # Entities that have been comparated privately only
+            # Entities that have been compared privately only
             # will not appear in comparisons.csv. That's why we need
             # to fill for missing values here.
             .fillna({"n_comparisons": 0, "n_users": 0})
