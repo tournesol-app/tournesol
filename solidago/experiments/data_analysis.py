@@ -1,10 +1,10 @@
-from solidago.pipeline.inputs import TournesolInputFromPublicDataset
+from solidago.pipeline.inputs import TournesolDataset
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy
 
-data = TournesolInputFromPublicDataset.download()
+data = TournesolDataset.download()
 
 criteria = {
     "reliability": "Reliable and not misleading",

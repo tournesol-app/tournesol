@@ -11,7 +11,7 @@ from solidago.judgments import DataFrameJudgments
 from solidago.scoring_model import DirectScoringModel
 
 
-class TournesolInput(ABC):
+class PipelineInput(ABC):
     """
     An abstract base class for handling input data of Solidago pipeline.
 
@@ -76,7 +76,7 @@ class TournesolInput(ABC):
             * `entity_id`: int
             * `criterion`: str
             * `score`: float
-            * `raw_score`: float (optional column)
+            * `raw_score`: float (optional column, used to initialize preference learning)
         """
         raise NotImplementedError
 
@@ -165,7 +165,7 @@ class TournesolInput(ABC):
         )
 
 
-class TournesolInputFromPublicDataset(TournesolInput):
+class TournesolDataset(PipelineInput):
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         if isinstance(dataset_zip, str) and (
             dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
@@ -249,7 +249,7 @@ class TournesolInputFromPublicDataset(TournesolInput):
                 )
 
     @classmethod
-    def download(cls) -> "TournesolInputFromPublicDataset":
+    def download(cls) -> "TournesolDataset":
         return cls(dataset_zip="https://api.tournesol.app/exports/all")
 
     def get_comparisons(self, criterion=None, user_id=None) -> pd.DataFrame:

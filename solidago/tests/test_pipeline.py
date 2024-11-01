@@ -1,7 +1,7 @@
 import pytest
 from importlib import import_module
 from solidago.pipeline import Pipeline
-from solidago.pipeline.inputs import TournesolInputFromPublicDataset
+from solidago.pipeline.inputs import TournesolDataset
 
 
 @pytest.mark.parametrize("test", range(5))
@@ -11,7 +11,7 @@ def test_pipeline_test_data(test):
 
 
 def test_tournesol_get_comparisons():
-    dataset = TournesolInputFromPublicDataset("tests/data/tiny_tournesol.zip")
+    dataset = TournesolDataset("tests/data/tiny_tournesol.zip")
 
     # Test no filter
     assert len(dataset.get_comparisons()) == 38387
@@ -32,7 +32,7 @@ def test_tournesol_get_comparisons():
 
 
 def test_tournesol_get_individual_scores():
-    dataset = TournesolInputFromPublicDataset("tests/data/tiny_tournesol.zip")
+    dataset = TournesolDataset("tests/data/tiny_tournesol.zip")
 
     # Test no filter
     assert len(dataset.get_individual_scores()) == 17319
@@ -66,7 +66,7 @@ def test_tournesol_get_individual_scores():
 
 
 def test_tournesol_get_collective_scores():
-    dataset = TournesolInputFromPublicDataset("tests/data/tiny_tournesol.zip")
+    dataset = TournesolDataset("tests/data/tiny_tournesol.zip")
 
     # Test no filter
     assert len(dataset.get_collective_scores()) == 12184

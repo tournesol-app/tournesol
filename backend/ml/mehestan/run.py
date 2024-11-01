@@ -4,7 +4,7 @@ from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_compl
 
 from django import db
 from django.conf import settings
-from solidago.pipeline import TournesolInput
+from solidago.pipeline import PipelineInput
 from solidago.pipeline.legacy2023.criterion_pipeline import run_pipeline_for_criterion
 from solidago.pipeline.legacy2023.individual_scores import get_individual_scores
 
@@ -45,7 +45,7 @@ def close_db_connection_callback():
 
 
 def run_mehestan(
-    ml_input: TournesolInput, poll: Poll, parameters: MehestanParameters, main_criterion_only=False
+    ml_input: PipelineInput, poll: Poll, parameters: MehestanParameters, main_criterion_only=False
 ):
     """
     This function use multiprocessing.

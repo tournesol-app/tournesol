@@ -2,12 +2,12 @@ from typing import Optional
 
 import pandas as pd
 
-from solidago.pipeline import TournesolInput
+from solidago.pipeline import PipelineInput
 from .parameters import PipelineParameters
 
 
 def get_individual_scores(
-    input: TournesolInput,
+    input: PipelineInput,
     criteria: str,
     parameters: PipelineParameters,
     single_user_id: Optional[int] = None,

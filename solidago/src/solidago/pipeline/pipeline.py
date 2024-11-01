@@ -16,7 +16,7 @@ from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShif
 from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
 
-from solidago.pipeline.inputs import TournesolInput
+from solidago.pipeline.inputs import PipelineInput
 from solidago.pipeline.outputs import PipelineOutput
 
 logger = logging.getLogger(__name__)
@@ -122,14 +122,11 @@ class Pipeline:
 
     def run(
         self,
-        input: TournesolInput,
+        input: PipelineInput,
         criterion: str,
         output: Optional[PipelineOutput] = None
     ):
-        # TODO: criterion should be managed by TournesolInput
-
-        # TODO: read existing individual scores from input
-        # to pass `init_user_models`
+        # TODO: `criterion` should be managed by PipelineInput ?
         return self(
             **input.get_pipeline_kwargs(criterion),
             output=output,

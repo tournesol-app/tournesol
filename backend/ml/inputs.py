@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 from django.db.models import Case, F, Q, QuerySet, When
 from django.db.models.expressions import RawSQL
-from solidago.pipeline import TournesolInput
+from solidago.pipeline import PipelineInput
 
 from core.models import User
 from tournesol.models import (
@@ -17,7 +17,7 @@ from tournesol.models import (
 from vouch.models import Voucher
 
 
-class MlInputFromDb(TournesolInput):
+class MlInputFromDb(PipelineInput):
     SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE = 20
 
     def __init__(self, poll_name: str):

@@ -7,7 +7,7 @@ from .global_scores import (
     get_squash_function,
     ALL_SCORE_MODES,
 )
-from solidago.pipeline import TournesolInput, PipelineOutput
+from solidago.pipeline import PipelineInput, PipelineOutput
 from . import collaborative_scaling
 from .individual_scores import get_individual_scores
 from .parameters import PipelineParameters
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def run_pipeline_for_criterion(
     criterion: str,
-    input: TournesolInput,
+    input: PipelineInput,
     parameters: PipelineParameters,
     output: PipelineOutput,
     done_callback: Optional[Callable] = None,
