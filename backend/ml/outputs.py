@@ -166,7 +166,7 @@ class TournesolPollOutput(PipelineOutput):
                         raw_uncertainty=row.raw_uncertainty,
                         voting_right=row.voting_right,
                     )
-                    for _, row in scores.iterrows()
+                    for row in scores.itertuples()
                 ),
                 batch_size=10000,
             )

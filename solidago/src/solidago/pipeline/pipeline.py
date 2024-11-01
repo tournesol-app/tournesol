@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Mapping, Optional
 
 import numpy as np
 import pandas as pd
@@ -141,7 +141,7 @@ class Pipeline:
         judgments: Judgments,
         init_user_models : Optional[dict[int, ScoringModel]] = None,
         output: Optional[PipelineOutput] = None,
-    ) -> tuple[pd.DataFrame, VotingRights, dict[int, ScoringModel], ScoringModel]:
+    ) -> tuple[pd.DataFrame, VotingRights, Mapping[int, ScoringModel], ScoringModel]:
         """ Run Pipeline 
         
         Parameters
@@ -265,8 +265,8 @@ class Pipeline:
 
     @staticmethod
     def save_individual_scores(
-        user_scorings: dict[int, ScoringModel],
-        raw_user_scorings: dict[int, ScoringModel],
+        user_scorings: Mapping[int, ScoringModel],
+        raw_user_scorings: Mapping[int, ScoringModel],
         voting_rights: VotingRights,
         output: PipelineOutput,
     ):
@@ -277,29 +277,17 @@ class Pipeline:
                     entity_id=entity_id,
                     score=score,
                     uncertainty=left_unc+right_unc,
-                    voting_right=voting_rights[user_id, entity_id]
+                    voting_right=voting_rights[user_id, entity_id],
+                    raw_score=raw_scoring[0],
+                    raw_uncertainty=raw_scoring[1] + raw_scoring[2]
                 )
                 for (user_id, scoring) in user_scorings.items()
                 for (entity_id, (score, left_unc, right_unc)) in scoring.iter_entities()
+                if (raw_scoring := raw_user_scorings[user_id](entity_id)) is not None
             ]
         )
 
-        def get_raw_score(row):
-            raw_scoring = raw_user_scorings[row.user_id](row.entity_id)
-            if raw_scoring is None:
-                return 0.0
-            score, _, _ = raw_scoring
-            return score
-
-        def get_raw_uncertainty(row):
-            raw_scoring = raw_user_scorings[row.user_id](row.entity_id)
-            assert raw_scoring is not None
-            _, left_unc, right_unc = raw_scoring
-            return left_unc + right_unc
-
         if len(scores_df) > 0:
-            scores_df["raw_score"] = scores_df.apply(get_raw_score, axis=1)
-            scores_df["raw_uncertainty"] = scores_df.apply(get_raw_uncertainty, axis=1)
             output.save_individual_scores(scores_df)
 
 
