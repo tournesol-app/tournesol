@@ -273,11 +273,14 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
     scalings = ml_input.get_user_scalings().set_index(["user_id", "criterion"])
     contributor_scores = contributor_scores.join(
         scalings, on=["user_id", "criterion"], how="left"
+    ).fillna(
+        {
+            "scale": 1.0,
+            "translation": 0.0,
+            "scale_uncertainty": 0.0,
+            "translation_uncertatinty": 0.0,
+        }
     )
-    contributor_scores["scale"].fillna(1, inplace=True)
-    contributor_scores["translation"].fillna(0, inplace=True)
-    contributor_scores["scale_uncertainty"].fillna(0, inplace=True)
-    contributor_scores["translation_uncertainty"].fillna(0, inplace=True)
 
     # Apply individual scaling
     contributor_scores["uncertainty"] = (
