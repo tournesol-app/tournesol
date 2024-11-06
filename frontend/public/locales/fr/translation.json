@@ -99,6 +99,15 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée.",
     "comparisonCriteria": "Critères de comparaison"
   },
+  "comparisonActionBar": {
+    "comparisonDeleted": "Comparaison supprimée.",
+    "errorOccurredCannotDeleteComparison": "Désolé, une erreur est survenue. Impossible de supprimer la comparaison.",
+    "youHaventComparedTheseItemsYet": "Vous n'avez pas encore comparé ces éléments.",
+    "deleteComparison": "Supprimer la comparaison",
+    "areYouSure": "Êtes-vous sûr·e ?",
+    "theScoresGivenToTheCriteriaWillBeDeleted": "Les scores donnés à chaque critère seront supprimés définitivement.",
+    "back": "Retour"
+  },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - L'association Tournesol souhaite vous apporter du contexte.",
     "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - L'association Tournesol souhaite vous apporter du contexte.",

@@ -95,6 +95,15 @@
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
     "comparisonCriteria": "Comparison criteria"
   },
+  "comparisonActionBar": {
+    "comparisonDeleted": "Comparison deleted.",
+    "errorOccurredCannotDeleteComparison": "Sorry, an error has occurred. Cannot delete the comparison.",
+    "youHaventComparedTheseItemsYet": "You haven't compared these items yet.",
+    "deleteComparison": "Delete comparison",
+    "areYouSure": "Are you sure?",
+    "theScoresGivenToTheCriteriaWillBeDeleted": "The scores given to the criteria will be permanently deleted.",
+    "back": "Back"
+  },
   "entityContext": {
     "entityAtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} A</0> - The Tournesol association would like to give you some context.",
     "entityBtheAssociationWouldLikeToGiveYouContext": "<0>{{entityName}} B</0> - The Tournesol association would like to give you some context.",

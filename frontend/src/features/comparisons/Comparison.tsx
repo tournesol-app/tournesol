@@ -15,6 +15,7 @@ import {
   Card,
   CircularProgress,
   Grid,
+  Theme,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -37,6 +38,7 @@ import {
   UID_YT_NAMESPACE,
 } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import ComparisonActionBar from './ComparisonActionBar';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
 import ComparisonInput from './ComparisonInput';
@@ -115,7 +117,10 @@ const Comparison = ({
   const currentLang = i18n.resolvedLanguage;
 
   const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const smallScreen = useMediaQuery(
+    (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
+    { noSsr: true }
+  );
 
   const history = useHistory();
   const location = useLocation();
@@ -408,6 +413,19 @@ const Comparison = ({
         >
           <ComparisonHelper />
         </Grid>
+        {!smallScreen && (
+          <Grid item xs={12}>
+            <ComparisonActionBar
+              uidA={uidA}
+              uidB={uidB}
+              afterDeletion={() => {
+                setSelectorA({ uid: uidA, rating: null });
+                setSelectorB({ uid: uidB, rating: null });
+                setInitialComparison(null);
+              }}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} sx={{ '&:empty': { display: 'none' } }}>
           <ComparisonEntityContexts
             selectorA={selectorA}
