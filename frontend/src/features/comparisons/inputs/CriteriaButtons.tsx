@@ -23,6 +23,8 @@ interface CriteriaButtonsProps {
   uidB: string;
   initialComparison: ComparisonRequest | null;
   onSubmit: (c: ComparisonRequest, partialUpdate?: boolean) => Promise<void>;
+  // Called when a new criterion is displayed.
+  onPositionChanged: (pos: number) => void;
 }
 
 const removeCriteria = (
@@ -43,6 +45,7 @@ const CriteriaButtons = ({
   uidB,
   initialComparison,
   onSubmit,
+  onPositionChanged,
 }: CriteriaButtonsProps) => {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLElement>(null);
@@ -95,6 +98,7 @@ const CriteriaButtons = ({
 
     if (submittedScore === undefined) {
       setSlideIn(true);
+      onPositionChanged(nextCritPosition);
       return;
     }
 
@@ -113,6 +117,7 @@ const CriteriaButtons = ({
 
     try {
       await onSubmit(comparisonRequest, true);
+      onPositionChanged(nextCritPosition);
     } catch {
       setCritPosition(critPosition);
     } finally {
