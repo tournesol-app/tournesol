@@ -198,7 +198,10 @@ const VideoInput = ({
             size="small"
             color="secondary"
             disabled={disabled}
-            sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+            sx={{
+              fontSize: { xs: '0.7rem', sm: '0.8rem' },
+              bgcolor: 'background.mobileButton',
+            }}
             data-testid={`entity-select-button-${variant}`}
           >
             <Search />

@@ -76,10 +76,12 @@ const ScoreButton = ({
       color="secondary"
       onClick={() => onClick(score)}
       sx={{
-        minWidth: '38.8px',
+        minWidth: '40px',
         borderRadius: '4px',
-        backgroundColor: selected ? theme.palette.primary.main : 'grey.200',
-        color: selected ? 'white' : undefined,
+        backgroundColor: selected
+          ? theme.palette.primary.main
+          : theme.palette.background.mobileButton,
+        color: selected ? 'text.primary' : undefined,
         '&:hover': hover
           ? {
               color: 'white',

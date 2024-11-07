@@ -12,7 +12,8 @@ declare module '@mui/material/styles' {
   interface TypeBackground {
     primary: string;
     menu: string;
-    emphatic?: string;
+    emphatic: string;
+    mobileButton: string;
   }
 
   interface ZIndex {
@@ -42,6 +43,7 @@ export const theme = createTheme({
       primary: '#FAFAFA',
       menu: '#FAF8F3',
       emphatic: '#1282B2',
+      mobileButton: '#EEEEEE',
     },
   },
   typography: {

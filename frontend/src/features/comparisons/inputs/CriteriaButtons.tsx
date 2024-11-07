@@ -216,6 +216,7 @@ const CriteriaButtons = ({
           aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
           onClick={() => moveWithoutPatching('down')}
           disabled={disableScoreButtons || navigationDisabled}
+          sx={{ bgcolor: 'background.mobileButton' }}
         >
           <ArrowDropUp />
         </IconButton>
@@ -257,6 +258,7 @@ const CriteriaButtons = ({
           aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
           onClick={() => moveWithoutPatching('up')}
           disabled={disableScoreButtons || navigationDisabled}
+          sx={{ bgcolor: 'background.mobileButton' }}
         >
           <ArrowDropDown />
         </IconButton>

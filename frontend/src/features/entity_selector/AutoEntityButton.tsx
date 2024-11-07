@@ -39,7 +39,10 @@ const AutoEntityButton = ({
           color="secondary"
           size="small"
           onClick={onClick}
-          sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+          sx={{
+            fontSize: { xs: '0.7rem', sm: '0.8rem' },
+            bgcolor: 'background.mobileButton',
+          }}
           data-testid={`auto-entity-button-${variant}`}
           startIcon={compactLabelLoc === 'left' ? compactLabel : undefined}
           endIcon={compactLabelLoc === 'right' ? compactLabel : undefined}
