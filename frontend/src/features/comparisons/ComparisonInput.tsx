@@ -1,7 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Divider, Paper, useMediaQuery } from '@mui/material';
+import {
+  Alert,
+  Box,
+  LinearProgress,
+  Paper,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
 import { ComparisonRequest } from 'src/services/openapi';
@@ -33,7 +40,7 @@ const ComparisonInput = ({
   isComparisonPublic,
 }: ComparisonInputProps) => {
   const { t } = useTranslation();
-  const { options } = useCurrentPoll();
+  const { options, criterias } = useCurrentPoll();
   const pointerFine = useMediaQuery('(pointer:fine)', { noSsr: true });
 
   const mainScoreMax = getCriterionScoreMax(
@@ -44,6 +51,10 @@ const ComparisonInput = ({
   const buttonsUsed = mainScoreMax == BUTTON_SCORE_MAX;
   const slidersUsed = mainScoreMax == SLIDER_SCORE_MAX;
   const fallBackToButtons = !buttonsUsed && !slidersUsed && !pointerFine;
+
+  const progress = initialComparison?.criteria_scores.length
+    ? (initialComparison?.criteria_scores.length / criterias.length) * 100
+    : 0;
 
   return (
     <>
@@ -61,7 +72,23 @@ const ComparisonInput = ({
               onSubmit={onSubmit}
               initialComparison={initialComparison}
             />
-            <Divider variant="middle" />
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              columnGap={2}
+            >
+              <Box width="100%">
+                <LinearProgress
+                  color="success"
+                  variant="determinate"
+                  value={progress}
+                />
+              </Box>
+              <Typography color="text.secondary">
+                <strong>{progress}%</strong>
+              </Typography>
+            </Box>
             <CriteriaButtonsScoreReview initialComparison={initialComparison} />
           </Box>
         </>
