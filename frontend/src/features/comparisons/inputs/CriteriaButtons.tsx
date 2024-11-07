@@ -187,8 +187,12 @@ const CriteriaButtons = ({
       return;
     }
 
-    if (sameScoreGiven(score) && criterion.name !== mainCriterionName) {
-      clearScore();
+    if (sameScoreGiven(score)) {
+      // Clicking two times on the mandatory main criterion must not clear it
+      // score.
+      if (criterion.name !== mainCriterionName) {
+        clearScore();
+      }
     } else {
       setSlideDirection('down');
       setSubmittedScore(score);

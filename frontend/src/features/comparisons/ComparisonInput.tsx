@@ -56,7 +56,7 @@ const PositionBar = ({ position, initialComparison }: PositionBarProps) => {
   return (
     <LinearProgress
       variant="determinate"
-      value={(position / criterias.length) * 100}
+      value={((position + 1) / criterias.length) * 100}
     />
   );
 };
