@@ -2,17 +2,17 @@ from typing import Optional
 
 import pandas as pd
 
-from solidago.pipeline import TournesolInput
+from solidago.pipeline import PipelineInput
 from .parameters import PipelineParameters
 
 
 def get_individual_scores(
-    input: TournesolInput,
+    input: PipelineInput,
     criteria: str,
     parameters: PipelineParameters,
     single_user_id: Optional[int] = None,
 ) -> pd.DataFrame:
-    comparisons_df = input.get_comparisons(criteria=criteria, user_id=single_user_id)
+    comparisons_df = input.get_comparisons(criterion=criteria, user_id=single_user_id)
     # Legacy pipeline assumes all comparisons use the same 'score_max'
     score_max_series = comparisons_df.pop("score_max")
     if score_max_series.nunique() > 1:
@@ -21,11 +21,11 @@ def get_individual_scores(
             f"Found {dict(score_max_series.value_counts())}"
         )
 
-    initial_contributor_scores = input.get_individual_scores(
-        criteria=criteria, user_id=single_user_id
-    )
-    if initial_contributor_scores is not None:
-        initial_contributor_scores = initial_contributor_scores.groupby("user_id")
+    individual_scores = input.get_individual_scores(criterion=criteria, user_id=single_user_id)
+    if individual_scores is not None and "raw_score" in individual_scores:
+        initial_contributor_scores = individual_scores.groupby("user_id")
+    else:
+        initial_contributor_scores = None
 
     individual_scores = []
     for user_id, user_comparisons in comparisons_df.groupby("user_id"):
@@ -35,7 +35,7 @@ def get_individual_scores(
             try:
                 contributor_score_df = initial_contributor_scores.get_group(user_id)
                 initial_entity_scores = pd.Series(
-                    data=contributor_score_df.raw_score, index=contributor_score_df.entity
+                    data=contributor_score_df.raw_score, index=contributor_score_df.entity_id
                 )
             except KeyError:
                 initial_entity_scores = None

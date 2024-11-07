@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from solidago.pipeline import TournesolInput
+from solidago.pipeline import PipelineInput
 from solidago.primitives import (
     lipschitz_resilient_mean,
     qr_median,
@@ -32,7 +32,7 @@ def get_significantly_different_pairs_indices(scores, uncertainties):
 
 
 
-def get_user_scaling_weights(input: TournesolInput, W: float):
+def get_user_scaling_weights(input: PipelineInput, W: float):
     ratings_properties = input.ratings_properties[
         ["user_id", "trust_score", "is_scaling_calibration_user"]
     ].copy()
@@ -77,7 +77,7 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
 
 def compute_scaling(
     df: pd.DataFrame,
-    tournesol_input: TournesolInput,
+    tournesol_input: PipelineInput,
     W: float,
     users_to_compute=None,
     reference_users=None,

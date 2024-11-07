@@ -20,7 +20,7 @@ keywords = ["tournesol", "collaborative recommendations", "judgement aggregation
 dependencies = [
     "pandas>=1.5.3,<3.0",
     "numpy>=1.24.3,<1.27",
-    "numba==0.58.1",
+    "numba==0.60.0",
 ]
 dynamic = ["version"]
 

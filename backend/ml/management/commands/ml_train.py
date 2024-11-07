@@ -1,5 +1,6 @@
 import os
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+from functools import cache
 
 from django import db
 from django.conf import settings
@@ -18,6 +19,7 @@ from tournesol.models import EntityPollRating, Poll
 from tournesol.models.poll import ALGORITHM_MEHESTAN, DEFAULT_POLL_NAME
 
 
+@cache
 def get_solidago_pipeline(run_trust_propagation: bool = True):
     if run_trust_propagation:
         trust_algo = LipschiTrust()

@@ -2,14 +2,14 @@ import logging
 
 import pandas as pd
 
-from solidago.pipeline import TournesolInput
+from solidago.pipeline import PipelineInput
 from solidago.primitives import qr_quantile, qr_standard_deviation
 from .scaling_step import compute_scaling
 
 
 def compute_individual_scalings(
     individual_scores: pd.DataFrame,
-    tournesol_input: TournesolInput,
+    tournesol_input: PipelineInput,
     W: float,
 ) -> pd.DataFrame:
     """
@@ -20,7 +20,7 @@ def compute_individual_scalings(
         * raw_score
         * raw_uncertainty
 
-    - tournesol_input: TournesolInput used to fetch user details (used in calibration step)
+    - tournesol_input: PipelineInput used to fetch user details (used in calibration step)
 
     Returns:
     - scalings: DataFrame with index `user_id` and columns:
