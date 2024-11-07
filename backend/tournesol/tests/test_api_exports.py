@@ -17,7 +17,7 @@ from django.core.management import call_command
 from django.test import TransactionTestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
-from solidago.pipeline.inputs import TournesolInputFromPublicDataset
+from solidago.pipeline.inputs import TournesolDataset
 
 from core.models import User
 from core.tests.factories.user import UserFactory
@@ -542,14 +542,14 @@ class ExportTest(TransactionTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         zip_content = io.BytesIO(response.content)
 
-        ml_input = TournesolInputFromPublicDataset(zip_content)
+        ml_input = TournesolDataset(zip_content)
         comparisons_df = ml_input.get_comparisons()
         rating_properties = ml_input.ratings_properties
 
         self.assertEqual(len(comparisons_df), 1)
         self.assertEqual(
             list(comparisons_df.columns),
-            ["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"],
+            ["user_id", "entity_a", "entity_b", "criterion", "score", "score_max", "weight"],
         )
 
         self.assertEqual(len(rating_properties), 2)

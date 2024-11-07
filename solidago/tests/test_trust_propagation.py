@@ -2,7 +2,7 @@ import pytest
 import importlib
 import pandas as pd
 
-from solidago.pipeline.inputs import TournesolInputFromPublicDataset
+from solidago.pipeline.inputs import TournesolDataset
 from solidago.trust_propagation.lipschitrust import LipschiTrust
 from solidago.trust_propagation.trust_all import TrustAll
 

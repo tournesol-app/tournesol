@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from solidago.pipeline.inputs import TournesolInputFromPublicDataset
+from solidago.pipeline.inputs import TournesolDataset
 
 from core.models import User
 from core.models.user import EmailDomain
@@ -27,7 +27,7 @@ class Command(BaseCommand):
         parser.add_argument("--user-sampling", type=float, default=None)
         parser.add_argument("--dataset-url", type=str, default=PUBLIC_DATASET_URL)
 
-    def create_user(self, username: str, ml_input: TournesolInputFromPublicDataset):
+    def create_user(self, username: str, ml_input: TournesolDataset):
         user = ml_input.users.loc[ml_input.users.public_username == username].iloc[0]
         is_pretrusted = user.trust_score > 0.5
         email = f"{username}@trusted.example" if is_pretrusted else f"{username}@example.com"
@@ -66,7 +66,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        public_dataset = TournesolInputFromPublicDataset(options["dataset_url"])
+        public_dataset = TournesolDataset(options["dataset_url"])
         nb_comparisons = 0
 
         with transaction.atomic():
@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 for values in rows.itertuples(index=False):
                     ComparisonCriteriaScore.objects.create(
                         comparison=comparison,
-                        criteria=values.criteria,
+                        criteria=values.criterion,
                         score=values.score,
                         score_max=values.score_max,
                     )

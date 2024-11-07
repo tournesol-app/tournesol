@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from threading import Thread
 
-from solidago.pipeline.inputs import TournesolInputFromPublicDataset
+from solidago.pipeline.inputs import TournesolDataset
 
 from solidago.trust_propagation import LipschiTrust
 from solidago.voting_rights import AffineOvertrust
@@ -32,7 +32,7 @@ for module in info_loggers:
     info_logger.addHandler(ch)
 
 logger.info("Retrieve public dataset")
-inputs = TournesolInputFromPublicDataset.download()
+inputs = TournesolDataset.download()
 video_id_to_entity_id = { 
     video_id: entity_id 
     for entity_id, video_id in enumerate(inputs.entity_id_to_video_id)
