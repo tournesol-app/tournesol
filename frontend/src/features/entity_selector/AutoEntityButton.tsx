@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Tooltip, Button, useMediaQuery } from '@mui/material';
@@ -7,6 +7,7 @@ import { Autorenew, SwipeUp } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { theme } from 'src/theme';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
 
 interface Props {
   onClick: () => Promise<void>;
@@ -26,6 +27,7 @@ const AutoEntityButton = ({
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const context = useContext(ComparisonsContext);
 
   if (pollName !== YOUTUBE_POLL_NAME) {
     return null;
@@ -35,6 +37,7 @@ const AutoEntityButton = ({
     <>
       {smallScreen && variant === 'compact' ? (
         <Button
+          className={context.hasLoopedThroughCriteria ? 'glowing' : undefined}
           disabled={disabled}
           color="secondary"
           size="small"

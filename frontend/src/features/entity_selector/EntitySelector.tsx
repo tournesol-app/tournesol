@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
@@ -31,6 +31,7 @@ import EntitySelectButton from './EntitySelectButton';
 import EntitySelectorControls from './EntitySelectorControls';
 import { extractVideoId } from 'src/utils/video';
 import { entityCardMainSx } from 'src/components/entity/style';
+import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
 
 const ENTITY_CARD_SWIPE_TIMEOUT = 180;
 // The minimum velocity per axis in pixels / ms.
@@ -147,10 +148,10 @@ const EntitySelectorInnerAuth = ({
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
-
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
   );
+  const { setHasLoopedThroughCriteria } = useContext(ComparisonsContext);
 
   let showEntityInput = true;
   let showRatingControl = true;
@@ -326,6 +327,7 @@ const EntitySelectorInnerAuth = ({
     setLoading(true);
     setInputValue('');
     setSlideIn(false);
+    setHasLoopedThroughCriteria?.(false);
   };
 
   const slideDown = () => {
@@ -337,6 +339,7 @@ const EntitySelectorInnerAuth = ({
     setLoading(true);
     setInputValue('');
     setSlideIn(false);
+    setHasLoopedThroughCriteria?.(false);
   };
 
   return (
