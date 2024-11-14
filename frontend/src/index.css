@@ -37,7 +37,7 @@ code {
 
 /* Custom animation to draw attention on buttons */
 .glowing {
-  animation: glow 1.4s infinite alternate
+  animation: glow 1.4s infinite alternate;
 }
 
 @keyframes glow {

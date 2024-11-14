@@ -178,15 +178,22 @@ const Comparison = ({
         searchParams.delete(LEGACY_PARAMS[vidKey]);
         history.replace({ search: searchParams.toString() });
       }
+
       if (vidKey === 'vidA') {
         setSelectorA(newValue);
+
+        if (newValue.uid !== selectorA.uid) {
+          setHasLoopedThroughCriteria?.(false);
+        }
       } else if (vidKey === 'vidB') {
         setSelectorB(newValue);
-      }
 
-      setHasLoopedThroughCriteria?.(false);
+        if (newValue.uid !== selectorB.uid) {
+          setHasLoopedThroughCriteria?.(false);
+        }
+      }
     },
-    [history, setHasLoopedThroughCriteria]
+    [history, selectorA.uid, selectorB.uid, setHasLoopedThroughCriteria]
   );
 
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
