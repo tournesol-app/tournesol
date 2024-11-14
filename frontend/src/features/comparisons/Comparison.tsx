@@ -359,7 +359,7 @@ const Comparison = ({
     }
 
     if (smallScreen) {
-      showSuccessAlert(t('comparison.ok'), 1200);
+      showSuccessAlert(t('comparison.saved'), 1200);
     } else {
       showSuccessAlert(t('comparison.successfullySubmitted'));
     }
