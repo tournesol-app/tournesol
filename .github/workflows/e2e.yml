@@ -55,7 +55,6 @@ jobs:
         with:
           working-directory: tests
           browser: chrome
-          headed: true
           spec: "cypress/e2e/frontend/**/*"
 
       - name: Print dev-env logs
