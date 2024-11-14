@@ -264,6 +264,7 @@ class ComparisonAdmin(admin.ModelAdmin):
         "entity_1",
         "entity_2",
         "poll",
+        "user",
     )
     raw_id_fields = (
         "user",
