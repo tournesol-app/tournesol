@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
-
 import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
+import { TutorialContext } from 'src/features/comparisonSeries/TutorialContext';
 import CollectiveGoalWeeklyProgress from 'src/features/goals/CollectiveGoalWeeklyProgress';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import Tips from 'src/features/tips/Tips';
@@ -62,17 +62,22 @@ const displayWeeklyCollectiveGoal = (
   return false;
 };
 
-interface ComparisonsCountContextValue {
+interface ComparisonsContextValue {
   comparisonsCount: number;
+  hasLoopedThroughCriteria?: boolean;
+  setHasLoopedThroughCriteria?: (value: boolean) => void;
 }
-export const ComparisonsCountContext =
-  React.createContext<ComparisonsCountContextValue>({ comparisonsCount: 0 });
+
+export const ComparisonsContext = React.createContext<ComparisonsContextValue>({
+  comparisonsCount: 0,
+});
 
 /**
  * Display the standard comparison UI or the poll tutorial.
  */
 const ComparisonPage = () => {
   const { t } = useTranslation();
+  const pointerFine = useMediaQuery('(pointer:fine)', { noSsr: true });
 
   const {
     options,
@@ -91,8 +96,10 @@ const ComparisonPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [comparisonsCount, setComparisonsCount] = useState(0);
   const [userComparisons, setUserComparisons] = useState<string[]>();
-
   const [userComparisonsRetrieved, setUserComparisonsRetrieved] =
+    useState(false);
+
+  const [hasLoopedThroughCriteria, setHasLoopedThroughCriteria] =
     useState(false);
 
   useEffect(() => {
@@ -141,7 +148,9 @@ const ComparisonPage = () => {
   const dialogActions = tutorialDialogActions
     ? tutorialDialogActions(t)
     : undefined;
-  const tipsTutorialContent = tutorialTips ? tutorialTips(t) : undefined;
+  const tipsTutorialContent = tutorialTips
+    ? tutorialTips(t, pointerFine)
+    : undefined;
 
   // User's settings.
   const userSettings = useSelector(selectSettings).settings;
@@ -193,7 +202,7 @@ const ComparisonPage = () => {
               comparisonsCount,
               userComparisonsRetrieved
             ) ? (
-              <>
+              <TutorialContext.Provider value={{ isActive: true }}>
                 <Tips
                   content={tipsTutorialContent}
                   step={comparisonsCount}
@@ -212,7 +221,7 @@ const ComparisonPage = () => {
                   keepUIDsAfterRedirect={keepUIDsAfterRedirect}
                   resumable={true}
                 />
-              </>
+              </TutorialContext.Provider>
             ) : (
               <>
                 {displayWeeklyCollectiveGoal(
@@ -221,14 +230,18 @@ const ComparisonPage = () => {
                   weeklyCollectiveGoalMobile,
                   smallScreen
                 ) && <CollectiveGoalWeeklyProgress />}
-                <ComparisonsCountContext.Provider
-                  value={{ comparisonsCount: comparisonsCount }}
+                <ComparisonsContext.Provider
+                  value={{
+                    comparisonsCount,
+                    hasLoopedThroughCriteria,
+                    setHasLoopedThroughCriteria,
+                  }}
                 >
                   <Comparison
                     autoFillSelectorA={autoSelectEntities}
                     autoFillSelectorB={autoSelectEntities}
                   />
-                </ComparisonsCountContext.Provider>
+                </ComparisonsContext.Provider>
               </>
             ))}
         </Box>

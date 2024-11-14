@@ -26,7 +26,7 @@ import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { useLoginState, usePreferredLanguages } from 'src/hooks';
-import { ComparisonsCountContext } from 'src/pages/comparisons/Comparison';
+import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
 import { EntityObject } from 'src/utils/types';
 
 // in milliseconds
@@ -62,7 +62,7 @@ const VideoInput = ({
     { noSsr: true }
   );
 
-  const comparisonsCount = useContext(ComparisonsCountContext).comparisonsCount;
+  const comparisonsCount = useContext(ComparisonsContext).comparisonsCount;
 
   const preferredLanguages = usePreferredLanguages({ pollName });
 
@@ -198,7 +198,10 @@ const VideoInput = ({
             size="small"
             color="secondary"
             disabled={disabled}
-            sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+            sx={{
+              fontSize: { xs: '0.7rem', sm: '0.8rem' },
+              bgcolor: 'background.mobileButton',
+            }}
             data-testid={`entity-select-button-${variant}`}
           >
             <Search />

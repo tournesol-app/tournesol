@@ -1,27 +1,33 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Tooltip, Button, useMediaQuery, IconButton } from '@mui/material';
+import { Tooltip, Button, useMediaQuery } from '@mui/material';
 import { Autorenew, SwipeUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { theme } from 'src/theme';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
 
 interface Props {
   onClick: () => Promise<void>;
   disabled?: boolean;
   variant?: 'compact' | 'full';
+  compactLabel?: string;
+  compactLabelLoc?: 'left' | 'right';
 }
 
 const AutoEntityButton = ({
   onClick,
   disabled = false,
   variant = 'compact',
+  compactLabel,
+  compactLabelLoc,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const context = useContext(ComparisonsContext);
 
   if (pollName !== YOUTUBE_POLL_NAME) {
     return null;
@@ -30,16 +36,22 @@ const AutoEntityButton = ({
   return (
     <>
       {smallScreen && variant === 'compact' ? (
-        <IconButton
+        <Button
+          className={context.hasLoopedThroughCriteria ? 'glowing' : undefined}
           disabled={disabled}
           color="secondary"
           size="small"
           onClick={onClick}
-          sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+          sx={{
+            fontSize: { xs: '0.7rem', sm: '0.8rem' },
+            bgcolor: 'background.mobileButton',
+          }}
           data-testid={`auto-entity-button-${variant}`}
+          startIcon={compactLabelLoc === 'left' ? compactLabel : undefined}
+          endIcon={compactLabelLoc === 'right' ? compactLabel : undefined}
         >
           <SwipeUp />
-        </IconButton>
+        </Button>
       ) : (
         <Tooltip
           title={`${t('entitySelector.newVideo')}`}

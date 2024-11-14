@@ -53,9 +53,10 @@ export const useNotifications = () => {
   );
 
   const showSuccessAlert = useCallback(
-    (message: React.ReactNode) => {
+    (message: React.ReactNode, autoHideDuration?: number) => {
       enqueueSnackbar(message, {
         variant: 'success',
+        autoHideDuration: autoHideDuration,
       });
     },
     [enqueueSnackbar]
