@@ -239,7 +239,13 @@ const CriteriaButtons = ({
             cancelling each other transition. */}
         <div>
           <Fade in={slideIn} appear={true} timeout={SWIPE_TIMEOUT}>
-            <Box {...bindDrag()} sx={{ touchAction: 'none' }}>
+            <Box
+              {...bindDrag()}
+              sx={{
+                touchAction: 'none',
+                pointerEvents: disableScoreButtons ? 'none' : undefined,
+              }}
+            >
               <CriterionButtons
                 critName={criterion.name}
                 critLabel={criterion.label}
