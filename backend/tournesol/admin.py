@@ -290,10 +290,29 @@ class ComparisonAdmin(admin.ModelAdmin):
         return obj.poll.name
 
 
+class ScoreMaxListFilter(admin.SimpleListFilter):
+    title = _("score max")
+    parameter_name = "score_max"
+    relevant_score_max = (2, 10)
+
+    def lookups(self, request, model_admin):
+        return [(score_max, score_max) for score_max in self.relevant_score_max]
+
+    def queryset(self, request, queryset):
+        try:
+            if int(self.value()) in self.relevant_score_max:
+                return queryset.filter(
+                    score_max=int(self.value()),
+                )
+        except ValueError:
+            pass
+        return queryset
+
+
 @admin.register(ComparisonCriteriaScore)
 class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
-    list_filter = ("comparison__poll__name",)
-    list_display = ("id", "comparison", "criteria", "score")
+    list_filter = ("comparison__poll__name", ScoreMaxListFilter)
+    list_display = ("id", "comparison", "criteria", "score_max", "score")
     readonly_fields = ("comparison",)
     search_fields = (
         "criteria",
