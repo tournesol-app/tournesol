@@ -299,6 +299,9 @@ class ScoreMaxListFilter(admin.SimpleListFilter):
         return [(score_max, score_max) for score_max in self.relevant_score_max]
 
     def queryset(self, request, queryset):
+        if self.value() is None:
+            return queryset
+
         try:
             if int(self.value()) in self.relevant_score_max:
                 return queryset.filter(
