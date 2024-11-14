@@ -15,6 +15,7 @@ import { ComparisonRequest } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import { TutorialContext } from 'src/features/comparisonSeries/TutorialContext';
 import { getCriterionScoreMax } from 'src/utils/criteria';
+import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
 
 import CriteriaButtons from './inputs/CriteriaButtons';
 import { BUTTON_SCORE_MAX } from './inputs/CriterionButtons';
@@ -73,7 +74,8 @@ const ComparisonInput = ({
   isComparisonPublic,
 }: ComparisonInputProps) => {
   const { t } = useTranslation();
-  const { options } = useCurrentPoll();
+  const { options, criterias } = useCurrentPoll();
+  const comparisonsContext = useContext(ComparisonsContext);
   const pointerFine = useMediaQuery('(pointer:fine)', { noSsr: true });
 
   // Position of the displayed criterion in the list of criteria.
@@ -90,6 +92,11 @@ const ComparisonInput = ({
 
   const changePosition = (newPos: number) => {
     setPosition(newPos);
+    if (position === criterias.length - 1 && newPos === 0) {
+      comparisonsContext.setHasLoopedThroughCriteria?.(true);
+    } else {
+      comparisonsContext.setHasLoopedThroughCriteria?.(false);
+    }
   };
 
   return (

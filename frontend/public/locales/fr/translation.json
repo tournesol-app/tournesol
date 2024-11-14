@@ -84,7 +84,7 @@
   },
   "comparison": {
     "newComparison": "Nouvelle comparaison",
-    "ok": "OK",
+    "saved": "Validé",
     "successfullySubmitted": "Comparaison bien enregistrée.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",

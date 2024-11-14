@@ -62,11 +62,15 @@ const displayWeeklyCollectiveGoal = (
   return false;
 };
 
-interface ComparisonsCountContextValue {
+interface ComparisonsContextValue {
   comparisonsCount: number;
+  hasLoopedThroughCriteria?: boolean;
+  setHasLoopedThroughCriteria?: (value: boolean) => void;
 }
-export const ComparisonsCountContext =
-  React.createContext<ComparisonsCountContextValue>({ comparisonsCount: 0 });
+
+export const ComparisonsContext = React.createContext<ComparisonsContextValue>({
+  comparisonsCount: 0,
+});
 
 /**
  * Display the standard comparison UI or the poll tutorial.
@@ -92,8 +96,10 @@ const ComparisonPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [comparisonsCount, setComparisonsCount] = useState(0);
   const [userComparisons, setUserComparisons] = useState<string[]>();
-
   const [userComparisonsRetrieved, setUserComparisonsRetrieved] =
+    useState(false);
+
+  const [hasLoopedThroughCriteria, setHasLoopedThroughCriteria] =
     useState(false);
 
   useEffect(() => {
@@ -224,14 +230,18 @@ const ComparisonPage = () => {
                   weeklyCollectiveGoalMobile,
                   smallScreen
                 ) && <CollectiveGoalWeeklyProgress />}
-                <ComparisonsCountContext.Provider
-                  value={{ comparisonsCount: comparisonsCount }}
+                <ComparisonsContext.Provider
+                  value={{
+                    comparisonsCount,
+                    hasLoopedThroughCriteria,
+                    setHasLoopedThroughCriteria,
+                  }}
                 >
                   <Comparison
                     autoFillSelectorA={autoSelectEntities}
                     autoFillSelectorB={autoSelectEntities}
                   />
-                </ComparisonsCountContext.Provider>
+                </ComparisonsContext.Provider>
               </>
             ))}
         </Box>

@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -40,6 +41,7 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import ComparisonEntityContexts from './ComparisonEntityContexts';
 import ComparisonHelper from './ComparisonHelper';
 import ComparisonInput from './ComparisonInput';
+import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -120,6 +122,7 @@ const Comparison = ({
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
+  const { setHasLoopedThroughCriteria } = useContext(ComparisonsContext);
 
   const { name: pollName, options } = useCurrentPoll();
   const mainCriterion = options?.mainCriterionName;
@@ -180,8 +183,10 @@ const Comparison = ({
       } else if (vidKey === 'vidB') {
         setSelectorB(newValue);
       }
+
+      setHasLoopedThroughCriteria?.(false);
     },
-    [history]
+    [history, setHasLoopedThroughCriteria]
   );
 
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);
@@ -354,7 +359,7 @@ const Comparison = ({
     }
 
     if (smallScreen) {
-      showSuccessAlert(t('comparison.ok'), 1200);
+      showSuccessAlert(t('comparison.saved'), 1200);
     } else {
       showSuccessAlert(t('comparison.successfullySubmitted'));
     }

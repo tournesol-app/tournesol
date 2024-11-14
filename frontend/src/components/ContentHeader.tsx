@@ -19,7 +19,7 @@ const ContentHeader = ({
   chipLabel?: string;
 }) => {
   return (
-    <Box px={[2, 4]} py={2} color="text.secondary">
+    <Box px={[2, 4]} pt={2} color="text.secondary">
       <Grid container spacing={1} justifyContent="space-between">
         <Grid item>
           <Typography

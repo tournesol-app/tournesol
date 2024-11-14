@@ -147,7 +147,6 @@ const EntitySelectorInnerAuth = ({
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
-
   const { availability: entityAvailability } = useEntityAvailable(
     value.uid ?? ''
   );
