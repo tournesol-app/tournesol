@@ -10,14 +10,14 @@ import json
 from datetime import datetime
 from typing import Optional
 
+import solidago
 from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from ml.mehestan.run import MehestanParameters
+from ml.management.commands.ml_train import get_solidago_pipeline
 from tournesol.entities.base import UID_DELIMITER
 from vouch.models import Voucher
-from vouch.trust_algo import SINK_VOUCH, TRUSTED_EMAIL_PRETRUST, VOUCH_DECAY
 
 # The standard decimal precision of floating point numbers appearing in the
 # dataset. Very small numbers can use a higher precision.
@@ -245,28 +245,15 @@ def write_metadata_file(write_target, data_until: datetime) -> None:
     Write the metadata as JSON in `write_target`, an
     object supporting the Python file API.
     """
-    mehestan_params = MehestanParameters()
-
+    solidago_pipeline = get_solidago_pipeline()
     metadata_dict = {
         "data_included_until": data_until.isoformat(),
         "generated_by": settings.MAIN_URL,
         "tournesol_version": settings.TOURNESOL_VERSION,
         "license": "ODC-By-1.0",
-        "algorithms_parameters": {
-            "byztrust": {
-                "SINK_VOUCH": SINK_VOUCH,
-                "TRUSTED_EMAIL_PRETRUST": TRUSTED_EMAIL_PRETRUST,
-                "VOUCH_DECAY": VOUCH_DECAY,
-            },
-            "individual_scores": mehestan_params.indiv_algo.get_metadata(),
-            "mehestan": {
-                "W": mehestan_params.W,
-                "VOTE_WEIGHT_PUBLIC_RATINGS": mehestan_params.vote_weight_public_ratings,
-                "VOTE_WEIGHT_PRIVATE_RATINGS": mehestan_params.vote_weight_private_ratings,
-                "OVER_TRUST_BIAS": mehestan_params.over_trust_bias,
-                "OVER_TRUST_SCALE": mehestan_params.over_trust_scale,
-                "MAX_SCALED_SCORE": mehestan_params.max_squashed_score,
-            },
+        "solidago": {
+            "version": solidago.__version__,
+            "pipeline": solidago_pipeline.to_json()
         },
     }
     json.dump(metadata_dict, write_target, indent=2)

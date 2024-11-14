@@ -284,29 +284,14 @@ class ExportTest(TransactionTestCase):
                 self.assertEqual(metadata["generated_by"],settings.MAIN_URL)
                 self.assertEqual(metadata["tournesol_version"],settings.TOURNESOL_VERSION)
                 self.assertEqual(
-                    set(metadata["algorithms_parameters"]["byztrust"].keys()),
+                    set(metadata["solidago"]["pipeline"].keys()),
                     {
-                        "SINK_VOUCH",
-                        "VOUCH_DECAY",
-                        "TRUSTED_EMAIL_PRETRUST",
-                    }
-                )
-                self.assertEqual(
-                    set(metadata["algorithms_parameters"]["mehestan"].keys()),
-                    {
-                        "W",
-                        "OVER_TRUST_BIAS",
-                        "OVER_TRUST_SCALE",
-                        "VOTE_WEIGHT_PUBLIC_RATINGS",
-                        "VOTE_WEIGHT_PRIVATE_RATINGS",
-                        "MAX_SCALED_SCORE",
-                    }
-                )
-                self.assertEqual(
-                    set(metadata["algorithms_parameters"]["individual_scores"]["parameters"].keys()),
-                    {
-                        "R_MAX",
-                        "ALPHA",
+                        "trust_propagation",
+                        "voting_rights",
+                        "preference_learning",
+                        "scaling",
+                        "aggregation",
+                        "post_process",
                     }
                 )
 

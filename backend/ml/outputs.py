@@ -6,7 +6,6 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from django.db import transaction
-from solidago.pipeline.legacy2023.global_scores import get_squash_function
 from solidago.pipeline.outputs import PipelineOutput
 
 from core.models import User
@@ -20,9 +19,6 @@ from tournesol.models import (
     Poll,
 )
 from tournesol.models.poll import ALGORITHM_MEHESTAN
-
-from .inputs import MlInputFromDb
-from .mehestan.parameters import MehestanParameters
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +36,8 @@ class TournesolPollOutput(PipelineOutput):
 
     @cached_property
     def poll(self) -> Poll:
-        # Retrieving the poll instance lazily allows to be use this instance
-        # in a forked process. See the function `run_mehestan()`.
+        # Retrieving the poll instance lazily allows to use this instance
+        # in a forked process (e.g with multiprocessing).
         return Poll.objects.get(name=self.poll_name)
 
     def save_trust_scores(self, trusts: pd.DataFrame):
@@ -92,11 +88,6 @@ class TournesolPollOutput(PipelineOutput):
         scores: pd.DataFrame,
         single_user_id: Optional[int] = None,
     ):
-        if "score" not in scores:
-            # Scaled "score" and "uncertainty" need to be computed
-            # based on raw_score and raw_uncertainty
-            scores = apply_score_scalings(self.poll, scores)
-
         if "voting_right" not in scores:
             # Row contains `voting_right` when it comes from a full ML run, but not in the
             # case of online individual updates. As online updates do not update the
@@ -246,61 +237,3 @@ def save_tournesol_scores(poll):
             [ent.single_poll_rating for ent in batch],
             fields=["tournesol_score"],
         )
-
-
-def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
-    """
-    Apply individual and poll-level scalings based on input "raw_score", and "raw_uncertainty".
-
-    Params:
-        poll: Poll,
-        contributor_scores: DataFrame with columns:
-            user_id: int
-            entity_id: int
-            criterion: str
-            raw_score: float
-            raw_uncertainty: float
-
-    Returns:
-        DataFrame with additional columns "score" and "uncertainty".
-    """
-    if poll.algorithm != ALGORITHM_MEHESTAN:
-        contributor_scores["score"] = contributor_scores["raw_score"]
-        contributor_scores["uncertainty"] = contributor_scores["raw_uncertainty"]
-        return contributor_scores
-
-    ml_input = MlInputFromDb(poll_name=poll.name)
-    scalings = ml_input.get_user_scalings().set_index(["user_id", "criterion"])
-    contributor_scores = contributor_scores.join(
-        scalings, on=["user_id", "criterion"], how="left"
-    ).fillna(
-        {
-            "scale": 1.0,
-            "translation": 0.0,
-            "scale_uncertainty": 0.0,
-            "translation_uncertatinty": 0.0,
-        }
-    )
-
-    # Apply individual scaling
-    contributor_scores["uncertainty"] = (
-        contributor_scores["scale"] * contributor_scores["raw_uncertainty"]
-        + contributor_scores["scale_uncertainty"]
-        * contributor_scores["raw_score"].abs()
-        + contributor_scores["translation_uncertainty"]
-    )
-    contributor_scores["score"] = (
-        contributor_scores["raw_score"] * contributor_scores["scale"]
-        + contributor_scores["translation"]
-    )
-
-    # Apply score squashing
-    squash_function = get_squash_function(MehestanParameters())
-    contributor_scores["uncertainty"] = 0.5 * (
-        squash_function(contributor_scores["score"] + contributor_scores["uncertainty"])
-        - squash_function(
-            contributor_scores["score"] - contributor_scores["uncertainty"]
-        )
-    )
-    contributor_scores["score"] = squash_function(contributor_scores["score"])
-    return contributor_scores
