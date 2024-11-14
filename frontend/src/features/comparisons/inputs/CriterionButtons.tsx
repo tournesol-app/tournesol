@@ -75,6 +75,9 @@ const ScoreButton = ({
       disabled={disabled}
       color="secondary"
       onClick={() => onClick(score)}
+      data-criterion-input-type="score-button"
+      data-criterion-input-score={score}
+      data-criterion-input-selected={selected}
       sx={{
         minWidth: '40px',
         borderRadius: '4px',

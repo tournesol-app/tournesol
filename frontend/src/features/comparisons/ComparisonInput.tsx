@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import {
   Alert,
@@ -76,6 +77,8 @@ const ComparisonInput = ({
   const { t } = useTranslation();
   const { options, criterias } = useCurrentPoll();
   const comparisonsContext = useContext(ComparisonsContext);
+  const location = useLocation();
+
   const pointerFine = useMediaQuery('(pointer:fine)', { noSsr: true });
 
   // Position of the displayed criterion in the list of criteria.
@@ -86,9 +89,15 @@ const ComparisonInput = ({
     options?.mainCriterionName
   );
 
+  const debugInput = new URLSearchParams(location.search).get('debugInput');
+  const buttonsDebugEnabled =
+    import.meta.env.REACT_APP_ENABLE_COMP_DEBUG_INPUT &&
+    debugInput === 'buttons';
+
   const buttonsUsed = mainScoreMax == BUTTON_SCORE_MAX;
   const slidersUsed = mainScoreMax == SLIDER_SCORE_MAX;
-  const fallBackToButtons = !buttonsUsed && !slidersUsed && !pointerFine;
+  const fallBackToButtons =
+    !buttonsUsed && !slidersUsed && (!pointerFine || buttonsDebugEnabled);
 
   const changePosition = (newPos: number) => {
     setPosition(newPos);
