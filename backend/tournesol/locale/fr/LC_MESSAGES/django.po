@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-14 15:02+0000\n"
+"POT-Creation-Date: 2024-11-14 15:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,15 +27,15 @@ msgstr "Les métadonnées de %(count)s entités ont été mises à jour."
 msgid "score max"
 msgstr "score max"
 
-#: tournesol/admin.py:391
+#: tournesol/admin.py:393
 msgid "has text?"
 msgstr "contient du texte?"
 
-#: tournesol/admin.py:396
+#: tournesol/admin.py:398
 msgid "Yes"
 msgstr "Oui"
 
-#: tournesol/admin.py:397
+#: tournesol/admin.py:399
 msgid "No"
 msgstr "Non"
 
