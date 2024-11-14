@@ -93,7 +93,7 @@ const ScoreButton = ({
               color: undefined,
               backgroundColor: selected
                 ? theme.palette.primary.main
-                : 'grey.200',
+                : theme.palette.background.mobileButton,
             },
       }}
     >
