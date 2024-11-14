@@ -8,6 +8,7 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { theme } from 'src/theme';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
+import { MobileButton } from 'src/components/buttons';
 
 interface Props {
   onClick: () => Promise<void>;
@@ -36,7 +37,7 @@ const AutoEntityButton = ({
   return (
     <>
       {smallScreen && variant === 'compact' ? (
-        <Button
+        <MobileButton
           className={context.hasLoopedThroughCriteria ? 'glowing' : undefined}
           disabled={disabled}
           color="secondary"
@@ -44,14 +45,13 @@ const AutoEntityButton = ({
           onClick={onClick}
           sx={{
             fontSize: { xs: '0.7rem', sm: '0.8rem' },
-            bgcolor: 'background.mobileButton',
           }}
           data-testid={`auto-entity-button-${variant}`}
           startIcon={compactLabelLoc === 'left' ? compactLabel : undefined}
           endIcon={compactLabelLoc === 'right' ? compactLabel : undefined}
         >
           <SwipeUp />
-        </Button>
+        </MobileButton>
       ) : (
         <Tooltip
           title={`${t('entitySelector.newVideo')}`}

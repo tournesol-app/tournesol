@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDrag } from '@use-gesture/react';
 import { Vector2 } from '@use-gesture/core/types';
 
-import { Box, Fade, IconButton, Slide } from '@mui/material';
+import { Box, Fade, Slide } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks';
@@ -14,6 +14,7 @@ import { ComparisonRequest } from 'src/services/openapi';
 
 import CriterionButtons, { BUTTON_SCORE_MAX } from './CriterionButtons';
 import { useOrderedCriteria } from 'src/hooks/useOrderedCriteria';
+import { MobileIconButton } from 'src/components/buttons';
 
 const SWIPE_TIMEOUT = 180;
 const SWIPE_VELOCITY: number | Vector2 = [0.25, 0.25];
@@ -215,15 +216,14 @@ const CriteriaButtons = ({
         justifyContent="center"
         visibility={navigationDisabled ? 'hidden' : 'visible'}
       >
-        <IconButton
+        <MobileIconButton
           color="secondary"
           aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
           onClick={() => moveWithoutPatching('down')}
           disabled={disableScoreButtons || navigationDisabled}
-          sx={{ bgcolor: 'background.mobileButton' }}
         >
           <ArrowDropUp />
-        </IconButton>
+        </MobileIconButton>
       </Box>
       <Slide
         in={slideIn}
@@ -263,15 +263,14 @@ const CriteriaButtons = ({
         justifyContent="center"
         visibility={navigationDisabled ? 'hidden' : 'visible'}
       >
-        <IconButton
+        <MobileIconButton
           color="secondary"
           aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
           onClick={() => moveWithoutPatching('up')}
           disabled={disableScoreButtons || navigationDisabled}
-          sx={{ bgcolor: 'background.mobileButton' }}
         >
           <ArrowDropDown />
-        </IconButton>
+        </MobileIconButton>
       </Box>
     </Box>
   );
