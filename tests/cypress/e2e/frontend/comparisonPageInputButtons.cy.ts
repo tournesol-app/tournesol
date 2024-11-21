@@ -62,7 +62,7 @@ describe('Comparison page w/ criteria buttons', () => {
     deleteComparisons();
   });
 
-  it('display the criteria buttons', () => {
+  it('display the criteria buttons and navigation', () => {
     cy.visit(`/comparison?uidA=${ids1[0]}&uidB=${ids1[1]}&debugInput=buttons`);
     cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
@@ -72,16 +72,51 @@ describe('Comparison page w/ criteria buttons', () => {
 
 
     // 5 score buttons are displayed for the current criterion.
-    cy.contains('should be largely', {matchCase: false}).should('be.visible');
+    cy.contains('should be largely recommended', {matchCase: false}).should('be.visible');
     cy.get('[data-criterion-input-type="score-button"]').should('have.length', 5);
     [-2, -1, 0, 1, 2].forEach((score) => {
       cy.get(`[data-criterion-input-score="${score}"]`).should('be.visible');
     });
 
     cy.get('[data-criterion-input-score="1"]').click();
-    cy.contains('should be largely', {matchCase: false}).should('not.exist');
     cy.contains('successfully submitted', {matchCase: false})
       .should('be.visible');
+
+    cy.contains('should be largely recommended', {matchCase: false}).should('not.exist');
     cy.contains('reliable & not misleading', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Previous quality criterion"]').click().click().click();
+    cy.contains('reliable & not misleading', {matchCase: false}).should('not.exist');
+    cy.contains('encourages better habits', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('resilience to backfiring risks', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('should be largely recommended', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('reliable & not misleading', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('clear & pedagogical', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('important & actionable', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('layman-friendly', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('entertaining & relaxing', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('engaging & thought-provoking', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click();
+    cy.contains('diversity & inclusion', {matchCase: false}).should('be.visible');
+
+    cy.get('button[aria-label="Next quality criterion"]').click().click().click();
+    cy.contains('should be largely recommended', {matchCase: false}).should('be.visible');
   });
 });
