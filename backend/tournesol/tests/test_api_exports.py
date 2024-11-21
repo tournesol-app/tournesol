@@ -540,5 +540,5 @@ class ExportTest(TransactionTestCase):
         self.assertEqual(len(rating_properties), 2)
         self.assertEqual(
             list(rating_properties.columns),
-            ["user_id", "entity_id", "is_public", "trust_score", "is_scaling_calibration_user"],
+            ["user_id", "entity_id", "is_public"],
         )

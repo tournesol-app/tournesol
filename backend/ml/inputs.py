@@ -2,8 +2,7 @@ from functools import cached_property
 from typing import Optional
 
 import pandas as pd
-from django.db.models import Case, F, Q, QuerySet, When
-from django.db.models.expressions import RawSQL
+from django.db.models import F, Q
 from solidago.pipeline import PipelineInput
 
 from core.models import User
@@ -12,51 +11,13 @@ from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
     ContributorScaling,
-    Entity,
 )
 from vouch.models import Voucher
 
 
 class MlInputFromDb(PipelineInput):
-    SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE = 20
-
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
-
-    def get_scaling_calibration_users(self) -> QuerySet[User]:
-        n_alternatives = (
-            Entity.objects.filter(comparisons_entity_1__poll__name=self.poll_name)
-            .union(Entity.objects.filter(comparisons_entity_2__poll__name=self.poll_name))
-            .count()
-        )
-        users = User.objects.alias(
-            n_compared_entities=RawSQL(
-                """
-                SELECT COUNT(DISTINCT e.id)
-                FROM tournesol_entity e
-                INNER JOIN tournesol_comparison c
-                    ON (c.entity_1_id = e.id OR c.entity_2_id = e.id)
-                INNER JOIN tournesol_poll p
-                    ON (p.id = c.poll_id AND p.name = %s)
-                WHERE c.user_id = "core_user"."id"
-                """,
-                (self.poll_name,),
-            )
-        )
-        if n_alternatives <= self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE:
-            # The number of alternatives is low enough to consider as calibration users
-            # all trusted users who have compared all alternatives.
-            return users.filter(
-                is_active=True,
-                trust_score__gt=self.SCALING_CALIBRATION_MIN_TRUST_SCORE,
-                n_compared_entities__gte=n_alternatives,
-            )
-
-        return users.filter(
-            is_active=True,
-            trust_score__gt=self.SCALING_CALIBRATION_MIN_TRUST_SCORE,
-            n_compared_entities__gte=self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE,
-        ).order_by("-n_compared_entities")[: self.MAX_SCALING_CALIBRATION_USERS]
 
     def get_comparisons(self, criterion=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
@@ -100,24 +61,12 @@ class MlInputFromDb(PipelineInput):
     def ratings_properties(self):
         # This makes sure that `get_scaling_calibration_users()` is evaluated separately, as the
         # table names mentionned in its RawSQL query could conflict with the current queryset.
-        scaling_calibration_user_ids = list(self.get_scaling_calibration_users().values_list("id"))
-        values = (
-            ContributorRating.objects.filter(
-                poll__name=self.poll_name,
-            )
-            .annotate(
-                is_scaling_calibration_user=Case(
-                    When(user__in=scaling_calibration_user_ids, then=True),
-                    default=False,
-                ),
-            )
-            .values(
-                "user_id",
-                "entity_id",
-                "is_public",
-                "is_scaling_calibration_user",
-                trust_score=F("user__trust_score"),
-            )
+        values = ContributorRating.objects.filter(
+            poll__name=self.poll_name,
+        ).values(
+            "user_id",
+            "entity_id",
+            "is_public",
         )
         if len(values) == 0:
             return pd.DataFrame(
@@ -125,8 +74,6 @@ class MlInputFromDb(PipelineInput):
                     "user_id",
                     "entity_id",
                     "is_public",
-                    "is_scaling_calibration_user",
-                    "trust_score",
                 ]
             )
         return pd.DataFrame(values)
