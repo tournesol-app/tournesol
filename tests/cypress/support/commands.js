@@ -52,7 +52,7 @@ User.objects.filter(username='${username}').delete()
 )
 
 /**
- * Delete a single comparison of a given user.
+ * Delete a single comparison made by a given user.
  */
 Cypress.Commands.add('deleteOneComparisonOfUser', (username, uidA, uidB) => {
   cy.sql(`
@@ -83,7 +83,7 @@ Cypress.Commands.add('deleteOneComparisonOfUser', (username, uidA, uidB) => {
 });
 
 /**
- * Delete all comparisons of a given user.
+ * Delete all comparisons made by a given user.
  */
 Cypress.Commands.add('deleteAllComparisonsOfUser', (username) => {
   cy.sql(`
