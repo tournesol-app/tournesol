@@ -3,6 +3,22 @@ describe('Comparison page w/ criteria buttons', () => {
   const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
   const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
 
+  // This comparison should not be created during the setup.
+  const newComparison = ["yt:sAjm3-IaRtI", "yt:IVqXKP91L4E"];
+
+  const criteriaNames = [
+    "should be largely recommended",
+    "reliable & not misleading",
+    "clear & pedagogical",
+    "important & actionable",
+    "layman-friendly",
+    "entertaining & relaxing",
+    "engaging & thought-provoking",
+    "diversity & inclusion",
+    "encourages better habits",
+    "resilience to backfiring risks",
+  ]
+
   /**
    * Create as much comparisons as required to not trigger the tutorial.
    */
@@ -33,6 +49,34 @@ describe('Comparison page w/ criteria buttons', () => {
     });
   };
 
+  const deleteComparison = (uidA: string, uidB: string) => {
+    cy.sql(`
+      DELETE FROM tournesol_comparisoncriteriascore
+      WHERE comparison_id = (
+        SELECT id
+        FROM tournesol_comparison
+        WHERE entity_1_id = (
+          SELECT id FROM tournesol_entity WHERE uid = '${uidA}'
+        ) AND entity_2_id = (
+          SELECT id FROM tournesol_entity WHERE uid = '${uidB}'
+        ) AND user_id = (
+          SELECT id FROM core_user WHERE username = '${username}'
+        )
+      );
+    `);
+
+    cy.sql(`
+        DELETE FROM tournesol_comparison
+            WHERE entity_1_id = (
+                SELECT id FROM tournesol_entity WHERE uid = '${uidA}'
+            ) AND entity_2_id = (
+                SELECT id FROM tournesol_entity WHERE uid = '${uidB}'
+            ) AND user_id = (
+                SELECT id FROM core_user WHERE username = '${username}'
+            );
+      `);
+  };
+
   const deleteComparisons = () => {
     cy.sql(`
       DELETE FROM tournesol_comparisoncriteriascore
@@ -58,12 +102,16 @@ describe('Comparison page w/ criteria buttons', () => {
     createComparisons();
   });
 
+  afterEach(() => {
+    deleteComparison(newComparison[0], newComparison[1]);
+  });
+
   after(() => {
     deleteComparisons();
   });
 
-  it('display the criteria buttons and navigation', () => {
-    cy.visit(`/comparison?uidA=${ids1[0]}&uidB=${ids1[1]}&debugInput=buttons`);
+  it('display the criteria and navigation buttons', () => {
+    cy.visit(`/comparison?uidA=${newComparison[0]}&uidB=${newComparison[1]}&debugInput=buttons`);
     cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
@@ -89,34 +137,31 @@ describe('Comparison page w/ criteria buttons', () => {
     cy.contains('reliable & not misleading', {matchCase: false}).should('not.exist');
     cy.contains('encourages better habits', {matchCase: false}).should('be.visible');
 
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('resilience to backfiring risks', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('should be largely recommended', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('reliable & not misleading', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('clear & pedagogical', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('important & actionable', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('layman-friendly', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('entertaining & relaxing', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('engaging & thought-provoking', {matchCase: false}).should('be.visible');
-
-    cy.get('button[aria-label="Next quality criterion"]').click();
-    cy.contains('diversity & inclusion', {matchCase: false}).should('be.visible');
+    [
+      'resilience to backfiring risks',
+      ...criteriaNames.slice(0 ,8)
+    ].forEach((criterion) => {
+      cy.get('button[aria-label="Next quality criterion"]').click();
+      cy.contains(criterion, {matchCase: false}).should('be.visible');
+    });
 
     cy.get('button[aria-label="Next quality criterion"]').click().click().click();
     cy.contains('should be largely recommended', {matchCase: false}).should('be.visible');
+  });
+
+  it('allows to compare with buttons', () => {
+    cy.visit(`/comparison?uidA=${newComparison[0]}&uidB=${newComparison[1]}&debugInput=buttons`);
+    cy.focused().type(username);
+    cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+
+    criteriaNames.forEach(() => {
+      cy.get('[data-criterion-input-score="-2"]').click();
+    });
+
+    criteriaNames.forEach(() => {
+      cy.get('[data-criterion-input-score="-2"][data-criterion-input-selected="true"]')
+        .should('exist');
+      cy.get('button[aria-label="Next quality criterion"]').click();
+    });
   });
 });
