@@ -1,22 +1,22 @@
 describe('Comparison page w/ criteria buttons', () => {
-  const username = "test-comp-input-buttons";
-  const ids1 = ["yt:hdAEGAwlK0M", "yt:lYXQvHhfKuM"];
-  const ids2 = ["yt:sGLiSLAlwrY", "yt:or5WdufFrmI"];
+  const username = 'test-comp-input-buttons';
+  const ids1 = ['yt:hdAEGAwlK0M', 'yt:lYXQvHhfKuM'];
+  const ids2 = ['yt:sGLiSLAlwrY', 'yt:or5WdufFrmI'];
 
   // This comparison should not be created during the setup.
-  const newComparison = ["yt:sAjm3-IaRtI", "yt:IVqXKP91L4E"];
+  const newComparison = ['yt:sAjm3-IaRtI', 'yt:IVqXKP91L4E'];
 
   const criteriaNames = [
-    "should be largely recommended",
-    "reliable & not misleading",
-    "clear & pedagogical",
-    "important & actionable",
-    "layman-friendly",
-    "entertaining & relaxing",
-    "engaging & thought-provoking",
-    "diversity & inclusion",
-    "encourages better habits",
-    "resilience to backfiring risks",
+    'should be largely recommended',
+    'reliable & not misleading',
+    'clear & pedagogical',
+    'important & actionable',
+    'layman-friendly',
+    'entertaining & relaxing',
+    'engaging & thought-provoking',
+    'diversity & inclusion',
+    'encourages better habits',
+    'resilience to backfiring risks',
   ]
 
   /**
@@ -49,75 +49,27 @@ describe('Comparison page w/ criteria buttons', () => {
     });
   };
 
-  const deleteComparison = (uidA: string, uidB: string) => {
-    cy.sql(`
-      DELETE FROM tournesol_comparisoncriteriascore
-      WHERE comparison_id = (
-        SELECT id
-        FROM tournesol_comparison
-        WHERE entity_1_id = (
-          SELECT id FROM tournesol_entity WHERE uid = '${uidA}'
-        ) AND entity_2_id = (
-          SELECT id FROM tournesol_entity WHERE uid = '${uidB}'
-        ) AND user_id = (
-          SELECT id FROM core_user WHERE username = '${username}'
-        )
-      );
-    `);
-
-    cy.sql(`
-        DELETE FROM tournesol_comparison
-            WHERE entity_1_id = (
-                SELECT id FROM tournesol_entity WHERE uid = '${uidA}'
-            ) AND entity_2_id = (
-                SELECT id FROM tournesol_entity WHERE uid = '${uidB}'
-            ) AND user_id = (
-                SELECT id FROM core_user WHERE username = '${username}'
-            );
-      `);
-  };
-
-  const deleteComparisons = () => {
-    cy.sql(`
-      DELETE FROM tournesol_comparisoncriteriascore
-      WHERE comparison_id IN (
-          SELECT id
-          FROM tournesol_comparison
-          WHERE user_id = (
-              SELECT id FROM core_user WHERE username = '${username}'
-          )
-      );
-    `);
-
-    cy.sql(`
-      DELETE FROM tournesol_comparison
-          WHERE user_id = (
-              SELECT id FROM core_user WHERE username = '${username}'
-          );
-    `);
-  };
-
   before(() => {
-    cy.recreateUser(username, `${username}@example.com`, "tournesol");
+    cy.recreateUser(username, `${username}@example.com`, 'tournesol');
     createComparisons();
   });
 
   afterEach(() => {
-    deleteComparison(newComparison[0], newComparison[1]);
+    cy.deleteOneComparisonOfUser(username, newComparison[0], newComparison[1]);
   });
 
   after(() => {
-    deleteComparisons();
+    cy.deleteAllComparisonsOfUser(username);
+    cy.deleteUser(username);
   });
 
-  it('display the criteria and navigation buttons', () => {
+  it('allows to do a partial comparison', () => {
     cy.visit(`/comparison?uidA=${newComparison[0]}&uidB=${newComparison[1]}&debugInput=buttons`);
     cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
 
     // The optional criteria button should not be displayed.
     cy.contains('add optional criteria', {matchCase: false}).should('not.exist');
-
 
     // 5 score buttons are displayed for the current criterion.
     cy.contains('should be largely recommended', {matchCase: false}).should('be.visible');
@@ -149,7 +101,7 @@ describe('Comparison page w/ criteria buttons', () => {
     cy.contains('should be largely recommended', {matchCase: false}).should('be.visible');
   });
 
-  it('allows to compare with buttons', () => {
+  it('allows to do a full comparison', () => {
     cy.visit(`/comparison?uidA=${newComparison[0]}&uidB=${newComparison[1]}&debugInput=buttons`);
     cy.focused().type(username);
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
