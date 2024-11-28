@@ -68,7 +68,7 @@ const ScoreButton = ({
   onClick,
 }: ScoreButtonProps) => {
   const theme = useTheme();
-  const hover = useMediaQuery('(hover: hover)');
+  const hover = useMediaQuery('(pointer:fine) and (hover:hover)');
 
   return (
     <IconButton
