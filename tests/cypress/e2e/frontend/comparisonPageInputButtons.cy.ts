@@ -29,8 +29,8 @@ describe('Comparison page w/ criteria buttons', () => {
         cy.sql(`
           WITH ent AS (
             SELECT
-              (SELECT id FROM tournesol_entity WHERE uid = '${uid1}') AS uid1,
-              (SELECT id FROM tournesol_entity WHERE uid = '${uid2}') AS uid2
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid1}') AS id1,
+              (SELECT id FROM tournesol_entity WHERE uid = '${uid2}') AS id2
           )
           INSERT INTO tournesol_comparison (
             user_id,
@@ -40,9 +40,9 @@ describe('Comparison page w/ criteria buttons', () => {
             poll_id
           ) VALUES (
             (SELECT id FROM core_user WHERE username = '${username}'),
-            (SELECT uid1 FROM ent),
-            (SELECT uid2 FROM ent),
-            (SELECT uid1 FROM ent) || '__' || (SELECT uid2 FROM ent),
+            (SELECT id1 FROM ent),
+            (SELECT id2 FROM ent),
+            (SELECT id1 FROM ent) || '__' || (SELECT id2 FROM ent),
           1);
         `);
       });
