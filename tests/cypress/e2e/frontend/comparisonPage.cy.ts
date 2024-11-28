@@ -33,61 +33,13 @@ describe('Comparison page', () => {
     });
   };
 
-  const deleteComparison = (idA, idB) => {
-    cy.sql(`
-      DELETE FROM tournesol_comparisoncriteriascore
-      WHERE comparison_id = (
-        SELECT id
-        FROM tournesol_comparison
-        WHERE entity_1_id = (
-          SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
-        ) AND entity_2_id = (
-          SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
-        ) AND user_id = (
-          SELECT id FROM core_user WHERE username = '${username}'
-        )
-      );
-    `);
-
-    cy.sql(`
-        DELETE FROM tournesol_comparison
-            WHERE entity_1_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
-            ) AND entity_2_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
-            ) AND user_id = (
-                SELECT id FROM core_user WHERE username = '${username}'
-            );
-      `);
-  };
-
-  const deleteComparisons = () => {
-    cy.sql(`
-      DELETE FROM tournesol_comparisoncriteriascore
-      WHERE comparison_id IN (
-          SELECT id
-          FROM tournesol_comparison
-          WHERE user_id = (
-              SELECT id FROM core_user WHERE username = '${username}'
-          )
-      );
-    `);
-
-    cy.sql(`
-      DELETE FROM tournesol_comparison
-          WHERE user_id = (
-              SELECT id FROM core_user WHERE username = '${username}'
-          );
-    `);
-  };
-
   before(() => { // create 4 comparisons to avoid being in the tutorial context
     cy.recreateUser(username, "test-comparison-page@example.com", "tournesol");
     createComparisons();
   });
 
   after(() => {
-    deleteComparisons();
+    cy.deleteAllComparisonsOfUser(username);
   });
 
   const waitForAutoFill = () => {
@@ -277,8 +229,8 @@ describe('Comparison page', () => {
   });
 
   describe('submit a comparison', () => {
-    const videoAId = 'u83A7DUNMHs';
-    const videoBId = '6jK9bFWE--g';
+    const uidA = 'yt:u83A7DUNMHs';
+    const uidB = 'yt:6jK9bFWE--g';
 
     const optionalCriteriaSliders = [
       "slider_expert_reliability",
@@ -293,11 +245,11 @@ describe('Comparison page', () => {
     ];
 
     beforeEach(() => {
-      deleteComparison(videoAId, videoBId);
+      cy.deleteOneComparisonOfUser(username, uidA, uidB);
     });
 
     after(() => {
-      deleteComparison(videoAId, videoBId);
+      cy.deleteOneComparisonOfUser(username, uidA, uidB);
     });
 
     /**
@@ -319,10 +271,10 @@ describe('Comparison page', () => {
 
       // add one video, and ask for a second one
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(`yt:${videoAId}`);
+      pasteInVideoInput(uidA);
 
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      pasteInVideoInput(`yt:${videoBId}`);
+      pasteInVideoInput(uidB);
 
       // only one criteria must be visible by default
       cy.contains('add optional criteria', {matchCase: false})
@@ -354,9 +306,9 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(`yt:${videoAId}`);
+      pasteInVideoInput(uidA);
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      pasteInVideoInput(`yt:${videoBId}`);
+      pasteInVideoInput(uidB);
 
       cy.contains('add optional criteria', {matchCase: false}).click();
 
@@ -389,9 +341,9 @@ describe('Comparison page', () => {
       waitForAutoFill();
 
       cy.get("[data-testid=entity-select-button-compact]").first().click();
-      pasteInVideoInput(`yt:${videoAId}`);
+      pasteInVideoInput(uidA);
       cy.get("[data-testid=entity-select-button-compact]").last().click();
-      pasteInVideoInput(`yt:${videoAId}`);
+      pasteInVideoInput(uidA);
 
       cy.contains('These two items are very similar', {matchCase: false})
           .should('be.visible');

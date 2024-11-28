@@ -218,7 +218,7 @@ const CriteriaButtons = ({
       >
         <MobileIconButton
           color="secondary"
-          aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
+          aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
           onClick={() => moveWithoutPatching('down')}
           disabled={disableScoreButtons || navigationDisabled}
         >
@@ -265,7 +265,7 @@ const CriteriaButtons = ({
       >
         <MobileIconButton
           color="secondary"
-          aria-label={t('comparisonCriteriaButtons.previousQualityCriterion')}
+          aria-label={t('comparisonCriteriaButtons.nextQualityCriterion')}
           onClick={() => moveWithoutPatching('up')}
           disabled={disableScoreButtons || navigationDisabled}
         >

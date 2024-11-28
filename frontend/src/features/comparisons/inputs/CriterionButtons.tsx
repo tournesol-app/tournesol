@@ -68,13 +68,16 @@ const ScoreButton = ({
   onClick,
 }: ScoreButtonProps) => {
   const theme = useTheme();
-  const hover = useMediaQuery('(hover: hover)');
+  const hover = useMediaQuery('(pointer:fine) and (hover:hover)');
 
   return (
     <IconButton
       disabled={disabled}
       color="secondary"
       onClick={() => onClick(score)}
+      data-criterion-input-type="score-button"
+      data-criterion-input-score={score}
+      data-criterion-input-selected={selected}
       sx={{
         minWidth: '40px',
         borderRadius: '4px',

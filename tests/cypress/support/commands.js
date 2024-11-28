@@ -50,3 +50,57 @@ from core.models import User
 User.objects.filter(username='${username}').delete()
 "`)
 )
+
+/**
+ * Delete a single comparison made by a given user.
+ */
+Cypress.Commands.add('deleteOneComparisonOfUser', (username, uidA, uidB) => {
+  cy.sql(`
+    DELETE FROM tournesol_comparisoncriteriascore
+    WHERE comparison_id = (
+      SELECT id
+      FROM tournesol_comparison
+      WHERE entity_1_id = (
+        SELECT id FROM tournesol_entity WHERE uid = '${uidA}'
+      ) AND entity_2_id = (
+        SELECT id FROM tournesol_entity WHERE uid = '${uidB}'
+      ) AND user_id = (
+        SELECT id FROM core_user WHERE username = '${username}'
+      )
+    );
+  `);
+
+  cy.sql(`
+      DELETE FROM tournesol_comparison
+          WHERE entity_1_id = (
+              SELECT id FROM tournesol_entity WHERE uid = '${uidA}'
+          ) AND entity_2_id = (
+              SELECT id FROM tournesol_entity WHERE uid = '${uidB}'
+          ) AND user_id = (
+              SELECT id FROM core_user WHERE username = '${username}'
+          );
+    `);
+});
+
+/**
+ * Delete all comparisons made by a given user.
+ */
+Cypress.Commands.add('deleteAllComparisonsOfUser', (username) => {
+  cy.sql(`
+    DELETE FROM tournesol_comparisoncriteriascore
+    WHERE comparison_id IN (
+        SELECT id
+        FROM tournesol_comparison
+        WHERE user_id = (
+            SELECT id FROM core_user WHERE username = '${username}'
+        )
+    );
+  `);
+
+  cy.sql(`
+    DELETE FROM tournesol_comparison
+        WHERE user_id = (
+            SELECT id FROM core_user WHERE username = '${username}'
+        );
+  `);
+});
