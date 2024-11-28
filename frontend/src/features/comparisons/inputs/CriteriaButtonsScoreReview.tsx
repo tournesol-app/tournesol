@@ -47,7 +47,7 @@ const CriteriaButtonsScoreReview = ({
           alignItems="center"
           rowGap={1}
         >
-          <Box px={1} color="grey.500">
+          <Box px={1} color="grey.500" height="1.8rem">
             {scoreBtn.icons}
           </Box>
 
@@ -57,7 +57,7 @@ const CriteriaButtonsScoreReview = ({
 
             return (
               <Zoom in={true} key={crit.criteria}>
-                <Box>
+                <Box display="flex" alignItems="center" height="1.4rem">
                   <CriteriaIcon criteriaName={crit.criteria} />
                 </Box>
               </Zoom>
