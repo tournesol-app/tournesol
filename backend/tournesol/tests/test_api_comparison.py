@@ -1,8 +1,8 @@
 import datetime
 from copy import deepcopy
+from unittest import skip
 from unittest.mock import patch
 
-import pytest
 from django.core.management import call_command
 from django.db.models import ObjectDoesNotExist, Q
 from django.test import TestCase, TransactionTestCase, override_settings
@@ -1372,7 +1372,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
-    @pytest.mark.skip("Online updates not implemented in Solidago")
+    @skip("Online updates not implemented in Solidago")
     @override_settings(
         UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True,
         MEHESTAN_MULTIPROCESSING=False,
