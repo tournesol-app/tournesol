@@ -47,7 +47,7 @@ const CriteriaButtonsScoreReview = ({
           alignItems="center"
           rowGap={1}
         >
-          <Box px={1} color="grey.500">
+          <Box px={1} color="grey.500" sx={{ height: '1.8rem' }}>
             {scoreBtn.icons}
           </Box>
 
