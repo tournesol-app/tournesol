@@ -57,8 +57,6 @@ class PipelineInput(ABC):
             * `user_id`: int
             * `entity_id`: int or str
             * `is_public`: bool
-            * `is_scaling_calibration_user`: bool
-            * `trust_score`: float
         """
         raise NotImplementedError
 
@@ -93,9 +91,14 @@ class PipelineInput(ABC):
         raise NotImplementedError
 
     def get_users(self):
-        users = self.ratings_properties.groupby("user_id").first()[["trust_score"]]
-        users["is_pretrusted"] = users["trust_score"] >= 0.8
-        return users
+        """
+        Returns:
+        - DataFrame with columns
+            * `user_id`: int (index)
+            * `trust_score`: float
+            * `is_pretrusted`: boolean
+        """
+        raise NotImplementedError
 
     def get_pipeline_kwargs(self, criterion: str):
         ratings_properties = self.ratings_properties
@@ -217,8 +220,7 @@ class TournesolDataset(PipelineInput):
             )
 
             self.video_id_to_entity_id = {
-                video_id: entity_id
-                for (entity_id, video_id) in self.entity_id_to_video_id.items()
+                video_id: entity_id for (entity_id, video_id) in self.entity_id_to_video_id.items()
             }
 
             # Convert video ids (str) to entity ids (int)
@@ -262,15 +264,17 @@ class TournesolDataset(PipelineInput):
         if "score_max" not in dtf:
             # For compatibility with older datasets
             dtf["score_max"] = 10
-        return dtf[[
-            "user_id",
-            "entity_a",
-            "entity_b",
-            "criterion",
-            "score",
-            "score_max",
-            "weight"
-        ]]
+        return dtf[
+            [
+                "user_id",
+                "entity_a",
+                "entity_b",
+                "criterion",
+                "score",
+                "score_max",
+                "weight",
+            ]
+        ]
 
     @cached_property
     def ratings_properties(self):
@@ -282,20 +286,13 @@ class TournesolDataset(PipelineInput):
         )
         dtf = pd.DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
         dtf["is_public"] = True
-        dtf["trust_score"] = dtf["user_id"].map(self.users["trust_score"])
-        scaling_calibration_user_ids = (
-            dtf[dtf.trust_score > self.SCALING_CALIBRATION_MIN_TRUST_SCORE]["user_id"]
-            .value_counts(sort=True)[: self.MAX_SCALING_CALIBRATION_USERS]
-            .index
-        )
-        dtf["is_scaling_calibration_user"] = dtf["user_id"].isin(scaling_calibration_user_ids)
         return dtf
 
     def get_individual_scores(
         self,
         user_id: Optional[int] = None,
         criterion: Optional[str] = None,
-        with_n_comparisons = False,
+        with_n_comparisons=False,
     ) -> pd.DataFrame:
         dtf = self.individual_scores
         if criterion is not None:
@@ -303,21 +300,21 @@ class TournesolDataset(PipelineInput):
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
 
-        dtf = dtf[[
-            "user_id",
-            "entity_id",
-            "criterion",
-            "score",
-            "uncertainty",
-            "voting_right",
-        ]]
+        dtf = dtf[
+            [
+                "user_id",
+                "entity_id",
+                "criterion",
+                "score",
+                "uncertainty",
+                "voting_right",
+            ]
+        ]
 
         if with_n_comparisons:
             comparison_counts = self.get_comparisons_counts(user_id=user_id, criterion=criterion)
             dtf = dtf.merge(
-                comparison_counts,
-                how="left",
-                on=["user_id", "entity_id", "criterion"]
+                comparison_counts, how="left", on=["user_id", "entity_id", "criterion"]
             )
 
         return dtf
@@ -347,8 +344,9 @@ class TournesolDataset(PipelineInput):
             # Entities that have been compared privately only
             # will not appear in comparisons.csv. That's why we need
             # to fill for missing values here.
-            .fillna({"n_comparisons": 0, "n_users": 0})
-            .astype({"n_comparisons": "int64", "n_users": "int64"})
+            .fillna({"n_comparisons": 0, "n_users": 0}).astype(
+                {"n_comparisons": "int64", "n_users": "int64"}
+            )
         )
 
     def get_vouches(self):
@@ -363,3 +361,14 @@ class TournesolDataset(PipelineInput):
                 "vouch": vouchers.value,
             }
         )
+
+    def get_users(self):
+        users_df = pd.DataFrame(
+            {
+                "trust_score": self.users["trust_score"],
+            },
+            index=self.users.index,
+        )
+        # TODO: export pretrusted status in public dataset
+        users_df["is_pretrusted"] = users_df["trust_score"] >= 0.8
+        return users_df
