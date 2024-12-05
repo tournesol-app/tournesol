@@ -312,7 +312,7 @@ class Entity(models.Model):
             return None
 
         video_uri = urljoin(
-            settings.REST_REGISTRATION_MAIN_URL, f"entities/yt:{self.video_id}"
+            settings.TOURNESOL_MAIN_URL, f"entities/yt:{self.video_id}"
         )
         return format_html('<a href="{}" target="_blank">Play ▶</a>', video_uri)
 

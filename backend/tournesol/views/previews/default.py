@@ -54,6 +54,8 @@ COLOR_DURATION_RECTANGLE = (0, 0, 0, 201)
 
 YT_THUMBNAIL_MQ_SIZE = (320, 180)
 
+session = requests.Session()
+
 
 class BasePreviewAPIView(APIView):
     """
@@ -102,7 +104,7 @@ class BasePreviewAPIView(APIView):
         # Quality can be: hq, mq, sd, or maxres (https://stackoverflow.com/a/34784842/188760)
         url = f"https://img.youtube.com/vi/{entity.video_id}/{quality}default.jpg"
         try:
-            thumbnail_response = requests.get(url, timeout=REQUEST_TIMEOUT)
+            thumbnail_response = session.get(url, timeout=REQUEST_TIMEOUT)
         except (ConnectionError, Timeout) as exc:
             logger.error("Preview failed for entity with UID %s.", entity.uid)
             logger.error("Exception caught: %s", exc)
