@@ -12,10 +12,12 @@ declare module '@mui/material/styles' {
   interface TypeBackground {
     primary: string;
     menu: string;
-    emphatic?: string;
+    emphatic: string;
+    mobileButton: string;
   }
 
   interface ZIndex {
+    comparisonElevation1: number;
     videoCardDuration: number;
   }
 }
@@ -41,6 +43,7 @@ export const theme = createTheme({
       primary: '#FAFAFA',
       menu: '#FAF8F3',
       emphatic: '#1282B2',
+      mobileButton: '#EEEEEE',
     },
   },
   typography: {
@@ -81,7 +84,8 @@ export const theme = createTheme({
     ].join(','),
   },
   zIndex: {
-    videoCardDuration: 1,
+    comparisonElevation1: 2,
+    videoCardDuration: 3,
   },
   components: {
     MuiInputBase: {

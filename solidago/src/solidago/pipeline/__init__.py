@@ -1,5 +1,5 @@
-from .inputs import TournesolInput
+from .inputs import PipelineInput
 from .outputs import PipelineOutput
 from .pipeline import DefaultPipeline, Pipeline
 
-__all__ = ["TournesolInput", "DefaultPipeline", "Pipeline", "PipelineOutput"]
+__all__ = ["PipelineInput", "DefaultPipeline", "Pipeline", "PipelineOutput"]

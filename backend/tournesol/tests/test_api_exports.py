@@ -17,7 +17,7 @@ from django.core.management import call_command
 from django.test import TransactionTestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
-from solidago.pipeline.inputs import TournesolInputFromPublicDataset
+from solidago.pipeline.inputs import TournesolDataset
 
 from core.models import User
 from core.tests.factories.user import UserFactory
@@ -284,29 +284,14 @@ class ExportTest(TransactionTestCase):
                 self.assertEqual(metadata["generated_by"],settings.MAIN_URL)
                 self.assertEqual(metadata["tournesol_version"],settings.TOURNESOL_VERSION)
                 self.assertEqual(
-                    set(metadata["algorithms_parameters"]["byztrust"].keys()),
+                    set(metadata["solidago"]["pipeline"].keys()),
                     {
-                        "SINK_VOUCH",
-                        "VOUCH_DECAY",
-                        "TRUSTED_EMAIL_PRETRUST",
-                    }
-                )
-                self.assertEqual(
-                    set(metadata["algorithms_parameters"]["mehestan"].keys()),
-                    {
-                        "W",
-                        "OVER_TRUST_BIAS",
-                        "OVER_TRUST_SCALE",
-                        "VOTE_WEIGHT_PUBLIC_RATINGS",
-                        "VOTE_WEIGHT_PRIVATE_RATINGS",
-                        "MAX_SCALED_SCORE",
-                    }
-                )
-                self.assertEqual(
-                    set(metadata["algorithms_parameters"]["individual_scores"]["parameters"].keys()),
-                    {
-                        "R_MAX",
-                        "ALPHA",
+                        "trust_propagation",
+                        "voting_rights",
+                        "preference_learning",
+                        "scaling",
+                        "aggregation",
+                        "post_process",
                     }
                 )
 
@@ -542,18 +527,18 @@ class ExportTest(TransactionTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         zip_content = io.BytesIO(response.content)
 
-        ml_input = TournesolInputFromPublicDataset(zip_content)
+        ml_input = TournesolDataset(zip_content)
         comparisons_df = ml_input.get_comparisons()
         rating_properties = ml_input.ratings_properties
 
         self.assertEqual(len(comparisons_df), 1)
         self.assertEqual(
             list(comparisons_df.columns),
-            ["user_id", "entity_a", "entity_b", "criteria", "score", "score_max", "weight"],
+            ["user_id", "entity_a", "entity_b", "criterion", "score", "score_max", "weight"],
         )
 
         self.assertEqual(len(rating_properties), 2)
         self.assertEqual(
             list(rating_properties.columns),
-            ["user_id", "entity_id", "is_public", "trust_score", "is_scaling_calibration_user"],
+            ["user_id", "entity_id", "is_public"],
         )

@@ -85,8 +85,9 @@
     "title": "Criteria scores distribution"
   },
   "comparison": {
-    "successfullySubmitted": "The comparison has been successfully submitted.",
-    "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
+    "newComparison": "New comparison",
+    "saved": "Saved",
+    "successfullySubmitted": "Comparison successfully submitted.",
     "removeOptionalCriterias": "Remove optional criteria",
     "addOptionalCriterias": "Add optional criteria",
     "changeOneItem": "Change one of the items to submit a new comparison",
@@ -94,6 +95,7 @@
     "comparisonInPublicDataAfterSubmission": "After submission, this comparison will be included in the public data.",
     "editComparison": "Edit comparison",
     "criteriaSkipped": "skipped",
+    "itemsAreSimilar": "These two items are very similar, it is probably not useful to compare them.",
     "submitAComparison": "Submit a comparison",
     "inactivePoll": "This poll is closed.",
     "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified.",
@@ -109,10 +111,18 @@
     "hideHelp": "Hide the help",
     "showHelp": "Show help for comparisons"
   },
+  "comparisonInput": {
+    "thisComparisonWasMadeOnAMobileDevice": "This comparison was made on a mobile device. The mobile interface exceptionally replaces the usual interface.",
+    "thisComparisonWasMadeOnAComputer": "This comparison was made on a computer. It cannot be modified on a mobile device."
+  },
   "comparisons": {
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
+  "comparisonCriteriaButtons": {
+    "nextQualityCriterion": "Next quality criterion",
+    "previousQualityCriterion": "Previous quality criterion"
+  },
   "comparisonSeries": {
     "skipTheSeries": "Skip the series"
   },
@@ -146,6 +156,9 @@
     "searchByTextOrPasteUrl": "Search by text or paste URL",
     "closeSearch": "Close search",
     "search": "Search"
+  },
+  "entitySelectorControls": {
+    "next": "next"
   },
   "tabsBox": {
     "subsample": "An ordered sample of your personal ranking. The elements you recommend the most appear first.",
@@ -616,8 +629,8 @@
     "preferences": "Preferences"
   },
   "poll": {
-    "videos": "videos",
-    "presidential2022": "election FR 2022",
+    "videos": "Videos",
+    "presidential2022": "Election FR 2022",
     "entityCandidate": "candidate",
     "entityVideo": "video"
   },
@@ -1192,12 +1205,16 @@
         "title1": "Comparing two videos 🌻",
         "message1": {
           "p10": "After watching the videos, move the main handle to the video that should be largely recommended according to you. Save once you've made your choice.",
-          "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity. If you find the videos similar, the handle should remain close to the center."
+          "p10mobile": "After watching the videos, vote for the video that should be largely recommended using the buttons below.",
+          "p20": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity. If you find the videos similar, the handle should remain close to the center.",
+          "p20mobile": "If your preference is strong, use the buttons at the ends. If you find the two videos similar, use the \"equal\" button in the middle."
         },
         "title2": "Making comparisons helps science 🔬",
         "message2": {
           "p10": "Each comparison helps Tournesol improve its recommendations and its open database. Try to unfold and use the optional criteria now.",
-          "p20": "You can always choose to not vote on an optional criterion by unchecking it. You will be able to edit all your comparisons from your page My comparisons."
+          "p10mobile": "Each comparison helps Tournesol improve its recommendations and its open database.",
+          "p20": "You can always choose to not vote on an optional criterion by unchecking it. You will be able to edit all your comparisons from the page My comparisons.",
+          "p20mobile": "After a few comparisons, new optional criteria will be displayed. You will also be able to edit all your comparisons from the page My Comparisons."
         },
         "title3": "How does Tournesol work? 🤖",
         "message3": {

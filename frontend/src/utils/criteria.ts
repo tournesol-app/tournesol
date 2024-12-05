@@ -1,3 +1,4 @@
+import { ComparisonCriteriaScore } from 'src/services/openapi';
 import { criteriaToEmoji } from 'src/utils/constants';
 
 export const criteriaIcon = (criteriaName: string) => {
@@ -25,3 +26,20 @@ const criterionColors: { [criteria: string]: string } = {
 
 export const criterionColor = (criterion: string) =>
   criterionColors[criterion] || '#506ad4';
+
+export const getCriterionScoreMax = (
+  criteriaScores?: ComparisonCriteriaScore[],
+  criterion?: string
+): number | undefined => {
+  if (criteriaScores == undefined || criterion == undefined) {
+    return undefined;
+  }
+
+  const main = criteriaScores.find((crit) => crit.criteria === criterion);
+
+  if (main == undefined) {
+    return undefined;
+  }
+
+  return main.score_max;
+};

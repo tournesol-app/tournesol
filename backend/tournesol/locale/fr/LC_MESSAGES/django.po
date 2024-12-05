@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-06 08:43+0000\n"
+"POT-Creation-Date: 2024-11-14 15:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,15 +23,19 @@ msgstr ""
 msgid "Successfully refreshed the metadata of %(count)s entities."
 msgstr "Les métadonnées de %(count)s entités ont été mises à jour."
 
-#: tournesol/admin.py:372
+#: tournesol/admin.py:294
+msgid "score max"
+msgstr "score max"
+
+#: tournesol/admin.py:393
 msgid "has text?"
 msgstr "contient du texte?"
 
-#: tournesol/admin.py:377
+#: tournesol/admin.py:398
 msgid "Yes"
 msgstr "Oui"
 
-#: tournesol/admin.py:378
+#: tournesol/admin.py:399
 msgid "No"
 msgstr "Non"
 
@@ -49,8 +53,8 @@ msgid ""
 "The absolute value of the score %(score)s given to the criterion "
 "%(criterion)s can't be greater than the value of score_max %(score_max)s."
 msgstr ""
-"La valeur absolue du score %(score)s donnée au critère "
-"%(criterion)s ne peut pas être supérieure à la valeur de score_max %(score_max)s."
+"La valeur absolue du score %(score)s donnée au critère %(criterion)s ne peut "
+"pas être supérieure à la valeur de score_max %(score_max)s."
 
 #: tournesol/serializers/rate_later.py:60
 msgid "The entity is already in the rate-later list of this poll."

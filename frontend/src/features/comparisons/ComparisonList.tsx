@@ -3,16 +3,25 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Grid, Container, Tooltip, Fab, Box, useTheme } from '@mui/material';
-import { Compare as CompareIcon } from '@mui/icons-material';
+import { Compare as CompareIcon, Smartphone } from '@mui/icons-material';
 
 import type { Comparison } from 'src/services/openapi';
 import EntityCard from 'src/components/entity/EntityCard';
+import { BUTTON_SCORE_MAX } from 'src/features/comparisons/inputs/CriterionButtons';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { getCriterionScoreMax } from 'src/utils/criteria';
 
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
+  const { baseUrl, options } = useCurrentPoll();
   const { entity_a, entity_b } = comparison;
+
+  const mainScoreMax = getCriterionScoreMax(
+    comparison?.criteria_scores,
+    options?.mainCriterionName
+  );
+
+  const buttonsUsed = mainScoreMax == BUTTON_SCORE_MAX;
 
   return (
     <Box
@@ -52,7 +61,11 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
             sx={{ backgroundColor: '#F1EFE7' }}
             size="small"
           >
-            <CompareIcon sx={{ color: 'neutral.main' }} />
+            {buttonsUsed ? (
+              <Smartphone sx={{ color: 'neutral.main' }} />
+            ) : (
+              <CompareIcon sx={{ color: 'neutral.main' }} />
+            )}
           </Fab>
         </Tooltip>
       </Box>

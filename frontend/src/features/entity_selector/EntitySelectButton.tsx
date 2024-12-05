@@ -9,7 +9,6 @@ import {
   useMediaQuery,
   Theme,
   Button,
-  IconButton,
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
@@ -26,8 +25,9 @@ import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { useLoginState, usePreferredLanguages } from 'src/hooks';
-import { ComparisonsCountContext } from 'src/pages/comparisons/Comparison';
+import { ComparisonsContext } from 'src/pages/comparisons/Comparison';
 import { EntityObject } from 'src/utils/types';
+import { MobileIconButton } from 'src/components/buttons';
 
 // in milliseconds
 const TYPING_DELAY = 50;
@@ -62,7 +62,7 @@ const VideoInput = ({
     { noSsr: true }
   );
 
-  const comparisonsCount = useContext(ComparisonsCountContext).comparisonsCount;
+  const comparisonsCount = useContext(ComparisonsContext).comparisonsCount;
 
   const preferredLanguages = usePreferredLanguages({ pollName });
 
@@ -193,16 +193,18 @@ const VideoInput = ({
         }}
       >
         {smallScreen && variant === 'compact' ? (
-          <IconButton
+          <MobileIconButton
             onClick={toggleSuggestions}
             size="small"
             color="secondary"
             disabled={disabled}
-            sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+            sx={{
+              fontSize: { xs: '0.7rem', sm: '0.8rem' },
+            }}
             data-testid={`entity-select-button-${variant}`}
           >
             <Search />
-          </IconButton>
+          </MobileIconButton>
         ) : (
           <Button
             fullWidth={variant === 'full' ? true : false}

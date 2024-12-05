@@ -119,10 +119,10 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
         init_solution = np.zeros(len(entities))
         if initialization is not None:
-            for (entity_id, entity_coord) in entity_coordinates.items():
-                entity_init_values = initialization(entity_id)
-                if entity_init_values is not None:
-                    init_solution[entity_coord] = entity_init_values[0]
+            for (entity_id, model_values) in initialization.iter_entities():
+                entity_coord = entity_coordinates.get(entity_id)
+                if entity_coord is not None:
+                    init_solution[entity_coord] = model_values[0]
 
         updated_coordinates = list() if updated_entities is None else [
             entity_coordinates[entity] for entity in updated_entities
