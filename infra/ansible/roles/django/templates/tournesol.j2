@@ -50,7 +50,7 @@ server {
 
     location @index {
         # The HTML content is served by Django to inject dynamic meta tags
-        rewrite ^ /ssr$request_uri break;
+        rewrite ^ /ssr$uri break;
         include /etc/nginx/snippets/gunicorn_proxy.conf;
     }
 
