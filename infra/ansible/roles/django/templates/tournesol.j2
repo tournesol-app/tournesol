@@ -49,10 +49,9 @@ server {
     }
 
     location @index {
-        root /srv/tournesol-frontend;
-        sub_filter '__META_OG_IMAGE__' '$scheme://{{api_domain_name}}/preview$request_uri';
-        sub_filter '__META_OG_URL__' '$scheme://$server_name$request_uri';
-        try_files /index.html =404;
+        # The HTML content is served by Django to inject dynamic meta tags
+        include /etc/nginx/snippets/proxy_params.conf;
+        proxy_pass http://unix:/run/gunicorn.sock:/ssr;
     }
 
 {% if letsencrypt_email is defined %}
@@ -128,7 +127,8 @@ server {
             return 503;
         {% else %}
             include /etc/nginx/snippets/block_tor.conf;
-            include /etc/nginx/snippets/gunicorn_proxy.conf;
+            include /etc/nginx/snippets/proxy_params.conf;
+            proxy_pass http://unix:/run/gunicorn.sock;
         {% endif %}
     }
 
@@ -136,7 +136,8 @@ server {
         {% if maintenance %}
             return 503;
         {% else %}
-            include /etc/nginx/snippets/gunicorn_proxy.conf;
+            include /etc/nginx/snippets/proxy_params.conf;
+            proxy_pass http://unix:/run/gunicorn.sock;
         {% endif %}
     }
 
