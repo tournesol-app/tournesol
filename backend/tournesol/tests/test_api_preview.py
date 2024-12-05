@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import requests
 from django.test import TestCase
 from PIL import Image
 from requests import Response
@@ -11,14 +12,14 @@ from core.tests.factories.user import UserFactory
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity, EntityPollRating
 
-from .factories.entity import EntityFactory, VideoCriteriaScoreFactory, VideoFactory
+from .factories.entity import VideoCriteriaScoreFactory, VideoFactory
 
 
 def raise_(exception):
     raise exception
 
 
-def mock_yt_thumbnail_response(url, timeout=None) -> Response:
+def mock_yt_thumbnail_response(self, url, timeout=None) -> Response:
     resp = Response()
     resp.status_code = 200
     resp._content = Image.new("1", (1, 1)).tobitmap()
@@ -104,7 +105,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         self.preview_url = "/preview/entities/"
         self.valid_uid = "yt:sDPk-r18sb0"
 
-    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch.object(requests.Session, "get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_auth_200_get(self):
         """
@@ -131,7 +132,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         # check is not very robust.
         self.assertNotIn("Content-Disposition", response.headers)
 
-    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch.object(requests.Session, "get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_anon_200_get_existing_entity(self):
         """
@@ -188,7 +189,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
 
-    @patch("requests.get", lambda x, timeout=None: raise_(ConnectionError))
+    @patch.object(requests.Session, "get", lambda *args, **kwargs: raise_(ConnectionError))
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_anon_200_get_with_yt_connection_error(self):
         """
@@ -231,7 +232,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         self.valid_uid = "yt:sDPk-r18sb0"
         self.valid_uid2 = "yt:VKsekCHBuHI"
 
-    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch.object(requests.Session, "get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_auth_200_get(self):
         """
@@ -279,7 +280,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         self.assertNotIn("Content-Disposition", response.headers)
 
-    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch.object(requests.Session, "get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_anon_200_get_existing_entities(self):
         """
@@ -412,7 +413,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
-    @patch("requests.get", lambda x, timeout=None: raise_(ConnectionError))
+    @patch.object(requests.Session, "get", lambda *args, **kwargs: raise_(ConnectionError))
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_anon_200_get_with_yt_connection_error(self):
         """
