@@ -171,9 +171,9 @@
     state: started
     daemon_reload: true
 
-- name: Copy proxy params snippet
+- name: Copy gunicorn snippet
   copy:
-    src: proxy_params.conf
+    src: gunicorn_proxy.conf
     dest: /etc/nginx/snippets/
 
 - name: Create block_tor snippet
