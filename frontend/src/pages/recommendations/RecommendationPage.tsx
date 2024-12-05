@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -8,12 +7,10 @@ import { Person } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
-import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
-import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import type {
   PaginatedContributorRecommendationsList,
   PaginatedRecommendationList,
@@ -23,12 +20,6 @@ import {
   getRecommendations,
 } from 'src/utils/api/recommendations';
 import { getRecommendationPageName } from 'src/utils/constants';
-import {
-  saveRecommendationsLanguages,
-  loadRecommendationsLanguages,
-  recommendationsLanguagesFromNavigator,
-} from 'src/utils/recommendationsLanguages';
-import { PollUserSettingsKeys } from 'src/utils/types';
 
 /**
  * Display a collective or personal recommendations.
@@ -41,12 +32,9 @@ function RecommendationsPage() {
   const history = useHistory();
   const location = useLocation();
   const { baseUrl, name: pollName, criterias, options } = useCurrentPoll();
-  const [isLoading, setIsLoading] = useState(true);
+  const langsAutoDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
-  const userSettings = useSelector(selectSettings).settings;
-  const preferredLanguages =
-    userSettings?.[pollName as PollUserSettingsKeys]
-      ?.recommendations__default_languages;
+  const [isLoading, setIsLoading] = useState(true);
 
   const allowPublicPersonalRecommendations =
     options?.allowPublicPersonalRecommendations ?? false;
@@ -74,7 +62,6 @@ function RecommendationsPage() {
 
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
-  const autoLanguageDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
   const locationSearchRef = useRef<string>();
 
@@ -95,19 +82,8 @@ function RecommendationsPage() {
     // effect. So it's safer to recreate it here, instead of adding
     // a dependency to the current effect.
     const searchParams = new URLSearchParams(location.search);
-    if (autoLanguageDiscovery && searchParams.get('language') === null) {
-      let loadedLanguages = preferredLanguages?.join(',') ?? null;
-
-      if (loadedLanguages === null) {
-        loadedLanguages = loadRecommendationsLanguages();
-      }
-
-      if (loadedLanguages === null) {
-        loadedLanguages = recommendationsLanguagesFromNavigator();
-        saveRecommendationsLanguages(loadedLanguages);
-      }
-
-      searchParams.set('language', loadedLanguages);
+    if (langsAutoDiscovery && searchParams.get('language') === null) {
+      searchParams.set('language', '');
       history.replace({ search: searchParams.toString() });
       return;
     }
@@ -143,14 +119,13 @@ function RecommendationsPage() {
 
     fetchEntities();
   }, [
-    autoLanguageDiscovery,
     criterias,
     displayPersonalRecommendations,
     history,
+    langsAutoDiscovery,
     location.search,
     options,
     pollName,
-    preferredLanguages,
     username,
   ]);
 
@@ -172,12 +147,11 @@ function RecommendationsPage() {
             <Grid item xs={12}>
               {/* Unsafe filter is not available when fetching personal recommendations */}
               <SearchFilter
-                showAdvancedFilter={!displayPersonalRecommendations}
+                disableAdvanced={displayPersonalRecommendations}
                 extraActions={
-                  <>
+                  <Box display="flex" gap={1}>
                     <ShareMenuButton isIcon />
-                    <PreferencesIconButtonLink hash="#recommendations_page" />
-                  </>
+                  </Box>
                 }
               />
             </Grid>
@@ -187,7 +161,7 @@ function RecommendationsPage() {
           <EntityList
             entities={entities.results}
             emptyMessage={
-              isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
+              isLoading ? '' : t('entityList.noItemMatchesYourFilters')
             }
           />
         </LoaderWrapper>
