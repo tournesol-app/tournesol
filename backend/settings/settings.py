@@ -174,6 +174,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 ROOT_URLCONF = "settings.urls"
 
