@@ -24,7 +24,7 @@ from .default import (
 
 TS_SCORE_OVERLAY_COLOR = (58, 58, 58, 224)
 TS_SCORE_OVERLAY_MARGIN_B = 0
-TS_SCORE_OVERLAY_PADDING_X = 8
+TS_SCORE_OVERLAY_PADDING_X = 10
 
 # Shift the score position to the left and to the top, to make space for the logo.
 TS_SCORE_SHIFT_L = 8
@@ -41,7 +41,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
     permission_classes = []
 
     @staticmethod
-    def draw_score(
+    def draw_score(  # pylint: disable=too-many-arguments
         image: Image.Image,
         score_overlay: Image.Image,
         score: float,
@@ -139,16 +139,21 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             font_config=font_config,
         )
 
-        # Only display the logo for the safe recommendations.
-        # if not poll_rating.is_recommendation_unsafe:
+        if poll_rating.is_recommendation_unsafe:
+            logo = (
+                self.get_ts_logo(tuple(numpy.multiply((17, 17), upscale_ratio)))
+                .convert("LA")
+                .convert("RGBA")
+            )
+        else:
+            logo = self.get_ts_logo(tuple(numpy.multiply((17, 17), upscale_ratio)))
+
         image.alpha_composite(
-            self.get_ts_logo(tuple(numpy.multiply((16, 16), upscale_ratio)))
-            .convert("LA")
-            .convert("RGBA"),
+            logo,
             dest=(
-                image.size[0] - 16 * upscale_ratio - TS_LOGO_MARGIN[0] * upscale_ratio,
+                image.size[0] - 17 * upscale_ratio - TS_LOGO_MARGIN[0] * upscale_ratio,
                 image.size[1]
-                - 16 * upscale_ratio
+                - 17 * upscale_ratio
                 - TS_LOGO_MARGIN[1] * upscale_ratio
                 - score_overlay_margin_b,
             ),
