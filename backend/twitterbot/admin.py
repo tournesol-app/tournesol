@@ -60,6 +60,6 @@ class TwitterBotAdmin(admin.ModelAdmin):
         Return the Tournesol front end URI of the video, in the poll `videos`.
         """
         video_uri = urljoin(
-            settings.REST_REGISTRATION_MAIN_URL, f"entities/yt:{obj.video.video_id}"
+            settings.TOURNESOL_MAIN_URL, f"entities/yt:{obj.video.video_id}"
         )
         return format_html('<a href="{}" target="_blank">Play ▶</a>', video_uri)

@@ -49,10 +49,9 @@ server {
     }
 
     location @index {
-        root /srv/tournesol-frontend;
-        sub_filter '__META_OG_IMAGE__' '$scheme://{{api_domain_name}}/preview$request_uri';
-        sub_filter '__META_OG_URL__' '$scheme://$server_name$request_uri';
-        try_files /index.html =404;
+        # The HTML content is served by Django to inject dynamic meta tags
+        rewrite ^ /ssr$uri break;
+        include /etc/nginx/snippets/gunicorn_proxy.conf;
     }
 
 {% if letsencrypt_email is defined %}
@@ -60,10 +59,6 @@ server {
     ssl_certificate /etc/letsencrypt/live/{{domain_name}}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{domain_name}}/privkey.pem;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Content-Type-Options nosniff;
 
     # HSTS set to 180 days (15552000 seconds)
     # For information, according to Mozilla 1 year is acceptable, and 2 year
@@ -145,10 +140,6 @@ server {
     ssl_certificate /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{api_domain_name}}/privkey.pem;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Content-Type-Options nosniff;
 
     # HSTS set to 180 days (15552000 seconds)
     # For information, according to Mozilla 1 year is acceptable, and 2 year
