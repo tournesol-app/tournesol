@@ -31,6 +31,7 @@ TS_SCORE_SHIFT_L = 8
 TS_SCORE_SHIFT_T = 2
 
 TS_LOGO_MARGIN = (2, 4)
+TS_LOGO_SIZE = (17, 17)
 
 
 class DynamicWebsitePreviewEntity(BasePreviewAPIView):
@@ -141,19 +142,21 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
         if poll_rating.is_recommendation_unsafe:
             logo = (
-                self.get_ts_logo(tuple(numpy.multiply((17, 17), upscale_ratio)))
+                self.get_ts_logo(tuple(numpy.multiply(TS_LOGO_SIZE, upscale_ratio)))
                 .convert("LA")
                 .convert("RGBA")
             )
         else:
-            logo = self.get_ts_logo(tuple(numpy.multiply((17, 17), upscale_ratio)))
+            logo = self.get_ts_logo(tuple(numpy.multiply(TS_LOGO_SIZE, upscale_ratio)))
 
         image.alpha_composite(
             logo,
             dest=(
-                image.size[0] - 17 * upscale_ratio - TS_LOGO_MARGIN[0] * upscale_ratio,
+                image.size[0]
+                - TS_LOGO_SIZE[0] * upscale_ratio
+                - TS_LOGO_MARGIN[0] * upscale_ratio,
                 image.size[1]
-                - 17 * upscale_ratio
+                - TS_LOGO_SIZE[1] * upscale_ratio
                 - TS_LOGO_MARGIN[1] * upscale_ratio
                 - score_overlay_margin_b,
             ),
