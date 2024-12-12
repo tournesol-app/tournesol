@@ -18,7 +18,6 @@ from .default import (
     COLOR_YELLOW_FONT,
     PREVIEW_BASE_SIZE,
     BasePreviewAPIView,
-    draw_video_duration,
     font_height,
     get_preview_font_config,
 )
@@ -100,22 +99,17 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         """
         poll_rating = entity.single_poll_rating
 
-        # If the score has not been computed yet, display a centered flower.
+        # If the score has not been computed yet, display nothing.
         if poll_rating is None or poll_rating.tournesol_score is None:
-            image.alpha_composite(
-                self.get_ts_logo(tuple(numpy.multiply((34, 34), upscale_ratio))),
-                dest=tuple(numpy.multiply((43, 24), upscale_ratio)),
-            )
             return
 
         if poll_rating.is_recommendation_unsafe:
             score_color = COLOR_UNSAFE_SCORE
-            shift_l, shift_t = 0, 0
-
         else:
             score_color = COLOR_YELLOW_FONT
-            shift_l = int(TS_SCORE_SHIFT_L / 2) * upscale_ratio
-            shift_t = int(TS_SCORE_SHIFT_T / 2) * upscale_ratio
+
+        shift_l = int(TS_SCORE_SHIFT_L / 2) * upscale_ratio
+        shift_t = int(TS_SCORE_SHIFT_T / 2) * upscale_ratio
 
         score_overlay_size = (
             int(
@@ -146,18 +140,21 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         )
 
         # Only display the logo for the safe recommendations.
-        if not poll_rating.is_recommendation_unsafe:
-            image.alpha_composite(
-                self.get_ts_logo(tuple(numpy.multiply((16, 16), upscale_ratio))),
-                dest=(
-                    image.size[0] - 16 * upscale_ratio - TS_LOGO_MARGIN[0] * upscale_ratio,
-                    image.size[1]
-                    - 16 * upscale_ratio
-                    - TS_LOGO_MARGIN[1] * upscale_ratio
-                    - score_overlay_margin_b,
-                ),
-            )
+        # if not poll_rating.is_recommendation_unsafe:
+        image.alpha_composite(
+            self.get_ts_logo(tuple(numpy.multiply((16, 16), upscale_ratio)))
+            .convert("LA")
+            .convert("RGBA"),
+            dest=(
+                image.size[0] - 16 * upscale_ratio - TS_LOGO_MARGIN[0] * upscale_ratio,
+                image.size[1]
+                - 16 * upscale_ratio
+                - TS_LOGO_MARGIN[1] * upscale_ratio
+                - score_overlay_margin_b,
+            ),
+        )
 
+    @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW))
     @extend_schema(
         description="Generic preview of an entity.",
         responses={200: OpenApiTypes.BINARY},
@@ -187,6 +184,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         self.add_tournesol_score(
             preview_image, entity, upscale_ratio=upscale_ratio, font_config=font_config
         )
+
         response = HttpResponse(content_type="image/jpeg")
         preview_image.convert("RGB").save(response, "jpeg")
         return response
