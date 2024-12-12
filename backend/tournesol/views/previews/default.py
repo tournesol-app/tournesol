@@ -32,6 +32,7 @@ BASE_DIR = settings.BASE_DIR
 CACHE_DEFAULT_PREVIEW = 3600 * 24  # 24h
 CACHE_ENTITY_PREVIEW = 3600 * 2
 
+POPPINS_BOLD_LOCATION = "tournesol/resources/Poppins-Bold.ttf"
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 LIGHT_FONT_LOCATION = "tournesol/resources/Poppins-Light.ttf"
 LIGHT_ITALIC_FONT_LOCATION = "tournesol/resources/Poppins-LightItalic.ttf"
@@ -46,13 +47,14 @@ TOURNESOL_SCORE_UNSAFE_XY = (60, 30)
 COLOR_YELLOW_BORDER = (255, 200, 0, 255)
 COLOR_YELLOW_BACKGROUND = (255, 200, 0, 16)
 COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
+COLOR_YELLOW_FONT = (255, 200, 0, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_WHITE_FONT = (255, 255, 255, 255)
 COLOR_GREY_FONT = (160, 155, 135, 255)
-COLOR_UNSAFE_SCORE = (128, 128, 128, 248)
+COLOR_UNSAFE_SCORE = (180, 180, 180, 248)
 COLOR_DURATION_RECTANGLE = (0, 0, 0, 201)
 
-YT_THUMBNAIL_MQ_SIZE = (320, 180)
+PREVIEW_BASE_SIZE = (440, 240)
 
 session = requests.Session()
 
@@ -153,8 +155,8 @@ class BasePreviewAPIView(APIView):
 
 def get_preview_font_config(upscale_ratio=1) -> dict:
     config = {
-        "ts_score": ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 32 * upscale_ratio
+        "entity_preview_ts_score": ImageFont.truetype(
+            str(BASE_DIR / POPPINS_BOLD_LOCATION), 32 * upscale_ratio
         ),
         "entity_title": ImageFont.truetype(
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
