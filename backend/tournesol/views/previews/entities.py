@@ -113,16 +113,17 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         shift_t = int(TS_SCORE_SHIFT_T / 2) * upscale_ratio
 
         score_overlay_size = (
-            int(
+            max(
                 int(
                     font_config["entity_preview_ts_score"].getlength(
-                        str(int(poll_rating.tournesol_score)), direction="ltr"
+                        str(int(poll_rating.tournesol_score))
                     )
+                    / upscale_ratio
                 )
-                / upscale_ratio
-            )
-            + TS_SCORE_SHIFT_L
-            + TS_SCORE_OVERLAY_PADDING_X,
+                + TS_SCORE_SHIFT_L
+                + TS_SCORE_OVERLAY_PADDING_X,
+                60,
+            ),
             int(font_height(font_config["entity_preview_ts_score"]) / upscale_ratio),
         )
 
