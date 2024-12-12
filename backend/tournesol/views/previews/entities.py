@@ -19,18 +19,17 @@ from .default import (
     PREVIEW_BASE_SIZE,
     BasePreviewAPIView,
     draw_video_duration,
+    font_height,
     get_preview_font_config,
 )
 
 TS_SCORE_OVERLAY_COLOR = (58, 58, 58, 224)
 TS_SCORE_OVERLAY_MARGIN_B = 0
+TS_SCORE_OVERLAY_PADDING_X = 8
 
 # Shift the score position to the left and to the top, to make space for the logo.
-TS_SCORE_OVERLAY_PADDING_R = 8
-TS_SCORE_OVERLAY_PADDING_B = 4
-TS_SCORE_OVERLAY_SIZE = (48 + TS_SCORE_OVERLAY_PADDING_R, 34 + TS_SCORE_OVERLAY_PADDING_B)
-# An extra space is required to display the minus symbol.
-TS_SCORE_OVERLAY_SIZE_UNSAFE = (TS_SCORE_OVERLAY_SIZE[0] + 12, TS_SCORE_OVERLAY_SIZE[1])
+TS_SCORE_SHIFT_L = 8
+TS_SCORE_SHIFT_T = 2
 
 TS_LOGO_MARGIN = (2, 4)
 
@@ -48,16 +47,16 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         score_overlay: Image.Image,
         score: float,
         color: tuple,
-        padding_r: int,
-        padding_b: int,
+        shift_l: int,
+        shift_t: int,
         margin_bottom: int,
         font_config,
     ):
         image_draw = ImageDraw.Draw(image)
         image_draw.text(
             (
-                image.size[0] - (score_overlay.size[0] / 2) - padding_r,
-                image.size[1] - (score_overlay.size[1] / 2) - padding_b - margin_bottom,
+                image.size[0] - (score_overlay.size[0] / 2) - shift_l,
+                image.size[1] - (score_overlay.size[1] / 2) - shift_t - margin_bottom,
             ),
             f"{score:.0f}",
             font=font_config["entity_preview_ts_score"],
@@ -111,18 +110,26 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
         if poll_rating.is_recommendation_unsafe:
             score_color = COLOR_UNSAFE_SCORE
-            score_padding_r, score_padding_b = 0, 0
-
-            if poll_rating.tournesol_score < 0:
-                score_overlay_size = TS_SCORE_OVERLAY_SIZE_UNSAFE
-            else:
-                score_overlay_size = TS_SCORE_OVERLAY_SIZE
+            shift_l, shift_t = 0, 0
 
         else:
             score_color = COLOR_YELLOW_FONT
-            score_padding_r = int(TS_SCORE_OVERLAY_PADDING_R / 2) * upscale_ratio
-            score_padding_b = int(TS_SCORE_OVERLAY_PADDING_B / 2) * upscale_ratio
-            score_overlay_size = TS_SCORE_OVERLAY_SIZE
+            shift_l = int(TS_SCORE_SHIFT_L / 2) * upscale_ratio
+            shift_t = int(TS_SCORE_SHIFT_T / 2) * upscale_ratio
+
+        score_overlay_size = (
+            int(
+                int(
+                    font_config["entity_preview_ts_score"].getlength(
+                        str(int(poll_rating.tournesol_score)), direction="ltr"
+                    )
+                )
+                / upscale_ratio
+            )
+            + TS_SCORE_SHIFT_L
+            + TS_SCORE_OVERLAY_PADDING_X,
+            int(font_height(font_config["entity_preview_ts_score"]) / upscale_ratio),
+        )
 
         score_overlay, score_overlay_margin_b = DynamicWebsitePreviewEntity.draw_score_overlay(
             image=image, size=score_overlay_size, upscale_ratio=upscale_ratio
@@ -132,8 +139,8 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             score_overlay=score_overlay,
             score=poll_rating.tournesol_score,
             color=score_color,
-            padding_r=score_padding_r,
-            padding_b=score_padding_b,
+            shift_l=shift_l,
+            shift_t=shift_t,
             margin_bottom=score_overlay_margin_b,
             font_config=font_config,
         )
