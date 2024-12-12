@@ -38,18 +38,13 @@ LIGHT_FONT_LOCATION = "tournesol/resources/Poppins-Light.ttf"
 LIGHT_ITALIC_FONT_LOCATION = "tournesol/resources/Poppins-LightItalic.ttf"
 REGULAR_FONT_LOCATION = "tournesol/resources/Poppins-Regular.ttf"
 DURATION_FONT_LOCATION = "tournesol/resources/Roboto-Bold.ttf"
-ENTITY_N_CONTRIBUTORS_XY = (60, 98)
-ENTITY_TITLE_XY = (128, 194)
-
-TOURNESOL_SCORE_XY = (84, 30)
-TOURNESOL_SCORE_UNSAFE_XY = (60, 30)
 
 COLOR_YELLOW_BORDER = (255, 200, 0, 255)
-COLOR_YELLOW_BACKGROUND = (255, 200, 0, 16)
 COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
+
+COLOR_WHITE_FONT = (255, 255, 255, 255)
 COLOR_YELLOW_FONT = (255, 200, 0, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
-COLOR_WHITE_FONT = (255, 255, 255, 255)
 COLOR_GREY_FONT = (160, 155, 135, 255)
 COLOR_UNSAFE_SCORE = (180, 180, 180, 248)
 COLOR_DURATION_RECTANGLE = (0, 0, 0, 201)
@@ -220,105 +215,6 @@ def truncate_text(draw, text, font, available_width):
 def font_height(font):
     ascent, descent = font.getmetrics()
     return ascent + descent
-
-
-def get_preview_frame(entity: Entity, fnt_config, upscale_ratio=1) -> Image.Image:
-    tournesol_frame = Image.new(
-        "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_BACKGROUND
-    )
-    tournesol_frame_draw = ImageDraw.Draw(tournesol_frame)
-
-    full_title = entity.metadata.get("name", "")
-    truncated_title = truncate_text(
-        tournesol_frame_draw,
-        full_title,
-        font=fnt_config["entity_title"],
-        available_width=300 * upscale_ratio,
-    )
-
-    full_uploader = entity.metadata.get("uploader", "")
-    truncated_uploader = truncate_text(
-        tournesol_frame_draw,
-        full_uploader,
-        font=fnt_config["entity_title"],
-        available_width=300 * upscale_ratio,
-    )
-
-    tournesol_frame_draw.text(
-        tuple(numpy.multiply((ENTITY_TITLE_XY), upscale_ratio)),
-        truncated_uploader,
-        font=fnt_config["entity_uploader"],
-        fill=COLOR_BROWN_FONT,
-    )
-    tournesol_frame_draw.text(
-        tuple(numpy.multiply((ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 18), upscale_ratio)),
-        truncated_title,
-        font=fnt_config["entity_title"],
-        fill=COLOR_BROWN_FONT,
-    )
-
-    poll_rating = entity.single_poll_rating
-    if poll_rating is not None and poll_rating.tournesol_score is not None:
-        score = poll_rating.tournesol_score
-
-        if poll_rating.is_recommendation_unsafe:
-            score_color = COLOR_UNSAFE_SCORE
-            score_xy = TOURNESOL_SCORE_UNSAFE_XY
-        else:
-            score_xy = TOURNESOL_SCORE_XY
-            score_color = COLOR_BROWN_FONT
-
-        tournesol_frame_draw.text(
-            tuple(numpy.multiply(score_xy, upscale_ratio)),
-            f"{score:.0f}",
-            font=fnt_config["ts_score"],
-            fill=score_color,
-            anchor="mt",
-        )
-    x_coordinate, y_coordinate = ENTITY_N_CONTRIBUTORS_XY
-    tournesol_frame_draw.text(
-        tuple(numpy.multiply((x_coordinate, y_coordinate), upscale_ratio)),
-        f"{poll_rating.n_comparisons if poll_rating else 0}",
-        font=fnt_config["entity_ratings"],
-        fill=COLOR_BROWN_FONT,
-        anchor="mt",
-    )
-    tournesol_frame_draw.text(
-        tuple(numpy.multiply((x_coordinate, y_coordinate + 26), upscale_ratio)),
-        "comparisons",
-        font=fnt_config["entity_ratings_label"],
-        fill=COLOR_BROWN_FONT,
-        anchor="mt",
-    )
-    tournesol_frame_draw.text(
-        tuple(numpy.multiply((x_coordinate, y_coordinate + 82), upscale_ratio)),
-        f"{poll_rating.n_contributors if poll_rating else 0}",
-        font=fnt_config["entity_ratings"],
-        fill=COLOR_BROWN_FONT,
-        anchor="mt",
-    )
-    tournesol_frame_draw.text(
-        tuple(numpy.multiply((x_coordinate, y_coordinate + 108), upscale_ratio)),
-        "contributors",
-        font=fnt_config["entity_ratings_label"],
-        fill=COLOR_BROWN_FONT,
-        anchor="mt",
-    )
-    tournesol_frame_draw.rectangle(
-        (
-            tuple(numpy.multiply((114, 0), upscale_ratio)),
-            tuple(numpy.multiply((120, 240), upscale_ratio)),
-        ),
-        fill=COLOR_YELLOW_BORDER,
-    )
-    tournesol_frame_draw.rectangle(
-        (
-            tuple(numpy.multiply((120, 180), upscale_ratio)),
-            tuple(numpy.multiply((440, 186), upscale_ratio)),
-        ),
-        fill=COLOR_YELLOW_BORDER,
-    )
-    return tournesol_frame
 
 
 def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
