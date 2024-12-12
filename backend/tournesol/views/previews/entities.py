@@ -31,7 +31,7 @@ TS_SCORE_SHIFT_L = 8
 TS_SCORE_SHIFT_T = 2
 
 TS_LOGO_MARGIN = (2, 4)
-TS_LOGO_SIZE = (17, 17)
+TS_LOGO_SIZE = (19, 19)
 
 
 class DynamicWebsitePreviewEntity(BasePreviewAPIView):
