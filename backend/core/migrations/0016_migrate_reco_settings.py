@@ -15,7 +15,7 @@ def copy_setting(user, from_key, to_key):
 
 def migrate_reco_settings_forward(apps, schema_editor):
     User = apps.get_model("core", "User")
-    for user in User.objects.all():
+    for user in User.objects.iterator():
         if "videos" not in user.settings:
             continue
 
