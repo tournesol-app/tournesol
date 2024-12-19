@@ -548,7 +548,7 @@
   "videosUserSettingsForm": {
     "feed": {
       "generic": {
-        "uploadDate": "Date de mise en ligne",
+        "uploadDate": "Vidéos mises à ligne depuis",
         "unsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices.",
         "excludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
       },
