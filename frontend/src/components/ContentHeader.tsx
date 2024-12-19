@@ -11,10 +11,12 @@ import { Box, Chip, Grid, Typography } from '@mui/material';
  */
 const ContentHeader = ({
   title,
+  subtitle,
   chipIcon,
   chipLabel,
 }: {
   title: string;
+  subtitle?: React.ReactNode;
   chipIcon?: React.ReactElement;
   chipLabel?: string;
 }) => {
@@ -51,6 +53,7 @@ const ContentHeader = ({
           </>
         )}
       </Grid>
+      {subtitle && <Typography mt={1}>{subtitle}</Typography>}
     </Box>
   );
 };

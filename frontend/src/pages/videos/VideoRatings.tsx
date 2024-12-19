@@ -44,7 +44,10 @@ const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
 
 const VideoRatingsPage = () => {
   const { name: pollName, options } = useCurrentPoll();
-  const [ratings, setRatings] = useState<PaginatedContributorRatingList>({});
+  const [ratings, setRatings] = useState<PaginatedContributorRatingList>({
+    count: 0,
+    results: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const history = useHistory();
@@ -52,7 +55,6 @@ const VideoRatingsPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
-  const videoCount = ratings.count || 0;
   const hasFilter = searchParams.get('isPublic') != null;
 
   const handleOffsetChange = (newOffset: number) => {
@@ -119,10 +121,10 @@ const VideoRatingsPage = () => {
             displayContextAlert={true}
           />
         </LoaderWrapper>
-        {!isLoading && videoCount > 0 && videoCount > limit && (
+        {!isLoading && ratings.count > 0 && ratings.count > limit && (
           <Pagination
             offset={offset}
-            count={videoCount}
+            count={ratings.count}
             onOffsetChange={handleOffsetChange}
             limit={limit}
           />

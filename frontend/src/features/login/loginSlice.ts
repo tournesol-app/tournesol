@@ -33,12 +33,29 @@ export const loginSlice = createSlice({
       state.refresh_token = undefined;
       state.access_token_expiration_date = undefined;
       state.username = undefined;
+      state.backPath = undefined;
+      state.backParams = undefined;
     },
     updateUsername: (
       state: LoginState,
       action: PayloadAction<{ username: string }>
     ) => {
       state.username = action.payload.username;
+    },
+    /**
+     * Save the given path and URL parameters to allow the back buttons to
+     * return to the desired location.
+     */
+    updateBackNagivation: (
+      state: LoginState,
+      action: PayloadAction<{ backPath: string; backParams: string }>
+    ) => {
+      state.backPath = action.payload.backPath;
+      state.backParams = action.payload.backParams;
+    },
+    clearBackNavigation: (state: LoginState) => {
+      state.backPath = undefined;
+      state.backParams = undefined;
     },
   },
   extraReducers: (builder) => {
@@ -82,6 +99,11 @@ export const loginSlice = createSlice({
 });
 
 export const selectLogin = (state: RootState) => state.token;
-export const { logout, updateUsername } = loginSlice.actions;
+export const {
+  clearBackNavigation,
+  logout,
+  updateUsername,
+  updateBackNagivation,
+} = loginSlice.actions;
 
 export default loginSlice.reducer;

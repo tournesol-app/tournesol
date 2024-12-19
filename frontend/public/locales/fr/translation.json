@@ -1,10 +1,16 @@
 {
+  "backIconButton": {
+    "backToThePreviousPage": "Retour à la page précédente"
+  },
   "copyUriToClipboard": {
     "copy": "Copier URI",
     "copied": "Copié !"
   },
   "preferencesIconButtonLink": {
     "linkToThePreferencesPage": "Lien vers la page des préférences"
+  },
+  "searchButtonLink": {
+    "linkToTheSearchPage": "Lien vers la page de recherche"
   },
   "components": {
     "filtersButton": "filtres"
@@ -312,7 +318,9 @@
   "menu": {
     "home": "Accueil",
     "homeAriaLabel": "Lien vers la page d'accueil",
-    "recommendationsAriaLabel": "Lien vers la page des recommandations",
+    "feedTopItemsAriaLabel": "Lien vers le classement collectif",
+    "forYou": "Pour vous",
+    "recommendationsAriaLabel": "Lien vers le classement collectif",
     "compare": "Comparer 🌻",
     "compareAriaLabel": "Lien vers la page comparer",
     "myComparisons": "Mes comparaisons",
@@ -400,7 +408,7 @@
     "filterByVisibility": "Filtrer par visibilité",
     "includeAllVideos": "Inclure toutes les vidéos",
     "excludeComparedVideos": "Exclure les vidéos comparées",
-    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
+    "unsafeTooltip": "Afficher aussi les vidéos non recommandées (peu de contributions, score faible, etc.).",
     "excludeComparedTooltip": "Enlever de la liste de recommandations les vidéos que vous avez déjà comparées",
     "advanced": "Avancés",
     "ignore": "Ignoré",
@@ -535,10 +543,31 @@
     "displayCollectiveGoalOnMobile": "Afficher l'objectif collectif hebdomadaire sur les périphériques mobiles.",
     "letTournesolSuggestElements": "Laisser Tournesol suggérer des éléments à comparer lors de l'ouverture de l'interface de comparaison.",
     "extensionYoutube": "Extension (YouTube)",
-    "rateLater": "Liste à comparer plus tard",
-    "recommendations": "Recommandations (flux)",
-    "recommendationsPage": "Recommandations (page)",
-    "customizeYourDefaultSearchFilter": "Personnalisez <1>les filtres de recherche par défaut</1> selon vos préférences. Ces filtres sont appliqués <4>seulement</4> lorsque vous accédez aux recommandations depuis le <7>menu principal</7>."
+    "rateLater": "Liste à comparer plus tard"
+  },
+  "videosUserSettingsForm": {
+    "feed": {
+      "generic": {
+        "uploadDate": "Vidéos mises à ligne depuis",
+        "unsafe": "Afficher par défaut les éléments non recommandés (peu de contributions, score faible, etc.).",
+        "excludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
+      },
+      "forYou": {
+        "feedForYou": "Flux - Pour vous",
+        "customizeItemsAppearingInTheFeedForYou": "Personnalisez les éléments qui apparaissent dans le flux Pour vous.",
+        "forYouVideosLanguages": "Langues des vidéos Pour vous",
+        "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)"
+      },
+      "topItems": {
+        "feedTopVideos": "Flux - Top vidéos",
+        "customizeItemsAppearingInTheFeedTopVideos": "Personnalisez les éléments qui apparaissent dans le flux Top vidéos.",
+        "topVideosLanguages": "Langues des Top vidéos",
+        "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner."
+      }
+    },
+    "recommendations": {
+      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne"
+    }
   },
   "generalUserSettingsForm": {
     "notificationsEmailNewFeatures": "Je veux être informé·e des nouvelles fonctionnalités (~ 1 par mois).",
@@ -601,15 +630,6 @@
     "uk": "Ukrainien",
     "ur": "Ourdou",
     "vi": "Vietnamien"
-  },
-  "videosUserSettingsForm": {
-    "recommendations": {
-      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne",
-      "defaultLanguages": "Langues des vidéos",
-      "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner. (S'applique aussi à l'extension de navigateur.)",
-      "defaultUnsafe": "Afficher par défaut les éléments avec un score négatif et ceux avec peu de contributeur·rices.",
-      "defaultExcludeCompared": "Exclure par défault les vidéos que vous avez déjà comparées."
-    }
   },
   "preferences": {
     "generalPreferences": "Préférences générales",
@@ -897,6 +917,27 @@
   "faqEntryList": {
     "questionURLCopied": "URL de la question copiée."
   },
+  "feedForYou": {
+    "forYou": "Pour vous",
+    "accordingToYourPreferences": "Selon <2>vos préférences</2>",
+    "thisPageDisplaysItemsAccordingToYourFilters": "Cette page affiche des éléments en fonction de vos filtres personnels. Vous pouvez les modifier en cliquant sur l'icône d'engrenage ci-dessus."
+  },
+  "genericError": {
+    "errorOnLoadingTryAgainLater": "Une erreur est survenue lors du chargement des résultats. Réessayez plus tard ou contactez un administrateur si le problème persiste."
+  },
+  "entityList": {
+    "noItems": "Il semblerait qu'il n'y ait pas d'élément à afficher pour l'instant.",
+    "noItemMatchesYourFilters": "Aucun élément ne correspond à vos filtres de recherche."
+  },
+  "feedTopItems": {
+    "generic": {
+      "recommendedByTheCommunity": "Recommandées par la communauté",
+      "results": "Résultats"
+    },
+    "videos": {
+      "title": "Top vidéos"
+    }
+  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
@@ -1054,7 +1095,10 @@
       "recommendations": "Recommandations"
     }
   },
-  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
+  "searchPage": {
+    "search": "Recherche",
+    "exploreTheRecommendationsUsingSearchFilters": "Explorez les recommandations avec les filtres de recherche"
+  },
   "profile": "Profil",
   "signup": {
     "oneLastStep": "Une toute dernière étape",

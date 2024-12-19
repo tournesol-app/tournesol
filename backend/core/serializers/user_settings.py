@@ -94,6 +94,11 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         ),
     )
 
+    # Settings starting with `recommendations__` are deprecated.
+    #
+    # They are kept for backward compatibility, mainly for older versions of
+    # the browser extension. They are replaced by settings dedicated to
+    # specific recommendation feeds.
     recommendations__default_date = serializers.ChoiceField(
         choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
     )
@@ -103,12 +108,34 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
     recommendations__default_unsafe = serializers.BooleanField(required=False)
     recommendations__default_exclude_compared_entities = serializers.BooleanField(required=False)
 
-    def validate_recommendations__default_languages(self, default_languages):
+    feed_foryou__date = serializers.ChoiceField(
+        choices=DEFAULT_DATE_CHOICES, allow_blank=True, required=False
+    )
+    feed_foryou__languages = serializers.ListField(
+        child=serializers.CharField(), allow_empty=True, required=False
+    )
+    feed_foryou__unsafe = serializers.BooleanField(required=False)
+    feed_foryou__exclude_compared_entities = serializers.BooleanField(required=False)
+
+    feed_topitems__languages = serializers.ListField(
+        child=serializers.CharField(), allow_empty=True, required=False
+    )
+
+    def _validate_languages(self, default_languages):
         for lang in default_languages:
             if lang not in ACCEPTED_LANGUAGE_CODES:
                 raise ValidationError(_("Unknown language code: %(lang)s.") % {"lang": lang})
 
         return default_languages
+
+    def validate_recommendations__default_languages(self, default_languages):
+        return self._validate_languages(default_languages)
+
+    def validate_feed_foryou__languages(self, default_languages):
+        return self._validate_languages(default_languages)
+
+    def validate_feed_topitems__languages(self, default_languages):
+        return self._validate_languages(default_languages)
 
 
 class TournesolUserSettingsSerializer(serializers.Serializer):

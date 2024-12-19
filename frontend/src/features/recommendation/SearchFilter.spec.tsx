@@ -19,7 +19,6 @@ import {
 import userEvent from '@testing-library/user-event';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { loadRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import { PollsService } from 'src/services/openapi';
 import { combineReducers, createStore } from 'redux';
@@ -75,7 +74,11 @@ describe('Filters feature', () => {
             <StyledEngineProvider injectFirst>
               <ThemeProvider theme={theme}>
                 <PollProvider>
-                  <SearchFilter />
+                  <SearchFilter
+                    onLanguagesChange={(langs) =>
+                      localStorage.setItem('languages', langs)
+                    }
+                  />
                 </PollProvider>
               </ThemeProvider>
             </StyledEngineProvider>
@@ -180,7 +183,8 @@ describe('Filters feature', () => {
     expect(pushSpy).toHaveBeenLastCalledWith({
       search: 'language=' + encodeURIComponent(expectInUrl),
     });
-    expect(loadRecommendationsLanguages()).toEqual(expectInUrl);
+
+    expect(localStorage.getItem('languages')).toEqual(expectInUrl);
   }
 
   it('Can open and close the filters menu', async () => {

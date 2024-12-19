@@ -3,9 +3,8 @@ import { TFunction } from 'react-i18next';
 
 import { Button, Link } from '@mui/material';
 
-import { SUPPORTED_LANGUAGES } from 'src/i18n';
 import { PollsService, Recommendation } from 'src/services/openapi';
-import { recommendationsLanguagesFromNavigator } from 'src/utils/recommendationsLanguages';
+import { getInitialRecoLanguages } from 'src/utils/recommendationsLanguages';
 import { OrderedDialogs, OrderedTips } from 'src/utils/types';
 
 import { getWebExtensionUrl } from '../extension';
@@ -35,24 +34,13 @@ export function getTutorialVideos(): Promise<Recommendation[]> {
     return VIDEOS;
   }
 
-  const supportedLangCodes = SUPPORTED_LANGUAGES.map((l) => l.code);
-  const langIsSupported = (langCode: string) =>
-    supportedLangCodes.includes(langCode);
-
   const metadata: Record<string, string | string[]> = {};
 
   const minutesMax = 5;
   const top = 100;
 
   metadata['duration:lte:int'] = (60 * minutesMax).toString();
-  metadata['language'] = recommendationsLanguagesFromNavigator().split(',');
-
-  // Add "en" to the recommendations request, so that users will always get
-  // recommendations, even if Tournesol doesn't have any recommendation
-  // matching their navigator languages.
-  if (!metadata['language'].some(langIsSupported)) {
-    metadata['language'].push('en');
-  }
+  metadata['language'] = getInitialRecoLanguages().split(',');
 
   VIDEOS = PollsService.pollsRecommendationsList({
     name: 'videos',

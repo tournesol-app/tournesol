@@ -923,12 +923,56 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /preview/feed/top/:
+    get:
+      operationId: preview_feed_top_retrieve
+      description: |-
+        Preview of a Recommendations page.
+
+        Returns a HTTP redirection to format the query parameters to match those
+        used by the polls API.
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /preview/recommendations/:
     get:
       operationId: preview_recommendations_retrieve
       description: |-
         Preview of a Recommendations page.
-        Returns HTTP redirection to transform the query parameters into the format used by the backend.
+
+        Returns a HTTP redirection to format the query parameters to match those
+        used by the polls API.
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /preview/search/:
+    get:
+      operationId: preview_search_retrieve
+      description: |-
+        Preview of a Recommendations page.
+
+        Returns a HTTP redirection to format the query parameters to match those
+        used by the polls API.
       tags:
       - preview
       security:
@@ -3252,12 +3296,12 @@ components:
         * `candidate_fr_2022` - Candidate (FR 2022)
     EventTypeEnum:
       enum:
-      - live
       - talk
+      - live
       type: string
       description: |-
-        * `live` - Tournesol Live
         * `talk` - Tournesol Talk
+        * `live` - Tournesol Live
     ExtendedCollectiveRating:
       type: object
       properties:
@@ -3334,6 +3378,20 @@ components:
       - answer
       - name
       - question
+    FeedForyou_dateEnum:
+      enum:
+      - TODAY
+      - WEEK
+      - MONTH
+      - YEAR
+      - ALL_TIME
+      type: string
+      description: |-
+        * `TODAY` - today
+        * `WEEK` - week
+        * `MONTH` - month
+        * `YEAR` - year
+        * `ALL_TIME` - all_time
     GeneralUserSettings:
       type: object
       description: The general user settings that are not related to Tournesol polls.
@@ -3458,6 +3516,9 @@ components:
         * `CONTRIBUTORS` - Contributors
     PaginatedBannerList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3478,6 +3539,9 @@ components:
             $ref: '#/components/schemas/Banner'
     PaginatedComparisonList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3498,6 +3562,9 @@ components:
             $ref: '#/components/schemas/Comparison'
     PaginatedContributorRatingList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3518,6 +3585,9 @@ components:
             $ref: '#/components/schemas/ContributorRating'
     PaginatedContributorRecommendationsList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3538,6 +3608,9 @@ components:
             $ref: '#/components/schemas/ContributorRecommendations'
     PaginatedEmailDomainList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3558,6 +3631,9 @@ components:
             $ref: '#/components/schemas/EmailDomain'
     PaginatedEntityList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3578,6 +3654,9 @@ components:
             $ref: '#/components/schemas/Entity'
     PaginatedEntityNoExtraFieldList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3598,6 +3677,9 @@ components:
             $ref: '#/components/schemas/EntityNoExtraField'
     PaginatedFAQEntryList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3618,6 +3700,9 @@ components:
             $ref: '#/components/schemas/FAQEntry'
     PaginatedRateLaterList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3638,6 +3723,9 @@ components:
             $ref: '#/components/schemas/RateLater'
     PaginatedRecommendationBaseList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3658,6 +3746,9 @@ components:
             $ref: '#/components/schemas/RecommendationBase'
     PaginatedRecommendationList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3678,6 +3769,9 @@ components:
             $ref: '#/components/schemas/Recommendation'
     PaginatedSubSampleList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3698,6 +3792,9 @@ components:
             $ref: '#/components/schemas/SubSample'
     PaginatedTournesolEventList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -3718,6 +3815,9 @@ components:
             $ref: '#/components/schemas/TournesolEvent'
     PaginatedUnconnectedEntityList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -4734,6 +4834,22 @@ components:
           type: boolean
         recommendations__default_exclude_compared_entities:
           type: boolean
+        feed_foryou__date:
+          oneOf:
+          - $ref: '#/components/schemas/FeedForyou_dateEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        feed_foryou__languages:
+          type: array
+          items:
+            type: string
+        feed_foryou__unsafe:
+          type: boolean
+        feed_foryou__exclude_compared_entities:
+          type: boolean
+        feed_topitems__languages:
+          type: array
+          items:
+            type: string
     VideosPollUserSettingsRequest:
       type: object
       description: |-
@@ -4773,6 +4889,24 @@ components:
           type: boolean
         recommendations__default_exclude_compared_entities:
           type: boolean
+        feed_foryou__date:
+          oneOf:
+          - $ref: '#/components/schemas/FeedForyou_dateEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        feed_foryou__languages:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        feed_foryou__unsafe:
+          type: boolean
+        feed_foryou__exclude_compared_entities:
+          type: boolean
+        feed_topitems__languages:
+          type: array
+          items:
+            type: string
+            minLength: 1
   securitySchemes:
     cookieAuth:
       type: apiKey

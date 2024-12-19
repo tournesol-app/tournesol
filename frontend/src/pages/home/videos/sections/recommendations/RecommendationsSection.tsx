@@ -15,13 +15,14 @@ import UseOurExtension from './UseOurExtension';
  * A home page section that displays a subset of recommended entities.
  */
 const RecommendationsSection = () => {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
   const stats = useStats({ poll: pollName });
   const pollStats = getPollStats(stats, pollName);
 
   const titleColor = '#fff';
+  const currentLang = i18n.resolvedLanguage || i18n.language;
 
   // Determine the date filter applied when the user click on the see more
   // button.
@@ -81,6 +82,7 @@ const RecommendationsSection = () => {
             gap={2}
           >
             <RecommendationsSubset
+              language={currentLang}
               displayControls
               onRecoDateChange={onRecoDateChangeCallback}
             />
@@ -88,7 +90,7 @@ const RecommendationsSection = () => {
               <Button
                 variant="contained"
                 component={Link}
-                to={`/recommendations?date=${seeMoreDate}`}
+                to={`/search?date=${seeMoreDate}&language=${currentLang}`}
               >
                 {t('recommendationsSection.seeMore')}
               </Button>

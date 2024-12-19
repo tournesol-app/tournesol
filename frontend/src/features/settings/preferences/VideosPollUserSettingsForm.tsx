@@ -1,13 +1,13 @@
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 
 import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
-  Recommendations_defaultDateEnum,
+  FeedForyou_dateEnum,
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
@@ -16,9 +16,9 @@ import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCrit
 import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
-import RecommendationsDefaultLanguage from './fields/RecommendationsDefaultLanguage';
-import RecommendationsDefaultDate from './fields/RecommendationsDefaultDate';
+import FeedForYou from './fieldsets/FeedForYou';
 import SettingsHeading from './SettingsHeading';
+import FeedTopItems from './fieldsets/FeedTopItems';
 
 interface VideosPollUserSettingsFormProps {
   extSearchRecommendation: boolean;
@@ -37,16 +37,16 @@ interface VideosPollUserSettingsFormProps {
   setDisplayedCriteria: (target: string[]) => void;
   rateLaterAutoRemoval: number;
   setRateLaterAutoRemoval: (number: number) => void;
-  recoDefaultLanguages: string[];
-  setRecoDefaultLanguages: (target: string[]) => void;
-  recoDefaultUnsafe: boolean;
-  setRecoDefaultUnsafe: (target: boolean) => void;
-  recoDefaultExcludeCompared: boolean;
-  setRecoDefaultExcludeCompared: (target: boolean) => void;
-  recoDefaultUploadDate: Recommendations_defaultDateEnum | BlankEnum;
-  setRecoDefaultUploadDate: (
-    target: Recommendations_defaultDateEnum | BlankEnum
-  ) => void;
+  forYouLanguages: string[];
+  setForYouLanguages: (target: string[]) => void;
+  forYouUploadDate: FeedForyou_dateEnum | BlankEnum;
+  setForYouUploadDate: (target: FeedForyou_dateEnum | BlankEnum) => void;
+  forYouUnsafe: boolean;
+  setForYouUnsafe: (target: boolean) => void;
+  forYouExcludeCompared: boolean;
+  setForYouExcludeCompared: (target: boolean) => void;
+  topVideosLanguages: string[];
+  setTopVideosLangauges: (target: string[]) => void;
   apiErrors: ApiError | null;
 }
 
@@ -66,14 +66,16 @@ const VideosPollUserSettingsForm = ({
   setDisplayedCriteria,
   rateLaterAutoRemoval,
   setRateLaterAutoRemoval,
-  recoDefaultLanguages,
-  setRecoDefaultLanguages,
-  recoDefaultUnsafe,
-  setRecoDefaultUnsafe,
-  recoDefaultExcludeCompared,
-  setRecoDefaultExcludeCompared,
-  recoDefaultUploadDate,
-  setRecoDefaultUploadDate,
+  forYouLanguages,
+  setForYouLanguages,
+  forYouUploadDate,
+  setForYouUploadDate,
+  forYouUnsafe,
+  setForYouUnsafe,
+  forYouExcludeCompared,
+  setForYouExcludeCompared,
+  topVideosLanguages,
+  setTopVideosLangauges,
   apiErrors,
 }: VideosPollUserSettingsFormProps) => {
   const pollName = YOUTUBE_POLL_NAME;
@@ -153,6 +155,26 @@ const VideosPollUserSettingsForm = ({
         </Grid>
       </Grid>
       <Grid container spacing={4} direction="column" alignItems="stretch">
+        <FeedTopItems
+          scope={pollName}
+          topItemsLanguages={topVideosLanguages}
+          setTopItemsLangauges={setTopVideosLangauges}
+        />
+      </Grid>
+      <Grid container spacing={4} direction="column" alignItems="stretch">
+        <FeedForYou
+          scope={pollName}
+          forYouLanguages={forYouLanguages}
+          setForYouLanguages={setForYouLanguages}
+          forYouUploadDate={forYouUploadDate}
+          setForYouUploadDate={setForYouUploadDate}
+          forYouUnsafe={forYouUnsafe}
+          setForYouUnsafe={setForYouUnsafe}
+          forYouExcludeCompared={forYouExcludeCompared}
+          setForYouExcludeCompared={setForYouExcludeCompared}
+        />
+      </Grid>
+      <Grid container spacing={4} direction="column" alignItems="stretch">
         <Grid item>
           <SettingsHeading
             id="rate_later"
@@ -166,76 +188,6 @@ const VideosPollUserSettingsForm = ({
             onChange={setRateLaterAutoRemoval}
             pollName={pollName}
           />
-        </Grid>
-      </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
-        <Grid item>
-          <SettingsHeading
-            id="recommendations"
-            text={t('pollUserSettingsForm.recommendations')}
-          />
-        </Grid>
-        <Grid item>
-          <RecommendationsDefaultLanguage
-            value={recoDefaultLanguages}
-            onChange={setRecoDefaultLanguages}
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
-        <Grid item>
-          <SettingsHeading
-            id="recommendations_page"
-            text={t('pollUserSettingsForm.recommendationsPage')}
-          />
-        </Grid>
-        <Grid item>
-          <Alert severity="info">
-            <Trans
-              t={t}
-              i18nKey="pollUserSettingsForm.customizeYourDefaultSearchFilter"
-            >
-              Customize <strong>the default search filters</strong> according to
-              your own preferences. Those filters are applied{' '}
-              <strong>only</strong> when you access the recommendations from the{' '}
-              <strong>main menu</strong>.
-            </Trans>
-          </Alert>
-        </Grid>
-        <Grid item>
-          <RecommendationsDefaultDate
-            value={recoDefaultUploadDate}
-            onChange={setRecoDefaultUploadDate}
-            pollName={pollName}
-          />
-        </Grid>
-        <Grid
-          item
-          container
-          spacing={1}
-          direction="column"
-          alignItems="stretch"
-        >
-          <Grid item>
-            <BooleanField
-              scope={pollName}
-              name="recommendations__default_unsafe"
-              label={t('videosUserSettingsForm.recommendations.defaultUnsafe')}
-              value={recoDefaultUnsafe}
-              onChange={setRecoDefaultUnsafe}
-            />
-          </Grid>
-          <Grid item>
-            <BooleanField
-              scope={pollName}
-              name="recommendations__default_exclude_compared_entities"
-              label={t(
-                'videosUserSettingsForm.recommendations.defaultExcludeCompared'
-              )}
-              value={recoDefaultExcludeCompared}
-              onChange={setRecoDefaultExcludeCompared}
-            />
-          </Grid>
         </Grid>
       </Grid>
     </Box>

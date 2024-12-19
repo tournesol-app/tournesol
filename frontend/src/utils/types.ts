@@ -46,7 +46,14 @@ export type EntityObject = RelatedEntity | EntityNoExtraField;
 export enum RouteID {
   // public and collective routes
   Home = 'home',
+  PwaEntryPoint = 'pwaEntryPoint',
+  // new feeds
+  FeedForYou = 'feedForYou',
+  FeedTopItems = 'feedTopItems',
+  Search = 'search',
+  // deprecated feed, replaced by FeedForYou, should be deleted later in 2025
   FeedCollectiveRecommendations = 'feedCollectiveRecommendations',
+  // depracated feed, replaced by FeedTopItems, should be deleted later in 2025
   CollectiveRecommendations = 'collectiveRecommendations',
   EntityAnalysis = 'entityAnalysis',
   FAQ = 'FAQ',
@@ -94,6 +101,12 @@ export type SelectablePoll = {
   // the recommendation link. can be date=Month to retrieve the entities
   // uploaded during the last month for instance
   defaultRecoSearchParams?: string;
+  // default filters used by the feed Top Items, formatted as URL search
+  // parameters
+  defaultFiltersFeedTopItems?: string;
+  // default filters used by the feed For You, formatted as URL search
+  // parameters
+  defaultFiltersFeedForYou?: string;
   // enable or disable the public personal recommendations feature.
   allowPublicPersonalRecommendations?: boolean;
   displayOrder: number;
@@ -103,7 +116,7 @@ export type SelectablePoll = {
   mainCriterionName: string;
   // the path used as URL prefix, must include leading and trailing slash
   path: string;
-  // a list route id that will be disable in `PollRoutes` and `SideBar`
+  // a list of route id that will be disabled in `PollRoutes` and `SideBar`
   disabledRouteIds?: Array<RouteID>;
   iconComponent: SvgIconComponent;
   withSearchBar: boolean;
