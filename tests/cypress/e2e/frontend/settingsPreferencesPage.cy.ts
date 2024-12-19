@@ -324,6 +324,7 @@ describe('Settings - preferences page', () => {
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
 
+          cy.get('[data-testid=videos_feed_foryou__unsafe]').should('not.be.checked');
           cy.contains('Update preferences').click();
 
           cy.visit('/feed/foryou');
@@ -343,7 +344,7 @@ describe('Settings - preferences page', () => {
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
 
-          cy.get('[data-testid=videos_feed_foryou__unsafe]').click();
+          cy.get('[data-testid=videos_feed_foryou__unsafe]').check();
           cy.contains('Update preferences').click();
 
           cy.visit('/feed/foryou');
@@ -375,7 +376,7 @@ describe('Settings - preferences page', () => {
           cy.wait('@settingsRetrievedFromAPI');
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
-          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]').click();
+          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]').uncheck();
           cy.contains('Update preferences').click();
 
           cy.visit('/feed/foryou');
@@ -424,7 +425,8 @@ describe('Settings - preferences page', () => {
           cy.wait('@settingsRetrievedFromAPI');
           cy.get(videosForYouDateSelector).click();
           cy.contains('All time').click();
-          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]');
+          cy.get('[data-testid=videos_feed_foryou__exclude_compared_entities]')
+            .should('be.checked');
           cy.contains('Update preferences').click();
 
           cy.visit('/feed/foryou');
