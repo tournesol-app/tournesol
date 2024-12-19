@@ -9,3 +9,5 @@ from .no_trust_propagation import NoTrustPropagation
 from .lipschitrust import LipschiTrust
 from .noop import NoopTrust
 from .trust_all import TrustAll
+
+__all__ = ["TrustPropagation", "NoTrustPropagation", "LipschiTrust", "TrustAll"]
