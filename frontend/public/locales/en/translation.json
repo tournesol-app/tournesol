@@ -400,7 +400,7 @@
     "filterByVisibility": "Filter by visibility",
     "includeAllVideos": "Include all videos",
     "excludeComparedVideos": "Exclude compared videos",
-    "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
+    "unsafeTooltip": "Also display non-recommended videos (few contributions, low score, etc.).",
     "excludeComparedTooltip": "Remove from the list of recommendations the videos that you have already compared.",
     "advanced": "Advanced",
     "ignore": "Ignore",
@@ -540,7 +540,7 @@
     "feed": {
       "generic": {
         "uploadDate": "Upload date",
-        "unsafe": "Display by default the items having a negative score and those with few contributors.",
+        "unsafe": "Display by default the non-recommended items (few contributions, low score, etc.).",
         "excludeCompared": "Exclude by default the videos that you have already compared."
       },
       "forYou": {
