@@ -4,7 +4,7 @@ import { TFunction } from 'react-i18next';
 import { Button, Link } from '@mui/material';
 
 import { PollsService, Recommendation } from 'src/services/openapi';
-import { initRecoLanguages } from 'src/utils/recommendationsLanguages';
+import { getInitialRecoLanguages } from 'src/utils/recommendationsLanguages';
 import { OrderedDialogs, OrderedTips } from 'src/utils/types';
 
 import { getWebExtensionUrl } from '../extension';
@@ -40,7 +40,7 @@ export function getTutorialVideos(): Promise<Recommendation[]> {
   const top = 100;
 
   metadata['duration:lte:int'] = (60 * minutesMax).toString();
-  metadata['language'] = initRecoLanguages().split(',');
+  metadata['language'] = getInitialRecoLanguages().split(',');
 
   VIDEOS = PollsService.pollsRecommendationsList({
     name: 'videos',

@@ -27,7 +27,7 @@ import {
 } from 'src/utils/constants';
 import { PollUserSettingsKeys } from 'src/utils/types';
 import {
-  initRecoLanguagesWithLocalStorage,
+  getInitialRecoLanguagesForFilterableFeed,
   saveRecoLanguagesToLocalStorage,
 } from 'src/utils/recommendationsLanguages';
 
@@ -105,7 +105,7 @@ const FeedTopItems = () => {
       let loadedLanguages = preferredLanguages?.join(',') ?? null;
 
       if (loadedLanguages === null) {
-        loadedLanguages = initRecoLanguagesWithLocalStorage(
+        loadedLanguages = getInitialRecoLanguagesForFilterableFeed(
           pollName,
           FEED_LANG_KEY
         );

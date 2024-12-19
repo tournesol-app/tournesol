@@ -107,7 +107,7 @@ export const saveRecoLanguagesToLocalStorage = (
  * Return the recommendations languages that should be used for anonymous and
  * authenticated users that have not defined their preferred languages yet.
  */
-export const initRecoLanguages = (): string => {
+export const getInitialRecoLanguages = (): string => {
   const languages = recommendationsLanguagesFromNavigator();
 
   if (!someLangsAreSupported(languages.split(','))) {
@@ -118,13 +118,13 @@ export const initRecoLanguages = (): string => {
 };
 
 /**
- * Return the same languages as `initRecoLanguages`, but check the browser
- * local storage first.
+ * Should be used instead of `getInitialRecoLanguages` to initialize the
+ * languages of recommendation feeds that display a language filter.
  */
-export const initRecoLanguagesWithLocalStorage = (
+export const getInitialRecoLanguagesForFilterableFeed = (
   poll: string,
   feed: string
 ): string => {
   const languages = loadRecoLanguagesFromLocalStorage(poll, feed);
-  return languages === null ? initRecoLanguages() : languages;
+  return languages === null ? getInitialRecoLanguages() : languages;
 };

@@ -34,8 +34,8 @@ import {
   polls,
 } from 'src/utils/constants';
 import {
-  initRecoLanguages,
-  initRecoLanguagesWithLocalStorage,
+  getInitialRecoLanguages,
+  getInitialRecoLanguagesForFilterableFeed,
 } from 'src/utils/recommendationsLanguages';
 import { searchFilterToSettingDate } from 'src/utils/userSettings';
 
@@ -202,7 +202,7 @@ const TournesolUserSettingsForm = () => {
     if (pollSettings?.feed_foryou__languages != undefined) {
       setForYouLanguages(pollSettings?.feed_foryou__languages);
     } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
-      const forYouLangs = initRecoLanguages();
+      const forYouLangs = getInitialRecoLanguages();
       setForYouLanguages(forYouLangs ? forYouLangs.split(',') : []);
     }
 
@@ -223,7 +223,7 @@ const TournesolUserSettingsForm = () => {
     if (pollSettings?.feed_topitems__languages != undefined) {
       setTopItemsLanguages(pollSettings.feed_topitems__languages);
     } else if (youtubePoll?.defaultRecoLanguageDiscovery) {
-      const topItemsLangs = initRecoLanguagesWithLocalStorage(
+      const topItemsLangs = getInitialRecoLanguagesForFilterableFeed(
         YOUTUBE_POLL_NAME,
         FEED_TOPITEMS_LANG_KEY
       );

@@ -11,8 +11,8 @@ import { FEED_LANG_KEY as FEED_TOPITEMS_LANG_KEY } from 'src/pages/feed/FeedTopI
 
 import { YOUTUBE_POLL_NAME } from './constants';
 import {
-  initRecoLanguages,
-  initRecoLanguagesWithLocalStorage,
+  getInitialRecoLanguages,
+  getInitialRecoLanguagesForFilterableFeed,
 } from './recommendationsLanguages';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
 
@@ -114,7 +114,7 @@ export const buildVideosFeedForYouSearchParams = (
       settingLanguagesToSearchFilter(userSettings.feed_foryou__languages)
     );
   } else if (langsDiscovery) {
-    searchParams.set('language', initRecoLanguages());
+    searchParams.set('language', getInitialRecoLanguages());
   }
 };
 
@@ -155,7 +155,7 @@ export const buildVideosFeedTopItemsSearchParams = (
   } else if (langsDiscovery) {
     searchParams.set(
       'language',
-      initRecoLanguagesWithLocalStorage(pollName, FEED_TOPITEMS_LANG_KEY)
+      getInitialRecoLanguagesForFilterableFeed(pollName, FEED_TOPITEMS_LANG_KEY)
     );
   }
 };
