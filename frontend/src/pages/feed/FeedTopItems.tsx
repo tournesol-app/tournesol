@@ -155,7 +155,7 @@ const FeedTopItems = () => {
       new URLSearchParams(location.search),
       ALLOWED_SEARCH_PARAMS
     );
-    searchPageSearchParams.set('offset', offset.toString());
+    searchPageSearchParams.delete('offset');
     return searchPageSearchParams;
   };
 

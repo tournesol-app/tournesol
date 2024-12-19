@@ -62,10 +62,10 @@ const FeedForYou = () => {
     dispatch(
       updateBackNagivation({
         backPath: location.pathname,
-        backParams: '',
+        backParams: offset > 0 ? `offset=${offset}` : '',
       })
     );
-  }, [dispatch, location.pathname]);
+  }, [dispatch, location.pathname, offset]);
 
   useEffect(() => {
     const searchString = new URLSearchParams(userPreferences);
@@ -95,12 +95,6 @@ const FeedForYou = () => {
     fetchEntities();
   }, [criterias, offset, options, pollName, userPreferences]);
 
-  const makeSearchPageSearchParams = () => {
-    const searchPageSearchParams = new URLSearchParams(userPreferences);
-    searchPageSearchParams.set('offset', offset.toString());
-    return searchPageSearchParams;
-  };
-
   return (
     <>
       <ContentHeader
@@ -122,9 +116,7 @@ const FeedForYou = () => {
           justifyContent="flex-end"
           gap={1}
         >
-          <SearchIconButtonLink
-            params={makeSearchPageSearchParams().toString()}
-          />
+          <SearchIconButtonLink params={userPreferences.toString()} />
           <PreferencesIconButtonLink hash={`#${pollName}-feed-foryou`} />
         </Box>
         {!isLoading && entities.count === 0 && (
