@@ -68,6 +68,14 @@ const PollRoutes = ({ pollName }: Props) => {
       page: PwaEntryPoint,
       type: PublicRoute,
     },
+    // deprecated, kept for backward compatibility, should be deleted later
+    // in 2025
+    {
+      id: RouteID.FeedCollectiveRecommendations,
+      url: 'feed/recommendations',
+      page: PwaEntryPoint,
+      type: PublicRoute,
+    },
     {
       id: RouteID.FeedTopItems,
       url: 'feed/top',
@@ -86,7 +94,8 @@ const PollRoutes = ({ pollName }: Props) => {
       page: SearchPage,
       type: PublicRoute,
     },
-    // kept for backward compatibility
+    // deprecated, kept for backward compatibility, should be deleted later
+    // in 2025
     {
       id: RouteID.CollectiveRecommendations,
       url: 'recommendations',

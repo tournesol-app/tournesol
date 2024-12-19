@@ -51,7 +51,9 @@ export enum RouteID {
   FeedForYou = 'feedForYou',
   FeedTopItems = 'feedTopItems',
   Search = 'search',
-  // depracated feed, replaced by FeedTopItems, should redirect to FeedTopItems
+  // deprecated feed, replaced by FeedForYou, should be deleted later in 2025
+  FeedCollectiveRecommendations = 'feedCollectiveRecommendations',
+  // depracated feed, replaced by FeedTopItems, should be deleted later in 2025
   CollectiveRecommendations = 'collectiveRecommendations',
   EntityAnalysis = 'entityAnalysis',
   FAQ = 'FAQ',
