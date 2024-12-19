@@ -166,7 +166,7 @@ const FeedTopItems = () => {
         subtitle={t('feedTopItems.generic.recommendedByTheCommunity')}
       />
       <ContentBox noMinPaddingX maxWidth="lg">
-        <Box mb={4} px={{ xs: 2, sm: 0 }}>
+        <Box px={{ xs: 2, sm: 0 }}>
           <SearchFilter
             disableAdvanced
             disableCriteria
