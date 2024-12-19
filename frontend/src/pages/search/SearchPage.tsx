@@ -102,7 +102,7 @@ const SearchPage = () => {
         subtitle={t('searchPage.exploreTheRecommendationsUsingSearchFilters')}
       />
       <ContentBox noMinPaddingX maxWidth="lg">
-        <Box mb={4} px={{ xs: 2, sm: 0 }}>
+        <Box px={{ xs: 2, sm: 0 }}>
           <SearchFilter
             appearExpanded
             extraActions={
