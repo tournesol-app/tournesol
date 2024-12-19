@@ -19,20 +19,20 @@ def migrate_reco_settings_forward(apps, schema_editor):
         if "videos" not in user.settings:
             continue
 
+        # We don't migrate the default_unsafe setting, because we think many
+        # users would appreciate the default configuration of the feed For you.
         copied = map(
             copy_setting,
             [user] * 5,
             [
                 "recommendations__default_date",
                 "recommendations__default_languages",
-                "recommendations__default_unsafe",
                 "recommendations__default_exclude_compared_entities",
                 "recommendations__default_languages",
             ],
             [
                 "feed_foryou__date",
                 "feed_foryou__languages",
-                "feed_foryou__unsafe",
                 "feed_foryou__exclude_compared_entities",
                 "feed_topitems__languages",
             ],
