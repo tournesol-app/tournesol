@@ -25,13 +25,13 @@ class LipschiTrust(TrustPropagation):
         Parameters
         ----------
         pretrust_value
-            the pretrust of a pretrusted user.
-            (`Trust^{pre}_{checkmark}` in paper)
+            The pretrust of a pretrusted user.
+            ($Trust^{pre}_{\\checkmark}$ in paper)
             The algorithm guarantees that every pre-trusted user is given a trust score which
             is at least `pretrust_value`. Moreover, all users' trust score will be at most 1.
         decay
-            the decay of trusts in voucher's vouchees.
-            (`beta` in paper)
+            The decay of trusts in voucher's vouchees.
+            ($\\beta$ in paper)
             When considering a random walker on the vouch network,
             (1 - `decay`) is the probability that the random walker resets
             its walk at each iteration.
@@ -40,7 +40,7 @@ class LipschiTrust(TrustPropagation):
             thereby bounding the maximal influence of such contributors.
         sink_vouch
             used to incentivize vouching
-            (V^{sink}_{checkmark} in paper)
+            ($V^{sink}_{\\checkmark}$ in paper)
             In our model we assume that each participating contributor implicitly
             vouches for a sink. The sink counts for `sink_vouch` vouchees. As a result, when a
             contributor with less than `sink_vouch` vouchees vouches for more vouchees,
@@ -48,8 +48,8 @@ class LipschiTrust(TrustPropagation):
             linearly, thereby not penalizing previously vouched contributors.
             Vouching is thereby not (too) disincentivized.
         error
-            >0, is an upper bound on error (in L1 norm)
-            (epsilon_{LipschiTrust} in paper)
+            Positive, is an upper bound on error, in L1 norm.
+            $\\epsilon_{LipschiTrust}$ in paper
         """
         assert pretrust_value >= 0 and pretrust_value <= 1
         assert decay >= 0 and decay <= 1
