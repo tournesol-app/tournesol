@@ -11,6 +11,7 @@ import { getRecommendations } from 'src/utils/api/recommendations';
 import RecommendationsSubsetControls from './RecommendationsSubsetControls';
 
 interface RecommendationsSubsetProps {
+  language: string;
   // the maximum number of entity to display
   nbr?: number;
   // if true display few buttons allowing to filter the recommendations
@@ -22,6 +23,7 @@ interface RecommendationsSubsetProps {
 }
 
 const RecommendationsSubset = ({
+  language,
   nbr = 4,
   displayControls = false,
   controlsColor = '#fff',
@@ -29,19 +31,18 @@ const RecommendationsSubset = ({
 }: RecommendationsSubsetProps) => {
   const theme = useTheme();
 
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
   const [isLoading, setIsLoading] = useState(true);
 
   const [recoDate, setRecoDate] = useState('Month');
   const [entities, setEntities] = useState<Array<Recommendation>>([]);
-  const currentLang = i18n.resolvedLanguage || i18n.language;
 
   useEffect(() => {
     const searchParams = new URLSearchParams();
     searchParams.append('date', recoDate);
-    searchParams.append('language', currentLang);
+    searchParams.append('language', language);
 
     const getRecommendationsAsync = async () => {
       setIsLoading(true);
@@ -58,7 +59,7 @@ const RecommendationsSubset = ({
     };
 
     getRecommendationsAsync();
-  }, [criterias, currentLang, nbr, pollName, recoDate]);
+  }, [criterias, language, nbr, pollName, recoDate]);
 
   const dateControlChangeCallback = (value: string) => {
     setRecoDate(value);

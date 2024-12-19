@@ -82,6 +82,7 @@ const RecommendationsSection = () => {
             gap={2}
           >
             <RecommendationsSubset
+              language={currentLang}
               displayControls
               onRecoDateChange={onRecoDateChangeCallback}
             />
