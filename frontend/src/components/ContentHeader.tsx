@@ -16,7 +16,7 @@ const ContentHeader = ({
   chipLabel,
 }: {
   title: string;
-  subtitle?: string | React.ReactElement;
+  subtitle?: React.ReactNode;
   chipIcon?: React.ReactElement;
   chipLabel?: string;
 }) => {
