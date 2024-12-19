@@ -48,7 +48,7 @@ const FeedForYouDate = ({ scope, value, onChange }: FeedForYouDateProps) => {
         id={`${scope}_feed_foryou__date`}
         labelId={`label_${scope}_feed_foryou__date`}
         value={value}
-        label={t('videosUserSettingsForm.recommendations.defaultUploadDate')}
+        label={t('videosUserSettingsForm.feed.generic.uploadDate')}
         onChange={(event) =>
           onChange(event.target.value as FeedForyou_dateEnum | BlankEnum)
         }
