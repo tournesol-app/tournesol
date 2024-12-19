@@ -33,6 +33,8 @@ export const loginSlice = createSlice({
       state.refresh_token = undefined;
       state.access_token_expiration_date = undefined;
       state.username = undefined;
+      state.backPath = undefined;
+      state.backParams = undefined;
     },
     updateUsername: (
       state: LoginState,
