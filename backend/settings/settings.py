@@ -19,6 +19,10 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# On deployed environments, Django needs to access the index.html template
+# built separately by the frontend toolchain.
+FRONTEND_STATIC_FILES_PATH = Path("/srv/tournesol-frontend")
+
 load_dotenv()
 
 server_settings = {}
@@ -71,6 +75,7 @@ STATIC_ROOT = server_settings.get("STATIC_ROOT", f"{base_folder}{STATIC_URL}")
 MEDIA_ROOT = server_settings.get("MEDIA_ROOT", f"{base_folder}{MEDIA_URL}")
 
 MAIN_URL = server_settings.get("MAIN_URL", "http://localhost:8000/")
+TOURNESOL_MAIN_URL = server_settings.get("TOURNESOL_MAIN_URL", "http://localhost:3000/")
 
 TOURNESOL_VERSION = server_settings.get("TOURNESOL_VERSION", "")
 
@@ -95,6 +100,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "rest_registration",
     "vouch",
+    "ssr",
 ]
 
 # Workaround for tests using TransactionTestCase with `serialized_rollback=True`
@@ -102,9 +108,7 @@ INSTALLED_APPS = [
 # See bug https://code.djangoproject.com/ticket/30751
 TEST_NON_SERIALIZED_APPS = ["django.contrib.contenttypes", "django.contrib.auth"]
 
-REST_REGISTRATION_MAIN_URL = server_settings.get(
-    "REST_REGISTRATION_MAIN_URL", "http://localhost:3000/"
-)
+REST_REGISTRATION_MAIN_URL = TOURNESOL_MAIN_URL
 REST_REGISTRATION = {
     "REGISTER_VERIFICATION_ENABLED": True,
     "REGISTER_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "verify-user/",
@@ -170,6 +174,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 ROOT_URLCONF = "settings.urls"
 
