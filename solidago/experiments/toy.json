@@ -28,8 +28,7 @@
         }], 
         "engagement_model": ["SimpleEngagementModel", {
             "p_per_criterion": {"0": 1.0}, 
-            "p_private": 0.2,
-            "entity_bias_noise": 1.0
+            "p_private": 0.2
         }], 
         "comparison_model": ["KnaryGBT", {
             "n_options": 21, 
@@ -50,7 +49,6 @@
         }], 
         "preference_learning": ["UniformGBT", {
             "prior_std_dev": 7, 
-            "comparison_max": 10, 
             "convergence_error": 1e-05, 
             "cumulant_generating_function_error": 1e-05
         }], 
