@@ -1,6 +1,6 @@
 from typing import Optional
 
-class PrivacySettings:
+class Privacy:
     def __init__(self, dct=None):
         self._dict = dict() if dct is None else dct
         

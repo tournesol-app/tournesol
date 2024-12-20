@@ -1,5 +1,6 @@
 from .inputs import PipelineInput
 from .outputs import PipelineOutput
-from .pipeline import DefaultPipeline, Pipeline
+from .base import Pipeline
+from .base import DefaultPipeline
 
 __all__ = ["PipelineInput", "DefaultPipeline", "Pipeline", "PipelineOutput"]
