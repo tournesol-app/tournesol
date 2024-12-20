@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pandas as pd
 import numpy as np
 
@@ -14,7 +16,8 @@ class IsTrust(VotingRightsAssignment):
         users: pd.DataFrame,
         entities: pd.DataFrame,
         vouches: pd.DataFrame,
-        privacy: pd.DataFrame
+        privacy: "PrivacySettings",
+        user_models: Optional[dict[int, "ScoringModel"]]=None
     ) -> tuple[VotingRights, pd.DataFrame]:
         """ Compute voting rights
         
@@ -25,12 +28,10 @@ class IsTrust(VotingRightsAssignment):
             * trust_score (float)
         entities: DataFrame with columns
             * entity_id (int, index)
-        vouches: DataFrame with columns
-            * voucher (int)
-            * vouchee (int)
-            * vouch (float)
+        vouches: Not used
         privacy: PrivacySettings
             privacy[user, entity] in { True, False, None }
+        user_models: Not used
         
         Returns
         -------
