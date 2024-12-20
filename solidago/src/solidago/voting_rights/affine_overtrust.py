@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 
@@ -30,6 +32,7 @@ class AffineOvertrust(VotingRightsAssignment):
         entities: pd.DataFrame,
         vouches: pd.DataFrame,
         privacy: PrivacySettings,
+        user_models: Optional[dict[int, "ScoringModel"]]=None
     ) -> tuple[VotingRights, pd.DataFrame]:
         """Compute voting rights
 
@@ -40,11 +43,11 @@ class AffineOvertrust(VotingRightsAssignment):
             * trust_score (float)
         entities: DataFrame with columns
             * entity_id (int, index)
-        vouches: DataFrame
-            This is not used by VotingRightsWithLimitedOvertrust
+        vouches: not used
         privacy: PrivacySettings
             privacy[user, entity] is the privacy setting of user for entity
             May be True, False or None
+        user_models: not used
 
         Returns
         -------
