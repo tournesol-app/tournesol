@@ -1,17 +1,23 @@
-from typing import Optional
+from typing import Optional, Union
+from pathlib import Path
 
-class VotingRights:
-    def __init__(self, dct: Optional[dict[int, dict[int, float]]]=None):
-        """ Initialize voting rights
-        
-        Parameters
-        ----------
-        dct: dict[int, dict[int, float]]
-            dct[entity][user] is the voting right of user for entity
-        """
-        self._dict = dict() if dct is None else dct
+import pandas as pd
+
+
+class VotingRights(pd.DataFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
-    def __getitem__(self, user_entity_tuple:tuple[int, int]) -> float:
+    @classmethod
+    def load(cls, filename: str):
+        return cls(pd.read_csv(filename, keep_default_na=False))
+
+    def save(self, directory: Union[str, Path]) -> Union[str, list, dict]:
+        path = Path(directory) / "voting_rights.csv"
+        self.to_csv(path)
+        return str(path)
+
+    def get(self, user) -> float:
         """ self[user, entity] must returns the voting right of a user for an entity
                 
         Parameters
@@ -50,3 +56,14 @@ class VotingRights:
     def on_entity(self, entity: int) -> dict[int, float]:
         return self._dict[entity]
 
+    def to_dict(self):
+        return self._dict
+
+    def from_dict(d: dict):
+        return VotingRights(d)
+
+    def from_df(df):
+        v = VotingRights()
+        for _, row in df.iterrows():
+            self
+        

@@ -1,8 +1,23 @@
-from typing import Optional
+from typing import Optional, Union
+from pathlib import Path
+
+import json
+
 
 class Privacy:
     def __init__(self, dct=None):
         self._dict = dict() if dct is None else dct
+
+    @classmethod
+    def load(cls, filename: str):
+        with open(filename) as f:
+            return cls(json.load(f))
+
+    def save(self, directory: Union[str, Path]) -> Union[str, list, dict]:
+        path = Path(directory) / "privacy.csv"
+        with open(path, "w") as f:
+            return json.dump(self._dict, f)
+        return str(path)
         
     def __getitem__(self, user_entity_tuple: tuple[int, int]) -> Optional[bool]:
         """ Returns the user's privacy setting for a given entity
@@ -46,6 +61,12 @@ class Privacy:
         if entity is None:
             return set().union(*(self.users(e) for e in self.entities()))
         return set(self._dict.get(entity, {}).keys())
+    
+    def to_dict(self):
+        return self._dict
+    
+    def from_dict(d: dict):
+        return Privacy(d)
 
     def __str__(self):
         return "{\n    " + ",\n    ".join([
@@ -55,4 +76,3 @@ class Privacy:
             ]) + "\n    }"
             for user in self.users()
         ]) + "\n}"
-        
