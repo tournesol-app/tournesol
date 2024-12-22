@@ -15,7 +15,7 @@ class TournesolExport(State):
         ):
             dataset_zip, _headers = urlretrieve(dataset_zip)  # nosec B310
 
-        from solidago.state import Users, Vouches, Comparisons, Judgments, Entities, VotingRights, UserModels, DirectScoring
+        from solidago.state import Users, Vouches, Entities, Privacy, Comparisons, Judgments, VotingRights, UserModels, DirectScoring
         with zipfile.ZipFile(dataset_zip) as zip_file:
             def load(filename, columns=dict()):
                 with (zipfile.Path(zip_file) / f"{filename}.csv").open(mode="rb") as f:
@@ -51,8 +51,12 @@ class TournesolExport(State):
         pd_global_scores["depth"] = 0
         
         entities = Entities({ "entity_id": list(set(pd_global_scores["entity_id"])) })
-        voting_rights_columns = ["username", "entity_id", "criterion", "voting_right", "public"]
-        voting_rights = VotingRights(pd_user_scores[voting_rights_columns])
+        
+        privacy_columns = ["username", "entity_id", "public"]
+        privacy = Privacy.from_df(privacy_columns)
+        
+        voting_rights_columns = ["username", "entity_id", "criterion", "voting_right"]
+        voting_rights = VotingRights.from_df(pd_user_scores[voting_rights_columns])
 
         print("Loading user models")
         user_models_instructions = { user.name: ["DirectScoring", dict()] for user in users }

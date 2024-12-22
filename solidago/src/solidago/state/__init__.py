@@ -3,8 +3,9 @@
 from .users import *
 from .vouches import *
 from .entities import *
-from .voting_rights import *
+from .privacy import *
 from .judgments import *
+from .voting_rights import *
 from .models import *
 
 from .base import State

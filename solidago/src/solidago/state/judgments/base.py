@@ -23,7 +23,7 @@ class Assessments(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(self.columns) == 0:
-            for column in ("username", "entity_id", "assessment", "assessment_type"):
+            for column in ("username", "entity_id", "assessment", "assessment_min", "assessment_max"):
                 self[column] = None
 
     def from_dict(d):

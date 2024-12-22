@@ -5,46 +5,54 @@ import pandas as pd
 
 
 class VotingRights(pd.DataFrame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for column in ("username", "entity_id", "criterion", "voting_right", "public"):
-            if column not in self.columns:
-                assert len(self) == 0
-                self[column] = list()
+    def __init__(self, d: dict=dict()):
+        self._dict = d
     
+    def __getitem__(self, args: tuple[Optional[str, "User"], Optional[str, "entity_id"], str]) -> float:
+        username = args[0] if isinstance(args[0], str) else args[0].name
+        entity_id = args[1] if isinstance(args[1], str) else args[1].id
+        criterion = args[2]
+        if username not in self._dict: return 0
+        if entity_id not in self._dict[username]: return 0
+        if criterion not in self._dict[username][entity_id]: return 0
+        return self._dict[username][entity_id][criterion]
+    
+    def __setitem__(self, args: tuple[Optional[str, "User"], Optional[str, "entity_id"], str], voting_right: float):
+        username = args[0] if isinstance(args[0], str) else args[0].name
+        entity_id = args[1] if isinstance(args[1], str) else args[1].id
+        criterion = args[2]
+        if username not in self._dict: self._dict[username] = dict()
+        if entity_id not in self._dict[username]: self._dict[username][entity_id] = dict()
+        self._dict[username][entity_id][criterion] = voting_right
+    
+    @class_method
+    def from_df(cls, df: pd.DataFrame) -> "VotingRights":
+        voting_rights = VotingRights()
+        for _, r in df.iterrows():
+            voting_rights[r["username"], r["entity_id"], r["criterion"]] = r["voting_right"]
+        return voting_rights
+        
     @classmethod
-    def load(cls, filename: str):
-        return cls(pd.read_csv(filename, keep_default_na=False))
+    def load(cls, filename: str) -> "VotingRights":
+        return cls.from_df(pd.read_csv(filename, keep_default_na=False))
+    
+    def to_df(self):
+        return pd.DataFrame([
+            pd.Series({
+                "username": username,
+                "entity_id": entity_id,
+                "criterion": criterion,
+                "voting_right": voting_right
+            })
+            for username in self._dict
+            for entity_id in self._dict[username]
+            for criterion, voting_right in self._dict[username][entity_id].items()
+        ])
 
     def save(self, directory: Union[str, Path]) -> Union[str, list, dict]:
         path = Path(directory) / "voting_rights.csv"
-        self.to_csv(path)
+        self.to_df().to_csv(path)
         return str(path)
-
-    def __call__(self, user: "User", entity: "Entity", criterion: str) -> float:
-        """ self(user, entity, criterion) returns a voting right """
-        df = self[(self["username"] == user.name) & (self["entity_id"] == entity.id) & (self["criterion"] == criterion)]
-        if len(df) == 0:
-            return 0
-        return df[-1]["voting_right"]
-        
-    def is_public(self, user: "User", entity: "Entity", criterion: str) -> float:
-        """ self(user, entity, criterion) returns a voting right """
-        df = self[(self["username"] == user.name) & (self["entity_id"] == entity.id) & (self["criterion"] == criterion)]
-        if len(df) == 0:
-            return 0
-        return df[-1]["public"]
-    
-    def set(self, user: "User", entity: "Entity", criterion: str, voting_right: float, privacy: Optional[bool]):
-        """ sets the voting right of a user for an entity on a criterion """
-        df = self[(self["username"] == user.name) & (self["entity_id"] == entity.id) & (self["criterion"] == criterion)]
-        self.drop(df.index, inplace=True)
-        self.loc[-1] = {
-            "username": user.name,
-            "entity_id": entity.id,
-            "criterion": criterion,
-            "voting_right": value
-        }
         
     def __repr__(self):
-        return repr(pd.DataFrame(self))        
+        return repr(self.to_df()) 
