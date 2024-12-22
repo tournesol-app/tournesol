@@ -11,7 +11,7 @@
     "n_entities": 6,
     "n_seeds": 2, 
     "generative_model": {
-        "user_model": ["NormalUserModel", {
+        "user_gen": ["NormalUserGenerator", {
             "p_trustworthy": 0.8, 
             "p_pretrusted": 0.2, 
             "zipf_vouch": 2.0, 
@@ -22,15 +22,16 @@
             "multiplicator_std_dev": 1.0,
             "engagement_bias_std_dev": 1.0
         }], 
-        "vouch_model": ["ErdosRenyiVouchModel"], 
-        "entity_model": ["NormalEntityModel", {
-            "mean": [0.0, 0.0, 0.0, 0.0, 0.0]
+        "vouch_gen": ["ErdosRenyiVouchGenerator"], 
+        "entity_gen": ["NormalEntityGenerator", {
+            "mean": 0.0,
+            "svd_dimension": 5
         }], 
-        "engagement_model": ["SimpleEngagementModel", {
-            "p_per_criterion": {"0": 1.0}, 
+        "engagement_gen": ["SimpleComparisonOnlyEngagementGenerator", {
+            "p_per_criterion": { "0": 1.0 }, 
             "p_private": 0.2
         }], 
-        "comparison_model": ["KnaryGBT", {
+        "comparison_gen": ["KnaryGBT", {
             "n_options": 21, 
             "comparison_max": 10
         }]

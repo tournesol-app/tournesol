@@ -4,52 +4,17 @@ from typing import Optional
 import pandas as pd
 import numpy as np
 
-class ComparisonModel(ABC):
-    @abstractmethod
-    def __call__(
-        self, 
-        users: pd.DataFrame, 
-        entities: pd.DataFrame, 
-        comparisons: pd.DataFrame
-    ) -> pd.DataFrame:
-        """ Fills in the comparisons
-        
-        Parameters
-        ----------
-        users: DataFrame
-            Must have an index column `user_id`. May have others.
-        entities: DataFrame with columns
-            * `entity_id`: int
-            * And maybe more
-        comparisons: DataFrame with columns
-            * `user_id`
-            * `entity_a`
-            * `entity_b`
-        
-        Returns
-        -------
-        comparisons: DataFrame with columns
-            * `user_id`
-            * `entity_a`
-            * `entity_b`
-            * `score`
-        """
-        raise NotImplementedError
+from .base import ComparisonGenerator
 
-    def __str__(self):
-        return type(self).__name__
 
-    def to_json(self):
-        return (type(self).__name__, )
-        
-class GeneralizedBradleyTerry(ComparisonModel):
+class GeneralizedBradleyTerry(ComparisonGenerator):
     """ The Generalized Bradley-Terry model is a score-to-comparison model
     with numerous desirable properties, which was introduced in the paper
     "Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons"
     by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud,
     published at AAAI 2024.
     """
-    def __init__(self, comparison_max: float=np.inf):
+    def __init__(self, comparison_max: float=float("inf")):
         assert comparison_max > 0
         self.comparison_max = comparison_max
     
@@ -144,7 +109,7 @@ class GeneralizedBradleyTerry(ComparisonModel):
         return self.non_normalized_probability(score_diff, comparison) / partition_fn
     
 class DiscreteGBT(GeneralizedBradleyTerry):
-    def __init__(self, comparison_max: float=np.inf):
+    def __init__(self, comparison_max: float=float("inf")):
         super().__init__(comparison_max)
         
     def sample_comparison(self, score_diff: float) -> float:

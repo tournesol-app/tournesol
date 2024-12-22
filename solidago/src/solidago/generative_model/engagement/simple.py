@@ -1,79 +1,67 @@
-from abc import ABC, abstractmethod
+from numpy.random import random, normal
 
 import pandas as pd
 import numpy as np
 
-from solidago.privacy_settings import PrivacySettings
-from solidago.judgments import Judgments, DataFrameJudgments
+from solidago.state import Users, Entities, VotingRights, Judgments
+from .base import EngagementGenerator
 
 
-class EngagementModel(ABC):
-    @abstractmethod
-    def __call__(
-        self, 
-        users: pd.DataFrame, 
-        entities: pd.DataFrame
-    ) -> tuple[PrivacySettings, Judgments]:
-        """ Assigns a score to each entity, by each user
-        
-        Parameters
-        ----------
-        users: DataFrame
-            Must have an index column `user_id`. May have others.
-        entities: DataFrame with columns
-            * `entity_id`: int
-            * And maybe more
-        
-        Returns
-        -------
-        privacy: PrivacySettings
-            privacy[user][entity] may be True (private), False (public) or None (undefined).
-        judgments: Judgments
-            judgments[user]["comparisons"] yields the user's comparisons
-            judgments[user]["assessments"] yields the user's assessments
-        """
-        raise NotImplementedError
-
-    def __str__(self):
-        return type(self).__name__
-
-    def to_json(self):
-        return (type(self).__name__, )
-
-                
-class SimpleEngagementModel(EngagementModel):
+class SimpleComparisonOnlyEngagementGenerator(EngagementGenerator):
     def __init__(
         self, 
         p_per_criterion: dict[str, float]={"0": 1.0}, 
         p_private: float=0.2
     ):
-        self.p_per_criterion = p_per_criterion
-        self.p_private = p_private
-
-    def __call__(
-        self, 
-        users: pd.DataFrame, 
-        entities: pd.DataFrame
-    ) -> tuple[PrivacySettings, DataFrameJudgments]:
-        """ Assigns a list of comparisons to be made to each entity, by each user
+        """ Simple Engagement defines a simple way for users to interact with entities.
+        Requires NormalUser 
         
         Parameters
         ----------
-        users: DataFrame with columns
-            * `user_id`: int
-            * `n_comparisons`: float
-            * `n_comparisons_per_entity`: float
-        entities: DataFrame with columns
-            * `entity_id`: int
-        
-        Returns
-        -------
-        privacy: PrivacySettings
-            privacy[user][entity] may be True (private), False (public) or None (undefined).
-        judgments: DataFrameJudgments
-            judgments[user]["comparisons"] yields the user's comparisons
-            judgments[user]["assessments"] yields the user's assessments
+        p_per_criterion: dict[str, float]
+            p_per_criterion[criterion] is the probability that an entity gets compared on criterion
+            Some "main" criterion may be given probability 1,
+            while secondary criteria may be given a lower probability
+        p_private: float
+            Probability that a user engages with an entity privately
         """
+        self.p_per_criterion = p_per_criterion
+        self.p_private = p_private
+
+    
+    def __call__(self, users: Users, entities: Entities) -> tuple[Privacy, Judgments]:
+        comparison_list = list()
+        voting_rights = VotingRights()
+        
+        for user in users:
+            if row["n_comparisons"] <= 0:
+                continue
+                
+            n_compared_entities = int(2 * user["n_comparisons"] / user["n_comparisons_per_entity"] )
+            p_compare_ab = 2 * row["n_comparisons"] / n_compared_entities**2
+            
+            scores = _svd_scores(user, users, entities)
+            compared_list = _random_biased_order(scores, row["engagement_bias"])[:n_compared_entities]
+            
+            for index, e1 in enumerate(compared_list):
+                privacy.set(user, e1, random() > self.p_private)
+                for e2 in compared_list[index + 1:]:
+                    if random() >= p_compare_ab:
+                        continue
+                    for criterion in self.p_per_criterion:
+                        if random() <= self.p_per_criterion[criterion]:
+                            if random() <= 0.5:
+                                comparison_list.append((user, criterion, e1, e2))
+                            else:
+                                comparison_list.append((user, criterion, e2, e1))
+        
+        c = list(zip(*comparison_list))
+        return privacy, DataFrameJudgments(pd.DataFrame(dict(
+            user_id=c[0], criteria=c[1], entity_a=c[2], entity_b=c[3])))
+
+    
+    def __call__(self, users: Users, entities: Entities) -> tuple[VotingRights, Judgments]:
+        """ Assigns a list of comparisons to be made to each entity, by each user """
         comparison_list = list()
         privacy = PrivacySettings()
         
@@ -109,7 +97,7 @@ class SimpleEngagementModel(EngagementModel):
 
     def __str__(self):
         properties = f"p_per_criterion={self.p_per_criterion}, p_private={self.p_private}"
-        return f"SimpleEngagementModel({properties})"
+        return f"SimpleEngagement({properties})"
 
     def to_json(self):
         return type(self).__name__, dict(
@@ -142,6 +130,6 @@ def _random_biased_order(scores: dict[int, float], score_bias: float) -> list[in
         Larger biases must imply a more deterministic order
     """
     keys = list(scores.keys())
-    noisy_scores = np.array([- score_bias * scores[k] + np.random.normal() for k in keys])
+    noisy_scores = np.array([- score_bias * scores[k] + normal() for k in keys])
     argsort = np.argsort(noisy_scores)
     return [keys[argsort[k]] for k in range(len(keys))]

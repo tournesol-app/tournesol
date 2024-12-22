@@ -7,18 +7,17 @@ class User(pd.Series):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @property
-    def name(self):
-        return self["username"]
-
     def __hash__(self):
-        return int(self.name)
+        return hash(self.name)
 
 
 class Users(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.index.name = "username"
+        if "username" not in self.columns:
+            assert len(self) == 0
+            self["username"] = list()
+        self.set_index("username", inplace=True)
         self.iterator = None
 
     @classmethod
@@ -31,6 +30,7 @@ class Users(pd.DataFrame):
         return str(path)
                 
     def get(self, username):
+        assert isinstance(username, User) or username in self.index, (username, self)
         return username if isinstance(username, User) else User(self.loc[username])
         
     def __iter__(self):
@@ -45,5 +45,5 @@ class Users(pd.DataFrame):
         return repr(pd.DataFrame(self))
     
     def __contains__(self, user: User):
-        return user.id in set(self["username"])
+        return user.name in set(self["username"])
 

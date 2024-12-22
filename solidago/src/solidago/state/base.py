@@ -9,11 +9,10 @@ import pandas as pd
 from .users.base import Users
 from .vouches.base import Vouches
 from .entities.base import Entities
-from .privacy.base import Privacy
-from .judgments.base import Judgments
 from .voting_rights.base import VotingRights
+from .judgments.base import Judgments
 from .models.direct import ScoringModel, DirectScoring
-from .models.base import UserScoringModels
+from .models.user_models import UserModels
 
 
 class State:
@@ -22,10 +21,9 @@ class State:
         users: Users=Users(),
         vouches: Vouches=Vouches(),
         entities: Entities=Entities(),
-        privacy: Privacy=Privacy(),
-        judgments: Judgments=Judgments(),
         voting_rights: VotingRights=VotingRights(),
-        user_models : UserScoringModels=UserScoringModels(),
+        judgments: Judgments=Judgments(),
+        user_models : UserModels=UserModels(),
         global_model: ScoringModel=DirectScoring(),
         save_directory: str = "temp"
     ):
@@ -33,9 +31,8 @@ class State:
         self.users = users
         self.vouches = vouches
         self.entities = entities
-        self.privacy = privacy
-        self.judgments = judgments
         self.voting_rights = voting_rights
+        self.judgments = judgments
         self.user_models = user_models
         self.global_model = global_model
         self._save_directory = save_directory

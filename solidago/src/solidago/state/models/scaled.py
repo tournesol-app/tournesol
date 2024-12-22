@@ -13,18 +13,15 @@ class ScaledModel(ScoringModel):
         self.iterator = None
     
     @classmethod
-    def load(cls, instructions: dict, entities: "Entities", direct_scores: pd.DataFrame, scalings: pd.DataFrame, depth: int=0):
+    def load(cls, instructions: dict, direct_model: "DirectScoring", scalings: dict, depth: int=0):
         import solidago.state.models as models
-        base_model = getattr(models, instructions["base_model"][0]).load(
-            instructions["base_model"][1], entities, direct_scores, scalings, depth+1)
+        base_cls, base_instr = instructions["base_model"]
+        base_model = getattr(models, base_cls).load(base_instr, direct_model, scalings, depth + 1)
         model = cls(base_model)
-        for criterion in instructions["scaling_parameters"]:
-            params = { "multiplicator": Score(1, 0, 0), "translation": Score(0, 0, 0) }
-            for key, value in instructions["scaling_parameters"][criterion].items():
-                params[key] = Score(value[0], value[1], value[2])
-            model.rescale(criterion, params["multiplicator"], params["translation"])
+        for criterion, scaling_params in scalings[depth].items():
+            model.rescale(criterion, scaling_params[0], scaling_params[1])
         return model
-
+        
     def save(self, directory: Union[Path, str], filename: str="scores", depth: int=0) -> Union[str, list, dict]:
         base_model_instructions = self.base_model.save(directory, depth)
         return [self.__class__.__name__, {

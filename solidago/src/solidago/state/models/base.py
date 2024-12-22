@@ -100,11 +100,44 @@ class ScoringModel(ABC):
         return self.score(entity, criteria)
         
     @classmethod
-    def load(cls, instructions: dict, entities: "Entities", direct_scores: pd.DataFrame, scalings: pd.DataFrame, depth: int=0):
+    def load(cls, instructions: dict, direct_model: "DirectScoring", scalings: dict, depth: int=0):
         import solidago.state.models as models
-        base_model = getattr(models, instructions["base_model"][0]).load(
-            instructions["base_model"][1], entities, direct_scores, scalings, depth + 1)
+        base_cls, base_instr = instructions["base_model"]
+        base_model = getattr(models, base_cls).load(base_instr, direct_model, scalings, depth + 1)
         return cls(base_model)
+
+    @staticmethod
+    def direct_scores_to_direct_model(direct_scores: pd.DataFrame) -> dict[str, "DirectScoring"]:
+        """ Constructs a dict that maps username to DirectScoring """
+        from solidago.state.models import DirectScoring, Score
+        direct_model = DirectScoring()
+        asymmetric = "left_unc" in direct_scores.columns
+        left, right = ("left_unc", "right_unc") if asymmetric else ("uncertainty", "uncertainty")
+        for _, r in direct_scores.iterrows():
+            direct_model[r["entity_id"], r["criterion"]] = Score(r["score"], r[left], r[right])
+        return direct_model
+
+    @staticmethod
+    def scalings_df_to_scaling_parameters(scalings_df: pd.DataFrame) -> dict:
+        """ out[username][depth][criterion] yields the multiplicator and the translation (Score) """
+        from solidago.state.models import Score
+        scaling_params = dict()
+        for _, r in scalings_df.iterrows():
+            criterion, depth = r["criterion"], r["depth"]
+            if depth not in scaling_params:
+                scaling_params[depth] = dict()
+            scaling_params[depth][criterion] = [
+                Score(r["multiplicator_score"], r["multiplicator_left"], r["multiplicator_right"]),
+                Score(r["translation_score"], r["translation_left"], r["translation_right"])
+            ]
+        return scaling_params
+        
+    @staticmethod
+    def global_model_load(instructions: list, direct_scores: pd.DataFrame, scalings_df: pd.DataFrame=pd.DataFrame()):
+        import solidago.state.models as models
+        direct_model = ScoringModel.direct_scores_to_direct_model(direct_scores)
+        scalings = ScoringModel.scalings_df_to_scaling_parameters(scalings_df)
+        return getattr(models, instructions[0]).load(instructions[1], direct_model, scalings)
         
     @abstractmethod
     def save(self, filename: Union[Path, str]) -> Union[str, list, dict]:
@@ -150,89 +183,3 @@ class ScoringModel(ABC):
     def foundational_model(self, depth: int=0):
         return self.base_model.foundational_model(depth + 1) if hasattr(self, "base_model") else self, depth
     
-
-class UserScoringModels:
-    def __init__(self, d: dict=dict()):
-        self._dict = d
-        self.iterator = None
-
-    @classmethod
-    def load(cls, 
-        d: dict, 
-        users: "Users", 
-        entities: "Entities", 
-        user_direct_scores: pd.DataFrame, 
-        scalings: pd.DataFrame
-    ):
-        import solidago.state.models as models
-        models = cls()
-        for username in d:
-            user = users.get(username)
-            model_cls = getattr(models, d[username][0])
-            direct_scores = user_direct_scores[user_direct_scores["username"] == username]
-            scalings = user_scalings[user_scalings["username"] == username]
-            models[user] = model_cls.load(d[username][1], entities, direct_scores, scalings)
-        return model
-    
-    def save_scalings(self, filename: Union[Path, str]) -> pd.DataFrame:
-        filename = Path(filename)
-        df = pd.DataFrame(columns=["username", "criterion", "depth",
-            "multiplicator_score", "multiplicator_left", "multiplicator_right", 
-            "translation_score", "translation_left", "translation_right"])
-        for user, model in self:
-            base_model, depth = model, 0
-            while hasattr(base_model, "base_model"):
-                if not isinstance(base_model, ScaledModel):
-                    continue
-                for criterion in self.scaled_criteria():
-                    m = base_model.multiplicator(criterion)
-                    t = base_model.translation(criterion)
-                    df.iloc[-1] = [user.name, criterion, depth, m.value, m.left, m.right, t.value, t.left, t.right]
-                depth += 1
-                base_model = base_model.base_model
-        df.to_csv(filename)
-        return df
-
-    def save_direct_scores(self, filename: Union[Path, str]) -> pd.DataFrame:
-        filename = Path(filename)
-        df = pd.DataFrame(columns=["username", "entity_id", "criterion", "depth",
-            "score", "left_uncertainty", "right_uncertainty"])
-        from .direct import DirectScoring
-        
-        for user, model in self:
-            foundation_model, depth = model.foundational_model()    
-            if not isinstance(foundation_model, DirectScoring):
-                continue
-            for entity in foundational_model.scored_entities(entities=None):
-                scores = foundation_model(entity)
-                for criterion, s in scores.items():
-                    df.iloc[-1] = [ user.name, entity.id, criterion, depth, s.value, s.left, s.right]
-            
-        df.to_csv(filename)
-        return df
-
-    def save(self, directory: Union[Path, str]) -> Union[str, list, dict]:
-        directory = Path(directory)
-        self.save_scalings(directory / "scaling.csv")
-        self.save_direct_scores(directory / "direct_scores.csv")
-        return {
-            "scaling": str(directory / "scaling.csv"),
-            "direct_score": str(directory / "direct_scores.csv"),
-            "users": {
-                user.id: model.to_dict(data=False)
-                for user, model in self
-            }
-        }        
-            
-    def __setitem__(self, user: "User", model: ScoringModel):
-        self._dict[user] = model
-    
-    def __getitem__(self, user: "User"):
-        return self._dict[user]
-        
-    def __iter__(self):
-        self.iterator = self._dict.items()
-        return self
-    
-    def __next__(self):
-        return next(self.iterator)

@@ -57,7 +57,6 @@ class Pipeline:
         self.aggregation = aggregation
         self.post_process = post_process
 
-
     @classmethod
     def from_json(cls, json) -> "Pipeline":
         return Pipeline(

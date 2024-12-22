@@ -9,16 +9,19 @@ class Entity(pd.Series):
 
     @property
     def id(self):
-        return self["entity_id"]
+        return self.name
     
     def __hash__(self):
-        return int(self.id)
+        return hash(self.id)
         
 
 class Entities(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.index.name = "entity_id"
+        if "entity_id" not in self.columns:
+            assert len(self) == 0
+            self["entity_id"] = list()
+        self.set_index("entity_id", inplace=True)
         self.iterator = None
 
     @classmethod
@@ -31,6 +34,7 @@ class Entities(pd.DataFrame):
         return str(path)
 
     def get(self, entity_id):
+        assert isinstance(entity_id, Entity) or entity_id in self.index, (entity_id, self)
         return entity_id if isinstance(entity_id, Entity) else Entity(self.loc[entity_id])
         
     def __iter__(self):

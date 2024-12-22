@@ -7,6 +7,10 @@ import pandas as pd
 class VotingRights(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        for column in ("username", "entity_id", "criterion", "voting_right", "public"):
+            if column not in self.columns:
+                assert len(self) == 0
+                self[column] = list()
     
     @classmethod
     def load(cls, filename: str):
@@ -17,53 +21,30 @@ class VotingRights(pd.DataFrame):
         self.to_csv(path)
         return str(path)
 
-    def get(self, user) -> float:
-        """ self[user, entity] must returns the voting right of a user for an entity
-                
-        Parameters
-        ----------
-        user_entity_tuple: (user: int, entity: int)
+    def __call__(self, user: "User", entity: "Entity", criterion: str) -> float:
+        """ self(user, entity, criterion) returns a voting right """
+        df = self[(self["username"] == user.name) & (self["entity_id"] == entity.id) & (self["criterion"] == criterion)]
+        if len(df) == 0:
+            return 0
+        return df[-1]["voting_right"]
         
-        Returns
-        -------
-        out: float
-        """
-        user, entity = user_entity_tuple
-        if entity not in self._dict:
+    def is_public(self, user: "User", entity: "Entity", criterion: str) -> float:
+        """ self(user, entity, criterion) returns a voting right """
+        df = self[(self["username"] == user.name) & (self["entity_id"] == entity.id) & (self["criterion"] == criterion)]
+        if len(df) == 0:
             return 0
-        if user not in self._dict[entity]:
-            return 0
-        return self._dict[entity][user]
+        return df[-1]["public"]
     
-    def __setitem__(self, user_entity_tuple:tuple[int, int], value: float):
-        """ sets the voting right of a user for an entity
-                
-        Parameters
-        ----------
-        user_entity_tuple: (user: int, entity: int)
-        value: float
-        """
-        user, entity = user_entity_tuple
-        if entity not in self._dict:
-            self._dict[entity] = dict()
-        self._dict[entity][user] = value
-
-    def entities(self, user: Optional[int] = None) -> set[int]:
-        if user is None:
-            return set(self._dict.keys())
-        return { e for e in self._dict if user in self._dict[e] }
+    def set(self, user: "User", entity: "Entity", criterion: str, voting_right: float, privacy: Optional[bool]):
+        """ sets the voting right of a user for an entity on a criterion """
+        df = self[(self["username"] == user.name) & (self["entity_id"] == entity.id) & (self["criterion"] == criterion)]
+        self.drop(df.index, inplace=True)
+        self.loc[-1] = {
+            "username": user.name,
+            "entity_id": entity.id,
+            "criterion": criterion,
+            "voting_right": value
+        }
         
-    def on_entity(self, entity: int) -> dict[int, float]:
-        return self._dict[entity]
-
-    def to_dict(self):
-        return self._dict
-
-    def from_dict(d: dict):
-        return VotingRights(d)
-
-    def from_df(df):
-        v = VotingRights()
-        for _, row in df.iterrows():
-            self
-        
+    def __repr__(self):
+        return repr(pd.DataFrame(self))        

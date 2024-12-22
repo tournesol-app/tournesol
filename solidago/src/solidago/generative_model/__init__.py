@@ -1,6 +1,8 @@
-from .user_model import UserModel, NormalUserModel
-from .vouch_model import VouchModel, ErdosRenyiVouchModel
-from .entity_model import EntityModel, NormalEntityModel
-from .engagement_model import EngagementModel, SimpleEngagementModel
-from .comparison_model import ComparisonModel, KnaryGBT
-from .generative_model import GenerativeModel
+from .user import *
+from .vouch import *
+from .entity import *
+from .engagement import *
+from .assessment import *
+from .comparison import *
+
+from .base import *

@@ -9,56 +9,70 @@ from .base import *
 
 
 class TournesolExport(State):
-    def __init__(self, dataset_zip: Union[str, BinaryIO]="https://api.tournesol.app/exports/all"):
+    def __init__(self, dataset_zip: Union[str, BinaryIO]):
         if isinstance(dataset_zip, str) and (
             dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
         ):
             dataset_zip, _headers = urlretrieve(dataset_zip)  # nosec B310
 
-        def load(filename, columns=dict()):
-            with zipfile.ZipFile(dataset_zip) as zip_file:
+        from solidago.state import Users, Vouches, Comparisons, Judgments, Entities, VotingRights, UserModels, DirectScoring
+        with zipfile.ZipFile(dataset_zip) as zip_file:
+            def load(filename, columns=dict()):
                 with (zipfile.Path(zip_file) / f"{filename}.csv").open(mode="rb") as f:
                     # keep_default_na=False is required otherwise some public usernames
                     # such as "NA" are converted to float NaN.
-                    return pd.read_csv(f, keep_default_na=False).rename(columns)
-            
-        users = User(load("users", { "public_username", "username" }))
-        vouches = Vouches(load("vouchers", { "by_username": "by", "to_username": "to", "value": "weight" }))
-        judgments = Judgments(
-            comparisons=Comparisons(load("comparisons", { 
-                "public_username": "username",
-                "video_a": "left_id",
-                "video_b": "right_id",
-                "criteria": "criterion",
-                "score": "comparison",
-                "score_max": "comparison_max"
-            }))
-        )
+                    return pd.read_csv(f, keep_default_na=False).rename(columns=columns)
+                
+            print("Loading the zip file")
+            users = Users(load("users", { "public_username": "username" }))
+            vouches = Vouches(load("vouchers", { "by_username": "by", "to_username": "to", "value": "weight" }))
+            judgments = Judgments(
+                comparisons=Comparisons(load("comparisons", { 
+                    "public_username": "username",
+                    "video_a": "left_id",
+                    "video_b": "right_id",
+                    "criteria": "criterion",
+                    "score": "comparison",
+                    "score_max": "comparison_max"
+                }))
+            )
+            pd_global_scores = load("collective_criteria_scores", { 
+                "criteria": "criterion", 
+                "video": "entity_id",
+            })
+            pd_user_scores = load("individual_criteria_scores", { 
+                "criteria": "criterion", 
+                "video": "entity_id",
+                "public_username": "username"
+            })
         
-        pd_global_scores = load("collective_criteria_scores", { 
-            "criteria": "criterion", 
-            "video": "entity_id",
-        })
-        pd_user_scores = load("comparisons", { 
-            "criteria": "criterion", 
-            "video": "entity_id",
-            "public_username": "username"
-        })
+        pd_user_scores["public"] = True
+        pd_user_scores["depth"] = 0
+        pd_global_scores["depth"] = 0
         
         entities = Entities({ "entity_id": list(set(pd_global_scores["entity_id"])) })
+        voting_rights_columns = ["username", "entity_id", "criterion", "voting_right", "public"]
+        voting_rights = VotingRights(pd_user_scores[voting_rights_columns])
+
+        print("Loading user models")
+        user_models_instructions = { user.name: ["DirectScoring", dict()] for user in users }
+        user_models = UserModels.load(user_models_instructions, pd_user_scores)
         
-        privacy = Privacy()
-        for _, r in pd_user_scores:
-            privacy[users.get(r["username"])]
+        print("Loading global model")
+        global_model = ScoringModel.global_model_load(["DirectScoring", dict()], pd_global_scores)
         
-        voting_rights = VotingRights()
-        
-        user_models = ScoringModelDict(),
-        global_model: ScoringModel = DirectScoring(),
-        
-        privacy = Privacy() # TODO
-        voting_rights = VotingRights()
-        super().__init__(users, vouches, entities, privacy, judgments, voting_rights, user_models, global_model)
+        super().__init__(users, vouches, entities, voting_rights, judgments, user_models, global_model)
+        self.criteria = {
+            "reliability": "Reliable and not misleading",
+            "importance": "Important and actionable",
+            "engaging": "Engaging and thought-provoking",
+            "pedagogy": "Clear and pedagogical",
+            "layman_friendly": "Layman-friendly",
+            "diversity_inclusion": "Diversity and inclusion",
+            "backfire_risk": "Resilience to backfiring risks",
+            "better_habits": "Encourages better habits",
+            "entertaining_relaxing": "Entertaining and relaxing"
+        }
 
     @classmethod
     def download(cls) -> "TournesolDataset":
