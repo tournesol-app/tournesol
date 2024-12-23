@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Union
 from pathlib import Path
+from pandas import DataFrame
 
 import pandas as pd
 
 
-class Assessments(pd.DataFrame):
+class Assessments(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(self.columns) == 0:
@@ -13,13 +14,13 @@ class Assessments(pd.DataFrame):
                 self[column] = None
 
     def from_dict(d):
-        return Assessments(pd.DataFrame.from_dict(d))
+        return Assessments(DataFrame.from_dict(d))
     
     def extract_user(self, user: int):
         return Assessments(self[self["user_id"] == user])
 
 
-class Comparisons(pd.DataFrame):
+class Comparisons(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(self.columns) == 0:
@@ -27,7 +28,7 @@ class Comparisons(pd.DataFrame):
                 self[column] = None
 
     def from_dict(d):
-        return Comparisons(pd.DataFrame.from_dict(d))
+        return Comparisons(DataFrame.from_dict(d))
     
     def extract_user(self, user: int):
         return Comparisons(self[self["user_id"] == user])
@@ -64,7 +65,7 @@ class Judgments:
                 getattr(self, key).to_csv(filename)
                 filenames[key] = (getattr(self, key).__class__.__name__, str(filename))
 
-        return filenames
+        return type(self).__name__, filenames
     
     @property
     def assessments(self):

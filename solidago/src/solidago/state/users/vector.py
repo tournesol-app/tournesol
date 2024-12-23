@@ -1,5 +1,7 @@
 from typing import Union, Optional
 from types import SimpleNamespace
+from pathlib import Path
+from pandas import DataFrame
 
 import pandas as pd
 import numpy as np
@@ -41,7 +43,7 @@ class VectorUsers(Users):
         users_path, vectors_path = path / "users.csv", path / "users_vectors.csv"
         self.to_csv(users_path)
         np.savetxt(vectors_path, self.vectors, delimiter=",")
-        return str(users_path), str(vectors_path)
+        return type(self).__name__, [str(users_path), str(vectors_path)]
 
     def get(self, user: Union[int, str, VectorUser]) -> VectorUser:
         username = user if isinstance(user, (int, str)) else user.name
@@ -58,7 +60,7 @@ class VectorUsers(Users):
             except StopIteration: break
         
     def __repr__(self) -> str:
-        return repr(pd.DataFrame(self))
+        return repr(DataFrame(self))
     
     def __contains__(self, user: Union[str, VectorUser]) -> bool:
         username = user if isinstance(username, str) else user.name

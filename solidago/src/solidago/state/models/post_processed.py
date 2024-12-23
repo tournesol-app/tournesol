@@ -1,8 +1,7 @@
 from typing import Optional, Callable, Union
 from pathlib import Path
 from math import sqrt
-
-import pandas as pd
+from pandas import DataFrame
 
 from .base import Score, ScoringModel
 
@@ -53,7 +52,7 @@ class SquashedModel(PostProcessedModel):
         }]
     
     @classmethod
-    def from_dict(self, d: dict, pd_scaling: pd.DataFrame, pd_direct_scores: pd.DataFrame):
+    def from_dict(self, d: dict, pd_scaling: DataFrame, pd_direct_scores: DataFrame):
         return ScaledModel(
             base_model=ScoringModel.from_dict(d["base_model"], entities),
             multiplicator=Score.from_dict(d["multiplicator"]),

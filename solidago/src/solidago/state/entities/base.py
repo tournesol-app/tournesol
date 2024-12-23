@@ -1,9 +1,10 @@
 from typing import Union
+from pandas import Series, DataFrame
 
 import pandas as pd
 
 
-class Entity(pd.Series):
+class Entity(Series):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -19,7 +20,7 @@ class Entity(pd.Series):
         return hash(self.id)
         
 
-class Entities(pd.DataFrame):
+class Entities(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "username" in self.columns:
@@ -35,7 +36,7 @@ class Entities(pd.DataFrame):
     def save(self, directory) -> Union[str, list, dict]:
         path = Path(directory) / "entities.csv"
         self.to_csv(path)
-        return str(path)
+        return type(self).__name__, str(path)
 
     def get(self, entity_id: Union[str, int, Entity]) -> Entity:
         assert isinstance(entity_id, Entity) or entity_id in self.index, (entity_id, self)
@@ -48,7 +49,7 @@ class Entities(pd.DataFrame):
             except StopIteration: break
     
     def __repr__(self):
-        return repr(pd.DataFrame(self))
+        return repr(DataFrame(self))
     
     def __contains__(self, entity: Entity):
         return entity.id in set(self["entity_id"])

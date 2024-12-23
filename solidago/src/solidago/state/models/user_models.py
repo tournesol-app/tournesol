@@ -1,29 +1,27 @@
-from typing import Union
+from typing import Union, Optional
 from pathlib import Path
-
-import pandas as pd
+from pandas import DataFrame
 
 
 class UserModels:
-    def __init__(self, d: dict=dict()):
-        self._dict = d
-        self.iterator = None
+    def __init__(self, d: Optional[dict]=None):
+        self._dict = dict()
 
     @staticmethod
-    def direct_scores_to_direct_models(direct_scores: pd.DataFrame) -> dict[str, "DirectScoring"]:
+    def direct_scores_to_dict(direct_scores: DataFrame) -> dict:
         """ Constructs a dict that maps username to DirectScoring """
         from solidago.state.models import DirectScoring, Score
-        direct_models = dict()
+        direct_scores_dict = dict()
         asymmetric = "left_unc" in direct_scores.columns
         left, right = ("left_unc", "right_unc") if asymmetric else ("uncertainty", "uncertainty")
         for _, r in direct_scores.iterrows():
-            if r["username"] not in direct_models:
-                direct_models[r["username"]] = DirectScoring()
-            direct_models[r["username"]][r["entity_id"], r["criterion"]] = Score(r["score"], r[left], r[right])
-        return direct_models
+            if r["username"] not in direct_scores_dict:
+                direct_scores_dict[r["username"]] = list()
+            direct_scores_dict[r["username"]].append(r)
+        return { username: DataFrame(direct_scores_dict[r["username"]]) for username in direct_scores_dict }
 
     @staticmethod
-    def scalings_df_to_scaling_parameters(scalings_df: pd.DataFrame) -> dict:
+    def scalings_df_to_scaling_parameters(scalings_df: DataFrame) -> dict:
         """ out[username][depth][criterion] yields the multiplicator and the translation (Score) """
         from solidago.state.models import Score
         scaling_params = dict()
@@ -40,20 +38,21 @@ class UserModels:
         return scaling_params
 
     @classmethod
-    def load(cls, d: dict, direct_scores: pd.DataFrame, scalings_df: pd.DataFrame=pd.DataFrame()):
+    def load(cls, d: dict, direct_scores: DataFrame, scalings_df: DataFrame):
         import solidago.state.models as models
-        direct_models = UserModels.direct_scores_to_direct_models(direct_scores)
+        direct_scores_dict = UserModels.direct_scores_to_dict(direct_scores)
         scaling_params = UserModels.scalings_df_to_scaling_parameters(scalings_df)
         user_models = cls()
-        for u in d:
-            model_cls = getattr(models, d[u][0])
-            user_scaling = scaling_params[u] if u in scaling_params else dict()
-            user_models[u] = model_cls.load(d[u][1], direct_models[u], user_scaling)
+        for username in d:
+            model_cls = getattr(models, d[username][0])
+            user_direct_scores = direct_scores_dict[username] if username in direct_scores_dict else DataFrame()
+            user_scaling = scaling_params[username] if username in scaling_params else dict()
+            user_models[username] = model_cls.load(d[username][1], user_direct_scores, user_scaling)
         return user_models
     
-    def save_scalings(self, filename: Union[Path, str]) -> pd.DataFrame:
+    def save_scalings(self, filename: Union[Path, str]) -> DataFrame:
         filename = Path(filename)
-        df = pd.DataFrame(columns=["username", "criterion", "depth",
+        df = DataFrame(columns=["username", "criterion", "depth",
             "multiplicator_score", "multiplicator_left", "multiplicator_right", 
             "translation_score", "translation_left", "translation_right"])
         for user, model in self:
@@ -70,35 +69,36 @@ class UserModels:
         df.to_csv(filename)
         return df
 
-    def save_direct_scores(self, filename: Union[Path, str]) -> pd.DataFrame:
+    def save_direct_scores(self, filename: Union[Path, str]) -> DataFrame:
         filename = Path(filename)
-        df = pd.DataFrame(columns=["username", "entity_id", "criterion", "depth",
-            "score", "left_uncertainty", "right_uncertainty"])
         from .direct import DirectScoring
+        direct_scores = list()
         
-        for user, model in self:
-            foundation_model, depth = model.foundational_model()    
+        for username, model in self:
+            foundation_model, depth = model.foundational_model()
             if not isinstance(foundation_model, DirectScoring):
                 continue
-            for entity in foundational_model.scored_entities(entities=None):
+            for entity in foundation_model.scored_entities(entities=None):
                 scores = foundation_model(entity)
                 for criterion, s in scores.items():
-                    df.iloc[-1] = [ user.name, entity.id, criterion, depth, s.value, s.left, s.right]
-            
+                    direct_scores.append({
+                        "username": username, 
+                        "entity_id": entity.id, 
+                        "criterion": criterion, 
+                        "depth": depth, 
+                        "score": s.value, 
+                        "left_unc": s.left, 
+                        "right_unc": s.right
+                    })
+        df = DataFrame(direct_scores)
         df.to_csv(filename)
         return df
 
     def save(self, directory: Union[Path, str]) -> Union[str, list, dict]:
         directory = Path(directory)
-        self.save_scalings(directory / "scaling.csv")
-        self.save_direct_scores(directory / "direct_scores.csv")
-        return {
-            "scaling": str(directory / "scaling.csv"),
-            "direct_score": str(directory / "direct_scores.csv"),
-            "users": {
-                user.id: model.to_dict(data=False)
-                for user, model in self
-            }
+        return type(self).__name__, {
+            user.id: model.to_dict(data=False)
+            for user, model in self
         }        
             
     def __setitem__(self, user: Union[str, "User"], model: "ScoringModel"):
@@ -108,8 +108,6 @@ class UserModels:
         return self._dict[user]
         
     def __iter__(self):
-        iterator = self._dict.items()
-        while True:
-            try: yield next(iterator)
-            except StopIteration: break
+        for key_value in self._dict.items():
+            yield key_value
             

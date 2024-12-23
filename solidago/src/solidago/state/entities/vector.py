@@ -1,5 +1,7 @@
 from typing import Union, Optional
 from types import SimpleNamespace
+from pathlib import Path
+from pandas import DataFrame
 
 import pandas as pd
 import numpy as np
@@ -30,7 +32,7 @@ class VectorEntities(Entities):
         self.meta.vectors = value
 
     @classmethod
-    def load(cls, filename: str):
+    def load(cls, filenames: tuple[str, str]):
         return cls(
             pd.read_csv(filenames[0], keep_default_na=False),
             vectors=np.loadtxt(filenames[1], delimiter=",")
@@ -41,7 +43,7 @@ class VectorEntities(Entities):
         entities_path, vectors_path = path / "entities.csv", path / "entities_vectors.csv"
         self.to_csv(entities_path)
         np.savetxt(vectors_path, self.vectors, delimiter=",")
-        return str(entities_path), str(vectors_path)
+        return type(self).__name__, [str(entities_path), str(vectors_path)]
 
     def get(self, entity: Union[int, str, VectorEntity]) -> VectorEntity:
         entity_id = entity if isinstance(entity, (int, str)) else entity.id
@@ -58,7 +60,7 @@ class VectorEntities(Entities):
             except StopIteration: break
     
     def __repr__(self) -> str:
-        return repr(pd.DataFrame(self))
+        return repr(DataFrame(self))
     
     def __contains__(self, entity: Union[str, VectorEntity]) -> bool:
         entity_id = entity if isinstance(entity, str) else entity.id

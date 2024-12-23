@@ -1,22 +1,21 @@
-from typing import Union
+from typing import Union, Optional
 from pathlib import Path
-
-import pandas as pd
+from pandas import DataFrame
 
 from .base import Score, ScoringModel
 
 
 class ScaledModel(ScoringModel):
-    def __init__(self, base_model: ScoringModel, scaling_parameters: dict=dict()):
+    def __init__(self, base_model: ScoringModel, scaling_parameters: Optional[dict]=None):
         self.base_model = base_model
-        self.scaling_parameters = scaling_parameters
+        self.scaling_parameters = dict() if scaling_parameters is None else scaling_parameters
         self.iterator = None
     
     @classmethod
-    def load(cls, instructions: dict, direct_model: "DirectScoring", scalings: dict, depth: int=0):
+    def load(cls, d: dict, direct_scores: DataFrame, scalings: dict, depth: int=0):    
         import solidago.state.models as models
-        base_cls, base_instr = instructions["base_model"]
-        base_model = getattr(models, base_cls).load(base_instr, direct_model, scalings, depth + 1)
+        base_cls, base_d = d["base_model"]
+        base_model = getattr(models, base_cls).load(base_d, direct_scores, scalings, depth + 1)
         model = cls(base_model)
         for criterion, scaling_params in scalings[depth].items():
             model.rescale(criterion, scaling_params[0], scaling_params[1])
@@ -24,23 +23,7 @@ class ScaledModel(ScoringModel):
         
     def save(self, directory: Union[Path, str], filename: str="scores", depth: int=0) -> Union[str, list, dict]:
         base_model_instructions = self.base_model.save(directory, depth)
-        return [self.__class__.__name__, {
-            "base_model": base_model_instructions,
-            "scaling_parameters": {
-                criterion: {
-                    "multiplicator": [
-                        self.scaling_parameters[criterion][0].value,
-                        self.scaling_parameters[criterion][0].left,
-                        self.scaling_parameters[criterion][0].right                        
-                    ],
-                    "translation": [
-                        self.scaling_parameters[criterion][1].value,
-                        self.scaling_parameters[criterion][1].left,
-                        self.scaling_parameters[criterion][1].right                        
-                    ],
-                } for criterion in self.scaled_criteria()
-            }
-        }]
+        return [self.__class__.__name__, base_model_instructions]
 
     def score(self, entity: "Entity", criterion: str):
         score = self.base_model(entity, criterion)
@@ -97,7 +80,7 @@ class ScaledModel(ScoringModel):
         }]
     
     @classmethod
-    def from_dict(self, d: dict, pd_scaling: pd.DataFrame, pd_direct_scores: pd.DataFrame):
+    def from_dict(self, d: dict, pd_scaling: DataFrame, pd_direct_scores: DataFrame):
         return ScaledModel(
             base_model=ScoringModel.from_dict(d["base_model"], entities),
             scaling_parameters={

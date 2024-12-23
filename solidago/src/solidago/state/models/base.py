@@ -1,9 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Optional, Union
 from pathlib import Path
-
-import pandas as pd
-import numpy as np
+from pandas import DataFrame
 
 
 class Score:
@@ -93,52 +91,19 @@ class ScoringModel(ABC):
         if isinstance(entities, Entities):
             return { entity: self(entity, criteria) for entity in entities }
         entity = entities
+        if isinstance(criteria, (int, str)):
+            return self.score(entity, criteria)
         if criteria is None:
             criteria = self.criteria()
-        if isinstance(criteria, list):
-            return { criterion: self(entity, criterion) for criterion in criteria }
-        return self.score(entity, criteria)
+        return { criterion: self(entity, criterion) for criterion in criteria }
         
     @classmethod
-    def load(cls, instructions: dict, direct_model: "DirectScoring", scalings: dict, depth: int=0):
+    def load(cls, d: dict, direct_scores: DataFrame, scalings: dict, depth: int=0):
         import solidago.state.models as models
-        base_cls, base_instr = instructions["base_model"]
-        base_model = getattr(models, base_cls).load(base_instr, direct_model, scalings, depth + 1)
+        base_cls, base_d = d["base_model"]
+        base_model = getattr(models, base_cls).load(base_d, direct_scores, scalings, depth + 1)
         return cls(base_model)
 
-    @staticmethod
-    def direct_scores_to_direct_model(direct_scores: pd.DataFrame) -> dict[str, "DirectScoring"]:
-        """ Constructs a dict that maps username to DirectScoring """
-        from solidago.state.models import DirectScoring, Score
-        direct_model = DirectScoring()
-        asymmetric = "left_unc" in direct_scores.columns
-        left, right = ("left_unc", "right_unc") if asymmetric else ("uncertainty", "uncertainty")
-        for _, r in direct_scores.iterrows():
-            direct_model[r["entity_id"], r["criterion"]] = Score(r["score"], r[left], r[right])
-        return direct_model
-
-    @staticmethod
-    def scalings_df_to_scaling_parameters(scalings_df: pd.DataFrame) -> dict:
-        """ out[username][depth][criterion] yields the multiplicator and the translation (Score) """
-        from solidago.state.models import Score
-        scaling_params = dict()
-        for _, r in scalings_df.iterrows():
-            criterion, depth = r["criterion"], r["depth"]
-            if depth not in scaling_params:
-                scaling_params[depth] = dict()
-            scaling_params[depth][criterion] = [
-                Score(r["multiplicator_score"], r["multiplicator_left"], r["multiplicator_right"]),
-                Score(r["translation_score"], r["translation_left"], r["translation_right"])
-            ]
-        return scaling_params
-        
-    @staticmethod
-    def global_model_load(instructions: list, direct_scores: pd.DataFrame, scalings_df: pd.DataFrame=pd.DataFrame()):
-        import solidago.state.models as models
-        direct_model = ScoringModel.direct_scores_to_direct_model(direct_scores)
-        scalings = ScoringModel.scalings_df_to_scaling_parameters(scalings_df)
-        return getattr(models, instructions[0]).load(instructions[1], direct_model, scalings)
-        
     @abstractmethod
     def save(self, filename: Union[Path, str]) -> Union[str, list, dict]:
         raise NotImplementedError
@@ -164,10 +129,10 @@ class ScoringModel(ABC):
 
     def save_scalings(self, filename: Union[Path, str]):
         filename = Path(filename)
-        df = pd.DataFrame(columns=["criterion", "depth",
+        df = DataFrame(columns=["criterion", "depth",
             "multiplicator_score", "multiplicator_left", "multiplicator_right", 
             "translation_score", "translation_left", "translation_right"])
-        base_model, depth = model, 0
+        base_model, depth = self, 0
         while hasattr(base_model, "base_model"):
             if not isinstance(base_model, ScaledModel):
                 continue
@@ -181,5 +146,5 @@ class ScoringModel(ABC):
         return df
     
     def foundational_model(self, depth: int=0):
-        return self.base_model.foundational_model(depth + 1) if hasattr(self, "base_model") else self, depth
+        return self.base_model.foundational_model(depth + 1) if hasattr(self, "base_model") else (self, depth)
     

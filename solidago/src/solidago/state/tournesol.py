@@ -2,6 +2,7 @@ import zipfile
 from functools import cached_property
 from typing import BinaryIO, Optional, Union
 from urllib.request import urlretrieve
+from pandas import DataFrame, Series
 
 import pandas as pd
 
@@ -17,7 +18,7 @@ class TournesolExport(State):
 
         from solidago.state import Users, Vouches, Entities, Privacy, Comparisons, Judgments, VotingRights, UserModels, DirectScoring
         with zipfile.ZipFile(dataset_zip) as zip_file:
-            def load(filename, columns=dict()):
+            def load(filename, columns):
                 with (zipfile.Path(zip_file) / f"{filename}.csv").open(mode="rb") as f:
                     # keep_default_na=False is required otherwise some public usernames
                     # such as "NA" are converted to float NaN.
@@ -61,9 +62,9 @@ class TournesolExport(State):
         voting_rights = VotingRights(pd_user_scores[voting_rights_columns])
 
         user_models_instructions = { user.name: ["DirectScoring", dict()] for user in users }
-        user_models = UserModels.load(user_models_instructions, pd_user_scores)
+        user_models = UserModels.load(user_models_instructions, pd_user_scores, DataFrame())
         
-        global_model = ScoringModel.global_model_load(["DirectScoring", dict()], pd_global_scores)
+        global_model = DirectScoring.load(dict(), pd_global_scores, DataFrame())
         
         super().__init__(users, vouches, entities, voting_rights, judgments, user_models, global_model)
         self.criteria = {
@@ -82,7 +83,7 @@ class TournesolExport(State):
     def download(cls) -> "TournesolDataset":
         return cls(dataset_zip="https://api.tournesol.app/exports/all")
 
-    def get_comparisons(self, criterion=None, user_id=None) -> pd.DataFrame:
+    def get_comparisons(self, criterion=None, user_id=None) -> DataFrame:
         dtf = self.comparisons.copy(deep=False)
         if criterion is not None:
             dtf = dtf[dtf.criterion == criterion]
@@ -106,13 +107,13 @@ class TournesolExport(State):
 
     @cached_property
     def ratings_properties(self):
-        user_entities_pairs = pd.Series(
+        user_entities_pairs = Series(
             iter(
                 set(self.comparisons.groupby(["user_id", "entity_a"]).indices.keys())
                 | set(self.comparisons.groupby(["user_id", "entity_b"]).indices.keys())
             )
         )
-        dtf = pd.DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
+        dtf = DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
         dtf["is_public"] = True
         return dtf
 
@@ -121,7 +122,7 @@ class TournesolExport(State):
         user_id: Optional[int] = None,
         criterion: Optional[str] = None,
         with_n_comparisons=False,
-    ) -> pd.DataFrame:
+    ) -> DataFrame:
         dtf = self.individual_scores
         if criterion is not None:
             dtf = dtf[dtf.criterion == criterion]
@@ -151,8 +152,8 @@ class TournesolExport(State):
         self,
         entity_id: Optional[str] = None,
         criterion: Optional[str] = None,
-    ) -> pd.DataFrame:
-        dtf: pd.DataFrame = self.collective_scores
+    ) -> DataFrame:
+        dtf: DataFrame = self.collective_scores
         if criterion is not None:
             dtf = dtf[dtf["criterion"] == criterion]
         if entity_id is not None:
@@ -182,7 +183,7 @@ class TournesolExport(State):
             self.vouchers.by_username.isin(self.username_to_user_id.index)
             & self.vouchers.to_username.isin(self.username_to_user_id.index)
         ]
-        return pd.DataFrame(
+        return DataFrame(
             {
                 "voucher": vouchers.by_username.map(self.username_to_user_id),
                 "vouchee": vouchers.to_username.map(self.username_to_user_id),
@@ -191,7 +192,7 @@ class TournesolExport(State):
         )
 
     def get_users(self):
-        users_df = pd.DataFrame(
+        users_df = DataFrame(
             {
                 "trust_score": self.users["trust_score"],
             },
