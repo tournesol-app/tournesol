@@ -1,2 +1,2 @@
 from .base import UserGenerator
-from .svd import NormalUser
+from .normal import NormalUserGenerator

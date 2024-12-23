@@ -23,9 +23,8 @@ class TournesolExport(State):
                     # such as "NA" are converted to float NaN.
                     return pd.read_csv(f, keep_default_na=False).rename(columns=columns)
                 
-            print("Loading the zip file")
             users = Users(load("users", { "public_username": "username" }))
-            vouches = Vouches(load("vouchers", { "by_username": "by", "to_username": "to", "value": "weight" }))
+            pd_vouches = load("vouchers", { "by_username": "by", "to_username": "to", "value": "weight" })
             judgments = Judgments(
                 comparisons=Comparisons(load("comparisons", { 
                     "public_username": "username",
@@ -46,23 +45,24 @@ class TournesolExport(State):
                 "public_username": "username"
             })
         
-        pd_user_scores["public"] = True
         pd_user_scores["depth"] = 0
         pd_global_scores["depth"] = 0
         
         entities = Entities({ "entity_id": list(set(pd_global_scores["entity_id"])) })
-        
-        privacy_columns = ["username", "entity_id", "public"]
-        privacy = Privacy.from_df(privacy_columns)
+        pd_vouches["kind"] = "ProofOfPersonhood"
+        vouches = Vouches(pd_vouches)
+            
+        # All interactions of Tournesol's public dataset are public
+        privacy = Privacy()
+        for _, r in pd_user_scores.iterrows():
+            privacy[r["username"], r["entity_id"]] = False
         
         voting_rights_columns = ["username", "entity_id", "criterion", "voting_right"]
-        voting_rights = VotingRights.from_df(pd_user_scores[voting_rights_columns])
+        voting_rights = VotingRights(pd_user_scores[voting_rights_columns])
 
-        print("Loading user models")
         user_models_instructions = { user.name: ["DirectScoring", dict()] for user in users }
         user_models = UserModels.load(user_models_instructions, pd_user_scores)
         
-        print("Loading global model")
         global_model = ScoringModel.global_model_load(["DirectScoring", dict()], pd_global_scores)
         
         super().__init__(users, vouches, entities, voting_rights, judgments, user_models, global_model)

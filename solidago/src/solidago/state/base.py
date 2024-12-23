@@ -22,7 +22,7 @@ class State:
         users: Users=Users(),
         vouches: Vouches=Vouches(),
         entities: Entities=Entities(),
-        privacy: Privacy=Privacy()
+        privacy: Privacy=Privacy(),
         judgments: Judgments=Judgments(),
         voting_rights: VotingRights=VotingRights(),
         user_models : UserModels=UserModels(),

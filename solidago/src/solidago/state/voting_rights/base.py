@@ -4,11 +4,14 @@ from pathlib import Path
 import pandas as pd
 
 
-class VotingRights(pd.DataFrame):
-    def __init__(self, d: dict=dict()):
-        self._dict = d
+class VotingRights:
+    def __init__(self, d: Union[dict, pd.DataFrame]=dict()):
+        self._dict = d if isinstance(d, dict) else dict()
+        if isinstance(d, pd.DataFrame):
+            for _, r in d.iterrows():
+                self[r["username"], r["entity_id"], r["criterion"]] = r["voting_right"]
     
-    def __getitem__(self, args: tuple[Optional[str, "User"], Optional[str, "entity_id"], str]) -> float:
+    def __getitem__(self, args: tuple[Union[str, "User"], Union[str, "Entity"], str]) -> float:
         username = args[0] if isinstance(args[0], str) else args[0].name
         entity_id = args[1] if isinstance(args[1], str) else args[1].id
         criterion = args[2]
@@ -17,24 +20,17 @@ class VotingRights(pd.DataFrame):
         if criterion not in self._dict[username][entity_id]: return 0
         return self._dict[username][entity_id][criterion]
     
-    def __setitem__(self, args: tuple[Optional[str, "User"], Optional[str, "entity_id"], str], voting_right: float):
+    def __setitem__(self, args: tuple[Union[str, "User"], Union[str, "Entity"], str], voting_right: float):
         username = args[0] if isinstance(args[0], str) else args[0].name
         entity_id = args[1] if isinstance(args[1], str) else args[1].id
         criterion = args[2]
         if username not in self._dict: self._dict[username] = dict()
         if entity_id not in self._dict[username]: self._dict[username][entity_id] = dict()
         self._dict[username][entity_id][criterion] = voting_right
-    
-    @class_method
-    def from_df(cls, df: pd.DataFrame) -> "VotingRights":
-        voting_rights = VotingRights()
-        for _, r in df.iterrows():
-            voting_rights[r["username"], r["entity_id"], r["criterion"]] = r["voting_right"]
-        return voting_rights
-        
+
     @classmethod
     def load(cls, filename: str) -> "VotingRights":
-        return cls.from_df(pd.read_csv(filename, keep_default_na=False))
+        return cls(pd.read_csv(filename, keep_default_na=False))
     
     def to_df(self):
         return pd.DataFrame([

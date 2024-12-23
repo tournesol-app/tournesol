@@ -42,11 +42,8 @@ class UserModels:
     @classmethod
     def load(cls, d: dict, direct_scores: pd.DataFrame, scalings_df: pd.DataFrame=pd.DataFrame()):
         import solidago.state.models as models
-        print("Converting direct models")
         direct_models = UserModels.direct_scores_to_direct_models(direct_scores)
-        print("Converting scaling parameters")
         scaling_params = UserModels.scalings_df_to_scaling_parameters(scalings_df)
-        print("Constructing user models")
         user_models = cls()
         for u in d:
             model_cls = getattr(models, d[u][0])
@@ -111,8 +108,8 @@ class UserModels:
         return self._dict[user]
         
     def __iter__(self):
-        self.iterator = self._dict.items()
-        return self
-    
-    def __next__(self):
-        return next(self.iterator)
+        iterator = self._dict.items()
+        while True:
+            try: yield next(iterator)
+            except StopIteration: break
+            

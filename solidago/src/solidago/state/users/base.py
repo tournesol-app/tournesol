@@ -14,11 +14,10 @@ class User(pd.Series):
 class Users(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if "username" not in self.columns:
-            assert len(self) == 0
-            self["username"] = list()
-        self.set_index("username", inplace=True)
-        self.iterator = None
+        if "username" in self.columns:
+            self.set_index("username", inplace=True)
+        else:
+            self.index.name = "username"
 
     @classmethod
     def load(cls, filename: str):
@@ -29,17 +28,15 @@ class Users(pd.DataFrame):
         self.to_csv(path)
         return str(path)
                 
-    def get(self, username):
+    def get(self, username: Union[int, str, User]) -> User:
         assert isinstance(username, User) or username in self.index, (username, self)
         return username if isinstance(username, User) else User(self.loc[username])
         
     def __iter__(self):
-        self.iterator = super(Users, self).iterrows()
-        return self
-    
-    def __next__(self):
-        _, user = next(self.iterator)
-        return User(user)
+        iterator = self.iterrows()
+        while True:
+            try: yield User(next(iterator)[1])
+            except StopIteration: break
     
     def __repr__(self):
         return repr(pd.DataFrame(self))

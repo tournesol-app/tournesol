@@ -11,6 +11,10 @@ class Entity(pd.Series):
     def id(self):
         return self.name
     
+    @id.setter
+    def id(self, entity_id):
+        self.name = entity_id
+    
     def __hash__(self):
         return hash(self.id)
         
@@ -18,10 +22,10 @@ class Entity(pd.Series):
 class Entities(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if "entity_id" not in self.columns:
-            assert len(self) == 0
-            self["entity_id"] = list()
-        self.set_index("entity_id", inplace=True)
+        if "username" in self.columns:
+            self.set_index("entity_id", inplace=True)
+        else:
+            self.index.name = "entity_id"
         self.iterator = None
 
     @classmethod
@@ -33,17 +37,15 @@ class Entities(pd.DataFrame):
         self.to_csv(path)
         return str(path)
 
-    def get(self, entity_id):
+    def get(self, entity_id: Union[str, int, Entity]) -> Entity:
         assert isinstance(entity_id, Entity) or entity_id in self.index, (entity_id, self)
         return entity_id if isinstance(entity_id, Entity) else Entity(self.loc[entity_id])
         
     def __iter__(self):
-        self.iterator = super(Entities, self).iterrows()
-        return self
-    
-    def __next__(self):
-        _, entity = next(self.iterator)
-        return Entity(entity)
+        iterator = self.iterrows()
+        while True:
+            try: yield Entity(next(iterator)[1])
+            except StopIteration: break
     
     def __repr__(self):
         return repr(pd.DataFrame(self))

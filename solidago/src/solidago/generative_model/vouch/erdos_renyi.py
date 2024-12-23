@@ -24,9 +24,7 @@ class ErdosRenyiVouchGenerator(VouchGenerator):
             for voucher in users_subset:
                 p_vouch = voucher["n_expected_vouches"] / (len(users_subset) - 1)
                 for vouchee in users_subset:
-                    if voucher.name == vouchee.name: continue
-                    if (np.random.random() < p_vouch):
-                        weight = 1 - np.random.random()**2
-                        vouches.set(voucher, vouchee, weight=weight)
+                    if (voucher.name != vouchee.name) and (np.random.random() < p_vouch):
+                        vouches[voucher, vouchee] = 1 - np.random.random()**2
         
         return vouches

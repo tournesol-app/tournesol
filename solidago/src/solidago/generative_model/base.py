@@ -71,7 +71,7 @@ class GenerativeModel:
             np.random.seed(random_seed)
         
         logger.info(f"Generate {n_users} users using {self.comparison_gen}")
-        users = self.comparison_gen(n_users)
+        users = self.user_gen(n_users)
         logger.info(f"Generate vouches using {self.vouch_gen}")
         vouches = self.vouch_gen(users)
         logger.info(f"Generate {n_entities} entities using {self.entity_gen}")
@@ -90,8 +90,8 @@ class GenerativeModel:
             with open(d) as f:
                 d = json.load(d)
         import solidago.generative_model as gen
-        load = lambda key: getattr(gen, j[key][0])(**j[key][1])
-        return GenerativeModel(**{ key: load(key) for key in list(self.__dict__.keys()) })
+        load = lambda key: getattr(gen, d[key][0])(**d[key][1])
+        return GenerativeModel(**{ key: load(key) for key in cls.__init__.__code__.co_varnames[1:] })
         
     def to_json(self):
         return { key: getattr(self, key).to_json() for key in self.__dict__.keys() }

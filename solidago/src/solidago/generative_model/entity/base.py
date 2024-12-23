@@ -5,12 +5,10 @@ from solidago.state import Entities
 
 class EntityGenerator:
     def __call__(self, n_entities: int) -> Entities:
-        df = pd.DataFrame([ self.entity_generate() for _ in range(n_entities) ])
-        df.index.name = "entity_id"
-        return Entities(df)
+        return Entities([ self.sample(entity_id) for entity_id in range(n_entities) ])
     
-    def user_generate(self):
-        return pd.Series()
+    def sample(self, entity_id):
+        return Entity(entity_id)
         
     def __str__(self):
         return type(self).__name__

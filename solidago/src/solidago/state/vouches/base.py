@@ -4,60 +4,51 @@ from pathlib import Path
 import pandas as pd
 
 
-class Vouches(pd.DataFrame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if "kind" not in self.columns:
-            self["kind"] = "ProofOfPersonhood"
-        if "weight" not in self.columns:
-            self["weight"] = 1
-        if "priority" not in self.columns:
-            self["priority"] = 0
-        self.iterator = None
+class Vouches:
+    def __init__(self, d: Union[dict, pd.DataFrame]=dict()):
+        self._dict = d if isinstance(d, dict) else dict()
+        if isinstance(d, pd.DataFrame):
+            if "priority" not in d.columns:
+                d["priority"] = 0
+            for _, r in d.iterrows():
+                self[r["by"], r["to"], r["kind"]] = r["weight"], r["priority"]
+    
+    def __getitem__(self, args: tuple[Union[str, "User"], Union[str, "User"], str]) -> tuple[float, float]:
+        """ Returns (weight, priority) of the vouch """
+        voucher = args[0] if isinstance(args[0], str) else args[0].name
+        vouchee = args[1] if isinstance(args[1], str) else args[1].name
+        kind = args[2] if len(args) > 2 else "ProofOfPersonhood"
+        if kind not in self._dict: return 0
+        if voucher not in self._dict[kind]: return 0
+        if vouchee not in self._dict[kind][voucher]: return 0
+        return self._dict[kind][voucher][vouchee]
+    
+    def __setitem__(self, args: tuple[Union[str, "User"], Union[str, "User"], str], vouch: Union[float, tuple[float, float]]):
+        vouch = (vouch, 0) if isinstance(vouch, (float, int)) else vouch
+        assert vouch[0] >= 0
+        voucher = args[0] if isinstance(args[0], str) else args[0].name
+        vouchee = args[1] if isinstance(args[1], str) else args[1].name
+        kind = args[2] if len(args) > 2 else "ProofOfPersonhood"
+        if kind not in self._dict: self._dict[kind] = dict()
+        if voucher not in self._dict[kind]: self._dict[kind][voucher] = dict()
+        self._dict[kind][voucher][vouchee] = vouch
 
     @classmethod
-    def load(cls, filename: str):
-        return cls(pd.read_csv(filename))
+    def load(cls, filename: str) -> "Vouches":
+        return cls(pd.read_csv(filename, keep_default_na=False))
+
+    def to_df(self):
+        return pd.DataFrame([
+            pd.Series({ "kind": kind, "by": voucher, "to": vouchee, "weight": out[0], "priority": out[1] })
+            for kind in self._dict
+            for voucher in self._dict[kind]
+            for vouchee, out in self._dict[kind][voucher].items()
+        ])
 
     def save(self, directory: Union[str, Path]) -> Union[str, list, dict]:
         path = Path(directory) / "vouches.csv"
-        self.to_csv(path)
+        self.to_df().to_csv(path)
         return str(path)
-    
-    def get(self, by: "User", to: Optional["User"]=None, kind: Optional[str]=None) -> Union[tuple[float, float], dict]:
-        """ Return vouch or vouches, depending on input
-        
-        Returns
-        -------
-        out: dict[str, dict[User, tuple[float, float]]]
-            if to is None and kind is None
-        out: dict[User, tuple[float, float]]
-            if to is None and kind: str
-        out: dict[str, tuple[float, float]]
-            if to: User and kind is None
-        weight, priority: tuple[float, float]
-            if to: User and kind: str
-        """
-        v = self[self["by_username"] == by.name]
-        if kind is None:
-            return { k: get(by, to, k) for k in set(v["kind"]) }
-        v = self[v["kind"] == kind]
-        if to is None:
-            return { t: get(by, to, kind) for t in set(v["to"]) }
-        v = v[v["to_username"] == to.name]
-        return (0, - float("inf")) if len(v) == 0 else (v.iloc[-1]["weight"], v.iloc[-1]["priority"])
 
-    def set(self, by: "User", to: "User", kind: str="ProofOfPersonhood", weight: float=1, priority: float=1):
-        self.iloc[-1] = { "by": by.name, "to": to.name, "kind": kind, "weight": weight, "priority": priority }
-            
-    def __iter__(self):
-        self.iterator = super(Vouches, self).iterrows()
-        return self
-    
-    def __next__(self):
-        _, vouch = next(self.iterator)
-        return vouch
-    
     def __repr__(self):
-        return repr(pd.DataFrame(self))
-    
+        return repr(self.to_df()) 

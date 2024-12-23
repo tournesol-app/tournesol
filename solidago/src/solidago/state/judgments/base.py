@@ -5,20 +5,6 @@ from pathlib import Path
 import pandas as pd
 
 
-class Comparisons(pd.DataFrame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if len(self.columns) == 0:
-            for column in ("username", "left_id", "right_id", "comparison", "comparison_max"):
-                self[column] = None
-
-    def from_dict(d):
-        return Comparisons(pd.DataFrame.from_dict(d))
-    
-    def extract_user(self, user: int):
-        return Comparisons(self[self["user_id"] == user])
-        
-
 class Assessments(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,15 +19,29 @@ class Assessments(pd.DataFrame):
         return Assessments(self[self["user_id"] == user])
 
 
+class Comparisons(pd.DataFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if len(self.columns) == 0:
+            for column in ("username", "left_id", "right_id", "comparison", "comparison_max"):
+                self[column] = None
+
+    def from_dict(d):
+        return Comparisons(pd.DataFrame.from_dict(d))
+    
+    def extract_user(self, user: int):
+        return Comparisons(self[self["user_id"] == user])
+        
+
 class Judgments:
     def __init__(
         self, 
-        comparisons: Comparisons = Comparisons(),
         assessments: Assessments = Assessments(),
+        comparisons: Comparisons = Comparisons(),
     ):
         """ Instantiates judgments from all contributors, based on dataframes """
-        self._comparisons = comparisons
         self._assessments = assessments
+        self._comparisons = comparisons
 
     @classmethod
     def load(cls, filenames: dict[str, tuple[str, str]]):
@@ -67,14 +67,23 @@ class Judgments:
         return filenames
     
     @property
-    def comparisons(self):
-        return self._comparisons
-        
-    @property
     def assessments(self):
         return self._assessments
     
+    @assessments.setter
+    def assessments(self, value):
+        self._assessments = value
+    
+    @property
+    def comparisons(self):
+        return self._comparisons
+    
+    @comparisons.setter
+    def comparisons(self, value):
+        self._comparisons = value
+        
     def __getitem__(self, user: int) -> "Judgments":
         return Judgments(self.comparisons.extract_user(user), self.assessments.extract_user(user))
 
-
+    def __repr__(self) -> str:
+        return repr(self.assessments) + "\n\n" + repr(self.comparisons)

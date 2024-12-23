@@ -1,13 +1,14 @@
+from typing import Union
 from numpy.random import random, normal
 
 import pandas as pd
 import numpy as np
 
-from solidago.state import Users, Entities, VotingRights, Comparisons, Judgments
+from solidago.state import Users, Entities, Privacy, Assessments, Comparisons, Judgments
 from .base import EngagementGenerator
 
 
-class SimpleComparisonOnlyEngagementGenerator(EngagementGenerator):
+class SimpleEngagementGenerator(EngagementGenerator):
     def __init__(
         self, 
         p_private: float=0.2,
@@ -34,90 +35,50 @@ class SimpleComparisonOnlyEngagementGenerator(EngagementGenerator):
         self.p_comparison_per_criterion = p_comparison_per_criterion
         self.p_assessment_per_criterion = p_assessment_per_criterion
 
-    
     def __call__(self, users: Users, entities: Entities) -> tuple[Privacy, Judgments]:
-        assessment_list, comparison_list = list(), list() # collects all added assesments/comparisons
-        privacy = Privacy()
+        privacy, assessments, comparisons = Privacy(), list(), list()
+        entity_index2id = { entity["vector_index"]: entity.id for entity in entities }
         
         for user in users:
-            if row["n_comparisons"] <= 0:
+            if user["n_comparisons"] <= 0:
                 continue
-                
+    
             n_compared_entities = int(2 * user["n_comparisons"] / user["n_comparisons_per_entity"] )
-            p_compare_ab = 2 * row["n_comparisons"] / n_compared_entities**2
-            
-            scores = _svd_scores(user, users, entities)
-            compared_entities = _random_biased_order(scores, row["engagement_bias"])[:n_compared_entities]
-            
+            n_compared_entities = min(len(entities), n_compared_entities)
+            p_compare_ab = 2 * user["n_comparisons"] / n_compared_entities**2
+
+            # To implement engagement bias, we construct a noisy score-based sort of the entities
+            scores = entities.vectors @ user.vector
+            noisy_scores = - user["engagement_bias"] * scores + normal(0, 1, len(scores))
+            argsort = np.argsort(noisy_scores)
+            compared_entities = [ entity_index2id[argsort[i]] for i in range(n_compared_entities) ]
+
             for index, e1 in enumerate(compared_entities):
-                privacy[user, e1] = (random() > self.p_private)
+                privacy[user, e1] = (random() < self.p_private)
                 for criterion in self.p_assessment_per_criterion:
-                    if random() <= self.p_comparison_per_criterion[criterion]:
-                        comparison_list.append((user, criterion, e1, None, None, None))
-                for e2 in compared_list[index + 1:]:
+                    if random() > self.p_comparison_per_criterion[criterion]:
+                        continue
+                    assessments.append({ "username": user.name, "criterion": criterion, "entity_id": e1 })
+                for e2 in compared_entities[index + 1:]:
                     if random() >= p_compare_ab:
                         continue
                     for criterion in self.p_comparison_per_criterion:
-                        if random() <= self.p_comparison_per_criterion[criterion]:
-                            if random() <= 0.5:
-                                comparison_list.append((user, criterion, e1, e2, None, None))
-                            else:
-                                comparison_list.append((user, criterion, e2, e1, None, None))
+                        if random() >= self.p_comparison_per_criterion[criterion]:
+                            continue
+                        shuffle_1_2 = (random() < 0.5)
+                        comparisons.append({
+                            "username": user.name, 
+                            "criterion": criterion,
+                            "left_id": e1 if shuffle_1_2 else e2,
+                            "right_id": e2 if shuffle_1_2 else e1
+                        })
         
-        a, c = list(zip(*assessment_list)), list(zip(*comparison_list))
-        assessment_df = pd.DataFrame(dict(
-            username=a[0], 
-            criterion=a[1], 
-            entity_id=a[2], 
-            assessment_min=c[4],
-            assessment_max=c[4],
-            assessment=c[5]
-        ))
-        comparisons_df = pd.DataFrame(dict(
-            username=c[0], 
-            criterion=c[1], 
-            left_id=c[2], 
-            right_id=c[3],
-            comparison_max=c[4],
-            comparison=c[5]
-        ))
-        return privacy, Judgments(Comparisons(comparisons_df), Assessment(assessment_df))
+        return privacy, Judgments(Assessments(assessments), Comparisons(comparisons))
 
     def __str__(self):
-        properties = f"p_per_criterion={self.p_per_criterion}, p_private={self.p_private}"
-        return f"SimpleEngagement({properties})"
+        properties = ", ".join([f"{key}={value}" for key, value in self.__dict__.items()])
+        return f"SimpleEngagementGenerator({properties})"
 
     def to_json(self):
-        return type(self).__name__, dict(
-            p_per_criterion=self.p_per_criterion, 
-            p_private=self.p_private
-        )
+        return type(self).__name__, self.__dict__
         
-def _svd_scores(user, users, entities):
-    svd_cols, svd_dim = list(), 0
-    while f"svd{svd_dim}" in users and f"svd{svd_dim}" in entities:
-        svd_cols.append(f"svd{svd_dim}")
-        svd_dim += 1
-        
-    if svd_dim == 0:
-        return { e: 0 for e in entities.index }
-        
-    user_svd = users[svd_cols].loc[user]
-    return {
-        entity: (user_svd @ entities[svd_cols].loc[entity]) / svd_dim
-        for entity, _ in entities.iterrows()
-    }
-
-def _random_biased_order(scores: dict[int, float], score_bias: float) -> list[int]:
-    """
-    Parameters
-    ----------
-    scores: dict
-        scores[entity] is the score of the entity
-    bias: float
-        Larger biases must imply a more deterministic order
-    """
-    keys = list(scores.keys())
-    noisy_scores = np.array([- score_bias * scores[k] + normal() for k in keys])
-    argsort = np.argsort(noisy_scores)
-    return [keys[argsort[k]] for k in range(len(keys))]
