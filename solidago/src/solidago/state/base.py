@@ -55,12 +55,11 @@ class State:
         with open(path / "state.json") as f: 
             j = json.load(f)
         def load_csv(name):
-            try: return pd.read_csv(j[name], keep_default_na=False)
-            except: return DataFrame()
+            return pd.read_csv(path / name, keep_default_na=False)
         user_scalings_df = load_csv(cls.user_scalings_filename)
-        user_direct_scores = load_csv(cls.user_direct_scores_filename)
+        user_direct_scores_df = load_csv(cls.user_direct_scores_filename)
         global_scalings_df = load_csv(cls.global_scalings_filename)
-        global_direct_scores = load_csv(cls.global_direct_scores_filename)
+        global_direct_scores_df = load_csv(cls.global_direct_scores_filename)
         global_scalings = dict()
         for _, r in global_scalings_df.iterrows():
             if r["depth"] not in global_scalings:
@@ -71,9 +70,9 @@ class State:
             assert hasattr(state, key)
             kwargs = dict()
             if key == "user_models":
-                kwargs = dict(direct_scores=user_direct_scores, scalings_df=user_scalings_df)
+                kwargs = dict(direct_scores=user_direct_scores_df, scalings_df=user_scalings_df)
             if key == "global_model":
-                kwargs = dict(direct_scores=global_direct_scores, scalings=global_scalings)
+                kwargs = dict(direct_scores=global_direct_scores_df, scalings=global_scalings)
             setattr(state, key, getattr(solidago.state, value[0]).load(value[1], **kwargs))
         return state
     
@@ -90,8 +89,8 @@ class State:
         self.save_directory = directory
         self.save_user_scalings()
         self.save_user_direct_scores()
-        self.save_global_scores()
         self.save_global_scalings()
+        self.save_global_direct_scores()
         instructions = dict()
         for key, value in self.__dict__.items():
             if key[0] != "_" and hasattr(value, "save"):
@@ -116,7 +115,7 @@ class State:
         self.save_directory = directory
         return self.global_model.save_scalings(self.save_directory / self.global_scalings_filename)
 
-    def save_global_scores(self, directory: Optional[str]=None):
+    def save_global_direct_scores(self, directory: Optional[str]=None):
         self.save_directory = directory
-        return self.global_model.foundational_model()[0].save(self.save_directory / self.global_direct_scores_filename)
+        return self.global_model.save_direct_scores(self.save_directory / self.global_direct_scores_filename)
 

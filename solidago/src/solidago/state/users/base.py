@@ -1,5 +1,6 @@
 from typing import Union
 from pandas import DataFrame, Series
+from pathlib import Path
 
 import pandas as pd
 

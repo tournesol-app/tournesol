@@ -2,6 +2,6 @@
 
 from .__version__ import __version__
 
-import solidago.state as state
-import solidago.generative_model as generative_model
+from solidago.state import *
+from solidago.generative_model import *
 # import solidago.pipeline

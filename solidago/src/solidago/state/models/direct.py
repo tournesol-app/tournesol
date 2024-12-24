@@ -32,16 +32,13 @@ class DirectScoring(ScoringModel):
             model[r["entity_id"], r["criterion"]] = Score(r["score"], r[left], r[right])
         return model
     
-    def save(self, filename: Union[Path, str], depth: int=0) -> Union[str, list, dict]:
+    def save(self, filename: Union[Path, str], depth: int=0, save_scores: bool=False) -> Union[str, list, dict]:
+        if not save_scores:
+            return [self.__class__.__name__, dict()]            
         filename = Path(filename)
         if filename.is_dir():
             filename /= "direct_scores.csv"
-        df = DataFrame(columns=["entity_id", "criterion", "score", "left_unc", "right_unc"])
-        for entity_id in self._dict:
-            for criterion in self._dict[entity_id]:
-                score = self(entity_id, criterion)
-                df.iloc[-1] = [entity_id, criterion, score.value, score.left, score.right]
-        df.to_csv(filename)
+        self.to_df(depth).to_csv(filename)
         return [self.__class__.__name__, str(filename)]
     
     def __setitem__(self, entity_criterion: tuple[Union["Entity", str], str], score: Score):
@@ -58,16 +55,24 @@ class DirectScoring(ScoringModel):
         ]
         from solidago.state.entities import Entities
         if entities is None:
-            return Entities(all_scored_entities)
+            return Entities(dict(entity_id=all_scored_entities))
         return Entities(entities[entities.id.isin(all_scored_entities)])
+
+    def to_df(self, depth: int=0):
+        rows = list()
+        for entity_id in self._dict:
+            for criterion in self._dict[entity_id]:
+                score = self(entity_id, criterion)
+                rows.append([entity_id, criterion, score.value, score.left, score.right, depth])
+        return DataFrame(rows, columns=["entity_id", "criterion", "score", "left_unc", "right_unc", "depth"])
 
     def to_dict(self, data=False):
         return [self.__class__.__name__, dict() if not data else { 
-            entity.id: {
-                criterion: self.score(entity, criterion).to_dict() 
-                for criterion in self._dict[entity]
+            entity_id: {
+                criterion: self.score(entity_id, criterion).to_triplet() 
+                for criterion in self._dict[entity_id]
             }
-            for entity in self._dict
+            for entity_id in self._dict
         }]
     
     @classmethod
@@ -79,4 +84,6 @@ class DirectScoring(ScoringModel):
                 model[entity, criterion] = Score(*score_triplet)
         return model
 
+    def __repr__(self):
+        return repr(self.to_df())
         

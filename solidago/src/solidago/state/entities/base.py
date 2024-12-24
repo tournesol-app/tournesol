@@ -1,5 +1,6 @@
 from typing import Union
 from pandas import Series, DataFrame
+from pathlib import Path
 
 import pandas as pd
 
@@ -23,7 +24,7 @@ class Entity(Series):
 class Entities(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if "username" in self.columns:
+        if "entity_id" in self.columns:
             self.set_index("entity_id", inplace=True)
         else:
             self.index.name = "entity_id"

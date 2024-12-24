@@ -129,21 +129,33 @@ class ScoringModel(ABC):
 
     def save_scalings(self, filename: Union[Path, str]):
         filename = Path(filename)
-        df = DataFrame(columns=["criterion", "depth",
-            "multiplicator_score", "multiplicator_left", "multiplicator_right", 
-            "translation_score", "translation_left", "translation_right"])
-        base_model, depth = self, 0
+        df = self.scalings_df()
+        df.to_csv(filename)
+        return df
+
+    def scalings_df(self):
+        rows, base_model, depth = list(), self, 0
         while hasattr(base_model, "base_model"):
             if not isinstance(base_model, ScaledModel):
                 continue
             for criterion in self.scaled_criteria():
                 m = base_model.multiplicator(criterion)
                 t = base_model.translation(criterion)
-                df.iloc[-1] = [criterion, depth, m.value, m.left, m.right, t.value, t.left, t.right]
+                rows.append([criterion, depth, m.value, m.left, m.right, t.value, t.left, t.right])
             depth += 1
             base_model = base_model.base_model
-        df.to_csv(filename)
-        return df
+        return DataFrame(rows, columns=["criterion", "depth",
+            "multiplicator_score", "multiplicator_left", "multiplicator_right", 
+            "translation_score", "translation_left", "translation_right"])
+        
+    
+    def save_direct_scores(self, filename: Union[Path, str]):
+        foundation_model, depth = self.foundational_model()
+        from .direct import DirectScoring
+        if isinstance(foundation_model, DirectScoring):
+            foundation_model.save(filename, depth, save_scores=True)
+        else:
+            DataFrame().to_csv(filename)
     
     def foundational_model(self, depth: int=0):
         return self.base_model.foundational_model(depth + 1) if hasattr(self, "base_model") else (self, depth)
