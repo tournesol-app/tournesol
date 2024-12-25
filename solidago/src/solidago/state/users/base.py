@@ -8,9 +8,13 @@ import pandas as pd
 class User(Series):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.name = str(self.name)
 
     def __hash__(self):
         return hash(self.name)
+    
+    def __str__(self):
+        return str(self.name)
 
 
 class Users(DataFrame):
@@ -30,9 +34,9 @@ class Users(DataFrame):
         self.to_csv(path)
         return type(self).__name__, str(path)
                 
-    def get(self, username: Union[int, str, User]) -> User:
-        assert isinstance(username, User) or username in self.index, (username, self)
-        return username if isinstance(username, User) else User(self.loc[username])
+    def get(self, user: Union[str, User]) -> User:
+        assert str(user) in self.index, (user, self)
+        return User(self.loc[str(user)])
         
     def __iter__(self):
         iterator = self.iterrows()
@@ -44,5 +48,5 @@ class Users(DataFrame):
         return repr(DataFrame(self))
     
     def __contains__(self, user: User):
-        return user.name in set(self["username"])
+        return str(user) in set(self.index)
 

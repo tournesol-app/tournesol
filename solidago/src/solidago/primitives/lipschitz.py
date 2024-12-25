@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 from numba import njit
 
-from solidago.solvers.optimize import njit_brentq as brentq
+from solidago.primitives.optimize import njit_brentq as brentq
 
 
 @njit

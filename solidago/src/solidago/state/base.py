@@ -10,7 +10,8 @@ import pandas as pd
 from .users.base import Users
 from .vouches.base import Vouches
 from .entities.base import Entities
-from .privacy.base import Privacy
+from .criteria.base import Criteria
+from .made_public.base import MadePublic
 from .judgments.base import Judgments
 from .voting_rights.base import VotingRights
 from .models.direct import ScoringModel, DirectScoring
@@ -29,18 +30,22 @@ class State:
         users: Users=Users(),
         vouches: Vouches=Vouches(),
         entities: Entities=Entities(),
-        privacy: Privacy=Privacy(),
+        criteria: Criteria=Criteria(),
+        made_public: MadePublic=MadePublic(),
         judgments: Judgments=Judgments(),
         voting_rights: VotingRights=VotingRights(),
         user_models : UserModels=UserModels(),
         global_model: ScoringModel=DirectScoring(),
-        save_directory: str = "temp"
+        save_directory: Union[str, bool]=False
     ):
-        """ State contains all information being processed by the pipeline """
+        """ State contains all information being processed by the pipeline 
+        save_directory == False means that no save operation will be performed
+        """
         self.users = users
         self.vouches = vouches
         self.entities = entities
-        self.privacy = privacy
+        self.criteria = criteria
+        self.made_public = made_public
         self.judgments = judgments
         self.voting_rights = voting_rights
         self.user_models = user_models
@@ -64,7 +69,7 @@ class State:
         for _, r in global_scalings_df.iterrows():
             if r["depth"] not in global_scalings:
                 global_scalings[r["depth"]] = dict()
-            global_scalings[r["depth"]][r["criterion"]] = Score(r["score"], r["left_unc"], r["right_unc"])
+            global_scalings[r["depth"]][r["criterion_id"]] = Score(r["score"], r["left_unc"], r["right_unc"])
         state = cls()
         for key, value in j.items():
             assert hasattr(state, key)
@@ -77,16 +82,20 @@ class State:
         return state
     
     @property
-    def save_directory(self):
-        return Path(self._save_directory)
+    def save_directory(self) -> Union[Path, bool]:
+        return False if self._save_directory == False else Path(self._save_directory)
         
     @save_directory.setter
-    def save_directory(self, directory: Optional[str]=None):
+    def save_directory(self, directory: Optional[Union[str, Path, bool]]=None):
         self._save_directory = self._save_directory if directory is None else directory
-        self.save_directory.mkdir(parents=True, exist_ok=True)
+        if isinstance(directory, (str, Path)):
+            self.save_directory.mkdir(parents=True, exist_ok=True)
         
-    def save(self, directory: Optional[str]=None):
+    def save(self, directory: Optional[str]=None) -> dict():
+        """ Returns instructions to load content (but which is also already saved) """
         self.save_directory = directory
+        if self.save_directory == False:
+            return dict()
         self.save_user_scalings()
         self.save_user_direct_scores()
         self.save_global_scalings()
@@ -99,23 +108,23 @@ class State:
             json.dump(instructions, f, indent=4)
         return instructions
 
-    def save_trust_scores(self, directory: Optional[str]=None):
+    def save_trust_scores(self, directory: Optional[str]=None) -> None:
         self.save_directory = directory
         self.users.to_csv(self.save_directory / self.users_filename)
 
-    def save_user_scalings(self, directory: Optional[str]=None):
+    def save_user_scalings(self, directory: Optional[str]=None) -> None:
         self.save_directory = directory
         return self.user_models.save_scalings(self.save_directory / self.user_scalings_filename)
 
-    def save_user_direct_scores(self, directory: Optional[str]=None):
+    def save_user_direct_scores(self, directory: Optional[str]=None) -> None:
         self.save_directory = directory
         return self.user_models.save_direct_scores(self.save_directory / self.user_direct_scores_filename)
 
-    def save_global_scalings(self, directory: Optional[str]=None):
+    def save_global_scalings(self, directory: Optional[str]=None) -> None:
         self.save_directory = directory
         return self.global_model.save_scalings(self.save_directory / self.global_scalings_filename)
 
-    def save_global_direct_scores(self, directory: Optional[str]=None):
+    def save_global_direct_scores(self, directory: Optional[str]=None) -> None:
         self.save_directory = directory
         return self.global_model.save_direct_scores(self.save_directory / self.global_direct_scores_filename)
 

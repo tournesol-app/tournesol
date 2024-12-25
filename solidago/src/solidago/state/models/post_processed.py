@@ -7,54 +7,46 @@ from .base import Score, ScoringModel
 
 
 class PostProcessedModel(ScoringModel):
-    def __init__(self, base_model: ScoringModel, post_process_fn: Callable):
+    def __init__(self, parent: ScoringModel, post_process_fn: Callable):
         """ Defines a derived scoring model, based on a base model and a post process
         
         Parameters
         ----------
-        base_model: ScoringModel
+        parent: ScoringModel
         post_process_fn: callable
             Must be a monotonous function float -> float
         """
-        self.base_model = base_model
+        self.parent = parent
         self.post_process_fn = post_process_fn
     
-    def score(self, entity: "Entity", criterion: str):
-        score = self.base_model(entity, criterion)
-        return None if score is None else self.post_process(score)
+    def score(self, entity: "Entity", criterion: "Criterion") -> Score:
+        return self.post_process(self.parent(entity, criterion))
 
-    def post_process(self, score: Score):
+    def post_process(self, score: Score) -> Score:
         value = self.post_process_fn(score.value)
         extremes = [self.post_process_fn(score.max), self.post_process_fn(score.min)]
         return Score(value, value - min(extremes), max(extremes) - value)
 
-    def scored_entities(self, entities: Optional["Entities"], criterion: Optional[str]) -> "Entities":
-        return self.base_model.scored_entities(entities, criterion)
-
 
 class SquashedModel(PostProcessedModel):
-    def __init__(self, base_model: ScoringModel):
-        super().__init__(base_model, lambda x: 100 * x / sqrt(1+x**2))
+    def __init__(self, parent: ScoringModel):
+        super().__init__(parent, lambda x: 100 * x / sqrt(1+x**2))
         
-    def to_dict(self):
-        return [self.__class__.__name__, { "base_model": self.base_model.to_dict() }]
+    def to_dict(self) -> tuple[str, dict]:
+        return [self.__class__.__name__, { "parent": self.parent.to_dict() }]
     
-    def from_dict(self, d: dict, entities: "Entities"):
-        return SquashedModel(ScoringModel.from_dict(d["base_model"], entities))
+    def from_dict(self, d: dict, entities: "Entities") -> "SquashedModel":
+        return SquashedModel(ScoringModel.from_dict(d["parent"], entities))
 
-    def save(self, directory: Union[Path, str], filename: str="scores", depth: int=0) -> Union[str, list, dict]:
-        base_model_instructions = self.base_model.save(directory, depth)
-        return [self.__class__.__name__, { "base_model": base_model_instructions }]
+    def save(self, directory: Union[Path, str], filename: str, depth: int=0 ) -> tuple[str, Union[dict, str, tuple, list]]:
+        parent_instructions = self.parent.save(directory, depth)
+        return [self.__class__.__name__, { "parent": parent_instructions }]
         
-    def to_dict(self, data=False):
+    def to_dict(self, data=False) -> tuple[str, dict]:
         return [self.__class__.__name__, dict() if not data else { 
-            "base_model": self.base_model.to_dict(data=True)
+            "parent": self.parent.to_dict(data=True)
         }]
     
     @classmethod
-    def from_dict(self, d: dict, pd_scaling: DataFrame, pd_direct_scores: DataFrame):
-        return ScaledModel(
-            base_model=ScoringModel.from_dict(d["base_model"], entities),
-            multiplicator=Score.from_dict(d["multiplicator"]),
-            translation=Score.from_dict(d["translation"])
-        )
+    def from_dict(self, d: dict, scaling_df: DataFrame, direct_scores_df: DataFrame) -> "SquashedModel":
+        return SquashedModel(ScoringModel.from_dict(d["parent"], entities))

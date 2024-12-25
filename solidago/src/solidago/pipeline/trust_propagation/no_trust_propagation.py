@@ -1,6 +1,5 @@
-import pandas as pd
-
 from .base import TrustPropagation
+from solidago.state import Users, Vouches
 
 
 class NoTrustPropagation(TrustPropagation):
@@ -13,11 +12,9 @@ class NoTrustPropagation(TrustPropagation):
         """
         self.pretrust_value = pretrust_value
 
-    def __call__(self,
-        users: pd.DataFrame,
-        vouches: pd.DataFrame
-    ) -> pd.DataFrame:
-        return users.assign(trust_score=users["is_pretrusted"] * self.pretrust_value)
+    def propagate(self, users: Users, vouches: Vouches) -> Users:
+        users["trust_score"] = users["is_pretrusted"] * self.pretrust_value
+        return users
         
     def __str__(self):
         return f"{type(self).__name__}(pretrust_value={self.pretrust_value})"

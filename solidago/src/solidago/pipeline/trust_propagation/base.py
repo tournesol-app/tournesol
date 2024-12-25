@@ -1,45 +1,18 @@
 from abc import ABC, abstractmethod
 
-import pandas as pd
+from solidago.pipeline.base import StateFunction
+from solidago.state import State, Users, Vouches
 
-class TrustPropagation(ABC):
-    """
-    Base class for Trust Propagation algorithms
-    """
 
+class TrustPropagation(StateFunction):
+    def __call__(self, state: State) -> State:
+        state.users = self.propagate(state.users, state.vouches)
+        return state
+    
     @abstractmethod
-    def __call__(self,
-        users: pd.DataFrame,
-        vouches: pd.DataFrame
-    ) -> pd.DataFrame:
-        """ Propagates trust through vouch network
-        
-        Parameters
-        ----------
-        users: DataFrame
-            with columns
-
-            * user_id (int, index)
-            * is_pretrusted (bool)
-
-        vouches: DataFrame
-            with columns
-
-            * voucher (str)
-            * vouchee (str)
-            * vouch (float)
-        
-        Returns
-        -------
-        users: DataFrame
-            with columns
-
-            * user_id (int, index)
-            * is_pretrusted (bool)
-            * trust_score (float)
-        """
-        raise NotImplementedError
-        
+    def propagate(self, users: Users, vouches: Vouches) -> Users:
+        raise NotImplemented
+    
     def __str__(self):
         return type(self).__name__
 		

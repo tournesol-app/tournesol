@@ -12,7 +12,7 @@ from .base import User, Users
 class VectorUser(User):
     def __init__(self, name: str, vector: np.ndarray, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = name
+        self.name = str(name)
         self.vector = vector
 
 
@@ -24,32 +24,31 @@ class VectorUsers(Users):
         self.meta.vectors = np.vstack([ user.vector for user in users ]) if vectors is None else vectors
         
     @property
-    def vectors(self):
+    def vectors(self) -> np.ndarray:
         return self.meta.vectors
     
     @vectors.setter
-    def vectors(self, value):
+    def vectors(self, value) -> None:
         self.meta.vectors = value
 
     @classmethod
-    def load(cls, filenames: tuple[str, str]):
+    def load(cls, filenames: tuple[str, str]) -> "VectorUsers":
         return cls(
             pd.read_csv(filenames[0], keep_default_na=False),
             vectors=np.loadtxt(filenames[1], delimiter=",")
         )
 
-    def save(self, directory) -> Union[str, list, dict]:
+    def save(self, directory) -> tuple[str, [str, str]]:
         path = Path(directory)
         users_path, vectors_path = path / "users.csv", path / "users_vectors.csv"
         self.to_csv(users_path)
         np.savetxt(vectors_path, self.vectors, delimiter=",")
         return type(self).__name__, [str(users_path), str(vectors_path)]
 
-    def get(self, user: Union[int, str, VectorUser]) -> VectorUser:
-        username = user if isinstance(user, (int, str)) else user.name
-        assert username in self.index, (username, self)
-        user_row = self.loc[username]
-        return VectorUser(username, self.vectors[user_row["vector_index"]], user_row)
+    def get(self, user: Union[str, VectorUser]) -> VectorUser:
+        assert str(user) in self.index, (user, self)
+        row = self.loc[str(user)]
+        return VectorUser(str(user), self.vectors[row["vector_index"]], row)
         
     def __iter__(self):
         iterator = self.iterrows()
@@ -61,10 +60,6 @@ class VectorUsers(Users):
         
     def __repr__(self) -> str:
         return repr(DataFrame(self))
-    
-    def __contains__(self, user: Union[str, VectorUser]) -> bool:
-        username = user if isinstance(username, str) else user.name
-        return username in self["username"]
 
     def append(self, user: VectorUser) -> "VectorUsers":
         user["vector_index"] = len(self)
@@ -73,8 +68,7 @@ class VectorUsers(Users):
         return self
     
     def delete(self, user: VectorUser) -> "VectorUsers":
-        username = user if isinstance(username, str) else user.name
-        user_index = self.loc[username, "vector_index"]
+        user_index = self.loc[str(user), "vector_index"]
         self.vectors = np.delete(self.vectors, user_index, axis=0)
         self.drop(user_index)
         self["vector_index"] = list(range(len(self)))

@@ -4,14 +4,14 @@ from numpy.random import random, normal
 import pandas as pd
 import numpy as np
 
-from solidago.state import Users, Entities, Privacy, Assessments, Comparisons, Judgments
+from solidago.state import *
 from .base import EngagementGenerator
 
 
 class SimpleEngagementGenerator(EngagementGenerator):
     def __init__(
         self, 
-        p_private: float=0.2,
+        p_public: float=0.8,
         p_comparison_per_criterion: dict[str, float]={"main": 1.0}, 
         p_assessment_per_criterion: dict[str, float]={"main": 0.0}, 
     ):
@@ -20,8 +20,8 @@ class SimpleEngagementGenerator(EngagementGenerator):
         
         Parameters
         ----------
-        p_private: float
-            Probability that a user engages with an entity privately
+        p_public: float
+            Probability that a user engages with an entity publicly
         p_comparison_per_criterion: dict[str, float]
             p_per_criterion[criterion] is the probability that an entity gets compared on criterion
             Some "main" criterion may be given probability 1,
@@ -31,18 +31,20 @@ class SimpleEngagementGenerator(EngagementGenerator):
             Some "main" criterion may be given probability 1,
             while secondary criteria may be given a lower probability
         """
-        self.p_private = p_private
+        self.p_public = p_public
         self.p_comparison_per_criterion = p_comparison_per_criterion
         self.p_assessment_per_criterion = p_assessment_per_criterion
 
-    def __call__(self, users: Users, entities: Entities) -> tuple[Privacy, Judgments]:
-        privacy, assessments, comparisons = Privacy(), list(), list()
-        entity_index2id = { entity["vector_index"]: entity.id for entity in entities }
+    def __call__(self, users: Users, entities: Entities) -> tuple[MadePublic, Judgments]:
+        made_public, assessments, comparisons = MadePublic(), dict(), dict()
+        entity_index2id = { entity["vector_index"]: str(entity) for entity in entities }
         
         for user in users:
             if user["n_comparisons"] <= 0:
                 continue
-    
+            
+            assessments[str(user)] = { criterion_id: list() for criterion_id in self.p_assessment_per_criterion }
+            comparisons[str(user)] = { criterion_id: list() for criterion_id in self.p_comparison_per_criterion }
             n_compared_entities = int(2 * user["n_comparisons"] / user["n_comparisons_per_entity"] )
             n_compared_entities = min(len(entities), n_compared_entities)
             p_compare_ab = 2 * user["n_comparisons"] / n_compared_entities**2
@@ -51,29 +53,27 @@ class SimpleEngagementGenerator(EngagementGenerator):
             scores = entities.vectors @ user.vector
             noisy_scores = - user["engagement_bias"] * scores + normal(0, 1, len(scores))
             argsort = np.argsort(noisy_scores)
-            compared_entities = [ entity_index2id[argsort[i]] for i in range(n_compared_entities) ]
+            compared_entities_ids = [ entity_index2id[argsort[i]] for i in range(n_compared_entities) ]
 
-            for index, e1 in enumerate(compared_entities):
-                privacy[user, e1] = (random() < self.p_private)
-                for criterion in self.p_assessment_per_criterion:
-                    if random() > self.p_comparison_per_criterion[criterion]:
+            for index, e1_id in enumerate(compared_entities_ids):
+                made_public[user, e1_id] = (random() < self.p_public)
+                for criterion_id in self.p_assessment_per_criterion:
+                    if random() > self.p_comparison_per_criterion[criterion_id]:
                         continue
-                    assessments.append({ "username": user.name, "criterion": criterion, "entity_id": e1 })
-                for e2 in compared_entities[index + 1:]:
+                    assessments[str(user)][criterion_id].append({ "entity_id": e1_id })
+                for e2_id in compared_entities_ids[index + 1:]:
                     if random() >= p_compare_ab:
                         continue
-                    for criterion in self.p_comparison_per_criterion:
-                        if random() >= self.p_comparison_per_criterion[criterion]:
+                    for criterion_id in self.p_comparison_per_criterion:
+                        if random() >= self.p_comparison_per_criterion[criterion_id]:
                             continue
-                        shuffle_1_2 = (random() < 0.5)
-                        comparisons.append({
-                            "username": user.name, 
-                            "criterion": criterion,
-                            "left_id": e1 if shuffle_1_2 else e2,
-                            "right_id": e2 if shuffle_1_2 else e1
-                        })
+                        left_id, right_id = (e1_id, e2_id) if (random() < 0.5) else (e2_id, e1_id)
+                        comparisons[str(user)][criterion_id].append({ "left_id": left_id, "right_id": right_id })
         
-        return privacy, Judgments(Assessments(assessments), Comparisons(comparisons))
+        return made_public, Judgments(
+            AssessmentsDictionary(assessments), 
+            ComparisonsDictionary(comparisons)
+        )
 
     def __str__(self):
         properties = ", ".join([f"{key}={value}" for key, value in self.__dict__.items()])

@@ -1,84 +1,54 @@
 import numpy as np
 import pandas as pd
 
-from solidago import PrivacySettings
 from solidago.solvers.dichotomy import solve
-from .base import VotingRights, VotingRightsAssignment
+from solidago.state import *
+from .base import VotingRightsAssignment
 
 
 class AffineOvertrust(VotingRightsAssignment):
-    def __init__(
-        self, 
+    def __init__(self, 
         privacy_penalty: float = 0.5, 
         min_overtrust: float = 2.0,
         overtrust_ratio: float = 0.1,
     ):
-        """ privately scored entities are given 
+        """ Computes voting_rights using the affine overtrust algorithm described in 
+        "Solidago: A Modular Pipeline for Collaborative Scoring" by Lê Nguyên Hoang, 
+        Romain Beylerian, Bérangère Colbois, Julien Fageot, Louis Faucon, Aidan Jungo, 
+        Alain Le Noac'h, Adrien Matissart, Oscar Villemaud, last updated in September 2024.
         
         Parameters
         ----------
         privacy_penalty: float
-            Penalty on private comparisons
+            Penalty on private entity evaluation
         """
         self.privacy_penalty = privacy_penalty
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
 
-    def __call__(
-        self,
-        users: pd.DataFrame,
-        entities: pd.DataFrame,
-        vouches: pd.DataFrame,
-        privacy: PrivacySettings,
-    ) -> tuple[VotingRights, pd.DataFrame]:
-        """Compute voting rights
+    def __call__(self, state: State) -> State
+        state.voting_rights = VotingRights()
+        if len(state.users) == 0 or len(state.entities) == 0:
+            return state
 
-        Parameters
-        ----------
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
-        entities: DataFrame with columns
-            * entity_id (int, index)
-        vouches: DataFrame
-            This is not used by VotingRightsWithLimitedOvertrust
-        privacy: PrivacySettings
-            privacy[user, entity] is the privacy setting of user for entity
-            May be True, False or None
-
-        Returns
-        -------
-        voting_rights[user, entity] is the voting right
-            of a user on entity for criterion
-        entities: DataFrame with columns
-            * entity_id (int, index)
-            * cumulative_trust (float)
-            * min_voting_right (float)
-            * overtrust (float)
-        """
-        voting_rights = VotingRights()
-        if len(users) == 0 or len(entities) == 0:
-            return voting_rights, entities
-
-        trust_scores = users["trust_score"]
+        trust_scores = state.users["trust_score"]
         new_records = list()
-        for e in entities.index:
-            user_ids = privacy.users(e)
-            privacy_weights = pd.Series(
-                {
-                    u: self.privacy_penalty if privacy[u, e] else 1.0
-                    for u in user_ids
-                }
-            )
-            (voting_rights_series, cumulative_trust, min_voting_right, overtrust) = (
-                self.compute_entity_voting_rights(
-                    trust_scores=trust_scores,
-                    privacy_weights=privacy_weights,
+        for criterion in state.criteria:
+            for entity in state.entities:
+                user_ids = privacy.users(e)
+                privacy_weights = pd.Series({
+                        u: self.privacy_penalty if privacy[u, e] else 1.0
+                        for u in user_ids
+                })
+                (voting_rights_series, cumulative_trust, min_voting_right, overtrust) = (
+                    self.compute_entity_voting_rights(
+                        trust_scores=trust_scores,
+                        privacy_weights=privacy_weights,
+                    )
                 )
-            )
-            for user_id, voting_right in voting_rights_series.items():
-                voting_rights[user_id, e] = voting_right  # type: ignore
-            new_records.append((cumulative_trust, min_voting_right, overtrust))
+                for user_id, voting_right in voting_rights_series.items():
+                    voting_rights[user_id, e] = voting_right  # type: ignore
+                new_records.append((cumulative_trust, min_voting_right, overtrust))
 
         r = list(zip(*new_records))
         entities = entities.assign(cumulative_trust=r[0], min_voting_right=r[1], overtrust=r[2])

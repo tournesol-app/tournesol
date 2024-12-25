@@ -29,7 +29,7 @@
             "dimension": 5
         }], 
         "engagement_gen": ["SimpleEngagementGenerator", {
-            "p_private": 0.2,
+            "p_public": 0.8,
             "p_assessment_per_criterion": { "0": 0.5 }, 
             "p_comparison_per_criterion": { "0": 1.0 }
         }], 

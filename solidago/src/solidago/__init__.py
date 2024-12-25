@@ -4,4 +4,5 @@ from .__version__ import __version__
 
 from solidago.state import *
 from solidago.generative_model import *
-# import solidago.pipeline
+import solidago.primitives as primitives
+import solidago.pipeline

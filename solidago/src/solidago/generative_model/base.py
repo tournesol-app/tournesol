@@ -76,13 +76,15 @@ class GenerativeModel:
         vouches = self.vouch_gen(users)
         logger.info(f"Generate {n_entities} entities using {self.entity_gen}")
         entities = self.entity_gen(n_entities)
+        logger.info(f"Generate {n_criteria} criteria using {self.criterion_gen}")
+        criteria = self.criterion_gen(n_criteria)
         logger.info(f"Generate user engagement using {self.engagement_gen}")
-        voting_rights, judgments = self.engagement_gen(users, entities)
+        voting_rights, judgments = self.engagement_gen(users, entities, criteria)
         logger.info(f"Generate assessments using {self.assessment_gen}")
-        judgments.assessments = self.assessment_gen(users, entities, voting_rights, judgments)
+        judgments.assessments = self.assessment_gen(users, entities, criteria, voting_rights, judgments)
         logger.info(f"Generate comparisons using {self.comparison_gen}")
-        judgments.comparisons = self.comparison_gen(users, entities, voting_rights, judgments)
-        return State(users, vouches, entities, voting_rights, judgments)
+        judgments.comparisons = self.comparison_gen(users, entities, criteria, voting_rights, judgments)
+        return State(users, vouches, entities, criteria, voting_rights, judgments)
 
     @classmethod
     def load(cls, d: Union[dict, str]) -> "GenerativeModel":

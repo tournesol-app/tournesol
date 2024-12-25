@@ -3,10 +3,10 @@
     Governance with Security Guarantees", available on ArXiV.
 """
 
-from .base import TrustPropagation
-
-import pandas as pd
 import numpy as np
+
+from .base import TrustPropagation
+from solidago.state import State, Users, Vouches
 
 
 class LipschiTrust(TrustPropagation):
@@ -61,9 +61,10 @@ class LipschiTrust(TrustPropagation):
         self.sink_vouch = sink_vouch
         self.error = error
 
-    def __call__(self, users: pd.DataFrame, vouches: pd.DataFrame) -> pd.DataFrame:
+    def propagate(self, users: Users, vouches: Vouches) -> Users:
         if len(users) == 0:
-            return users.assign(trust_score=[])
+            users["trust_score"] = list()
+            return users
 
         total_vouches = vouches["voucher"].value_counts() + self.sink_vouch
         pretrusts = users["is_pretrusted"] * self.pretrust_value
@@ -86,8 +87,9 @@ class LipschiTrust(TrustPropagation):
             trusts = new_trusts
             if delta < self.error:
                 break
-
-        return users.assign(trust_score=trusts)
+        
+        users["trust_score"] = trusts
+        return users
 
     def __str__(self):
         prop_names = ["pretrust_value", "decay", "sink_vouch", "error"]
