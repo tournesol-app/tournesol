@@ -16,6 +16,10 @@ class Assessment(Series):
 class Assessments(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def __getitem__(self, entity: Union[str, "Entity"]) -> Optional[Assessment]:
+        df = self[self["entity_id"] == str(entity)]
+        return Assessment(df[-1]) if list(df) > 0 else None
     
     def __iter__(self):
         for _, row in self.iterrows():
@@ -70,18 +74,21 @@ class AssessmentsDictionary:
         return type(self).__name__, str(filename)
     
     def __getitem__(self, 
-        user_criterion: Union[
+        args: Union[
+            tuple[Union[str, "User"], Union[str, "Criterion"], Union[str, "Entity"]],
             tuple[Union[str, "User"], Union[str, "Criterion"]],
             Union[str, "User"]
         ]
-    ) -> Union["Assessments", dict[str, "Assessments"]]:
+    ) -> Union[Optional[Assessment], Assessments, dict[str, Assessments]]:
         from solidago.state import User
-        if isinstance(user_criterion, (str, User)):
-            return self._dict[str(user_criterion)]
-        username, criterion_id = str(user_criterion[0]), str(user_criterion[1])
-        if username not in self._dict or criterion_id not in self._dict[username]:
+        if isinstance(args, (str, User)):
+            return self._dict[str(args)]
+        username, criterion_id = str(args[0]), str(args[1])
+        if username not in self._dict or criterion_id not in self._dict[username] and len(args) == 2:
             return Assessments()
-        return self._dict[username][criterion_id]
+        if len(args) == 2:
+            return self._dict[username][criterion_id]
+        return self._dict[username][criterion_id][str(args[2])]
 
     def __iter__(self):
         for username in self._dict:

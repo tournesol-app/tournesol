@@ -24,8 +24,8 @@ class Users(DataFrame):
             self.rename(columns={ self.columns[0]: "username" }, inplace=True)
         if "username" in self.columns:
             self.set_index("username", inplace=True)
-        else:
-            self.index.name = "username"
+        self.index = [str(name) for name in self.index]
+        self.index.name = "username"
 
     @classmethod
     def load(cls, filename: str):

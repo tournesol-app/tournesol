@@ -28,10 +28,12 @@ class Criterion(Series):
 class Criteria(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if len(self.columns) == 1:
+            self.rename(columns={ self.columns[0]: "criterion_id" }, inplace=True)
         if "criterion_id" in self.columns:
             self.set_index("criterion_id", inplace=True)
-        else:
-            self.index.name = "criterion_id"
+        self.index = [str(name) for name in self.index]
+        self.index.name = "criterion_id"
 
     @classmethod
     def load(cls, filename: str) -> "Criteria":

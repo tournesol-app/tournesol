@@ -12,7 +12,15 @@ class MadePublic:
             for _, r in d.iterrows():
                 self[r["username"], r["entity_id"]] = r["public"]
     
-    def __getitem__(self, args: tuple[Union[str, "User"], Union[str, "Entity"]]) -> bool:
+    def __getitem__(self, 
+        args: Union[
+            Union[str, "User"],
+            tuple[Union[str, "User"], Union[str, "Entity"]]
+        ]
+    ) -> Union[set[str], bool]:
+        from solidago.state import User
+        if isinstance(args, (str, User)):
+            return set(self._dict[str(args)].keys()) if str(args) in self._dict else set()
         username, entity_id = str(args[0]), str(args[1])
         if username not in self._dict or entity_id not in self._dict[username]: return False
         return self._dict[username][entity_id]
@@ -38,7 +46,8 @@ class MadePublic:
     def to_df(self) -> DataFrame:
         return DataFrame([
             Series({ "username": username, "entity_id": entity_id, "public": True })
-            for username, entity_id in self._dict.items()
+            for username in self._dict
+            for entity_id in self._dict[username]
         ])
 
     def save(self, directory: Union[str, Path]) -> tuple[str, str]:

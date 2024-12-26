@@ -33,9 +33,9 @@ class Vouches:
             }
         voucher_id, vouchee_id = str(args[0]), str(args[1])
         kind = args[2] if len(args) > 2 else "ProofOfPersonhood"
-        if kind not in self._dict: return 0
-        if voucher_id not in self._dict[kind]: return 0
-        if vouchee_id not in self._dict[kind][voucher_id]: return 0
+        if kind not in self._dict: return 0, - float("inf")
+        if voucher_id not in self._dict[kind]: return 0, - float("inf")
+        if vouchee_id not in self._dict[kind][voucher_id]: return 0, - float("inf")
         return self._dict[kind][voucher_id][vouchee_id]
     
     def __setitem__(self, 

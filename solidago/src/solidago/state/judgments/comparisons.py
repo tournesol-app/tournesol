@@ -16,6 +16,19 @@ class Comparison(Series):
 class Comparisons(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def __getitem__(self, 
+        args: Union[
+            Union[str, "Entity"],
+            tuple[Union[str, "Entity"], Union[str, "Entity"]]
+        ]
+    ) -> Union[dict[str, Comparison], Comparison]:
+        from solidago.state import Entity
+        if isinstance(args, (str, Entity)):
+            df = self[(self["left_id"] == str(left))]
+            return { r["right_id"]: Comparison(r) for _, r in df.iterrows() }
+        df = self[(self["left_id"] == str(left)) & (self["right_id"] == str(right))]
+        return Comparison(df[-1]) if list(df) > 0 else None
     
     def __iter__(self):
         for _, row in self.iterrows():
@@ -66,18 +79,23 @@ class ComparisonsDictionary:
         return type(self).__name__, str(filename)
     
     def __getitem__(self, 
-        user_criterion: Union[
+        args: Union[
+            tuple[Union[str, "User"], Union[str, "Criterion"], Union[str, "Entity"], Union[str, "Entity"]],
+            tuple[Union[str, "User"], Union[str, "Criterion"], Union[str, "Entity"]],
             tuple[Union[str, "User"], Union[str, "Criterion"]],
             Union[str, "User"]
         ]
-    ) -> Union["Comparisons", dict[str, "Comparisons"]]:
+    ) -> Union[Optional[Comparison], Comparisons, dict[str, Comparisons]]:
         from solidago.state import User
-        if isinstance(user_criterion, (str, User)):
-            return self._dict[str(user_criterion)]
-        username, criterion_id = str(user_criterion[0]), str(user_criterion[1])
-        if username not in self._dict or criterion_id not in self._dict[username]:
+        if isinstance(args, (str, User)):
+            return self._dict[str(args)]
+        username, criterion_id = str(args[0]), str(args[1])
+        if username not in self._dict or criterion_id not in self._dict[username] and len(args) == 2:
             return Comparisons()
-        return self._dict[username][criterion_id]
+        if len(args) == 2:
+            return self._dict[username][criterion_id]
+        args2 = args[2] if len(args) == 3 else args[2:]
+        return self._dict[username][criterion_id][args2]
 
     def __iter__(self):
         for username in self._dict:

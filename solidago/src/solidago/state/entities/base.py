@@ -28,10 +28,12 @@ class Entity(Series):
 class Entities(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if len(self.columns) == 1:
+            self.rename(columns={ self.columns[0]: "entity_id" }, inplace=True)
         if "entity_id" in self.columns:
             self.set_index("entity_id", inplace=True)
-        else:
-            self.index.name = "entity_id"
+        self.index = [str(name) for name in self.index]
+        self.index.name = "entity_id"
 
     @classmethod
     def load(cls, filename: str) -> "Entities":
