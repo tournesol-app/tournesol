@@ -1,6 +1,14 @@
 name: Browser extension lint
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - 'browser-extension/**'
+      - '.github/workflows/browser-extension-ci.yml'
+  pull_request:
+    paths:
+      - 'browser-extension/**'
+      - '.github/workflows/browser-extension-ci.yml'
 
 defaults:
   run:
