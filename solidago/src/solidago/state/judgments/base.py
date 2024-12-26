@@ -24,3 +24,6 @@ class Judgments:
             key: getattr(self, key).save(directory)
             for key in ("assessments", "comparisons")
         }
+
+    def __repr__(self):
+        return repr(self.assessments) + "\n\n" + repr(self.comparisons)

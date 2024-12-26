@@ -20,6 +20,8 @@ class User(Series):
 class Users(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if len(self.columns) == 1:
+            self.rename(columns={ self.columns[0]: "username" }, inplace=True)
         if "username" in self.columns:
             self.set_index("username", inplace=True)
         else:

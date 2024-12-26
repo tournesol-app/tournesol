@@ -14,9 +14,11 @@ class AssessmentGenerator:
         """ Fills in the assessments """
         for username, criterion_id, assessments in judgments.assessments:
             for index, assessment in assessments.iterrows():
+                user = users.get(username)
+                entity = entities.get(assessment["entity_id"])
                 assessment_min, assessment_max, assessment_value = self.sample(
-                    user=users.get(username), 
-                    entity=entities.get(assessment["entity_id"]), 
+                    user=user,
+                    entity=entity,
                     criterion=criteria.get(criterion_id), 
                     public=made_public[user, entity]
                 )

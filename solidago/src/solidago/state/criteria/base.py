@@ -43,12 +43,13 @@ class Criteria(DataFrame):
         return type(self).__name__, str(path)
 
     def get(self, criterion: Union[str, Criterion]) -> Criterion:
+        assert str(criterion) in self.index, (criterion, self)
         return Criterion(self.loc[str(criterion)])
         
     def __iter__(self):
         iterator = self.iterrows()
         while True:
-            try: yield next(iterator)
+            try: yield Criterion(next(iterator)[1])
             except StopIteration: break
     
     def __repr__(self) -> str:

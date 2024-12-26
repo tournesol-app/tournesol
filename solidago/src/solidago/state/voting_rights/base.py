@@ -12,7 +12,20 @@ class VotingRights:
             for _, r in d.iterrows():
                 self[r["username"], r["entity_id"], r["criterion_id"]] = r["voting_right"]
     
-    def __getitem__(self, args: tuple[Union[str, "User"], Union[str, "Entity"], Union[str, "Criterion"]]) -> float:
+    def __getitem__(self, 
+        args: Union[
+            Union[str, "User"],
+            tuple[Union[str, "User"], Union[str, "Entity"]],
+            tuple[Union[str, "User"], Union[str, "Entity"], Union[str, "Criterion"]]
+        ]
+    ) -> Union[dict[str, dict[str, float]], dict[str, float], float]:
+        from solidago.state import User, Entity
+        if isinstance(args, (str, User)):
+            return self._dict[str(args)] if str(args) in self._dict else dict()
+        elif len(args) == 2:
+            username, entity_id = str(args[0]), str(args[1])
+            if username not in self._dict: return dict()
+            return self._dict[username][entity_id] if entity_id in self._dict[username] else dict()
         username, entity_id, criterion_id = str(args[0]), str(args[1]), str(args[2])
         if username not in self._dict: return 0
         if entity_id not in self._dict[username]: return 0
@@ -27,7 +40,8 @@ class VotingRights:
 
     @classmethod
     def load(cls, filename: str) -> "VotingRights":
-        return cls(pd.read_csv(filename, keep_default_na=False))
+        try: return cls(pd.read_csv(filename, keep_default_na=False))
+        except pd.errors.EmptyDataError: return cls()
     
     def to_df(self) -> DataFrame:
         return DataFrame([

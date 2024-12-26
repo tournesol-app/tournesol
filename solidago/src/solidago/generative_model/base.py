@@ -10,6 +10,7 @@ from solidago.state import *
 from .user import UserGenerator
 from .vouch import VouchGenerator
 from .entity import EntityGenerator
+from .criterion import CriterionGenerator
 from .engagement import EngagementGenerator
 from .assessment import AssessmentGenerator
 from .comparison import ComparisonGenerator
@@ -23,6 +24,7 @@ class GenerativeModel:
         user_gen: UserGenerator = UserGenerator(),
         vouch_gen: VouchGenerator = VouchGenerator(),
         entity_gen: EntityGenerator = EntityGenerator(),
+        criterion_gen: CriterionGenerator = CriterionGenerator(),
         engagement_gen: EngagementGenerator = EngagementGenerator(),
         assessment_gen: AssessmentGenerator = AssessmentGenerator(),
         comparison_gen: ComparisonGenerator = ComparisonGenerator(),
@@ -45,11 +47,12 @@ class GenerativeModel:
         self.user_gen = user_gen
         self.vouch_gen = vouch_gen
         self.entity_gen = entity_gen
+        self.criterion_gen = criterion_gen
         self.engagement_gen = engagement_gen
         self.assessment_gen = assessment_gen
         self.comparison_gen = comparison_gen
  
-    def __call__(self, n_users: int, n_entities: int, random_seed: Optional[int] = None) -> State:
+    def __call__(self, n_users: int, n_entities: int, n_criteria: int=1, random_seed: Optional[int]=None) -> State:
         """ Generates a random dataset, presented as a state.
         No processing of the dataset is performed by the generative model.
         
@@ -59,6 +62,8 @@ class GenerativeModel:
             Number of users to generate
         n_entities: int
             Number of entities to generate
+        n_criteria: int
+            Number of criteria to generate
         random_seed: None or int
             If int, sets numpy seed for reproducibility
             
@@ -79,12 +84,13 @@ class GenerativeModel:
         logger.info(f"Generate {n_criteria} criteria using {self.criterion_gen}")
         criteria = self.criterion_gen(n_criteria)
         logger.info(f"Generate user engagement using {self.engagement_gen}")
-        voting_rights, judgments = self.engagement_gen(users, entities, criteria)
+        made_public, judgments = self.engagement_gen(users, entities, criteria)
         logger.info(f"Generate assessments using {self.assessment_gen}")
-        judgments.assessments = self.assessment_gen(users, entities, criteria, voting_rights, judgments)
+        judgments.assessments = self.assessment_gen(users, entities, criteria, made_public, judgments)
         logger.info(f"Generate comparisons using {self.comparison_gen}")
-        judgments.comparisons = self.comparison_gen(users, entities, criteria, voting_rights, judgments)
-        return State(users, vouches, entities, criteria, voting_rights, judgments)
+        judgments.comparisons = self.comparison_gen(users, entities, criteria, made_public, judgments)
+        
+        return State(users, vouches, entities, criteria, made_public, judgments)
 
     @classmethod
     def load(cls, d: Union[dict, str]) -> "GenerativeModel":
@@ -92,8 +98,7 @@ class GenerativeModel:
             with open(d) as f:
                 d = json.load(d)
         import solidago.generative_model as gen
-        load = lambda key: getattr(gen, d[key][0])(**d[key][1])
-        return GenerativeModel(**{ key: load(key) for key in cls.__init__.__code__.co_varnames[1:] })
+        return cls(**{ key: getattr(gen, d[key][0])(**d[key][1]) for key in d })
         
     def to_json(self):
         return { key: getattr(self, key).to_json() for key in self.__dict__.keys() }

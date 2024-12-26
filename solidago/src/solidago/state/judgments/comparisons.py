@@ -8,6 +8,9 @@ import pandas as pd
 class Comparison(Series):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    
+    def __hash__(self) -> int:
+        return hash(self["username"] + self["entity_id"] + self["left_id"] +  + self["right_id"])
 
 
 class Comparisons(DataFrame):
@@ -37,7 +40,7 @@ class ComparisonsDictionary:
 
     @classmethod
     def load(cls, filename: str) -> "ComparisonsDictionary":
-        try: return cls(pd.read_csv(filename))
+        try: return cls(pd.read_csv(filename, keep_default_na=False))
         except pd.errors.EmptyDataError: return cls()
     
     def __len__(self) -> int:
@@ -78,5 +81,8 @@ class ComparisonsDictionary:
 
     def __iter__(self):
         for username in self._dict:
-            for criterion_id in self._dict[criterion_id]:
+            for criterion_id in self._dict[username]:
                 yield username, criterion_id, self[username][criterion_id]
+
+    def __repr__(self):
+        return repr(self.to_df())
