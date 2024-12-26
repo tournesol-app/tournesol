@@ -47,6 +47,7 @@ assert isinstance(t2.made_public, AllPublic)
 assert len(t2.judgments.assessments) == 0
 assert len(t2.judgments.comparisons) == 10295
 assert len(t2.judgments.comparisons["amatissart", "largely_recommended"]) == 11
+assert t.judgments.comparisons["amatissart", "largely_recommended"].get("Ud2rUxmrhYI")["as_left"]["vqDbMEdLiCs"]["comparison"] == -3
 assert t2.voting_rights["Tit0uan", "SlQMxMr6t2w", "largely_recommended"] == 1
 assert len(t2.voting_rights["Tit0uan"]) == 39
 assert "lpfaucon" in t2.user_models
@@ -83,7 +84,8 @@ assert len(s2.entities) == 100
 assert "1" in s2.criteria
 assert len(s2.criteria) == 2
 assert s.made_public["21"] == s2.made_public["21"]
-
+assert set(s.judgments.assessments["12", "0"]["entity_id"]) == len(s2.judgments.assessments["12", "0"]["entity_id"])
+assert set(s.judgments.comparisons["0", "0", "57"]["as_left"].keys()) == set(s2.judgments.comparisons["0", "0", "57"]["as_left"].keys())
 
 # pipeline = Pipeline.from_json(hps["pipeline"])
 

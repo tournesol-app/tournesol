@@ -17,13 +17,16 @@ class Assessments(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __getitem__(self, entity: Union[str, "Entity"]) -> Optional[Assessment]:
+    def get(self, entity: Union[str, "Entity"]) -> Optional[Assessment]:
         df = self[self["entity_id"] == str(entity)]
-        return Assessment(df[-1]) if list(df) > 0 else None
+        return Assessment(df.iloc[-1]) if len(df) > 0 else None
     
     def __iter__(self):
         for _, row in self.iterrows():
             yield Assessment(row)
+    
+    def __repr__(self):
+        return repr(DataFrame(self))
         
 
 class AssessmentsDictionary:
@@ -48,7 +51,9 @@ class AssessmentsDictionary:
 
     @classmethod
     def load(cls, filename: str) -> "AssessmentsDictionary":
-        try: return cls(pd.read_csv(filename, keep_default_na=False))
+        try: return cls(pd.read_csv(filename, keep_default_na=False, dtype={ 
+            "username": str, "criterion_id": str, "entity_id": str
+        }))
         except pd.errors.EmptyDataError: return cls()
     
     def __len__(self) -> int:
@@ -88,7 +93,7 @@ class AssessmentsDictionary:
             return Assessments()
         if len(args) == 2:
             return self._dict[username][criterion_id]
-        return self._dict[username][criterion_id][str(args[2])]
+        return self._dict[username][criterion_id].get(str(args[2]))
 
     def __iter__(self):
         for username in self._dict:

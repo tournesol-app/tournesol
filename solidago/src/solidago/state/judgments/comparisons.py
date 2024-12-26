@@ -10,14 +10,14 @@ class Comparison(Series):
         super().__init__(*args, **kwargs)
     
     def __hash__(self) -> int:
-        return hash(self["username"] + self["entity_id"] + self["left_id"] +  + self["right_id"])
+        return hash(self["username"] + self["left_id"] +  self["right_id"] + self["criterion_id"])
 
 
 class Comparisons(DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __getitem__(self, 
+    def get(self, 
         args: Union[
             Union[str, "Entity"],
             tuple[Union[str, "Entity"], Union[str, "Entity"]]
@@ -25,14 +25,22 @@ class Comparisons(DataFrame):
     ) -> Union[dict[str, Comparison], Comparison]:
         from solidago.state import Entity
         if isinstance(args, (str, Entity)):
-            df = self[(self["left_id"] == str(left))]
-            return { r["right_id"]: Comparison(r) for _, r in df.iterrows() }
-        df = self[(self["left_id"] == str(left)) & (self["right_id"] == str(right))]
-        return Comparison(df[-1]) if list(df) > 0 else None
+            df_left = self[(self["left_id"] == str(args))]
+            df_right = self[(self["right_id"] == str(args))]
+            return {
+                "as_left": { r["right_id"]: Comparison(r) for _, r in df_left.iterrows() },
+                "as_right": { r["left_id"]: Comparison(r) for _, r in df_right.iterrows() }
+            }
+        left, right = str(args[0]), str(args[1])
+        df = self[(self["left_id"] == left) & (self["right_id"] == right)]
+        return Comparison(df.iloc[-1]) if len(df) > 0 else None
     
     def __iter__(self):
         for _, row in self.iterrows():
             yield Comparison(row)
+    
+    def __repr__(self):
+        return repr(DataFrame(self))
     
 
 class ComparisonsDictionary:
@@ -53,7 +61,9 @@ class ComparisonsDictionary:
 
     @classmethod
     def load(cls, filename: str) -> "ComparisonsDictionary":
-        try: return cls(pd.read_csv(filename, keep_default_na=False))
+        try: return cls(pd.read_csv(filename, keep_default_na=False, dtype={ 
+            "username": str, "criterion_id": str, "left_id": str, "right_id": str
+        }))
         except pd.errors.EmptyDataError: return cls()
     
     def __len__(self) -> int:
@@ -95,7 +105,7 @@ class ComparisonsDictionary:
         if len(args) == 2:
             return self._dict[username][criterion_id]
         args2 = args[2] if len(args) == 3 else args[2:]
-        return self._dict[username][criterion_id][args2]
+        return self._dict[username][criterion_id].get(args2)
 
     def __iter__(self):
         for username in self._dict:
