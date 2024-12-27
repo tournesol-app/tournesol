@@ -1,5 +1,5 @@
 from .trust_propagation import *
-# from .voting_rights import *
+from .voting_rights import *
 # from .preference_learning import *
 # from .scaling import *
 # from .aggregation import *

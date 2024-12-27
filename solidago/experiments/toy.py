@@ -19,9 +19,9 @@ assert "KMuBHtR8zUk" in t.entities
 assert "reliability" in t.criteria
 assert t.criteria.get("engaging")["description"] == 'Engaging and thought-provoking'
 assert isinstance(t.made_public, AllPublic)
-assert len(t.judgments.assessments) == 0
-assert len(t.judgments.comparisons) == 10295
-assert len(t.judgments.comparisons["amatissart", "largely_recommended"]) == 11
+assert len(t.assessments) == 0
+assert len(t.comparisons) == 10295
+assert len(t.comparisons["amatissart", "largely_recommended"]) == 11
 assert t.voting_rights["Tit0uan", "SlQMxMr6t2w", "largely_recommended"] == 1
 assert len(t.voting_rights["Tit0uan"]) == 39
 assert "lpfaucon" in t.user_models
@@ -44,10 +44,10 @@ assert "KMuBHtR8zUk" in t2.entities
 assert "reliability" in t2.criteria
 assert t2.criteria.get("engaging")["description"] == 'Engaging and thought-provoking'
 assert isinstance(t2.made_public, AllPublic)
-assert len(t2.judgments.assessments) == 0
-assert len(t2.judgments.comparisons) == 10295
-assert len(t2.judgments.comparisons["amatissart", "largely_recommended"]) == 11
-assert t.judgments.comparisons["amatissart", "largely_recommended"].get("Ud2rUxmrhYI")["as_left"]["vqDbMEdLiCs"]["comparison"] == -3
+assert len(t2.assessments) == 0
+assert len(t2.comparisons) == 10295
+assert len(t2.comparisons["amatissart", "largely_recommended"]) == 11
+assert t.comparisons["amatissart", "largely_recommended"].get("Ud2rUxmrhYI")["as_left"]["vqDbMEdLiCs"]["comparison"] == -3
 assert t2.voting_rights["Tit0uan", "SlQMxMr6t2w", "largely_recommended"] == 1
 assert len(t2.voting_rights["Tit0uan"]) == 39
 assert "lpfaucon" in t2.user_models
@@ -65,7 +65,7 @@ users = generative_model.user_gen(30)
 vouches = generative_model.vouch_gen(users)
 entities = generative_model.entity_gen(100)
 criteria = generative_model.criterion_gen(2)
-made_public, judgments = generative_model.engagement_gen(users, entities, criteria)
+made_public, assessments, comparisons = generative_model.engagement_gen(users, entities, criteria)
 
 print("Generating data")
 s = generative_model(30, 100, 2, 0)
@@ -84,8 +84,8 @@ assert len(s2.entities) == 100
 assert "1" in s2.criteria
 assert len(s2.criteria) == 2
 assert s.made_public["21"] == s2.made_public["21"]
-assert set(s.judgments.assessments["12", "0"]["entity_id"]) == len(s2.judgments.assessments["12", "0"]["entity_id"])
-assert set(s.judgments.comparisons["0", "0", "57"]["as_left"].keys()) == set(s2.judgments.comparisons["0", "0", "57"]["as_left"].keys())
+assert set(s.assessments["12", "0"]["entity_id"]) == set(s2.assessments["12", "0"]["entity_id"])
+assert set(s.comparisons["0", "0", "57"]["as_left"].keys()) == set(s2.comparisons["0", "0", "57"]["as_left"].keys())
 
 # pipeline = Pipeline.from_json(hps["pipeline"])
 

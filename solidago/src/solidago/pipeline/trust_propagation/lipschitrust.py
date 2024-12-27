@@ -96,8 +96,8 @@ class LipschiTrust(TrustPropagation):
         prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
         return f"LipschiTrust({prop})"
 
-    def to_json(self):
-        return "LipschiTrust", dict(
+    def args_save(self) -> dict[str, float]:
+        return dict(
             pretrust_value=self.pretrust_value,
             decay=self.decay,
             sink_vouch=self.sink_vouch,

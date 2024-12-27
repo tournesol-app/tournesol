@@ -72,7 +72,7 @@ class TournesolExport(State):
     
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         dfs = TournesolExport.load_dfs(dataset_zip)
-        from solidago.state import Users, Vouches, Entities, AllPublic, ComparisonsDictionary, Judgments, VotingRights, UserModels, DirectScoring
+        from solidago.state import Users, Vouches, Entities, AllPublic, Comparisons, VotingRights, UserModels, DirectScoring
         voting_rights_columns = ["username", "entity_id", "criterion_id", "voting_right"]
         user_models_instructions = { username: ["DirectScoring", dict()] for username in dfs["users"]["username"] }
         super().__init__(
@@ -81,7 +81,7 @@ class TournesolExport(State):
             entities=Entities(dfs["entities"]),
             criteria=Criteria(dfs["criteria"]),
             made_public=AllPublic(),
-            judgments=Judgments(comparisons=ComparisonsDictionary(dfs["comparisons"])),
+            comparisons=Comparisons(dfs["comparisons"]),
             voting_rights = VotingRights(dfs["user_scores"][voting_rights_columns]),
             user_models=UserModels.load(user_models_instructions, dfs["user_scores"], DataFrame()),
             global_model=DirectScoring.load(dict(), dfs["global_scores"], DataFrame())

@@ -11,11 +11,11 @@ class ComparisonGenerator:
         entities: Entities, 
         criteria: Criteria,
         made_public: MadePublic, 
-        judgments: Judgments
+        comparisons: Comparisons
     ) -> Comparisons:
         """ Fills in the comparisons """
-        for username, criterion_id, comparisons in judgments.comparisons:
-            for index, comparison in comparisons.iterrows():
+        for username, criterion_id, user_comparisons in comparisons:
+            for index, comparison in user_comparisons.iterrows():
                 user = users.get(username)
                 left = entities.get(comparison["left_id"])
                 right = entities.get(comparison["right_id"])
@@ -25,9 +25,9 @@ class ComparisonGenerator:
                     left_public=made_public[user, left], 
                     right_public=made_public[user, right]
                 )
-                comparisons.loc[index, "comparison_max"] = comparison_max
-                comparisons.loc[index, "comparison"] = comparison
-        return judgments.comparisons
+                user_comparisons.loc[index, "comparison_max"] = comparison_max
+                user_comparisons.loc[index, "comparison"] = comparison
+        return comparisons
     
     def sample(self, 
         user: User, 

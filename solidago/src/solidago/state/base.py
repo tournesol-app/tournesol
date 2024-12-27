@@ -12,7 +12,8 @@ from .vouches.base import Vouches
 from .entities.base import Entities
 from .criteria.base import Criteria
 from .made_public.base import MadePublic
-from .judgments.base import Judgments
+from .assessments.base import Assessments
+from .comparisons.base import Comparisons
 from .voting_rights.base import VotingRights
 from .models.direct import ScoringModel, DirectScoring
 from .models.user_models import UserModels
@@ -32,7 +33,8 @@ class State:
         entities: Entities=Entities(),
         criteria: Criteria=Criteria(),
         made_public: MadePublic=MadePublic(),
-        judgments: Judgments=Judgments(),
+        assessments: Assessments=Assessments(),
+        comparisons: Comparisons=Comparisons(),
         voting_rights: VotingRights=VotingRights(),
         user_models : UserModels=UserModels(),
         global_model: ScoringModel=DirectScoring(),
@@ -46,7 +48,8 @@ class State:
         self.entities = entities
         self.criteria = criteria
         self.made_public = made_public
-        self.judgments = judgments
+        self.assessments = assessments
+        self.comparisons = comparisons
         self.voting_rights = voting_rights
         self.user_models = user_models
         self.global_model = global_model

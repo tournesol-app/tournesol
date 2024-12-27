@@ -35,7 +35,11 @@ class SimpleEngagementGenerator(EngagementGenerator):
         self.p_assessment = p_assessment
         self.p_comparison = p_comparison
 
-    def __call__(self, users: Users, entities: Entities, criteria: Criteria) -> tuple[MadePublic, Judgments]:
+    def __call__(self, 
+        users: Users, 
+        entities: Entities, 
+        criteria: Criteria
+    ) -> tuple[MadePublic, Assessments, Comparisons]:
         made_public, assessments, comparisons = MadePublic(), dict(), dict()
         entity_index2id = { entity["vector_index"]: str(entity) for entity in entities }
         
@@ -59,21 +63,23 @@ class SimpleEngagementGenerator(EngagementGenerator):
                 made_public[user, entity_id] = (random() < self.p_public)
 
             for criterion in criteria:
-                a_list, c_list = list(), list()
+                assessments[str(user)][str(criterion)] = list()
+                comparisons[str(user)][str(criterion)] = list()
                 for index, e1_id in enumerate(compared_entities_ids):
                     if random() > self.p_assessment:
                         continue
-                    a_list.append([e1_id])
+                    assessments[str(user)][str(criterion)].append([e1_id])
                     for e2_id in compared_entities_ids[index + 1:]:
                         if random() >= p_compare_ab or random() >= self.p_comparison:
                             continue
                         left_id, right_id = (e1_id, e2_id) if (random() < 0.5) else (e2_id, e1_id)
-                        c_list.append([left_id, right_id])
-                    
-                assessments[str(user)][str(criterion)] = Assessments(a_list, columns=["entity_id"])
-                comparisons[str(user)][str(criterion)] = Comparisons(c_list, columns=["left_id", "right_id"])
+                        comparisons[str(user)][str(criterion)].append([left_id, right_id])
         
-        return made_public, Judgments(AssessmentsDictionary(assessments), ComparisonsDictionary(comparisons))
+        return (
+            made_public, 
+            Assessments(assessments, columns=["entity_id"]), 
+            Comparisons(comparisons, columns=["left_id", "right_id"])
+        )
 
     def __str__(self):
         properties = ", ".join([f"{key}={value}" for key, value in self.__dict__.items()])

@@ -32,7 +32,10 @@ class VotingRights:
         if criterion_id not in self._dict[username][entity_id]: return 0
         return self._dict[username][entity_id][criterion_id]
     
-    def __setitem__(self, args: tuple[Union[str, "User"], Union[str, "Entity"], str], voting_right: float) -> None:
+    def __setitem__(self, 
+        args: tuple[Union[str, "User"], Union[str, "Entity"], Union[str, "Criterion"]], 
+        voting_right: float
+    ) -> None:
         username, entity_id, criterion_id = str(args[0]), str(args[1]), str(args[2])
         if username not in self._dict: self._dict[username] = dict()
         if entity_id not in self._dict[username]: self._dict[username][entity_id] = dict()

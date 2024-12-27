@@ -1,4 +1,4 @@
-from .voting_rights import VotingRights
+from solidago.state import *
 from .base import VotingRightsAssignment
 
 
@@ -28,6 +28,6 @@ class IsTrust(VotingRightsAssignment):
 
         return state
     
-    def to_json(self):
-        return type(self).__name__, { "privacy_penalty": self.privacy_penalty }
+    def args_save(self) -> dict[str, float]:
+        return { "privacy_penalty": self.privacy_penalty }
     

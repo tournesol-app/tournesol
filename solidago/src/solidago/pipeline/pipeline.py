@@ -1,4 +1,5 @@
 from typing import Mapping, Optional, Union
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -51,13 +52,8 @@ class Pipeline(Sequential):
         super().__init__(trust_propagation, voting_rights_assignment, preference_learning, 
             scaling, aggregation, post_process)
 
-    @classmethod
-    def from_json(cls, json) -> "Pipeline":
-        import solidago.pipeline as pipeline
-        return Pipeline(*[ getattr(pipeline, json[name][0])(**json[name][1]) for name in cls.module_names ])
-                
-    def to_json(self):
-        return { name: getattr(self, name).to_json() for name in module_names }
+    def args_save(self):
+        return { key: getattr(self, key).save() for key in self.module_names }
         
     def __call__(self, state: State, save_directory: Optional[str]=None) -> State:
         state.save_directory = save_directory

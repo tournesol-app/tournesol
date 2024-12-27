@@ -1,7 +1,9 @@
+from typing import Union
+
 import numpy as np
 import pandas as pd
 
-from solidago.solvers.dichotomy import solve
+from solidago.primitives.dichotomy import solve
 from solidago.state import *
 from .base import VotingRightsAssignment
 
@@ -26,101 +28,99 @@ class AffineOvertrust(VotingRightsAssignment):
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
 
-    def __call__(self, state: State) -> State
-        state.voting_rights = VotingRights()
+    def __call__(self, state: State) -> None:
+        """ Updates state.voting_rights and state.entities by assigning voting rights
+        that exceed trust by a limited overtrust amount.
+        This overtrust on a given entity on a given criterion is set to be at most 
+        an affine function of the total trusts of users who evaluated the entity on the criterion.
+        """
         if len(state.users) == 0 or len(state.entities) == 0:
-            return state
+            return None
 
+        state.voting_rights = VotingRights()
         trust_scores = state.users["trust_score"]
         new_records = list()
         for criterion in state.criteria:
             for entity in state.entities:
-                user_ids = privacy.users(e)
-                privacy_weights = pd.Series({
-                        u: self.privacy_penalty if privacy[u, e] else 1.0
-                        for u in user_ids
-                })
-                (voting_rights_series, cumulative_trust, min_voting_right, overtrust) = (
-                    self.compute_entity_voting_rights(
-                        trust_scores=trust_scores,
-                        privacy_weights=privacy_weights,
-                    )
-                )
-                for user_id, voting_right in voting_rights_series.items():
-                    voting_rights[user_id, e] = voting_right  # type: ignore
+                voting_rights, statistics = self.compute_per_entity_criterion(state, entity, criterion)
+                for username, voting_right in voting_rights.items():
+                    state.voting_rights[username, entity, criterion] = voting_right  # type: ignore
                 new_records.append((cumulative_trust, min_voting_right, overtrust))
 
         r = list(zip(*new_records))
-        entities = entities.assign(cumulative_trust=r[0], min_voting_right=r[1], overtrust=r[2])
-        return voting_rights, entities
+        state.entities = state.entities.assign(cumulative_trust=r[0], min_voting_right=r[1], overtrust=r[2])
 
-    def compute_entity_voting_rights(
-        self,
-        trust_scores: pd.Series,
-        privacy_weights: pd.Series,
-    ) -> tuple[pd.Series, float, float, float]:
-        trust_scores_np = trust_scores[privacy_weights.index].fillna(0.0).to_numpy()
-        privacy_weights_np = privacy_weights.to_numpy()
-        cumulative_trust = self.cumulative_trust(trust_scores_np, privacy_weights_np)
+    def compute_per_entity_criterion(self, 
+        state: State, 
+        entity: Union[str, "Entity"], 
+        criterion: Union[str, "Criterion"]
+    ) -> tuple[dict[str, float], dict[str, float]]:
+        """ Computes the allocated voting rights and some statistics of these voting rights
+        
+        Returns
+        -------
+        voting_rights: dict[str, float]
+            voting_rights[username] is the voting right allocated to username
+        statistics: dict[str, float]
+            statistics[statistics_name] is the value of statistics_name
+        """
+        usernames = list(state.judgments.get_evaluators(entity, criterion))
+        voting_rights, statistics = self.computing_voting_rights_and_statistics(
+            trust_scores=np.array([
+                state.users.loc[username, "trust_scores"]
+                for username in usernames
+            ]),
+            privacy_weights=np.array([
+                1 if state.made_public[username, entities] else self.privacy_penalty
+                for username in usernames
+            ])
+        )
+        return { username: voting_rights[i] for i, username in enumerate(usernames) }, statistics
+        
+
+    def computing_voting_rights_and_statistics(self,
+        trust_scores: np.ndarray,
+        privacy_weights: np.ndarray,
+    ) -> tuple[np.ndarray, dict[str, float]]:
+        """ Computes voting rights and statistics without having to care about usernames """
+        trust_scores = trust_scores.nan_to_num(nan=0.)
+        cumulative_trust = (trust_scores * privacy_weights).sum()
         max_overtrust = self.maximal_overtrust(cumulative_trust)
-        min_voting_right = self.min_voting_right(
-            max_overtrust, trust_scores_np, privacy_weights_np
-        )
-        voting_rights = pd.Series(
-            privacy_weights_np * trust_scores_np.clip(min=min_voting_right),
-            index=privacy_weights.index,
-        )
-        return (
-            voting_rights,
-            cumulative_trust,
-            min_voting_right,
-            voting_rights.sum() - cumulative_trust,
-        )
+        min_voting_right = self.min_voting_right(max_overtrust, trust_scores, privacy_weights)
+        voting_rights = privacy_weights * trust_scores.clip(min=min_voting_right)
+        return voting_rights, {
+            "cumulative_trust": cumulative_trust,
+            "min_voting_right": min_voting_right,
+            "overtrust": voting_rights.sum() - cumulative_trust,
+        }
 
-    def cumulative_trust(
-        self,
+    def maximal_overtrust(self, cumulative_trust: float) -> float:
+        """Computes the maximal allowed overtrust of an entity,
+        for a given total trust of the entity's raters """
+        return cumulative_trust * self.overtrust_ratio + self.min_overtrust 
+
+    def min_voting_right(self,
+        max_overtrust: float,
         trust_scores: np.ndarray,
         privacy_weights: np.ndarray,
     ) -> float:
-        """Returns the sum of trusts of raters of entity entity_id,
-        weighted by their privacy setting.
+        """ Returns the minimal voting rights that corresponds to max_overtrust """
+        assert max_overtrust >= 0
 
-        Parameters
-        ----------
-        trust_scores: Series with
-            * index "user_id (int, index)
-            * values "trust_score" (float)
-        privacy_weights: dict[int, float]
-            privacy_weights[u] is the privacy weight of user u
+        def overtrust(min_voting_right):
+            return self.overtrust(min_voting_right, trust_scores, privacy_weights)
 
-        Returns
-        -------
-        out: float
-        """
-        return (trust_scores * privacy_weights).sum()
+        if overtrust(1) <= max_overtrust:
+            return 1.
 
-    def maximal_overtrust(self, trust: float) -> float:
-        """Computes the maximal allowed overtrust of an entity,
-        for a given total trust of the entity's raters.
+        return solve(overtrust, max_overtrust, 0, 1)
 
-        Parameters
-        ----------
-        trust: float
-            Cumulative trust received by the entity
-
-        Returns
-        -------
-        out: float
-        """
-        return trust * self.overtrust_ratio + self.min_overtrust 
-
-    def overtrust(
-        self,
+    def overtrust(self,
         min_voting_right: float,
         trust_scores: np.ndarray,
         privacy_weights: np.ndarray,
     ) -> float:
-        """Returns the overtrust, if min_voting_right is enforced upon all raters.
+        """ Returns the overtrust, if min_voting_right is enforced upon all raters.
 
         Parameters
         ----------
@@ -139,39 +139,8 @@ class AffineOvertrust(VotingRightsAssignment):
             min_voting_right > trust_scores
         ].sum()
 
-    def min_voting_right(
-        self,
-        max_overtrust: float,
-        trust_scores: np.ndarray,
-        privacy_weights: np.ndarray,
-    ) -> float:
-        """Returns the minimal voting rights that corresponds to max_overtrust.
-
-        Parameters
-        ----------
-        max_overtrust: float
-            Maximal overtrust allowed for entity_id
-        trust_scores:
-            trust score values per user
-        privacy_weights: dict[int, float]
-            privacy weight per user
-
-        Returns
-        -------
-        out: float
-        """
-        assert max_overtrust >= 0
-
-        def overtrust(min_voting_right):
-            return self.overtrust(min_voting_right, trust_scores, privacy_weights)
-
-        if overtrust(1) <= max_overtrust:
-            return 1.0
-
-        return solve(overtrust, max_overtrust, 0, 1)
-
-    def to_json(self):
-        return "AffineOvertrust", dict(
+    def args_save(self) -> dict[str, float]:
+        return dict(
             privacy_penalty=self.privacy_penalty, 
             min_overtrust=self.min_overtrust,
             overtrust_ratio=self.overtrust_ratio

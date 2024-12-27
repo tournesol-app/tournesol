@@ -12,54 +12,27 @@ logger = logging.getLogger(__name__)
 
 
 class PreferenceLearning(ABC):
-    MAX_UNCERTAINTY = 1000.0
-
-    def __call__(
-        self,
+    def __call__(self, state: State) -> None:
+        state.user_models = self.learn(
+            state.users, 
+            state.entities, 
+            state.criteria, 
+            state.judgments,
+            state.user_models
+        )
+    
+    def learn(self,
+        users: Users,
+        entities: Entities,
+        criteria: Criteria,
         judgments: Judgments,
-        users: pd.DataFrame,
-        entities: pd.DataFrame,
-        initialization: Optional[dict[int, ScoringModel]] = None,
-        new_judgments: Optional[Judgments] = None,
-    ) -> dict[int, ScoringModel]:
-        """Learns a scoring model, given user judgments of entities
-
-        Parameters
-        ----------
-        judgments:
-            May contain different forms of judgments,
-            but most likely will contain "comparisons" and/or "assessments"
-        entities: DataFrame with columns
-            * entity_id: int, index
-            * May contain others, such as vector representation
-        initialization: dict[int, ScoringModel] or ScoringModel or None
-            Starting models, added to facilitate optimization
-            It is not supposed to affect the output of the training
-        new_judgments:
-            New judgments
-            This allows to prioritize coordinate descent, starting with newly evaluated entities
-
-        Returns
-        -------
-        user_models: dict[int, ScoringModel]
-            user_models[user] is the learned scoring model for user
-        """
+        user_models: UserModels
+    ) -> UserModels:
+        """ Learns a scoring model, given user judgments of entities """
         assert isinstance(judgments, Judgments)
-
-        user_models = dict() if initialization is None else initialization
-        for n_user, user in enumerate(users.index):
-            if n_user % 100 == 0:
-                logger.info(f"  Preference learning for user {n_user} out of {len(users)}")
-            else:
-                logger.debug(f"  Preference learning for user {n_user} out of {len(users)}")
-            init_model = None
-            if initialization is not None:
-                init_model = initialization.get(user)
-            new_judg = None if new_judgments is None else new_judgments[user]
-            user_judgments = judgments[user]
-            if user_judgments is None:
-                continue
-            user_models[user] = self.user_learn(user_judgments, entities, init_model, new_judg)
+        for user in users:
+            init_model = user_models[user]
+            user_models[user] = self.user_learn(state.judgments, entities, init_model, new_judg)
         return user_models
 
     @abstractmethod

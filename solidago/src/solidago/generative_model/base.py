@@ -84,13 +84,13 @@ class GenerativeModel:
         logger.info(f"Generate {n_criteria} criteria using {self.criterion_gen}")
         criteria = self.criterion_gen(n_criteria)
         logger.info(f"Generate user engagement using {self.engagement_gen}")
-        made_public, judgments = self.engagement_gen(users, entities, criteria)
+        made_public, assessments, comparisons = self.engagement_gen(users, entities, criteria)
         logger.info(f"Generate assessments using {self.assessment_gen}")
-        judgments.assessments = self.assessment_gen(users, entities, criteria, made_public, judgments)
+        assessments = self.assessment_gen(users, entities, criteria, made_public, assessments)
         logger.info(f"Generate comparisons using {self.comparison_gen}")
-        judgments.comparisons = self.comparison_gen(users, entities, criteria, made_public, judgments)
+        comparisons = self.comparison_gen(users, entities, criteria, made_public, comparisons)
         
-        return State(users, vouches, entities, criteria, made_public, judgments)
+        return State(users, vouches, entities, criteria, made_public, assessments, comparisons)
 
     @classmethod
     def load(cls, d: Union[dict, str]) -> "GenerativeModel":

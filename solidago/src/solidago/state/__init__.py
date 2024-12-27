@@ -5,7 +5,8 @@ from .vouches import *
 from .entities import *
 from .criteria import *
 from .made_public import *
-from .judgments import *
+from .assessments import *
+from .comparisons import *
 from .voting_rights import *
 from .models import *
 

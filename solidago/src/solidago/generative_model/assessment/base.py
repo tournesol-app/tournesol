@@ -9,11 +9,11 @@ class AssessmentGenerator:
         entities: Entities, 
         criteria: Criteria,
         made_public: MadePublic, 
-        judgments: Judgments
-    ) -> AssessmentsDictionary:
+        assessments: Assessments
+    ) -> Assessments:
         """ Fills in the assessments """
-        for username, criterion_id, assessments in judgments.assessments:
-            for index, assessment in assessments.iterrows():
+        for username, criterion_id, user_assessments in assessments:
+            for index, assessment in user_assessments.iterrows():
                 user = users.get(username)
                 entity = entities.get(assessment["entity_id"])
                 assessment_min, assessment_max, assessment_value = self.sample(
@@ -22,10 +22,10 @@ class AssessmentGenerator:
                     criterion=criteria.get(criterion_id), 
                     public=made_public[user, entity]
                 )
-                assessments.loc[index, "assessment_min"] = assessment_min
-                assessments.loc[index, "assessment_max"] = assessment_max
-                assessments.loc[index, "assessment"] = assessment_value
-        return judgments.assessments
+                user_assessments.loc[index, "assessment_min"] = assessment_min
+                user_assessments.loc[index, "assessment_max"] = assessment_max
+                user_assessments.loc[index, "assessment"] = assessment_value
+        return assessments
         
     def sample(self, user: User, entity: Entity, criterion: Criterion, public: bool) -> tuple[float, float, float]:
         """ Returns assessment min, max and value """
