@@ -49,6 +49,7 @@ class TournesolExport(State):
             })
         
         vouches["kind"] = "ProofOfPersonhood"
+        vouches["priority"] = 0
         user_scores["depth"] = 0
         global_scores["depth"] = 0
         from solidago.primitives.date import week_date_to_week_number as to_week_number

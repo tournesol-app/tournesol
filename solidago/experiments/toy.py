@@ -13,7 +13,7 @@ t = TournesolExport("experiments/tiny_tournesol.zip")
 
 assert "biscuissec" in t.users, t.users
 assert t.users.loc["le_science4all", "trust_score"] == 1
-assert "NatNgs" in t.vouches["aidjango"]["ProofOfPersonhood"]
+assert "NatNgs" in t.vouches["aidjango"]
 assert t.vouches["aidjango", "biscuissec", "ProofOfPersonhood"] == (1, 0)
 assert "KMuBHtR8zUk" in t.entities
 assert "reliability" in t.criteria
@@ -38,7 +38,7 @@ t2 = State.load("experiments/save_tiny_tournesol")
 
 assert "biscuissec" in t2.users, t2.users
 assert t2.users.loc["le_science4all", "trust_score"] == 1
-assert "NatNgs" in t2.vouches["aidjango"]["ProofOfPersonhood"]
+assert "NatNgs" in t2.vouches["aidjango"]
 assert t2.vouches["aidjango", "biscuissec", "ProofOfPersonhood"] == (1, 0)
 assert "KMuBHtR8zUk" in t2.entities
 assert "reliability" in t2.criteria
@@ -78,7 +78,7 @@ s2 = State.load("experiments/generated_model")
 
 assert "17" in s2.users
 assert s.users.get("10")["n_comparisons"] == s2.users.get("10")["n_comparisons"]
-assert s.vouches["24", "11"] == s2.vouches["24", "11"]
+assert s.vouches["24", "11", "ProofOfPersonhood"] == s2.vouches["24", "11", "ProofOfPersonhood"]
 assert "73" in s2.entities
 assert len(s2.entities) == 100
 assert "1" in s2.criteria
