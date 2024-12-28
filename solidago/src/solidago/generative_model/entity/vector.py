@@ -36,10 +36,10 @@ class NormalEntityGenerator(EntityGenerator):
         return np.random.normal(0, 1, len(self.mean)) + self.mean
 
     def __call__(self, n_entities: int) -> VectorEntities:
-        return VectorEntities([ self.sample(entity_id) for entity_id in range(n_entities) ])
+        return VectorEntities([ self.sample(entity_name) for entity_name in range(n_entities) ])
     
-    def sample(self, entity_id):
-        return VectorEntity(entity_id, self.sample_vector())
+    def sample(self, entity_name):
+        return VectorEntity(self.sample_vector(), name=entity_name)
 
     def __str__(self):
         return f"NormalEntityGenerator(mean={self.mean})"

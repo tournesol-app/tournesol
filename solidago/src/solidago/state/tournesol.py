@@ -32,30 +32,30 @@ class TournesolExport(State):
             })
             comparisons = load("comparisons", { 
                 "public_username": "username",
-                "video_a": "left_id",
-                "video_b": "right_id",
-                "criteria": "criterion_id",
+                "video_a": "left_name",
+                "video_b": "right_name",
+                "criteria": "criterion_name",
                 "score": "comparison",
                 "score_max": "comparison_max"
             })
             global_scores = load("collective_criteria_scores", { 
-                "criteria": "criterion_id", 
-                "video": "entity_id",
+                "criteria": "criterion_name", 
+                "video": "entity_name",
             })
             user_scores = load("individual_criteria_scores", { 
-                "criteria": "criterion_id", 
-                "video": "entity_id",
+                "criteria": "criterion_name", 
+                "video": "entity_name",
                 "public_username": "username"
             })
         
-        vouches["kind"] = "ProofOfPersonhood"
+        vouches["kind"] = "Personhood"
         vouches["priority"] = 0
         user_scores["depth"] = 0
         global_scores["depth"] = 0
         from solidago.primitives.date import week_date_to_week_number as to_week_number
         comparisons["week_number"] = [to_week_number(wd) for wd in list(comparisons["week_date"])]
         
-        entities = DataFrame({ "entity_id": list(set(global_scores["entity_id"])) })
+        entities = DataFrame({ "entity_name": list(set(global_scores["entity_name"])) })
         criteria = DataFrame([
             ["reliability", "Reliable and not misleading"],
             ["importance", "Important and actionable"],
@@ -66,7 +66,7 @@ class TournesolExport(State):
             ["backfire_risk", "Resilience to backfiring risks"],
             ["better_habits", "Encourages better habits"],
             ["entertaining_relaxing", "Entertaining and relaxing"]
-        ], columns=["criterion_id", "description"])
+        ], columns=["criterion_name", "description"])
         
         return { "users": users, "vouches": vouches, "entities": entities, "criteria": criteria,
             "comparisons": comparisons, "user_scores": user_scores, "global_scores": global_scores }
@@ -74,7 +74,7 @@ class TournesolExport(State):
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         dfs = TournesolExport.load_dfs(dataset_zip)
         from solidago.state import Users, Vouches, Entities, AllPublic, Comparisons, VotingRights, UserModels, DirectScoring
-        voting_rights_columns = ["username", "entity_id", "criterion_id", "voting_right"]
+        voting_rights_columns = ["username", "entity_name", "criterion_name", "voting_right"]
         user_models_instructions = { username: ["DirectScoring", dict()] for username in dfs["users"]["username"] }
         super().__init__(
             users=Users(dfs["users"]),

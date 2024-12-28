@@ -14,19 +14,14 @@ class ComparisonGenerator:
         comparisons: Comparisons
     ) -> Comparisons:
         """ Fills in the comparisons """
-        for username, criterion_id, user_comparisons in comparisons:
-            for index, comparison in user_comparisons.iterrows():
-                user = users.get(username)
-                left = entities.get(comparison["left_id"])
-                right = entities.get(comparison["right_id"])
-                comparison_max, comparison = self.sample(
-                    user=user, left=left, right=right,
-                    criterion=criteria.get(criterion_id), 
-                    left_public=made_public[user, left], 
-                    right_public=made_public[user, right]
-                )
-                user_comparisons.loc[index, "comparison_max"] = comparison_max
-                user_comparisons.loc[index, "comparison"] = comparison
+        for username, left_name, right_name, criterion_name in comparisons:
+            user = users.get(username)
+            criterion = criteria.get(criterion_name)
+            left = entities.get(left_name)
+            right = entities.get(right_name)
+            left_public = made_public[user, left]
+            right_public = made_public[user, right]
+            comparisons[user, criterion, left, right] = self.sample(user, left, right, criterion, lpublic, rpublic)
         return comparisons
     
     def sample(self, 

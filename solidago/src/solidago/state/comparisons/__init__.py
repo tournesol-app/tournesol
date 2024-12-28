@@ -1,1 +1,1 @@
-from .base import Comparison, UserCriterionComparisons, Comparisons
+from .base import Comparisons

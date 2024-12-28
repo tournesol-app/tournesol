@@ -7,10 +7,11 @@ from solidago.state.wrappers import NestedDict
 class Vouches(NestedDict):
     def __init__(self, 
         d: Optional[Union[dict, DataFrame]]=None, 
-        args_names=["by", "to", "kind"],
+        keys_names=["by", "to", "kind"],
         values_names=["weight", "priority"],
+        save_filename="vouches.csv"
     ):
-        super().__init__(args_names, values_names, d, "vouches.csv")
+        super().__init__(keys_names, values_names, d, save_filename)
     
     def default_value(self) -> tuple[float, float]:
         return 0, - float("inf")
@@ -27,13 +28,4 @@ class Vouches(NestedDict):
         
     def value2list(self, value: tuple[float, float]) -> list[float]:
         return list(self.value_process(value))
-    
-    def __setitem__(self, 
-        keys: Union[
-            tuple[Union[str, "User"], Union[str, "User"], str],
-            tuple[Union[str, "User"], Union[str, "User"]]
-        ], 
-        value: "OutputValue"
-    ) -> None:
-        keys = keys if len(keys) == len(self.args_names) else (*keys, "ProofOfPersonhood")
-        super(Vouches, self).__setitem__(keys, value)
+

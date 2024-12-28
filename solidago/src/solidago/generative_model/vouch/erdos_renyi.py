@@ -18,13 +18,13 @@ class ErdosRenyiVouchGenerator(VouchGenerator):
         vouches = Vouches()
         
         for trustworthy in (True, False):
-            users_subset = Users(users[users["is_trustworthy"] == trustworthy])
-            if len(users_subset) <= 1: continue
+            usernames_subset = set(users[users["is_trustworthy"] == trustworthy].index)
+            if len(usernames_subset) <= 1: continue
             
-            for voucher in users_subset:
-                p_vouch = voucher["n_expected_vouches"] / (len(users_subset) - 1)
-                for vouchee in users_subset:
-                    if (voucher.name != vouchee.name) and (np.random.random() < p_vouch):
-                        vouches[voucher, vouchee] = 1 - np.random.random()**2
+            for voucher_name in usernames_subset:
+                p_vouch = users.loc[voucher_name, "n_expected_vouches"] / (len(usernames_subset) - 1)
+                for vouchee_name in usernames_subset:
+                    if (voucher_name != vouchee_name) and (np.random.random() < p_vouch):
+                        vouches[voucher_name, vouchee_name] = 1 - np.random.random()**2
         
         return vouches

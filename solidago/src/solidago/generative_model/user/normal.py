@@ -84,7 +84,7 @@ class NormalUserGenerator(UserGenerator):
         return VectorUsers([ self.sample(username) for username in range(n_users) ])
 
     def sample(self, username):
-        user = VectorUser(username, self.vector_sample())
+        user = VectorUser(self.vector_sample(), name=username)
         user["is_trustworthy"] = (random() < self.p_trustworthy)
         user["is_pretrusted"] = (random() < self.p_pretrusted) if user["is_trustworthy"] else False
         user["n_expected_vouches"] = zipf(self.zipf_vouch) - 1

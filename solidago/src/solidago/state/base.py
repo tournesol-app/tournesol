@@ -72,7 +72,7 @@ class State:
         for _, r in global_scalings_df.iterrows():
             if r["depth"] not in global_scalings:
                 global_scalings[r["depth"]] = dict()
-            global_scalings[r["depth"]][r["criterion_id"]] = Score(r["score"], r["left_unc"], r["right_unc"])
+            global_scalings[r["depth"]][r["criterion_name"]] = Score(r["score"], r["left_unc"], r["right_unc"])
         state = cls()
         for key, value in j.items():
             assert hasattr(state, key)

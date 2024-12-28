@@ -1,0 +1,127 @@
+{
+    "users": [
+        "Users",
+        "tests/save_tiny_tournesol/users.csv"
+    ],
+    "vouches": [
+        "Vouches",
+        "tests/save_tiny_tournesol/vouches.csv"
+    ],
+    "entities": [
+        "Entities",
+        "tests/save_tiny_tournesol/entities.csv"
+    ],
+    "criteria": [
+        "Criteria",
+        "tests/save_tiny_tournesol/criteria.csv"
+    ],
+    "made_public": [
+        "AllPublic",
+        {}
+    ],
+    "assessments": [
+        "Assessments",
+        "tests/save_tiny_tournesol/assessments.csv"
+    ],
+    "comparisons": [
+        "Comparisons",
+        "tests/save_tiny_tournesol/comparisons.csv"
+    ],
+    "voting_rights": [
+        "VotingRights",
+        "tests/save_tiny_tournesol/voting_rights.csv"
+    ],
+    "user_models": [
+        "UserModels",
+        {
+            "aidjango": [
+                "DirectScoring",
+                {}
+            ],
+            "amatissart": [
+                "DirectScoring",
+                {}
+            ],
+            "Antarctus": [
+                "DirectScoring",
+                {}
+            ],
+            "biscuissec": [
+                "DirectScoring",
+                {}
+            ],
+            "Foebus": [
+                "DirectScoring",
+                {}
+            ],
+            "Fungus-Bob": [
+                "DirectScoring",
+                {}
+            ],
+            "Guigui220D": [
+                "DirectScoring",
+                {}
+            ],
+            "Jean-Lou": [
+                "DirectScoring",
+                {}
+            ],
+            "joleenj": [
+                "DirectScoring",
+                {}
+            ],
+            "lafabriquesociale": [
+                "DirectScoring",
+                {}
+            ],
+            "LapinLambda": [
+                "DirectScoring",
+                {}
+            ],
+            "le_science4all": [
+                "DirectScoring",
+                {}
+            ],
+            "lpfaucon": [
+                "DirectScoring",
+                {}
+            ],
+            "MrChamo": [
+                "DirectScoring",
+                {}
+            ],
+            "NatNgs": [
+                "DirectScoring",
+                {}
+            ],
+            "oscarv": [
+                "DirectScoring",
+                {}
+            ],
+            "Pierre-Yves": [
+                "DirectScoring",
+                {}
+            ],
+            "timber": [
+                "DirectScoring",
+                {}
+            ],
+            "Tit0uan": [
+                "DirectScoring",
+                {}
+            ],
+            "vero": [
+                "DirectScoring",
+                {}
+            ],
+            "white": [
+                "DirectScoring",
+                {}
+            ]
+        }
+    ],
+    "global_model": [
+        "DirectScoring",
+        {}
+    ]
+}

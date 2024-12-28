@@ -76,9 +76,9 @@ class ScoringModel(ABC):
         -------
         out: Score or dict
             If entities: Entity and criteria: str, the output is a Score.
-            If entities: Entity and criteria is None or list, then out[criterion_id] is a Score.
-            If entities: Entities and criteria: str, then out[entity_id] is a Score.
-            If entities: Entity and criteria is None or list, then out[entity_id][criterion_id] is a Score.
+            If entities: Entity and criteria is None or list, then out[criterion_name] is a Score.
+            If entities: Entities and criteria: str, then out[entity_name] is a Score.
+            If entities: Entity and criteria is None or list, then out[entity_name][criterion_name] is a Score.
         """
         from solidago.state.entities import Entities
         from solidago.state.criteria import Criteria
@@ -134,7 +134,7 @@ class ScoringModel(ABC):
                 rows.append([str(criterion), depth, m.value, m.left, m.right, t.value, t.left, t.right])
             depth += 1
             parent = parent.parent
-        return DataFrame(rows, columns=["criterion_id", "depth",
+        return DataFrame(rows, columns=["criterion_name", "depth",
             "multiplicator_score", "multiplicator_left", "multiplicator_right", 
             "translation_score", "translation_left", "translation_right"])
     

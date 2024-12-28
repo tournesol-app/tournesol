@@ -28,12 +28,12 @@ class UserModels:
         from solidago.state.models import Score
         scaling_params = dict()
         for _, r in scalings_df.iterrows():
-            username, criterion_id, depth = r["username"], r["criterion_id"], r["depth"]
+            username, criterion_name, depth = r["username"], r["criterion_name"], r["depth"]
             if username not in scaling_params:
                 scaling_params[username] = dict()
             if depth not in scaling_params[username]:
                 scaling_params[username][depth] = dict()
-            scaling_params[username][depth][criterion_id] = [
+            scaling_params[username][depth][criterion_name] = [
                 Score(r["multiplicator_score"], r["multiplicator_left"], r["multiplicator_right"]),
                 Score(r["translation_score"], r["translation_left"], r["translation_right"])
             ]

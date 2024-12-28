@@ -47,8 +47,7 @@ class SimpleEngagementGenerator(EngagementGenerator):
             if user["n_comparisons"] <= 0:
                 continue
             
-            assessments[str(user)] = { str(criterion): list() for criterion in criteria }
-            comparisons[str(user)] = { str(criterion): list() for criterion in criteria }
+            assessments, comparisons = Assessments(), Comparisons()
             n_compared_entities = int(2 * user["n_comparisons"] / user["n_comparisons_per_entity"] )
             n_compared_entities = min(len(entities), n_compared_entities)
             p_compare_ab = 2 * user["n_comparisons"] / n_compared_entities**2
@@ -57,29 +56,23 @@ class SimpleEngagementGenerator(EngagementGenerator):
             scores = entities.vectors @ user.vector
             noisy_scores = - user["engagement_bias"] * scores + normal(0, 1, len(scores))
             argsort = np.argsort(noisy_scores)
-            compared_entities_ids = [ entity_index2id[argsort[i]] for i in range(n_compared_entities) ]
+            compared_entities_names = [ entity_index2id[argsort[i]] for i in range(n_compared_entities) ]
             
-            for entity_id in compared_entities_ids:
-                made_public[user, entity_id] = (random() < self.p_public)
+            for entity_name in compared_entities_names:
+                made_public[user, entity_name] = (random() < self.p_public)
 
             for criterion in criteria:
-                assessments[str(user)][str(criterion)] = list()
-                comparisons[str(user)][str(criterion)] = list()
-                for index, e1_id in enumerate(compared_entities_ids):
+                for index, e1 in enumerate(compared_entities_names):
                     if random() > self.p_assessment:
                         continue
-                    assessments[str(user)][str(criterion)].append([e1_id])
-                    for e2_id in compared_entities_ids[index + 1:]:
+                    assessments[str(user), e1, str(criterion)] = float("nan"), float("nan"), float("nan")
+                    for e2 in compared_entities_names[index + 1:]:
                         if random() >= p_compare_ab or random() >= self.p_comparison:
                             continue
-                        left_id, right_id = (e1_id, e2_id) if (random() < 0.5) else (e2_id, e1_id)
-                        comparisons[str(user)][str(criterion)].append([left_id, right_id])
+                        left, right = (e1, e2) if (random() < 0.5) else (e2, e1)
+                        comparisons[str(user), str(criterion), left, right] = float("nan"), float("nan")
         
-        return (
-            made_public, 
-            Assessments(assessments, columns=["entity_id"]), 
-            Comparisons(comparisons, columns=["left_id", "right_id"])
-        )
+        return made_public, assessments, comparisons
 
     def __str__(self):
         properties = ", ".join([f"{key}={value}" for key, value in self.__dict__.items()])

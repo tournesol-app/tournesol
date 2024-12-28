@@ -16,8 +16,8 @@ class ScaledModel(ScoringModel):
         base_cls, base_d = d["parent"]
         parent = getattr(models, base_cls).load(base_d, direct_scores, scalings, depth + 1)
         model = cls(parent)
-        for criterion_id, scaling_params in scalings[depth].items():
-            model.rescale(criterion_id, scaling_params[0], scaling_params[1])
+        for criterion_name, scaling_params in scalings[depth].items():
+            model.rescale(criterion_name, scaling_params[0], scaling_params[1])
         return model
 
     def save(self, directory: Union[Path, str], filename: str="scores", depth: int=0) -> Union[str, list, dict]:
@@ -46,7 +46,7 @@ class ScaledModel(ScoringModel):
     
     def scaled_criteria(self) -> "Criteria":
         from solidago.state import Criteria
-        return Criteria(dict(criterion_id=list(self.scaling_paramters.keys())))
+        return Criteria(dict(criterion_name=list(self.scaling_paramters.keys())))
     
     def multiplicator(self, criterion: "Criterion") -> Score:
         if str(criterion) not in self.scaling_parameters:
@@ -76,10 +76,10 @@ class ScaledModel(ScoringModel):
         return [self.__class__.__name__, dict() if not data else { 
             "parent": self.parent.to_dict(data=True),
             "scaling_parameters": {
-                criterion_id: {
+                criterion_name: {
                     "multiplicator": self.multiplicator(criterion).to_triplet(),
                     "translation": self.translation(criterion).to_triplet()
-                } for criterion_id, values in self.scaling_parameters.items()
+                } for criterion_name, values in self.scaling_parameters.items()
             }
         }]
     
@@ -88,9 +88,9 @@ class ScaledModel(ScoringModel):
         return ScaledModel(
             parent=ScoringModel.from_dict(d["parent"], entities),
             scaling_parameters={
-                criterion_id: {
+                criterion_name: {
                     "multiplicator": Score(*value["multiplicator"]),
                     "translation": Score(*value["translation"])
-                } for criterion_id, value in d["scaling_parameters"].items()
+                } for criterion_name, value in d["scaling_parameters"].items()
             }
         )

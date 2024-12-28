@@ -1,1 +1,1 @@
-from .base import Assessment, UserCriterionAssessments, Assessments
+from .base import Assessments

@@ -1,61 +1,14 @@
-from typing import Union
-from pathlib import Path
-from pandas import DataFrame, Series
-
-import pandas as pd
+from solidago.state.wrappers.named_dataframe import NamedSeries, NamedDataFrame
 
 
-class Criterion(Series):
+class Criterion(NamedSeries):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = str(self.name)
-
-    @property
-    def id(self) -> str:
-        return str(self.name)
-    
-    @id.setter
-    def id(self, criterion_id) -> None:
-        self.name = str(criterion_id)
-    
-    def __hash__(self) -> int:
-        return hash(self.id)
-    
-    def __str__(self) -> str:
-        return str(self.name)
 
 
-class Criteria(DataFrame):
+class Criteria(NamedDataFrame):
+    index_name = "criterion_name"
+    series_class = Criterion
+    
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if len(self.columns) == 1:
-            self.rename(columns={ self.columns[0]: "criterion_id" }, inplace=True)
-        if "criterion_id" in self.columns:
-            self.set_index("criterion_id", inplace=True)
-        self.index = [str(name) for name in self.index]
-        self.index.name = "criterion_id"
-
-    @classmethod
-    def load(cls, filename: str) -> "Criteria":
-        return cls(pd.read_csv(filename, keep_default_na=False))
-
-    def save(self, directory) -> tuple[str, str]:
-        path = Path(directory) / "criteria.csv"
-        self.to_csv(path)
-        return type(self).__name__, str(path)
-
-    def get(self, criterion: Union[str, Criterion]) -> Criterion:
-        assert str(criterion) in self.index, (criterion, self)
-        return Criterion(self.loc[str(criterion)])
-        
-    def __iter__(self):
-        iterator = self.iterrows()
-        while True:
-            try: yield Criterion(next(iterator)[1])
-            except StopIteration: break
-    
-    def __repr__(self) -> str:
-        return repr(DataFrame(self))
-    
-    def __contains__(self, criterion: Union[str, Series]) -> bool:
-        return str(criterion) in set(self.index)
+        super().__init__(*args, save_filename="criteria.csv", **kwargs)
