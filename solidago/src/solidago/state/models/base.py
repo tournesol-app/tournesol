@@ -1,152 +1,129 @@
 from abc import abstractmethod, ABC
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from pathlib import Path
 from pandas import DataFrame
 
+import logging
 
-class Score:
-    def __init__(
-        self, 
-        value: float=float("nan"), 
-        left_uncertainty: float=float("inf"), 
-        right_uncertainty: float=float("inf")
-    ):
-        self._value = value
-        self._left_uncertainty = left_uncertainty
-        self._right_uncertainty = right_uncertainty
-    
-    @property
-    def value(self) -> float:
-        return self._value
+logger = logging.getLogger(__name__)
 
-    @property
-    def left(self) -> float:
-        return self._left_uncertainty
-        
-    @property
-    def right(self) -> float:
-        return self._right_uncertainty
-        
-    @property
-    def min(self) -> float:
-        return self.value - self.left
-    
-    @property
-    def max(self) -> float:
-        return self.value + self.right
-    
-    def to_triplet(self) -> tuple[float, float, float]:
-        return self.value, self.left, self.right
-    
-    def average_uncertainty(self) -> float:
-        return (self._left_uncertainty + self._right_uncertainty) / 2
-    
-    def __neg__(self) -> "Score":
-        return Score(- self.value, self.right, self.left)
-    
-    def __add__(self, score: "Score") -> "Score":
-        return Score(
-            self.value + score.value,
-            self.left + score.left,
-            self.right + score.right
-        )
-    
-    def __mul__(self, s: "Score") -> "Score":
-        extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
-        value = self.value * score.value
-        return Score(value, value - min(extremes), max(extremes) - value)
-
-    def isnan(self) -> bool:
-        return self.value == float("nan") or (self.left == float("inf") and self.right == float("inf"))
+from solidago.primitives.datastructure.nested_dict import NestedDict
+from .score import Score, MultiScore
 
 
 class ScoringModel(ABC):
-    def __call__(self, 
-        entities: Union["Entity", "Entities"], 
-        criteria: Union["Criterion", "Criteria"]
-    ) -> Union[Score, dict]:
-        """ Assigns a score to an entity
+    """ dfs is the set of dataframes that are loaded/saved to reconstruct a scoring model """
+    df_names: set[str]={ "directs", "scalings" }
+    
+    def __call__(self, entities: Union["Entity", "Entities"]) -> Union[Score, MultiScore, NestedDict]:
+        """ Assigns a score to an entity, or to multiple entities.
         
         Parameters
         ----------
         entities: Union[Entity, Entities]
-        criteria: Union[Criterion, Criteria]
             
         Returns
         -------
-        out: Score or dict
-            If entities: Entity and criteria: str, the output is a Score.
-            If entities: Entity and criteria is None or list, then out[criterion_name] is a Score.
-            If entities: Entities and criteria: str, then out[entity_name] is a Score.
-            If entities: Entity and criteria is None or list, then out[entity_name][criterion_name] is a Score.
+        out: Score or MultiScore or NestedDict
+            If entities: Entity with unidimensional scoring, the output is a Score.
+            If entities: Entity with multivariate scoring, then out[criterion_name] is a Score.
+            If entities: Entities with unidimensional scoring, then out[entity_name] is a Score.
+            If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
         from solidago.state.entities import Entities
-        from solidago.state.criteria import Criteria
         if isinstance(entities, Entities):
-            return { entity: self(entity, criteria) for entity in entities }
+            return NestedDict({ entity: self(entity) for entity in entities })
         entity = entities
-        if isinstance(criteria, Criteria):
-            return { criterion: self(entity, criterion) for criterion in criteria }
-        return self.score(entity, criteria)        
-        
-    @classmethod
-    def load(cls, d: dict, direct_scores: DataFrame, scalings: dict, depth: int=0) -> "ScoringModel":
-        import solidago.state.models as models
-        base_cls, base_d = d["parent"]
-        parent = getattr(models, base_cls).load(base_d, direct_scores, scalings, depth + 1)
-        return cls(parent)
-
-    @abstractmethod
-    def save(self, filename: Union[Path, str]) -> tuple[str, Union[str, tuple, list, dict]]:
-        raise NotImplementedError
+        return self.score(entity)
     
     @abstractmethod
-    def score(self, entity: "Entity", criterion: "Criterion") -> Score:
+    def score(self, entity: "Entity") -> Union[Score, MultiScore]:
         raise NotImplementedError
+    
+    @classmethod
+    def dfs_load(cls, d: dict[str, Any], loaded_dfs: Optional[dict[str, DataFrame]]=None):
+        if loaded_dfs is None:
+            loaded_dfs = dict()
+        for df_name in cls.df_names & set(d):
+            assert isinstance(d[df_name], str)
+            if df_name in loaded_dfs:
+                logger.warn("Multiple scaling model dataframe loading. Overriding the previously loaded.")
+            loaded_dfs[df_name] = pd.read_csv(d[df_name], keep_default_na=False)
+        return loaded_dfs
+    
+    @classmethod
+    def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
+        return dict()
+    
+    @classmethod
+    def load(cls, d: dict, dfs: Optional[dict[str, DataFrame]]=None, depth: int=0) -> "ScoringModel":
+        import solidago.state.models as models
+        dfs = cls.dfs_load(d, dfs)
+        args = cls.args_load(d, dfs, depth)
+        if "parent" in d:
+            base_cls, base_d = d["parent"]
+            args["parent"] = getattr(models, base_cls).load(base_d, dfs, depth + 1)
+        return cls(**args)
+
+    def save(self, filename_root: Optional[str]=None, depth: int=0, json_dump: bool=False) -> tuple[str, dict]:
+        """ save must be given a filename_root (typically without extension),
+        as multiple csv files may be saved, with a name derived from the filename_root
+        (in addition to the json description) """
+        if depth > 0 or filename_root is None:
+            arg = dict() if isinstance(self, BaseModel) else dict(parent=self.parent.save(depth=depth + 1))
+            return type(self).__name__, arg
+        dfs = self.to_dfs()
+        saved_dict = dict()
+        if not isinstance(self, BaseModel):
+            saved_dict["parent"] = self.parent.save(depth=depth + 1)
+        for df_name, df in dfs.items():
+            save_filename = f"{filename_root}_{df_name}.csv"
+            df.to_csv(save_filename, index=False)
+            saved_dict[df_name] = save_filename
+        if json_dump:
+            with open(f"{filename_root}.json", "w") as f:
+                json.dump([type(self).__name__, saved_dict], f, indent=4)
+        return type(self).__name__, saved_dict
+    
+    def to_dfs(self) -> dict[str, DataFrame]:
+        dfs = { df_name: self.to_df(df_name) for df_name in self.df_names }
+        return { df_name: df for df_name, df in dfs.items() if not df.empty }
+    
+    def to_df(self, df_name: str) -> DataFrame:
+        if "df_name" == "directs":
+            return self.directs_df()
+        if "df_name" == "scalings":
+            return self.scalings_df()
+        raise f"{df_name} not known"
+
+    def scalings_df(self) -> DataFrame:
+        rows, parent, depth = list(), self, 0
+        from .scaled import ScaledModel, MultiScaledModel
+        while not isinstance(parent, BaseModel):
+            if not isinstance(parent, (ScaledModel, MultiScaledModel)):
+                continue
+            rows += parent.to_series_list(depth)
+            depth += 1
+            parent = parent.parent
+        return DataFrame(rows)
+    
+    def directs_df(self) -> Optional[DataFrame]:
+        base_model, depth = self.base_model()
+        from .direct import DirectScoring, DirectMultiScoring
+        if isinstance(base_model, (DirectScoring, DirectMultiScoring)):
+            return base_model.to_df(depth)
+        return DataFrame()
     
     def base_model(self, depth: int=0) -> "BaseModel":
         return (self, depth) if isinstance(self, BaseModel) else self.parent.base_model(depth + 1)
 
-    def from_dict(d: dict, entities: Optional["Entities"]=None) -> "ScoringModel":
-        import solidago.state.models as models
-        return getattr(models, d[0]).from_dict(d[1], entities)
-
     def __str__(self) -> str:
-        return str(self.to_dict())
+        return type(self).__name__
     
     def __repr__(self) -> str:
-        return repr(self.to_dict())
+        dfs = [ self.to_df(self, df_name) for df_name in self.df_names ]
+        return "\n\n".join([df for df in dfs if not df.empty])
 
-    def save_scalings(self, filename: Optional[Union[Path, str]]) -> DataFrame:
-        df = self.scalings_df()
-        if filename is not None:
-            df.to_csv(filename, index=False)
-        return df
-
-    def scalings_df(self) -> DataFrame:
-        rows, parent, depth = list(), self, 0
-        while not isinstance(parent, BaseModel):
-            if not isinstance(parent, ScaledModel):
-                continue
-            for criterion in self.scaled_criteria():
-                m = parent.multiplicator(criterion)
-                t = parent.translation(criterion)
-                rows.append([str(criterion), depth, m.value, m.left, m.right, t.value, t.left, t.right])
-            depth += 1
-            parent = parent.parent
-        return DataFrame(rows, columns=["criterion_name", "depth",
-            "multiplicator_score", "multiplicator_left", "multiplicator_right", 
-            "translation_score", "translation_left", "translation_right"])
-    
-    def save_direct_scores(self, filename: Union[Path, str]) -> "ScoringModel":
-        base_model, depth = self.base_model()
-        from .direct import DirectScoring
-        if isinstance(base_model, DirectScoring):
-            base_model.save(filename, depth, save_scores=True)
-        else:
-            DataFrame().to_csv(filename)
-        return self
-    
 
 class BaseModel(ScoringModel):
     @property

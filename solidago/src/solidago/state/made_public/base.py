@@ -1,17 +1,17 @@
 from typing import Union, Optional
 from pandas import DataFrame
 
-from solidago.state.wrappers import NestedDict
+from solidago.primitives.datastructure.nested_dict import NestedDict
 
 
 class MadePublic(NestedDict):
     def __init__(self, 
         d: Optional[Union[dict, DataFrame]]=None, 
-        keys_names=["username", "entity_name"],
-        values_names=["public"],
+        key_names=["username", "entity_name"],
+        value_names=["public"],
         save_filename="made_public.csv"
     ):
-        super().__init__(keys_names, values_names, d, save_filename)
+        super().__init__(d, key_names, value_names, save_filename)
     
     def default_value(self) -> tuple[float, float]:
         return False
@@ -21,6 +21,6 @@ class MadePublic(NestedDict):
             super(MadePublic, self).__setitem__(keys, value)
 
     def get(self, *keys):
-        if len(keys) == 1 and self.keys_names == ["username", "entity_name"]:
+        if len(keys) == 1 and self.key_names == ["username", "entity_name"]:
             return set(self._dict[keys[0]]._dict.keys())
         return super(MadePublic, self).get(keys)

@@ -62,26 +62,11 @@ class State:
         path = Path(directory)
         with open(path / "state.json") as f: 
             j = json.load(f)
-        def load_csv(name):
-            return pd.read_csv(path / name, keep_default_na=False)
-        user_scalings_df = load_csv(cls.user_scalings_filename)
-        user_direct_scores_df = load_csv(cls.user_direct_scores_filename)
-        global_scalings_df = load_csv(cls.global_scalings_filename)
-        global_direct_scores_df = load_csv(cls.global_direct_scores_filename)
-        global_scalings = dict()
-        for _, r in global_scalings_df.iterrows():
-            if r["depth"] not in global_scalings:
-                global_scalings[r["depth"]] = dict()
-            global_scalings[r["depth"]][r["criterion_name"]] = Score(r["score"], r["left_unc"], r["right_unc"])
         state = cls()
-        for key, value in j.items():
+        for key, j_value in j.items():
             assert hasattr(state, key)
-            kwargs = dict()
-            if key == "user_models":
-                kwargs = dict(direct_scores=user_direct_scores_df, scalings_df=user_scalings_df)
-            if key == "global_model":
-                kwargs = dict(direct_scores=global_direct_scores_df, scalings=global_scalings)
-            setattr(state, key, getattr(solidago.state, value[0]).load(value[1], **kwargs))
+            value = getattr(solidago.state, j_value[0]).load(j_value[1])
+            setattr(state, key, value)
         return state
     
     @property

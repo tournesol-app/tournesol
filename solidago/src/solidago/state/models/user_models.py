@@ -4,85 +4,85 @@ from pandas import DataFrame
 
 import pandas as pd
 
+from solidago.primitives.datastructure.nested_dict import NestedDict
+from .base import ScoringModel
 
-class UserModels:
-    def __init__(self, d: Optional[dict]=None):
-        self._dict = dict()
 
-    @staticmethod
-    def direct_scores_to_dict(direct_scores: DataFrame) -> dict[str, DataFrame]:
-        """ Constructs a dict that maps username to DirectScoring """
-        from solidago.state.models import DirectScoring, Score
-        direct_scores_dict = dict()
-        asymmetric = "left_unc" in direct_scores.columns
-        left, right = ("left_unc", "right_unc") if asymmetric else ("uncertainty", "uncertainty")
-        for _, r in direct_scores.iterrows():
-            if r["username"] not in direct_scores_dict:
-                direct_scores_dict[r["username"]] = list()
-            direct_scores_dict[r["username"]].append(r)
-        return { username: DataFrame(direct_scores_dict[username]) for username in direct_scores_dict }
-
-    @staticmethod
-    def scalings_df_to_scaling_parameters(scalings_df: DataFrame) -> dict[str, dict[int, dict[str, tuple["Score", "Score"]]]]:
-        """ out[username][depth][criterion] yields the multiplicator and the translation (Score) """
-        from solidago.state.models import Score
-        scaling_params = dict()
-        for _, r in scalings_df.iterrows():
-            username, criterion_name, depth = r["username"], r["criterion_name"], r["depth"]
-            if username not in scaling_params:
-                scaling_params[username] = dict()
-            if depth not in scaling_params[username]:
-                scaling_params[username][depth] = dict()
-            scaling_params[username][depth][criterion_name] = [
-                Score(r["multiplicator_score"], r["multiplicator_left"], r["multiplicator_right"]),
-                Score(r["translation_score"], r["translation_left"], r["translation_right"])
-            ]
-        return scaling_params
-
-    @classmethod
-    def load(cls, d: dict, direct_scores: DataFrame, scalings_df: DataFrame) -> "UserModels":
-        import solidago.state.models as models
-        direct_scores_dict = UserModels.direct_scores_to_dict(direct_scores)
-        scaling_params = UserModels.scalings_df_to_scaling_parameters(scalings_df)
-        user_models = cls()
-        for username in d:
-            model_cls = getattr(models, d[username][0])
-            user_direct_scores = direct_scores_dict[username] if username in direct_scores_dict else DataFrame()
-            user_scaling = scaling_params[username] if username in scaling_params else dict()
-            user_models[username] = model_cls.load(d[username][1], user_direct_scores, user_scaling)
-        return user_models
+class UserModels(NestedDict):
+    """ dfs is the set of dataframes that are loaded/saved to reconstruct a scoring model """
+    df_names: set[str]={ "user_directs", "user_scalings" }
     
-    def save_scalings(self, filename: Union[Path, str]) -> DataFrame:
-        filename, rows, sub_df = Path(filename), list(), DataFrame()
-        for username, model in self:
-            sub_df = model.scalings_df()
-            rows += [[username] + r.values.flatten().tolist() for _, r in sub_df.iterrows()]
-        columns = ["username"] + list(sub_df.columns)
-        df = DataFrame(rows, columns=columns)
-        df.to_csv(filename, index=False)
-        return df
-
-    def save_direct_scores(self, filename: Union[Path, str]) -> DataFrame:
-        from .direct import DirectScoring
-        filename, rows, sub_df = Path(filename), list(), DataFrame()
-        for username, model in self:
-            base_model, depth = model.base_model()
-            if not isinstance(base_model, DirectScoring):
-                continue
-            sub_df = base_model.to_df(depth)
-            rows += [[username] + r.values.flatten().tolist() for _, r in sub_df.iterrows()]
-        columns = ["username"] + list(sub_df.columns)
-        df = DataFrame(rows, columns=columns)
-        df.to_csv(filename, index=False)
-        return df
-
-    def save(self, directory: Union[Path, str]) -> tuple[str, dict]:
-        directory = Path(directory)
-        return type(self).__name__, {
-            username: model.to_dict(data=False)
+    def __init__(self, 
+        d: Optional[Union[NestedDict, dict, DataFrame]]=None,
+        key_names: list[str]=["username"], 
+        value_names: Optional[list[str]]=None,
+        save_filename: Optional[str]=None,
+        model_cls: type=ScoringModel,
+    ):
+        """ Maps usernames to ScoringModel objects.
+        Useful to export/import `glued` directs / scalings dataframes. """
+        super().__init__(d=d, key_names=key_names, value_names=value_names, save_filename=None)
+        self.model_cls = model_cls
+    
+    @classmethod
+    def dfs_load(cls, d: dict, loaded_dfs: dict) -> dict[str, dict[str, DataFrame]]:
+        if loaded_dfs is None:
+            loaded_dfs = dict()
+        for df_name in cls.df_names & set(d):
+            df = pd.read_csv(d[df_name], keep_default_na=False)
+            for _, r in df.iterrows():
+                if r["username"] not in loaded_dfs:
+                    loaded_dfs[r["username"]] = dict()
+                if df_name not in loaded_dfs[r["username"]]:
+                    loaded_dfs[df_name][r["username"]] = list()
+                loaded_dfs[df_name][r["username"]].append(r)
+        return {
+            username: {
+                df_name: DataFrame(rows_list)
+                for df_name, rows_list in loaded_dfs[username].items()
+            } for username in loaded_dfs
+        }       
+    
+    @classmethod
+    def load(cls, d: dict, dfs: Optional[dict[str, dict[str, DataFrame]]]=None) -> "UserModels":
+        if "users" not in d:
+            return cls()
+        import solidago.state.models as models
+        if "dataframes" in d:
+            dfs = cls.dfs_load(d["dataframes"], dfs)
+        return cls({
+            username: getattr(models, user_d[0]).load(user_d[1], dfs[username] if username in dfs else dict())
+            for username, user_d in d["users"].items()
+        })
+    
+    def to_dfs(self) -> dict[str, DataFrame]:
+        dfs = { df_name: self.to_df(df_name) for df_name in self.df_names }
+        return { df_name: df for df_name, df in dfs.items() if not df.empty }
+        
+    def to_df(self, df_name: str) -> DataFrame:
+        return DataFrame(sum([
+            [ dict(username=username) | dict(r) for _, r in model.to_df(df_name).iterrows() ]
             for username, model in self
-        }        
-            
+        ], list()))
+
+    def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict, dict]:
+        df_filenames = dict()
+        for df_name in self.df_names:
+            df = self.to_df(df_name)
+            if df.empty:
+                continue
+            filename = Path(directory) / f"{df_name}.csv"
+            df.to_csv(filename, index=False)
+            df_filenames[df_name] = str(filename)
+        j = type(self).__name__, {
+            "users": { username: model.save() for username, model in self },
+            "dataframes": df_filenames
+        }
+        if json_dump:
+            with open(directory / "user_models.json", "w") as f:
+                json.dump(j, f)
+        return j
+
     def __setitem__(self, user: Union[str, "User"], model: "ScoringModel") -> None:
         self._dict[str(user)] = model
     
@@ -95,3 +95,6 @@ class UserModels:
             
     def __contains__(self, user: Union[str, "User"]) -> bool:
         return str(user) in self._dict
+
+    def __repr__(self) -> str:
+        return "\n\n".join(self.to_dfs().values())

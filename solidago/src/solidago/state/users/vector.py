@@ -1,6 +1,6 @@
 import numpy as np
 
-from solidago.state.wrappers.vector_dataframe import VectorSeries, VectorDataFrame
+from solidago.primitives.datastructure.vector_dataframe import VectorSeries, VectorDataFrame
 
 
 class VectorUser(VectorSeries):

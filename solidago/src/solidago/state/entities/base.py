@@ -1,4 +1,4 @@
-from solidago.state.wrappers.named_dataframe import NamedSeries, NamedDataFrame
+from solidago.primitives.datastructure.named_dataframe import NamedSeries, NamedDataFrame
 
 
 class Entity(NamedSeries):

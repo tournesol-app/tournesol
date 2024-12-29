@@ -17,7 +17,8 @@ class AssessmentGenerator:
             entity = entities.get(entity_name)
             criterion = criteria.get(criterion_name)
             public=made_public[user, entity]
-            assessments[user, entity, criterion] = self.sample(user, entity, criterion, public)
+            a_min, a_max, a = self.sample(user, entity, criterion, public)
+            assessments[user, entity, criterion] |= { "assessment_min": a_min, "assessment_max": a_max, "assessment": a }
         return assessments
         
     def sample(self, user: User, entity: Entity, criterion: Criterion, public: bool) -> tuple[float, float, float]:

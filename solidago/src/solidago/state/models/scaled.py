@@ -1,96 +1,134 @@
-from typing import Union, Optional
+from typing import Union, Optional, Any
 from pathlib import Path
 from pandas import DataFrame
 
-from .base import Score, ScoringModel
+from solidago.primitives.datastructure.nested_dict import NestedDict
+from .score import Score, MultiScore
+from .base import ScoringModel
 
 
 class ScaledModel(ScoringModel):
-    def __init__(self, parent: ScoringModel, scaling_parameters: Optional[dict]=None):
+    def __init__(self, parent: ScoringModel, multiplicator: Score, translation: Score):
+        super().__init__()
         self.parent = parent
-        self.scaling_parameters = dict() if scaling_parameters is None else scaling_parameters
-
-    @classmethod
-    def load(cls, d: dict, direct_scores: DataFrame, scalings: dict, depth: int=0) -> "ScaledModel":
-        import solidago.state.models as models
-        base_cls, base_d = d["parent"]
-        parent = getattr(models, base_cls).load(base_d, direct_scores, scalings, depth + 1)
-        model = cls(parent)
-        for criterion_name, scaling_params in scalings[depth].items():
-            model.rescale(criterion_name, scaling_params[0], scaling_params[1])
-        return model
-
-    def save(self, directory: Union[Path, str], filename: str="scores", depth: int=0) -> Union[str, list, dict]:
-        parent_instructions = self.parent.save(directory, depth)
-        return [self.__class__.__name__, parent_instructions]
-
-    def score(self, entity: "Entity", criterion: "Criterion") -> Score:
-        score = self.parent(entity, criterion)
-        return None if score is None else self.scale(score, criterion)
-
-    def scale(self, score: Score, criterion: "Criterion") -> Score:
-        return self.multiplicator(criterion) * score + self.translation(criterion)
-    
-    def set_scale(self, criterion: "Criterion", multiplicator: Score, translation: Score) -> "ScaledModel":
-        self.scaling_parameters[str(criterion)] = (multiplicator, translation)
-        return self
-    
-    def rescale(self, criterion: "Criterion", multiplicator: Score, translation: Score) -> "ScaledModel":
-        if str(criterion) not in self.scaling_parameters:
-            self.scaling_parameters[str(criterion)] = (multiplicator, translation)
-        else:
-            self.scaling_parameters[str(criterion)][0] *= multiplicator
-            self.scaling_parameters[str(criterion)][1] *= multiplicator 
-            self.scaling_parameters[str(criterion)][1] += translation
-        return self
-    
-    def scaled_criteria(self) -> "Criteria":
-        from solidago.state import Criteria
-        return Criteria(dict(criterion_name=list(self.scaling_paramters.keys())))
-    
-    def multiplicator(self, criterion: "Criterion") -> Score:
-        if str(criterion) not in self.scaling_parameters:
-            return Score(1, 0, 0)
-        return self.scaling_parameters[criterion][0]
-        
-    def translation(self, criterion: "Criterion") -> Score:
-        if str(criterion) not in self.scaling_parameters:
-            return Score(0, 0, 0)
-        return self.scaling_parameters[str(criterion)][1]
-    
-    def set_multiplicator(self, criterion: "Criterion", multiplicator: Score) -> "ScaledModel":
-        if str(criterion) not in self.scaling_parameters:
-            self.scaling_parameters[str(criterion)] = (multiplicator, Score(0, 0, 0))
-        else:
-            self.scaling_parameters[str(criterion)][0] = multiplicator
-        return self
-    
-    def set_translation(self, criterion: "Criterion", translation: Score) -> "ScaledModel":
-        if str(criterion) not in self.scaling_parameters:
-            self.scaling_parameters[str(criterion)] = (Score(1, 0, 0), translation)
-        else:
-            self.scaling_parameters[str(criterion)][1] = str(translation)
-        return self
-        
-    def to_dict(self, data=False) -> tuple[str, dict]:
-        return [self.__class__.__name__, dict() if not data else { 
-            "parent": self.parent.to_dict(data=True),
-            "scaling_parameters": {
-                criterion_name: {
-                    "multiplicator": self.multiplicator(criterion).to_triplet(),
-                    "translation": self.translation(criterion).to_triplet()
-                } for criterion_name, values in self.scaling_parameters.items()
-            }
-        }]
+        self.multiplicator = multiplicator
+        self.translation = translation
     
     @classmethod
-    def from_dict(self, d: dict, scaling_df: DataFrame, direct_scores_df: DataFrame) -> "ScaledModel":
-        return ScaledModel(
-            parent=ScoringModel.from_dict(d["parent"], entities),
-            scaling_parameters={
-                criterion_name: {
-                    "multiplicator": Score(*value["multiplicator"]),
-                    "translation": Score(*value["translation"])
-                } for criterion_name, value in d["scaling_parameters"].items()
-            }
+    def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int):
+        depth_df = dfs["scalings"][dfs["scalings"]["depth"] == depth]
+        if depth_df.empty:
+            return dict(multiplicator=Score(1, 0, 0), translation=Score(0, 0, 0))
+        if len(depth_df) > 1:
+            logger.warn(f"Multiple scalings of same depth. Selected the last one.")
+        r = depth_df.iloc[-1]
+        return dict(
+            multiplicator=Score(r["multiplicator_value"], r["multiplicator_left_unc"], r["multiplicator_right_unc"]), 
+            translation=Score(r["translation_value"], r["translation_left_unc"], r["translation_right_unc"])
         )
+
+    def score(self, entity: "Entity") -> Score:
+        return self.scale( self.parent(entity) )
+
+    def scale(self, score: Score) -> Score:
+        return self.multiplicator * score + self.translation
+    
+    def set_scale(self, multiplicator: Score, translation: Score) -> None:
+        self.multiplicator = multiplicator
+        self.translation = translation
+    
+    def rescale(self, multiplicator: Score, translation: Score) -> None:
+        self.multiplicator *= multiplicator
+        self.translation = multiplicator * self.translation + translation
+    
+    def to_series_list(self, depth: int=0):
+        return [Series(dict(
+            depth=depth,
+            multiplicator_value=self.multiplicator.value,
+            multiplicator_left_unc=self.multiplicator.left_unc,
+            multiplicator_right_unc=self.multiplicator.right_unc,
+            translation_value=self.translation.value,
+            translation_left_unc=self.translation.left_unc,
+            translation_right_unc=self.translation.right_unc,
+        ))]
+        
+    def to_df(self, depth: int=0):
+        return DataFrame(self.to_series_list(depth))
+    
+    def to_series_list(self, depth):
+        raise NotImplementedError
+
+
+class MultiScaledModel(ScoringModel, NestedDict):
+    def __init__(self,
+        parent: ScoringModel,
+        d: Optional[Union[NestedDict, dict, DataFrame]]=None,
+        key_names: list[str]=["criterion"], 
+        value_names: Optional[list[str]]=None,
+        save_filename: Optional[str]=None
+    ):
+        super().__init__(d, key_names, value_names, save_filename)
+        self.parent = parent
+
+    def default_value(self) -> tuple[Score, Score]:
+        return Score(1, 0, 0), Score(0, 0, 0)
+    
+    def value_process(self, value: Any, keys: Optional[list]=None) -> tuple[Score, Score]:
+        if isinstance(value, (tuple, list)) and len(value) == 2:
+            return Score(value[0]), Score(value[1])
+        if isinstance(value, (dict, Series)) and len(value) == 2:
+            return (
+                Score(value["multiplicator_value"], value["multiplicator_left_unc"], value["multiplicator_right_unc"]), 
+                Score(value["translation_value"], value["translation_left_unc"], value["translation_right_unc"]), 
+            )
+        return value
+
+    def values2list(self, value: Any) -> list:
+        return list(value[0].to_triplet()) + list(value[1].to_triplet())
+
+    @classmethod
+    def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
+        depth_df = dfs["scalings"][dfs["scalings"]["depth"] == depth]
+        if depth_df.empty:
+            return dict(multiplicator=Score(1, 0, 0), translation=Score(0, 0, 0))
+        d = dict()
+        for _, r in depth_df.iterrows():
+            if r["criterion"] in d:
+                logger.warn(f"Multiple scalings of same depth with same criterion. Selected the last one.")
+            d[r["criterion"]] = (
+                Score(r["multiplicator_value"], r["multiplicator_left_unc"], r["multiplicator_right_unc"]),
+                Score(r["translation_value"], r["translation_left_unc"], r["translation_right_unc"]),
+            )
+        return dict(d=d)
+
+    @property
+    def multiplicator(self) -> MultiScore:
+        return MultiScore({ criterion: value[0] for criterion, value in self })
+        
+    @multiplicator.setter
+    def multiplicator(self, value: MultiScore) -> None:
+        for criterion, m in value:
+            self[criterion] = m, self[criterion][1]
+        
+    @property
+    def translation(self) -> MultiScore:
+        return MultiScore({ criterion: value[1] for criterion, value in self })
+        
+    @translation.setter
+    def translation(self, value: MultiScore) -> None:
+        for criterion, t in value:
+            self[criterion] = self[criterion][1], t
+    
+    def score(self, entity: "Entity") -> MultiScore:
+        return self.scale( self.parent(entity) )
+
+    def scale(self, score: MultiScore) -> MultiScore:
+        return self.multiplicator * score + self.translation
+    
+    def set_scale(self, multiplicator: Score, translation: Score, criterion: str) -> None:
+        self[criterion] = multiplicator, translation
+    
+    def rescale(self, multiplicator: Score, translation: Score) -> None:
+        self.multiplicator *= multiplicator
+        self.translation = multiplicator * self.translation + translation
+

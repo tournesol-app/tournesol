@@ -65,12 +65,12 @@ class SimpleEngagementGenerator(EngagementGenerator):
                 for index, e1 in enumerate(compared_entities_names):
                     if random() > self.p_assessment:
                         continue
-                    assessments[str(user), e1, str(criterion)] = float("nan"), float("nan"), float("nan")
+                    assessments[str(user), e1, str(criterion)] = dict()
                     for e2 in compared_entities_names[index + 1:]:
                         if random() >= p_compare_ab or random() >= self.p_comparison:
                             continue
                         left, right = (e1, e2) if (random() < 0.5) else (e2, e1)
-                        comparisons[str(user), str(criterion), left, right] = float("nan"), float("nan")
+                        comparisons[str(user), str(criterion), left, right] = dict()
         
         return made_public, assessments, comparisons
 

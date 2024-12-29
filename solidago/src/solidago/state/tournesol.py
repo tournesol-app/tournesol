@@ -34,27 +34,31 @@ class TournesolExport(State):
                 "public_username": "username",
                 "video_a": "left_name",
                 "video_b": "right_name",
-                "criteria": "criterion_name",
+                "criteria": "criterion",
                 "score": "comparison",
                 "score_max": "comparison_max"
             })
             global_scores = load("collective_criteria_scores", { 
-                "criteria": "criterion_name", 
+                "criteria": "criterion", 
                 "video": "entity_name",
+                "uncertainty": "left_unc",
             })
             user_scores = load("individual_criteria_scores", { 
-                "criteria": "criterion_name", 
+                "criteria": "criterion", 
                 "video": "entity_name",
-                "public_username": "username"
+                "public_username": "username",
+                "uncertainty": "left_unc",
             })
         
         vouches["kind"] = "Personhood"
         vouches["priority"] = 0
         user_scores["depth"] = 0
         global_scores["depth"] = 0
+        user_scores["right_unc"] = user_scores["left_unc"]
+        global_scores["right_unc"] = global_scores["left_unc"]
         from solidago.primitives.date import week_date_to_week_number as to_week_number
         comparisons["week_number"] = [to_week_number(wd) for wd in list(comparisons["week_date"])]
-        
+                
         entities = DataFrame({ "entity_name": list(set(global_scores["entity_name"])) })
         criteria = DataFrame([
             ["reliability", "Reliable and not misleading"],
@@ -68,14 +72,30 @@ class TournesolExport(State):
             ["entertaining_relaxing", "Entertaining and relaxing"]
         ], columns=["criterion_name", "description"])
         
-        return { "users": users, "vouches": vouches, "entities": entities, "criteria": criteria,
+        return { "users": users, "vouches": vouches, "entities": entities, "criteria": criteria, 
             "comparisons": comparisons, "user_scores": user_scores, "global_scores": global_scores }
     
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         dfs = TournesolExport.load_dfs(dataset_zip)
-        from solidago.state import Users, Vouches, Entities, AllPublic, Comparisons, VotingRights, UserModels, DirectScoring
-        voting_rights_columns = ["username", "entity_name", "criterion_name", "voting_right"]
-        user_models_instructions = { username: ["DirectScoring", dict()] for username in dfs["users"]["username"] }
+        from solidago.state import Users, Vouches, Entities, AllPublic, Comparisons, VotingRights, UserModels, DirectMultiScoring
+        voting_rights_columns = ["username", "entity_name", "criterion", "voting_right"]
+        
+        user_models_d = {
+            "users": {
+                username: ["DirectMultiScoring", dict()] 
+                for username in dfs["users"]["username"]
+            }
+        }
+        user_dfs = dict()
+        for _, r in dfs["user_scores"].iterrows():
+            if r["username"] not in user_dfs:
+                user_dfs[r["username"]] = { "directs": list() }
+            user_dfs[r["username"]]["directs"].append(r)
+        user_dfs = { 
+            username: { "directs": DataFrame(user_dfs[username]["directs"]) } 
+            for username in user_dfs
+        }
+        
         super().__init__(
             users=Users(dfs["users"]),
             vouches=Vouches(dfs["vouches"]),
@@ -84,8 +104,8 @@ class TournesolExport(State):
             made_public=AllPublic(),
             comparisons=Comparisons(dfs["comparisons"]),
             voting_rights = VotingRights(dfs["user_scores"][voting_rights_columns]),
-            user_models=UserModels.load(user_models_instructions, dfs["user_scores"], DataFrame()),
-            global_model=DirectScoring.load(dict(), dfs["global_scores"], DataFrame())
+            user_models=UserModels.load(user_models_d, user_dfs),
+            global_model=DirectMultiScoring(dict(), { "directs": dfs["global_scores"] })
         )
 
     @classmethod

@@ -21,7 +21,11 @@ class ComparisonGenerator:
             right = entities.get(right_name)
             left_public = made_public[user, left]
             right_public = made_public[user, right]
-            comparisons[user, criterion, left, right] = self.sample(user, left, right, criterion, lpublic, rpublic)
+            comparison_max, comparison = self.sample(user, left, right, criterion, lpublic, rpublic)
+            comparisons[user, criterion, left, right] |= {
+                "comparison_max": comparison_max,
+                "comparison": comparison
+            }
         return comparisons
     
     def sample(self, 
