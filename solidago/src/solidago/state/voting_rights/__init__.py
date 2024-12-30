@@ -1,1 +1,1 @@
-from .base import VotingRights
+from .base import VotingRights, MultiVotingRights

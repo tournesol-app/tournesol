@@ -64,7 +64,10 @@ class MultiScaledModel(ScoringModel, NestedDict):
         parent: ScoringModel,
         d: Optional[Union[NestedDict, dict, DataFrame]]=None,
         key_names: list[str]=["criterion"], 
-        value_names: Optional[list[str]]=None,
+        value_names: list[str]=[
+            "multiplicator_value", "multiplicator_left_unc", "multiplicator_right_unc", 
+            "translation_value", "translation_left_unc", "translation_right_unc",
+        ],
         save_filename: Optional[str]=None
     ):
         super().__init__(d, key_names, value_names, save_filename)
@@ -73,33 +76,16 @@ class MultiScaledModel(ScoringModel, NestedDict):
     def default_value(self) -> tuple[Score, Score]:
         return Score(1, 0, 0), Score(0, 0, 0)
     
-    def value_process(self, value: Any, keys: Optional[list]=None) -> tuple[Score, Score]:
-        if isinstance(value, (tuple, list)) and len(value) == 2:
-            return Score(value[0]), Score(value[1])
-        if isinstance(value, (dict, Series)) and len(value) == 2:
-            return (
-                Score(value["multiplicator_value"], value["multiplicator_left_unc"], value["multiplicator_right_unc"]), 
-                Score(value["translation_value"], value["translation_left_unc"], value["translation_right_unc"]), 
-            )
-        return value
-
-    def values2list(self, value: Any) -> list:
-        return list(value[0].to_triplet()) + list(value[1].to_triplet())
+    def process_stored_value(self, 
+        keys: list[str], 
+        stored_value: tuple[float, float, float, float, float, float]
+    ) -> tuple[Score, Score]:
+        return Score(*stored_value[0:3]), Score(*stored_value[3:6])
 
     @classmethod
     def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
         depth_df = dfs["scalings"][dfs["scalings"]["depth"] == depth]
-        if depth_df.empty:
-            return dict(multiplicator=Score(1, 0, 0), translation=Score(0, 0, 0))
-        d = dict()
-        for _, r in depth_df.iterrows():
-            if r["criterion"] in d:
-                logger.warn(f"Multiple scalings of same depth with same criterion. Selected the last one.")
-            d[r["criterion"]] = (
-                Score(r["multiplicator_value"], r["multiplicator_left_unc"], r["multiplicator_right_unc"]),
-                Score(r["translation_value"], r["translation_left_unc"], r["translation_right_unc"]),
-            )
-        return dict(d=d)
+        return dict(d=depth_df)
 
     @property
     def multiplicator(self) -> MultiScore:

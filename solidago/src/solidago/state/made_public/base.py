@@ -13,14 +13,9 @@ class MadePublic(NestedDict):
     ):
         super().__init__(d, key_names, value_names, save_filename)
     
-    def default_value(self) -> tuple[float, float]:
+    def default_value(self) -> bool:
         return False
-
+    
     def __setitem__(self, keys: Union[str, tuple, list], value: bool) -> None:
         if value:
             super(MadePublic, self).__setitem__(keys, value)
-
-    def get(self, *keys):
-        if len(keys) == 1 and self.key_names == ["username", "entity_name"]:
-            return set(self._dict[keys[0]]._dict.keys())
-        return super(MadePublic, self).get(keys)

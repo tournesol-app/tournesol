@@ -86,15 +86,15 @@ class ScoringModel(ABC):
         return type(self).__name__, saved_dict
     
     def to_dfs(self) -> dict[str, DataFrame]:
-        dfs = { df_name: self.to_df(df_name) for df_name in self.df_names }
+        dfs = { df_name: self.export_df(df_name) for df_name in self.df_names }
         return { df_name: df for df_name, df in dfs.items() if not df.empty }
     
-    def to_df(self, df_name: str) -> DataFrame:
-        if "df_name" == "directs":
+    def export_df(self, df_name: str) -> DataFrame:
+        if df_name == "directs":
             return self.directs_df()
-        if "df_name" == "scalings":
+        if df_name == "scalings":
             return self.scalings_df()
-        raise f"{df_name} not known"
+        raise ValueError(f"{df_name} not known")
 
     def scalings_df(self) -> DataFrame:
         rows, parent, depth = list(), self, 0
@@ -121,8 +121,8 @@ class ScoringModel(ABC):
         return type(self).__name__
     
     def __repr__(self) -> str:
-        dfs = [ self.to_df(self, df_name) for df_name in self.df_names ]
-        return "\n\n".join([df for df in dfs if not df.empty])
+        dfs = [ self.export_df(df_name) for df_name in self.df_names ]
+        return "\n\n".join([repr(df) for df in dfs if not df.empty])
 
 
 class BaseModel(ScoringModel):

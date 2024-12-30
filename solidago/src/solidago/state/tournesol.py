@@ -77,14 +77,15 @@ class TournesolExport(State):
     
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         dfs = TournesolExport.load_dfs(dataset_zip)
-        from solidago.state import Users, Vouches, Entities, AllPublic, Comparisons, VotingRights, UserModels, DirectMultiScoring
+        from solidago.state import Users, Vouches, Entities, AllPublic, Comparisons, MultiVotingRights, UserModels, DirectMultiScoring
         voting_rights_columns = ["username", "entity_name", "criterion", "voting_right"]
         
         user_models_d = {
             "users": {
                 username: ["DirectMultiScoring", dict()] 
                 for username in dfs["users"]["username"]
-            }
+            },
+            "model_class": "DirectMultiScoring"
         }
         user_dfs = dict()
         for _, r in dfs["user_scores"].iterrows():
@@ -103,9 +104,9 @@ class TournesolExport(State):
             criteria=Criteria(dfs["criteria"]),
             made_public=AllPublic(),
             comparisons=Comparisons(dfs["comparisons"]),
-            voting_rights = VotingRights(dfs["user_scores"][voting_rights_columns]),
+            voting_rights=MultiVotingRights(dfs["user_scores"][voting_rights_columns]),
             user_models=UserModels.load(user_models_d, user_dfs),
-            global_model=DirectMultiScoring(dict(), { "directs": dfs["global_scores"] })
+            global_model=DirectMultiScoring.load(dict(), { "directs": dfs["global_scores"] })
         )
 
     @classmethod

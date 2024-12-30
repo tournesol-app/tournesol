@@ -32,7 +32,7 @@ class Score:
         else:
             assert isinstance(left_unc, float) and isinstance(right_unc, float)
             values = value, left_unc, right_unc
-        assert self.left_unc >= 0 and self.right_unc >= 0
+        assert values[1] >= 0 and values[2] >= 0
         self.value, self.left_unc, self.right_unc = values
     
     @classmethod
@@ -79,12 +79,15 @@ class Score:
         return self.value == float("nan") or (
             self.left_unc == float("inf") and self.right_unc == float("inf")
         )
+    
+    def __repr__(self) -> str:
+        return f"{self.value} ± [- {self.left_unc}, {self.right_unc}]"
 
 
 class MultiScore(NestedDict):
     def __init__(self, 
         d: Optional[Union[NestedDict, dict, DataFrame]]=None,
-        key_names: list[str]=["criterion_name"], 
+        key_names: list[str]=["criterion"], 
         value_names: list[str]=["score", "left_unc", "right_unc"],
         save_filename: Optional[str]=None,
     ):
@@ -97,10 +100,8 @@ class MultiScore(NestedDict):
     def default_value(self) -> Score:
         return Score.nan()
     
-    def value_process(self, value) -> Score:
-        if isinstance(value, Score):
-            return value
-        return Score(*value)
+    def process_stored_value(self, keys: list[str], stored_value: tuple[float, float, float]) -> Score:
+        return Score(*stored_value)
     
     @classmethod
     def nan(cls) -> "MultiScore":
@@ -112,11 +113,11 @@ class MultiScore(NestedDict):
     def __add__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
         if isinstance(other, Score):
             return MultiScore({ key: value + other for key, value in self })
-        keys = self.get_set("criterion_name") & other.get_set("criterion_name")
+        keys = self.get_set("criterion") & other.get_set("criterion")
         return MultiScore({ key: self[key] + other[key] for key in keys })
     
     def __mul__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
         if isinstance(other, Score):
             return MultiScore({ key: value * other for key, value in self })
-        keys = self.get_set("criterion_name") & other.get_set("criterion_name")
+        keys = self.get_set("criterion") & other.get_set("criterion")
         return MultiScore({ key: self[key] * other[key] for key in keys })
