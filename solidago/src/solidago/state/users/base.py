@@ -8,7 +8,7 @@ class User(NamedSeries):
 
 class Users(NamedDataFrame):
     index_name = "username"
-    series_class = User
+    series_cls = User
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, save_filename="users.csv", **kwargs)

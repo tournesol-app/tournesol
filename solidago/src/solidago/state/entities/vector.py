@@ -10,7 +10,7 @@ class VectorEntity(VectorSeries):
 
 class VectorEntities(VectorDataFrame):
     index_name = "entity_name"
-    series_class = VectorEntity
+    series_cls = VectorEntity
 
     def __init__(self, vectors: np.ndarray, *args, **kwargs):
         super().__init__(vectors, "entities.csv", "entity_vectors.csv", *args, **kwargs)

@@ -41,8 +41,8 @@ class UserModels(dict):
                 if r["username"] not in loaded_dfs:
                     loaded_dfs[r["username"]] = dict()
                 if df_name not in loaded_dfs[r["username"]]:
-                    loaded_dfs[df_name][r["username"]] = list()
-                loaded_dfs[df_name][r["username"]].append(r)
+                    loaded_dfs[r["username"]][df_name] = list()
+                loaded_dfs[r["username"]][df_name].append(r)
         return {
             username: {
                 df_name: DataFrame(rows_list)
@@ -57,8 +57,12 @@ class UserModels(dict):
         import solidago.state.models as models
         if "dataframes" in d:
             dfs = cls.dfs_load(d["dataframes"], dfs)
-        return cls(getattr(models, d["model_class"]), {
-            username: getattr(models, user_d[0]).load(user_d[1], dfs[username] if username in dfs else dict())
+        def user_dfs(username):
+            if dfs is None or username not in dfs:
+                return dict()
+            return { df_name.split("_")[-1]: df for df_name, df in dfs[username].items() }
+        return cls(getattr(models, d["model_cls"]), {
+            username: getattr(models, user_d[0]).load(user_d[1], user_dfs(username))
             for username, user_d in d["users"].items()
         })
     
@@ -67,15 +71,16 @@ class UserModels(dict):
         return { df_name: df for df_name, df in dfs.items() if not df.empty }
         
     def export_df(self, df_name: str) -> DataFrame:
+        user_df_name = df_name.split("_")[-1]
         return DataFrame(sum([
-            [ dict(username=username) | dict(r) for _, r in model.to_df(df_name).iterrows() ]
+            [ dict(username=username) | dict(r) for _, r in model.export_df(user_df_name).iterrows() ]
             for username, model in self
         ], list()))
 
     def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict, dict]:
         df_filenames = dict()
         for df_name in self.df_names:
-            df = self.to_df(df_name)
+            df = self.export_df(df_name)
             if df.empty:
                 continue
             filename = Path(directory) / f"{df_name}.csv"
@@ -83,8 +88,9 @@ class UserModels(dict):
             df_filenames[df_name] = str(filename)
         j = type(self).__name__, {
             "users": { username: model.save() for username, model in self },
-            "dataframes": df_filenames
-        }, self.model_cls.__name__
+            "dataframes": df_filenames,
+            "model_cls": self.model_cls.__name__,
+        }, 
         if json_dump:
             with open(directory / "user_models.json", "w") as f:
                 json.dump(j, f)
@@ -92,17 +98,3 @@ class UserModels(dict):
 
     def __repr__(self) -> str:
         return "\n\n".join([repr(df) for df in self.to_dfs().values()])
-
-    # def __setitem__(self, user: Union[str, "User"], model: "ScoringModel") -> None:
-        # self._dict[str(user)] = model
-    
-    # def __getitem__(self, user: "User") -> "ScoringModel":
-        # return self._dict[str(user)]
-        
-    # def __iter__(self):
-        # for key_value in self._dict.items():
-            # yield key_value
-            
-    # def __contains__(self, user: Union[str, "User"]) -> bool:
-        # return str(user) in self._dict
-

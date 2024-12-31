@@ -8,7 +8,7 @@ class Entity(NamedSeries):
 
 class Entities(NamedDataFrame):
     index_name = "entity_name"
-    series_class = Entity
+    series_cls = Entity
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, save_filename="entities.csv", **kwargs)

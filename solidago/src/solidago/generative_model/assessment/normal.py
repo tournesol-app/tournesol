@@ -1,17 +1,11 @@
 from numpy import sqrt
 from numpy.random import normal
 
-from solidago.state import VectorUser, VectorEntity, Criterion
+from solidago.state import *
 from .base import AssessmentGenerator
 
 
 class NormalAssessmentGenerator(AssessmentGenerator):
-    def sample(self, user: VectorUser, entity: VectorEntity, criterion: Criterion, public: bool) -> tuple[float, float, float]:
+    def sample(self, state: State, assessment: Assessment, user: VectorUser, entity: VectorEntity, public: bool) -> tuple[float, float, float]:
         score = user.vector @ entity.vector / sqrt(user.vector.size)
-        return -float("inf"), float("inf"), score + normal()
-
-    def __str__(self):
-        return type(self).__name__
-
-    def to_json(self):
-        return (type(self).__name__, )
+        return score + normal(), -float("inf"), float("inf")

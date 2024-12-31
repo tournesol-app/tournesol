@@ -21,7 +21,7 @@ class NamedSeries(Series):
 
 class NamedDataFrame(DataFrame):
     index_name: str
-    series_class: type
+    series_cls: type
 
     def __init__(self, *args, save_filename: Optional[Union[str, Path]]=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,11 +53,11 @@ class NamedDataFrame(DataFrame):
                 
     def get(self, series: Union[str, NamedSeries]) -> NamedSeries:
         assert series in self, (series, self)
-        return self.series_class(self.loc[str(series)])
+        return self.series_cls(self.loc[str(series)])
         
     def __iter__(self):
         for _, row in self.iterrows():
-            yield self.series_class(row)
+            yield self.series_cls(row)
     
     def __repr__(self):
         return repr(DataFrame(self))

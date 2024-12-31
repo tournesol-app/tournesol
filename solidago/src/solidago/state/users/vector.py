@@ -10,7 +10,7 @@ class VectorUser(VectorSeries):
 
 class VectorUsers(VectorDataFrame):
     index_name = "username"
-    series_class = VectorUser
+    series_cls = VectorUser
 
     def __init__(self, vectors: np.ndarray, *args, **kwargs):
         super().__init__(vectors, "users.csv", "user_vectors.csv", *args, **kwargs)

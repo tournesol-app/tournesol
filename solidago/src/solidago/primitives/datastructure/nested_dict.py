@@ -1,4 +1,5 @@
 from typing import Union, Optional, Callable, Any, Iterable
+from types import BuiltinFunctionType
 from pathlib import Path
 from pandas import DataFrame, Series
 from functools import reduce
@@ -54,14 +55,14 @@ class NestedDict:
         """ _get does NOT postprocess the result, which makes it usually unsuitable for external use """
         assert len(keys) <= len(self.key_names), (keys, repr(self))
         out_key_names = [ 
-            n for n, key in zip(self.key_names[:len(keys)], keys)
-            if key == any or isinstance(key, (set, tuple, list))
+            key_name for key_name, key in zip(self.key_names[:len(keys)], keys)
+            if (isinstance(key, BuiltinFunctionType) and key == any) or isinstance(key, (set, tuple, list))
         ] + self.key_names[len(keys):]
         if len(keys) == 0:
             return self
-        if keys[0] == any and len(self.key_names) == 1:
+        if isinstance(keys[0], BuiltinFunctionType) and keys[0] == any and len(self.key_names) == 1:
             return self
-        if keys[0] == any: # len(self.key_names) > 1 and len(out_key_names) > 0
+        if isinstance(keys[0], BuiltinFunctionType) and keys[0] == any: # len(self.key_names) > 1 and len(out_key_names) > 0
             d = { key: subdict._get(*keys[1:], default_value=(len(out_key_names) == 0)) for key, subdict in self._dict.items() }
             d = { key: subdict for key, subdict in d.items() if len(subdict) > 0  }
             return type(self)(key_names=out_key_names, value_names=self.value_names, d=d, save_filename=None)
@@ -123,13 +124,24 @@ class NestedDict:
         if str(keys[0]) not in self._dict:
             self._dict[str(keys[0])] = type(self)(key_names=self.key_names[1:], value_names=self.value_names)
         self._dict[str(keys[0])].set(keys[1:], value)
-        
+
+    def add(self, *keys) -> None:
+        """ Adds an empty entry to nested_dict[keys] 
+        (requires that it be a list of dict, nested_dict.value_names is None """
+        assert self.value_names is None, "Cannot add empty entry to NestedDict with nonlist values"
+        self[keys] = self._get(*keys) + [dict()]
+    
+    def append(self, keys: list, row: dict) -> None:
+        assert self.value_names is None, "Cannot add dict to NestedDict with nonlist values"
+        self[keys] = self._get(*keys) + [dict(row)]
+
     def __setitem__(self, keys: Union[str, tuple, list], value: "OutputValue") -> None:
         self.set(keys, value)
 
     @classmethod
     def load(cls, filename: str) -> "NestedDict":
-        return cls(pd.read_csv(filename, keep_default_na=False))
+        try: return cls(pd.read_csv(filename, keep_default_na=False))
+        except pd.errors.EmptyDataError: return cls()
 
     def __iter__(self, process: bool=True) -> Iterable:
         if len(self.key_names) == 1:
@@ -137,10 +149,8 @@ class NestedDict:
                 yield [key], (self.process_stored_value([key], value) if process else value)
         else:
             for key in self._dict:
-                for subkeys, value in self._dict[key]:
-                    keys = [key] + subkeys
-                    assert len(keys) == len(self.key_names), (keys, self.key_names)
-                    yield keys, (self.process_stored_value([key], value) if process else value)
+                for subkeys, value in self._dict[key].__iter__(process=process):
+                    yield [key] + subkeys, value
     
     def __len__(self) -> int:
         if len(self.key_names) == 1 and self.value_names is not None:
@@ -157,8 +167,8 @@ class NestedDict:
             return DataFrame(sum([
                 [
                     dict(zip(self.key_names, keys)) | row 
-                    for row in self._get(*keys)
-                ] for keys, _ in self
+                    for row in row_list
+                ] for keys, row_list in self.__iter__(process=False)
             ], list()))
         if len(self.value_names) == 1:
             return DataFrame([ 

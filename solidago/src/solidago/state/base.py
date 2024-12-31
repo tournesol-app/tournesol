@@ -58,7 +58,6 @@ class State:
     @classmethod
     def load(cls, directory: Union[Path, str]) -> "State":
         import solidago.state
-        from solidago.state import Score
         path = Path(directory)
         with open(path / "state.json") as f: 
             j = json.load(f)
@@ -84,13 +83,11 @@ class State:
         self.save_directory = directory
         if self.save_directory == False:
             return dict()
-        self.save_user_scalings()
-        self.save_user_direct_scores()
-        self.save_global_scalings()
-        self.save_global_direct_scores()
         instructions = dict()
         for key, value in self.__dict__.items():
-            if key[0] != "_" and hasattr(value, "save"):
+            if key == "global_model":
+                instructions[key] = value.save(Path(self.save_directory) / "global")
+            elif key[0] != "_" and hasattr(value, "save"):
                 instructions[key] = value.save(self.save_directory)
         with open(self.save_directory / "state.json", "w") as f:
             json.dump(instructions, f, indent=4)
@@ -116,3 +113,8 @@ class State:
         self.save_directory = directory
         return self.global_model.save_direct_scores(self.save_directory / self.global_direct_scores_filename)
 
+    def __repr__(self) -> str:
+        return type(self).__name__ + "(\n\t" + "\n\t".join([
+            f"{key}: {type(value).__name__}, with len = {len(value)}"
+            for key, value in self.__dict__.items() if key[0] != "_" and hasattr(value, "save")
+        ]) + "\n)"

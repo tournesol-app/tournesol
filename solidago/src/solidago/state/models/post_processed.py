@@ -43,4 +43,4 @@ class SquashedModel(PostProcessedModel):
 
     def save(self, directory: Union[Path, str], filename: Optional[str], depth: int=0 ) -> tuple[str, Union[dict, str, tuple, list]]:
         parent_instructions = self.parent.save(directory, depth)
-        return [self.__class__.__name__, { "parent": parent_instructions }]
+        return [type(self).__name__, { "parent": parent_instructions }]

@@ -1,32 +1,24 @@
 import numpy as np
 
 from solidago.state import *
+from solidago.pipeline import StateFunction
 
 
-class AssessmentGenerator:
-    def __call__(self, 
-        users: Users, 
-        entities: Entities, 
-        criteria: Criteria,
-        made_public: MadePublic, 
-        assessments: Assessments
-    ) -> Assessments:
+class AssessmentGenerator(StateFunction):
+    def __call__(self, state: State) -> None:
         """ Fills in the assessments """
-        for (username, entity_name, criterion_name), _ in assessments:
-            user = users.get(username)
-            entity = entities.get(entity_name)
-            criterion = criteria.get(criterion_name)
-            public=made_public[user, entity]
-            a_min, a_max, a = self.sample(user, entity, criterion, public)
-            assessments[user, entity, criterion] |= { "assessment_min": a_min, "assessment_max": a_max, "assessment": a }
-        return assessments
+        for (username, entity_name), assessment_list in state.assessments:
+            for index, assessment in enumerate(assessment_list):
+                user = state.users.get(username)
+                entity = state.entities.get(entity_name)
+                public = state.made_public[user, entity]
+                a, a_min, a_max = self.sample(state, assessment, user, entity, public)
+                state.assessments[user, entity][index] |= { 
+                    "assessment": a,
+                    "assessment_min": a_min, 
+                    "assessment_max": a_max, 
+                }
         
-    def sample(self, user: User, entity: Entity, criterion: Criterion, public: bool) -> tuple[float, float, float]:
+    def sample(self, state: State, assessment: Assessment, user: User, entity: Entity, public: bool) -> tuple[float, float, float]:
         """ Returns assessment min, max and value """
-        return 0, 1, np.random.random()
-
-    def __str__(self):
-        return type(self).__name__
-
-    def to_json(self):
-        return (type(self).__name__, )
+        return np.random.random(), 0, 1

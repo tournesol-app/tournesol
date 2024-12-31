@@ -25,7 +25,7 @@ class VectorSeries(NamedSeries):
 
 class VectorDataFrame(NamedDataFrame):
     index_name: str
-    series_class: type
+    series_cls: type
 
     def __init__(self, 
         vectors: Union[np.ndarray, list[VectorSeries]], 
@@ -73,7 +73,7 @@ class VectorDataFrame(NamedDataFrame):
         
     def __iter__(self):
         for _, row in self.iterrows():
-            yield self.series_class(self.vectors[row["vector_index"]], row)
+            yield self.series_cls(self.vectors[row["vector_index"]], row)
         
     def __repr__(self) -> str:
         return repr(DataFrame(self)) + "\n\n" + repr(self.vectors)

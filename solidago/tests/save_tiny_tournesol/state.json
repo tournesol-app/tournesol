@@ -28,100 +28,108 @@
         "tests/save_tiny_tournesol/comparisons.csv"
     ],
     "voting_rights": [
-        "VotingRights",
+        "MultiVotingRights",
         "tests/save_tiny_tournesol/voting_rights.csv"
     ],
     "user_models": [
         "UserModels",
         {
-            "aidjango": [
-                "DirectScoring",
-                {}
-            ],
-            "amatissart": [
-                "DirectScoring",
-                {}
-            ],
-            "Antarctus": [
-                "DirectScoring",
-                {}
-            ],
-            "biscuissec": [
-                "DirectScoring",
-                {}
-            ],
-            "Foebus": [
-                "DirectScoring",
-                {}
-            ],
-            "Fungus-Bob": [
-                "DirectScoring",
-                {}
-            ],
-            "Guigui220D": [
-                "DirectScoring",
-                {}
-            ],
-            "Jean-Lou": [
-                "DirectScoring",
-                {}
-            ],
-            "joleenj": [
-                "DirectScoring",
-                {}
-            ],
-            "lafabriquesociale": [
-                "DirectScoring",
-                {}
-            ],
-            "LapinLambda": [
-                "DirectScoring",
-                {}
-            ],
-            "le_science4all": [
-                "DirectScoring",
-                {}
-            ],
-            "lpfaucon": [
-                "DirectScoring",
-                {}
-            ],
-            "MrChamo": [
-                "DirectScoring",
-                {}
-            ],
-            "NatNgs": [
-                "DirectScoring",
-                {}
-            ],
-            "oscarv": [
-                "DirectScoring",
-                {}
-            ],
-            "Pierre-Yves": [
-                "DirectScoring",
-                {}
-            ],
-            "timber": [
-                "DirectScoring",
-                {}
-            ],
-            "Tit0uan": [
-                "DirectScoring",
-                {}
-            ],
-            "vero": [
-                "DirectScoring",
-                {}
-            ],
-            "white": [
-                "DirectScoring",
-                {}
-            ]
+            "users": {
+                "aidjango": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "amatissart": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "Antarctus": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "biscuissec": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "Foebus": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "Fungus-Bob": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "Guigui220D": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "Jean-Lou": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "joleenj": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "lafabriquesociale": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "LapinLambda": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "le_science4all": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "lpfaucon": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "MrChamo": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "NatNgs": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "oscarv": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "Pierre-Yves": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "timber": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "Tit0uan": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "vero": [
+                    "DirectMultiScoring",
+                    {}
+                ],
+                "white": [
+                    "DirectMultiScoring",
+                    {}
+                ]
+            },
+            "dataframes": {
+                "user_directs": "tests/save_tiny_tournesol/user_directs.csv"
+            },
+            "model_cls": "DirectMultiScoring"
         }
     ],
     "global_model": [
-        "DirectScoring",
-        {}
+        "DirectMultiScoring",
+        {
+            "directs": "tests/save_tiny_tournesol/global_directs.csv"
+        }
     ]
 }

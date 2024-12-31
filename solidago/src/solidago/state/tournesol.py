@@ -85,7 +85,7 @@ class TournesolExport(State):
                 username: ["DirectMultiScoring", dict()] 
                 for username in dfs["users"]["username"]
             },
-            "model_class": "DirectMultiScoring"
+            "model_cls": "DirectMultiScoring"
         }
         user_dfs = dict()
         for _, r in dfs["user_scores"].iterrows():

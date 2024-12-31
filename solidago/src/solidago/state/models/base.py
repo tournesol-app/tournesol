@@ -3,6 +3,7 @@ from typing import Optional, Union, Any
 from pathlib import Path
 from pandas import DataFrame
 
+import pandas as pd
 import logging
 
 logger = logging.getLogger(__name__)

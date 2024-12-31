@@ -3,13 +3,16 @@ from numpy.random import random, poisson, zipf, gamma, normal
 
 import numpy as np
 
-from solidago.state import VectorUser, VectorUsers
+from solidago.state import *
 from .base import UserGenerator
 
 
 class NormalUserGenerator(UserGenerator):
+    users_cls: type=VectorUsers
+    
     def __init__(
         self,
+        n_users: int=30,
         p_trustworthy: float=0.8,
         p_pretrusted: float=0.2,
         zipf_vouch: float=2.0,
@@ -26,6 +29,8 @@ class NormalUserGenerator(UserGenerator):
         
         Parameters
         ----------
+        n_users: int=30
+            Number of users generated
         p_trustworthy: float=0.8
             Probability that a user is trustworthy
         p_pretrusted: float=0.5
@@ -59,6 +64,7 @@ class NormalUserGenerator(UserGenerator):
         assert zipf_vouch > 1.0 and zipf_compare > 1.0
         assert poisson_compare > 0 and n_comparisons_per_entity > 0
         assert mean is not None or dimension is not None
+        super().__init__(n_users)
         if isinstance(mean, Iterable) and dimension is not None:
             assert len(mean) == dimension
             mean = np.array(mean)
@@ -75,16 +81,13 @@ class NormalUserGenerator(UserGenerator):
         self.n_comparisons_per_entity = n_comparisons_per_entity
         self.multiplicator_std_dev = multiplicator_std_dev
         self.engagement_bias_std_dev = engagement_bias_std_dev
-        self.mean = mean
+        self.mean = list(mean)
     
     def vector_sample(self):
-        return np.random.normal(0, 1, len(self.mean)) + self.mean
-
-    def __call__(self, n_users: int) -> VectorUsers:
-        return VectorUsers([ self.sample(username) for username in range(n_users) ])
+        return np.random.normal(0, 1, len(self.mean)) + np.array(self.mean)
 
     def sample(self, username):
-        user = VectorUser(self.vector_sample(), name=username)
+        user = self.users_cls.series_cls(self.vector_sample(), name=username)
         user["is_trustworthy"] = (random() < self.p_trustworthy)
         user["is_pretrusted"] = (random() < self.p_pretrusted) if user["is_trustworthy"] else False
         user["n_expected_vouches"] = zipf(self.zipf_vouch) - 1
@@ -96,21 +99,9 @@ class NormalUserGenerator(UserGenerator):
         )
         user["engagement_bias"] = normal(0, self.engagement_bias_std_dev)
         return user
-        
-    def __str__(self):
-        printed_properties = ["p_trustworthy", "p_pretrusted", "zipf_vouch", "zipf_compare", 
+
+    @classmethod
+    def json_keys(cls):
+        return ["n_users", "p_trustworthy", "p_pretrusted", "zipf_vouch", "zipf_compare", 
             "poisson_compare", "n_comparisons_per_entity", "mean", 
             "multiplicator_std_dev", "engagement_bias_std_dev"]
-        properties = ", ".join([f"{p}={getattr(self,p)}" for p in printed_properties])
-        return f"{self.__class__.__name__}({properties})"
-
-    def to_json(self):
-        return type(self).__name__, dict(
-            p_trustworthy=self.p_trustworthy,
-            p_pretrusted=self.p_pretrusted,
-            zipf_vouch=self.zipf_vouch,
-            zipf_compare=self.zipf_compare,
-            poisson_compare=self.poisson_compare,
-            n_comparisons_per_entity=self.n_comparisons_per_entity,
-            mean=list(self.mean),
-        )

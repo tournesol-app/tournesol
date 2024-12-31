@@ -36,5 +36,17 @@ class StateFunction(ABC):
     def args_save(self) -> Optional[Union[dict, list]]:
         return None
 
-    def __str__(self):
-        return type(self).__name__
+    @classmethod
+    def json_keys(cls) -> list:
+        return list(self.__dict__.keys())
+
+    def __str__(self) -> str:
+        return repr(self)
+        
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(\n\t" + "\n\t".join([
+            f"{key}={getattr(self, key)}" for key in self.json_keys()
+        ]) + "\n)"
+
+    def to_json(self):
+        return type(self).__name__, { key: getattr(self, key) for key in self.json_keys() }

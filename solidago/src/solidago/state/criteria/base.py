@@ -8,7 +8,7 @@ class Criterion(NamedSeries):
 
 class Criteria(NamedDataFrame):
     index_name = "criterion_name"
-    series_class = Criterion
+    series_cls = Criterion
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, save_filename="criteria.csv", **kwargs)

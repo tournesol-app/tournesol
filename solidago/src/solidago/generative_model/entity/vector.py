@@ -9,7 +9,10 @@ from .base import EntityGenerator
 
 
 class NormalEntityGenerator(EntityGenerator):
+    entities_cls: type=VectorEntities
+    
     def __init__(self, 
+        n_entities: int=100,
         mean: Optional[Union[int, float, list[float]]]=[3, 0, 0], 
         dimension: Optional[int]=None
     ):
@@ -22,6 +25,7 @@ class NormalEntityGenerator(EntityGenerator):
         dimension: None or int
             Dimension of the entity vector distribution (for type(mean) in (NoneType, float))
         """
+        super().__init__(n_entities)
         assert mean is not None or dimension is not None
         if isinstance(mean, Iterable) and dimension is not None:
             assert len(mean) == dimension
@@ -31,15 +35,12 @@ class NormalEntityGenerator(EntityGenerator):
         elif mean is None:
             mean = np.zeros(dimension)
         self.mean = mean
-
-    def sample_vector(self) -> np.ndarray:
-        return np.random.normal(0, 1, len(self.mean)) + self.mean
-
-    def __call__(self, n_entities: int) -> VectorEntities:
-        return VectorEntities([ self.sample(entity_name) for entity_name in range(n_entities) ])
     
     def sample(self, entity_name):
         return VectorEntity(self.sample_vector(), name=entity_name)
+
+    def sample_vector(self) -> np.ndarray:
+        return np.random.normal(0, 1, len(self.mean)) + self.mean
 
     def __str__(self):
         return f"NormalEntityGenerator(mean={self.mean})"
