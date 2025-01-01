@@ -95,11 +95,11 @@ class NestedDict:
                 return any({ keys in subdict for _, subdict in self._dict.items() })
             return True
         elif len(keys) == 1:
-            return keys[0] in self._dict
+            return str(keys[0]) in self._dict
         assert len(keys) <= len(self.key_names), (keys, self.key_names, self)
-        if keys[0] not in self._dict:
+        if str(keys[0]) not in self._dict:
             return False
-        return keys[1:] in self._dict[keys[0]]
+        return keys[1:] in self._dict[str(keys[0])]
 
     def __or__(self, other: "NestedDict") -> "NestedDict":
         """ If a conflict arises, other takes over """
@@ -109,11 +109,26 @@ class NestedDict:
             result[keys] = value
         return result
     
-    def get_set(self, key_name: str) -> set[str]:
-        assert key_name in self.key_names, (key_name, self.key_names)
+    def get_set(self, key_name: str, default_value: Optional[str]=None) -> set:
         if key_name == self.key_names[0]:
             return set(self._dict)
-        return reduce(lambda subdict, s: subdict.get_set(key_name) | s, self._dict.values(), set())
+        if key_name in self.key_names:
+            return reduce(lambda subdict, s: subdict.get_set(key_name) | s, self._dict.values(), set())
+        if value_name in self.value_names:
+            value_name_index = self.value_names.index(value_name)
+            return { values[value_name_index] for _, values in self }
+        assert self.value_names is None, f"`{key_name}` must be a key or value name for nonlist values"
+        if default_value is None:
+            return { 
+                row[key_name]
+                for _, row_list in self
+                for row in row_list if key_name in row
+            }
+        return {
+            row[key_name] if key_name in row else default_value
+            for _, row_list in self
+            for row in row_list
+        }
     
     def set(self, keys: Union[str, tuple, list], value: "OutputValue") -> None:
         if len(keys) == 1:

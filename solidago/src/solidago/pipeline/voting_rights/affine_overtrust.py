@@ -28,33 +28,52 @@ class AffineOvertrust(VotingRightsAssignment):
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
 
-    def __call__(self, state: State) -> None:
+    def main(self, 
+        users: Users, 
+        entities: Entities, 
+        made_public: MadePublic,
+        assessments: Assessments, 
+        comparisons: Comparisons
+    ) -> tuple[Entities, VotingRights]:
         """ Updates state.voting_rights and state.entities by assigning voting rights
         that exceed trust by a limited overtrust amount.
         This overtrust on a given entity on a given criterion is set to be at most 
         an affine function of the total trusts of users who evaluated the entity on the criterion.
         """
-        if len(state.users) == 0 or len(state.entities) == 0:
+        if len(users) == 0 or len(entities) == 0:
             return None
 
-        state.voting_rights = VotingRights()
+        voting_rights = VotingRights()
         trust_scores = state.users["trust_score"]
         new_records = list()
-        for criterion in state.criteria:
-            for entity in state.entities:
-                voting_rights, statistics = self.compute_per_entity_criterion(state, entity, criterion)
-                for username, voting_right in voting_rights.items():
-                    state.voting_rights[username, entity, criterion] = voting_right  # type: ignore
-                new_records.append((cumulative_trust, min_voting_right, overtrust))
+        criteria = assessments.get_set("criterion") | comparisons.get_set("criterion")
+        statistics_list = list()
+        for entity in entities:
+            assessment_evaluators = assessments.get_evaluators_by_criterion(entity)
+            comparison_evaluators = comparisons.get_evaluators_by_criterion(entity)
+            entity_statistics = list()
+            for criterion in criteria:
+                evaluators = assessment_evaluators[criterion] | comparison_evaluators[criterion]
+                trust_scores = { username: users.loc[username, "trust_score"] for username in evaluators }
+                public = { username: made_public[username, entity] for username in evaluators }
+                sub_voting_rights, sub_statistics = self.sub_main(trust_scores, public)
+                for username in sub_voting_rights:
+                    voting_rights.add_row((username, entity), { criterion: voting_right })
+                entity_statistics += [ cumulative_trust, min_voting_right, overtrust ]
+            statistics_list.append(entity_statistics)
 
-        r = list(zip(*new_records))
-        state.entities = state.entities.assign(cumulative_trust=r[0], min_voting_right=r[1], overtrust=r[2])
+        statistics = list(zip(*statistics_list))
+        entities_with_stats = entities
+        for index, criterion in enumerate(criteria):
+            entities_with_stats[f"{criterion}_cumulative_trust"] = statistics[3*index]
+            entities_with_stats[f"{criterion}_min_voting_right"] = statistics[3*index + 1]
+            entities_with_stats[f"{criterion}_overtrust"] = statistics[3*index + 2]
+        return entities_with_stats, voting_rights
 
-    def compute_per_entity_criterion(self, 
-        state: State, 
-        entity: Union[str, "Entity"], 
-        criterion: Union[str, "Criterion"]
-    ) -> tuple[dict[str, float], dict[str, float]]:
+    def sub_main(self, 
+        trust_scores: dict[str, float],
+        public: dict[str, bool],
+    ) -> tuple[dict[str, float], tuple[float, float, float]]:
         """ Computes the allocated voting rights and some statistics of these voting rights
         
         Returns
@@ -64,16 +83,9 @@ class AffineOvertrust(VotingRightsAssignment):
         statistics: dict[str, float]
             statistics[statistics_name] is the value of statistics_name
         """
-        usernames = list(state.judgments.get_evaluators(entity, criterion))
         voting_rights, statistics = self.computing_voting_rights_and_statistics(
-            trust_scores=np.array([
-                state.users.loc[username, "trust_scores"]
-                for username in usernames
-            ]),
-            privacy_weights=np.array([
-                1 if state.made_public[username, entities] else self.privacy_penalty
-                for username in usernames
-            ])
+            trust_scores=np.array(list(trust_scores.values())),
+            privacy_weights=( np.array(list(public.values())) * (1 - self.privacy) + self.privacy )
         )
         return { username: voting_rights[i] for i, username in enumerate(usernames) }, statistics
         
@@ -88,11 +100,7 @@ class AffineOvertrust(VotingRightsAssignment):
         max_overtrust = self.maximal_overtrust(cumulative_trust)
         min_voting_right = self.min_voting_right(max_overtrust, trust_scores, privacy_weights)
         voting_rights = privacy_weights * trust_scores.clip(min=min_voting_right)
-        return voting_rights, {
-            "cumulative_trust": cumulative_trust,
-            "min_voting_right": min_voting_right,
-            "overtrust": voting_rights.sum() - cumulative_trust,
-        }
+        return voting_rights, (cumulative_trust, min_voting_right, voting_rights.sum() - cumulative_trust)
 
     def maximal_overtrust(self, cumulative_trust: float) -> float:
         """Computes the maximal allowed overtrust of an entity,
@@ -139,14 +147,3 @@ class AffineOvertrust(VotingRightsAssignment):
             min_voting_right > trust_scores
         ].sum()
 
-    def args_save(self) -> dict[str, float]:
-        return dict(
-            privacy_penalty=self.privacy_penalty, 
-            min_overtrust=self.min_overtrust,
-            overtrust_ratio=self.overtrust_ratio
-        )
-
-    def __str__(self):
-        prop_names = ["privacy_penalty", "min_overtrust", "overtrust_ratio"]
-        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
-        return f"{type(self).__name__}({prop})"

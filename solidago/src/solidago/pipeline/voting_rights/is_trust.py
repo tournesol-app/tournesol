@@ -14,18 +14,23 @@ class IsTrust(VotingRightsAssignment):
         """
         self.privacy_penalty = privacy_penalty
     
-    def __call__(self, state: State) -> None:
+    def main(self, 
+        users: Users, 
+        entities: Entities, 
+        made_public: MadePublic,
+        assessments: Assessments, 
+        comparisons: Comparisons
+    ) -> VotingRights:
         """ Compute voting rights as trust_scores """
-        state.voting_rights = VotingRights()
+        voting_rights = VotingRights()
+        criteria = assessments.get_set("criterion") | comparisons.get_set("criterion")
         
-        for user in state.users:
-            for criterion in state.criteria:
-                for entity in state.user_models[user].scored_entities(state.entities, criterion):
-                    state.voting_rights[user, entity, criterion] = state.users.loc[user, "trust_score"]
-                    if state.privacy[user, entity] is None:
-                        state.privacy[user, entity] = False
-                        state.voting_rights[user, entity, criterion] *= self.privacy_penalty
-    
-    def args_save(self) -> dict[str, float]:
-        return { "privacy_penalty": self.privacy_penalty }
-    
+        for user in users:
+            for entity in entities:
+                for criterion in criteria:
+                    voting_right = users.loc[user, "trust_score"]
+                    if not made_public[user, entity]:
+                        voting_right *= self.privacy_penalty
+                    voting_rights.add_row((user, entity), { criterion: voting_right })
+        
+        return voting_rights

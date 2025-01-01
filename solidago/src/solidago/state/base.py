@@ -29,9 +29,9 @@ class State:
     def __init__(
         self,
         users: Users=Users(),
-        vouches: Vouches=Vouches(),
         entities: Entities=Entities(),
         criteria: Criteria=Criteria(),
+        vouches: Vouches=Vouches(),
         made_public: MadePublic=MadePublic(),
         assessments: Assessments=Assessments(),
         comparisons: Comparisons=Comparisons(),
@@ -43,9 +43,9 @@ class State:
         save_directory == False means that no save operation will be performed
         """
         self.users = users
-        self.vouches = vouches
         self.entities = entities
         self.criteria = criteria
+        self.vouches = vouches
         self.made_public = made_public
         self.assessments = assessments
         self.comparisons = comparisons

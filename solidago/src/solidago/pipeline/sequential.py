@@ -25,11 +25,10 @@ class Sequential(StateFunction):
 
     def main(self, state: State, save_directory: Optional[str]=None) -> State:
         result = state.copy()
-        type2keys = { value: key for key, value in self.state_cls.__init__.__annotations__.items() }
         start = timeit.default_timer()
         for step, (key, module) in enumerate(self.modules.items()):
             logger.info(f"Step {step}. Doing {key} with {type(module).__name__}")
-            value = module(state)
+            value = module(result)
             stop = timeit.default_timer()
             logger.info(f"Step {step}. Terminated in {round(stop - start, 2)} seconds")
             start = stop

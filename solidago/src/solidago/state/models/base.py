@@ -16,7 +16,7 @@ class ScoringModel(ABC):
     """ dfs is the set of dataframes that are loaded/saved to reconstruct a scoring model """
     df_names: set[str]={ "directs", "scalings" }
     
-    def __call__(self, entities: Union["Entity", "Entities"]) -> Union[Score, MultiScore, NestedDict]:
+    def __call__(self, entities: Union["Entity", "Entities"]) -> Union[MultiScore, NestedDict]:
         """ Assigns a score to an entity, or to multiple entities.
         
         Parameters
@@ -38,11 +38,11 @@ class ScoringModel(ABC):
         return self.score(entity)
     
     @abstractmethod
-    def score(self, entity: "Entity") -> Union[Score, MultiScore]:
+    def score(self, entity: "Entity") -> MultiScore:
         raise NotImplementedError
     
     @classmethod
-    def dfs_load(cls, d: dict[str, Any], loaded_dfs: Optional[dict[str, DataFrame]]=None):
+    def dfs_load(cls, d: dict[str, Any], loaded_dfs: Optional[dict[str, DataFrame]]=None) -> dict[str, DataFrame]:
         if loaded_dfs is None:
             loaded_dfs = dict()
         for df_name in cls.df_names & set(d):

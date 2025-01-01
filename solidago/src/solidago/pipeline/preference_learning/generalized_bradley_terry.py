@@ -1,24 +1,24 @@
 from abc import abstractmethod
 from functools import cached_property
-from typing import Optional, Callable
+from typing import Optional, Callable, Union
 
 import pandas as pd
 import numpy as np
 import numpy.typing as npt
 from numba import njit
 
-from solidago.scoring_model import ScoringModel, DirectScoringModel
+from solidago.state import *
 from solidago.solvers.optimize import coordinate_descent, njit_brentq
+from .base import PreferenceLearning
 
-from .comparison_learning import ComparisonBasedPreferenceLearning
 
-
-class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
+class GeneralizedBradleyTerry(PreferenceLearning):
     def __init__(
         self, 
         prior_std_dev: float=7.0,
         convergence_error: float=1e-5,
-        high_likelihood_range_threshold = 1.0,
+        high_likelihood_range_threshold: float=1.0,
+        max_uncertainty: float=1e3
     ):
         """
         
@@ -32,6 +32,7 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
         self.high_likelihood_range_threshold = high_likelihood_range_threshold
+        self.max_uncertainty = max_uncertainty
 
     @property
     @abstractmethod
@@ -93,47 +94,56 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             )
         return f
 
-    def comparison_learning(
-        self, 
-        comparisons: pd.DataFrame, 
-        entities=None, 
-        initialization: Optional[ScoringModel]=None,
-        updated_entities: Optional[set[int]]=None,
-    ) -> ScoringModel:
-        """ Learns only based on comparisons
-        
-        Parameters
-        ----------
-        comparisons: DataFrame with columns
-            * entity_a: int
-            * entity_b: int
-            * comparison: float
-            * comparison_max: float
-        entities: DataFrame
-            This parameter is not used
-        """
-        entities = list(set(comparisons["entity_a"]) | set(comparisons["entity_b"]))
-        entity_coordinates = { entity: c for c, entity in enumerate(entities) }
+    def initialize_entity_scores(self, base_model, entities, entity_names) -> np.ndarray:
+        scores = np.zeros(len(entities))
+        if initialization is not None:
+            for index, entity_name in enumerate(entity_names):
+                score = initialization(entities.get(entity_name))
+                if not score.isnan():
+                    scores[index] = score.value
+        return scores
 
+    def user_learn(self, 
+        user: User,
+        entities: Entities,
+        assessments: Assessments,
+        comparisons: Comparisons,
+        base_model: Optional[BaseModel]=None,
+    ) -> BaseModel:
+        """ Learns only based on comparisons """
+        model = DirectScoring()
+        for criterion in comparisons.get_set("criterion", "default"):
+            entity_scores = self.user_learn_criterion(user, entities, comparisons, base_model, criterion)
+            for index, (entity_name, score) in enumerate(entity_scores.items()):
+                model[entity_name].add_row(dict(criterion=criterion) | score.to_dict())
+        return model
+    
+    def user_learn(self, 
+        user: User,
+        entities: Entities,
+        assessments: Assessments,
+        comparisons: Comparisons,
+        base_model: Optional[BaseModel]=None,
+        criterion: str
+    ) -> dict[str, Score]:
+        """
+        Returns
+        -------
+        out: dict
+            out[entity_name] must be of type Score (i.e. with a value and left/right uncertainties
+        """
+        entity_names = list(comparisons.get_set("left_name") | comparisons.get_set("right_name"))
+        entity_name2index = { entity: c for c, entity in enumerate(entities) }
+        entity_ordered_comparisons = comparisons.order_by_entities()
+        
         comparisons_dict = self.comparisons_dict(comparisons, entity_coordinates)
 
-        init_solution = np.zeros(len(entities))
-        if initialization is not None:
-            for (entity_id, model_values) in initialization.iter_entities():
-                entity_coord = entity_coordinates.get(entity_id)
-                if entity_coord is not None:
-                    init_solution[entity_coord] = model_values[0]
 
-        updated_coordinates = list() if updated_entities is None else [
-            entity_coordinates[entity] for entity in updated_entities
-        ]
+        updated_coordinates = list()
 
-        def get_derivative_args(coord: int, sol: np.ndarray):
-            indices, comparisons_bis = comparisons_dict[coord]
-            return (
-                sol[indices],
-                comparisons_bis
-            )
+        def get_derivative_args(entity_index: int, solution: np.ndarray):
+            indices, comparisons_bis = comparisons_dict[entity_index]
+            return solution[indices],comparisons_bis
 
         solution = coordinate_descent(
             self.update_coordinate_function,
@@ -164,12 +174,12 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                     self.translated_negative_log_likelihood,
                     args=(score_diff, r_actual, comparison_indicator, ll_actual),
                     xtol=1e-2,
-                    a=-self.MAX_UNCERTAINTY,
+                    a=-self.max_uncertainty,
                     b=0.0,
                     extend_bounds="no",
                 )
             except ValueError:
-                uncertainties_left[coordinate] = self.MAX_UNCERTAINTY
+                uncertainties_left[coordinate] = self.max_uncertainty
 
             try:
                 uncertainties_right[coordinate] = njit_brentq(
@@ -177,11 +187,11 @@ class GeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
                     args=(score_diff, r_actual, comparison_indicator, ll_actual),
                     xtol=1e-2,
                     a=0.0,
-                    b=self.MAX_UNCERTAINTY,
+                    b=self.max_uncertainty,
                     extend_bounds="no",
                 )
             except ValueError:
-                uncertainties_right[coordinate] = self.MAX_UNCERTAINTY
+                uncertainties_right[coordinate] = self.max_uncertainty
 
         model = DirectScoringModel()
         for coord in range(len(solution)):

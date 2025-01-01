@@ -61,7 +61,7 @@ class LipschiTrust(TrustPropagation):
         self.sink_vouch = sink_vouch
         self.error = error
 
-    def propagate(self, users: Users, vouches: Vouches) -> Users:
+    def main(self, users: Users, vouches: Vouches) -> Users:
         if len(users) == 0:
             users["trust_score"] = list()
             return users
@@ -90,11 +90,6 @@ class LipschiTrust(TrustPropagation):
         
         users["trust_score"] = trusts
         return users
-
-    def __str__(self):
-        prop_names = ["pretrust_value", "decay", "sink_vouch", "error"]
-        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
-        return f"LipschiTrust({prop})"
 
     def args_save(self) -> dict[str, float]:
         return dict(

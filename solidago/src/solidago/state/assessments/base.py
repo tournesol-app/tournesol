@@ -26,3 +26,14 @@ class Assessments(NestedDict):
         
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
         return set(self[any, entity])
+    
+    def get_evaluators_by_criterion(self, entity: Union[str, "Entity"]) -> dict[str, set[str]]:
+        assessments = self[any, entity]
+        evaluators = dict()
+        for username, row_list in assessments:
+            for row in row_list:
+                criterion = row["criterion"] if "criterion" in row else "default"
+                if criterion not in evaluators:
+                    evaluators[criterion] = set()
+                evaluators[criterion].add(username)
+        return evaluators

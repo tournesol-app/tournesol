@@ -19,7 +19,7 @@ class ComparisonGenerator(StateFunction):
                 left_public = made_public[user, left]
                 right_public = made_public[user, right]
                 comparison_value, comparison_max = self.sample(user, left, right, left_public, right_public)
-                filled_comparisons[user, left, right].append(dict(comparison) | {
+                filled_comparisons.add_row((user, left, right), dict(comparison) | {
                     "comparison_max": comparison_max,
                     "comparison": comparison_value
                 })

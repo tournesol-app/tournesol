@@ -27,11 +27,11 @@ class ScaledModel(ScoringModel):
             translation=Score(r["translation_value"], r["translation_left_unc"], r["translation_right_unc"])
         )
 
-    def score(self, entity: "Entity") -> Score:
+    def score(self, entity: "Entity") -> MultiScore:
         return self.scale( self.parent(entity) )
 
-    def scale(self, score: Score) -> Score:
-        return self.multiplicator * score + self.translation
+    def scale(self, score: Union[Score, MultiScore]) -> Union[Score, MultiScore]:
+        return score * self.multiplicator + self.translation
     
     def set_scale(self, multiplicator: Score, translation: Score) -> None:
         self.multiplicator = multiplicator
@@ -41,8 +41,8 @@ class ScaledModel(ScoringModel):
         self.multiplicator *= multiplicator
         self.translation = multiplicator * self.translation + translation
     
-    def to_series_list(self, depth: int=0):
-        return [Series(dict(
+    def to_row_list(self, depth: int=0) -> list[dict]:
+        return [dict(
             depth=depth,
             multiplicator_value=self.multiplicator.value,
             multiplicator_left_unc=self.multiplicator.left_unc,
@@ -50,13 +50,10 @@ class ScaledModel(ScoringModel):
             translation_value=self.translation.value,
             translation_left_unc=self.translation.left_unc,
             translation_right_unc=self.translation.right_unc,
-        ))]
+        )]
         
-    def to_df(self, depth: int=0):
-        return DataFrame(self.to_series_list(depth))
-    
-    def to_series_list(self, depth):
-        raise NotImplementedError
+    def to_df(self, depth: int=0) -> DataFrame:
+        return DataFrame(self.to_row_list(depth))
 
 
 class MultiScaledModel(ScoringModel, NestedDict):

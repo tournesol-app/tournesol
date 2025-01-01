@@ -22,14 +22,29 @@ class StateFunction:
             key: getattr(state, key) 
             for key in self.main.__annotations__ if key != "return" 
         })
-        assert "return" in self.main.__annotations__, "" \
-            f"Please carefully specify main result type of `{type(self).__name__}`, " \
-            f"whose annotation is currently `{self.main.__annotations__}`"
-        assert isinstance(value, self.main.__annotations__["return"]), "" \
-            "Please carefully specify main result type and verify type consistency " \
-            f"of `{type(self).__name__}`, " \
-            f"whose annotation is currently `{self.main.__annotations__}`"
+        self.type_check(value, self.main.__annotations__)
         return value
+    
+    def type_check(self, value, annotations):
+        assert "return" in annotations, "" \
+            f"Please carefully specify main result type of `{type(self).__name__}`, " \
+            f"whose annotation is currently `{annotations}`"
+        assert annotations["return"] != Any, "" \
+            f"Return type of `{type(self).__name__}`, " \
+            f"whose annotation is currently `{annotations}`," \
+            f"must not be `Any`"
+        if not hasattr(annotations["return"], "__origin__"):
+            assert isinstance(value, annotations["return"]), "" \
+                "Please verify type consistency " \
+                f"of `{type(self).__name__}`, " \
+                f"whose annotation is currently `{annotations}`"
+        else:
+            for index, return_type in enumerate(annotations["return"].__args__):
+                assert isinstance(value[index], return_type), "" \
+                    f"Please verify type consistency of returned value number {index} " \
+                    f"of `{type(self).__name__}`, " \
+                    f"whose annotation is currently `{annotations}`"
+        
     
     @abstractmethod
     def main(self) -> Any:
@@ -66,7 +81,7 @@ class StateFunction:
         }
     
     def assign(self, result: State, value: Any):
-        assert isinstance(value, self.main.__annotations__["return"]), (type(value), self.main.__annotations__["return"])
+        self.type_check(value, self.main.__annotations__)
         if isinstance(value, State):
             result = value
             return None
@@ -77,7 +92,7 @@ class StateFunction:
         if isinstance(value, (list, tuple)):
             for v in value:
                 for key, key_type in result.__init__.__annotations__.items():
-                    if isinstance(value, key_type):
+                    if isinstance(v, key_type):
                         setattr(result, key, v)
         elif isinstance(value, (dict, Series)):
             for key, v in dict(value).items():

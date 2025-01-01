@@ -3,5 +3,5 @@ from solidago.pipeline.base import StateFunction
 
 
 class VotingRightsAssignment(StateFunction):
-    def __init__(self):
-        super().__init__()
+    def main(self, voting_rights: VotingRights) -> VotingRights:
+        return state.voting_rights

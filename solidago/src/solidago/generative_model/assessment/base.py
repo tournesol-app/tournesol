@@ -9,13 +9,13 @@ class AssessmentGenerator(StateFunction):
         """ Fills in the assessments """
         filled_assessments = Assessments()
         for (username, entity_name), assessment_list in assessments:
-            filled_assessments[user, entity] = list()
+            filled_assessments[username, entity_name] = list()
             for index, assessment in enumerate(assessment_list):
                 user = users.get(username)
                 entity = entities.get(entity_name)
                 public = made_public[user, entity]
                 a, a_min, a_max = self.sample(assessment, user, entity, public)
-                filled_assessments[user, entity].append(dict(assessment) | { 
+                filled_assessments.add_row((user, entity), dict(assessment) | { 
                     "assessment": a,
                     "assessment_min": a_min, 
                     "assessment_max": a_max, 

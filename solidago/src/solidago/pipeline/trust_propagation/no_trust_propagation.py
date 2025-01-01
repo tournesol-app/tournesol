@@ -12,12 +12,6 @@ class NoTrustPropagation(TrustPropagation):
         """
         self.pretrust_value = pretrust_value
 
-    def propagate(self, users: Users, vouches: Vouches) -> Users:
+    def main(self, users: Users, vouches: Vouches) -> Users:
         users["trust_score"] = users["is_pretrusted"] * self.pretrust_value
         return users
-        
-    def __str__(self):
-        return f"{type(self).__name__}(pretrust_value={self.pretrust_value})"
-		
-    def args_save(self) -> dict[str, float]:
-        return { "pretrust_value": self.pretrust_value }

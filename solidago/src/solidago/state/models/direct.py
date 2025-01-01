@@ -11,33 +11,6 @@ class DirectScoring(BaseModel, NestedDict):
     def __init__(self,
         d: Optional[Union[NestedDict, dict, DataFrame]]=None,
         key_names: list[str]=["entity_name"], 
-        value_names: Optional[list[str]]=["score", "left_unc", "right_unc"],
-        save_filename: Optional[str]=None
-    ):
-        """ Provides directly a Score to scored entities """
-        super().__init__(d, key_names, value_names, save_filename)
-
-    def default_value(self) -> Score:
-        return Score.nan()
-    
-    def process_stored_value(self, keys: list[str], stored_value: tuple[float, float, float]) -> Score:
-        return Score(*stored_value)
-
-    def score(self, entity: Union[str, "Entity"]) -> Score:
-        return self[str(entity)]  
-
-    @classmethod
-    def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
-        return dict(d=dfs["directs"][dfs["directs"]["depth"] == depth])
-        
-    def to_df(self, depth: int=0):
-        return NestedDict.to_df(self).assign(depth=depth)
-    
-
-class DirectMultiScoring(BaseModel, NestedDict):
-    def __init__(self,
-        d: Optional[Union[NestedDict, dict, DataFrame]]=None,
-        key_names: list[str]=["entity_name"], 
         value_names: Optional[list[str]]=None,
         save_filename: Optional[str]=None
     ):
