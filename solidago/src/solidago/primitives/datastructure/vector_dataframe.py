@@ -8,6 +8,12 @@ import numpy as np
 
 from .named_dataframe import NamedSeries, NamedDataFrame
 
+""" The following classes are designed to be Mixin.
+This means that they will merely write down vector information,
+and pass on through the arguments to another inherited class,
+which would inherit from NameDataFrame. """
+
+
 
 class VectorSeries(NamedSeries):
     def __init__(self, vector: np.ndarray, *args, **kwargs):
@@ -29,18 +35,17 @@ class VectorDataFrame(NamedDataFrame):
 
     def __init__(self, 
         vectors: Union[np.ndarray, list[VectorSeries]], 
-        save_filename: Union[str, Path], 
         save_vector_filename: Union[str, Path], 
         *args, 
         **kwargs
     ):
         if len(args) == 0 and len(kwargs) == 0:
             args = [list(range(len(vectors)))]
-        if all({ isinstance(v, VectorSeries) for v in vectors }):
+        if isinstance(vectors, list) and all({ isinstance(v, VectorSeries) for v in vectors }):
             args = [vectors] + list(args)
             vectors = np.array([v.vector for v in vectors])
-        super().__init__(*args, save_filename=save_filename, **kwargs)
-        assert len(vectors) == len(self)
+        super().__init__(*args, **kwargs)
+        assert len(vectors) == len(self), (vectors, self)
         self["vector_index"] = list(range(len(self)))
         self.meta.vectors = vectors
         self.meta.save_vector_filename = save_vector_filename
@@ -60,7 +65,7 @@ class VectorDataFrame(NamedDataFrame):
             pd.read_csv(filenames[0], keep_default_na=False)
         )
 
-    def save(self, directory) -> tuple[str, tuple[str, str]]:
+    def save(self, directory: Union[Path, str]) -> tuple[str, tuple[str, str]]:
         vectors_path = Path(directory) / self.meta.save_vector_filename
         np.savetxt(vectors_path, self.vectors, delimiter=",")
         class_name, df_path = super(VectorDataFrame, self).save(directory)

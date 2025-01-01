@@ -14,7 +14,7 @@ class IsTrust(VotingRightsAssignment):
         """
         self.privacy_penalty = privacy_penalty
     
-    def __call__(self, state: State) -> State:
+    def __call__(self, state: State) -> None:
         """ Compute voting rights as trust_scores """
         state.voting_rights = VotingRights()
         
@@ -25,8 +25,6 @@ class IsTrust(VotingRightsAssignment):
                     if state.privacy[user, entity] is None:
                         state.privacy[user, entity] = False
                         state.voting_rights[user, entity, criterion] *= self.privacy_penalty
-
-        return state
     
     def args_save(self) -> dict[str, float]:
         return { "privacy_penalty": self.privacy_penalty }

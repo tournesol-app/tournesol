@@ -30,6 +30,11 @@ class SimpleEngagementGenerator(EngagementGenerator):
         self.p_public = p_public
         self.p_assessment = p_assessment
         self.p_comparison = p_comparison
+        self._entity_index2id = None
+
+    def __call__(self, state: State) -> None:
+        super().__call__(state)
+        self._entity_index2id = None
 
     def sample_evaluated_entities(self, state: State, user: User) -> Entities:
         if user["n_comparisons"] <= 0:
@@ -43,8 +48,9 @@ class SimpleEngagementGenerator(EngagementGenerator):
         scores = state.entities.vectors @ user.vector
         noisy_scores = - user["engagement_bias"] * scores + normal(0, 1, len(scores))
         argsort = np.argsort(noisy_scores)
-        entity_index2id = { index: str(entity) for index, entity in enumerate(state.entities) }
-        return [ entity_index2id[argsort[i]] for i in range(n_eval_entities) ]
+        if self._entity_index2id is None:
+            self._entity_index2id = { index: str(entity) for index, entity in enumerate(state.entities) }
+        return [ self._entity_index2id[argsort[i]] for i in range(n_eval_entities) ]
 
     def public(self, state: State, user: User, entity: Entity, eval_entities: Entities) -> bool:
         return random() < self.p_public

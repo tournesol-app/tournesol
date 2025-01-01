@@ -72,7 +72,7 @@ class Score:
     
     def __mul__(self, s: "Score") -> "Score":
         extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
-        value = self.value * score.value
+        value = self.value * s.value
         return Score(value, value - min(extremes), max(extremes) - value)
 
     def isnan(self) -> bool:

@@ -38,7 +38,6 @@ class State:
         voting_rights: VotingRights=VotingRights(),
         user_models : UserModels=UserModels(),
         global_model: ScoringModel=DirectScoring(),
-        save_directory: Union[str, bool]=False
     ):
         """ State contains all information being processed by the pipeline 
         save_directory == False means that no save operation will be performed
@@ -53,7 +52,7 @@ class State:
         self.voting_rights = voting_rights
         self.user_models = user_models
         self.global_model = global_model
-        self._save_directory = save_directory
+        self._save_directory = None
     
     @classmethod
     def load(cls, directory: Union[Path, str]) -> "State":
@@ -92,6 +91,12 @@ class State:
         with open(self.save_directory / "state.json", "w") as f:
             json.dump(instructions, f, indent=4)
         return instructions
+    
+    def copy(self):
+        return State(**{ 
+            key: value for key, value in self.__dict__.items() 
+            if key[0] != "_" and hasattr(value, "save")
+        })
 
     def save_trust_scores(self, directory: Optional[str]=None) -> None:
         self.save_directory = directory

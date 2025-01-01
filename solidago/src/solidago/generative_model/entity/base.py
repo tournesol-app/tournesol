@@ -14,7 +14,7 @@ class EntityGenerator(StateFunction):
     def __call__(self, state: State) -> None:
         state.entities = self.entities_cls([ self.sample(e) for e in range(self.n_entities) ])
     
-    def sample(self, entity_name):
+    def sample(self, entity_name: int) -> Entities:
         return self.entities_cls.series_cls(name=entity_name)
         
     def __str__(self):

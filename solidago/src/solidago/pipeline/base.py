@@ -1,17 +1,37 @@
 from abc import ABC, abstractmethod
-from typing import Union, Optional
+from typing import Union, Optional, Any
 from pathlib import Path
 
-from solidago.state import State
+from solidago.state import *
 
 
-class StateFunction(ABC):
+class StateFunction:
+    state_cls: type=State
+    
+    def __init__(self):
+        for key in self.main.__annotations__:
+            if key != "return":
+                assert key in ("state", "save_directory") or key in self.state_cls.__init__.__annotations__, "" \
+                    f"The argument `{key}` of function `main` of StateFunction {type(self).__name__} " \
+                    f"must be an attribute of {self.state_cls.__name__}, which are " \
+                    f"{set(self.state_cls.__init__.__annotations__.keys())}."
+    
+    def __call__(self, state: State, save_directory: Optional[str]=None) -> Any:
+        """ Must not modify the state """
+        value = self.main(**{ 
+            key: getattr(state, key) 
+            for key in self.main.__annotations__ if key != "return" 
+        })
+        assert isinstance(value, self.main.__annotations__["result"]), "" \
+            "Please carefully specify main result type and verify type consistency"
+        return value
+    
     @abstractmethod
-    def __call__(self, state: State) -> None:
-        raise NotImplemented
+    def main(self) -> Any:
+        return None
 
     @classmethod
-    def load(cls, filename: Optional[Union[str, Path, list, dict]]=None) -> "Sequential":
+    def load(cls, filename: Optional[Union[str, Path, list, dict]]=None) -> "StateFunction":
         if filename is None:
             return cls()
         if isinstance(filename, (str, Path)):
@@ -34,11 +54,51 @@ class StateFunction(ABC):
         return j
     
     def args_save(self) -> Optional[Union[dict, list]]:
-        return None
+        return { 
+            key: value.save() 
+            for key, value in self.__dict__.items()
+            if isinstance(value, StateFunction) 
+        }
+    
+    def assign(self, result: State, value: Any):
+        assert isinstance(value, self.main.__annotations__["return"]), (type(value), self.main.__annotations__["return"])
+        if isinstance(value, State):
+            result = value
+            return None
+        for key, key_type in result.__init__.__annotations__.items():
+            if isinstance(value, key_type):
+                setattr(result, key, value)
+                return None
+        if isinstance(value, (list, tuple)):
+            for v in value:
+                for key, key_type in result.__init__.__annotations__.items():
+                    if isinstance(value, key_type):
+                        setattr(result, key, v)
+        elif isinstance(value, (dict, Series)):
+            for key, v in dict(value).items():
+                assert isinstance(value, result.__init__.__annotations__[key])
+                setattr(result, key, v)
 
-    @classmethod
-    def json_keys(cls) -> list:
-        return list(self.__dict__.keys())
+    def save_result(self, result: Any, directory: Optional[Union[str, Path]]=None) -> None:
+        """ result should be the result of the main function """
+        if directory is None:
+            return None
+        if isinstance(result, self.state_cls.__init__.__annotations__.values()) and hasattr(result, "save"):
+            result.save(directory)
+            return None
+        if isinstance(result, (list, tuple)):
+            for sub_result in result:
+                self.save_result(directory)
+        if isinstance(result, dict):
+            for key, sub_result in result.items():
+                assert isinstance(sub_result, self.state_cls.__init__.__annotations__[key])
+                getattr(self, key).save(directory)
+
+    def json_keys(self) -> list:
+        return list(
+            key for key in self.__init__.__annotations__ 
+            if key[0] != "_" and hasattr(self, key)
+        )
 
     def __str__(self) -> str:
         return repr(self)

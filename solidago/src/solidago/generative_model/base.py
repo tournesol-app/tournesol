@@ -19,9 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class GenerativeModel(Sequential):
-    module_names = ("user_gen", "vouch_gen", "entity_gen", 
-        "engagement_gen", "assessment_gen", "comparison_gen")
-
     def __init__(self,
         user_gen: UserGenerator = UserGenerator(),
         entity_gen: EntityGenerator = EntityGenerator(),
@@ -47,15 +44,22 @@ class GenerativeModel(Sequential):
         comparison_model: ComparisonModel
             Generates comparisons values
         """
-        super().__init__(user_gen, entity_gen, vouch_gen, engagement_gen,
-            assessment_gen, comparison_gen)
+        super().__init__()
+        self.user_gen = user_gen
+        self.entity_gen = entity_gen
+        self.vouch_gen = vouch_gen
+        self.engagement_gen = engagement_gen
+        self.assessment_gen = assessment_gen
+        self.comparison_gen = comparison_gen
  
-    def __call__(self, random_seed: Optional[int]=None) -> State:
+    def __call__(self, state: Optional[State]=None, seed: Optional[int]=None) -> State:
         """ Generates a random dataset, presented as a state.
         No processing of the dataset is performed by the generative model.
         
         Parameters
         ----------
+        state: State or None
+            Optional state to derive computations from
         random_seed: None or int
             If int, sets numpy seed for reproducibility
             
@@ -63,16 +67,14 @@ class GenerativeModel(Sequential):
         -------
         state: State
         """
-        if random_seed is not None:
-            assert type(random_seed) == int
-            np.random.seed(random_seed)
+        if seed is not None:
+            assert type(seed) == int
+            np.random.seed(seed)
         
-        state = State()
-        for name, module in zip(self.module_names, self.modules):
-            logger.info(f"Running {name} with {type(module).__name__}")
-            module(state)
-            
-        return state
+        if state is None:
+            state = State()
+        
+        return self.main(state)
 
     @classmethod
     def load(cls, d: Union[dict, str]) -> "GenerativeModel":
