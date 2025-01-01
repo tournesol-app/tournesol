@@ -32,35 +32,36 @@ class SimpleEngagementGenerator(EngagementGenerator):
         self.p_comparison = p_comparison
         self._entity_index2id = None
 
-    def __call__(self, state: State) -> None:
-        super().__call__(state)
+    def main(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
+        made_public, assessments, comparisons = super().main(users, entities)
         self._entity_index2id = None
+        return made_public, assessments, comparisons
 
-    def sample_evaluated_entities(self, state: State, user: User) -> Entities:
+    def sample_evaluated_entities(self, user: User, entities: Entities) -> Entities:
         if user["n_comparisons"] <= 0:
-            return type(state.entities)()
+            return type(entities)()
         
         n_eval_entities = int(2 * user["n_comparisons"] / user["n_comparisons_per_entity"] )
-        n_eval_entities = min(len(state.entities), n_eval_entities)
+        n_eval_entities = min(len(entities), n_eval_entities)
         p_compare_ab = 2 * user["n_comparisons"] / n_eval_entities**2
 
         # To implement engagement bias, we construct a noisy score-based sort of the entities
-        scores = state.entities.vectors @ user.vector
+        scores = entities.vectors @ user.vector
         noisy_scores = - user["engagement_bias"] * scores + normal(0, 1, len(scores))
         argsort = np.argsort(noisy_scores)
         if self._entity_index2id is None:
-            self._entity_index2id = { index: str(entity) for index, entity in enumerate(state.entities) }
+            self._entity_index2id = { index: str(entity) for index, entity in enumerate(entities) }
         return [ self._entity_index2id[argsort[i]] for i in range(n_eval_entities) ]
 
-    def public(self, state: State, user: User, entity: Entity, eval_entities: Entities) -> bool:
+    def public(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
         return random() < self.p_public
 
-    def assess(self, state: State, user: User, entity: Entity, eval_entities: Entities) -> bool:
+    def assess(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
         return random() < self.p_assessment
         
-    def compare(self, state: State, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
+    def compare(self, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
         p_compare_ab = 2 * user["n_comparisons"] / len(eval_entities)**2
         return random() < p_compare_ab and random() < self.p_comparison
         
-    def shuffle(self, state: State, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
+    def shuffle(self, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
         return random() < 0.5

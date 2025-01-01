@@ -22,8 +22,13 @@ class StateFunction:
             key: getattr(state, key) 
             for key in self.main.__annotations__ if key != "return" 
         })
-        assert isinstance(value, self.main.__annotations__["result"]), "" \
-            "Please carefully specify main result type and verify type consistency"
+        assert "return" in self.main.__annotations__, "" \
+            f"Please carefully specify main result type of `{type(self).__name__}`, " \
+            f"whose annotation is currently `{self.main.__annotations__}`"
+        assert isinstance(value, self.main.__annotations__["return"]), "" \
+            "Please carefully specify main result type and verify type consistency " \
+            f"of `{type(self).__name__}`, " \
+            f"whose annotation is currently `{self.main.__annotations__}`"
         return value
     
     @abstractmethod

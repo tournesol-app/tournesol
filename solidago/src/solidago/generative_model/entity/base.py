@@ -11,8 +11,8 @@ class EntityGenerator(StateFunction):
         assert isinstance(n_entities, int) and n_entities > 0
         self.n_entities = n_entities
     
-    def __call__(self, state: State) -> None:
-        state.entities = self.entities_cls([ self.sample(e) for e in range(self.n_entities) ])
+    def main(self) -> Entities:
+        return self.entities_cls([ self.sample(e) for e in range(self.n_entities) ])
     
     def sample(self, entity_name: int) -> Entities:
         return self.entities_cls.series_cls(name=entity_name)

@@ -5,37 +5,37 @@ from solidago.pipeline import StateFunction
 
 
 class EngagementGenerator(StateFunction):
-    def __call__(self, state: State) -> None:
-        state.made_public = MadePublic()
-        state.assessments, state.comparisons = Assessments(), Comparisons()
-        for user in state.users:
-            eval_entities = self.sample_evaluated_entities(state, user)
+    def main(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
+        made_public, assessments, comparisons = MadePublic(), Assessments(), Comparisons()
+        for user in users:
+            eval_entities = self.sample_evaluated_entities(user, entities)
             for index, entity in enumerate(eval_entities):
-                public = self.public(state, user, entity, eval_entities)
-                state.made_public[user, entity] = public
-                assess = self.assess(state, user, entity, eval_entities)
+                public = self.public(user, entity, eval_entities)
+                made_public[user, entity] = public
+                assess = self.assess(user, entity, eval_entities)
                 if assess:
-                    state.assessments.add(user, entity)
+                    assessments.add(user, entity)
                 for index2, entity2 in enumerate(eval_entities):
                     if index2 >= index:
                         break
-                    compare = self.compare(state, user, entity, entity2, eval_entities)
+                    compare = self.compare(user, entity, entity2, eval_entities)
                     if compare:
-                        shuffle = self.shuffle(state, user, entity, entity2, eval_entities)
+                        shuffle = self.shuffle(user, entity, entity2, eval_entities)
                         left, right = (entity, entity2) if shuffle else (entity2, entity)
-                        state.comparisons.add(user, left, right)
+                        comparisons.add(user, left, right)
+        return made_public, assessments, comparisons
         
-    def sample_evaluated_entities(self, state: State, user: User) -> Entities:
-        return type(state.entities)([ e for e in state.entities if random() < 0.5 ])
+    def sample_evaluated_entities(self, user: User, entities: Entities) -> Entities:
+        return type(entities)([ e for e in entities if random() < 0.5 ])
 
-    def public(self, state: State, user: User, entity: Entity, eval_entities: Entities) -> bool:
+    def public(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
         return random() < 0.5
 
-    def assess(self, state: State, user: User, entity: Entity, eval_entities: Entities) -> bool:
+    def assess(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
         return random() < 0.5
         
-    def compare(self, state: State, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
+    def compare(self, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
         return random() < 0.5
         
-    def shuffle(self, state: State, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
+    def shuffle(self, user: User, entity1: Entity, entity2: Entity, eval_entities: Entities) -> bool:
         return random() < 0.5

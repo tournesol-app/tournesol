@@ -6,7 +6,7 @@ from .base import VouchGenerator
 
 class ErdosRenyiVouchGenerator(VouchGenerator):
 
-    def sample_vouches(self, users: Users) -> Vouches:
+    def main(self, users: Users) -> Vouches:
         """ Each vouch is sampled independently, with a probability dependent on users' metadata.
         Each user must have the two keys `is_trustworthy: bool` and `n_expected_vouches: float`.
         Trustworthy vouchers only vouch for trustworthy vouchees,

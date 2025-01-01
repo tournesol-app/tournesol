@@ -24,7 +24,10 @@ class ThurstonComparisonGenerator(ComparisonGenerator):
         """ `lpublic` and `rpublic` are not used.
         Returns comparison max and value. """
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        return self.sample_comparison(score_diff), self.comparison_max
+        comparison = self.sample_comparison(score_diff)
+        if "is_trustworthy" in user and not user["is_trustworthy"]:
+            comparison = - comparison
+        return comparison, self.comparison_max
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:
