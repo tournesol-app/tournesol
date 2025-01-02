@@ -20,13 +20,15 @@ class PreferenceLearning(ABC):
     ) -> UserModels:
         """ Learns a scoring model, given user judgments of entities """
         learned_models = UserModels()
+        comparison_key_names = ["user", "criterion", "left_name", "right_name"]
+        reordered_comparisons = comparisons.reorder_keys(comparison_key_names)
         for user in users:
             learned_models[user] = self.user_learn(
                 user, 
                 entities, 
                 assessments[user], 
                 comparisons[user],
-                user_models[user].base_model() if user in user_models else None
+                user_models[user].base_model() if user in user_models else DirectScoring()
             )
         return learned_models
 

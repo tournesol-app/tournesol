@@ -8,7 +8,7 @@ import numpy.typing as npt
 from numba import njit
 
 from solidago.state import *
-from solidago.solvers.optimize import coordinate_descent, njit_brentq
+from solidago.primitives.optimize import coordinate_descent, njit_brentq
 from .base import PreferenceLearning
 
 
@@ -20,14 +20,27 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         high_likelihood_range_threshold: float=1.0,
         max_uncertainty: float=1e3
     ):
-        """
+        """ Generalized Bradley Terry is a class of porbability models of comparisons,
+        introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
+        from Paired Comparisons" by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang
+        and Oscar Villemaud, and published at AAAI'24.
+        
+        This implementation leverages coordinate descent, and makes heavy use of numba 
+        to accelerate the computations.
         
         Parameters
         ----------
-        initialization: dict[int, float]
-            previously computed entity scores
-        error: float
-            tolerated error
+        prior_std_dev: float=7.0
+            Typical scale of scores. 
+            Technical, it should be the standard deviation of the gaussian prior.
+        convergence_error: float=1e-5
+            Admissible error in score computations (obtained through optimization).
+        high_likelihood_range_threshold: float=1.0
+            To determine the uncertainty, we compute left_unc (respectively, right_unc)
+            such that score - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than score.
+        max_uncertainty: float=1e3
+            Replaces infinite uncertainties with max_uncertainty
         """
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
@@ -94,37 +107,71 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             )
         return f
 
-    def initialize_entity_scores(self, base_model, entities, entity_names) -> np.ndarray:
-        scores = np.zeros(len(entities))
-        if initialization is not None:
-            for index, entity_name in enumerate(entity_names):
-                score = initialization(entities.get(entity_name))
-                if not score.isnan():
-                    scores[index] = score.value
-        return scores
-
     def user_learn(self, 
         user: User,
         entities: Entities,
         assessments: Assessments,
         comparisons: Comparisons,
-        base_model: Optional[BaseModel]=None,
+        base_model: BaseModel,
     ) -> BaseModel:
         """ Learns only based on comparisons """
         model = DirectScoring()
+        reordered_direct_scoring = base_model.to_direct().reorder_keys(["criterion", "entity_name"])
         for criterion in comparisons.get_set("criterion", "default"):
-            entity_scores = self.user_learn_criterion(user, entities, comparisons, base_model, criterion)
+            entity_scores = self.user_learn_criterion(
+                user, 
+                reordered_comparisons[{"criterion": criterion }], 
+                reordered_direct_scoring[criterion]
+            )
             for index, (entity_name, score) in enumerate(entity_scores.items()):
                 model[entity_name].add_row(dict(criterion=criterion) | score.to_dict())
         return model
+
+    def init_solution(self, 
+        init_model: DirectScoring, 
+        entity_names: list[str],
+        entity_name2index: dict[str, int]
+    ) -> np.ndarray:
+        scores = np.zeros(len(entity_names))
+        if initialization is not None:
+            for index, entity_name in enumerate(entity_names):
+                score = init_model(entity_name)
+                if not score.isnan():
+                    scores[index] = score.value
+        return scores
+    
+    def compute_scores_without_uncertainties(self, 
+        comparisons: Comparisons,
+        direct_scoring: DirectScoring,
+        entity_names: list[str],
+        entity_name2index: dict[str, int],
+    ) -> npt.NDArray:
+        """ Computes the scores given comparisons """
+        entity_ordered_comparisons = comparisons.order_by_entities()
+        def get_derivative_args(entity_index: int, solution: np.ndarray):
+            entity_name = entity_names[entity_index]
+            df = entity_ordered_comparisons[entity_name].to_df()
+            values = dict()
+            for _, row in df.iterrows():
+                values[ entity_name2index[row["with"]] ] = row["comparison"] / row["comparison_max"]
+            values = list(zip(*values.values()))
+            indices = np.array(list(values.keys()))
+            comparison_values = np.array(list(values.values()))
+            return solution[indices], comparison_values
+
+        init_solution = self.init_solution(direct_scoring, entity_names, entity_name2index)
+        return coordinate_descent(
+            self.update_coordinate_function,
+            get_args=get_derivative_args,
+            initialization=init_solution,
+            updated_coordinates=list(),
+            error=self.convergence_error,
+        )        
     
     def user_learn_criterion(self, 
         user: User,
-        entities: Entities,
-        assessments: Assessments,
         comparisons: Comparisons,
-        base_model: Optional[BaseModel]=None,
-        criterion: str
+        direct_scoring: DirectScoring
     ) -> dict[str, Score]:
         """
         Returns
@@ -133,41 +180,30 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             out[entity_name] must be of type Score (i.e. with a value and left/right uncertainties
         """
         entity_names = list(comparisons.get_set("left_name") | comparisons.get_set("right_name"))
-        entity_name2index = { entity: c for c, entity in enumerate(entities) }
-        entity_ordered_comparisons = comparisons.order_by_entities()
+        entity_name2index = { entity_name: c for c, entity_name in enumerate(entity_names) }
         
-        comparisons_dict = self.comparisons_dict(comparisons, entity_coordinates)
-
-
-        updated_coordinates = list()
-
-        def get_derivative_args(entity_index: int, solution: np.ndarray):
-            indices, comparisons_bis = comparisons_dict[entity_index]
-            return solution[indices],comparisons_bis
-
-        solution = coordinate_descent(
-            self.update_coordinate_function,
-            get_args=get_derivative_args,
-            initialization=init_solution,
-            updated_coordinates=updated_coordinates,
-            error=self.convergence_error,
+        solution = self.compute_scores_without_uncertainties(
+            comparisons, 
+            direct_scoring, 
+            entity_names, 
+            entity_name2index
         )
-
-        comparisons = comparisons.assign(
-            entity_a_coord=comparisons["entity_a"].map(entity_coordinates),
-            entity_b_coord=comparisons['entity_b'].map(entity_coordinates),
+        
+        comparisons_df = comparisons.to_df().assign(
+            left_index=comparisons["left_name"].map(entity_name2index),
+            right_index=comparisons['right_name'].map(entity_name2index),
         )
-        score_diff = solution[comparisons["entity_a_coord"]] - solution[comparisons["entity_b_coord"]]
-        r_actual = (comparisons["comparison"] / comparisons["comparison_max"]).to_numpy()
+        score_diff = solution[comparisons_df["left_index"]] - solution[comparisons_df["right_index"]]
+        comparisons_np = (comparisons_df["comparison"] / comparisons_df["comparison_max"]).to_numpy()
 
         uncertainties_left = np.empty_like(solution)
         uncertainties_right = np.empty_like(solution)
-        ll_actual = self.log_likelihood_function(score_diff, r_actual)
+        ll_actual = self.log_likelihood_function(score_diff, comparisons_np)
 
         for coordinate in range(len(solution)):
             comparison_indicator = (
-                (comparisons["entity_a_coord"] == coordinate).astype(int)
-                - (comparisons["entity_b_coord"] == coordinate).astype(int)
+                (comparisons["left_index"] == coordinate).astype(int)
+                - (comparisons["right_index"] == coordinate).astype(int)
             ).to_numpy()
             try:
                 uncertainties_left[coordinate] = -1 * njit_brentq(
@@ -194,36 +230,9 @@ class GeneralizedBradleyTerry(PreferenceLearning):
                 uncertainties_right[coordinate] = self.max_uncertainty
 
         model = DirectScoringModel()
-        for coord in range(len(solution)):
-            model[entities[coord]] = solution[coord], uncertainties_left[coord], uncertainties_right[coord]
+        for i in range(len(solution)):
+            model[entity_names[i]] = solution[i], uncertainties_left[i], uncertainties_right[i]
         return model
-
-    def comparisons_dict(self, comparisons, entity_coordinates) -> dict[int, tuple[npt.NDArray, npt.NDArray]]:
-        comparisons = comparisons[["entity_a","entity_b","comparison", "comparison_max"]]
-        comparisons_sym = pd.concat(
-            [
-                comparisons,
-                 pd.DataFrame(
-                    {
-                        "entity_a": comparisons.entity_b,
-                        "entity_b": comparisons.entity_a,
-                        "comparison": -1 * comparisons.comparison,
-                        "comparison_max": comparisons.comparison_max,
-                    }
-                ),
-            ]
-        )
-        comparisons_sym.entity_a = comparisons_sym.entity_a.map(entity_coordinates)
-        comparisons_sym.entity_b = comparisons_sym.entity_b.map(entity_coordinates)
-        comparisons_sym.comparison = -1 * np.where(
-            np.isfinite(comparisons_sym.comparison_max),
-            comparisons_sym.comparison / comparisons_sym.comparison_max,
-            comparisons_sym.comparison
-        )
-        return {
-            coord: (group["entity_b"].to_numpy(),  group["comparison"].to_numpy())
-            for (coord, group) in comparisons_sym.groupby("entity_a")
-        }  # type: ignore
 
     @cached_property
     def partial_derivative(self):
@@ -306,16 +315,3 @@ class UniformGBT(GeneralizedBradleyTerry):
             )
 
         return f
-
-    def to_json(self):
-        return type(self).__name__, dict(
-            prior_std_dev=self.prior_std_dev,
-            convergence_error=self.convergence_error,
-            cumulant_generating_function_error=self.cumulant_generating_function_error,
-            high_likelihood_range_threshold=self.high_likelihood_range_threshold,
-        )
-
-    def __str__(self):
-        prop_names = ["prior_std_dev", "convergence_error", "cumulant_generating_function_error"]
-        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
-        return f"{type(self).__name__}({prop})"

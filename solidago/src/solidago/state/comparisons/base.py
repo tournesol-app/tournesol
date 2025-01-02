@@ -10,9 +10,11 @@ class Comparison(Series):
 
 
 class Comparisons(NestedDictOfRowLists):
+    row_cls: type=Comparison
+    
     def __init__(self, 
         d: Optional[Union[NestedDictOfRowLists, dict, DataFrame]]=None, 
-        key_names=["username", "left_name", "right_name"],
+        key_names=["username", "criterion", "left_name", "right_name"],
         save_filename="comparisons.csv"
     ):
         super().__init__(d, key_names, save_filename)
@@ -21,26 +23,19 @@ class Comparisons(NestedDictOfRowLists):
         return list()
     
     def process_stored_value(self, keys: list[str], stored_value: list[dict]) -> list[Comparison]:
-        return [Comparison(v) for v in stored_value]
+        return [self.row_cls(v) for v in stored_value]
         
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
-        return self[any, entity, any].get_set("username") | self[any, any, entity].get_set("username")
-
-    def get_evaluators_by_criterion(self, entity: Union[str, "Entity"]) -> dict[str, set[str]]:
-        evaluators = dict()
-        for comparisons in (self[any, entity, any], self[any, any, entity]):
-            for username, row_list in comparisons:
-                for row in row_list:
-                    criterion = row["criterion"] if "criterion" in row else "default"
-                    if criterion not in evaluators:
-                        evaluators[criterion] = set()
-                    evaluators[criterion].add(username)
-        return evaluators
+        evaluators = self[{ "left_name": entity }].get_set("username") 
+        return evaluators | self[{ "right_name": entity }].get_set("username")
 
     def order_by_entities(self) -> "Comparisons":
-        result = Comparisons(key_names=["entity"])
+        if "entity_name" in self.key_names:
+            key_names = ["entity_name"] + [ kn for kn in key_names if kn != ["entity_name"] ]
+            return self.reorder_keys(key_names)
         assert "left_name" in self.key_names and "right_name" in self.key_names, "" \
             "Comparisons must have columns `left_name` and `right_name`"
+        result = Comparisons(key_names=["entity_name"])
         left_key_index = self.key_names.index("left_name")
         right_key_index = self.key_names.index("right_name")
         for keys, row_list in self:

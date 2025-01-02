@@ -12,31 +12,49 @@ except ImportError as exc:
         "Install 'solidago[torch]' to get the optional dependencies."
     ) from exc
 
-from solidago.scoring_model import ScoringModel, DirectScoringModel
-from solidago.solvers import dichotomy
-from .comparison_learning import ComparisonBasedPreferenceLearning
+from solidago.state import *
+from solidago.primitives import dichotomy
+from .base import PreferenceLearning
 
-class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
-    def __init__(
-        self,
-        prior_std_dev: float = 7,
-        convergence_error: float = 1e-5,
-        max_iter: int = 100,
-        high_likelihood_range_threshold = 1.0,
+
+class LBFGSGeneralizedBradleyTerry(PreferenceLearning):
+    def __init__(self,
+        prior_std_dev: float=7,
+        convergence_error: float=1e-5,
+        high_likelihood_range_threshold: float=1.0,
+        max_uncertainty: float=1e3,
+        max_iter: int=100,
     ):
-        """
+        """ Generalized Bradley Terry is a class of porbability models of comparisons,
+        introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
+        from Paired Comparisons" by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang
+        and Oscar Villemaud, and published at AAAI'24.
+        
+        This implementation leverages the pytorch implementation of the Limited-memory 
+        Broyden-Fletcher-Goldfarb-Shanno (LBFGS) algorithm, a second-order quasi-Newton 
+        method with limited demands of computer memory.
 
         Parameters
         ----------
-        initialization: dict[int, float]
-            previously computed entity scores
-        error: float
-            tolerated error
+        prior_std_dev: float=7.0
+            Typical scale of scores. 
+            Technical, it should be the standard deviation of the gaussian prior.
+        convergence_error: float=1e-5
+            Admissible error in score computations (obtained through optimization).
+        high_likelihood_range_threshold: float=1.0
+            To determine the uncertainty, we compute left_unc (respectively, right_unc)
+            such that score - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than score.
+        max_uncertainty: float=1e3
+            Replaces infinite uncertainties with max_uncertainty
+        max_iter: int=100
+            Maximal number of iterations used
         """
         self.prior_std_dev = prior_std_dev
         self.convergence_error = convergence_error
-        self.max_iter = max_iter
         self.high_likelihood_range_threshold = high_likelihood_range_threshold
+        self.max_uncertainty = max_uncertainty
+        self.max_iter = max_iter
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     @abstractmethod
@@ -47,61 +65,72 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
 
         Parameters
         ----------
-        score_diff: float
-            Score difference
+        score_diff: torch.Tensor
+            Score differences
 
         Returns
         -------
-        out: float
+        out: torch.Tensor
+            values of the cumulant generating function on the score differences
         """
         pass
 
-    def comparison_learning(
-        self,
-        comparisons: pd.DataFrame,
-        entities=None,
-        initialization: Optional[ScoringModel] = None,
-        updated_entities: Optional[set[int]] = None,
-    ) -> ScoringModel:
-        """Learns only based on comparisons
+    def user_learn(self, 
+        user: User,
+        entities: Entities,
+        assessments: Assessments,
+        comparisons: Comparisons,
+        base_model: BaseModel,
+    ) -> BaseModel:
+        """ Learns only based on comparisons """
+        model = DirectScoring()
+        reordered_direct_scoring = base_model.to_direct().reorder_keys(["criterion", "entity_name"])
+        for criterion in comparisons.get_set("criterion", "default"):
+            entity_scores = self.user_learn_criterion(
+                user, 
+                reordered_comparisons[{"criterion": criterion }], 
+                reordered_direct_scoring[criterion]
+            )
+            for index, (entity_name, score) in enumerate(entity_scores.items()):
+                model[entity_name].add_row(dict(criterion=criterion) | score.to_dict())
+        return model
 
-        Parameters
-        ----------
-        comparisons: DataFrame with columns
-            * entity_a: int
-            * entity_b: int
-            * comparison: float
-            * comparison_max: float
-        entities: DataFrame
-            This parameter is not used
-        """
-        if len(comparisons) == 0:
-            return DirectScoringModel()
-
-        entities = list(set(comparisons["entity_a"]) | set(comparisons["entity_b"]))
-        entity_coordinates = {entity: c for c, entity in enumerate(entities)}
-        comparisons_np = (
-            comparisons["entity_a"].map(entity_coordinates).to_numpy(),
-            comparisons["entity_b"].map(entity_coordinates).to_numpy(),
-            (comparisons["comparison"] / comparisons["comparison_max"]).to_numpy()
-        )
-
-        solution = np.random.normal(0.0, 1.0, size=len(entities))
+    def init_solution(self, 
+        init_model: DirectScoring, 
+        entity_names: list[str],
+        entity_name2index: dict[str, int]
+    ) -> torch.Tensor:
+        scores = torch.zeros(len(entity_names))
         if initialization is not None:
-            for (entity_id, values) in initialization.iter_entities():
-                entity_coord = entity_coordinates.get(entity_id)
-                if entity_coord is not None:
-                    score, _left, _right = values
-                    solution[entity_coord] = score
+            for index, entity_name in enumerate(entity_names):
+                score = init_model(entity_name)
+                if not score.isnan():
+                    scores[index] = score.value
+        return scores
 
-        solution = torch.tensor(solution, requires_grad=True, device=self.device)
+    def compute_scores_without_uncertainties(self, 
+        comparisons: Comparisons,
+        direct_scoring: DirectScoring,
+        entity_names: list[str],
+        entity_name2index: dict[str, int],
+    ) -> torch.Tensor:
+        """ Computes the scores given comparisons """
+        comparisons_df = comparisons.to_df().assign(
+            left_index=comparisons["left_name"].map(entity_name2index),
+            right_index=comparisons['right_name'].map(entity_name2index),
+            normalized_comparisons=(comparisons['comparison'] / comparisons['comparison_max'])
+        )
+        solution = self.init_solution(direct_scoring, entity_names, entity_name2index)
+        solution.requires_grad = True
+        solution = solution.to(self.device)
+
         lbfgs = torch.optim.LBFGS(
             (solution,),
             max_iter=self.max_iter,
             tolerance_change=self.convergence_error,
             line_search_fn="strong_wolfe",
         )
-
+        
         def closure():
             lbfgs.zero_grad()
             loss = self.loss(solution, comparisons_np)
@@ -117,6 +146,32 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
         solution = solution.detach()
         if solution.isnan().any():
             raise RuntimeError(f"Nan in solution, state: {lbfgs.state_dict()}")
+        return solution
+            
+    def user_learn_criterion(self, 
+        user: User,
+        comparisons: Comparisons,
+        direct_scoring: DirectScoring
+    ) -> dict[str, Score]:
+        if len(comparisons) == 0:
+            return DirectScoringModel()
+
+        entity_names = list(comparisons.get_set("left_name") | comparisons.get_set("right_name"))
+        entity_name2index = { entity_name: c for c, entity_name in enumerate(entity_names) }
+
+        solution = self.compute_scores_without_uncertainties(
+            comparisons, 
+            direct_scoring, 
+            entity_names, 
+            entity_name2index
+        )
+    
+        comparisons_df = comparisons.to_df().assign(
+            left_index=comparisons["left_name"].map(entity_name2index),
+            right_index=comparisons['right_name'].map(entity_name2index),
+        )
+        score_diff = solution[comparisons_df["left_index"]] - solution[comparisons_df["right_index"]]
+        comparisons_np = (comparisons_df["comparison"] / comparisons_df["comparison_max"]).to_numpy()
 
         def loss_with_delta(delta, comparisons, coord):
             solution_with_delta = solution.clone()
@@ -153,7 +208,7 @@ class LBFGSGeneralizedBradleyTerry(ComparisonBasedPreferenceLearning):
             except ValueError:
                 uncertainty_right = self.MAX_UNCERTAINTY
 
-            model[entities[coordinate]] = (
+            model[entity_names[coordinate]] = (
                 solution[coordinate].item(),
                 uncertainty_left,
                 uncertainty_right,

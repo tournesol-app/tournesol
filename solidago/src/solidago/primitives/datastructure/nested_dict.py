@@ -117,6 +117,17 @@ class NestedDict(ABC):
     def __setitem__(self, keys: Union[str, tuple, list], value: "OutputValue") -> None:
         self.set(keys, value)
 
+    def reorder_keys(self, key_names: list[str]) -> "NestedDict":
+        if not key_names or self.key_names == key_names:
+            return self
+        assert all({ key_name in key_names for key_name in self.key_names }), (key_names, self.key_names)
+        key_names += [ key_name for key_name in self.key_names if key_name not in key_names ]
+        new2self_index = { i: self.key_names.index(key_names[i]) for i in range(len(key_names)) }
+        result = type(self)(key_names=key_names)
+        for self_keys, value in self.__iter__(process=False):
+            result[ [self_keys[new2self_index[i]] for i in range(len(key_names))] ] = value
+        return result
+
     @classmethod
     def load(cls, filename: str) -> "NestedDict":
         try: return cls(pd.read_csv(filename, keep_default_na=False))

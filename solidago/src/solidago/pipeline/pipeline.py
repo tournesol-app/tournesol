@@ -9,24 +9,19 @@ import timeit
 logger = logging.getLogger(__name__)
 
 from solidago.state import State
+from .base import StateFunction
 from .sequential import Sequential
 from .identity import Identity
-from .trust_propagation import TrustPropagation
-from .voting_right import VotingRights
-from .preference_learning import PreferenceLearning
-from .scaling import Scaling
-from .aggregation import Aggregation
-from .post_process import PostProcess
 
 
 class Pipeline(Sequential):    
     def __init__(self,
-        trust_propagation: TrustPropagation=TrustPropagation(),
-        voting_rights_assignment: VotingRightsAssignment=VotingRightsAssignment(),
-        preference_learning: PreferenceLearning=PreferenceLearning(),
-        scaling: Scaling=Scaling(),
-        aggregation: Aggregation=Aggregation(),
-        post_process: PostProcess=PostProcess(),
+        trust_propagation: StateFunction=Identity(),
+        voting_rights_assignment: StateFunction=Identity(),
+        preference_learning: StateFunction=Identity(),
+        scaling: StateFunction=Identity(),
+        aggregation: StateFunction=Identity(),
+        post_process: StateFunction=Identity(),
     ):
         """Instantiates the pipeline components.
         

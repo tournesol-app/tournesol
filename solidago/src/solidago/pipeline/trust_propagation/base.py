@@ -7,6 +7,6 @@ from solidago.state import State, Users, Vouches
 class TrustPropagation(StateFunction):
     @abstractmethod
     def main(self, users: Users, vouches: Vouches) -> Users:
-        """ Propagates user trust through vouches, and stores result in state.users """
+        """ Propagates user trust through vouches """
         return self.propagate(state.users, state.vouches)
     

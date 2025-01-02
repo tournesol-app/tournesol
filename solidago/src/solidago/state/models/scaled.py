@@ -8,7 +8,11 @@ from .base import ScoringModel
 
 
 class ScaledModel(ScoringModel):
-    def __init__(self, parent: ScoringModel, multiplicator: Score, translation: Score):
+    def __init__(self, 
+        parent: ScoringModel, 
+        multiplicator: Score=Score(1, 0, 0), 
+        translation: Score=Score(0, 0, 0)
+    ):
         super().__init__()
         self.parent = parent
         self.multiplicator = multiplicator

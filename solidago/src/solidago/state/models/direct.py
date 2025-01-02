@@ -34,3 +34,6 @@ class DirectScoring(BaseModel, NestedDictOfTuples):
         
     def to_df(self, depth: int=0):
         return NestedDictOfTuples.to_df(self).assign(depth=depth)
+
+    def to_direct(self) -> "DirectScoring":
+        return self

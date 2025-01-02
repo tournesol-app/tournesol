@@ -35,12 +35,16 @@ class PostProcessedModel(ScoringModel):
 
 
 class SquashedModel(PostProcessedModel):
-    def __init__(self, parent: ScoringModel):
+    def __init__(self, parent: ScoringModel, self.max_score: float=100.):
         super().__init__(parent)
+        self.max_score = max_score
         
     def post_process_fn(self, x: float) -> float:
-        return 100 * x / sqrt(1+x**2)
+        return self.max_score * x / sqrt(1+x**2)
 
     def save(self, directory: Union[Path, str], filename: Optional[str], depth: int=0 ) -> tuple[str, Union[dict, str, tuple, list]]:
         parent_instructions = self.parent.save(directory, depth)
-        return [type(self).__name__, { "parent": parent_instructions }]
+        return type(self).__name__, { 
+            "parent": parent_instructions, 
+            "args": { "max_score": self.max_score },
+        }

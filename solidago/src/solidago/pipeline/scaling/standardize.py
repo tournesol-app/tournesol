@@ -14,20 +14,19 @@ class Standardize(Scaling):
         
         Parameters
         ----------
-        zero_quantile: float
+        dev_quantile: float
         """
         self.dev_quantile = dev_quantile
         self.lipschitz = lipschitz
         self.error = error
 
-    def __call__(
-        self, 
-        user_models: dict[int, ScoringModel],
-        users: pd.DataFrame,
-        entities: pd.DataFrame,
+    def main(self,
+        users: Users,
+        entities: Entities,
+        made_public: MadePublic,
         voting_rights: VotingRights,
-        privacy: PrivacySettings
-    ):
+        user_models: UserModels,
+    ) -> UserModels:
         df = _get_user_scores(user_models, entities)
         std_dev = self._compute_std_dev(df)
         return {
@@ -47,15 +46,6 @@ class Standardize(Scaling):
             default_dev=1.0,
             error=self.error,
         )
-
-    def to_json(self):
-        return type(self).__name__, dict(dev_quantile=self.dev_quantile, 
-            lipschitz=self.lipschitz, error=self.error)
-
-    def __str__(self):
-        prop_names = ["dev_quantile", "lipschitz", "error"]
-        prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
-        return f"{type(self).__name__}({prop})"
 
 
 def _get_user_scores(user_models: dict[int, ScoringModel], entities: pd.DataFrame):

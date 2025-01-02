@@ -7,57 +7,47 @@ from .base import Aggregation
 
 
 class Average(Aggregation):
-    def __call__(
-        self, 
+    def main(self, 
+        entities: Entities,
         voting_rights: VotingRights,
-        user_models: dict[int, ScoringModel],
-        users: pd.DataFrame,
-        entities: pd.DataFrame
-    ) -> tuple[dict[int, ScoringModel], ScoringModel]:
-        """ Returns scaled user models
-        
-        Parameters
-        ----------
-        voting_rights: VotingRights
-            voting_rights[user, entity]: float
-        user_models: dict[int, ScoringModel]
-            user_models[user] is user's scoring model
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
-        entities: DataFrame with columns
-            * entity_id (int, ind)
-
-        Returns
-        -------
-        updated_user_models[user]: ScoringModel
-            Returns a scaled user model
-        global_model: ScoringModel
-            Returns a global scoring model
-        """
+        user_models: UserModels,
+    ) -> ScoringModel:
+        """ Returns weighted average of user's scores """
         global_model = DirectScoringModel()
+        voting_rights = voting_rights.reorder_keys(["username", "entity_name", "criterion"])
         
-        for entity in entities.index:
+        for entity in entities:
         
-            total_voting_rights, total_scores = 0, 0
-            total_lefts, total_rights = 0, 0
+            total_voting_rights, total_scores = dict(), dict()
+            total_lefts, total_rights = dict(), dict()
         
-            for user in user_models:
-                output = user_models[user](entity, entities.loc[entity])
-                if output is None:
+            for user, model in user_models:
+                multiscore = model(entity)
+        
+                for criterion, score in multiscore:
+        
+                    if score.isnan():
+                        continue
+        
+                    for d in (total_voting_rights, total_scores, total_lefts, total_rights):
+                        if criterion not in d:
+                            d[criterion] = 0
+        
+                    total_voting_rights[criterion] += voting_rights[user, entity, criterion]
+                    total_scores[criterion] = voting_rights[user, entity, criterion] * output[0]
+                    total_lefts[criterion]  = voting_rights[user, entity, criterion] * output[1]
+                    total_rights[criterion] = voting_rights[user, entity, criterion] * output[2]
+        
+            for criterion in total_voting_rights:
+                
+                if total_voting_rights[criterion] == 0:
                     continue
-                total_voting_rights += voting_rights[user, entity]
-                total_scores = voting_rights[user, entity] * output[0]
-                total_lefts  = voting_rights[user, entity] * output[1]
-                total_rights = voting_rights[user, entity] * output[2]
+                
+                global_model[entity, criterion] = (
+                    total_scores[criterion] / total_voting_rights[criterion],
+                    total_lefts[criterion]  / total_voting_rights[criterion],
+                    total_rights[criterion] / total_voting_rights[criterion],
+                )
         
-            if total_voting_rights == 0:
-                continue
-        
-            score = total_scores / total_voting_rights
-            left  = total_lefts  / total_voting_rights
-            right = total_rights / total_voting_rights
-            global_model[entity] = score, left, right
-        
-        return user_models, global_model
+        return global_model
         

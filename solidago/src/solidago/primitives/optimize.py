@@ -7,7 +7,7 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 
-from typing import Callable, Tuple, Literal
+from typing import Callable, Tuple, Literal, Optional
 
 import numpy as np
 from numba import njit
@@ -178,7 +178,7 @@ def coordinate_descent(
     update_coordinate_function: Callable[[Tuple, float], float],
     get_args: Callable[[int, np.ndarray], Tuple],
     initialization: np.ndarray,
-    updated_coordinates: list[int],
+    updated_coordinates: Optional[list[int]]=None,
     error: float = 1e-5,
 ):
     """Minimize a loss function with coordinate descent,
@@ -201,7 +201,7 @@ def coordinate_descent(
         For well behaved losses, there is a convergence guarantee
     """
     unchanged = set()
-    to_pick = updated_coordinates
+    to_pick = list() if updated_coordinates is None else updated_coordinates
     solution = initialization
     solution_len = len(solution)
 

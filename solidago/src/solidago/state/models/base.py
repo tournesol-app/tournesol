@@ -54,7 +54,7 @@ class ScoringModel(ABC):
     
     @classmethod
     def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
-        return dict()
+        return d["args"] if "args" in d else dict()
     
     @classmethod
     def load(cls, d: dict, dfs: Optional[dict[str, DataFrame]]=None, depth: int=0) -> "ScoringModel":
@@ -65,6 +65,9 @@ class ScoringModel(ABC):
             base_cls, base_d = d["parent"]
             args["parent"] = getattr(models, base_cls).load(base_d, dfs, depth + 1)
         return cls(**args)
+
+    def args_save(self) -> dict:
+        return dict()
 
     def save(self, filename_root: Optional[str]=None, depth: int=0, json_dump: bool=False) -> tuple[str, dict]:
         """ save must be given a filename_root (typically without extension),
@@ -77,6 +80,9 @@ class ScoringModel(ABC):
         saved_dict = dict()
         if not isinstance(self, BaseModel):
             saved_dict["parent"] = self.parent.save(depth=depth + 1)
+        args = self.args_save()
+        if args:
+            saved_dict["args"] = args
         for df_name, df in dfs.items():
             save_filename = f"{filename_root}_{df_name}.csv"
             df.to_csv(save_filename, index=False)
@@ -130,3 +136,7 @@ class BaseModel(ScoringModel):
     @property
     def parent(self) -> ScoringModel:
         raise ValueError(f"{type(self)} is a BaseModel and thus has no parent")
+    
+    @abstractmethod
+    def to_direct(self) -> "DirectScoring":
+        raise NotImplemented

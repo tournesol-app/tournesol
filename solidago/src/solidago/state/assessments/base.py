@@ -10,9 +10,11 @@ class Assessment(Series):
         
 
 class Assessments(NestedDictOfRowLists):
+    row_cls: type=Assessment
+    
     def __init__(self, 
         d: Optional[Union[NestedDictOfRowLists, dict, DataFrame]]=None, 
-        key_names=["username", "entity_name"],
+        key_names=["username", "criterion", "entity_name"],
         save_filename="assessments.csv"
     ):
         super().__init__(d, key_names, save_filename)
@@ -21,18 +23,8 @@ class Assessments(NestedDictOfRowLists):
         return list()
     
     def process_stored_value(self, keys: list[str], stored_value: list[dict]) -> list[Assessment]:
-        return [Assessment(v) for v in stored_value]
+        return [self.row_cls(v) for v in stored_value]
         
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
-        return set(self[any, entity])
+        return self[{ "entity_name": entity }].get_set("username")
     
-    def get_evaluators_by_criterion(self, entity: Union[str, "Entity"]) -> dict[str, set[str]]:
-        assessments = self[any, entity]
-        evaluators = dict()
-        for username, row_list in assessments:
-            for row in row_list:
-                criterion = row["criterion"] if "criterion" in row else "default"
-                if criterion not in evaluators:
-                    evaluators[criterion] = set()
-                evaluators[criterion].add(username)
-        return evaluators
