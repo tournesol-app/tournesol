@@ -7,11 +7,30 @@ A toolbox for **Soli**d **A**lgorithmic **Go**vernance, used by the [Tournesol](
 
 ## Usage
 
-Here are some examples of what **solidago** can do:
-
 ```py title="Pipeline Usage"
-from solidago import Pipeline
-# TODO
+import logging
+from solidago.pipeline import Pipeline
+from solidago.pipeline.inputs import TournesolDataset
+from solidago.pipeline.outputs import PipelineOutputInMemory
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+# Initialize pipeline with its input and output
+tournesol_dataset = TournesolDataset.download()
+pipeline = Pipeline()
+output = PipelineOutputInMemory()
+
+# Run pipeline
+pipeline.run(
+    input=tournesol_dataset,
+    output=PipelineOutputInMemory(),
+    criterion="largely_recommended",
+)
+
+# Access results
+print(output.individual_scores)
+print(output.entity_scores)
 ```
 
 ## Installation

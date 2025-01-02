@@ -166,6 +166,10 @@ class PipelineInput(ABC):
 
 class TournesolDataset(PipelineInput):
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
+        """
+        Initilialize a Pipeline input, by loading a tournesol dataset (.zip format) from a local file,
+        or a URL.
+        """
         if isinstance(dataset_zip, str) and (
             dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
         ):

@@ -34,7 +34,7 @@ theme:
 
 
 nav:
-  - Introduction: "index.md"
+  - Get Started: "index.md"
   - Pipeline: "pipeline.md"
   - Structures:
     - "structures/scoring_model.md"

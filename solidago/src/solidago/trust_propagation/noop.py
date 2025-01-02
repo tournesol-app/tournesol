@@ -5,8 +5,8 @@ from .base import TrustPropagation
 
 class NoopTrust(TrustPropagation):
     """
-    Noop for trust propagation:
-    trust scores are simply read from the input dataframe
+    Noop implementation for trust propagation:
+    trust values are simply read from the input `users`.
     """
 
     def __call__(self, users: pd.DataFrame, _vouches: pd.DataFrame) -> pd.DataFrame:
