@@ -110,8 +110,8 @@ class ScoringModel(ABC):
     
     def directs_df(self) -> Optional[DataFrame]:
         base_model, depth = self.base_model()
-        from .direct import DirectScoring, DirectMultiScoring
-        if isinstance(base_model, (DirectScoring, DirectMultiScoring)):
+        from .direct import DirectScoring
+        if isinstance(base_model, DirectScoring):
             return base_model.to_df(depth)
         return DataFrame()
     

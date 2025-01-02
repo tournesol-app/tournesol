@@ -2,7 +2,7 @@ from typing import Union, Optional, Any
 from pathlib import Path
 from pandas import DataFrame
 
-from solidago.primitives.datastructure.nested_dict import NestedDict
+from solidago.primitives.datastructure import NestedDictOfTuples
 from .score import Score, MultiScore
 from .base import ScoringModel
 
@@ -56,10 +56,10 @@ class ScaledModel(ScoringModel):
         return DataFrame(self.to_row_list(depth))
 
 
-class MultiScaledModel(ScoringModel, NestedDict):
+class MultiScaledModel(ScoringModel, NestedDictOfTuples):
     def __init__(self,
         parent: ScoringModel,
-        d: Optional[Union[NestedDict, dict, DataFrame]]=None,
+        d: Optional[Union[NestedDictOfTuples, dict, DataFrame]]=None,
         key_names: list[str]=["criterion"], 
         value_names: list[str]=[
             "multiplicator_value", "multiplicator_left_unc", "multiplicator_right_unc", 

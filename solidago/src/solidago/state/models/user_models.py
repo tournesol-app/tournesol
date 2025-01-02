@@ -6,7 +6,7 @@ import pandas as pd
 
 from solidago.primitives.datastructure.nested_dict import NestedDict
 from .base import ScoringModel
-from .direct import DirectScoring, DirectMultiScoring
+from .direct import DirectScoring
 
 
 class UserModels(dict):

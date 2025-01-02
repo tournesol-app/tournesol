@@ -118,7 +118,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
                 model[entity_name].add_row(dict(criterion=criterion) | score.to_dict())
         return model
     
-    def user_learn(self, 
+    def user_learn_criterion(self, 
         user: User,
         entities: Entities,
         assessments: Assessments,

@@ -1,7 +1,7 @@
 from typing import Optional, Union
 from pandas import DataFrame, Series
 
-from solidago.primitives.datastructure.nested_dict import NestedDict
+from solidago.primitives.datastructure import NestedDictOfTuples
 
 
 class Score:
@@ -84,9 +84,9 @@ class Score:
         return f"{self.value} ± [- {self.left_unc}, {self.right_unc}]"
 
 
-class MultiScore(NestedDict):
+class MultiScore(NestedDictOfTuples):
     def __init__(self, 
-        d: Optional[Union[NestedDict, dict, DataFrame]]=None,
+        d: Optional[Union[NestedDictOfTuples, dict, DataFrame]]=None,
         key_names: list[str]=["criterion"], 
         value_names: list[str]=["score", "left_unc", "right_unc"],
         save_filename: Optional[str]=None,

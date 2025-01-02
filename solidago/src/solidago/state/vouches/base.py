@@ -1,10 +1,10 @@
 from typing import Union, Optional
 from pandas import DataFrame, Series
 
-from solidago.primitives.datastructure.nested_dict import NestedDict
+from solidago.primitives.datastructure import NestedDictOfTuples
 
 
-class Vouches(NestedDict):
+class Vouches(NestedDictOfTuples):
     def __init__(self, 
         d: Optional[Union[dict, DataFrame]]=None, 
         key_names=["by", "to", "kind"],

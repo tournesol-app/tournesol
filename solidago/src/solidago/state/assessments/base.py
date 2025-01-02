@@ -1,7 +1,7 @@
 from typing import Optional, Union
 from pandas import DataFrame, Series
 
-from solidago.primitives.datastructure.nested_dict import NestedDict
+from solidago.primitives.datastructure import NestedDictOfRowLists
 
 
 class Assessment(Series):
@@ -9,14 +9,13 @@ class Assessment(Series):
         super().__init__(*args, **kwargs)
         
 
-class Assessments(NestedDict):
+class Assessments(NestedDictOfRowLists):
     def __init__(self, 
-        d: Optional[Union[NestedDict, dict, DataFrame]]=None, 
+        d: Optional[Union[NestedDictOfRowLists, dict, DataFrame]]=None, 
         key_names=["username", "entity_name"],
-        value_names=None,
         save_filename="assessments.csv"
     ):
-        super().__init__(d, key_names, value_names, save_filename)
+        super().__init__(d, key_names, save_filename)
 
     def default_value(self) -> list:
         return list()

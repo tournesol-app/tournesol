@@ -2,29 +2,29 @@ from typing import Optional, Union, Any
 from pathlib import Path
 from pandas import DataFrame, Series
 
-from solidago.primitives.datastructure.nested_dict import NestedDict
+from solidago.primitives.datastructure import NestedDictOfTuples
 from .score import Score, MultiScore
 from .base import ScoringModel, BaseModel
 
 
-class DirectScoring(BaseModel, NestedDict):
+class DirectScoring(BaseModel, NestedDictOfTuples):
     def __init__(self,
-        d: Optional[Union[NestedDict, dict, DataFrame]]=None,
-        key_names: list[str]=["entity_name"], 
-        value_names: Optional[list[str]]=None,
+        d: Optional[Union[NestedDictOfTuples, dict, DataFrame]]=None,
+        key_names: list[str]=["entity_name", "criterion"], 
+        value_names: list[str]=["score", "left_unc", "right_unc"],
         save_filename: Optional[str]=None
     ):
         """ Provides directly a MultiScore to scored entities """
         super().__init__(d, key_names, value_names, save_filename)
 
-    def default_value(self) -> MultiScore:
-        return MultiScore.nan()
+    def default_value(self) -> Score:
+        return Score.nan()
     
-    def process_stored_value(self, keys: list[str], stored_value: list[dict]) -> MultiScore:
-        return MultiScore(DataFrame(stored_value))
+    def process_stored_value(self, keys: list[str], stored_value: tuple[float, float, float]) -> Score:
+        return Score(*stored_value)
 
     def score(self, entity: Union[str, "Entity"]) -> MultiScore:
-        return self[str(entity)]
+        return MultiScore(self[str(entity)].to_df())
 
     @classmethod
     def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
@@ -33,4 +33,4 @@ class DirectScoring(BaseModel, NestedDict):
         return dict(d=dfs["directs"][dfs["directs"]["depth"] == depth])
         
     def to_df(self, depth: int=0):
-        return NestedDict.to_df(self).assign(depth=depth)
+        return NestedDictOfTuples.to_df(self).assign(depth=depth)

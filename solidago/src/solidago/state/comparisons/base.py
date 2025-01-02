@@ -1,7 +1,7 @@
 from typing import Optional, Union
 from pandas import DataFrame, Series
 
-from solidago.primitives.datastructure.nested_dict import NestedDict
+from solidago.primitives.datastructure import NestedDictOfRowLists
 
 
 class Comparison(Series):
@@ -9,14 +9,13 @@ class Comparison(Series):
         super().__init__(*args, **kwargs)
 
 
-class Comparisons(NestedDict):
+class Comparisons(NestedDictOfRowLists):
     def __init__(self, 
-        d: Optional[Union[NestedDict, dict, DataFrame]]=None, 
+        d: Optional[Union[NestedDictOfRowLists, dict, DataFrame]]=None, 
         key_names=["username", "left_name", "right_name"],
-        value_names=None,
         save_filename="comparisons.csv"
     ):
-        super().__init__(d, key_names, value_names, save_filename)
+        super().__init__(d, key_names, save_filename)
 
     def default_value(self) -> list:
         return list()
@@ -38,7 +37,7 @@ class Comparisons(NestedDict):
                     evaluators[criterion].add(username)
         return evaluators
 
-    def order_by_entities(self) -> Comparisons:
+    def order_by_entities(self) -> "Comparisons":
         result = Comparisons(key_names=["entity"])
         assert "left_name" in self.key_names and "right_name" in self.key_names, "" \
             "Comparisons must have columns `left_name` and `right_name`"
