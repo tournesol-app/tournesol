@@ -274,7 +274,7 @@ class PostProcessedScoringModel(ScoringModel):
             right = - temp
         return score, left, right
 
-    def scored_entities(self, entities) -> set[int]:
+    def scored_entities(self, entities=None) -> set[int]:
         return self.base_model.scored_entities(entities)
 
     def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:
