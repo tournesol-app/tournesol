@@ -24,7 +24,7 @@ output = PipelineOutputInMemory()
 # Run pipeline
 pipeline.run(
     input=tournesol_dataset,
-    output=PipelineOutputInMemory(),
+    output=output,
     criterion="largely_recommended",
 )
 
