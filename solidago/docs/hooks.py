@@ -9,7 +9,7 @@ from solidago import __version__
 
 def on_page_markdown(markdown: str, page: Page, config: Config, files: Files) -> str:
     # Add Solidago version in homepage
-    if page.abs_url == '/':
+    if page.file.src_uri == "index.md":
         version_str = f'''
 !!! info "Version"
     This documentation has been generated from version **{__version__}**.
