@@ -1,12 +1,8 @@
-# solidago
+# solidago [![pypi](https://img.shields.io/pypi/v/solidago.svg?color=%2334D058)](https://pypi.python.org/pypi/solidago) [![license](https://img.shields.io/pypi/l/solidago)](https://github.com/tournesol-app/tournesol/blob/main/solidago/README.md#copyright--license)
 
-[![pypi](https://img.shields.io/pypi/v/solidago.svg)](https://pypi.python.org/pypi/solidago)
-[![license](https://img.shields.io/pypi/l/solidago)](https://github.com/tournesol-app/tournesol/blob/main/solidago/README.md#copyright--license)
-
-**Soli**d **A**lgorithmic **Go**vernance used by the Tournesol platform
+A toolbox for **Soli**d **A**lgorithmic **Go**vernance, used by the [Tournesol](https://tournesol.app) platform.
 
 {{ version }}
-
 
 
 ## Usage
@@ -20,7 +16,7 @@ from solidago import Pipeline
 
 ## Installation
 
-**solidago** requires **Python >= 3.9**
+**`solidago`** requires **Python >= 3.9**
 
 ### From PyPI
 

@@ -7,6 +7,7 @@ repo_url: https://github.com/tournesol-app/tournesol/tree/main/solidago
 
 theme:
   name: material
+  custom_dir: docs/overrides
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -35,6 +36,9 @@ theme:
 nav:
   - Introduction: "index.md"
   - Pipeline: "pipeline.md"
+  - Structures:
+    - "structures/scoring_model.md"
+    - "structures/privacy_settings.md"
   - Modules: 
     - "modules/trust_propagation.md"
     - "modules/voting_rights.md"
@@ -42,6 +46,7 @@ nav:
     - "modules/scaling.md"
     - "modules/aggregation.md"
     - "modules/post_process.md"
+  - Primitives: "primitives.md"
   - Tournesol dataset: "tournesol.md"
 
 
@@ -112,4 +117,7 @@ watch:
 
 extra_javascript:
   - javascripts/mathjax.js
-  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js
+
+extra:
+  site_title: "Solidago"

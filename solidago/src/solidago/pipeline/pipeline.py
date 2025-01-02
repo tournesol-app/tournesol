@@ -127,6 +127,18 @@ class Pipeline:
         criterion: str,
         output: Optional[PipelineOutput] = None
     ):
+        """
+        Executes the pipeline with the given input and criterion.
+
+        Parameters
+        ----------
+        input : PipelineInput
+            The input data for the pipeline.
+        criterion : str
+            The criterion used for the pipeline execution.
+        output : Optional[PipelineOutput], optional
+            The output object to store results, by default None
+        """
         # TODO: `criterion` should be managed by PipelineInput ?
         return self(
             **input.get_pipeline_kwargs(criterion),
