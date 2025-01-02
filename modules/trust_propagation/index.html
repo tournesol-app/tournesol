@@ -261,7 +261,7 @@
         
   
   <span class="md-ellipsis">
-    Introduction
+    Get Started
   </span>
   
 
@@ -593,6 +593,39 @@
         
           <li class="md-nav__item">
   <a href="#solidago.trust_propagation.LipschiTrust.to_json" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_json
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solidago.trust_propagation.NoopTrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      NoopTrust
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NoopTrust">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#solidago.trust_propagation.NoopTrust.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solidago.trust_propagation.NoopTrust.to_json" class="md-nav__link">
     <span class="md-ellipsis">
       to_json
     </span>
@@ -946,6 +979,39 @@
         
           <li class="md-nav__item">
   <a href="#solidago.trust_propagation.LipschiTrust.to_json" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_json
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solidago.trust_propagation.NoopTrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      NoopTrust
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NoopTrust">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#solidago.trust_propagation.NoopTrust.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solidago.trust_propagation.NoopTrust.to_json" class="md-nav__link">
     <span class="md-ellipsis">
       to_json
     </span>
@@ -1577,6 +1643,87 @@ Vouching is thereby not (too) disincentivized.</p>
 
 
 
+<h2 id="solidago.trust_propagation.NoopTrust" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">NoopTrust</span>
+
+
+<a href="#solidago.trust_propagation.NoopTrust" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="solidago.trust_propagation.base.TrustPropagation" href="#solidago.trust_propagation.TrustPropagation">TrustPropagation</a></code></p>
+
+
+        <p>Noop implementation for trust propagation:
+trust values are simply read from the input <code>users</code>.</p>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="solidago.trust_propagation.NoopTrust.__call__" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__call__</span>
+
+
+<a href="#solidago.trust_propagation.NoopTrust.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="fm">__call__</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="nf">users</span><span class="p">:</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">,</span> <span class="n">_vouches</span><span class="p">:</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="solidago.trust_propagation.NoopTrust.to_json" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">to_json</span>
+
+
+<a href="#solidago.trust_propagation.NoopTrust.to_json" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">to_json</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h2 id="solidago.trust_propagation.TrustAll" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">TrustAll</span>
 
@@ -1589,7 +1736,7 @@ Vouching is thereby not (too) disincentivized.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="solidago.trust_propagation.base.TrustPropagation" href="#solidago.trust_propagation.TrustPropagation">TrustPropagation</a></code></p>
 
 
-        <p><code>TrustAll</code> is a naive solution that assignes an equal amount of trust to all users.</p>
+        <p>A naive implementation that assigns an equal amount of trust to all users.</p>
 
 
 
