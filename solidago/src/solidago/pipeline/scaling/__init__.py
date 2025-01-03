@@ -8,8 +8,6 @@ assuming each user has a very specific selection bias of rated entities.
 """
 
 from .base import Scaling
-from .compose import ScalingCompose
-from .no_scaling import NoScaling
 from .mehestan import Mehestan
 from .quantile_zero_shift import QuantileShift, QuantileZeroShift
 from .standardize import Standardize

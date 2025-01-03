@@ -2,22 +2,17 @@ from typing import Callable, Mapping, Optional
 
 import numpy as np
 import pandas as pd
-
-import logging
 import timeit
+import logging
+
+logger = logging.getLogger(__name__)
+
+from solidago.primitives import qr_median, qr_uncertainty, lipschitz_resilient_mean
+from solidago.primitives.pairs import UnorderedPairs
+from solidago.state import *
 
 from .base import Scaling
 from .no_scaling import NoScaling
-
-from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel, ScaledScoringModel
-from solidago.voting_rights import VotingRights
-from solidago.primitives import qr_median, qr_uncertainty, lipschitz_resilient_mean
-
-from solidago.utils.pairs import UnorderedPairs
-
-
-logger = logging.getLogger(__name__)
 
 
 class Mehestan(Scaling):
@@ -32,14 +27,16 @@ class Mehestan(Scaling):
         n_diffs_sample_max=1000,
         error=1e-5
     ):
-        """ Mehestan performs Lipschitz-resilient ollaborative scaling.
-        
-        A simplified version of Mehestan was published in 
-        "Robust Sparse Voting", Youssef Allouah, Rachid Guerraoui, Lȩ Nguyên Hoang
-        and Oscar Villemaud, published at AISTATS 2024.
+        """ Mehestan performs Lipschitz-resilient collaborative scaling.
+        It is based on "Robust Sparse Voting", by Youssef Allouah, 
+        Rachid Guerraoui, Lȩ Nguyên Hoang and Oscar Villemaud, 
+        published at AISTATS 2024.
         
         The inclusion of uncertainties is further detailed in
-        "Solidago: A Modular Pipeline for Collaborative Scoring"
+        "Solidago: A Modular Pipeline for Collaborative Scoring",
+        by Lê Nguyên Hoang, Romain Beylerian, Bérangère Colbois, Julien Fageot, 
+        Louis Faucon, Aidan Jungo, Alain Le Noac'h, Adrien Matissart
+        and Oscar Villemaud.
         
         Parameters
         ----------
@@ -69,14 +66,11 @@ class Mehestan(Scaling):
         self.n_diffs_sample_max = n_diffs_sample_max
         self.error = error
 
-    def __call__(
-        self, 
-        user_models: Mapping[int, ScoringModel],
-        users: pd.DataFrame,
-        entities: pd.DataFrame,
-        voting_rights: Optional[VotingRights] = None,
-        privacy: Optional[PrivacySettings] = None
-    ) -> dict[int, ScaledScoringModel]:
+    def __call__(self, 
+        users: Users,
+        entities: Entities,
+        user_models: UserModels,
+    ) -> UserModels:
         """ Returns scaled user models
         
         Parameters
@@ -107,7 +101,7 @@ class Mehestan(Scaling):
         nonscalers = users[users["is_scaler"] == False]
         if len(scalers) == 0:
             logger.warning("    No user qualifies as a scaler. No scaling performed.")
-            return NoScaling()(user_models)
+            return user_models
         end_step1 = timeit.default_timer()
         logger.info(f"Mehestan 1. Terminated in {int(end_step1 - start)} seconds")
 
