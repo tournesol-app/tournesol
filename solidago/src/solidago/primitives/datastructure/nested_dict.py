@@ -35,6 +35,9 @@ class NestedDict(ABC):
     def process_stored_value(self, keys: list[str], stored_value: Any) -> Any:
         return stored_value
     
+    def sanitize(self, injected_value: Any) -> Any:
+        return injected_value
+    
     @abstractmethod
     def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
         raise NotImplemented
@@ -105,7 +108,10 @@ class NestedDict(ABC):
             return set(self._dict)
         return reduce(lambda subdict, s: subdict.get_set(key_name) | s, self._dict.values(), set())
     
-    def set(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"]) -> None:
+    def set(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"], sanitize: bool=False) -> None:
+        if sanitize:
+            self.set(keys, self.sanitize(value))
+            return None
         if len(keys) == 1:
             assert len(self.key_names) == 1 or (
                 isinstance(value, NestedDict) and value.key_names == self.key_names[1:]
@@ -118,7 +124,7 @@ class NestedDict(ABC):
         self._dict[str(keys[0])].set(keys[1:], value)
 
     def __setitem__(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"]) -> None:
-        self.set(keys, value)
+        self.set(keys, value, sanitize=True)
 
     def reorder_keys(self, key_names: list[str]) -> "NestedDict":
         if not key_names or self.key_names == key_names:

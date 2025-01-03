@@ -120,6 +120,15 @@ class MultiScore(NestedDictOfTuples):
     def process_stored_value(self, keys: list[str], stored_value: tuple[float, float, float]) -> Score:
         return Score(*stored_value)
     
+    def sanitize(self, value: Union[tuple, Score, dict]) -> tuple[float, float, float]:
+        if isinstance(value, (list, tuple)):
+            assert len(value) == 3
+            return value
+        if isinstance(value, Score):
+            return value.to_triplet()
+        assert isinstance(value, (dict, Series))
+        return Score(value).to_triplet()
+    
     @classmethod
     def nan(cls) -> "MultiScore":
         return MultiScore()

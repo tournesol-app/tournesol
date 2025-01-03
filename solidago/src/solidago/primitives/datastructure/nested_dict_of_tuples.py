@@ -25,6 +25,9 @@ class NestedDictOfTuples(NestedDict):
     def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
         self[keys] = tuple([row[name] for name in self.value_names])
 
+    def sanitize(self, value: Any) -> tuple:
+        return tuple(value)
+
     def get_set(self, key_name: str, default_value: Optional[str]=None) -> set:
         try:
             return super().get_set(key_name, default_value)
