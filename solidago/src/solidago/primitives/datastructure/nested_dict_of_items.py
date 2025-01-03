@@ -33,9 +33,11 @@ class NestedDictOfItems(NestedDict):
                 raise NestedKeyError(key_name)
             return { value for _, value in self }
 
-    def to_df(self) -> DataFrame:
-        return DataFrame([ 
+    def to_rows(self, kwargs: Optional[dict]) -> list[dict]:
+        if row_kwargs is None:
+            row_kwargs = dict()
+        return [ 
             dict(zip(self.key_names, keys)) | { self.value_name: value }
             for keys, value in self.__iter__(process=False)
-        ])
+        ]
         

@@ -39,9 +39,10 @@ class NestedDict(ABC):
     def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
         raise NotImplemented
         
-    def _get(self, *keys) -> Union["NestedDict", Any]:
-        """ _get does NOT postprocess the result, which makes it usually unsuitable for external use """
+    def get(self, *keys, process: bool=False) -> Union["NestedDict", Any]:
         assert len(keys) <= len(self.key_names), (keys, repr(self))
+        if process:
+            return self.process_stored_value(self.get(*keys))
         out_key_names = [ 
             key_name for key_name, key in zip(self.key_names[:len(keys)], keys)
             if (isinstance(key, BuiltinFunctionType) and key == any) or isinstance(key, (set, tuple, list))
@@ -53,7 +54,7 @@ class NestedDict(ABC):
         if _is_any(keys[0]) or isinstance(keys[0], (set, tuple, list)): # len(keys) > 1
             result = type(self)(key_names=out_key_names, save_filename=None)
             valid_key = lambda key: True if _is_any(keys[0]) else key in keys[0]
-            d = { key: subdict._get(*keys[1:]) for key, subdict in self._dict.items() if valid_key(key) }
+            d = { key: subdict.get(*keys[1:]) for key, subdict in self._dict.items() if valid_key(key) }
             result._dict = { key: subdict for key, subdict in d.items() if len(subdict) > 0  }
             return result
         if str(keys[0]) not in self._dict and len(out_key_names) == 0:
@@ -62,13 +63,13 @@ class NestedDict(ABC):
             return type(self)(key_names=out_key_names, save_filename=None)
         if len(keys) == 1:
             return self._dict[str(keys[0])]
-        return self._dict[str(keys[0])]._get(*keys[1:])
+        return self._dict[str(keys[0])].get(*keys[1:])
 
     def __getitem__(self, keys: Union[str, tuple, list, dict]) -> Union["NestedDict", Any]:
         """ __getitem___ postprocesses the result to make it readily usable for external use """
         if isinstance(keys, dict):
             keys = [(keys[name] if name in keys else any) for name in self.args_names]
-        value = self._get(keys) if keys == any or isinstance(keys, str) else self._get(*keys)
+        value = self.get(keys) if keys == any or isinstance(keys, str) else self.get(*keys)
         return value if isinstance(value, NestedDict) else self.process_stored_value(keys, value)
 
     def __contains__(self, keys: Union[str, tuple, list, dict]) -> bool:
@@ -104,9 +105,11 @@ class NestedDict(ABC):
             return set(self._dict)
         return reduce(lambda subdict, s: subdict.get_set(key_name) | s, self._dict.values(), set())
     
-    def set(self, keys: Union[str, tuple, list], value: "OutputValue") -> None:
+    def set(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"]) -> None:
         if len(keys) == 1:
-            assert len(self.key_names) == 1, (keys, self.key_names, self)
+            assert len(self.key_names) == 1 or (
+                isinstance(value, NestedDict) and value.key_names == self.key_names[1:]
+            ), (keys, self.key_names)
             self._dict[str(keys[0])] = value
             return None
         assert len(keys) == len(self.key_names), (keys, self.key_names)
@@ -114,7 +117,7 @@ class NestedDict(ABC):
             self._dict[str(keys[0])] = type(self)(key_names=self.key_names[1:])
         self._dict[str(keys[0])].set(keys[1:], value)
 
-    def __setitem__(self, keys: Union[str, tuple, list], value: "OutputValue") -> None:
+    def __setitem__(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"]) -> None:
         self.set(keys, value)
 
     def reorder_keys(self, key_names: list[str]) -> "NestedDict":
@@ -149,10 +152,13 @@ class NestedDict(ABC):
     
     def to_dict(self, keys: Union[list, tuple], value: Any) -> dict:
         return dict(zip(self.key_names, keys)) | self.value2dict(value)
-    
+
     @abstractmethod
-    def to_df(self) -> DataFrame:
+    def to_rows(self, row_kwargs: Optional[dict]=None) -> list[dict]:
         raise NotImplemented
+            
+    def to_df(self, row_kwargs: Optional[dict]=None) -> DataFrame:
+        raise DataFrame(self.to_rows(row_kwargs))
 
     def save(self, directory: Union[str, Path]) -> tuple[str, str]:
         assert self.save_filename is not None, f"{type(self).__name__} has no save filename"

@@ -95,35 +95,17 @@ class ScoringModel(ABC):
                 json.dump([type(self).__name__, saved_dict], f, indent=4)
         return type(self).__name__, saved_dict
     
-    def to_dfs(self) -> dict[str, DataFrame]:
-        dfs = { df_name: self.export_df(df_name) for df_name in self.df_names }
-        return { df_name: df for df_name, df in dfs.items() if not df.empty }
-    
-    def export_df(self, df_name: str) -> DataFrame:
-        if df_name == "directs":
-            return self.directs_df()
-        if df_name == "scalings":
-            return self.scalings_df()
-        raise ValueError(f"{df_name} not known")
+    def to_dfs(self, depth: int=0) -> dict[str, DataFrame]:
+        self_rows = self.to_rows(depth)
+        rows = dict() if isinstance(parent, BaseModel) else self.parent.to_rows(depth + 1)
+        for df_name, self_rows in self_rows.items():
+            rows[df_name] = self_rows if df_name not in rows else rows[df_name] + self_rows
+        return { df_name: DataFrame(rows) for df_name, rows in rows.items() }
+        
+    def to_rows(self, depth: int=0) -> dict[str, list]:
+        """ Must return a dict, with df_name as keys, and a list of rows as values """
+        return dict()
 
-    def scalings_df(self) -> DataFrame:
-        rows, parent, depth = list(), self, 0
-        from .scaled import ScaledModel, MultiScaledModel
-        while not isinstance(parent, BaseModel):
-            if not isinstance(parent, (ScaledModel, MultiScaledModel)):
-                continue
-            rows += parent.to_series_list(depth)
-            depth += 1
-            parent = parent.parent
-        return DataFrame(rows)
-    
-    def directs_df(self) -> Optional[DataFrame]:
-        base_model, depth = self.base_model()
-        from .direct import DirectScoring
-        if isinstance(base_model, DirectScoring):
-            return base_model.to_df(depth)
-        return DataFrame()
-    
     def base_model(self, depth: int=0) -> "BaseModel":
         return (self, depth) if isinstance(self, BaseModel) else self.parent.base_model(depth + 1)
 

@@ -21,7 +21,7 @@ class NestedDictOfRowLists(NestedDict):
         super().__init__(d=d, key_names=key_names, save_filename=save_filename)
 
     def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
-        l = self._get(*keys) if keys in self else list()
+        l = self.get(*keys) if keys in self else list()
         self[keys] = l + [dict(row)]
 
     def get_set(self, key_name: str, default_value: Optional[str]=None) -> set:
@@ -35,21 +35,22 @@ class NestedDictOfRowLists(NestedDict):
             }
 
     def add(self, *keys) -> None:
-        self[keys] = self._get(*keys) + [dict()]
+        self[keys] = self.get(*keys) + [dict()]
     
     def append(self, keys: list, row: dict) -> None:
-        self[keys] = self._get(*keys) + [dict(row)]
+        self[keys] = self.get(*keys) + [dict(row)]
 
     def __len__(self) -> int:
         if len(self.key_names) == 1:
             return sum([len(row_list) for _, row_list in self._dict.items()])
         return sum([ len(sub_dicts) for sub_dicts in self._dict.values() ])
 
-    def to_df(self) -> DataFrame:
-        return DataFrame(sum([
-            [
-                dict(zip(self.key_names, keys)) | row 
-                for row in row_list
-            ] for keys, row_list in self.__iter__(process=False)
-        ], list()))
+    def to_rows(self, kwargs: Optional[dict]) -> list[dict]:
+        if row_kwargs is None:
+            row_kwargs = dict()
+        return [
+            dict(zip(self.key_names, keys)) | row_kwargs | row
+            for keys, row_list in self.__iter__(process=False)
+            for row in row_list
+        ]
 

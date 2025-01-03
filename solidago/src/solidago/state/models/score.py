@@ -71,9 +71,23 @@ class Score:
         )
     
     def __mul__(self, s: "Score") -> "Score":
-        extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
         value = self.value * s.value
+        extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
         return Score(value, value - min(extremes), max(extremes) - value)
+
+    def __truediv__(self, s: "Score") -> "Score":
+        if 0 in self or 0 in s:
+            return Score.nan()
+        value = self.value / s.value
+        extremes = [ self.min / s.min, self.min / s.max, self.max / s.min, self.max / s.max ]
+        return Score(value, value - min(extremes), max(extremes) - value)
+
+    def abs(self) -> "Score":
+        if 0 in self:
+            return Score(abs(self.value), 0, max(abs(self.min), self.max) - abs(self.value))
+        if self.value > 0:
+            return Score(self.value, self.left_unc, self.right_unc)
+        return Score(abs(self.value), self.right_unc, self.left_unc)
 
     def isnan(self) -> bool:
         return self.value == float("nan") or (
@@ -82,6 +96,9 @@ class Score:
     
     def __repr__(self) -> str:
         return f"{self.value} ± [- {self.left_unc}, {self.right_unc}]"
+
+    def __contains__(self, value: float) -> bool:
+        return self.min <= value and value <= self.max
 
 
 class MultiScore(NestedDictOfTuples):

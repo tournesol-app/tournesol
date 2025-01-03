@@ -1,4 +1,4 @@
-from typing import Callable, Mapping, Optional
+from typing import Callable, Optional, Iterable
 
 import numpy as np
 import pandas as pd
@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives import qr_median, qr_uncertainty, lipschitz_resilient_mean
 from solidago.primitives.pairs import UnorderedPairs
+from solidago.primitives.datastructure import NestedDictOfRowList
 from solidago.state import *
 
 from .base import Scaling
@@ -24,6 +25,7 @@ class Mehestan(Scaling):
         privacy_penalty=0.5,
         user_comparison_lipschitz=10.0,
         p_norm_for_multiplicative_resilience=4.0,
+        n_entity_to_fully_compare_max=100,
         n_diffs_sample_max=1000,
         error=1e-5
     ):
@@ -63,61 +65,59 @@ class Mehestan(Scaling):
         self.privacy_penalty = privacy_penalty
         self.user_comparison_lipschitz = user_comparison_lipschitz
         self.p_norm_for_multiplicative_resilience = p_norm_for_multiplicative_resilience
+        self.n_entity_to_fully_compare_max = n_entity_to_fully_compare_max
         self.n_diffs_sample_max = n_diffs_sample_max
         self.error = error
 
-    def __call__(self, 
+    def main(self, 
         users: Users,
         entities: Entities,
+        made_public: MadePublic,
         user_models: UserModels,
-    ) -> UserModels:
+    ) -> tuple[Users, UserModels]:
         """ Returns scaled user models
         
-        Parameters
-        ----------
-        user_models: dict[int, ScoringModel]
-            user_models[user] is user's scoring model
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
-        entities: DataFrame with columns
-            * entity_id (int, ind)
-        voting_rights: VotingRights
-            Not used in Mehestan
-        privacy: PrivacySettings
-            privacy[user, entity] in { True, False, None }
-
         Returns
         -------
-        out[user]: ScoringModel
-            Will be scaled by the Scaling method
+        users: Users
+            Records whether users are Mehestan-scalers
+        user_models: ScoringModel
+            Scaled user models
         """
         logger.info("Starting Mehestan's collaborative scaling")
+        user_name2index = { str(user): index for index, user in enumerate(users) }
 
-        start = timeit.default_timer()
-        logger.info("Mehestan 1. Select scalers based on activity and trustworthiness")
-        users = users.assign(is_scaler=self.compute_scalers(user_models, entities, users, privacy))
-        scalers = users[users["is_scaler"]]
-        nonscalers = users[users["is_scaler"] == False]
-        if len(scalers) == 0:
-            logger.warning("    No user qualifies as a scaler. No scaling performed.")
-            return user_models
-        end_step1 = timeit.default_timer()
-        logger.info(f"Mehestan 1. Terminated in {int(end_step1 - start)} seconds")
-
-        logger.info("Mehestan 2. Collaborative scaling of scalers")
-        scaler_user_models = {u: m for u,m in user_models.items() if u in scalers.index}
-        scaled_models = self.scale_scalers(scaler_user_models, scalers, entities, privacy)
-        end_step2 = timeit.default_timer()
-        logger.info(f"Mehestan 2. Terminated in {int(end_step2 - end_step1)} seconds")
-
-        logger.info("Mehestan 3. Scaling of non-scalers")
-        scaled_models = self.scale_non_scalers(user_models, nonscalers, entities, scalers, 
-            scaled_models, privacy)
-        end = timeit.default_timer()
-        logger.info(f"Mehestan 3. Terminated in {int(end - end_step2)} seconds")
-
-        logger.info(f"Succesful Mehestan normalization, in {int(end - start)} seconds")
+        logger.info("Mehestan 0. Compute user scores")
+        scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
+        logger.info(f"Mehestan 0. Terminated")
+        
+        scales = ScaleDict(key_names=["criterion", "username"])
+        for criterion in scores.get_set("criterion"):
+            start = timeit.default_timer()
+            logger.info("Mehestan 1. Select scalers based on activity and trustworthiness")
+            users["is_scaler"] = self.compute_scalers(users, made_public, scores[criterion])
+            if len(scalers) == 0:
+                logger.warning("    No user qualifies as a scaler. No scaling performed.")
+                logger.info(f"Mehestan 1. Terminated in {int(end_step1 - start)} seconds")
+                return user_models
+            end_step1 = timeit.default_timer()
+            logger.info(f"Mehestan 1. Terminated in {int(end_step1 - start)} seconds")
+    
+            logger.info("Mehestan 2. Collaborative scaling of scalers")
+            scalers = users.get({ "is_scaler": True })
+            scaler_scores = scores[criterion][scalers]
+            scaler_scales = self.scale_scalers(scalers, made_public, scaler_scores)
+            scales[criterion] = scaler_scales
+            end_step2 = timeit.default_timer()
+            logger.info(f"Mehestan 2. Terminated in {int(end_step2 - end_step1)} seconds")
+    
+            logger.info("Mehestan 3. Scaling of non-scalers")
+            scales[criterion] = scaler_scales | self.scale_non_scalers(users, made_public, 
+                scores[criterion], scaler_scales)
+            end = timeit.default_timer()
+            logger.info(f"Mehestan 3. Terminated in {int(end - end_step2)} seconds")
+    
+            logger.info(f"Succesful Mehestan normalization, in {int(end - start)} seconds")
         return scaled_models
 
     ############################################
@@ -127,52 +127,60 @@ class Mehestan(Scaling):
     ##  3. Fit the nonscalers to the scalers  ##
     ############################################
 
-    def compute_scalers(
-        self,
-        user_models: Mapping[int, ScoringModel],
-        entities: pd.DataFrame,
-        users: pd.DataFrame,
-        privacy: Optional[PrivacySettings],
+    def compute_scalers(self,
+        users: Users, 
+        made_public: MadePublic,
+        scores: MultiScore, # key_names = ["username", "entity_name"]
     ) -> np.ndarray:
         """ Determines which users will be scalers.
         The set of scalers is restricted for two reasons.
         First, too inactive users are removed, because their lack of comparability
         with other users makes the scaling process ineffective.
         Second, scaling scalers is the most computationally demanding step of Mehestan.
-        Reducing the number of scalers accelerates the computation.
-        
-        Parameters
-        ----------
-        activities: np.ndarray
-            activities[user] is the activity of user, 
-            weighted by their trustworthiness and how public their activity is
+        Reducing the number of scalers accelerates the computation (often a bottleneck).
             
         Returns
         -------
         is_scaler: np.ndarray
-            is_scaler[user]: bool says whether user is a scaler
+            is_scaler[i] says whether username at iloc i in users is a scaler
         """
-        activities = self.compute_activities(user_models, entities, users, privacy)
-        index_to_user = { index: user for index, user in enumerate(users.index) }
-        np_activities = np.array([
-            activities.get(index_to_user[index], 0.0)
-            for index in range(len(users))
-        ])
-        argsort = np.argsort(np_activities)
+        activities = self.compute_activities(users, made_public, scores)
+        argsort = np.argsort(activities)
         is_scaler = np.array([False] * len(np_activities))
-        for user in range(min(self.n_scalers_max, len(np_activities))):
-            if np_activities[argsort[-user-1]] < self.min_activity:
+        for user_index in range(min(self.n_scalers_max, len(np_activities))):
+            if np_activities[argsort[-user_index-1]] < self.min_activity:
                 break
-            is_scaler[argsort[-user-1]] = True
+            is_scaler[argsort[-user_index-1]] = True
         return is_scaler
 
-    def scale_scalers(self, user_models, scalers, entities, privacy):
+    def scale_scalers(self, 
+        scalers: Users,
+        made_public: MadePublic, 
+        scores: MultiScore, # key_names == ["username", "entity_name"]
+    ) -> ScaleDict:
+        """ Scale scalers
+        
+        Parameters
+        ----------
+        scalers: Users
+            Must have column "is_scaler"
+        made_public: MadePublic
+        scores: MultiScore
+            Must have key_names == ["username", "entity_name"]
+            Should be processed to only consider scalers' names as username
+        
+        Returns
+        -------
+        scales: ScaleDict
+            With key_names = ["username"] and processed values tuple[Score, Score],
+            which correspond to the multiplicator and the translation.
+        """
         start = timeit.default_timer()
-        model_norms = self.compute_model_norms(user_models, scalers, entities, privacy)
+        model_norms = self.compute_model_norms(scalers, made_public, scores)
         end2a = timeit.default_timer()
         logger.info(f"    Mehestan 2a. Model norms in {int(end2a - start)} seconds")
 
-        entity_ratios = self.compute_entity_ratios(user_models, user_models, entities, privacy)
+        weights, ratios = self.compute_entity_ratios(scalers, scalers, made_public, scores)
         end2b = timeit.default_timer()
         logger.info(f"    Mehestan 2b. Entity ratios in {int(end2b - end2a)} seconds")
         ratio_voting_rights, ratios, ratio_uncertainties = _aggregate_user_comparisons(
@@ -271,95 +279,120 @@ class Mehestan(Scaling):
     ##     Methods to esimate the scalers     ##
     ############################################
 
-    def compute_activities(
-        self,
-        user_models: Mapping[int, ScoringModel],
-        entities: pd.DataFrame,
-        users: pd.DataFrame,
-        privacy: Optional[PrivacySettings],
-    ) -> dict[int, float]:
+    def compute_activities(self,
+        users: Users, 
+        made_public: MadePublic,
+        scores: MultiScore, # key_names == ["username", "entity_name"]
+    ) -> np.ndarray:
         """ Returns a dictionary, which maps users to their trustworthy activeness.
         
         Parameters
         ----------
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
-        privacy: PrivacySettings
-            privacy[user, entity] in { True, False, None }
-        privacy_penalty: float
-            Penalty for privacy
+        users: Users
+        made_public: MadePublic
+            Must have key_names "username" and "entity_name"
+        scores: MultiScore
+            Must have key_names == ["username", "entity_name"]
     
         Returns
         -------
-        activities: dict[int, float]
-            activities[user] is a measure of user's trustworthy activeness.
+        activities: np.ndarray
+            activities[i] is a measure of user i's trustworthy activeness,
+            where i is the iloc of the user in users
         """
-        return {
-            user_id: _computer_user_activities(
-                user_id,  # type: ignore
-                user_models[user_id],  # type: ignore
-                entities,
-                trust_score,  # type: ignore
-                privacy,
-                self.privacy_penalty
-            )
-            for (user_id, trust_score) in users["trust_score"].items()
-            if user_id in user_models
-        }
+        made_public = made_public.reorder_keys(["username", "entity_name"])
+        return np.array([
+            self.computer_user_activities(made_public[user], scores[user])
+            for user in users
+        }]
+    
+    def computer_user_activities(self,
+        made_public: MadePublic, # key_names = ["entity_name"]
+        scores: MultiScore, # key_names = ["entity_name"]
+    ) -> float:
+        """ Returns a dictionary, which maps users to their trustworthy activeness.
+        
+        Parameters
+        ----------
+        made_public: MadePublic with key_names = ["entity_name"]
+        scores: MultiScore with key_names = ["entity_name"]
+    
+        Returns
+        -------
+        activity: float
+        """
+        if trust_score <= 0.0:
+            return 0.0
+            
+        return trust_score * sum([
+            1 if made_public[entity] else privacy_penalty
+            for entity, score in scores
+            if not (score.min < 0 and score.max > 0)
+        ])
 
     ############################################
     ##  Methods to esimate the multiplicators ##
     ############################################
 
-    def compute_model_norms(
-        self,
-        user_models: dict[int, ScoringModel],
-        users: pd.DataFrame,
-        entities: pd.DataFrame,
-        privacy: PrivacySettings,
-    ) -> dict[int, float]:
+    def compute_model_norms(self,
+        users: Users,
+        made_public: MadePublic, # key_names == ["username", "entity_name"]
+        scores: MultiScore, # key_names == ["username", "entity_name"]
+    ) -> np.ndarray:
         """ Estimator of the scale of scores of a user, with an emphasis on large scores.
         The estimator uses a L_power norm, and weighs scores, depending on public/private status.
         For each user u, it computes (sum_e w[ue] * score[u, e]**power / sum_e w[ue])**(1/power).
         
         Parameters
         ----------
-        user_models: dict[int, ScoringModel]
-            user_models[user] is user's scoring model
-        users: DataFrame with columns
-            * user_id (int, index)
-        entities: DataFrame with columns
-            * entity_id (int, ind)
-        privacy: PrivacySettings
-            privacy[user, entity] in { True, False, None }
-        privacy_penalty: float
-            Penalty for privacy
+        users: Users
+        made_public: MadePublic
+            Must have key_names == ["username", "entity_name"]
+        scores: MultiScore
+            Must have key_names == ["username", "entity_name"]
     
         Returns
         -------
-        out: dict[int, float]
-            out[user]
+        out: np.ndarray
+            out[i] is the norm of user i's score vector, where i is the user's iloc in users
         """
-        return {
-            user: _user_model_norms(
-                user, 
-                user_models[user], 
-                entities, privacy, 
-                self.p_norm_for_multiplicative_resilience, 
-                self.privacy_penalty
-            )
-            for user in users.index
-            if user in user_models
-        }
+        return [ self.compute_model_norm(made_public[user], scores[user]) for user in users ]
 
-    def compute_entity_ratios(
-        self, 
-        scalee_models: dict[int, ScoringModel],
-        scaler_models: dict[int, ScoringModel],
-        entities: pd.DataFrame,
-        privacy: PrivacySettings
-    ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
+    def compute_model_norm(self, made_public: MadePublic, scores: MultiScore) -> float:
+        """ Estimator of the scale of scores of a user, with an emphasis on large scores.
+        The estimator uses a L_power norm, and weighs scores, depending on public/private status.
+        For each user u, it computes (sum_e w[ue] * score[u, e]**power / sum_e w[ue])**(1/power).
+        
+        Parameters
+        ----------
+        made_public: MadePublic
+            Must have key_names == ["entity_name"]
+        scores: MultiScore
+            Must have key_names == ["entity_name"]
+    
+        Returns
+        -------
+        norm: float
+        """
+        weight_sum, weighted_sum = 0., 0.
+        for entity_name, score in scores:
+            weight = self.penalty(made_public[entity_name])
+            weight_sum += weight
+            weighted_sum += weight * (score.value**self.p_norm_for_multiplicative_resilience)
+    
+        if weight_sum == 0:
+            return 1.0
+    
+        return np.power(weighted_sum / weight_sum, 1 / self.p_norm_for_multiplicative_resilience)
+
+    def compute_entity_ratios(self, 
+        scalees: Users, 
+        scalers: Users, 
+        made_public: MadePublic, # key_names == ["username", "entity_name"]
+        scalee_scores: MultiScore, # key_names == ["username", "entity_name"]
+        scaler_scores: MultiScore, # key_names == ["username", "entity_name"]
+    ) -> tuple[VotingRights, NestedDictOfRowLists]: # key_names == ["scalee_name", "scaler_name"]
+    # ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
         """ Computes the ratios of score differences, with uncertainties,
         for comparable entities of any pair of scalers (s_{uvef} in paper),
         for u in scalees and v in scalers.
@@ -368,132 +401,80 @@ class Mehestan(Scaling):
         
         Parameters
         ----------
-        user_models: dict[int, ScoringModel]
-            user_models[user] is a scoring model
-        entities: DataFrame with columns
-            * entity_id (int, index)
-        scalees: DataFrame with columns
-            * user_id (int, index)
-        scalers: DataFrame with columns
-            * user_id (int, index)
-        privacy: PrivacySettings
+        scalees: Users, 
+        scalers: Users, 
+        made_public: MadePublic
+            Must have key_names == ["username", "entity_name"]
+        scalee_scores: MultiScore
+            Must have key_names == ["username", "entity_name"]
+        scaler_scores: MultiScore
+            Must have key_names == ["username", "entity_name"]
         
         Returns
         -------
-        out: dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]
-            out[user][user_bis] is a tuple (ratios, voting_rights, lefts, rights),
-            where ratios is a list of ratios of score differences,
+        voting_rights: VotingRights
+            With key_names == ["scalee_name", "scaler_name"]
+            voting_rights[scalee_name, scaler_name] is the weight of scaler_name
+            on the multiplicative scaling of scalee_name        
+        ratios: NestedDictOfRowLists
+            With key_names == ["scalee_name", "scaler_name"]
+            multiscore[scalee_name, scaler_name] is a list of rows,
+            where each row is a ratio of score differences,
             and left and right are the left and right ratio uncertainties.
         """
-        user_entity_ratios = dict()
-        entities_ids = set(entities.index)
-
-        for u, u_model in scalee_models.items():
-            user_entity_ratios[u] = dict()
-            u_entities = entities_ids & u_model.scored_entities()
-            if len(u_entities) == 0:
-                continue
-
-            for v, v_model in scaler_models.items():
-                if u == v:
-                    user_entity_ratios[u][v] = [1.], [1.], [0.], [0.]
+        reordered_scaler_scores = scaler_scores.reorder_keys(["entity_name", "username"])
+        voting_rights = VotingRights()
+        ratios = NestedDictOfRowList()
+        
+        for scalee in scalees:
+            scalee_entity_names = scalee_scores[scalee].get_set("entity_name")
+            scalers = reordered_scaler_scores[scalee_entity_names].get_set("username")
+        
+            for scaler in scalers:
+                
+                if str(scalee) == str(scaler):
+                    voting_rights[scalee, scaler] = 1
+                    ratios[scalee, scaler] = [Score(1, 0, 0).to_dict()]
                     continue
-
-                uv_entities = list(u_entities & v_model.scored_entities())
-                if len(entities) <= 1:
+                
+                common_entity_names = scalee_entity_names & scaler_scores[scaler].get_set("entity_name")
+                
+                if len(common_entity_names) <= 1:
                     continue
-                elif len(entities) <= 100:
-                    ratios = self.load_all_ratios(u, v, uv_entities, entities, 
-                        u_model, v_model, privacy)
-                    if ratios is not None:
-                        user_entity_ratios[u][v] = ratios
+                if len(common_entity_names) <= self.n_entity_to_fully_compare_max:
+                    pairs = UnorderedPairs(common_entity_names)
                 else:
-                    ratios = self.sample_ratios(u, v, uv_entities, entities, 
-                        u_model, v_model, privacy)
-                    if ratios is not None:
-                        user_entity_ratios[u][v] = ratios
+                    pairs = UnorderedPairs(common_entity_names).n_samples(self.n_diffs_sample_max)
+                
+                voting_right, ratio_list = self.compute_ratios(
+                    scalee_scores[scalee], 
+                    scaler_scores[scaler], 
+                    made_public[scaler],
+                    pairs
+                )
+                if voting_right > 0:
+                    voting_rights[scalee, scaler] = voting_right
+                    ratios[scalee, scaler] = ratio_list
+                
+        return voting_rights, ratios
 
-        return user_entity_ratios
-
-    def load_all_ratios(
-        self, 
-        u: int, 
-        v: int, 
-        uv_entities: list[int], 
-        entities: pd.DataFrame,
-        u_model: ScoringModel, 
-        v_model: ScoringModel, 
-        privacy: Optional[PrivacySettings]
-    ) -> Optional[tuple[
-        list[float],
-        list[float],
-        list[float],
-        list[float],
-    ]]:
-        ratios, voting_rights, lefts, rights = list(), list(), list(), list()
-        for e, f in UnorderedPairs(uv_entities):
-            output_u = _compute_abs_diff(u_model, e, f, entities)
-            if output_u is None:
-                continue
-            output_v = _compute_abs_diff(v_model, e, f, entities)
-            if output_v is None:
-                continue
-
-            voting_right = 1.0
-            if privacy is not None:
-                if privacy[u, f]:
-                    voting_right *= self.privacy_penalty
-                if privacy[v, f]:
-                    voting_right *= self.privacy_penalty
-            voting_rights.append(voting_right)
-
-            diff_u, left_u, right_u = output_u
-            diff_v, left_v, right_v = output_v
-            ratio = np.abs(diff_v / diff_u)
-            ratios.append(ratio)
-            lefts.append(ratio - np.abs((diff_v - left_v) / (diff_u + right_u)))
-            rights.append(np.abs((diff_v + right_v) / (diff_u - left_u)) - ratio)
-
-        if len(voting_rights) == 0:
-            return None
-
-        return ratios, voting_rights, lefts, rights
-
-    def sample_ratios(
-        self, 
-        u: int, 
-        v: int, 
-        uv_entities: list[int], 
-        entities: pd.DataFrame,
-        u_model: ScoringModel, 
-        v_model: ScoringModel, 
-        privacy: Optional[PrivacySettings]
-    ) -> tuple[list[float], list[float], list[float], list[float]]:
-        ratios, voting_rights, lefts, rights = list(), list(), list(), list()
-
-        for e, f in UnorderedPairs(uv_entities).n_samples(self.n_diffs_sample_max):
-            output_u = _compute_abs_diff(u_model, e, f, entities)
-            if output_u is None:
-                continue
-            output_v = _compute_abs_diff(v_model, e, f, entities)
-            if output_v is None:
-                continue
-
-            voting_right = 1.0
-            if privacy is not None:
-                if privacy[u, f]:
-                    voting_right *= self.privacy_penalty
-                if privacy[v, f]:
-                    voting_right *= self.privacy_penalty
-            voting_rights.append(voting_right)
-
-            diff_u, left_u, right_u = output_u
-            diff_v, left_v, right_v = output_v
-            ratio = np.abs(diff_v / diff_u)
-            ratios.append(ratio)
-            lefts.append(ratio - np.abs((diff_v - left_v) / (diff_u + right_u)))
-            rights.append(np.abs((diff_v + right_v) / (diff_u - left_u)) - ratio)
-        return ratios, voting_rights, lefts, rights
+    def compute_ratios(self,
+        scalee_scores: MultiScore, # key_name == ["entity_name"]
+        scaler_scores: MultiScore, # key_name == ["entity_name"]
+        scaler_public: MadePublic, # key_name == ["entity_name"]
+        pairs: Iterable # outputs list of pairs (e, f) of entity names
+    ) -> tuple[float, list[dict]]:
+        """ Returns the scaler's voting right and ratios to multiplicatively scale scalee's model """
+        voting_right, ratios = 0, list()
+        for e, f in pairs:
+            ratio = (scaler_scores[e] - scaler_scores[f]) / (scalee_scores[e] - scalee_scores[f])
+            if ratio.isnan(): continue
+            ratios.append(ratio.abs())
+            voting_right += self.penalty(scaler_public[e]) * self.penalty(scaler_public[f])
+        return voting_right, ratios
+    
+    def penalty(self, public: bool):
+        return 1 if public else self.privacy_penalty
 
     def compute_multiplicators(
         self, 
@@ -687,96 +668,7 @@ def _compute_abs_diff(
         return score_b - score_a, left_b + right_a, right_b + left_a
     return None
 
-def _computer_user_activities(
-    user: int,
-    user_model: ScoringModel, 
-    entities: pd.DataFrame,
-    trust_score: float,
-    privacy: Optional[PrivacySettings],
-    privacy_penalty: float
-) -> float:
-    """ Returns a dictionary, which maps users to their trustworthy activeness.
-    
-    Parameters
-    ----------
-    user: int
-    score_diffs: dict[int, dict[int, tuple[float, float, float]]]
-        score_diffs[e][f] is a tuple (score, left_uncertainty, right_uncertainty)
-    users: DataFrame with columns
-        * user_id (int, index)
-        * trust_score (float)
-    privacy: PrivacySettings
-        privacy[user, entity] in { True, False, None }
-    privacy_penalty: float
-        Penalty for privacy
 
-    Returns
-    -------
-    activities: dict[int, float]
-        activities[user] is a measure of user's trustworthy activeness.
-    """
-    if trust_score <= 0.0:
-        return 0.0
-
-    results = 0.0
-    entity_ids = set(entities.index)
-    for entity_id, (score, left, right) in user_model.iter_entities():
-        if entity_id not in entity_ids:
-            continue
-        if score <= left and score >= -right:
-            # Uncertainty interval contains 0
-            # Sign of score is uncertain.
-            continue
-        added_quantity = 1.0
-        if privacy is not None and privacy[user, entity_id]:
-            added_quantity *= privacy_penalty
-        results += added_quantity
-    
-    return results * trust_score
-
-def _user_model_norms(
-    user: int,
-    user_model: ScoringModel,
-    entities: pd.DataFrame,
-    privacy: PrivacySettings,
-    power: float,
-    privacy_penalty: float
-) -> float:
-    """ Estimator of the scale of scores of a user, with an emphasis on large scores.
-    The estimator uses a L_power norm, and weighs scores, depending on public/private status.
-    For each user u, it computes (sum_e w[ue] * score[u, e]**power / sum_e w[ue])**(1/power).
-    
-    Parameters
-    ----------
-    user_models: dict[int, ScoringModel]
-        user_models[user] is user's scoring model
-    users: DataFrame with columns
-        * user_id (int, index)
-    entities: DataFrame with columns
-        * entity_id (int, ind)
-    privacy: PrivacySettings
-        privacy[user, entity] in { True, False, None }
-    privacy_penalty: float
-        Penalty for privacy
-
-    Returns
-    -------
-    out: dict[int, float]
-        out[user]
-    """
-    weight_sum, weighted_sum = 0., 0.
-    for (entity_id, (score, left_unc, right_unc)) in user_model.iter_entities(entities):
-        weight = 1.0
-        if privacy is not None and privacy[user, entity_id]:
-            weight *= privacy_penalty
-        
-        weight_sum += weight
-        weighted_sum += weight * (score**power)
-
-    if weight_sum == 0:
-        return 1.0
-
-    return np.power(weighted_sum / weight_sum, 1 / power)
 
 def _aggregate_user_comparisons(
     scalers: pd.DataFrame, 

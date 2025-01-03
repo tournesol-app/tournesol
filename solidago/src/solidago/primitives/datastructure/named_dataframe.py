@@ -50,13 +50,25 @@ class NamedDataFrame(DataFrame):
         path = Path(directory) / self.save_filename
         self.to_csv(path)
         return type(self).__name__, str(path)
-                
-    def get(self, series: Union[str, NamedSeries]) -> NamedSeries:
-        assert series in self, (series, self)
-        return self.series_cls(self.loc[str(series)])
-    
-    def extract(self, names: set[str]) -> NamedDataFrame:
-        return type(self)(self[self.index.isin(names)], save_filename=self.save_filename)
+
+    def get(self, key: Union[str, NamedSeries, Iterable, dict]) -> Union[NamedSeries, "NamedDataFrame"]:
+        """ Extract carefully typed objects given index names (default) or attributes
+        
+        Returns
+        -------
+        out: NamedSeries or NamedDataFrame
+            If key is a string or a NamedSeries, returns corresponding NamedSeries
+            If key is a set/list/tuple, returns NamedDataFrame with matching indices
+            If key is a dict, returns NamedDataFrame with matching attributes
+        """
+        if isinstance(key, (str, NamedSeries)):
+            return self.series_cls(self.loc[str(key)])
+        if isinstance(key, dict):
+            filtered, key_values = True, key
+            for key, value in key_values.items():
+                filtered &= (self[key] == value)
+            return type(self)(self[filtered])
+        return type(self)(self.loc[list(names)])
     
     def __iter__(self):
         for _, row in self.iterrows():

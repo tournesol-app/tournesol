@@ -35,7 +35,7 @@ class VectorDataFrame(NamedDataFrame):
 
     def __init__(self, 
         vectors: Union[np.ndarray, list[VectorSeries]], 
-        save_vector_filename: Union[str, Path], 
+        save_vector_filename: Optional[Union[str, Path]], 
         *args, 
         **kwargs
     ):
@@ -66,24 +66,34 @@ class VectorDataFrame(NamedDataFrame):
         )
 
     def save(self, directory: Union[Path, str]) -> tuple[str, tuple[str, str]]:
+        assert self.meta.save_vector_filename is not None
         vectors_path = Path(directory) / self.meta.save_vector_filename
         np.savetxt(vectors_path, self.vectors, delimiter=",")
         class_name, df_path = super(VectorDataFrame, self).save(directory)
         return type(self).__name__, (df_path, str(vectors_path))
 
-    def get(self, series: Union[str, NamedSeries]) -> VectorSeries:
-        assert str(series) in self.index, (series, self)
-        row = self.loc[str(series)]
-        return VectorSeries(self.vectors[row["vector_index"]], row)
-
-    def extract(self, names: Iterable[str]) -> "VectorDataFrame":
-        sub_df = self.loc[list(names)]
-        return type(self)(
-            vectors[sub_df["vector_index"]], 
-            self.save_vector_filename, 
-            sub_df, 
-            save_filename=self.save_filename
-        )
+    def get(self, key: Union[str, NamedSeries, Iterable, dict]) -> Union[VectorSeries, "VectorDataFrame"]:
+        """ Extract carefully typed objects given index names (default) or attributes
+        
+        Returns
+        -------
+        out: NamedSeries or NamedDataFrame
+            If key is a string or a NamedSeries, returns corresponding NamedSeries
+            If key is a set/list/tuple, returns NamedDataFrame with matching indices
+            If key is a dict, returns NamedDataFrame with matching attributes
+        """
+        if isinstance(key, (str, NamedSeries)):
+            row = self.loc[str(series)]
+            return VectorSeries(self.vectors[row["vector_index"]], row)
+        if isinstance(key, dict):
+            filtered, key_values = True, key
+            for key, value in key_values.items():
+                filtered &= (self[key] == value)
+            sub_df = self[filtered]
+        else:
+            assert isinstance(key, (set, tuple, list))
+            sub_df = self.loc[list(names)]
+        return VectorDataFrame(self.vectors[sub_df["vector_index"]], None, sub_df)
                 
     def __iter__(self):
         for _, row in self.iterrows():
