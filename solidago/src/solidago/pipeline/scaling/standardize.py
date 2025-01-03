@@ -1,11 +1,8 @@
 import pandas as pd
 
-from .base import Scaling
-
-from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel, ScaledScoringModel
-from solidago.voting_rights import VotingRights
 from solidago.primitives import qr_standard_deviation
+from solidago.state import *
+from .base import Scaling
 
 
 class Standardize(Scaling):
@@ -20,51 +17,26 @@ class Standardize(Scaling):
         self.lipschitz = lipschitz
         self.error = error
 
-    def main(self,
-        users: Users,
-        entities: Entities,
-        made_public: MadePublic,
-        voting_rights: VotingRights,
-        user_models: UserModels,
-    ) -> UserModels:
-        df = _get_user_scores(user_models, entities)
-        std_dev = self._compute_std_dev(df)
-        return {
-            user: ScaledScoringModel(user_model, multiplicator=1/std_dev)
-            for (user, user_model) in user_models.items()
-        }
-
-    def _compute_std_dev(self, df):
-        w = 1 / df.groupby("user_id")["scores"].transform("size")
-        return qr_standard_deviation(
-            lipschitz=self.lipschitz,
-            values=df["scores"].to_numpy(),
-            quantile_dev=self.dev_quantile,
-            voting_rights=w.to_numpy(),
-            left_uncertainties=df["left_uncertainties"].to_numpy(),
-            right_uncertainties=df["right_uncertainties"].to_numpy(),
-            default_dev=1.0,
-            error=self.error,
-        )
-
-
-def _get_user_scores(user_models: dict[int, ScoringModel], entities: pd.DataFrame):
-    user_list, entity_list = list(), list()
-    scores, lefts, rights = list(), list(), list()
-    for user_id, scoring_model in user_models.items():
-        for entity_id, output in scoring_model.iter_entities(entities):
-            user_list.append(user_id)
-            entity_list.append(entity_id)
-            scores.append(output[0])
-            lefts.append(output[1])
-            rights.append(output[2])
-
-    return pd.DataFrame(
-        dict(
-            user_id=user_list,
-            entity_id=entity_list,
-            scores=scores,
-            left_uncertainties=lefts,
-            right_uncertainties=rights,
-        )
-    )
+    def main(self, entities: Entities, user_models: UserModels) -> UserModels:
+        scores_df = user_models.score(entities).reorder_keys(["criterion"]).to_df()
+        multiplicator2scale = lambda multiplicator: (multiplicator, 0, 0, 0, 0, 0)
+        scalings = dict()
+        
+        for criterion in scores_df.get_set("criterion"):
+            weights = 1 / df.groupby("username")["scores"].transform("size")
+            std_dev = qr_standard_deviation(
+                lipschitz=self.lipschitz,
+                values=df["scores"].to_numpy(),
+                quantile_dev=self.dev_quantile,
+                voting_rights=weights.to_numpy(),
+                left_uncertainties=df["left_uncertainties"].to_numpy(),
+                right_uncertainties=df["right_uncertainties"].to_numpy(),
+                default_dev=1.0,
+                error=self.error,
+            )
+            scalings[criterion] = multiplicator2scale(1 / std_dev)
+        
+        return UserModels({
+            username: MultiScaledModel(model, scalings)
+            for username, model in user_models
+        })

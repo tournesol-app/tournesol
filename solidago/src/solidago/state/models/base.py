@@ -41,6 +41,9 @@ class ScoringModel(ABC):
     def score(self, entity: "Entity") -> MultiScore:
         raise NotImplementedError
     
+    def evaluated_entities(self, entities: "Entities") -> "Entities":
+        return self.parent.evaluated_entities(entities)
+    
     @classmethod
     def dfs_load(cls, d: dict[str, Any], loaded_dfs: Optional[dict[str, DataFrame]]=None) -> dict[str, DataFrame]:
         if loaded_dfs is None:
@@ -140,3 +143,6 @@ class BaseModel(ScoringModel):
     @abstractmethod
     def to_direct(self) -> "DirectScoring":
         raise NotImplemented
+
+    def evaluated_entities(self, entities: "Entities") -> "Entities":
+        return entities

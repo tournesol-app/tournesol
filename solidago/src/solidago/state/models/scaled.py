@@ -11,25 +11,33 @@ class ScaledModel(ScoringModel):
     def __init__(self, 
         parent: ScoringModel, 
         multiplicator: Score=Score(1, 0, 0), 
-        translation: Score=Score(0, 0, 0)
+        translation: Score=Score(0, 0, 0),
+        note: str="None",
     ):
         super().__init__()
         self.parent = parent
         self.multiplicator = multiplicator
         self.translation = translation
+        self.note = note
     
     @classmethod
     def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int):
         depth_df = dfs["scalings"][dfs["scalings"]["depth"] == depth]
         if depth_df.empty:
-            return dict(multiplicator=Score(1, 0, 0), translation=Score(0, 0, 0))
+            return super().args_load(d, dfs, depth) | dict(
+                multiplicator=Score(1, 0, 0), 
+                translation=Score(0, 0, 0)
+            )
         if len(depth_df) > 1:
             logger.warn(f"Multiple scalings of same depth. Selected the last one.")
         r = depth_df.iloc[-1]
-        return dict(
+        return super().args_load(d, dfs, depth) | dict(
             multiplicator=Score(r["multiplicator_value"], r["multiplicator_left_unc"], r["multiplicator_right_unc"]), 
             translation=Score(r["translation_value"], r["translation_left_unc"], r["translation_right_unc"])
         )
+        
+    def args_save(self) -> dict:
+        return dict(note=self.note)
 
     def score(self, entity: "Entity") -> MultiScore:
         return self.scale( self.parent(entity) )
@@ -69,10 +77,12 @@ class MultiScaledModel(ScoringModel, NestedDictOfTuples):
             "multiplicator_value", "multiplicator_left_unc", "multiplicator_right_unc", 
             "translation_value", "translation_left_unc", "translation_right_unc",
         ],
-        save_filename: Optional[str]=None
+        save_filename: Optional[str]=None,
+        note: str="None"
     ):
         super().__init__(d, key_names, value_names, save_filename)
         self.parent = parent
+        self.note = note
 
     def default_value(self) -> tuple[Score, Score]:
         return Score(1, 0, 0), Score(0, 0, 0)
@@ -86,8 +96,11 @@ class MultiScaledModel(ScoringModel, NestedDictOfTuples):
     @classmethod
     def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
         depth_df = dfs["scalings"][dfs["scalings"]["depth"] == depth]
-        return dict(d=depth_df)
+        return super().args_load(d, dfs, depth) | dict(d=depth_df)
 
+    def args_save(self) -> dict:
+        return dict(note=self.note)
+        
     @property
     def multiplicator(self) -> MultiScore:
         return MultiScore({ criterion: value[0] for criterion, value in self })

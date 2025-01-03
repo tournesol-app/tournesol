@@ -26,6 +26,10 @@ class DirectScoring(BaseModel, NestedDictOfTuples):
     def score(self, entity: Union[str, "Entity"]) -> MultiScore:
         return MultiScore(self[str(entity)].to_df())
 
+    def evaluated_entities(self, entities: "Entities") -> "Entities":
+        entity_names = self.get_set("entity_name") & entities.index
+        return entities.extract(entity_names)
+        
     @classmethod
     def args_load(cls, d: dict[str, Any], dfs: dict[str, DataFrame], depth: int) -> dict:
         if "directs" not in dfs:

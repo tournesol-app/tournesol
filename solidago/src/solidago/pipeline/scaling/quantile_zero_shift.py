@@ -37,31 +37,28 @@ class QuantileShift(Scaling):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        values, criteria = dict(), set()
-        for username, model in user_models:
-            for entity in entities:
-                multiscore = model(entity)
-                for criterion, score in multiscore:
-                    if criterion not in values:
-                        values[criterion] = list()
-                        criteria.add(criterion)
-                    values[criterion].append(score.to_triplet())
-        
-        for criterion in criteria:
-            scores, lefts, rights = zip(*values[criterion])
-            shift = - qr_quantile(
+        scores = user_models.score(entities).reorder_keys(["criterion"])
+        translation2scale = lambda translation: (1, 0, 0, translation, 0, 0)
+        scalings = dict()
+        for criterion in scores.get_set("criterion"):
+            scores_df = scores[criterion].to_df()
+            score_values = scores_df["score"]
+            left_uncertainties = scores_df["left_unc"]
+            right_uncertainties = scores_df["right_unc"]
+            translation_value = - qr_quantile(
                 lipschitz=self.lipschitz,
                 quantile=self.quantile,
-                values=np.array(scores),
+                values=np.array(score_values),
                 voting_rights=np.array([1/len(entities)] * len(entities)),
-                left_uncertainties=np.array(lefts),
-                right_uncertainties=np.array(rights),
+                left_uncertainties=np.array(left_uncertainties),
+                right_uncertainties=np.array(right_uncertainties),
                 error=self.error,
             ) + self.target_score
+            scalings[criterion] = translation_value2scale(translation_value)
 
         return UserModels({
-            user: ScaledScoringModel(user_model, translation=shift)
-            for (user, user_model) in user_models.items()
+            username: MultiScaledModel(model, scalings)
+            for username, model in user_models
         })
 
 

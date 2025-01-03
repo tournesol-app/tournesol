@@ -54,7 +54,10 @@ class NamedDataFrame(DataFrame):
     def get(self, series: Union[str, NamedSeries]) -> NamedSeries:
         assert series in self, (series, self)
         return self.series_cls(self.loc[str(series)])
-        
+    
+    def extract(self, names: set[str]) -> NamedDataFrame:
+        return type(self)(self[self.index.isin(names)], save_filename=self.save_filename)
+    
     def __iter__(self):
         for _, row in self.iterrows():
             yield self.series_cls(row)

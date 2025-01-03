@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Iterable
 from pandas import DataFrame, Series
 from types import SimpleNamespace
 from pathlib import Path
@@ -75,7 +75,16 @@ class VectorDataFrame(NamedDataFrame):
         assert str(series) in self.index, (series, self)
         row = self.loc[str(series)]
         return VectorSeries(self.vectors[row["vector_index"]], row)
-        
+
+    def extract(self, names: Iterable[str]) -> "VectorDataFrame":
+        sub_df = self.loc[list(names)]
+        return type(self)(
+            vectors[sub_df["vector_index"]], 
+            self.save_vector_filename, 
+            sub_df, 
+            save_filename=self.save_filename
+        )
+                
     def __iter__(self):
         for _, row in self.iterrows():
             yield self.series_cls(self.vectors[row["vector_index"]], row)

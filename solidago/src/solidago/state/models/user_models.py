@@ -4,8 +4,8 @@ from pandas import DataFrame
 
 import pandas as pd
 
-from solidago.primitives.datastructure.nested_dict import NestedDict
 from .base import ScoringModel
+from .score import MultiScore
 from .direct import DirectScoring
 
 
@@ -21,6 +21,24 @@ class UserModels(dict):
 
     def default_value(self) -> ScoringModel:
         return self.model_cls()
+
+    def score(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
+        from solidago.state import Entity, Entities
+        if isinstance(entity, (str, Entity)):
+            result = NestedDictOfTuples(key_names=["username", "criterion"])
+            for username, model in self:
+                multiscore = model(entity)
+                for criterion, score in multiscore:
+                    result[username, criterion] = score.to_triplet()
+            return result
+        assert isinstance(entity, Entities)
+        entities = entity
+        result = NestedDictOfTuples(key_names=["username", "entity_name", "criterion"])
+        for username, model in self:
+            for entity in model.evaluated_entities(entities):
+                multiscore = model(entity)
+                for criterion, score in multiscore:
+                    result[username, str(entity), criterion] = score.to_triplet()
     
     def __getitem__(self, user: Union[str, "User"]) -> ScoringModel:
         if str(user) not in self.keys():
