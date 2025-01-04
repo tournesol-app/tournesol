@@ -35,7 +35,7 @@ class PostProcessedModel(ScoringModel):
 
 
 class SquashedModel(PostProcessedModel):
-    def __init__(self, parent: ScoringModel, self.max_score: float=100.):
+    def __init__(self, parent: ScoringModel, max_score: float=100.):
         super().__init__(parent)
         self.max_score = max_score
         

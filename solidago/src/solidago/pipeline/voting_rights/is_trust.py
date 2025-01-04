@@ -1,8 +1,8 @@
 from solidago.state import *
-from .base import VotingRightsAssignment
+from solidago.pipeline.base import StateFunction
 
 
-class IsTrust(VotingRightsAssignment):
+class IsTrust(StateFunction):
     def __init__(self, privacy_penalty: float=0.5):
         """ Computes voting_rights simply as the user trust scores,
         potentially multiplied by the privacy penalty if the vote is private.

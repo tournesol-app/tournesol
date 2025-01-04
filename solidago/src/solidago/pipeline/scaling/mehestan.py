@@ -7,16 +7,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from solidago.primitives import qr_median, qr_uncertainty, lipschitz_resilient_mean
+from solidago.primitives.lipschitz import qr_median, qr_uncertainty, lipschitz_resilient_mean
 from solidago.primitives.pairs import UnorderedPairs
-from solidago.primitives.datastructure import NestedDictOfRowList
+from solidago.primitives.datastructure import NestedDictOfItems, NestedDictOfRowLists
 from solidago.state import *
-
-from .base import Scaling
-from .no_scaling import NoScaling
+from solidago.pipeline.base import StateFunction
 
 
-class Mehestan(Scaling):
+class Mehestan(StateFunction):
     def __init__(
         self, 
         lipschitz=0.1, 
@@ -105,6 +103,7 @@ class Mehestan(Scaling):
             for username in user_models
         })
     
+    """ A simple way to distribute computations is to parallelize `compute_scales` """
     def compute_scales(self, 
         users: Users, # Must have column "trust_score"
         scores: MultiScore, # key_names == ["criterion", "username", "entity_name"]
@@ -150,8 +149,8 @@ class Mehestan(Scaling):
 
         logger.info(f"Mehestan 2 for {criterion}. Collaborative scaling of scalers")
         scalers = users.get({ "is_scaler": True })
-        scaler_scores = scores[scalers]
-        scaler_scales, scaler_scores = self.compute_scales(trusts, made_public, scaler_scores, scaler_scores)
+        scaler_scales, scaler_scores = self.scale_to_scalers(trusts, made_public, 
+            scores[scalers], scores[scalers], scalees_are_scalers=True)
         end_step2 = timeit.default_timer()
         logger.info(f"Mehestan 2 for {criterion}. Terminated in {int(end_step2 - end_step1)} seconds")
 
@@ -163,7 +162,7 @@ class Mehestan(Scaling):
         logger.info(f"Mehestan 3 for {criterion}. Terminated in {int(end - end_step2)} seconds")
         
         logger.info(f"Succesful Mehestan normalization on {criterion}, in {int(end - start)} seconds")
-        return users, scaler_scales | nonscaler_scales
+        return users, (scaler_scales | nonscaler_scales)
 
     def penalty(self, public: bool):
         return 1 if public else self.privacy_penalty
@@ -202,49 +201,52 @@ class Mehestan(Scaling):
             is_scaler[argsort[-user_index-1]] = True
         return is_scaler
 
-    def compute_scales(self, 
+    def scale_to_scalers(self, 
         trusts: NestedDictOfItems, # key_names == ["username"]
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         scaler_scores: MultiScore, # key_names == ["username", "entity_name"]
         scalee_scores: MultiScore, # key_names == ["username", "entity_name"]
+        scalees_are_scalers: bool=False
     ):
+        s = "2" if scalees_are_scalers else "3"
         start = timeit.default_timer()
-        model_norms = self.compute_model_norms(made_public, scalee_scores)
-        end2a = timeit.default_timer()
-        logger.info(f"    Mehestan 3a. Model norms in {int(end2a - start)} seconds")
+        scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
+        end_a = timeit.default_timer()
+        logger.info(f"    Mehestan {s}a. Model norms in {int(end_a - start)} seconds")
 
-        end3a = timeit.default_timer()
         weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
-        end3b = timeit.default_timer()
-        logger.info(f"    Mehestan 3b. Entity ratios in {int(end3b - end3a)} seconds")
+        end_b = timeit.default_timer()
+        logger.info(f"    Mehestan {s}b. Entity ratios in {int(end_b - end_a)} seconds")
         voting_rights, ratios = self.aggregate_scaler_scores(trusts, weight_lists, ratio_lists)
-        end3c = timeit.default_timer()
-        logger.info(f"    Mehestan 3c. Aggregate ratios in {int(end3c - end3b)} seconds")
-        multiplicators = self.compute_multiplicators(voting_rights, ratios, model_norms)
-        end3d = timeit.default_timer()
-        logger.info(f"    Mehestan 3d. Multiplicators in {int(end3d - end3c)} seconds")
+        end_c = timeit.default_timer()
+        logger.info(f"    Mehestan {s}c. Aggregate ratios in {int(end_c - end_b)} seconds")
+        multiplicators = self.compute_multiplicators(voting_rights, ratios, scalee_model_norms)
+        end_d = timeit.default_timer()
+        logger.info(f"    Mehestan {s}d. Multiplicators in {int(end_d - end_c)} seconds")
 
         for (scalee_name, entity_name), score in scaler_scores:
             scalee_scores[scalee_name, entity_name] = score * multiplicators[scalee_name]
+        if scalees_are_scalers:
+            scaler_scores = scalee_scores
         
         weight_lists, diff_lists = self.diffs(made_public, scaler_scores, scalee_scores)
-        end3e = timeit.default_timer()
-        logger.info(f"    Mehestan 3e. Entity diffs in {int(end3e - end3d)} seconds")
+        end_e = timeit.default_timer()
+        logger.info(f"    Mehestan {s}e. Entity diffs in {int(end_e - end_d)} seconds")
         voting_rights, diffs = self.aggregate_scaler_scores(trusts, weight_lists, diff_lists)
-        end3f = timeit.default_timer()
-        logger.info(f"    Mehestan 3f. Aggregate diffs in {int(end3f - end3e)} seconds")
+        end_f = timeit.default_timer()
+        logger.info(f"    Mehestan {s}f. Aggregate diffs in {int(end_f - end_e)} seconds")
         translations = self.compute_translations(voting_rights, diffs)
-        end3g = timeit.default_timer()
-        logger.info(f"    Mehestan 3g. Translations in {int(end3g - end3f)} seconds")
+        end_g = timeit.default_timer()
+        logger.info(f"    Mehestan {s}g. Translations in {int(end_g - end_f)} seconds")
 
-        scales = ScaleDict({
+        scalee_scales = ScaleDict({
             scalee_name: (
                 *multiplicators[scalee_name].to_triplet(), 
                 *translations[scalee_name].to_triplet()
             ) for scalee_name in multiplicators.get_set("scalee_name")
         }, key_names=["username"])
 
-        return scales, scaler_scores
+        return scalee_scales, scalee_scores
 
     ############################################
     ##    Methods to estimate the scalers     ##
@@ -278,7 +280,7 @@ class Mehestan(Scaling):
         return np.array([
             self.computer_user_activities(trusts[user], made_public[user], scores[user])
             for user in users
-        }]
+        ])
     
     def computer_user_activities(self,
         trust: float,
@@ -312,9 +314,9 @@ class Mehestan(Scaling):
     #############################################################
     
     def aggregate_scaler_scores(self,
-        trusts: NestedDictOfRowList, # key_names == ["username"]
-        weight_lists: NestedDictOfRowList, # key_names == ["scalee_name", "scaler_name"]
-        score_lists: NestedDictOfRowList, # key_names == ["scalee_name", "scaler_name"]
+        trusts: NestedDictOfRowLists, # key_names == ["username"]
+        weight_lists: NestedDictOfRowLists, # key_names == ["scalee_name", "scaler_name"]
+        score_lists: NestedDictOfRowLists, # key_names == ["scalee_name", "scaler_name"]
     ) -> tuple[VotingRights, MultiScore]: # key_names == ["scalee_name", "scaler_name"]
         """ For any two pairs (scalee, scaler), aggregates their ratio or diff data.
         Typically used to transform s_{uvef}'s into s_{uv}, and tau_{uve}'s into tau_{uv}.
@@ -325,7 +327,7 @@ class Mehestan(Scaling):
         voting_rights: VotingRights
             Must have key_names == ["scalee_name", "scaler_name"]
             voting_rights[scalee_name, scaler_name] is a list of weights
-        comparisons: NestedDictOfRowList
+        comparisons: NestedDictOfRowLists
             Must have key_names == ["scalee_name", "scaler_name"]
             comparisons[scalee, scaler] is a list of triplets that represent a Score,
             which represent how scalee's scale should be set to match scaler's.
@@ -485,7 +487,7 @@ class Mehestan(Scaling):
             each of which is of type Score.
         """
         reordered_scaler_scores = scaler_scores.reorder_keys(["entity_name", "username"])
-        weight_lists, ratio_lists = NestedDictOfRowList(), NestedDictOfRowList()
+        weight_lists, ratio_lists = NestedDictOfRowLists(), NestedDictOfRowLists()
         
         for scalee_name, _ in scalee_scores:
             scalee_entity_names = scalee_scores[scalee_name].get_set("entity_name")
@@ -601,7 +603,7 @@ class Mehestan(Scaling):
             of type Score (i.e. with left and right uncertainties).
         """
         reordered_scaler_scores = scaler_scores.reorder_keys(["entity_name", "username"])
-        weight_lists, diff_lists = NestedDictOfRowList(), NestedDictOfRowList()
+        weight_lists, diff_lists = NestedDictOfRowLists(), NestedDictOfRowLists()
         
         for scalee_name, _ in scalee_scores:
             scalee_entity_names = scalee_scores[scalee_name].get_set("entity_name")

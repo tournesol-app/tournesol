@@ -7,7 +7,6 @@ This latter effect is particularly an issue in comparison-based preference learn
 assuming each user has a very specific selection bias of rated entities.
 """
 
-from .base import Scaling
 from .mehestan import Mehestan
 from .quantile_zero_shift import QuantileShift, QuantileZeroShift
 from .standardize import Standardize

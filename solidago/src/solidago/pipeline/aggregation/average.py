@@ -1,12 +1,10 @@
 import pandas as pd
 
-from solidago.voting_rights import VotingRights
-from solidago.scoring_model import ScoringModel, DirectScoringModel
-
-from .base import Aggregation
+from solidago.state import *
+from solidago.pipeline.base import StateFunction
 
 
-class Average(Aggregation):
+class Average(StateFunction):
     def main(self, 
         entities: Entities,
         voting_rights: VotingRights,

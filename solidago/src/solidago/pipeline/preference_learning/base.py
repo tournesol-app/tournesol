@@ -7,10 +7,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 from solidago.state import *
+from solidago.pipeline.base import StateFunction
 
 
-
-class PreferenceLearning(ABC):
+class PreferenceLearning(StateFunction, ABC):
     def main(self, 
         users: Users,
         entities: Entities,

@@ -1,4 +1,4 @@
-from typing import Union, Iterable
+from typing import Union, Optional, Iterable
 from pandas import DataFrame, Series
 from types import SimpleNamespace
 from pathlib import Path

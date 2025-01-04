@@ -3,15 +3,12 @@ from typing import Mapping
 import pandas as pd
 import numpy as np
 
-from .base import Scaling
-
-from solidago.privacy_settings import PrivacySettings
-from solidago.scoring_model import ScoringModel, ScaledScoringModel
-from solidago.voting_rights import VotingRights
 from solidago.primitives import qr_quantile
+from solidago.state import *
+from solidago.pipeline.base import StateFunction
 
 
-class QuantileShift(Scaling):
+class QuantileShift(StateFunction):
     def __init__(self,
         quantile: float = 0.15,
         target_score: float = 0.0,

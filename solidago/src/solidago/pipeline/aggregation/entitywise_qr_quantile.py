@@ -1,13 +1,12 @@
 import pandas as pd
 import numpy as np
 
-from .base import Aggregation
-
-from solidago.state import *
 from solidago.primitives.lipschitz import qr_quantile, qr_uncertainty
+from solidago.state import *
+from solidago.pipeline.base import StateFunction
 
 
-class EntitywiseQrQuantile(Aggregation):
+class EntitywiseQrQuantile(StateFunction):
     def __init__(self, quantile=0.2, lipschitz=0.1, error=1e-5):
         """ Standardize scores so that only a fraction 1 - dev_quantile
         of the scores is further than 1 away from the median,
@@ -38,7 +37,7 @@ class EntitywiseQrQuantile(Aggregation):
             for criterion, scores_list in all_scores.items():
                 if criterion not in rights:
                     continue
-                scores, left_uncs, right_uncs = [ np.array(l) for l in zip(*scores_list)) ]
+                scores, left_uncs, right_uncs = [ np.array(l) for l in zip(*scores_list) ]
                 score = qr_quantile(
                     lipschitz=self.lipschitz,
                     quantile=self.quantile,

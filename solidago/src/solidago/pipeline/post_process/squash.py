@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 
 from solidago.state import *
-from .base import PostProcess
+from solidago.pipeline.base import StateFunction
 
 
-class Squash(PostProcess):
+class Squash(StateFunction):
     def __init__(self, score_max: float = 100.0):
         assert score_max > 0
         self.score_max = score_max

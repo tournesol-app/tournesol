@@ -5,13 +5,12 @@
 
 import numpy as np
 
-from .base import TrustPropagation
-from solidago.state import State, Users, Vouches
+from solidago.state import *
+from solidago.pipeline.base import StateFunction
 
 
-class LipschiTrust(TrustPropagation):
-    def __init__(
-        self,
+class LipschiTrust(StateFunction):
+    def __init__(self,
         pretrust_value: float = 0.8,
         decay: float = 0.8,
         sink_vouch: float = 5.0,

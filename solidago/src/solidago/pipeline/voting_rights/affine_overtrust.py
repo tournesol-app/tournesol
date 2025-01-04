@@ -5,10 +5,10 @@ import pandas as pd
 
 from solidago.primitives.dichotomy import solve
 from solidago.state import *
-from .base import VotingRightsAssignment
+from solidago.pipeline.base import StateFunction
 
 
-class AffineOvertrust(VotingRightsAssignment):
+class AffineOvertrust(StateFunction):
     def __init__(self, 
         privacy_penalty: float = 0.5, 
         min_overtrust: float = 2.0,

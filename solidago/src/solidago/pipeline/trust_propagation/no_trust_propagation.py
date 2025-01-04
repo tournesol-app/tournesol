@@ -1,8 +1,8 @@
-from .base import TrustPropagation
-from solidago.state import Users, Vouches
+from solidago.state import *
+from solidago.pipeline.base import StateFunction
 
 
-class NoTrustPropagation(TrustPropagation):
+class NoTrustPropagation(StateFunction):
     def __init__(self, pretrust_value: float=0.8,):
         """
         Parameters

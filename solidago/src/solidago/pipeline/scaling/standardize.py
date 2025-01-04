@@ -2,10 +2,10 @@ import pandas as pd
 
 from solidago.primitives import qr_standard_deviation
 from solidago.state import *
-from .base import Scaling
+from solidago.pipeline.base import StateFunction
 
 
-class Standardize(Scaling):
+class Standardize(StateFunction):
     def __init__(self, dev_quantile: float=0.9, lipschitz: float=0.1, error: float=1e-5):
         """ The scores are shifted so that their quantile zero_quantile equals zero
         
