@@ -24,6 +24,13 @@ class NestedDict(ABC):
     def init_dict(self, d: Union["NestedDict", dict, DataFrame]) -> None:
         if isinstance(d, NestedDict):
             self._dict |= d._dict
+        elif isinstance(d, dict) and len(self.key_names) == 1:
+            self._dict |= d
+        elif isinstance(d, dict):
+            self._dict |= {
+                key: type(self)(d=value, key_names=self.key_names[1:])
+                for key, value in d.items()
+            }
         elif isinstance(d, DataFrame):
             for _, row in d.iterrows():
                 self.add_row([row[key_name] for key_name in self.key_names], row)

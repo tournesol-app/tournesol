@@ -1,4 +1,4 @@
-from solidago.utils import date
+from solidago.primitives import date
 
 def test_week_date_to_week_number():
     assert date.week_date_to_week_number("2021-01-15") == 0

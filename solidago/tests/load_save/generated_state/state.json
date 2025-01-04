@@ -1,0 +1,54 @@
+{
+    "users": [
+        "VectorUsers",
+        [
+            "tests/load_save/generated_state/users.csv",
+            "tests/load_save/generated_state/user_vectors.csv"
+        ]
+    ],
+    "entities": [
+        "VectorEntities",
+        [
+            "tests/load_save/generated_state/entities.csv",
+            "tests/load_save/generated_state/entity_vectors.csv"
+        ]
+    ],
+    "criteria": [
+        "Criteria",
+        "tests/load_save/generated_state/criteria.csv"
+    ],
+    "vouches": [
+        "Vouches",
+        "tests/load_save/generated_state/vouches.csv"
+    ],
+    "made_public": [
+        "MadePublic",
+        "tests/load_save/generated_state/made_public.csv"
+    ],
+    "assessments": [
+        "Assessments",
+        "tests/load_save/generated_state/assessments.csv"
+    ],
+    "comparisons": [
+        "Comparisons",
+        "tests/load_save/generated_state/comparisons.csv"
+    ],
+    "voting_rights": [
+        "VotingRights",
+        "tests/load_save/generated_state/voting_rights.csv"
+    ],
+    "user_models": [
+        "UserModels",
+        {
+            "users": {},
+            "dataframes": {},
+            "model_cls": "DirectScoring"
+        }
+    ],
+    "global_model": [
+        "DirectScoring",
+        {
+            "directs": "tests/load_save/generated_state/global_directs.csv"
+        }
+    ]
+}

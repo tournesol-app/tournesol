@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from solidago.primitives import (
+from solidago.primitives.lipschitz import (
     qr_quantile,
     qr_median,
     qr_standard_deviation,

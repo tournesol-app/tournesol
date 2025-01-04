@@ -4,7 +4,7 @@ import numpy as np
 
 
 class UnorderedPairs:
-    def __init__(self, elements: Union[list, str, tuple, int]):
+    def __init__(self, elements: Union[list, set, tuple, int]):
         if isinstance(elements, int):
             self.elements = np.arange(elements)
         else:

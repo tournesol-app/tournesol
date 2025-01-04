@@ -1,8 +1,8 @@
 import pytest
 from numba import njit
 
-from solidago.solvers.dichotomy import solve as dichotomy_solve
-from solidago.solvers.optimize import njit_brentq as brentq
+from solidago.primitives.dichotomy import solve as dichotomy_solve
+from solidago.primitives.optimize import njit_brentq as brentq
 
 
 def test_dichotomy():

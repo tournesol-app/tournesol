@@ -1,0 +1,135 @@
+{
+    "users": [
+        "Users",
+        "tests/load_save/save_tiny_tournesol/users.csv"
+    ],
+    "entities": [
+        "Entities",
+        "tests/load_save/save_tiny_tournesol/entities.csv"
+    ],
+    "criteria": [
+        "Criteria",
+        "tests/load_save/save_tiny_tournesol/criteria.csv"
+    ],
+    "vouches": [
+        "Vouches",
+        "tests/load_save/save_tiny_tournesol/vouches.csv"
+    ],
+    "made_public": [
+        "AllPublic",
+        {}
+    ],
+    "assessments": [
+        "Assessments",
+        "tests/load_save/save_tiny_tournesol/assessments.csv"
+    ],
+    "comparisons": [
+        "Comparisons",
+        "tests/load_save/save_tiny_tournesol/comparisons.csv"
+    ],
+    "voting_rights": [
+        "VotingRights",
+        "tests/load_save/save_tiny_tournesol/voting_rights.csv"
+    ],
+    "user_models": [
+        "UserModels",
+        {
+            "users": {
+                "aidjango": [
+                    "DirectScoring",
+                    {}
+                ],
+                "amatissart": [
+                    "DirectScoring",
+                    {}
+                ],
+                "Antarctus": [
+                    "DirectScoring",
+                    {}
+                ],
+                "biscuissec": [
+                    "DirectScoring",
+                    {}
+                ],
+                "Foebus": [
+                    "DirectScoring",
+                    {}
+                ],
+                "Fungus-Bob": [
+                    "DirectScoring",
+                    {}
+                ],
+                "Guigui220D": [
+                    "DirectScoring",
+                    {}
+                ],
+                "Jean-Lou": [
+                    "DirectScoring",
+                    {}
+                ],
+                "joleenj": [
+                    "DirectScoring",
+                    {}
+                ],
+                "lafabriquesociale": [
+                    "DirectScoring",
+                    {}
+                ],
+                "LapinLambda": [
+                    "DirectScoring",
+                    {}
+                ],
+                "le_science4all": [
+                    "DirectScoring",
+                    {}
+                ],
+                "lpfaucon": [
+                    "DirectScoring",
+                    {}
+                ],
+                "MrChamo": [
+                    "DirectScoring",
+                    {}
+                ],
+                "NatNgs": [
+                    "DirectScoring",
+                    {}
+                ],
+                "oscarv": [
+                    "DirectScoring",
+                    {}
+                ],
+                "Pierre-Yves": [
+                    "DirectScoring",
+                    {}
+                ],
+                "timber": [
+                    "DirectScoring",
+                    {}
+                ],
+                "Tit0uan": [
+                    "DirectScoring",
+                    {}
+                ],
+                "vero": [
+                    "DirectScoring",
+                    {}
+                ],
+                "white": [
+                    "DirectScoring",
+                    {}
+                ]
+            },
+            "dataframes": {
+                "directs": "tests/load_save/save_tiny_tournesol/user_directs.csv"
+            },
+            "model_cls": "DirectScoring"
+        }
+    ],
+    "global_model": [
+        "DirectScoring",
+        {
+            "directs": "tests/load_save/save_tiny_tournesol/global_directs.csv"
+        }
+    ]
+}

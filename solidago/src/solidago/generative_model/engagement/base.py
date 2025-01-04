@@ -14,7 +14,7 @@ class EngagementGenerator(StateFunction):
                 made_public[user, entity] = public
                 assess = self.assess(user, entity, eval_entities)
                 if assess:
-                    assessments.add(user, entity, "default")
+                    assessments.add(user, "default", entity)
                 for index2, entity2 in enumerate(eval_entities):
                     if index2 >= index:
                         break
@@ -22,7 +22,7 @@ class EngagementGenerator(StateFunction):
                     if compare:
                         shuffle = self.shuffle(user, entity, entity2, eval_entities)
                         left, right = (entity, entity2) if shuffle else (entity2, entity)
-                        comparisons.add(user, left, right, "default")
+                        comparisons.add(user, "default", left, right)
         return made_public, assessments, comparisons
         
     def sample_evaluated_entities(self, user: User, entities: Entities) -> Entities:

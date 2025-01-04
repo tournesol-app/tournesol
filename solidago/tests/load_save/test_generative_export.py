@@ -21,5 +21,5 @@ def test_generative_model():
     assert len(s2.entities) == 100
     assert s.made_public["21"].get_set("entity_name") == s2.made_public["21"].get_set("entity_name")
     assert set(s.assessments["12", "0"]["entity_name"]) == set(s2.assessments["12", "0"]["entity_name"])
-    assert set(s.comparisons["0", "0", "57"]["as_left"].keys()) == set(s2.comparisons["0", "0", "57"]["as_left"].keys())
+    assert set(s.comparisons["0", "0", "57"]["as_left"]) == set(s2.comparisons["0", "0", "57"]["as_left"])
 

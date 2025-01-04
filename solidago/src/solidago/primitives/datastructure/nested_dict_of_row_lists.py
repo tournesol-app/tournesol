@@ -19,6 +19,9 @@ class NestedDictOfRowLists(NestedDict):
         where the values are themselves lists of dicts (called "rows") """
         assert len(key_names) >= 1
         super().__init__(d=d, key_names=key_names, save_filename=save_filename)
+
+    def default_value(self) -> Any:
+        return list()
         
     def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
         assert len(keys) == len(self.key_names)
