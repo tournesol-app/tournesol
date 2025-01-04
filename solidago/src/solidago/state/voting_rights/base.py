@@ -11,7 +11,4 @@ class VotingRights(NestedDictOfItems):
         value_name="voting_right",
         save_filename="voting_rights.csv"
     ):
-        super().__init__(d, key_names, value_name, save_filename)
-    
-    def default_value(self) -> bool:
-        return 0    
+        super().__init__(d, key_names, value_name, save_filename, , default_value=0)

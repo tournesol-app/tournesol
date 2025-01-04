@@ -15,12 +15,17 @@ class NestedDictOfItems(NestedDict):
         key_names: list[str]=["key"], 
         value_name: str="value", 
         save_filename: Optional[str]=None,
+        default_value: Optional[Any]=None
     ):
         """ Defines a nested dict for sparse data storage of values with multiple keys,
         where the values are themselves lists of dict """
         assert isinstance(value_name, str)
         self.value_name = value_name
+        self._default_value = default_value
         super().__init__(d=d, key_names=key_names, save_filename=save_filename)
+
+    def default_value(self) -> Any:
+        return self._default_value
 
     def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
         self[keys] = row[self.value_name]

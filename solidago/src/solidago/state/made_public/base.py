@@ -11,10 +11,7 @@ class MadePublic(NestedDictOfItems):
         value_name="public",
         save_filename="made_public.csv"
     ):
-        super().__init__(d, key_names, value_name, save_filename)
-    
-    def default_value(self) -> bool:
-        return False
+        super().__init__(d, key_names, value_name, save_filename, default_value=False)
     
     def __setitem__(self, keys: Union[str, tuple, list], value: bool) -> None:
         if value:
