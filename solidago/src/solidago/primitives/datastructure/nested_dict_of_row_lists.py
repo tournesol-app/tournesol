@@ -19,8 +19,9 @@ class NestedDictOfRowLists(NestedDict):
         where the values are themselves lists of dicts (called "rows") """
         assert len(key_names) >= 1
         super().__init__(d=d, key_names=key_names, save_filename=save_filename)
-
+        
     def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
+        assert len(keys) == len(self.key_names)
         l = self.get(*keys) if keys in self else list()
         self[keys] = l + [dict(row)]
 
@@ -35,9 +36,11 @@ class NestedDictOfRowLists(NestedDict):
             }
 
     def add(self, *keys) -> None:
-        self[keys] = self.get(*keys) + [dict()]
+        assert len(keys) == len(self.key_names)
+        self[keys] = self.get(*keys, process=False) + [dict()]
     
     def append(self, keys: list, row: dict) -> None:
+        assert len(keys) == len(self.key_names)
         self[keys] = self.get(*keys) + [dict(row)]
 
     def __len__(self) -> int:
@@ -45,7 +48,7 @@ class NestedDictOfRowLists(NestedDict):
             return sum([len(row_list) for _, row_list in self._dict.items()])
         return sum([ len(sub_dicts) for sub_dicts in self._dict.values() ])
 
-    def to_rows(self, kwargs: Optional[dict]) -> list[dict]:
+    def to_rows(self, row_kwargs: Optional[dict]) -> list[dict]:
         if row_kwargs is None:
             row_kwargs = dict()
         return [

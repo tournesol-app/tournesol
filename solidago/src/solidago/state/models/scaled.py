@@ -47,8 +47,9 @@ class ScaledModel(ScoringModel):
     def args_save(self) -> dict:
         return dict(note=self.note)
 
-    def to_rows(self, depth: int=0) -> dict[str, list]:
-        return dict(scalings=self.scales.to_rows(dict(depth=depth)))
+    def to_rows(self, depth: int=0, kwargs: Optional[dict]=None) -> dict[str, list]:
+        kwargs = dict() if kwargs is None else kwargs
+        return dict(scalings=self.scales.to_rows(kwargs | dict(depth=depth)))
         
     @property
     def multiplicator(self) -> MultiScore:

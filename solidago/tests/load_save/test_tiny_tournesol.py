@@ -26,10 +26,10 @@ def test_import():
     assert t.global_model("0BoRX6UrBv0")["importance"].to_triplet() == (-4.53, 141.1, 141.1)
 
 def test_export():
-    TournesolExport("tests/tiny_tournesol.zip").save("tests/save_tiny_tournesol")
+    TournesolExport("tests/tiny_tournesol.zip").save("tests/load_save/save_tiny_tournesol")
 
 def test_reimport():
-    t = State.load("tests/save_tiny_tournesol")
+    t = State.load("tests/load_save/save_tiny_tournesol")
     
     assert "biscuissec" in t.users, t.users
     assert t.users.loc["le_science4all", "trust_score"] == 1

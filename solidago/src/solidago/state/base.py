@@ -28,30 +28,30 @@ class State:
     
     def __init__(
         self,
-        users: Users=Users(),
-        entities: Entities=Entities(),
-        criteria: Criteria=Criteria(),
-        vouches: Vouches=Vouches(),
-        made_public: MadePublic=MadePublic(),
-        assessments: Assessments=Assessments(),
-        comparisons: Comparisons=Comparisons(),
-        voting_rights: VotingRights=VotingRights(),
-        user_models : UserModels=UserModels(),
-        global_model: ScoringModel=DirectScoring(),
+        users: Optional[Users]=None,
+        entities: Optional[Entities]=None,
+        criteria: Optional[Criteria]=None,
+        vouches: Optional[Vouches]=None,
+        made_public: Optional[MadePublic]=None,
+        assessments: Optional[Assessments]=None,
+        comparisons: Optional[Comparisons]=None,
+        voting_rights: Optional[VotingRights]=None,
+        user_models : Optional[UserModels]=None,
+        global_model: Optional[ScoringModel]=None,
     ):
         """ State contains all information being processed by the pipeline 
         save_directory == False means that no save operation will be performed
         """
-        self.users = users
-        self.entities = entities
-        self.criteria = criteria
-        self.vouches = vouches
-        self.made_public = made_public
-        self.assessments = assessments
-        self.comparisons = comparisons
-        self.voting_rights = voting_rights
-        self.user_models = user_models
-        self.global_model = global_model
+        self.users = Users() if users is None else users
+        self.entities = Entities() if entities is None else entities
+        self.criteria = Criteria() if criteria is None else criteria
+        self.vouches = Vouches() if vouches is None else vouches
+        self.made_public = MadePublic() if made_public is None else made_public
+        self.assessments = Assessments() if assessments is None else assessments
+        self.comparisons = Comparisons() if comparisons is None else comparisons
+        self.voting_rights = VotingRights() if voting_rights is None else voting_rights
+        self.user_models = UserModels() if user_models is None else user_models
+        self.global_model = DirectScoring() if global_model is None else global_model
         self._save_directory = None
     
     @classmethod

@@ -2,7 +2,7 @@
 
 from .__version__ import __version__
 
+import solidago.primitives as primitives
 from solidago.state import *
 from solidago.generative_model import *
-import solidago.primitives as primitives
-import solidago.pipeline
+from solidago.pipeline import *

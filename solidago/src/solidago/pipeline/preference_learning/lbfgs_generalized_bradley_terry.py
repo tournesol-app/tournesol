@@ -84,7 +84,8 @@ class LBFGSGeneralizedBradleyTerry(PreferenceLearning):
     ) -> BaseModel:
         """ Learns only based on comparisons """
         model = DirectScoring()
-        reordered_direct_scoring = base_model.to_direct().reorder_keys(["criterion", "entity_name"])
+        direct_scoring = base_model.to_direct(entities)
+        reordered_direct_scoring = direct_scoring.reorder_keys(["criterion", "entity_name"])
         for criterion in comparisons.get_set("criterion", "default"):
             entity_scores = self.user_learn_criterion(
                 user, 

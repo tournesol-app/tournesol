@@ -10,9 +10,6 @@ from .direct import DirectScoring
 
 
 class UserModels(dict):
-    """ dfs is the set of dataframes that are loaded/saved to reconstruct a scoring model """
-    df_names: set[str]={ "user_directs", "user_scalings" }
-    
     def __init__(self, model_cls: type=DirectScoring, *args, **kwargs):
         """ Maps usernames to ScoringModel objects.
         Useful to export/import `glued` directs / scalings dataframes. """
@@ -53,7 +50,7 @@ class UserModels(dict):
     def dfs_load(cls, d: dict, loaded_dfs: Optional[dict]) -> dict[str, dict[str, DataFrame]]:
         if loaded_dfs is None:
             loaded_dfs = dict()
-        for df_name in cls.df_names & set(d):
+        for df_name in set(d):
             df = pd.read_csv(d[df_name], keep_default_na=False)
             for _, r in df.iterrows():
                 if r["username"] not in loaded_dfs:
@@ -85,23 +82,24 @@ class UserModels(dict):
         })
     
     def to_dfs(self) -> dict[str, DataFrame]:
-        dfs = { df_name: self.export_df(df_name) for df_name in self.df_names }
-        return { df_name: df for df_name, df in dfs.items() if not df.empty }
+        return { df_name: DataFrame(rows) for df_name, rows in self.to_rows().items() }
         
-    def export_df(self, df_name: str) -> DataFrame:
-        user_df_name = df_name.split("_")[-1]
-        return DataFrame(sum([
-            [ dict(username=username) | dict(r) for _, r in model.export_df(user_df_name).iterrows() ]
-            for username, model in self
-        ], list()))
+    def to_rows(self, depth: int=0) -> dict[str, list]:
+        """ Must return a dict, with df_name as keys, and a list of rows as values """
+        rows = dict()
+        for username, model in self:
+            for key_name, user_rows in model.to_rows(depth=0, kwargs=dict(username=username)).items():
+                if key_name not in rows:
+                    rows[key_name] = list()
+                rows[key_name] += user_rows
+        return rows
 
     def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict, dict]:
         df_filenames = dict()
-        for df_name in self.df_names:
-            df = self.export_df(df_name)
+        for df_name, df in self.to_dfs().items():
             if df.empty:
                 continue
-            filename = Path(directory) / f"{df_name}.csv"
+            filename = Path(directory) / f"user_{df_name}.csv"
             df.to_csv(filename, index=False)
             df_filenames[df_name] = str(filename)
         j = type(self).__name__, {

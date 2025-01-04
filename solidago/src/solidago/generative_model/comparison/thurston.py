@@ -20,7 +20,14 @@ class ThurstonComparisonGenerator(ComparisonGenerator):
     def score_matrix(self, users: VectorUsers, entities: VectorEntities):
         return users.vectors @ entities.vectors.T / users.vectors.shape[1]
     
-    def sample(self, user: User, left: Entity, right: Entity, left_public: bool, right_public: bool) -> tuple[float, float]:
+    def sample(self, 
+        user: User, 
+        left: Entity, 
+        right: Entity, 
+        left_public: bool, 
+        right_public: bool, 
+        criterion: str
+    ) -> tuple[float, float]:
         """ `lpublic` and `rpublic` are not used.
         Returns comparison max and value. """
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)

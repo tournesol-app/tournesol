@@ -83,7 +83,7 @@ class VectorDataFrame(NamedDataFrame):
             If key is a dict, returns NamedDataFrame with matching attributes
         """
         if isinstance(key, (str, NamedSeries)):
-            row = self.loc[str(series)]
+            row = self.loc[str(key)]
             return VectorSeries(self.vectors[row["vector_index"]], row)
         if isinstance(key, dict):
             filtered, key_values = True, key

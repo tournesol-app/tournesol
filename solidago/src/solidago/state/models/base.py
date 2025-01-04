@@ -13,9 +13,9 @@ from .score import Score, MultiScore
 
 
 class ScoringModel(ABC):
-    """ dfs is the set of dataframes that are loaded/saved to reconstruct a scoring model """
-    df_names: set[str]={ "directs", "scalings" }
-    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+            
     def __call__(self, entities: Union["Entity", "Entities"]) -> Union[MultiScore, NestedDict]:
         """ Assigns a score to an entity, or to multiple entities.
         
@@ -48,11 +48,12 @@ class ScoringModel(ABC):
     def dfs_load(cls, d: dict[str, Any], loaded_dfs: Optional[dict[str, DataFrame]]=None) -> dict[str, DataFrame]:
         if loaded_dfs is None:
             loaded_dfs = dict()
-        for df_name in cls.df_names & set(d):
+        for df_name in set(d):
             assert isinstance(d[df_name], str)
             if df_name in loaded_dfs:
                 logger.warn("Multiple scaling model dataframe loading. Overriding the previously loaded.")
-            loaded_dfs[df_name] = pd.read_csv(d[df_name], keep_default_na=False)
+            try: loaded_dfs[df_name] = pd.read_csv(d[df_name], keep_default_na=False)
+            except pd.errors.EmptyDataError: loaded_dfs[df_name] = DataFrame()
         return loaded_dfs
     
     @classmethod
@@ -97,14 +98,15 @@ class ScoringModel(ABC):
     
     def to_dfs(self, depth: int=0) -> dict[str, DataFrame]:
         self_rows = self.to_rows(depth)
-        rows = dict() if isinstance(parent, BaseModel) else self.parent.to_rows(depth + 1)
+        rows = dict() if isinstance(self, BaseModel) else self.parent.to_rows(depth + 1)
         for df_name, self_rows in self_rows.items():
             rows[df_name] = self_rows if df_name not in rows else rows[df_name] + self_rows
         return { df_name: DataFrame(rows) for df_name, rows in rows.items() }
         
-    def to_rows(self, depth: int=0) -> dict[str, list]:
+    def to_rows(self, depth: int=0, kwargs: Optional[dict]=None) -> dict[str, list]:
         """ Must return a dict, with df_name as keys, and a list of rows as values """
-        return dict()
+        kwargs = dict() if kwargs is None else kwargs
+        return kwargs | dict(depth=depth)
 
     def base_model(self, depth: int=0) -> "BaseModel":
         return (self, depth) if isinstance(self, BaseModel) else self.parent.base_model(depth + 1)
@@ -113,18 +115,22 @@ class ScoringModel(ABC):
         return type(self).__name__
     
     def __repr__(self) -> str:
-        dfs = [ self.export_df(df_name) for df_name in self.df_names ]
-        return "\n\n".join([repr(df) for df in dfs if not df.empty])
+        return "\n\n".join([repr(df) for df in self.to_dfs().values() if not df.empty])
 
 
 class BaseModel(ScoringModel):
-    @property
-    def parent(self) -> ScoringModel:
-        raise ValueError(f"{type(self)} is a BaseModel and thus has no parent")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
-    @abstractmethod
-    def to_direct(self) -> "DirectScoring":
-        raise NotImplemented
+    def to_direct(self, entities: "Entities") -> "DirectScoring":
+        from .direct import DirectScoring
+        direct_scoring = DirectScoring()
+        for entity in entities:
+            for criterion, score in self(entity):
+                if not score.isnan():
+                    direct_scoring[entity, criterion] = score
+        return direct_scoring
+            
 
     def evaluated_entities(self, entities: "Entities") -> "Entities":
         return entities

@@ -71,7 +71,7 @@ class NestedDict(ABC):
     def __getitem__(self, keys: Union[str, tuple, list, dict]) -> Union["NestedDict", Any]:
         """ __getitem___ postprocesses the result to make it readily usable for external use """
         if isinstance(keys, dict):
-            keys = [(keys[name] if name in keys else any) for name in self.args_names]
+            keys = [(keys[key_name] if key_name in keys else any) for key_name in self.key_names]
         value = self.get(keys) if keys == any or isinstance(keys, str) else self.get(*keys)
         return value if isinstance(value, NestedDict) else self.process_stored_value(keys, value)
 
@@ -164,7 +164,7 @@ class NestedDict(ABC):
         raise NotImplemented
             
     def to_df(self, row_kwargs: Optional[dict]=None) -> DataFrame:
-        raise DataFrame(self.to_rows(row_kwargs))
+        return DataFrame(self.to_rows(row_kwargs))
 
     def save(self, directory: Union[str, Path]) -> tuple[str, str]:
         assert self.save_filename is not None, f"{type(self).__name__} has no save filename"

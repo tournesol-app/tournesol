@@ -38,11 +38,11 @@ class NestedDictOfItems(NestedDict):
                 raise NestedKeyError(key_name)
             return { value for _, value in self }
 
-    def to_rows(self, kwargs: Optional[dict]) -> list[dict]:
+    def to_rows(self, row_kwargs: Optional[dict]=None) -> list[dict]:
         if row_kwargs is None:
             row_kwargs = dict()
         return [ 
-            dict(zip(self.key_names, keys)) | { self.value_name: value }
+            dict(zip(self.key_names, keys)) | { self.value_name: value } | row_kwargs
             for keys, value in self.__iter__(process=False)
         ]
         

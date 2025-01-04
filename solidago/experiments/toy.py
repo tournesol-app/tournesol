@@ -5,6 +5,7 @@ import logging
 import numpy as np
 import pandas as pd
 
+from pandas import DataFrame, Series
 from pathlib import Path
 
 from solidago import *
@@ -12,11 +13,10 @@ from solidago import *
 
 dfs = TournesolExport.load_dfs("tests/tiny_tournesol.zip")
 t = TournesolExport("tests/tiny_tournesol.zip")
-            
-with open("experiments/toy.json") as f: hps = json.load(f)
-generative_model = GenerativeModel.load(hps["generative_model"])
-    
-# s = generative_model()
+
+with open("tests/load_save/test_generative_model.json") as f: 
+    generative_model = GenerativeModel.load(json.load(f))
+s = generative_model(seed=0)
 
 # pipeline = Pipeline.from_json(hps["pipeline"])
 

@@ -1,0 +1,31 @@
+{
+    "user_gen": ["NormalUserGenerator", {
+        "n_users": 30,
+        "p_trustworthy": 0.8, 
+        "p_pretrusted": 0.2, 
+        "zipf_vouch": 2.0, 
+        "zipf_compare": 1.5, 
+        "poisson_compare": 30.0, 
+        "n_comparisons_per_entity": 3.0, 
+        "multiplicator_std_dev": 1.0,
+        "engagement_bias_std_dev": 1.0,
+        "mean": 0.0,
+        "dimension": 5
+    }], 
+    "entity_gen": ["NormalEntityGenerator", {
+        "n_entities": 100,
+        "mean": 0.0,
+        "dimension": 5
+    }], 
+    "vouch_gen": ["ErdosRenyiVouchGenerator", {}], 
+    "engagement_gen": ["SimpleEngagementGenerator", {
+        "p_public": 0.8,
+        "p_assessment": 0.5, 
+        "p_comparison": 1.0
+    }], 
+    "assessment_gen": ["NormalAssessmentGenerator", {}],
+    "comparison_gen": ["KnaryGBT", {
+        "n_options": 21, 
+        "comparison_max": 10
+    }]
+}

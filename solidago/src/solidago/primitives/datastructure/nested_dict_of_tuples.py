@@ -37,10 +37,10 @@ class NestedDictOfTuples(NestedDict):
             value_name_index = self.value_names.index(value_name)
             return { values[value_name_index] for _, values in self }
 
-    def to_rows(self, kwargs: Optional[dict]) -> list[dict]:
+    def to_rows(self, row_kwargs: Optional[dict]=None) -> list[dict]:
         if row_kwargs is None:
             row_kwargs = dict()
-        return DataFrame([ 
-            dict(zip(self.key_names, keys)) | dict(zip(self.value_names, value)) 
+        return [ 
+            dict(zip(self.key_names, keys)) | dict(zip(self.value_names, value)) | row_kwargs
             for keys, value in self.__iter__(process=False)
-        ])
+        ]
