@@ -41,9 +41,20 @@ class Pipeline(Sequential):
             Algorithm to post-process user and global models,
             and make it readily usable for applications.
         """
-        self.trust_propagation = trust_propagation
-        self.voting_rights_assignment = voting_rights_assignment
-        self.preference_learning = preference_learning
-        self.scaling = scaling
-        self.aggregation = aggregation
-        self.post_process = post_process
+        super().__init__(
+            trust_propagation=trust_propagation,
+            voting_rights_assignment=voting_rights_assignment,
+            preference_learning=preference_learning,
+            scaling=scaling,
+            aggregation=aggregation,
+            post_process=post_process,
+        )
+
+    @classmethod
+    def load(cls, d: Union[dict, str]) -> "GenerativeModel":
+        if isinstance(d, str):
+            with open(d) as f:
+                d = json.load(d)
+        import solidago.pipeline as pipeline
+        return cls(**{ key: getattr(pipeline, d[key][0])(**d[key][1]) for key in d })
+    

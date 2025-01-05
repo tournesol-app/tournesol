@@ -7,7 +7,7 @@ from solidago.pipeline import StateFunction
 
 
 class ComparisonGenerator(StateFunction):
-    def main(self, users: Users, entities: Entities, made_public: MadePublic, comparisons: Comparisons) -> Comparisons:
+    def __call__(self, users: Users, entities: Entities, made_public: MadePublic, comparisons: Comparisons) -> Comparisons:
         """ Fills in the comparisons """
         filled_comparisons = Comparisons()
         for (username, criterion, left_name, right_name), comparisons_list in comparisons:

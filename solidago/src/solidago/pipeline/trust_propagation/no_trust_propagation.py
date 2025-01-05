@@ -12,6 +12,5 @@ class NoTrustPropagation(StateFunction):
         """
         self.pretrust_value = pretrust_value
 
-    def main(self, users: Users, vouches: Vouches) -> Users:
-        users["trust_score"] = users["is_pretrusted"] * self.pretrust_value
-        return users
+    def __call__(self, users: Users, vouches: Vouches) -> Users:
+        return users.assign(trust_score=(users["is_pretrusted"] * self.pretrust_value))

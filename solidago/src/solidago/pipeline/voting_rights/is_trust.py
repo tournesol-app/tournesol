@@ -14,7 +14,7 @@ class IsTrust(StateFunction):
         """
         self.privacy_penalty = privacy_penalty
     
-    def main(self, 
+    def __call__(self, 
         users: Users, 
         entities: Entities, 
         made_public: MadePublic,

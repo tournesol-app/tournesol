@@ -5,7 +5,7 @@ from solidago.pipeline import StateFunction
 
 
 class EngagementGenerator(StateFunction):
-    def main(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
+    def __call__(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
         made_public, assessments, comparisons = MadePublic(), Assessments(), Comparisons()
         for user in users:
             eval_entities = self.sample_evaluated_entities(user, entities)

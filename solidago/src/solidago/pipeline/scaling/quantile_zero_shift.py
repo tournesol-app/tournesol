@@ -26,7 +26,7 @@ class QuantileShift(StateFunction):
         self.lipschitz = lipschitz
         self.error = error
 
-    def main(self, entities: Entities, user_models: UserModels) -> UserModels:
+    def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
         """ Returns scaled user models
         
         Returns

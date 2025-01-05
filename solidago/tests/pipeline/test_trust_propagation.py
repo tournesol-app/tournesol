@@ -2,24 +2,23 @@ import pytest
 import importlib
 import pandas as pd
 
-from solidago.pipeline.inputs import TournesolDataset
-from solidago.trust_propagation.lipschitrust import LipschiTrust
-from solidago.trust_propagation.trust_all import TrustAll
-
-from solidago.generative_model.user_model import NormalUserModel
-from solidago.generative_model.vouch_model import ErdosRenyiVouchModel
+from solidago import *
 
 
 def test_lipschitrust_simple():
-    users = pd.DataFrame({"is_pretrusted": [True, True, False, False, False]})
-    users.index.name = "user_id"
-    vouches = pd.DataFrame(
-        {
-            "voucher": [0, 0, 2, 3],
-            "vouchee": [1, 2, 3, 4],
-            "vouch": 1.0,
-        }
-    )
+    users = Users({"username": list(range(5)), "is_pretrusted": [True, True, False, False, False]})
+    vouches = Vouches({
+        "0": {
+            "1": { "Personhood": (1, 0), },
+            "2": { "Personhood": (1, 0), },
+        },
+        "2": {
+            "3": { "Personhood": (1, 0), },
+        },
+        "3": {
+            "4": { "Personhood": (1, 0), },
+        },
+    })
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
     users = trust_propagator(users, vouches)
     assert users.loc[0, "trust_score"] == 0.8
@@ -28,8 +27,8 @@ def test_lipschitrust_simple():
 
 
 def test_lipschitrust_generative():
-    users = NormalUserModel(p_trustworthy=0.8, p_pretrusted=0.2, svd_dimension=5)(50)
-    vouches = ErdosRenyiVouchModel()(users)
+    users = NormalUserGenerator(n_users=50, p_trustworthy=0.8, p_pretrusted=0.2, dimension=5)()
+    vouches = ErdosRenyiVouchGenerator()(users)
 
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
 
@@ -39,9 +38,10 @@ def test_lipschitrust_generative():
 
 
 def test_lipschitrust_ten_users():
-    users = pd.DataFrame(
-        {"is_pretrusted": [False, True, False, True, False, False, True, False, False, False]}
-    )
+    users = Users({
+        "username": list(range(10)),
+        "is_pretrusted": [False, True, False, True, False, False, True, False, False, False]
+    })
     users.index.name = "user_id"
     vouches = pd.DataFrame(
         [

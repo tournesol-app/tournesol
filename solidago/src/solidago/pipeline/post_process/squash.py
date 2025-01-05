@@ -12,7 +12,7 @@ class Squash(StateFunction):
         assert score_max > 0
         self.score_max = score_max
     
-    def main(self, 
+    def __call__(self, 
         user_models: UserModels,
         global_model: ScoringModel,
     ) -> tuple[UserModels, ScoringModel]:

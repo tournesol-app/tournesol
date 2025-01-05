@@ -7,7 +7,11 @@ from solidago.pipeline.base import StateFunction
 
 
 class EntitywiseQrQuantile(StateFunction):
-    def __init__(self, quantile=0.2, lipschitz=0.1, error=1e-5):
+    def __init__(self, 
+        quantile: float=0.2, 
+        lipschitz: float=0.1, 
+        error: float=1e-5
+    ):
         """ Standardize scores so that only a fraction 1 - dev_quantile
         of the scores is further than 1 away from the median,
         and then run qr_median to aggregate the scores.
@@ -22,13 +26,13 @@ class EntitywiseQrQuantile(StateFunction):
         self.lipschitz = lipschitz
         self.error = error
  
-    def main(self, 
+    def __call__(self, 
         entities: Entities,
         voting_rights: VotingRights,
         user_models: UserModels,
     ) -> ScoringModel:
         """ Returns scaled user models """
-        global_scores = DirectScoringModel()
+        global_scores = DirectScoring()
         
         voting_rights = voting_rights.reorder_keys(["entity_name", "username", "criterion"])
         for entity in entities:

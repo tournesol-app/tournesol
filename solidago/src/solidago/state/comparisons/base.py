@@ -42,7 +42,7 @@ class Comparisons(NestedDictOfRowLists):
             for row in row_list:
                 left_name = keys[left_key_index]
                 right_name = keys[right_key_index]
-                new_row = dict(zip(self.key_names, keys)) | row
+                new_row = dict(zip(self.key_names, keys)) | dict(row)
                 result.add_row(left_name,  new_row | { "location": "left", "with": right_name })
                 result.add_row(right_name, new_row | { "location": "right", "with": left_name })
         return result

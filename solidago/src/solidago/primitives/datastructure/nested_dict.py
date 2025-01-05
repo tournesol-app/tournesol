@@ -79,7 +79,13 @@ class NestedDict(ABC):
         """ __getitem___ postprocesses the result to make it readily usable for external use """
         if isinstance(keys, dict):
             keys = [(keys[key_name] if key_name in keys else any) for key_name in self.key_names]
-        value = self.get(keys) if keys == any or isinstance(keys, str) else self.get(*keys)
+        if _is_any(keys):
+            return self
+        elif isinstance(keys, (tuple, list)):
+            value = self.get(*keys)
+        else: # keys is a key
+            key = keys
+            value = self.get(str(keys))
         return value if isinstance(value, NestedDict) else self.process_stored_value(keys, value)
 
     def __contains__(self, keys: Union[str, tuple, list, dict]) -> bool:
@@ -113,7 +119,8 @@ class NestedDict(ABC):
             raise NestedKeyError(key_name)
         if key_name == self.key_names[0]:
             return set(self._dict)
-        return reduce(lambda subdict, s: subdict.get_set(key_name) | s, self._dict.values(), set())
+        add_subdict_set = lambda s, subdict: subdict.get_set(key_name) | s
+        return reduce(add_subdict_set, self._dict.values(), set())
     
     def set(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"], sanitize: bool=False) -> None:
         if sanitize:

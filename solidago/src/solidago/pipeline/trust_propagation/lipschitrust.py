@@ -5,6 +5,7 @@
 
 import numpy as np
 
+from solidago.primitives.datastructure import NestedDictOfItems
 from solidago.state import *
 from solidago.pipeline.base import StateFunction
 
@@ -60,12 +61,16 @@ class LipschiTrust(StateFunction):
         self.sink_vouch = sink_vouch
         self.error = error
 
-    def main(self, users: Users, vouches: Vouches) -> Users:
+    def __call__(self, users: Users, vouches: Vouches) -> Users:
         if len(users) == 0:
             users["trust_score"] = list()
             return users
-
-        total_vouches = vouches["voucher"].value_counts() + self.sink_vouch
+        
+        vouches = vouches[any, any, "Personhood"]
+        total_vouches = NestedDictOfItems({
+            voucher_name: vouches[voucher_name].to_df()["weight"].sum()
+            for voucher_name in vouches.get_set("by")
+        }, key_names=["voucher_name"], default_value=0)
         pretrusts = users["is_pretrusted"] * self.pretrust_value
         trusts = pretrusts.copy()
 
@@ -75,9 +80,9 @@ class LipschiTrust(StateFunction):
             # Initialize to pretrust
             new_trusts = pretrusts.copy()
             # Propagate trust through vouches
-            for row in vouches.itertuples():
-                discount = self.decay * row.vouch / total_vouches[row.voucher]
-                new_trusts[row.vouchee] += discount * trusts[row.voucher]
+            for (voucher_name, vouchee_name), (weight, _) in vouches:
+                discount = self.decay * weight / total_vouches[voucher_name]
+                new_trusts.loc[vouchee_name] += discount * trusts.loc[voucher_name]
 
             # Bound trusts for Lipschitz resilience
             new_trusts = new_trusts.clip(upper=1.0)

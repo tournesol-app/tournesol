@@ -9,20 +9,24 @@ class StateFunction:
     state_cls: type=State
     
     def __init__(self):
-        for key in self.main.__annotations__:
-            if key != "return":
-                assert key in ("state", "save_directory") or key in self.state_cls.__init__.__annotations__, "" \
+        for key in self.__call__.__annotations__:
+            if key not in ("return", "state", "save_directory", "seed"):
+                assert key in self.state_cls.__init__.__annotations__, "" \
                     f"The argument `{key}` of function `main` of StateFunction {type(self).__name__} " \
                     f"must be an attribute of {self.state_cls.__name__}, which are " \
                     f"{set(self.state_cls.__init__.__annotations__.keys())}."
+
+    @abstractmethod
+    def __call__(self) -> Any:
+        return None
     
-    def __call__(self, state: State, save_directory: Optional[str]=None) -> Any:
+    def state_function(self, state: State, save_directory: Optional[str]=None) -> Any:
         """ Must not modify the state """
-        value = self.main(**{ 
+        value = self(**{ 
             key: getattr(state, key) 
-            for key in self.main.__annotations__ if key != "return" 
+            for key in self.__call__.__annotations__ if key != "return" 
         })
-        self.type_check(value, self.main.__annotations__)
+        self.type_check(value, self.__call__.__annotations__)
         return value
     
     def type_check(self, value, annotations):
@@ -44,12 +48,7 @@ class StateFunction:
                     f"Please verify type consistency of returned value number {index} " \
                     f"of `{type(self).__name__}`, " \
                     f"whose annotation is currently `{annotations}`"
-        
     
-    @abstractmethod
-    def main(self) -> Any:
-        return None
-
     @classmethod
     def load(cls, filename: Optional[Union[str, Path, list, dict]]=None) -> "StateFunction":
         if filename is None:
@@ -81,7 +80,7 @@ class StateFunction:
         }
     
     def assign(self, result: State, value: Any):
-        self.type_check(value, self.main.__annotations__)
+        self.type_check(value, self.__call__.__annotations__)
         if isinstance(value, State):
             result = value
             return None

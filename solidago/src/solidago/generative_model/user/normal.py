@@ -21,7 +21,7 @@ class NormalUserGenerator(UserGenerator):
         n_comparisons_per_entity: float=3.0,
         multiplicator_std_dev: float=0.0,
         engagement_bias_std_dev: float=0.0,
-        mean: Optional[Union[float, list[float]]]=[3, 0, 0], 
+        mean: Optional[Union[float, list[float]]]=None, 
         dimension: Optional[int]=None,
     ):
         """ This models users, with varying vouch, engagement and multiplicative scaling behaviors.

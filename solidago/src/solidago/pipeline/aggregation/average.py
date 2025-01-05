@@ -5,7 +5,8 @@ from solidago.pipeline.base import StateFunction
 
 
 class Average(StateFunction):
-    def main(self, 
+    
+    def __call__(self, 
         entities: Entities,
         voting_rights: VotingRights,
         user_models: UserModels,

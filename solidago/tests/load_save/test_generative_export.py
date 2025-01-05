@@ -3,7 +3,7 @@ from solidago import *
 
 
 def test_generative_model():
-    with open("tests/load_save/test_generative_model.json") as f: 
+    with open("tests/generative_model/test_generative_model.json") as f: 
         generative_model = GenerativeModel.load(json.load(f))
             
     s = generative_model()

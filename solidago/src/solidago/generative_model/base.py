@@ -44,13 +44,14 @@ class GenerativeModel(Sequential):
         comparison_model: ComparisonModel
             Generates comparisons values
         """
-        super().__init__()
-        self.user_gen = user_gen
-        self.entity_gen = entity_gen
-        self.vouch_gen = vouch_gen
-        self.engagement_gen = engagement_gen
-        self.assessment_gen = assessment_gen
-        self.comparison_gen = comparison_gen
+        super().__init__(
+            user_gen = user_gen,
+            entity_gen = entity_gen,
+            vouch_gen = vouch_gen,
+            engagement_gen = engagement_gen,
+            assessment_gen = assessment_gen,
+            comparison_gen = comparison_gen,
+        )
  
     def __call__(self, state: Optional[State]=None, seed: Optional[int]=None) -> State:
         """ Generates a random dataset, presented as a state.
@@ -74,7 +75,7 @@ class GenerativeModel(Sequential):
         if state is None:
             state = State()
         
-        return self.main(state)
+        return super().__call__(state)
 
     @classmethod
     def load(cls, d: Union[dict, str]) -> "GenerativeModel":
@@ -83,7 +84,4 @@ class GenerativeModel(Sequential):
                 d = json.load(d)
         import solidago.generative_model as gen
         return cls(**{ key: getattr(gen, d[key][0])(**d[key][1]) for key in d })
-        
-    def to_json(self):
-        return type(self).__name__, { m: getattr(self, m).to_json() for key in self.module_names }
-
+       

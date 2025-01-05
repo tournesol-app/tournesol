@@ -36,8 +36,7 @@ class VectorDataFrame(NamedDataFrame):
     def __init__(self, 
         vectors: Union[np.ndarray, list[VectorSeries]], 
         save_vector_filename: Optional[Union[str, Path]], 
-        *args, 
-        **kwargs
+        *args, **kwargs
     ):
         if len(args) == 0 and len(kwargs) == 0:
             args = [list(range(len(vectors)))]
@@ -84,7 +83,7 @@ class VectorDataFrame(NamedDataFrame):
         """
         if isinstance(key, (str, NamedSeries)):
             row = self.loc[str(key)]
-            return VectorSeries(self.vectors[row["vector_index"]], row)
+            return self.series_cls(self.vectors[row["vector_index"]], row)
         if isinstance(key, dict):
             filtered, key_values = True, key
             for key, value in key_values.items():
@@ -92,8 +91,8 @@ class VectorDataFrame(NamedDataFrame):
             sub_df = self[filtered]
         else:
             assert isinstance(key, (set, tuple, list))
-            sub_df = self.loc[list(names)]
-        return VectorDataFrame(self.vectors[sub_df["vector_index"]], None, sub_df)
+            sub_df = self.loc[list(key)]
+        return type(self)(self.vectors[sub_df["vector_index"]], data=sub_df)
                 
     def __iter__(self):
         for _, row in self.iterrows():

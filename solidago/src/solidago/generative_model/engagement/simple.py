@@ -32,8 +32,8 @@ class SimpleEngagementGenerator(EngagementGenerator):
         self.p_comparison = p_comparison
         self._entity_index2id = None
 
-    def main(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
-        made_public, assessments, comparisons = super().main(users, entities)
+    def __call__(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
+        made_public, assessments, comparisons = super().__call__(users, entities)
         self._entity_index2id = None
         return made_public, assessments, comparisons
 

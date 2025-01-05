@@ -16,7 +16,7 @@ class ScoringModel(ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
             
-    def __call__(self, entities: Union["Entity", "Entities"]) -> Union[MultiScore, NestedDict]:
+    def __call__(self, entities: Union["Entity", "Entities"]) -> MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
         
         Parameters
@@ -33,7 +33,10 @@ class ScoringModel(ABC):
         """
         from solidago.state.entities import Entities
         if isinstance(entities, Entities):
-            return NestedDict({ entity: self(entity) for entity in entities })
+            return MultiScore(
+                { entity: self(entity) for entity in entities },
+                key_names=["entity_name", "criterion"]
+            )
         entity = entities
         return self.score(entity)
     

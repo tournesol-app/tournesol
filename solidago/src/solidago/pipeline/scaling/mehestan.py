@@ -15,8 +15,7 @@ from solidago.pipeline.base import StateFunction
 
 
 class Mehestan(StateFunction):
-    def __init__(
-        self, 
+    def __init__(self, 
         lipschitz=0.1, 
         min_activity=10.0,
         n_scalers_max=100, 
@@ -73,7 +72,7 @@ class Mehestan(StateFunction):
         self.default_translation_dev = default_translation_dev
         self.error = error
 
-    def main(self, 
+    def __call__(self, 
         users: Users,
         entities: Entities,
         made_public: MadePublic,

@@ -23,7 +23,8 @@ class NestedDictOfRowLists(NestedDict):
     def default_value(self) -> Any:
         return list()
         
-    def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
+    def add_row(self, keys: Union[str, list, tuple], row: Union[dict, Series]) -> None:
+        keys = keys if isinstance(keys, (list, tuple)) else [str(keys)]
         assert len(keys) == len(self.key_names)
         l = self.get(*keys) if keys in self else list()
         self[keys] = l + [dict(row)]
@@ -43,6 +44,7 @@ class NestedDictOfRowLists(NestedDict):
         self[keys] = self.get(*keys, process=False) + [dict()]
     
     def append(self, keys: list, row: dict) -> None:
+        keys = keys if isinstance(keys, (list, tuple)) else [str(keys)]
         assert len(keys) == len(self.key_names)
         self[keys] = self.get(*keys) + [dict(row)]
 

@@ -5,7 +5,12 @@ from solidago.pipeline import StateFunction
 
 
 class AssessmentGenerator(StateFunction):
-    def main(self, users: Users, entities: Entities, made_public: MadePublic, assessments: Assessments) -> Assessments:
+    def __call__(self, 
+        users: Users, 
+        entities: Entities, 
+        made_public: MadePublic, 
+        assessments: Assessments
+    ) -> Assessments:
         """ Fills in the assessments """
         filled_assessments = Assessments()
         for (username, criterion, entity_name), assessment_list in assessments:

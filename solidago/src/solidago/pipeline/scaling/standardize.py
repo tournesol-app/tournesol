@@ -17,7 +17,7 @@ class Standardize(StateFunction):
         self.lipschitz = lipschitz
         self.error = error
 
-    def main(self, entities: Entities, user_models: UserModels) -> UserModels:
+    def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
         scores_df = user_models.score(entities).reorder_keys(["criterion"]).to_df()
         multiplicator2scale = lambda multiplicator: (multiplicator, 0, 0, 0, 0, 0)
         scalings = dict()

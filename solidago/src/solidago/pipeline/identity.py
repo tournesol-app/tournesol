@@ -6,5 +6,5 @@ from .base import StateFunction
 
 
 class Identity(StateFunction):
-    def main(self, state: State) -> State:
+    def __call__(self, state: State) -> State:
         return state.copy()
