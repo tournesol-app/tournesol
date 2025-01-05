@@ -18,26 +18,31 @@
         "overtrust_ratio": 0.1
     }], 
     "scaling": ["Sequential", {
-            "collaborative_scaling": ["Mehestan", {
-                "lipschitz": 1, 
-                "min_activity": 1, 
-                "n_scalers_max": 100, 
-                "privacy_penalty": 0.5, 
-                "p_norm_for_multiplicative_resilience": 4.0, 
-                "error": 1e-05
-            }], 
-            "common_translation": ["QuantileZeroShift", {
-                "zero_quantile": 0.15, 
-                "lipschitz": 0.1, 
-                "error": 1e-05
-            }], 
-            "common_multiplicator": ["Standardize", {
-                "zero_quantile": 0.15, 
-                "lipschitz": 0.1, 
-                "error": 1e-05
-            }]
-        }
-    ], 
+        "collaborative_scaling": ["Mehestan", {
+            "lipschitz": 1, 
+            "min_activity": 1, 
+            "n_scalers_max": 100, 
+            "privacy_penalty": 0.5, 
+            "large_number_of_activities": 1000,
+            "user_comparison_lipschitz": 10.0,
+            "p_norm_for_multiplicative_resilience": 4.0, 
+            "n_entity_to_fully_compare_max": 100,
+            "n_diffs_sample_max": 1000,
+            "default_multiplicator_dev": 0.8,
+            "default_translation_dev": 1.0,
+            "error": 1e-05
+        }], 
+        "common_translation": ["QuantileZeroShift", {
+            "zero_quantile": 0.15, 
+            "lipschitz": 0.1, 
+            "error": 1e-05
+        }], 
+        "common_multiplicator": ["Standardize", {
+            "dev_quantile": 0.9, 
+            "lipschitz": 0.1, 
+            "error": 1e-05
+        }]
+    }], 
     "aggregation": ["EntitywiseQrQuantile", {
         "quantile": 0.2, 
         "lipschitz": 0.1, 

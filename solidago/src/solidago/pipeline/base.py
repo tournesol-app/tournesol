@@ -122,10 +122,16 @@ class StateFunction:
     def __str__(self) -> str:
         return repr(self)
         
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}(\n\t" + "\n\t".join([
-            f"{key}={getattr(self, key)}" for key in self.json_keys()
-        ]) + "\n)"
+    def __repr__(self, n_indents: int=0) -> str:
+        def sub_repr(key): 
+            value = getattr(self, key)
+            return value.__repr__(n_indents + 1) if isinstance(value, StateFunction) else value
+                        
+        indent = "\t" * (n_indents + 1)
+        last_indent = "\t" * n_indents
+        return f"{type(self).__name__}(\n{indent}" + f",\n{indent}".join([
+            f"{key}={sub_repr(key)}"  for key in self.json_keys()
+        ]) + f"\n{last_indent})"
 
     def to_json(self):
         return type(self).__name__, { key: getattr(self, key) for key in self.json_keys() }

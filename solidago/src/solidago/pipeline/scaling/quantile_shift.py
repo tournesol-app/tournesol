@@ -60,17 +60,10 @@ class QuantileShift(StateFunction):
 
 
 class QuantileZeroShift(QuantileShift):
-    def __init__(
-        self,
+    def __init__(self,
         zero_quantile: float = 0.15,
         lipschitz: float = 0.1,
         error: float = 0.00001
     ):
         super().__init__(zero_quantile, target_score=0.0, lipschitz=lipschitz, error=error)
 
-    def to_json(self):
-        return type(self).__name__, dict(
-            zero_quantile=self.quantile,
-            lipschitz=self.lipschitz,
-            error=self.error
-        )

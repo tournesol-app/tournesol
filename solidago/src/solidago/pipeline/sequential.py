@@ -16,7 +16,13 @@ class Sequential(StateFunction):
     def __init__(self, **kwargs):
         super().__init__()
         for key, value in kwargs.items():
-            setattr(self, key, value)
+            if isinstance(value, StateFunction):
+                setattr(self, key, value)
+            elif isinstance(value, (list, tuple)) and len(value) == 2:
+                import solidago.pipeline as pipeline
+                setattr(self, key, getattr(pipeline, value[0])(**value[1]))
+            else:
+                print(f"Sequential.__init__: Got unhandled input key={key}, type(value)={type(value).__name__}")
     
     @property
     def modules(self):
@@ -48,3 +54,9 @@ class Sequential(StateFunction):
                 d = json.load(d)
         import solidago.pipeline as pipeline
         return cls(**{ key: getattr(pipeline, d[key][0])(**d[key][1]) for key in d })
+
+    def json_keys(self) -> list:
+        return list(
+            key for key in self.__dict__
+            if key[0] != "_" and hasattr(self, key)
+        )

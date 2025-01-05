@@ -16,18 +16,18 @@ from solidago.pipeline.base import StateFunction
 
 class Mehestan(StateFunction):
     def __init__(self, 
-        lipschitz=0.1, 
-        min_activity=10.0,
-        n_scalers_max=100, 
-        privacy_penalty=0.5,
-        large_number_of_activities=1000,
-        user_comparison_lipschitz=10.0,
-        p_norm_for_multiplicative_resilience=4.0,
-        n_entity_to_fully_compare_max=100,
-        n_diffs_sample_max=1000,
-        default_multiplicator_dev=0.8,
-        default_translation_dev=1.,
-        error=1e-5
+        lipschitz: float=0.1, 
+        min_activity: float=10.0,
+        n_scalers_max: float=100, 
+        privacy_penalty: float=0.5,
+        large_number_of_activities: float=1000,
+        user_comparison_lipschitz: float=10.0,
+        p_norm_for_multiplicative_resilience: float=4.0,
+        n_entity_to_fully_compare_max: float=100,
+        n_diffs_sample_max: float=1000,
+        default_multiplicator_dev: float=0.8,
+        default_translation_dev: float=1.,
+        error: float=1e-5
     ):
         """ Mehestan performs Lipschitz-resilient collaborative scaling.
         It is based on "Robust Sparse Voting", by Youssef Allouah, 
