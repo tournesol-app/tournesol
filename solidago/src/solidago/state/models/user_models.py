@@ -10,7 +10,7 @@ from .direct import DirectScoring
 
 
 class UserModels(dict):
-    def __init__(self, model_cls: type=DirectScoring, *args, **kwargs):
+    def __init__(self, *args, model_cls: type=DirectScoring, **kwargs):
         """ Maps usernames to ScoringModel objects.
         Useful to export/import `glued` directs / scalings dataframes. """
         super().__init__(*args, **kwargs)
@@ -77,10 +77,10 @@ class UserModels(dict):
             if dfs is None or username not in dfs:
                 return dict()
             return { df_name.split("_")[-1]: df for df_name, df in dfs[username].items() }
-        return cls(getattr(models, d["model_cls"]), {
+        return cls({
             username: getattr(models, user_d[0]).load(user_d[1], user_dfs(username))
             for username, user_d in d["users"].items()
-        })
+        }, model_cls=getattr(models, d["model_cls"]))
     
     def to_dfs(self) -> dict[str, DataFrame]:
         return { df_name: DataFrame(rows) for df_name, rows in self.to_rows().items() }
@@ -95,14 +95,18 @@ class UserModels(dict):
                 rows[key_name] += user_rows
         return rows
 
-    def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict, dict]:
+    def save(self, 
+        directory: Optional[Union[Path, str]]=None, 
+        json_dump: bool=False
+    ) -> tuple[str, dict, dict]:
         df_filenames = dict()
-        for df_name, df in self.to_dfs().items():
-            if df.empty:
-                continue
-            filename = Path(directory) / f"user_{df_name}.csv"
-            df.to_csv(filename, index=False)
-            df_filenames[df_name] = str(filename)
+        if directory is not None:
+            for df_name, df in self.to_dfs().items():
+                if df.empty:
+                    continue
+                filename = Path(directory) / f"user_{df_name}.csv"
+                df.to_csv(filename, index=False)
+                df_filenames[df_name] = str(filename)
         j = type(self).__name__, {
             "users": { username: model.save() for username, model in self },
             "dataframes": df_filenames,

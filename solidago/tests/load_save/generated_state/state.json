@@ -48,7 +48,7 @@
     "global_model": [
         "DirectScoring",
         {
-            "directs": "tests/load_save/generated_state/global_directs.csv"
+            "directs": "tests/load_save/generated_state/directs.csv"
         }
     ]
 }

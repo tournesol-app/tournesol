@@ -129,7 +129,7 @@
     "global_model": [
         "DirectScoring",
         {
-            "directs": "tests/load_save/save_tiny_tournesol/global_directs.csv"
+            "directs": "tests/load_save/save_tiny_tournesol/directs.csv"
         }
     ]
 }

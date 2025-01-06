@@ -51,7 +51,6 @@ class State:
         self.voting_rights = VotingRights() if voting_rights is None else voting_rights
         self.user_models = UserModels() if user_models is None else user_models
         self.global_model = DirectScoring() if global_model is None else global_model
-        self._save_directory = None
     
     @classmethod
     def load(cls, directory: Union[Path, str]) -> "State":
@@ -66,65 +65,43 @@ class State:
             setattr(state, key, value)
         return state
     
-    @property
-    def save_directory(self) -> Union[Path, bool]:
-        return False if self._save_directory == False else Path(self._save_directory)
-        
-    @save_directory.setter
-    def save_directory(self, directory: Optional[Union[str, Path, bool]]=None):
-        self._save_directory = self._save_directory if directory is None else directory
-        if isinstance(directory, (str, Path)):
-            self.save_directory.mkdir(parents=True, exist_ok=True)
-        
     def save(self, directory: Optional[str]=None) -> tuple:
         """ Returns instructions to load content (but which is also already saved) """
-        self.save_directory = directory
-        if self.save_directory == False:
-            return dict()
         instructions = dict()
+        if directory is not None:
+            Path(directory).mkdir(parents=True, exist_ok=True)
         for key, value in self.__dict__.items():
-            if key == "global_model":
-                instructions[key] = value.save(Path(self.save_directory) / "global")
-            elif key[0] != "_" and hasattr(value, "save"):
-                instructions[key] = value.save(self.save_directory)
-        with open(self.save_directory / "state.json", "w") as f:
-            json.dump(instructions, f, indent=4)
+            instructions[key] = value.save(directory)
+        if directory is not None:
+            with open(Path(directory) / "state.json", "w") as f:
+                json.dump(instructions, f, indent=4)
         return instructions
     
     def save_objects(self, types: type, directory: str) -> Union[list, tuple]:
+        if directory is not None:
+            Path(directory).mkdir(parents=True, exist_ok=True)
         if types == State:
             return self.save(directory)
         if hasattr(types, "__args__"):
-            return [ self.save_objects(directory, t) for t in types.__args__ ]
+            return [ self.save_objects(t, directory) for t in types.__args__ ]
+        state_json_filename = Path(directory) / "state.json"
+        if state_json_filename.is_file():
+            with open(state_json_filename) as f:
+                state_json = json.load(f)
+        else:
+            state_json = self.save()
         for key, value in self.__init__.__annotations__.items():
             if issubclass(types, value) and getattr(self, key) is not None:
-                return getattr(self, key).save(directory)
+                state_json[key] = getattr(self, key).save(directory)
+        with open(Path(directory) / "state.json", "w") as f:
+            json.dump(state_json, f, indent=4)
+        return state_json
     
     def copy(self):
         return State(**{ 
             key: value for key, value in self.__dict__.items() 
             if key[0] != "_" and hasattr(value, "save")
         })
-
-    def save_trust_scores(self, directory: Optional[str]=None) -> None:
-        self.save_directory = directory
-        self.users.to_csv(self.save_directory / self.users_filename)
-
-    def save_user_scalings(self, directory: Optional[str]=None) -> None:
-        self.save_directory = directory
-        return self.user_models.save_scalings(self.save_directory / self.user_scalings_filename)
-
-    def save_user_direct_scores(self, directory: Optional[str]=None) -> None:
-        self.save_directory = directory
-        return self.user_models.save_direct_scores(self.save_directory / self.user_direct_scores_filename)
-
-    def save_global_scalings(self, directory: Optional[str]=None) -> None:
-        self.save_directory = directory
-        return self.global_model.save_scalings(self.save_directory / self.global_scalings_filename)
-
-    def save_global_direct_scores(self, directory: Optional[str]=None) -> None:
-        self.save_directory = directory
-        return self.global_model.save_direct_scores(self.save_directory / self.global_direct_scores_filename)
 
     def __repr__(self) -> str:
         return type(self).__name__ + "(\n\t" + "\n\t".join([

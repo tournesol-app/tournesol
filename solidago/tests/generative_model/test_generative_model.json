@@ -1,6 +1,6 @@
 {
     "user_gen": ["NormalUserGenerator", {
-        "n_users": 30,
+        "n_users": 10,
         "p_trustworthy": 0.8, 
         "p_pretrusted": 0.2, 
         "zipf_vouch": 2.0, 
@@ -13,7 +13,7 @@
         "dimension": 5
     }], 
     "entity_gen": ["NormalEntityGenerator", {
-        "n_entities": 100,
+        "n_entities": 20,
         "mean": 0.0,
         "dimension": 5
     }], 

@@ -86,7 +86,7 @@ class NormalUserGenerator(UserGenerator):
     def vector_sample(self):
         return np.random.normal(0, 1, len(self.mean)) + np.array(self.mean)
 
-    def sample(self, username):
+    def sample(self, username: str):
         user = self.users_cls.series_cls(self.vector_sample(), name=username)
         user["is_trustworthy"] = (random() < self.p_trustworthy)
         user["is_pretrusted"] = (random() < self.p_pretrusted) if user["is_trustworthy"] else False

@@ -23,7 +23,7 @@ class PreferenceLearning(StateFunction, ABC):
         comparison_key_names = ["username", "criterion", "left_name", "right_name"]
         reordered_comparisons = comparisons.reorder_keys(comparison_key_names)
         for user in users:
-            learned_models[user] = self.user_learn(
+            learned_models[str(user)] = self.user_learn(
                 user, 
                 entities, 
                 assessments[user], 

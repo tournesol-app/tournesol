@@ -113,7 +113,7 @@ class StateFunction:
         """ result should be the result of the main function """
         if directory is None:
             return None
-        result.save_objects(self.state_cls.__init__.__annotations__["return"], directory)
+        result.save_objects(type(self).__call__.__annotations__["return"], directory)
 
     def json_keys(self) -> list:
         return list(

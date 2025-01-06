@@ -38,10 +38,10 @@ class VectorDataFrame(NamedDataFrame):
         save_vector_filename: Optional[Union[str, Path]], 
         *args, **kwargs
     ):
-        if len(args) == 0 and len(kwargs) == 0:
+        if isinstance(vectors, np.ndarray) and len(args) == 0 and len(kwargs) == 0:
             args = [list(range(len(vectors)))]
         if isinstance(vectors, list) and all({ isinstance(v, VectorSeries) for v in vectors }):
-            args = [vectors] + list(args)
+            kwargs = dict(data=vectors)
             vectors = np.array([v.vector for v in vectors])
         super().__init__(*args, **kwargs)
         assert len(vectors) == len(self), (vectors, self)
@@ -100,14 +100,14 @@ class VectorDataFrame(NamedDataFrame):
         else:
             assert isinstance(key, (set, tuple, list))
             sub_df = self.loc[list(key)]
-        return type(self)(self.vectors[sub_df["vector_index"]], data=sub_df)
+        return type(self)(vectors=self.vectors[sub_df["vector_index"]], data=sub_df)
                 
     def __iter__(self):
         for _, row in self.iterrows():
             yield self.series_cls(self.vectors[int(row["vector_index"])], row)
         
     def __repr__(self) -> str:
-        return repr(DataFrame(self)) + "\n\n" + repr(self.vectors)
+        return repr(DataFrame(self))
 
     def append(self, series: VectorSeries) -> VectorSeries:
         series["vector_index"] = len(self)

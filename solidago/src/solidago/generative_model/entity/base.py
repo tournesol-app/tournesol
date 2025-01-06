@@ -12,7 +12,7 @@ class EntityGenerator(StateFunction):
         self.n_entities = n_entities
     
     def __call__(self) -> Entities:
-        return self.entities_cls([ self.sample(e) for e in range(self.n_entities) ])
+        return self.entities_cls([ self.sample(f"entity_{e}") for e in range(self.n_entities) ])
     
-    def sample(self, entity_name: int) -> Entities:
+    def sample(self, entity_name: str) -> Entities:
         return self.entities_cls.series_cls(name=entity_name)

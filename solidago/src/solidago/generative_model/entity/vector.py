@@ -36,14 +36,8 @@ class NormalEntityGenerator(EntityGenerator):
             mean = np.zeros(dimension)
         self.mean = mean
     
-    def sample(self, entity_name: int) -> VectorEntity:
+    def sample(self, entity_name: str) -> VectorEntity:
         return self.entities_cls.series_cls(self.sample_vector(), name=entity_name)
 
     def sample_vector(self) -> np.ndarray:
         return np.random.normal(0, 1, len(self.mean)) + self.mean
-
-    def __str__(self):
-        return f"NormalEntityGenerator(mean={self.mean})"
-
-    def to_json(self):
-        return type(self).__name__, dict(mean=self.mean)

@@ -5,8 +5,8 @@ from solidago import *
 def test_generative_model():
     with open("tests/generative_model/test_generative_model.json") as f: 
         generative_model = GenerativeModel.load(json.load(f))
-            
-    s = generative_model()
+
+    s = generative_model(seed=0)
     
     print("Saving data")
     s.save("tests/load_save/generated_state")
@@ -14,12 +14,12 @@ def test_generative_model():
     print("Reloading saved data")
     s2 = State.load("tests/load_save/generated_state")
     
-    assert "17" in s2.users
-    assert s.users.get("10")["n_comparisons"] == s2.users.get("10")["n_comparisons"]
-    assert s.vouches["24", "11", "ProofOfPersonhood"] == s2.vouches["24", "11", "ProofOfPersonhood"]
-    assert "73" in s2.entities
-    assert len(s2.entities) == 100
-    assert s.made_public["21"].get_set("entity_name") == s2.made_public["21"].get_set("entity_name")
-    assert set(s.assessments["12", "0"]["entity_name"]) == set(s2.assessments["12", "0"]["entity_name"])
-    assert set(s.comparisons["0", "0", "57"]["as_left"]) == set(s2.comparisons["0", "0", "57"]["as_left"])
+    assert "user_7" in s2.users
+    assert s.users.get("user_5")["n_comparisons"] == s2.users.get("user_5")["n_comparisons"]
+    assert s.vouches["user_4", "user_3", "Personhood"] == s2.vouches["user_4", "user_3", "Personhood"]
+    assert "entity_3" in s2.entities
+    assert len(s2.entities) == 20
+    assert s.made_public["user_1"].get_set("entity_name") == s2.made_public["user_1"].get_set("entity_name")
+    assert s.assessments["user_2", "default"].get_set("entity_name") == s2.assessments["user_2", "default"].get_set("entity_name")
+    assert s.comparisons["user_0", "default", "entity_7"].get_set("right_name") == s2.comparisons["user_0", "default", "entity_7"].get_set("right_name")
 

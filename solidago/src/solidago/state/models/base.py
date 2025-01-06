@@ -76,11 +76,11 @@ class ScoringModel(ABC):
     def args_save(self) -> dict:
         return dict()
 
-    def save(self, filename_root: Optional[str]=None, depth: int=0, json_dump: bool=False) -> tuple[str, dict]:
+    def save(self, directory: Optional[str]=None, depth: int=0, json_dump: bool=False) -> tuple[str, dict]:
         """ save must be given a filename_root (typically without extension),
         as multiple csv files may be saved, with a name derived from the filename_root
         (in addition to the json description) """
-        if depth > 0 or filename_root is None:
+        if depth > 0 or directory is None:
             arg = dict() if isinstance(self, BaseModel) else dict(parent=self.parent.save(depth=depth + 1))
             return type(self).__name__, arg
         dfs = self.to_dfs()
@@ -91,11 +91,11 @@ class ScoringModel(ABC):
         if args:
             saved_dict["args"] = args
         for df_name, df in dfs.items():
-            save_filename = f"{filename_root}_{df_name}.csv"
+            save_filename = f"{directory}/{df_name}.csv"
             df.to_csv(save_filename, index=False)
             saved_dict[df_name] = save_filename
         if json_dump:
-            with open(f"{filename_root}.json", "w") as f:
+            with open(f"{directory}/model.json", "w") as f:
                 json.dump([type(self).__name__, saved_dict], f, indent=4)
         return type(self).__name__, saved_dict
     

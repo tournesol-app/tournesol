@@ -15,7 +15,7 @@ class UserGenerator(StateFunction):
         self.n_users = n_users
     
     def __call__(self) -> Users:
-        return self.users_cls([ self.sample(username) for username in range(self.n_users) ])
+        return self.users_cls([ self.sample(f"user_{u}") for u in range(self.n_users) ])
     
-    def sample(self, username: Union[int, str]) -> User:
+    def sample(self, username: str) -> User:
         return self.users_cls.series_cls(name=username)
