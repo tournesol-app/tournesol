@@ -43,6 +43,12 @@ class UserModels(dict):
             return self.default_value()
         return super().__getitem__(str(user))
     
+    def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
+        super().__setitem__(str(user), model)
+    
+    def __contains__(self, user: Union[str, "User"]) -> bool:
+        return super().__contains__(str(user))
+    
     def __iter__(self) -> Iterable:
         for username, model in self.items():
             yield username, model

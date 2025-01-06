@@ -23,12 +23,12 @@ class PreferenceLearning(StateFunction, ABC):
         comparison_key_names = ["username", "criterion", "left_name", "right_name"]
         reordered_comparisons = comparisons.reorder_keys(comparison_key_names)
         for user in users:
-            learned_models[str(user)] = self.user_learn(
+            learned_models[user] = self.user_learn(
                 user, 
                 entities, 
                 assessments[user], 
                 comparisons[user],
-                user_models[user].base_model() if user in user_models else DirectScoring()
+                user_models[user].base_model()[0] if user in user_models else DirectScoring()
             )
         return learned_models
 
