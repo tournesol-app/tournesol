@@ -186,10 +186,12 @@ def coordinate_descent(
 
     Parameters
     ----------
-    loss_partial_derivative: callable
-        (coordinate: int, coordinate_value: float, solution: np.array) -> float
-        Returns the partial derivative of a loss, along coordinate,
-        when the coordinate value is modified
+    update_coordinate_function: callable
+        (args: tuple, current_value: float) -> float
+        Returns the updated value, after coordinate descent (may use brentq for this)
+    get_args: callable
+        (coordinate: int, solution: np.ndarray) -> tuple
+        retrieves the arguments needed to optimize `solution` along `coordinate`
     initialization: np.array
         Initialization point of the coordinate descent
     error: float

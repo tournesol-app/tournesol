@@ -37,7 +37,7 @@ class NormalEntityGenerator(EntityGenerator):
         self.mean = mean
     
     def sample(self, entity_name: int) -> VectorEntity:
-        return VectorEntity(self.sample_vector(), name=entity_name)
+        return self.entities_cls.series_cls(self.sample_vector(), name=entity_name)
 
     def sample_vector(self) -> np.ndarray:
         return np.random.normal(0, 1, len(self.mean)) + self.mean

@@ -54,8 +54,16 @@ class VectorDataFrame(NamedDataFrame):
         return self.meta.vectors
     
     @vectors.setter
-    def vectors(self, value) -> None:
+    def vectors(self, value: np.ndarray) -> None:
         self.meta.vectors = value
+    
+    @property
+    def save_vector_filename(self) -> str:
+        return self.meta.save_vector_filename
+    
+    @save_vector_filename.setter
+    def save_vector_filename(self, value: str) -> None:
+        self.meta.save_vector_filename = value
 
     @classmethod
     def load(cls, filenames: tuple[str, str]) -> "VectorDataFrame":
@@ -68,7 +76,7 @@ class VectorDataFrame(NamedDataFrame):
         assert self.meta.save_vector_filename is not None
         vectors_path = Path(directory) / self.meta.save_vector_filename
         np.savetxt(vectors_path, self.vectors, delimiter=",")
-        class_name, df_path = super(VectorDataFrame, self).save(directory)
+        class_name, df_path = super().save(directory)
         return type(self).__name__, (df_path, str(vectors_path))
 
     def get(self, key: Union[str, NamedSeries, Iterable, dict]) -> Union[VectorSeries, "VectorDataFrame"]:
@@ -83,7 +91,7 @@ class VectorDataFrame(NamedDataFrame):
         """
         if isinstance(key, (str, NamedSeries)):
             row = self.loc[str(key)]
-            return self.series_cls(self.vectors[row["vector_index"]], row)
+            return self.series_cls(self.vectors[int(row["vector_index"])], row)
         if isinstance(key, dict):
             filtered, key_values = True, key
             for key, value in key_values.items():
@@ -96,7 +104,7 @@ class VectorDataFrame(NamedDataFrame):
                 
     def __iter__(self):
         for _, row in self.iterrows():
-            yield self.series_cls(self.vectors[row["vector_index"]], row)
+            yield self.series_cls(self.vectors[int(row["vector_index"])], row)
         
     def __repr__(self) -> str:
         return repr(DataFrame(self)) + "\n\n" + repr(self.vectors)

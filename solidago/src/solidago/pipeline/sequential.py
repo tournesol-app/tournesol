@@ -36,12 +36,10 @@ class Sequential(StateFunction):
         start = timeit.default_timer()
         for step, (key, module) in enumerate(self.modules.items()):
             logger.info(f"Step {step}. Doing {key} with {type(module).__name__}")
-            value = module.state_function(result)
+            result = module.state2state_function(result)
             stop = timeit.default_timer()
             logger.info(f"Step {step}. Terminated in {round(stop - start, 2)} seconds")
             start = stop
-            module.assign(result, value)
-            module.save_result(result, save_directory)
         return result
     
     def args_save(self):

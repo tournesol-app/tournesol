@@ -9,6 +9,7 @@ class StateFunction:
     state_cls: type=State
     
     def __init__(self):
+        assert "return" in self.__call__.__annotations__, f"{type(self).__name__} must have a return type"
         for key in self.__call__.__annotations__:
             if key not in ("return", "state", "save_directory", "seed"):
                 assert key in self.state_cls.__init__.__annotations__, "" \
@@ -20,14 +21,43 @@ class StateFunction:
     def __call__(self) -> Any:
         return None
     
-    def state_function(self, state: State, save_directory: Optional[str]=None) -> Any:
+    def state2objects_function(self, state: State) -> Any:
         """ Must not modify the state """
-        value = self(**{ 
+        values = self(state) if "state" in self.__call__.__annotations__ else self(**{ 
             key: getattr(state, key) 
             for key in self.__call__.__annotations__ if key != "return" 
         })
+        self.type_check(values, self.__call__.__annotations__)
+        return values
+    
+    def assign(self, result: State, value: Any):
         self.type_check(value, self.__call__.__annotations__)
-        return value
+        if isinstance(value, State):
+            result = value
+            return None
+        for key, key_type in result.__init__.__annotations__.items():
+            if isinstance(value, key_type):
+                setattr(result, key, value)
+                return None
+        if isinstance(value, (list, tuple)):
+            for v in value:
+                for key, key_type in result.__init__.__annotations__.items():
+                    if isinstance(v, key_type):
+                        setattr(result, key, v)
+        elif isinstance(value, (dict, Series)):
+            for key, v in dict(value).items():
+                assert isinstance(value, result.__init__.__annotations__[key])
+                setattr(result, key, v)
+
+    def state2state_function(self, state: State, save_directory: Optional[str]=None) -> Any:
+        """ Must not modify the state """
+        if self.__call__.__annotations__["return"] == State:
+            result = self.state2objects_function(state)
+        else:
+            result = State() if state is None else state.copy()
+            self.assign(result, self.state2objects_function(state))
+        self.save_result(result, save_directory)
+        return result
     
     def type_check(self, value, annotations):
         assert "return" in annotations, "" \
@@ -79,39 +109,11 @@ class StateFunction:
             if isinstance(value, StateFunction) 
         }
     
-    def assign(self, result: State, value: Any):
-        self.type_check(value, self.__call__.__annotations__)
-        if isinstance(value, State):
-            result = value
-            return None
-        for key, key_type in result.__init__.__annotations__.items():
-            if isinstance(value, key_type):
-                setattr(result, key, value)
-                return None
-        if isinstance(value, (list, tuple)):
-            for v in value:
-                for key, key_type in result.__init__.__annotations__.items():
-                    if isinstance(v, key_type):
-                        setattr(result, key, v)
-        elif isinstance(value, (dict, Series)):
-            for key, v in dict(value).items():
-                assert isinstance(value, result.__init__.__annotations__[key])
-                setattr(result, key, v)
-
-    def save_result(self, result: Any, directory: Optional[Union[str, Path]]=None) -> None:
+    def save_result(self, result: State, directory: Optional[Union[str, Path]]=None) -> None:
         """ result should be the result of the main function """
         if directory is None:
             return None
-        if isinstance(result, self.state_cls.__init__.__annotations__.values()) and hasattr(result, "save"):
-            result.save(directory)
-            return None
-        if isinstance(result, (list, tuple)):
-            for sub_result in result:
-                self.save_result(directory)
-        if isinstance(result, dict):
-            for key, sub_result in result.items():
-                assert isinstance(sub_result, self.state_cls.__init__.__annotations__[key])
-                getattr(self, key).save(directory)
+        result.save_objects(self.state_cls.__init__.__annotations__["return"], directory)
 
     def json_keys(self) -> list:
         return list(

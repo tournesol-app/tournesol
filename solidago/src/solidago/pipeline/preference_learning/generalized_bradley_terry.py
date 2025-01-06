@@ -69,43 +69,6 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         """The loss function definition is used only to compute uncertainties.
         """
 
-    @cached_property
-    def translated_negative_log_likelihood(self):
-        """This function is a convex negative log likelihood, translated such
-        that its minimum has a constant negative value at `delta=0`. The
-        roots of this function are used to compute the uncertainties
-        intervals. If it has only a single root, then uncertainty on the
-        other side is considered infinite.
-        """
-        log_likelihood_function = self.log_likelihood_function
-        high_likelihood_range_threshold = self.high_likelihood_range_threshold
-
-        @njit
-        def f(delta, score_diffs, comparison_values, score_log_likelihood, indicators):
-            return (
-                log_likelihood_function(score_diffs + delta * indicators, comparison_values)
-                - score_log_likelihood
-                - high_likelihood_range_threshold
-            )
-
-        return f
-
-    @cached_property
-    def update_coordinate_function(self):
-        xtol = self.convergence_error / 10
-        partial_derivative = self.partial_derivative
-
-        @njit
-        def f(derivative_args, old_coordinate_value):
-            return njit_brentq(
-                partial_derivative,
-                args=derivative_args,
-                xtol=xtol,
-                a=old_coordinate_value - 1,
-                b=old_coordinate_value + 1
-            )
-        return f
-
     def user_learn(self, 
         user: User, # Not used (kept because other methods might leverage user metadata)
         entities: Entities,
@@ -122,12 +85,12 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         criteria = comparisons.get_set("criterion") | init.get_set("criterion")
         for criterion in criteria:
             learned_scores = self.user_learn_criterion(entities, comparisons[criterion], init[criterion])
-            for entity_name, score in learned_scores:
+            for (entity_name, ), score in learned_scores:
                 if not score.isnan():
                     model[entity_name, criterion] = score
         return model
 
-    def init_solution(self, 
+    def init_scores(self, 
         entity_name2index: dict[str, int],
         init_multiscores: MultiScore, # key_names == "entity_name"
     ) -> np.ndarray:
@@ -146,7 +109,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         """ Computes the scores given comparisons """
         entity_ordered_comparisons = comparisons.order_by_entities()
         def get_derivative_args(entity_index: int, solution: np.ndarray):
-            entity_name = entities.iloc[entity_index]
+            entity_name = entities.iloc[entity_index].name
             values = dict()
             for row in entity_ordered_comparisons[entity_name]:
                 values[ entity_name2index[row["with"]] ] = row["comparison"] / row["comparison_max"]
@@ -154,12 +117,10 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             comparison_values = np.array(list(values.values()))
             return solution[indices], comparison_values
 
-        init_solution = self.init_solution(entity_name2index, init_multiscores)
         return coordinate_descent(
             self.update_coordinate_function,
             get_args=get_derivative_args,
-            initialization=init_solution,
-            updated_coordinates=list(),
+            initialization=self.init_scores(entity_name2index, init_multiscores),
             error=self.convergence_error,
         )        
     
@@ -174,11 +135,11 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         out: dict
             out[entity_name] must be of type Score (i.e. with a value and left/right uncertainties
         """
-        entity_name2index = { entity_name: c for c, entity_name in enumerate(entities.index) }
+        entity_name2index = { str(entity): index for index, entity in enumerate(entities) }
         scores = self.compute_scores(entities, entity_name2index, comparisons, init_multiscores)
         lefts, rights = self.compute_uncertainties(entities, entity_name2index, comparisons, scores)
         return MultiScore({
-            str(entities.iloc[i]): (scores[i], lefts[i], rights[i])
+            entities.iloc[i].name: (scores[i], lefts[i], rights[i])
             for i in range(len(scores))
         }, key_names=["entity_name"])
     
@@ -224,6 +185,43 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         return lefts, rights
 
     @cached_property
+    def translated_negative_log_likelihood(self):
+        """This function is a convex negative log likelihood, translated such
+        that its minimum has a constant negative value at `delta=0`. The
+        roots of this function are used to compute the uncertainties
+        intervals. If it has only a single root, then uncertainty on the
+        other side is considered infinite.
+        """
+        log_likelihood_function = self.log_likelihood_function
+        high_likelihood_range_threshold = self.high_likelihood_range_threshold
+
+        @njit
+        def f(delta, score_diffs, comparison_values, score_log_likelihood, indicators):
+            return (
+                log_likelihood_function(score_diffs + delta * indicators, comparison_values)
+                - score_log_likelihood
+                - high_likelihood_range_threshold
+            )
+
+        return f
+
+    @cached_property
+    def update_coordinate_function(self):
+        xtol = self.convergence_error / 10
+        partial_derivative = self.partial_derivative
+
+        @njit
+        def f(derivative_args, old_coordinate_value):
+            return njit_brentq(
+                partial_derivative,
+                args=derivative_args,
+                xtol=xtol,
+                a=old_coordinate_value - 1,
+                b=old_coordinate_value + 1
+            )
+        return f
+
+    @cached_property
     def partial_derivative(self):
         """ Computes the partial derivative along a coordinate, 
         for a given value along the coordinate,
@@ -231,8 +229,8 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         The computation evidently depends on the dataset,
         which is given by coordinate_comparisons.
         """
-        prior_std_dev = self.prior_std_dev
-        cumulant_generating_function_derivative = self.cumulant_generating_function_derivative
+        prior_var = self.prior_std_dev**2
+        cfg_deriv = self.cumulant_generating_function_derivative
 
         @njit
         def njit_partial_derivative(
@@ -241,13 +239,8 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             comparisons_values: npt.NDArray,
         ) -> npt.NDArray:
             score_diff = value - current_solution
-            return (
-                (value / prior_std_dev ** 2)
-                + np.sum(
-                    cumulant_generating_function_derivative(score_diff)
-                    - comparisons_values
-                )
-            )
+            return (value / prior_var) + np.sum(cfg_deriv(score_diff) - comparisons_values)
+        
         return njit_partial_derivative
 
 

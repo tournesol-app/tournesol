@@ -26,8 +26,7 @@ class State:
     global_scalings_filename = "global_scalings.csv"
     global_direct_scores_filename = "global_direct_scores.csv"
     
-    def __init__(
-        self,
+    def __init__(self,
         users: Optional[Users]=None,
         entities: Optional[Entities]=None,
         criteria: Optional[Criteria]=None,
@@ -77,7 +76,7 @@ class State:
         if isinstance(directory, (str, Path)):
             self.save_directory.mkdir(parents=True, exist_ok=True)
         
-    def save(self, directory: Optional[str]=None) -> dict():
+    def save(self, directory: Optional[str]=None) -> tuple:
         """ Returns instructions to load content (but which is also already saved) """
         self.save_directory = directory
         if self.save_directory == False:
@@ -91,6 +90,15 @@ class State:
         with open(self.save_directory / "state.json", "w") as f:
             json.dump(instructions, f, indent=4)
         return instructions
+    
+    def save_objects(self, types: type, directory: str) -> Union[list, tuple]:
+        if types == State:
+            return self.save(directory)
+        if hasattr(types, "__args__"):
+            return [ self.save_objects(directory, t) for t in types.__args__ ]
+        for key, value in self.__init__.__annotations__.items():
+            if issubclass(types, value) and getattr(self, key) is not None:
+                return getattr(self, key).save(directory)
     
     def copy(self):
         return State(**{ 
