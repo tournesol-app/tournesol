@@ -18,7 +18,10 @@ class UserModels(dict):
 
     def default_value(self) -> ScoringModel:
         return self.default_model_cls()
-
+    
+    def __call__(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
+        return self.score(entity)
+    
     def score(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
         from solidago._state._entities import Entity, Entities
         if isinstance(entity, (str, Entity)):

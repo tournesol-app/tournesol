@@ -47,7 +47,7 @@ class TournesolExport(State):
                 "criteria": "criterion", 
                 "video": "entity_name",
                 "public_username": "username",
-                "uncertainty": "left_unc",
+                "uncertainty": "left_unc",                
             })
         
         vouches["kind"] = "Personhood"

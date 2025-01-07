@@ -22,10 +22,12 @@ class NestedDictOfTuples(NestedDict):
         self.value_names = value_names
         super().__init__(d=d, key_names=key_names, save_filename=save_filename)
 
-    def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
-        self[keys] = tuple([row[name] for name in self.value_names])
+    def add_row(self, keys: Union[str, list[str]], row: Union[dict, Series]) -> None:
+        self[keys] = self.sanitize(row)
 
     def sanitize(self, value: Any) -> tuple:
+        if isinstance(value, (dict, Series)):
+            return [value[name] for name in self.value_names]
         return tuple(value)
 
     def get_set(self, key_name: str, default_value: Optional[str]=None) -> set:

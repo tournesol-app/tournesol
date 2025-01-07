@@ -27,8 +27,8 @@ class NamedDataFrame(DataFrame):
         super().__init__(*args, **kwargs)
         self.meta = SimpleNamespace()
         self.meta.save_filename = save_filename
-        # if len(self.columns) == 1:
-            # self.rename(columns={ self.columns[0]: self.index_name }, inplace=True)
+        if self.index.name is None and len(self.columns) == 1 and self.columns[0] == 0:
+            self.rename(columns={ self.columns[0]: self.index_name }, inplace=True)
         if self.index_name in self.columns:
             self.set_index(self.index_name, inplace=True)
         self.index = [str(name) for name in self.index]

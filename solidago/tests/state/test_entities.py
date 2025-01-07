@@ -12,6 +12,10 @@ def test_entities():
     assert entities.get("entity_0")["title"] == "Hello World"
     assert len(entities.get({"entity_0", "entity_2"})) == 2
 
+def test_entities2():
+    entities = Entities(["entity_1", "entity_2"])
+    assert set(entities.index) == {"entity_1", "entity_2"}
+
 def test_vector_entities():
     entities = VectorEntities(np.array([
         [0, 1, 2],

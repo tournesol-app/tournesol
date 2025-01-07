@@ -25,7 +25,7 @@ class Score:
             values = value.value, value.left_unc, value.right_unc
         elif isinstance(value, (dict, Series)):
             assert left_unc is None and right_unc is None
-            values = value["value"], value["left_unc"], value["right_unc"]
+            values = value["score"], value["left_unc"], value["right_unc"]
         elif isinstance(value, (list, tuple)):
             assert left_unc is None and right_unc is None
             values = value
@@ -59,23 +59,59 @@ class Score:
     
     def average_uncertainty(self) -> float:
         return (self.left_unc + self.right_unc) / 2
+
+    def __eq__(self, score: Union[int, float, "Score"]) -> bool:
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
+        return self.to_triplet() == score.to_triplet()
+        
+    def __neq__(self, score: Union[int, float, "Score"]) -> bool:
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
+        return self.to_triplet() != score.to_triplet()
+    
+    def __lt__(self, score: Union[int, float, "Score"]) -> bool:
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
+        return self.max < score.min
+    
+    def __gt__(self, score: Union[int, float, "Score"]) -> bool:
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
+        return self.min > score.max
+    
+    def __le__(self, score: Union[int, float, "Score"]) -> bool:
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
+        return self.min <= score.max
+    
+    def __ge__(self, score: Union[int, float, "Score"]) -> bool:
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
+        return self.max >= score.min
     
     def __neg__(self) -> "Score":
         return Score(- self.value, self.right_unc, self.left_unc)
     
-    def __add__(self, score: "Score") -> "Score":
+    def __add__(self, score: Union[int, float, "Score"]) -> "Score":
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
         return Score(
             self.value + score.value,
             self.left_unc + score.left_unc,
             self.right_unc + score.right_unc
         )
     
-    def __mul__(self, s: "Score") -> "Score":
+    def __mul__(self, s: Union[int, float, "Score"]) -> "Score":
+        if isinstance(s, (int, float)):
+            s = Score(score, 0, 0)
         value = self.value * s.value
         extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
         return Score(value, value - min(extremes), max(extremes) - value)
 
     def __truediv__(self, s: "Score") -> "Score":
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
         if 0 in self or 0 in s:
             return Score.nan()
         value = self.value / s.value

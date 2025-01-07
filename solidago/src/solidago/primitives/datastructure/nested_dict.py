@@ -25,7 +25,7 @@ class NestedDict(ABC):
         if isinstance(d, NestedDict):
             self._dict |= d._dict
         elif isinstance(d, dict) and len(self.key_names) == 1:
-            self._dict |= d
+            self._dict |= { key: self.sanitize(value) for key, value in d.items() }
         elif isinstance(d, dict):
             self._dict |= {
                 key: type(self)(d=value, key_names=self.key_names[1:])

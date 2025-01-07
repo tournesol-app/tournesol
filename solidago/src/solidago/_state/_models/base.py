@@ -34,7 +34,7 @@ class ScoringModel(ABC):
         from solidago._state._entities import Entities
         if isinstance(entities, Entities):
             return MultiScore(
-                { entity: self(entity) for entity in entities },
+                { str(entity): self(entity) for entity in entities },
                 key_names=["entity_name", "criterion"]
             )
         entity = entities
