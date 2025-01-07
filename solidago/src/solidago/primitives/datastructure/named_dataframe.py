@@ -68,7 +68,7 @@ class NamedDataFrame(DataFrame):
             for key, value in key_values.items():
                 filtered &= (self[key] == value)
             return type(self)(self[filtered])
-        return type(self)(self.loc[list(names)])
+        return type(self)(self.loc[list(key)])
     
     def __iter__(self):
         for _, row in self.iterrows():

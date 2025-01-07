@@ -51,8 +51,6 @@ class NestedDict(ABC):
         
     def get(self, *keys, process: bool=False) -> Union["NestedDict", Any]:
         assert len(keys) <= len(self.key_names), (keys, repr(self))
-        if process:
-            return self.process_stored_value(self.get(*keys))
         out_key_names = [ 
             key_name for key_name, key in zip(self.key_names[:len(keys)], keys)
             if (isinstance(key, BuiltinFunctionType) and key == any) or isinstance(key, (set, tuple, list))
@@ -72,8 +70,11 @@ class NestedDict(ABC):
         elif str(keys[0]) not in self._dict: # and len(out_key_names) > 0
             return type(self)(key_names=out_key_names, save_filename=None)
         if len(keys) == 1:
-            return self._dict[str(keys[0])]
-        return self._dict[str(keys[0])].get(*keys[1:])
+            value = self._dict[str(keys[0])]
+            if process and len(self.key_names) == 1:
+                return self.process_stored_value(keys, value)
+            return value
+        return self._dict[str(keys[0])].get(*keys[1:], process=process)
 
     def __getitem__(self, keys: Union[str, tuple, list, dict]) -> Union["NestedDict", Any]:
         """ __getitem___ postprocesses the result to make it readily usable for external use """
@@ -82,11 +83,8 @@ class NestedDict(ABC):
         if _is_any(keys):
             return self
         elif isinstance(keys, (tuple, list)):
-            value = self.get(*keys)
-        else: # keys is a key
-            key = keys
-            value = self.get(str(keys))
-        return value if isinstance(value, NestedDict) else self.process_stored_value(keys, value)
+            return self.get(*keys, process=True)
+        return self.get(keys, process=True) # keys is a key
 
     def __contains__(self, keys: Union[str, tuple, list, dict]) -> bool:
         if isinstance(keys, str):
@@ -136,7 +134,7 @@ class NestedDict(ABC):
         assert len(keys) == len(self.key_names) or isinstance(value, NestedDict), (keys, self.key_names)
         if str(keys[0]) not in self._dict:
             self._dict[str(keys[0])] = type(self)(key_names=self.key_names[1:])
-        self._dict[str(keys[0])].set(keys[1:], value)
+        self._dict[str(keys[0])].set(keys[1:], value, sanitize)
 
     def __setitem__(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"]) -> None:
         self.set(keys, value, sanitize=True)
@@ -168,6 +166,12 @@ class NestedDict(ABC):
             for key in self._dict:
                 for subkeys, value in self._dict[key].__iter__(value_process=value_process, key_process=False):
                     yield [key] + subkeys, value
+
+    def keys(self, key_process: bool=True) -> list:
+        return [ keys for keys, _ in self.__iter__(key_process=key_process) ]
+
+    def values(self, value_process: bool=True) -> list:
+        return [ value for _, value in self.__iter__(value_process=value_process) ]
     
     def __len__(self) -> int:
         if len(self.key_names) == 1:
