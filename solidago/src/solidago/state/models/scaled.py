@@ -49,11 +49,17 @@ class ScaledModel(ScoringModel):
 
     def to_rows(self, depth: int=0, kwargs: Optional[dict]=None) -> dict[str, list]:
         kwargs = dict() if kwargs is None else kwargs
-        return dict(scalings=self.scales.to_rows(kwargs | dict(depth=depth)))
+        self_rows = dict(scalings=self.scales.to_rows(kwargs | dict(depth=depth)))
+        parent_rows = self.parent.to_rows(depth + 1, kwargs)
+        get = lambda rows, key: rows[key] if key in rows else list()
+        return {
+            key: get(self_rows, key) + get(parent_rows, key)
+            for key in set(self_rows) | set(parent_rows)
+        }
         
     @property
     def multiplicator(self) -> MultiScore:
-        return MultiScore({ criterion: value[0] for criterion, value in self })
+        return MultiScore({ criterion: value[0].to_triplet() for criterion, value in self.scales })
         
     @multiplicator.setter
     def multiplicator(self, value: MultiScore) -> None:
@@ -62,7 +68,7 @@ class ScaledModel(ScoringModel):
         
     @property
     def translation(self) -> MultiScore:
-        return MultiScore({ criterion: value[1] for criterion, value in self })
+        return MultiScore({ criterion: value[1].to_triplet() for criterion, value in self.scales })
         
     @translation.setter
     def translation(self, value: MultiScore) -> None:

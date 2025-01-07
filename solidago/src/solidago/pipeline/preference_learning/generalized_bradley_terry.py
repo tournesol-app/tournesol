@@ -85,7 +85,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         criteria = comparisons.get_set("criterion") | init.get_set("criterion")
         for criterion in criteria:
             learned_scores = self.user_learn_criterion(entities, comparisons[criterion], init[criterion])
-            for (entity_name, ), score in learned_scores:
+            for entity_name, score in learned_scores:
                 if not score.isnan():
                     model[entity_name, criterion] = score
         return model

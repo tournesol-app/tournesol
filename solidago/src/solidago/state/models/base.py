@@ -52,7 +52,9 @@ class ScoringModel(ABC):
         if loaded_dfs is None:
             loaded_dfs = dict()
         for df_name in set(d):
-            assert isinstance(d[df_name], str)
+            if df_name == "parent":
+                continue
+            assert isinstance(d[df_name], str), (df_name, d)
             if df_name in loaded_dfs:
                 logger.warn("Multiple scaling model dataframe loading. Overriding the previously loaded.")
             try: loaded_dfs[df_name] = pd.read_csv(d[df_name], keep_default_na=False)
@@ -99,17 +101,12 @@ class ScoringModel(ABC):
                 json.dump([type(self).__name__, saved_dict], f, indent=4)
         return type(self).__name__, saved_dict
     
-    def to_dfs(self, depth: int=0) -> dict[str, DataFrame]:
-        self_rows = self.to_rows(depth)
-        rows = dict() if isinstance(self, BaseModel) else self.parent.to_rows(depth + 1)
-        for df_name, self_rows in self_rows.items():
-            rows[df_name] = self_rows if df_name not in rows else rows[df_name] + self_rows
-        return { df_name: DataFrame(rows) for df_name, rows in rows.items() }
+    def to_dfs(self, depth: int=0, kwargs: Optional[dict]=None) -> dict[str, DataFrame]:
+        return { df_name: DataFrame(rows) for df_name, rows in self.to_rows(depth, kwargs).items() }
         
     def to_rows(self, depth: int=0, kwargs: Optional[dict]=None) -> dict[str, list]:
         """ Must return a dict, with df_name as keys, and a list of rows as values """
-        kwargs = dict() if kwargs is None else kwargs
-        return kwargs | dict(depth=depth)
+        return self.parent.to_rows(depth + 1, kwargs)
 
     def base_model(self, depth: int=0) -> "BaseModel":
         return (self, depth) if isinstance(self, BaseModel) else self.parent.base_model(depth + 1)
@@ -133,7 +130,10 @@ class BaseModel(ScoringModel):
                 if not score.isnan():
                     direct_scoring[entity, criterion] = score
         return direct_scoring
-            
 
     def evaluated_entities(self, entities: "Entities") -> "Entities":
         return entities
+
+    @abstractmethod
+    def to_rows(self, depth: int=0, kwargs: Optional[dict]=None) -> dict[str, list]:
+        raise NotImplemented

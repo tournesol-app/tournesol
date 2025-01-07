@@ -18,25 +18,24 @@ class Standardize(StateFunction):
         self.error = error
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
-        scores_df = user_models.score(entities).reorder_keys(["criterion"]).to_df()
-        multiplicator2scale = lambda multiplicator: (multiplicator, 0, 0, 0, 0, 0)
-        scalings = dict()
-        
-        for criterion in scores_df.get_set("criterion"):
-            weights = 1 / df.groupby("username")["scores"].transform("size")
+        scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
+        scales = ScaleDict(key_names=["criterion"]) # the same scale will apply to all users        
+        for criterion in scores.get_set("criterion"):
+            scores_df = scores.to_df()
+            weights = 1 / scores_df.groupby("username")["scores"].transform("size")
             std_dev = qr_standard_deviation(
                 lipschitz=self.lipschitz,
-                values=df["scores"].to_numpy(),
+                values=scores_df["scores"].to_numpy(),
                 quantile_dev=self.dev_quantile,
                 voting_rights=weights.to_numpy(),
-                left_uncertainties=df["left_uncertainties"].to_numpy(),
-                right_uncertainties=df["right_uncertainties"].to_numpy(),
+                left_uncertainties=scores_df["left_unc"].to_numpy(),
+                right_uncertainties=scores_df["right_unc"].to_numpy(),
                 default_dev=1.0,
                 error=self.error,
             )
-            scalings[criterion] = multiplicator2scale(1 / std_dev)
+            scales[criterion] = (1 / std_dev, 0, 0, 0, 0, 0)
         
         return UserModels({
-            username: MultiScaledModel(model, scalings)
+            username: ScaledModel(model, scales, note="standardize")
             for username, model in user_models
         })

@@ -58,7 +58,7 @@ class NestedDictOfRowLists(NestedDict):
             row_kwargs = dict()
         return [
             dict(zip(self.key_names, keys)) | row_kwargs | row
-            for keys, row_list in self.__iter__(process=False)
+            for keys, row_list in self.__iter__(value_process=False, key_process=False)
             for row in row_list
         ]
 

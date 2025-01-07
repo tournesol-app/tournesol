@@ -42,5 +42,5 @@ class NestedDictOfTuples(NestedDict):
             row_kwargs = dict()
         return [ 
             dict(zip(self.key_names, keys)) | dict(zip(self.value_names, value)) | row_kwargs
-            for keys, value in self.__iter__(process=False)
+            for keys, value in self.__iter__(value_process=False, key_process=False)
         ]

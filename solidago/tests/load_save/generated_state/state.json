@@ -42,7 +42,7 @@
         {
             "users": {},
             "dataframes": {},
-            "model_cls": "DirectScoring"
+            "default_model_cls": "DirectScoring"
         }
     ],
     "global_model": [

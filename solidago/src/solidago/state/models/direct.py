@@ -20,7 +20,7 @@ class DirectScoring(BaseModel, MultiScore):
         return self
         
     def score(self, entity: Union[str, "Entity"]) -> MultiScore:
-        return MultiScore(self[str(entity)].to_df())
+        return self[str(entity)]
 
     def evaluated_entities(self, entities: "Entities") -> "Entities":
         return entities.get(self.get_set("entity_name"))

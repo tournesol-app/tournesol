@@ -95,11 +95,11 @@ class Mehestan(StateFunction):
         scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
         logger.info(f"Mehestan 0. Terminated")
         
-        users, scales = self.compute_scales(self, users, scores, made_public)
+        users, scales = self.compute_scales(users, scores, made_public)
         
         return users, UserModels({
-            username: ScaledModel(user_models[username], scales[username], note="Mehestan")
-            for username in user_models
+            username: ScaledModel(model, scales[username], note="Mehestan")
+            for username, model in user_models
         })
     
     """ A simple way to distribute computations is to parallelize `compute_scales` """
@@ -127,22 +127,22 @@ class Mehestan(StateFunction):
         """
         scales = ScaleDict(key_names=["criterion", "username"])
         for criterion in scores.get_set("criterion"):
-            scales[criterion] = users, self.scale_criterion(users, scores, made_public, criterion)
-        return users, scales.rerorder_keys(["username", "criterion"])
+            users, scales[criterion] = self.scale_criterion(users, scores, made_public, criterion)
+        return users, scales.reorder_keys(["username", "criterion"])
     
     def scale_criterion(self, 
         users: Users,
         scores: MultiScore, # key_names == ["username", "entity_name"]
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         criterion: str,
-    ) -> [Users, ScaleDict]:
+    ) -> tuple[Users, ScaleDict]:
         start = timeit.default_timer()
         logger.info(f"Mehestan 1 for {criterion}. Select scalers.")
         trusts = NestedDictOfItems(dict(users["trust_score"]), key_names=["username"], default_value=0)
         users[f"is_scaler_{criterion}"] = self.compute_scalers(users, trusts, made_public, scores)
-        if len(scalers) == 0:
+        if not any(users[f"is_scaler_{criterion}"]):
             logger.warning("    No user qualifies as a scaler. No scaling performed.")
-            return ScaleDict()
+            return users, ScaleDict(key_names=["username"])
         end_step1 = timeit.default_timer()
         logger.info(f"Mehestan 1 for {criterion}. Terminated in {int(end_step1 - start)} seconds")
 
@@ -191,11 +191,11 @@ class Mehestan(StateFunction):
         is_scaler: np.ndarray
             is_scaler[i] says whether username at iloc i in users is a scaler
         """
-        activities = self.compute_activities(users, trusts, made_public, scores)
+        activities = self.compute_activities(users, trusts, made_public, scores) # np.ndarray
         argsort = np.argsort(activities)
-        is_scaler = np.array([False] * len(np_activities))
-        for user_index in range(min(self.n_scalers_max, len(np_activities))):
-            if np_activities[argsort[-user_index-1]] < self.min_activity:
+        is_scaler = np.array([False] * len(activities))
+        for user_index in range(min(self.n_scalers_max, len(activities))):
+            if activities[argsort[-user_index-1]] < self.min_activity:
                 break
             is_scaler[argsort[-user_index-1]] = True
         return is_scaler

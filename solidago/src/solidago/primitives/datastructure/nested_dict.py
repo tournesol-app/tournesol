@@ -123,16 +123,17 @@ class NestedDict(ABC):
         return reduce(add_subdict_set, self._dict.values(), set())
     
     def set(self, keys: Union[str, tuple, list], value: Union["NestedDict", "OutputValue"], sanitize: bool=False) -> None:
-        if sanitize:
-            self.set(keys, self.sanitize(value))
-            return None
+        if isinstance(keys, str):
+            keys = [keys]
         if len(keys) == 1:
-            assert len(self.key_names) == 1 or (
-                isinstance(value, NestedDict) and value.key_names == self.key_names[1:]
-            ), (keys, self.key_names)
+            if len(self.key_names) == 1:
+                self._dict[str(keys[0])] = self.sanitize(value) if sanitize else value
+                return None
+            assert isinstance(value, type(self)) and value.key_names == self.key_names[1:], (keys, value, self.key_names)
             self._dict[str(keys[0])] = value
             return None
-        assert len(keys) == len(self.key_names), (keys, self.key_names)
+        assert len(keys) <= len(self.key_names), (keys, self.key_names)
+        assert len(keys) == len(self.key_names) or isinstance(value, NestedDict), (keys, self.key_names)
         if str(keys[0]) not in self._dict:
             self._dict[str(keys[0])] = type(self)(key_names=self.key_names[1:])
         self._dict[str(keys[0])].set(keys[1:], value)
@@ -147,7 +148,7 @@ class NestedDict(ABC):
         key_names += [ key_name for key_name in self.key_names if key_name not in key_names ]
         new2self_index = { i: self.key_names.index(key_names[i]) for i in range(len(key_names)) }
         result = type(self)(key_names=key_names)
-        for self_keys, value in self.__iter__(process=False):
+        for self_keys, value in self.__iter__(value_process=False, key_process=False):
             result[ [self_keys[new2self_index[i]] for i in range(len(key_names))] ] = value
         return result
 
@@ -156,13 +157,16 @@ class NestedDict(ABC):
         try: return cls(pd.read_csv(filename, keep_default_na=False))
         except pd.errors.EmptyDataError: return cls()
 
-    def __iter__(self, process: bool=True) -> Iterable:
+    def __iter__(self, value_process: bool=True, key_process: bool=True) -> Iterable:
         if len(self.key_names) == 1:
             for key, value in self._dict.items():
-                yield [key], (self.process_stored_value([key], value) if process else value)
+                yield (
+                    key if key_process else [key], 
+                    self.process_stored_value([key], value) if value_process else value
+                )
         else:
             for key in self._dict:
-                for subkeys, value in self._dict[key].__iter__(process=process):
+                for subkeys, value in self._dict[key].__iter__(value_process=value_process, key_process=False):
                     yield [key] + subkeys, value
     
     def __len__(self) -> int:

@@ -30,7 +30,7 @@ class Score:
             assert left_unc is None and right_unc is None
             values = value
         else:
-            assert isinstance(left_unc, float) and isinstance(right_unc, float)
+            assert isinstance(left_unc, (int, float)) and isinstance(right_unc, (int, float))
             values = value, left_unc, right_unc
         assert values[1] >= 0 and values[2] >= 0
         self.value, self.left_unc, self.right_unc = values
@@ -134,16 +134,16 @@ class MultiScore(NestedDictOfTuples):
         return MultiScore()
 
     def __neg__(self) -> "MultiScore":
-        return MultiScore({ key: - value for key, value in self })
+        return MultiScore({ key: (- value).to_triplet() for key, value in self })
     
     def __add__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
         if isinstance(other, Score):
             return MultiScore({ key: value + other for key, value in self })
         keys = self.get_set("criterion") & other.get_set("criterion")
-        return MultiScore({ key: self[key] + other[key] for key in keys })
+        return MultiScore({ key: (self[key] + other[key]).to_triplet() for key in keys })
     
     def __mul__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
         if isinstance(other, Score):
             return MultiScore({ key: value * other for key, value in self })
         keys = self.get_set("criterion") & other.get_set("criterion")
-        return MultiScore({ key: self[key] * other[key] for key in keys })
+        return MultiScore({ key: (self[key] * other[key]).to_triplet() for key in keys })

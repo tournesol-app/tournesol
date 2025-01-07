@@ -34,9 +34,8 @@ class QuantileShift(StateFunction):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        scores = user_models.score(entities).reorder_keys(["criterion"])
-        translation2scale = lambda translation: (1, 0, 0, translation, 0, 0)
-        scalings = dict()
+        scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
+        scales = ScaleDict(key_names=["criterion"]) # the same scale will apply to all users
         for criterion in scores.get_set("criterion"):
             scores_df = scores[criterion].to_df()
             score_values = scores_df["score"]
@@ -51,10 +50,10 @@ class QuantileShift(StateFunction):
                 right_uncertainties=np.array(right_uncertainties),
                 error=self.error,
             ) + self.target_score
-            scalings[criterion] = translation_value2scale(translation_value)
+            scales[criterion] = (1, 0, 0, translation_value, 0, 0)
 
         return UserModels({
-            username: MultiScaledModel(model, scalings)
+            username: ScaledModel(model, scales, note="quantile_shift")
             for username, model in user_models
         })
 
