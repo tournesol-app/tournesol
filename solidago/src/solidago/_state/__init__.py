@@ -3,7 +3,6 @@
 from ._users import *
 from ._vouches import *
 from ._entities import *
-from ._criteria import *
 from ._made_public import *
 from ._assessments import *
 from ._comparisons import *

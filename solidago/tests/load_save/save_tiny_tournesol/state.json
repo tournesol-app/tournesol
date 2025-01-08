@@ -7,10 +7,6 @@
         "Entities",
         "tests/load_save/save_tiny_tournesol/entities.csv"
     ],
-    "criteria": [
-        "Criteria",
-        "tests/load_save/save_tiny_tournesol/criteria.csv"
-    ],
     "vouches": [
         "Vouches",
         "tests/load_save/save_tiny_tournesol/vouches.csv"
@@ -226,8 +222,8 @@
                 ]
             },
             "dataframes": {
-                "scalings": "tests/load_save/save_tiny_tournesol/user_scalings.csv",
-                "directs": "tests/load_save/save_tiny_tournesol/user_directs.csv"
+                "directs": "tests/load_save/save_tiny_tournesol/user_directs.csv",
+                "scalings": "tests/load_save/save_tiny_tournesol/user_scalings.csv"
             },
             "default_model_cls": "DirectScoring"
         }

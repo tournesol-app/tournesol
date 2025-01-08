@@ -13,7 +13,7 @@ class NormalEntityGenerator(EntityGenerator):
     
     def __init__(self, 
         n_entities: int=100,
-        mean: Optional[Union[int, float, list[float]]]=[3, 0, 0], 
+        mean: Optional[Union[int, float, list[float]]]=None, 
         dimension: Optional[int]=None
     ):
         """ Assigns a normally distributed vector to each entity
@@ -26,7 +26,8 @@ class NormalEntityGenerator(EntityGenerator):
             Dimension of the entity vector distribution (for type(mean) in (NoneType, float))
         """
         super().__init__(n_entities)
-        assert mean is not None or dimension is not None
+        if mean is None and dimension is None:
+            mean = [3, 0, 0]
         if isinstance(mean, Iterable) and dimension is not None:
             assert len(mean) == dimension
             mean = np.array(mean)

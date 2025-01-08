@@ -1,16 +1,12 @@
 import pytest
-import importlib
+from solidago import *
 
-from solidago.aggregation import Aggregation, StandardizedQrMedian, Average
-from solidago.scoring_model import ScaledScoringModel
+states = [ State.load(f"tests/pipeline/saved_{seed}") for seed in range(5) ]
+pipeline = Sequential.load("tests/pipeline/test_pipeline.json")
 
-from solidago.aggregation.standardized_qr_quantile import _get_user_scores
-
-
-@pytest.mark.parametrize( "test", list(range(5)) )
+@pytest.mark.parametrize( "seed", list(range(5)) )
 def test_aggregation(test):
     """ Basic run of pipelines on test data """
-    td = importlib.import_module(f"data.data_{test}")
     user_models, global_model = td.pipeline.aggregation(
         td.voting_rights,
         td.standardized_models,

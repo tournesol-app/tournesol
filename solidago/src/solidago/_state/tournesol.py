@@ -60,19 +60,8 @@ class TournesolExport(State):
         comparisons["week_number"] = [to_week_number(wd) for wd in list(comparisons["week_date"])]
                 
         entities = DataFrame({ "entity_name": list(set(global_scores["entity_name"])) })
-        criteria = DataFrame([
-            ["reliability", "Reliable and not misleading"],
-            ["importance", "Important and actionable"],
-            ["engaging", "Engaging and thought-provoking"],
-            ["pedagogy", "Clear and pedagogical"],
-            ["layman_friendly", "Layman-friendly"],
-            ["diversity_inclusion", "Diversity and inclusion"],
-            ["backfire_risk", "Resilience to backfiring risks"],
-            ["better_habits", "Encourages better habits"],
-            ["entertaining_relaxing", "Entertaining and relaxing"]
-        ], columns=["criterion_name", "description"])
         
-        return { "users": users, "vouches": vouches, "entities": entities, "criteria": criteria, 
+        return { "users": users, "vouches": vouches, "entities": entities, 
             "comparisons": comparisons, "user_scores": user_scores, "global_scores": global_scores }
     
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
@@ -101,7 +90,6 @@ class TournesolExport(State):
             users=Users(dfs["users"]),
             vouches=Vouches(dfs["vouches"]),
             entities=Entities(dfs["entities"]),
-            criteria=Criteria(dfs["criteria"]),
             made_public=AllPublic(),
             comparisons=Comparisons(dfs["comparisons"]),
             voting_rights=VotingRights(dfs["user_scores"][voting_rights_columns]),

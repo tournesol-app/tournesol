@@ -10,7 +10,6 @@ import pandas as pd
 from ._users.base import Users
 from ._vouches.base import Vouches
 from ._entities.base import Entities
-from ._criteria.base import Criteria
 from ._made_public.base import MadePublic
 from ._assessments.base import Assessments
 from ._comparisons.base import Comparisons
@@ -29,7 +28,6 @@ class State:
     def __init__(self,
         users: Optional[Users]=None,
         entities: Optional[Entities]=None,
-        criteria: Optional[Criteria]=None,
         vouches: Optional[Vouches]=None,
         made_public: Optional[MadePublic]=None,
         assessments: Optional[Assessments]=None,
@@ -43,7 +41,6 @@ class State:
         """
         self.users = Users() if users is None else users
         self.entities = Entities() if entities is None else entities
-        self.criteria = Criteria() if criteria is None else criteria
         self.vouches = Vouches() if vouches is None else vouches
         self.made_public = MadePublic() if made_public is None else made_public
         self.assessments = Assessments() if assessments is None else assessments
@@ -104,7 +101,7 @@ class State:
         })
 
     def __repr__(self) -> str:
-        length = lambda value: f", with len = {len(value)}" if hasattr(value, __len__) else ""
+        length = lambda value: f", with len = {len(value)}" if hasattr(value, "__len__") else ""
         return type(self).__name__ + "(\n\t" + "\n\t".join([
             f"{key}: {type(value).__name__}{length(value)}"
             for key, value in self.__dict__.items() if key[0] != "_" and hasattr(value, "save")

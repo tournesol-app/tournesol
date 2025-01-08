@@ -6,6 +6,9 @@ from .base import AssessmentGenerator
 
 
 class NormalAssessmentGenerator(AssessmentGenerator):
+    def __init__(self, error_size: float=1):
+        self.error_size = error_size
+    
     def sample(self, 
         assessment: Assessment, 
         user: VectorUser, 
@@ -17,5 +20,5 @@ class NormalAssessmentGenerator(AssessmentGenerator):
         if "is_trustworthy" in user and not user["is_trustworthy"]:
             score = - score
         else:
-            score += normal()
+            score += self.error_size * normal()
         return score, -float("inf"), float("inf")

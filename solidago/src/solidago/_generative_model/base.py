@@ -81,7 +81,7 @@ class GenerativeModel(Sequential):
     def load(cls, d: Union[dict, str]) -> "GenerativeModel":
         if isinstance(d, str):
             with open(d) as f:
-                d = json.load(d)
+                d = json.load(f)
         import solidago._generative_model as gen
         return cls(**{ key: getattr(gen, d[key][0])(**d[key][1]) for key in d })
        

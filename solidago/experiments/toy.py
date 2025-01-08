@@ -14,16 +14,12 @@ from solidago import *
 
 # t = TournesolExport("tests/tiny_tournesol.zip")
 
-with open("tests/generative_model/test_generative_model.json") as f: 
-    generative_model = GenerativeModel.load(json.load(f))
-s = generative_model(seed=0)
-s.save("tests/pipeline/saved")
+generative_model = GenerativeModel.load("tests/generative_model/test_generative_model.json")
 
-s = State.load("tests/pipeline/saved")
-with open("tests/pipeline/test_pipeline.json") as f: 
-    pipeline= Sequential.load(json.load(f))
+# s = State.load("tests/pipeline/saved")
+pipeline= Sequential.load("tests/pipeline/test_pipeline.json")
 
-s = pipeline(s, "tests/pipeline/saved")
+# s = pipeline(s, "tests/pipeline/saved")
 
 # s = pipeline.trust_propagation.state2state_function(s, save_directory="tests/pipeline/saved")
 # s = pipeline.preference_learning.state2state_function(s, save_directory="tests/pipeline/saved")

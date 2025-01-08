@@ -51,7 +51,7 @@ class Sequential(StateFunction):
     def load(cls, d: Union[dict, str]) -> "Sequential":
         if isinstance(d, str):
             with open(d) as f:
-                d = json.load(d)
+                d = json.load(f)
         import solidago._pipeline as pipeline
         return cls(**{ key: getattr(pipeline, d[key][0])(**d[key][1]) for key in d })
 

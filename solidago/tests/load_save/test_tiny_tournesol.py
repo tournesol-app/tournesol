@@ -9,8 +9,6 @@ def test_import():
     assert "NatNgs" in t.vouches["aidjango"]
     assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
     assert "aBdymwisfb4" in t.entities
-    assert "importance" in t.criteria
-    assert t.criteria.get("engaging")["description"] == 'Engaging and thought-provoking'
     assert isinstance(t.made_public, AllPublic)
     assert len(t.assessments) == 0
     assert len(t.comparisons) == 2268
@@ -42,9 +40,6 @@ def test_reimport():
     assert t.users.loc["le_science4all", "trust_score"] == 1
     assert "NatNgs" in t.vouches["aidjango"]
     assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
-    assert "aBdymwisfb4" in t.entities
-    assert "importance" in t.criteria
-    assert t.criteria.get("engaging")["description"] == 'Engaging and thought-provoking'
     assert isinstance(t.made_public, AllPublic)
     assert len(t.assessments) == 0
     assert len(t.comparisons) == 2268

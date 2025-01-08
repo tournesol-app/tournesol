@@ -13,10 +13,6 @@
             "tests/load_save/generated_state/entity_vectors.csv"
         ]
     ],
-    "criteria": [
-        "Criteria",
-        "tests/load_save/generated_state/criteria.csv"
-    ],
     "vouches": [
         "Vouches",
         "tests/load_save/generated_state/vouches.csv"

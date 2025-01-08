@@ -1,11 +1,12 @@
 from abc import abstractmethod
 from functools import cached_property
-from typing import Optional, Callable, Union
+from typing import Optional, Callable, Union, Mapping
 
 import pandas as pd
 import numpy as np
 import numpy.typing as npt
-from numba import njit
+
+import solidago.primitives.dichotomy
 
 from solidago._state import *
 from solidago.primitives.optimize import coordinate_descent, njit_brentq
@@ -15,8 +16,7 @@ from .base import PreferenceLearning
 class GeneralizedBradleyTerry(PreferenceLearning):
     def __init__(self, 
         prior_std_dev: float=7.0,
-        convergence_error: float=1e-5,
-        high_likelihood_range_threshold: float=1.0,
+        uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
@@ -32,42 +32,74 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         prior_std_dev: float=7.0
             Typical scale of scores. 
             Technical, it should be the standard deviation of the gaussian prior.
-        convergence_error: float=1e-5
-            Admissible error in score computations (obtained through optimization).
-        high_likelihood_range_threshold: float=1.0
+        uncertainty_nll_increase: float=1.0
             To determine the uncertainty, we compute left_unc (respectively, right_unc)
             such that score - left_unc (respectively, + right_unc) has a likelihood
-            which is exp(high_likelihood_range_threshold) times lower than score.
+            which is exp(uncertainty_nll_increase) times lower than score.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
         """
         self.prior_std_dev = prior_std_dev
-        self.convergence_error = convergence_error
-        self.high_likelihood_range_threshold = high_likelihood_range_threshold
+        self.uncertainty_nll_increase = uncertainty_nll_increase
         self.max_uncertainty = max_uncertainty
 
-    @property
     @abstractmethod
-    def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
+    def cumulant_generating_function_derivative(self, score_diffs: Mapping[int, float]) -> Mapping[int, float]:
         """ The beauty of the generalized Bradley-Terry model is that it suffices
         to specify its cumulant generating function derivative to fully define it,
         and to allow a fast computation of its corresponding maximum a posterior.
+        This method performs the coordinate-wise computation of the cfg derivative
+        at the score_diffs values. It is vectorized for improved performance,
+        as it is expected to be repeatedly called.
+        
+        Note that entities are abstracted away from this method.
         
         Parameters
         ----------
-        score_diff: float
-            Score difference
+        score_diffs: Mapping[int, float]
+            Score differences
             
         Returns
         -------
-        out: float
+        cgf_derivative: Mapping[int, float]
+            cgf_derivative[i] is the derivative of the cumulant-generating function 
+            at score_diffs[i]
         """
 
-    @property
     @abstractmethod
-    def log_likelihood_function(self) -> Callable[[npt.NDArray, npt.NDArray], float]:
-        """The loss function definition is used only to compute uncertainties.
+    def cumulant_generating_function(self, score_diffs: Mapping[int, float]) -> float:
+        """ The cumulant-generating function is useful to compute the uncertainty,
+        especially if we use uncertainties by increase of the negative log-likelihood.
+        It is also sufficient if the optimizer can compute the derivatives itself,
+        e.g. when using pytorch.
+        
+        Parameters
+        ----------
+        score_diffs: Mapping[int, float]
+            Score differences
+            
+        Returns
+        -------
+        cgf: Mapping[int, float]
+            cgf[i] is the cumulant-generating function at score_diffs[i]
         """
+
+    @abstractmethod
+    def compute_scores(self, 
+        entities: Entities,
+        entity_name2index: dict[str, int],
+        comparisons: Comparisons, # key_names == ["left_name, right_name"]
+        init_multiscores : MultiScore, # key_names == "entity_name"
+    ) -> npt.NDArray:
+        """ Computes the scores given comparisons, typically by minimizing the
+        user's negative log-posterior. This method is abstract, because 
+        different optimizers may be used.
+        
+        Returns
+        -------
+        scores: npt.NDArray
+        """
+        raise NotImplementedError
 
     def user_learn(self, 
         user: User, # Not used (kept because other methods might leverage user metadata)
@@ -93,36 +125,12 @@ class GeneralizedBradleyTerry(PreferenceLearning):
     def init_scores(self, 
         entity_name2index: dict[str, int],
         init_multiscores: MultiScore, # key_names == "entity_name"
-    ) -> np.ndarray:
+    ) -> npt.NDArray:
         scores = np.zeros(len(entity_name2index))
         for entity, init_score in init_multiscores:
             if not init_score.isnan():
                 scores[entity_name2index[str(entity)]] = init_score.value
         return scores
-    
-    def compute_scores(self, 
-        entities: Entities,
-        entity_name2index: dict[str, int],
-        comparisons: Comparisons, # key_names == ["left_name, right_name"]
-        init_multiscores : MultiScore, # key_names == "entity_name"
-    ) -> npt.NDArray:
-        """ Computes the scores given comparisons """
-        entity_ordered_comparisons = comparisons.order_by_entities()
-        def get_derivative_args(entity_index: int, solution: np.ndarray):
-            entity_name = entities.iloc[entity_index].name
-            values = dict()
-            for row in entity_ordered_comparisons[entity_name]:
-                values[ entity_name2index[row["with"]] ] = row["comparison"] / row["comparison_max"]
-            indices = np.array(list(values.keys()), dtype=int)
-            comparison_values = np.array(list(values.values()))
-            return solution[indices], comparison_values
-
-        return coordinate_descent(
-            self.update_coordinate_function,
-            get_args=get_derivative_args,
-            initialization=self.init_scores(entity_name2index, init_multiscores),
-            error=self.convergence_error,
-        )        
     
     def user_learn_criterion(self, 
         entities: Entities,
@@ -147,110 +155,107 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         entities: Entities,
         entity_name2index: dict[str, int],
         comparisons: Comparisons, # key_names == ["left_name, right_name"]
-        scores: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
+        scores: npt.NDArray,
+    ) -> tuple[npt.NDArray, npt.NDArray]:
+        """ Given learned maximum-a-posteriori scores, this method determines uncertainties
+        by evaluating the necessary deviations to decrease the log likelihood
+        by the amount `self.uncertainty_nll_increase`.
         
-        comparisons_df = comparisons.to_df()
-        left_indices = comparisons_df["left_name"].map(entity_name2index)
-        right_indices = comparisons_df["right_name"].map(entity_name2index)
-        score_diff = scores[left_indices] - scores[right_indices]
-        comparisons_np = (comparisons_df["comparison"] / comparisons_df["comparison_max"]).to_numpy()
-        score_log_likelihood = self.log_likelihood_function(score_diff, comparisons_np)
+        Returns
+        -------
+        lefts: npt.NDArray
+            lefts[i] is the left uncertainty on scores[i]
+        rights: npt.NDArray
+            rights[i] is the right uncertainty on scores[i]
+        """
+        compared_entity_indices = comparisons.compared_entity_indices(entity_name2index)
+        score_diffs = scores[compared_entity_indices["left"]] - scores[compared_entity_indices["right"]]
+        normalized_comparisons = comparisons.normalized_comparisons()
+        score_log_likelihood = self.negative_log_likelihood(score_diffs, normalized_comparisons)
         
-        brentq_kwargs = dict(
-            f=self.translated_negative_log_likelihood,
-            xtol=1e-2,
-            extend_bounds="no",
+        kwargs = dict(
+            self.translated_negative_log_likelihood,
+            value=score_negative_log_likelihood + self.uncertainty_nll_increase,
+            error=1e-1,
         )
 
         lefts = np.empty_like(scores)
         rights = np.empty_like(scores)
         for i in range(len(scores)):
-            brentq_kwargs["args"] = (
-                score_diff, 
-                comparisons_np, 
-                score_log_likelihood,
-                (1 *(left_indices == i) - 1 *(right_indices == i)).to_numpy()
-            )             
+            indicators = (1 *(left_indices == i) - 1 *(right_indices == i)).to_numpy()
+            kwargs["args"] = (score_diffs, normalized_comparisons, indicators)
             try:
-                lefts[i] = -1 * njit_brentq(a=-self.max_uncertainty, b=0.0, **brentq_kwargs)
+                lefts[i] = - dichotomy.solve(xmin=-self.max_uncertainty, xmax=0.0, **kwargs)
             except ValueError:
                 lefts[i] = self.max_uncertainty
 
             try:
-                rights[i] = njit_brentq(a=0.0, b=self.max_uncertainty, **brentq_kwargs)
+                rights[i] = dichotomy.solve(xmin=0.0, xmax=self.max_uncertainty, **kwargs)
             except ValueError:
                 rights[i] = self.max_uncertainty
                 
         return lefts, rights
 
-    @cached_property
-    def translated_negative_log_likelihood(self):
+    def negative_log_likelihood(self, 
+        score_diffs: Mapping[int, float], 
+        normalized_comparisons: Mapping[int, float]
+    ) -> float:
+        """ Computes the negative log-likelihood of the observed 
+        comparisons (`normalized_comparisons`) given the score differences
+        between the entities that are compared.
+        Necessary only for the uncertainty estimators (the cumulant-generating
+        function derivative is sufficient to compute the maximum a posteriori).
+        
+        Note that entities are abstracted away from this method,
+        and the prior is not added.
+        
+        Parameters
+        ----------
+        score_diffs: npt.NDArray
+            Score differences
+        normalized_comparisons: npt.NDArray
+            Normalized comparison values
+        
+        Returns
+        -------
+        log_likelihood: float
+            Logarithm of the likelihood of the comparisons given the score differences
+        """
+        cgfs = self.cumulant_generating_function(score_diffs)
+        return (score_diffs * normalized_comparisons + cgfs).sum()
+        
+    def translated_negative_log_likelihood(self,
+        delta: float,
+        score_diffs: Mapping[int, float],
+        normalized_comparisons: Mapping[int, float],
+        indicators: npt.NDArray,
+    ) -> float:
         """This function is a convex negative log likelihood, translated such
         that its minimum has a constant negative value at `delta=0`. The
         roots of this function are used to compute the uncertainties
         intervals. If it has only a single root, then uncertainty on the
         other side is considered infinite.
-        """
-        log_likelihood_function = self.log_likelihood_function
-        high_likelihood_range_threshold = self.high_likelihood_range_threshold
-
-        @njit
-        def f(delta, score_diffs, comparison_values, score_log_likelihood, indicators):
-            return (
-                log_likelihood_function(score_diffs + delta * indicators, comparison_values)
-                - score_log_likelihood
-                - high_likelihood_range_threshold
-            )
-
-        return f
-
-    @cached_property
-    def update_coordinate_function(self):
-        xtol = self.convergence_error / 10
-        partial_derivative = self.partial_derivative
-
-        @njit
-        def f(derivative_args, old_coordinate_value):
-            return njit_brentq(
-                partial_derivative,
-                args=derivative_args,
-                xtol=xtol,
-                a=old_coordinate_value - 1,
-                b=old_coordinate_value + 1
-            )
-        return f
-
-    @cached_property
-    def partial_derivative(self):
-        """ Computes the partial derivative along a coordinate, 
-        for a given value along the coordinate,
-        when other coordinates' values are given by the solution.
-        The computation evidently depends on the dataset,
-        which is given by coordinate_comparisons.
-        """
-        prior_var = self.prior_std_dev**2
-        cfg_deriv = self.cumulant_generating_function_derivative
-
-        @njit
-        def njit_partial_derivative(
-            value: float,
-            current_solution: npt.NDArray,
-            comparisons_values: npt.NDArray,
-        ) -> npt.NDArray:
-            score_diff = value - current_solution
-            return (value / prior_var) + np.sum(cfg_deriv(score_diff) - comparisons_values)
         
-        return njit_partial_derivative
+        Note that the negative log-likelihood function is actually translated
+        in both the input space (as deviations from score_diffs for one entity
+        score deviation) and the output space (by subtracting the negative
+        log-likelihood at score_diffs, and self.high_likelihood_range_threshold
+        to mean that the roots have a likelihood that is
+        exp(self.high_likelihood_range_threshold) times smaller
+        than that of score_diffs.
+        
+        Note that entities are abstracted away, though indicators should
+        be carefully computed as a function of the entity whose score uncertainity
+        is being estimated.
+        """
+        deviated_score_diffs = indicators * delta + score_diffs
+        return self.negative_log_likelihood_function(deviated_score_diffs, normalized_comparisons)
 
 
 class UniformGBT(GeneralizedBradleyTerry):
-    def __init__(
-        self,
+    def __init__(self,
         prior_std_dev: float = 7.0,
-        convergence_error: float = 1e-5,
-        cumulant_generating_function_error: float = 1e-5,
-        high_likelihood_range_threshold: float = 1.0,
+        uncertainty_nll_increase: float = 1.0,
         max_uncertainty: float=1e3,
     ):
         """
@@ -260,42 +265,35 @@ class UniformGBT(GeneralizedBradleyTerry):
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
-            convergence_error=convergence_error,
-            high_likelihood_range_threshold=high_likelihood_range_threshold,
-            max_uncertainty=max_uncertainty
+            uncertainty_nll_increase=uncertainty_nll_increase,
+            max_uncertainty=max_uncertainty,
         )
-        self.cumulant_generating_function_error = cumulant_generating_function_error
 
-    @cached_property
-    def log_likelihood_function(self):
-        @njit
-        def f(score_diff, r):
-            score_diff_abs = np.abs(score_diff)
-            return (
-                np.where(
-                    score_diff_abs > 1e-1,
-                    np.where(
-                        score_diff_abs < 20.0,
-                        np.log(np.sinh(score_diff) / score_diff),
-                        score_diff_abs - np.log(2) - np.log(score_diff_abs),
-                    ),
-                    score_diff_abs ** 2 / 6 - score_diff_abs ** 4 / 180,
-                )
-                + r * score_diff
-            ).sum()
+    def cumulant_generating_function(self, score_diffs: npt.NDArray) -> npt.NDArray:
+        """ The cgf of UniformGBT is simply log( sinh(score_diff) / score_diff ).
+        However, numerical accuracy requires care in the cases 
+        where abs(score_diff) is small (because of division by zero)
+        or where it is large (because sinh explodes).
+        """
+        score_diffs_abs = np.abs(score_diffs)
+        return np.where(
+            score_diffs_abs > 1e-1,
+            np.where(
+                score_diffs_abs < 20.0,
+                np.log(np.sinh(score_diffs) / score_diffs),
+                score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
+            ),
+            score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
+        )
 
-        return f
-
-    @cached_property
-    def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
-        tolerance = self.cumulant_generating_function_error
-
-        @njit
-        def f(score_diff: npt.NDArray):
-            return np.where(
-                np.abs(score_diff) < tolerance,
-                score_diff / 3,
-                1 / np.tanh(score_diff) - 1 / score_diff,
-            )
-
-        return f
+    def cumulant_generating_function_derivative(self, score_diffs: npt.NDArray) -> npt.NDArray:
+        """ The cgf derivative of UniformGBT is simply 
+        1 / tanh(score_diff) - 1 / score_diff.
+        However, numerical accuracy requires care in the cases 
+        where abs(score_diff) is small (because of division by zero).
+        """
+        return np.where(
+            np.abs(score_diffs) < 1e-2,
+            score_diffs / 3,
+            1 / np.tanh(score_diffs) - 1 / score_diffs,
+        )
