@@ -2,6 +2,7 @@
   "short_name": "Tournesol",
   "name": "Tournesol",
   "description": "Compare online content and contribute to the development of responsible content recommendations.",
+  "categories": ["education"],
   "icons": [
     {
       "src": "/icons/favicon.ico",
