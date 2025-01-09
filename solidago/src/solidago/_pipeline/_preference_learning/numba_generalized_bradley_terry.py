@@ -77,42 +77,22 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
     ) -> npt.NDArray:
         """ Computes the scores given comparisons """
         entity_ordered_comparisons = comparisons.order_by_entities()
-        def get_derivative_args(entity_index: int, scores: np.ndarray):
+        def get_partial_derivative_args(entity_index: int, scores: np.ndarray) -> tuple:
             entity_name = entities.iloc[entity_index].name
             df = entity_ordered_comparisons[entity_name].to_df()
-            normalized_comparisons = df["comparison"] / df["comparison_max"]
+            normalized_comparisons = np.array(df["comparison"] / df["comparison_max"])
             indices = df["other_name"].map(entity_name2index)
             return scores[indices], normalized_comparisons
 
         return coordinate_descent(
-            self.update_coordinate_function,
-            get_args=get_derivative_args,
+            self.partial_derivative,
+            get_partial_derivative_args=get_partial_derivative_args,
             initialization=self.init_scores(entity_name2index, init_multiscores),
             error=self.convergence_error,
-        )        
-    
-    @cached_property
-    def update_coordinate_function(self) -> Callable[[npt.NDArray, npt.NDArray, float], float]:
-        xtol = self.convergence_error / 10
-        partial_derivative = self.partial_derivative
-
-        @njit
-        def njit_update_coordinate_function(
-            compared_scores: npt.NDArray, 
-            compared_comparisons: npt.NDArray, 
-            init: float
-        ) -> float:
-            return njit_brentq(
-                partial_derivative,
-                args=(compared_scores, compared_comparisons),
-                xtol=xtol,
-                a=old_coordinate_value - 1,
-                b=old_coordinate_value + 1
-            )
-        return njit_update_coordinate_function
+        )
 
     @cached_property
-    def partial_derivative(self) -> Callable[[float, npt.NDArray, npt.NDArray], float]:
+    def partial_derivative(self) -> Callable[[int, np.ndarray[np.float64], dict, dict], float]:
         """ Computes the partial derivative along a coordinate, 
         for a given value along the coordinate,
         when other coordinates' values are given by the solution.
@@ -124,12 +104,15 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
 
         @njit
         def njit_partial_derivative(
-            value: float,
+            coordinate: int,
+            scores: float,
             compared_scores: npt.NDArray, 
-            compared_comparisons: npt.NDArray, 
+            normalized_comparisons: npt.NDArray, 
         ) -> npt.NDArray:
-            score_diffs = value - compared_scores
-            return (value / prior_var) + np.sum(cfg_deriv(score_diffs) - compared_comparisons)
+            score_diffs = scores[coordinate] - compared_scores
+            nll_derivative = np.sum(cfg_deriv(score_diffs) - normalized_comparisons)
+            prior_derivative = scores[coordinate] / prior_var
+            return prior_derivative + nll_derivative
         
         return njit_partial_derivative
 

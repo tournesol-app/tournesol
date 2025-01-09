@@ -1,4 +1,4 @@
-from typing import Union, Optional, Callable, Any, Iterable
+from typing import Union, Optional, Callable, Any, Iterable, Literal
 from types import BuiltinFunctionType
 from pathlib import Path
 from pandas import DataFrame, Series
@@ -10,6 +10,8 @@ from .nested_dict import NestedDict, NestedKeyError
 
 
 class NestedDictOfRowLists(NestedDict):
+    row_cls: type=dict
+    
     def __init__(self, 
         d: Optional[Union["NestedDict", dict, DataFrame]]=None,
         key_names: list[str]=["key"], 
@@ -22,6 +24,9 @@ class NestedDictOfRowLists(NestedDict):
 
     def default_value(self) -> Any:
         return list()
+        
+    def process_stored_value(self, keys: list[str], stored_value: dict) -> Any:
+        return self.row_cls(stored_value)
         
     def add_row(self, keys: Union[str, list, tuple], row: Union[dict, Series]) -> None:
         keys = keys if isinstance(keys, (list, tuple)) else [str(keys)]
@@ -58,7 +63,43 @@ class NestedDictOfRowLists(NestedDict):
             row_kwargs = dict()
         return [
             dict(zip(self.key_names, keys)) | row_kwargs | row
-            for keys, row_list in self.__iter__(value_process=False, key_process=False)
-            for row in row_list
+            for keys, row in self.iter(returns="rows", value_process=False, key_process=False)
         ]
 
+    def iter(self, 
+        returns: Literal["rows", "row_list", "last_row"]="rows", 
+        value_process: bool=True,
+        key_process: bool=True,
+    ) -> Iterable:
+        if len(self.key_names) == 1:
+            for key, row_list in self._dict.items():
+                if returns == "rows":
+                    for row in row_list:
+                        yield (
+                            key if key_process else [key],
+                            self.process_stored_value([key], row) if value_process else row
+                        )
+                elif returns == "row_list":
+                    yield key if key_process else [key], [
+                        self.process_stored_value([key], row) if value_process else row
+                        for row in row_list
+                    ]
+                elif returns == "last_row":
+                    yield (
+                        key if key_process else [key],
+                        self.process_stored_value([key], row_list[-1]) if value_process else row_list[-1]
+                    )
+                else:
+                    raise ValueError(f"Returns argument '{returns}' must be 'rows', 'row_list' or 'last_row'.")
+        else:
+            kwargs = dict(returns=returns, value_process=value_process, key_process=False)
+            for key in self._dict:
+                for subkeys, value in self._dict[key].iter(**kwargs):
+                    yield [key] + subkeys, value
+
+    def __iter__(self,
+        returns: Literal["rows", "row_list", "last_row"]="rows", 
+        value_process: bool=True,
+        key_process: bool=True,
+    ) -> Iterable:
+        return self.iter(returns=returns, value_process=value_process, key_process=key_process)

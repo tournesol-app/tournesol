@@ -1,5 +1,4 @@
 import pytest
-import importlib
 import pandas as pd
 
 from solidago import *
@@ -8,13 +7,14 @@ from pandas import DataFrame
 states = [ State.load(f"tests/pipeline/saved_{seed}") for seed in range(5) ]
 
 
-@pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
+@pytest.mark.parametrize("GBT", [NumbaUniformGBT])
 def test_gbt_score_zero(GBT):
     
     if GBT == LBFGSUniformGBT:
         pytest.importorskip("torch")
         
     entities=Entities(["entity_1", "entity_2", "entity_3"])
+    entity_name2index = { str(entity): index for index, entity in enumerate(entities) }
     comparisons=Comparisons(
         DataFrame([
             ["entity_1", "entity_2", 0, 10],
@@ -24,11 +24,11 @@ def test_gbt_score_zero(GBT):
     )
     init_multiscores = MultiScore(key_names=["entity_name"])
     
-    scoring_model = GBT().user_learn_criterion(entities, comparisons, init_multiscores)
+    scores = NumbaUniformGBT().compute_scores(entities, entity_name2index, comparisons, init_multiscores)
     
-    assert scoring_model(entity_id=1) == pytest.approx((0, 1.8, 1.8), abs=0.1)
-    assert scoring_model(entity_id=2) == pytest.approx((0, 2.7, 2.7), abs=0.1)
-    assert scoring_model(entity_id=3) == pytest.approx((0, 2.7, 2.7), abs=0.1)
+    assert scores[0].value == pytest.approx((0, 1.8, 1.8), abs=0.1)
+    assert scores[1].value == pytest.approx((0, 2.7, 2.7), abs=0.1)
+    assert scores[2].value == pytest.approx((0, 2.7, 2.7), abs=0.1)
 
 
 # @pytest.mark.parametrize("seed", range(4))

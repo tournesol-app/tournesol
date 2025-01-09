@@ -1,6 +1,6 @@
 import numpy as np
 
-from typing import Optional, Union, Mapping
+from typing import Optional, Union, Mapping, Literal
 from pandas import DataFrame, Series
 
 from solidago.primitives.datastructure import NestedDictOfRowLists
@@ -20,12 +20,6 @@ class Comparisons(NestedDictOfRowLists):
         save_filename="comparisons.csv"
     ):
         super().__init__(d, key_names, save_filename)
-
-    def default_value(self) -> list:
-        return list()
-    
-    def process_stored_value(self, keys: list[str], stored_value: list[dict]) -> list[Comparison]:
-        return [self.row_cls(v) for v in stored_value]
         
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
         evaluators = self[{ "left_name": entity }].get_set("username") 
@@ -58,29 +52,34 @@ class Comparisons(NestedDictOfRowLists):
         result = Comparisons(key_names=key_names)
         left_key_index = self.key_names.index("left_name")
         right_key_index = self.key_names.index("right_name")
-        for keys, comparison_list in self:
-            for comparison in comparison_list:
-                left_name, right_name = keys[left_key_index], keys[right_key_index]
-                non_entity_keys = [ 
-                    key for index, key in enumerate(keys) 
-                    if index not in (left_key_index, right_key_index) 
-                ]
-                new_comparison = dict(zip(self.key_names, keys)) | dict(comparison)
-                result.add_row(
-                    [left_name, right_name] + non_entity_keys,  
-                    new_comparison | dict(location="left")
-                )
-                result.add_row(
-                    [right_name, left_name] + non_entity_keys,
-                    new_comparison | dict(location="right")
-                )
+        for keys, comparison in self:
+            left_name, right_name = keys[left_key_index], keys[right_key_index]
+            non_entity_keys = [ 
+                key for index, key in enumerate(keys) 
+                if index not in (left_key_index, right_key_index) 
+            ]
+            new_comparison = dict(zip(self.key_names, keys)) | dict(comparison)
+            result.add_row(
+                [left_name, right_name] + non_entity_keys,  
+                new_comparison | dict(location="left")
+            )
+            result.add_row(
+                [right_name, left_name] + non_entity_keys,
+                new_comparison | dict(location="right")
+            )
         return result
 
-    def compared_entity_indices(self, entity_name2index: dict[str, int]) -> dict[str, list[int]]:
+    def compared_entity_indices(self, 
+        entity_name2index: dict[str, int], 
+        last_comparison_only: bool=True,
+        returns: Literal["rows", "row_list", "last_row"]="rows"
+    ) -> dict[str, list[int]]:
         key_indices = { loc: self.key_names.index(f"{loc}_name") for loc in ("left", "right") }
         return {
-            location: [ entity_name2index[keys[key_indices[location]]] for keys, _ in self ] 
-            for location in ("left", "right")
+            location: [ 
+                entity_name2index[keys[key_indices[location]]] 
+                for keys, _ in self.iter(returns)
+            ] for location in ("left", "right")
         }
     
     def normalized_comparisons(self) -> Series:

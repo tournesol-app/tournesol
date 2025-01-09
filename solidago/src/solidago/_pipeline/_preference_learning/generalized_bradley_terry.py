@@ -6,10 +6,9 @@ import pandas as pd
 import numpy as np
 import numpy.typing as npt
 
-import solidago.primitives.dichotomy
+import solidago.primitives.dichotomy as dichotomy
 
 from solidago._state import *
-from solidago.primitives.optimize import coordinate_descent, njit_brentq
 from .base import PreferenceLearning
 
 
@@ -17,15 +16,18 @@ class GeneralizedBradleyTerry(PreferenceLearning):
     def __init__(self, 
         prior_std_dev: float=7.0,
         uncertainty_nll_increase: float=1.0,
-        max_uncertainty: float=1e3
+        max_uncertainty: float=1e3,
+        last_comparison_only: bool=True,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
         from Paired Comparisons" by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang
         and Oscar Villemaud, and published at AAAI'24.
         
-        This implementation leverages coordinate descent, and makes heavy use of numba 
-        to accelerate the computations.
+        Note that this class only defines the key objects of Generalized Bradley Terry,
+        without specification of (1) the root law and (2) the optimization method to
+        compute the maximum a posteriori. Nevertheless, it does implement uncertainty
+        estimation given the maximum a posteriori, using dichotomic search.
         
         Parameters
         ----------
@@ -42,6 +44,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         self.prior_std_dev = prior_std_dev
         self.uncertainty_nll_increase = uncertainty_nll_increase
         self.max_uncertainty = max_uncertainty
+        self.last_comparison_only = last_comparison_only
 
     @abstractmethod
     def cumulant_generating_function_derivative(self, score_diffs: Mapping[int, float]) -> Mapping[int, float]:
@@ -169,12 +172,13 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             rights[i] is the right uncertainty on scores[i]
         """
         compared_entity_indices = comparisons.compared_entity_indices(entity_name2index)
-        score_diffs = scores[compared_entity_indices["left"]] - scores[compared_entity_indices["right"]]
+        indices = { loc: np.array(compared_entity_indices[loc]) for loc in ("left", "right") }
+        score_diffs = scores[indices["left"]] - scores[indices["right"]]
         normalized_comparisons = comparisons.normalized_comparisons()
-        score_log_likelihood = self.negative_log_likelihood(score_diffs, normalized_comparisons)
+        score_negative_log_likelihood = self.negative_log_likelihood(score_diffs, normalized_comparisons)
         
         kwargs = dict(
-            self.translated_negative_log_likelihood,
+            f=self.translated_negative_log_likelihood,
             value=score_negative_log_likelihood + self.uncertainty_nll_increase,
             error=1e-1,
         )
@@ -182,7 +186,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         lefts = np.empty_like(scores)
         rights = np.empty_like(scores)
         for i in range(len(scores)):
-            indicators = (1 *(left_indices == i) - 1 *(right_indices == i)).to_numpy()
+            indicators = 1 *(indices["left"] == i) - 1 *(indices["right"] == i)
             kwargs["args"] = (score_diffs, normalized_comparisons, indicators)
             try:
                 lefts[i] = - dichotomy.solve(xmin=-self.max_uncertainty, xmax=0.0, **kwargs)
@@ -249,7 +253,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         is being estimated.
         """
         deviated_score_diffs = indicators * delta + score_diffs
-        return self.negative_log_likelihood_function(deviated_score_diffs, normalized_comparisons)
+        return self.negative_log_likelihood(deviated_score_diffs, normalized_comparisons)
 
 
 class UniformGBT(GeneralizedBradleyTerry):
@@ -257,16 +261,32 @@ class UniformGBT(GeneralizedBradleyTerry):
         prior_std_dev: float = 7.0,
         uncertainty_nll_increase: float = 1.0,
         max_uncertainty: float=1e3,
+        last_comparison_only: bool=True,
     ):
-        """
-
-        Parameters (TODO)
+        """ UniformGBT is the specific instance of the generalized Bradley-Terry models
+        with a uniform distribution over [-1, 1] as a root law. Find out more 
+        in the paper "Generalized Bradley-Terry Models for Score Estimation 
+        from Paired Comparisons" by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang
+        and Oscar Villemaud, and published at AAAI'24.
+        
+        
+        Parameters
         ----------
+        prior_std_dev: float=7.0
+            Typical scale of scores. 
+            Technical, it should be the standard deviation of the gaussian prior.
+        uncertainty_nll_increase: float=1.0
+            To determine the uncertainty, we compute left_unc (respectively, right_unc)
+            such that score - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(uncertainty_nll_increase) times lower than score.
+        max_uncertainty: float=1e3
+            Replaces infinite uncertainties with max_uncertainty
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
+            last_comparison_only=last_comparison_only,
         )
 
     def cumulant_generating_function(self, score_diffs: npt.NDArray) -> npt.NDArray:
@@ -277,9 +297,9 @@ class UniformGBT(GeneralizedBradleyTerry):
         """
         score_diffs_abs = np.abs(score_diffs)
         return np.where(
-            score_diffs_abs > 1e-1,
+            score_diffs_abs > 1,
             np.where(
-                score_diffs_abs < 20.0,
+                score_diffs_abs < 10.0,
                 np.log(np.sinh(score_diffs) / score_diffs),
                 score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
             ),

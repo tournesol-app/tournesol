@@ -5,12 +5,12 @@
         "sink_vouch": 5.0, 
         "error": 1e-08
     }], 
-    "preference_learning": ["UniformGBT", {
+    "preference_learning": ["NumbaUniformGBT", {
         "prior_std_dev": 7, 
-        "convergence_error": 1e-05, 
-        "cumulant_generating_function_error": 1e-05,
-        "high_likelihood_range_threshold": 1.0,
-        "max_uncertainty": 1e3
+        "uncertainty_nll_increase": 1.0,
+        "max_uncertainty": 1e3,
+        "last_comparison_only": true,
+        "convergence_error": 1e-05
     }], 
     "voting_rights": ["AffineOvertrust", {
         "privacy_penalty": 0.5, 

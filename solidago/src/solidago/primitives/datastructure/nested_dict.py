@@ -146,7 +146,7 @@ class NestedDict(ABC):
         key_names += [ key_name for key_name in self.key_names if key_name not in key_names ]
         new2self_index = { i: self.key_names.index(key_names[i]) for i in range(len(key_names)) }
         result = type(self)(key_names=key_names)
-        for self_keys, value in self.__iter__(value_process=False, key_process=False):
+        for self_keys, value in self.iter(value_process=False, key_process=False):
             result[ [self_keys[new2self_index[i]] for i in range(len(key_names))] ] = value
         return result
 
@@ -155,7 +155,7 @@ class NestedDict(ABC):
         try: return cls(pd.read_csv(filename, keep_default_na=False))
         except pd.errors.EmptyDataError: return cls()
 
-    def __iter__(self, value_process: bool=True, key_process: bool=True) -> Iterable:
+    def iter(self, value_process: bool=True, key_process: bool=True) -> Iterable:
         if len(self.key_names) == 1:
             for key, value in self._dict.items():
                 yield (
@@ -164,14 +164,17 @@ class NestedDict(ABC):
                 )
         else:
             for key in self._dict:
-                for subkeys, value in self._dict[key].__iter__(value_process=value_process, key_process=False):
+                for subkeys, value in self._dict[key].iter(value_process=value_process, key_process=False):
                     yield [key] + subkeys, value
 
+    def __iter__(self, value_process: bool=True, key_process: bool=True) -> Iterable:
+        return self.iter(value_process=value_process, key_process=key_process)
+
     def keys(self, key_process: bool=True) -> list:
-        return [ keys for keys, _ in self.__iter__(key_process=key_process) ]
+        return [ keys for keys, _ in self.iter(key_process=key_process) ]
 
     def values(self, value_process: bool=True) -> list:
-        return [ value for _, value in self.__iter__(value_process=value_process) ]
+        return [ value for _, value in self.iter(value_process=value_process) ]
     
     def __len__(self) -> int:
         if len(self.key_names) == 1:

@@ -21,20 +21,22 @@ class ThurstonComparisonGenerator(ComparisonGenerator):
         return users.vectors @ entities.vectors.T / users.vectors.shape[1]
     
     def sample(self, 
+        comparison: Comparison,
         user: User, 
         left: Entity, 
         right: Entity, 
         left_public: bool, 
         right_public: bool, 
         criterion: str
-    ) -> tuple[float, float]:
+    ) -> Comparison:
         """ `lpublic` and `rpublic` are not used.
         Returns comparison max and value. """
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        comparison = self.sample_comparison(score_diff)
+        comparison["comparison"] = self.sample_comparison(score_diff)
         if "is_trustworthy" in user and not user["is_trustworthy"]:
-            comparison = - comparison
-        return comparison, self.comparison_max
+            comparison["comparison"] = - comparison["comparison"]
+        comparison["comparison_max"] = self.comparison_max
+        return comparison
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:

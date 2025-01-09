@@ -7,7 +7,7 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 
-from typing import Callable, Tuple, Literal, Optional
+from typing import Callable, Tuple, Literal, Optional, Any
 
 import numpy as np
 from numba import njit
@@ -47,9 +47,11 @@ def njit_brentq(
     xtol=_xtol,
     rtol=_rtol,
     maxiter=_iter,
-    a: float = -1.0,
-    b: float = 1.0,
-    extend_bounds: Literal["ascending", "descending", "no"] = "ascending",
+    a: float=-1.0,
+    b: float=1.0,
+    extend_bounds: bool=True,
+    xmin: float = -1e30,
+    xmax: float = 1e30,
 ) -> float:
     """Accelerated brentq. Requires f to be itself jitted via numba.
     Essentially, numba optimizes the execution by running an optimized compilation
@@ -80,16 +82,14 @@ def njit_brentq(
         'ascending': extend the bounds assuming `f` is ascending,
         'descending': extend the bounds assuming `f` is descending)
     """
-    if extend_bounds == "ascending":
-        while f(a, *args) > 0:
-            a = a - 2 * (b - a)
-        while f(b, *args) < 0:
-            b = b + 2 * (b - a)
-    elif extend_bounds == "descending":
-        while f(a, *args) < 0:
-            a = a - 2 * (b - a)
-        while f(b, *args) > 0:
-            b = b + 2 * (b - a)
+    if extend_bounds:
+        fa = f(a, *args) 
+        fb = f(b, *args)
+        while (a > xmin or b < xmax) and (fa * fb > 0):
+            a = max(a - 2 * (b - a), xmin)
+            b = min(b + 2 * (b - a), xmax)
+            fa = f(a, *args) 
+            fb = f(b, *args)
 
     if xtol <= 0:
         raise ValueError("xtol is too small (<= 0)")
@@ -174,12 +174,12 @@ def njit_brentq(
     return root  # type: ignore
 
 
-def coordinate_descent(
-    update_coordinate_function: Callable[[Tuple, float], float],
-    get_args: Callable[[int, np.ndarray], Tuple],
+def coordinate_updates(
+    update_coordinate_function: Callable[[int, np.ndarray, Tuple], float],
+    get_update_coordinate_function_args: Callable[[int, np.ndarray], Tuple],
     initialization: np.ndarray,
     updated_coordinates: Optional[list[int]]=None,
-    error: float = 1e-5,
+    error: float=1e-5,
 ):
     """Minimize a loss function with coordinate descent,
     by leveraging the partial derivatives of the loss
@@ -187,11 +187,12 @@ def coordinate_descent(
     Parameters
     ----------
     update_coordinate_function: callable
-        (args: tuple, current_value: float) -> float
-        Returns the updated value, after coordinate descent (may use brentq for this)
-    get_args: callable
-        (coordinate: int, solution: np.ndarray) -> tuple
-        retrieves the arguments needed to optimize `solution` along `coordinate`
+        (int: coordinate, variable: np.ndarray, args: tuple) -> float
+        Returns the updated value on 'coordinate', given a current 'variable', 
+        with additional arguments args.
+    get_update_coordinate_function_args: callable
+        (coordinate: int, variable: np.ndarray) -> (coordinate_update_args: tuple)
+        Return the 'args' of update_coordinate_function
     initialization: np.array
         Initialization point of the coordinate descent
     error: float
@@ -204,28 +205,107 @@ def coordinate_descent(
     """
     unchanged = set()
     to_pick = list() if updated_coordinates is None else updated_coordinates
-    solution = initialization
-    solution_len = len(solution)
+    variable = initialization
+    variable_len = len(variable)
 
     def pick_next_coordinate():
         nonlocal to_pick
         if not to_pick:
-            to_pick = list(range(solution_len))
+            to_pick = list(range(variable_len))
             np.random.shuffle(to_pick)
         return to_pick.pop()
 
-    while len(unchanged) < solution_len:
+    while len(unchanged) < variable_len:
         coordinate = pick_next_coordinate()
         if coordinate in unchanged:
             continue
-        old_coordinate_value = solution[coordinate]
-        new_coordinate_value = update_coordinate_function(
-            get_args(coordinate, solution),
-            old_coordinate_value,
-        )
-        solution[coordinate] = new_coordinate_value
+        old_coordinate_value = variable[coordinate]
+        args = get_update_coordinate_function_args(coordinate, variable)
+        new_coordinate_value = update_coordinate_function(coordinate, variable, *args)
+        variable[coordinate] = new_coordinate_value
         if abs(new_coordinate_value - old_coordinate_value) < error:
             unchanged.add(coordinate)
         else:
             unchanged.clear()
-    return solution
+    return variable
+
+
+def coordinate_descent(
+    partial_derivative: Callable[[int, np.ndarray[np.float64], Tuple], float],
+    initialization: np.ndarray,
+    get_partial_derivative_args: Optional[Callable[[int, np.ndarray[np.float64], Tuple], Tuple]]=None,
+    get_update_coordinate_function_args: Optional[Callable[[int, np.ndarray[np.float64]], Tuple]]=None,
+    updated_coordinates: Optional[list[int]]=None,
+    error: float=1e-5,
+    coordinate_optimization_xtol: float=1e-5
+):
+    """Minimize a loss function with coordinate descent,
+    by leveraging the partial derivatives of the loss
+
+    Parameters
+    ----------
+    partial_derivative: jitted callable
+        (x: float, partial_derivative_args: Tuple) -> float
+        Returns the partial derivative of the loss to optimize
+    get_partial_derivative_args: jitted callable(
+            coordinate: int, 
+            variable: np.ndarray, 
+            coordinate_update_args: Tuple
+        ) -> (partial_derivative_args: Tuple)
+        retrieves the arguments needed to optimize `variable` along `coordinate`
+    get_update_coordinate_function_args: callable
+        (coordinate: int, variable: np.ndarray) -> (coordinate_update_args: tuple)
+        Return the 'args' of update_coordinate_function
+    initialization: np.array
+        Initialization point of the coordinate descent
+    error: float
+        Tolerated error
+    coordinate_optimization_xtol: float
+        Tolerated error in brentq's coordinate update
+
+    Returns
+    -------
+    out: stationary point of the loss
+        For well behaved losses, there is a convergence guarantee
+    """
+    # First define the update_coordinate_function associated to coordinatewise descent
+    # by leveraging njit and brentq
+    
+    if get_partial_derivative_args is None:
+        get_partial_derivative_args = lambda coordinate, variable: tuple()
+        
+    if get_update_coordinate_function_args is None:
+        get_update_coordinate_function_args = lambda coordinate, variable: tuple()
+    
+    def coordinate_function(
+        coordinate: int, 
+        variable: np.ndarray[np.float64],
+    ) -> Callable[[float, Tuple], float]:
+        @njit
+        def f(value: np.float64, *partial_derivative_args) -> np.float64:
+            return partial_derivative(coordinate, np.array([ 
+                variable[i] if i != coordinate else value
+                for i in range(len(variable))
+            ], dtype=np.float64), *partial_derivative_args)
+        return f
+    
+    def update_coordinate_function(
+        coordinate: int, 
+        variable: np.ndarray[np.float64], 
+        *coordinate_update_args
+    ) -> float:
+        return njit_brentq(
+            f=coordinate_function(coordinate, variable),
+            args=get_partial_derivative_args(coordinate, variable, *coordinate_update_args),
+            xtol=coordinate_optimization_xtol,
+            a=variable[coordinate] - 1.0,
+            b=variable[coordinate] + 1.0
+        )
+        
+    return coordinate_updates(
+        update_coordinate_function=update_coordinate_function,
+        get_update_coordinate_function_args=get_update_coordinate_function_args,
+        initialization=initialization,
+        updated_coordinates=updated_coordinates,
+        error=error,
+    )

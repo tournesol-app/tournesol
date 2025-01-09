@@ -19,12 +19,6 @@ class Assessments(NestedDictOfRowLists):
     ):
         super().__init__(d, key_names, save_filename)
 
-    def default_value(self) -> list:
-        return list()
-    
-    def process_stored_value(self, keys: list[str], stored_value: list[dict]) -> list[Assessment]:
-        return [self.row_cls(v) for v in stored_value]
-        
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
         return self[{ "entity_name": entity }].get_set("username")
     
