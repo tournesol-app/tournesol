@@ -21,7 +21,8 @@
     {
       "src": "/icons/favicon-512x512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     },
     {
       "src": "/icons/maskable-icon-512x512.png",
