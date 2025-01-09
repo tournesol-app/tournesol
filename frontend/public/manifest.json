@@ -36,7 +36,6 @@
   "scope": "/",
   "start_url": "/pwa/start?utm_source=pwa",
   "display": "standalone",
-  "display_override": ["minimal-ui"],
   "orientation": "any",
   "theme_color": "#ffc800",
   "background_color": "#a09b87",
@@ -79,5 +78,6 @@
       "form_factor": "narrow",
       "label": "Tournesol comparison page on Mobile"
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }
