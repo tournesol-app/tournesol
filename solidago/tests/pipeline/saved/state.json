@@ -13,10 +13,6 @@
             "tests/pipeline/saved/entity_vectors.csv"
         ]
     ],
-    "criteria": [
-        "Criteria",
-        "tests/pipeline/saved/criteria.csv"
-    ],
     "vouches": [
         "Vouches",
         "tests/pipeline/saved/vouches.csv"

@@ -78,11 +78,11 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         init_multiscores : MultiScore, # key_names == "entity_name"
     ) -> npt.NDArray:
         """ Computes the scores given comparisons """
-        entity_ordered_comparisons = comparisons.order_by_entities()
+        comparisons = comparisons.order_by_entities()
         def get_partial_derivative_args(entity_index: int, scores: np.ndarray) -> tuple:
             entity_name = entities.iloc[entity_index].name
-            normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
-            df = entity_ordered_comparisons[entity_name].to_df(last_row_only=self.last_comparison_only)
+            normalized_comparisons = comparisons[entity_name].normalized_comparisons(self.last_comparison_only)
+            df = comparisons[entity_name].to_df(last_row_only=self.last_comparison_only)
             indices = df["other_name"].map(entity_name2index)
             return scores[indices], np.array(normalized_comparisons)
 
@@ -106,14 +106,14 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
 
         @njit
         def njit_partial_derivative(
-            coordinate: int,
+            entity_index: int,
             scores: float,
             compared_scores: npt.NDArray, 
             normalized_comparisons: npt.NDArray, 
         ) -> npt.NDArray:
-            score_diffs = scores[coordinate] - compared_scores
+            score_diffs = scores[entity_index] - compared_scores
             nll_derivative = np.sum(cfg_deriv(score_diffs) - normalized_comparisons)
-            prior_derivative = scores[coordinate] / prior_var
+            prior_derivative = scores[entity_index] / prior_var
             return prior_derivative + nll_derivative
         
         return njit_partial_derivative

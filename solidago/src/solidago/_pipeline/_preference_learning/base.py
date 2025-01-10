@@ -19,25 +19,21 @@ class PreferenceLearning(StateFunction, ABC):
         user_models: UserModels
     ) -> UserModels:
         """ Learns a scoring model, given user judgments of entities """
-        learned_models = UserModels()
-        comparison_key_names = ["username", "criterion", "left_name", "right_name"]
-        reordered_comparisons = comparisons.reorder_keys(comparison_key_names)
+        result = UserModels()
+        assessments = assessments.reorder_keys(["username", "criterion", "entity_name"])
+        comparisons = comparisons.reorder_keys(["username", "criterion", "left_name", "right_name"])
         for user in users:
-            learned_models[user] = self.user_learn(
-                user, 
-                entities, 
-                assessments[user], 
-                comparisons[user],
-                user_models[user].base_model()[0] if user in user_models else DirectScoring()
-            )
-        return learned_models
+            logger.info(f"  Learning user {user}'s base model")
+            result[user] = self.user_learn(user, entities, assessments[user], comparisons[user],
+                user_models[user].base_model()[0])
+        return result
 
     @abstractmethod
     def user_learn(self,
         user: User,
         entities: Entities,
-        assessments: Assessments,
-        comparisons: Comparisons,
+        assessments: Assessments, # key_names == ["criterion", "entity_name"]
+        comparisons: Comparisons, # key_names == ["criterion", "left_name", "right_name"]
         base_model: BaseModel
     ) -> BaseModel:
         """Learns a scoring model, given user judgments of entities """

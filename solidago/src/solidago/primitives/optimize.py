@@ -8,6 +8,7 @@ All rights reserved.
 """
 
 from typing import Callable, Tuple, Literal, Optional, Any
+from functools import cache
 
 import numpy as np
 from numba import njit
@@ -180,6 +181,7 @@ def coordinate_updates(
     initialization: np.ndarray,
     updated_coordinates: Optional[list[int]]=None,
     error: float=1e-5,
+    max_iter: int=10000,
 ):
     """Minimize a loss function with coordinate descent,
     by leveraging the partial derivatives of the loss
@@ -197,6 +199,8 @@ def coordinate_updates(
         Initialization point of the coordinate descent
     error: float
         Tolerated error
+    max_iter: int
+        Maximum number of iterations
 
     Returns
     -------
@@ -207,6 +211,7 @@ def coordinate_updates(
     to_pick = list() if updated_coordinates is None else updated_coordinates
     variable = initialization
     variable_len = len(variable)
+    iteration_number = 0
 
     def pick_next_coordinate():
         nonlocal to_pick
@@ -215,7 +220,8 @@ def coordinate_updates(
             np.random.shuffle(to_pick)
         return to_pick.pop()
 
-    while len(unchanged) < variable_len:
+    while len(unchanged) < variable_len and iteration_number < max_iter:
+        iteration_number += 1
         coordinate = pick_next_coordinate()
         if coordinate in unchanged:
             continue
@@ -271,12 +277,14 @@ def coordinate_descent(
     # First define the update_coordinate_function associated to coordinatewise descent
     # by leveraging njit and brentq
     
+    empty_function = lambda coordinate, variable: tuple()
+    
     if get_partial_derivative_args is None:
-        get_partial_derivative_args = lambda coordinate, variable: tuple()
+        get_partial_derivative_args = empty_function
         
     if get_update_coordinate_function_args is None:
-        get_update_coordinate_function_args = lambda coordinate, variable: tuple()
-    
+        get_update_coordinate_function_args = empty_function
+
     def coordinate_function(
         coordinate: int, 
         variable: np.ndarray[np.float64],

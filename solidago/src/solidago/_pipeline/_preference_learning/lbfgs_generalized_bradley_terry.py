@@ -87,7 +87,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         entities: Entities,
         entity_name2index: dict[str, int],
         comparisons: Comparisons, # key_names == ["left_name, right_name"]
-        init_multiscores : MultiScore, # key_names == "entity_name"
+        init_multiscores : MultiScore, # key_names == ["entity_name"]
     ) -> npt.NDArray:
         """ Computes the scores given comparisons """
         scores = self.init_scores(entity_name2index, init_multiscores)
