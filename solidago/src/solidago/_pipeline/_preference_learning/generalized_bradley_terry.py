@@ -129,7 +129,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         entity_name2index: dict[str, int],
         init_multiscores: MultiScore, # key_names == "entity_name"
     ) -> npt.NDArray:
-        scores = np.zeros(len(entity_name2index))
+        scores = np.zeros(len(entity_name2index), dtype=np.float64)
         for entity, init_score in init_multiscores:
             if not init_score.isnan():
                 scores[entity_name2index[str(entity)]] = init_score.value
@@ -171,10 +171,10 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         rights: npt.NDArray
             rights[i] is the right uncertainty on scores[i]
         """
-        compared_entity_indices = comparisons.compared_entity_indices(entity_name2index)
-        indices = { loc: np.array(compared_entity_indices[loc]) for loc in ("left", "right") }
+        indices = comparisons.compared_entity_indices(entity_name2index, self.last_comparison_only)
+        indices = { loc: np.array(indices[loc]) for loc in ("left", "right") }
         score_diffs = scores[indices["left"]] - scores[indices["right"]]
-        normalized_comparisons = comparisons.normalized_comparisons()
+        normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
         score_negative_log_likelihood = self.negative_log_likelihood(score_diffs, normalized_comparisons)
         
         kwargs = dict(

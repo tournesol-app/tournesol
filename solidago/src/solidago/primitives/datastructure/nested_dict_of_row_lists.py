@@ -58,13 +58,17 @@ class NestedDictOfRowLists(NestedDict):
             return sum([len(row_list) for _, row_list in self._dict.items()])
         return sum([ len(sub_dicts) for sub_dicts in self._dict.values() ])
 
-    def to_rows(self, row_kwargs: Optional[dict]) -> list[dict]:
+    def to_rows(self, row_kwargs: Optional[dict]=None, last_row_only: bool=False) -> list[dict]:
         if row_kwargs is None:
             row_kwargs = dict()
+        returns = "last_row" if last_row_only else "rows"
         return [
             dict(zip(self.key_names, keys)) | row_kwargs | row
-            for keys, row in self.iter(returns="rows", value_process=False, key_process=False)
+            for keys, row in self.iter(returns=returns, value_process=False, key_process=False)
         ]
+
+    def to_df(self, row_kwargs: Optional[dict]=None, last_row_only: bool=False) -> DataFrame:
+        return DataFrame(self.to_rows(row_kwargs, last_row_only))
 
     def iter(self, 
         returns: Literal["rows", "row_list", "last_row"]="rows", 

@@ -28,6 +28,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         convergence_error: float=1e-5,
         max_iter: int=100,
         device: torch.device=default_device,
+        last_comparison_only: bool=True,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -58,6 +59,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
+            last_comparison_only=last_comparison_only,
         )
         self.convergence_error = convergence_error
         self.max_iter = max_iter
@@ -124,9 +126,9 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         comparisons: Comparisons,
     ) -> torch.Tensor:
         """ Negative log posterior """
-        entity_indices = comparisons.compared_entity_indices(entity_name2index)
-        score_diffs = scores[entity_indices["left"]] - scores[entity_indices["right"]]
-        normalized_comparisons = comparisons.normalized_comparisons()
+        indices = comparisons.compared_entity_indices(entity_name2index, self.last_comparison_only)
+        score_diffs = scores[indices["left"]] - scores[indices["right"]]
+        normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
         loss = self.cumulant_generating_function(score_diffs).sum()
         loss -= (score_diffs * torch.tensor(normalized_comparisons)).sum()
         return loss + (scores**2).sum() / (2 * self.prior_std_dev**2)
@@ -140,6 +142,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         convergence_error: float=1e-5,
         max_iter: int=100,
         device: torch.device=default_device,
+        last_comparison_only: bool=True,
     ):
         """
         Parameters (TODO)
@@ -152,6 +155,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
             convergence_error=convergence_error,
             max_iter=max_iter,
             device=device,
+            last_comparison_only=last_comparison_only
         )
 
     def cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:

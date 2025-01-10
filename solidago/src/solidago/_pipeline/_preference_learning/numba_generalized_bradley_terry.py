@@ -18,6 +18,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
+        last_comparison_only: bool=True,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -45,6 +46,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
+            last_comparison_only=last_comparison_only,
         )
         self.convergence_error = convergence_error
 
@@ -79,10 +81,10 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         entity_ordered_comparisons = comparisons.order_by_entities()
         def get_partial_derivative_args(entity_index: int, scores: np.ndarray) -> tuple:
             entity_name = entities.iloc[entity_index].name
-            df = entity_ordered_comparisons[entity_name].to_df()
-            normalized_comparisons = np.array(df["comparison"] / df["comparison_max"])
+            normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
+            df = entity_ordered_comparisons[entity_name].to_df(last_row_only=self.last_comparison_only)
             indices = df["other_name"].map(entity_name2index)
-            return scores[indices], normalized_comparisons
+            return scores[indices], np.array(normalized_comparisons)
 
         return coordinate_descent(
             self.partial_derivative,
@@ -123,6 +125,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
+        last_comparison_only: bool=True,
     ):
         """
 
@@ -134,6 +137,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             convergence_error=convergence_error,
+            last_comparison_only=last_comparison_only,
         )
 
     @cached_property

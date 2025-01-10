@@ -16,8 +16,14 @@ def test_comparisons():
     assert "entity_4" in ordered_comparisons["entity_2"]
     
     entity_name2index = { "entity_2": 0, "entity_4": 1 }
-    indices = comparisons.compared_entity_indices(entity_name2index)
+    indices = comparisons.compared_entity_indices(entity_name2index, False)
     assert indices["left"] == [1, 1]
     assert indices["right"] == [0, 0]
-    normalized_comparisons = comparisons.normalized_comparisons()
+    normalized_comparisons = comparisons.normalized_comparisons(False)
     assert normalized_comparisons[0] == 0.5
+    
+    indices = comparisons.compared_entity_indices(entity_name2index, True)
+    assert indices["left"] == [1]
+    assert indices["right"] == [0]
+    normalized_comparisons = comparisons.normalized_comparisons(True)
+    assert normalized_comparisons[0] == 0.8

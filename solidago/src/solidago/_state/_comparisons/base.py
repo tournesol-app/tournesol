@@ -72,9 +72,9 @@ class Comparisons(NestedDictOfRowLists):
     def compared_entity_indices(self, 
         entity_name2index: dict[str, int], 
         last_comparison_only: bool=True,
-        returns: Literal["rows", "row_list", "last_row"]="rows"
     ) -> dict[str, list[int]]:
         key_indices = { loc: self.key_names.index(f"{loc}_name") for loc in ("left", "right") }
+        returns = "last_row" if last_comparison_only else "rows"
         return {
             location: [ 
                 entity_name2index[keys[key_indices[location]]] 
@@ -82,6 +82,6 @@ class Comparisons(NestedDictOfRowLists):
             ] for location in ("left", "right")
         }
     
-    def normalized_comparisons(self) -> Series:
-        df = self.to_df()
+    def normalized_comparisons(self, last_comparison_only: bool) -> Series:
+        df = self.to_df(last_row_only=last_comparison_only)
         return df["comparison"] / df["comparison_max"]
