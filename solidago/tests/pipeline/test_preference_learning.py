@@ -3,7 +3,7 @@ import pytest
 from solidago import *
 from pandas import DataFrame
 
-states = [ State.load(f"tests/pipeline/saved_{seed}") for seed in range(5) ]
+states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
 
 
 @pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])

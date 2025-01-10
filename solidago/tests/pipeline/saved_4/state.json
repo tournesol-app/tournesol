@@ -36,51 +36,8 @@
     "user_models": [
         "UserModels",
         {
-            "users": {
-                "user_0": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_1": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_2": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_3": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_4": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_5": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_6": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_7": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_8": [
-                    "DirectScoring",
-                    {}
-                ],
-                "user_9": [
-                    "DirectScoring",
-                    {}
-                ]
-            },
-            "dataframes": {
-                "directs": "tests/pipeline/saved_4/user_directs.csv"
-            },
+            "users": {},
+            "dataframes": {},
             "default_model_cls": "DirectScoring"
         }
     ],

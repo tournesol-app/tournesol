@@ -40,6 +40,8 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             which is exp(uncertainty_nll_increase) times lower than score.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
+        last_comparison_only: bool=True
+            Ignores all comparisons between two entities prior to the last provided.
         """
         self.prior_std_dev = prior_std_dev
         self.uncertainty_nll_increase = uncertainty_nll_increase
@@ -281,6 +283,8 @@ class UniformGBT(GeneralizedBradleyTerry):
             which is exp(uncertainty_nll_increase) times lower than score.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
+        last_comparison_only: bool=True
+            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
@@ -296,16 +300,15 @@ class UniformGBT(GeneralizedBradleyTerry):
         or where it is large (because sinh explodes).
         """
         score_diffs_abs = np.abs(score_diffs)
-        with np.errstate(all='ignore'):
-            return np.where(
-                score_diffs_abs > 1e-1,
-                np.where(
-                    score_diffs_abs < 20.0,
-                    np.log(np.sinh(score_diffs) / score_diffs),
-                    score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
-                ),
-                score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
-            )
+        return np.where(
+            score_diffs_abs > 1e-1,
+            np.where(
+                score_diffs_abs < 20.0,
+                np.log(np.sinh(score_diffs) / score_diffs),
+                score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
+            ),
+            score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
+        )
 
     def cumulant_generating_function_derivative(self, score_diffs: npt.NDArray) -> npt.NDArray:
         """ The cgf derivative of UniformGBT is simply 

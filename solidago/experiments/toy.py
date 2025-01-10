@@ -22,16 +22,11 @@ from solidago.primitives.optimize import coordinate_descent, njit_brentq
 
 # s = State.load("tests/pipeline/saved")
 pipeline= Sequential.load("tests/pipeline/test_pipeline.json")
-states = [ State.load(f"tests/pipeline/saved_{seed}") for seed in range(5) ]
+states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
 
 for seed in range(5):
     s = states[seed]
-    s = pipeline.trust_propagation.state2state_function(s, save_directory=f"tests/pipeline/saved_{seed}")
-    s = pipeline.preference_learning.state2state_function(s, save_directory=f"tests/pipeline/saved_{seed}")
 
-# s = pipeline(s, "tests/pipeline/saved")
-
-# s = pipeline.voting_rights.state2state_function(s, save_directory="tests/pipeline/saved")
 # s = pipeline.scaling.state2state_function(s, save_directory="tests/pipeline/saved")
 # s = pipeline.aggregation.state2state_function(s, save_directory="tests/pipeline/saved")
 # s = pipeline.post_process.state2state_function(s, save_directory="tests/pipeline/saved")

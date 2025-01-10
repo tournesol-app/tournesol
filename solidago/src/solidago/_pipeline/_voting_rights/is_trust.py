@@ -2,7 +2,7 @@ from solidago._state import *
 from solidago._pipeline.base import StateFunction
 
 
-class IsTrust(StateFunction):
+class Trust2VotingRights(StateFunction):
     def __init__(self, privacy_penalty: float=0.5):
         """ Computes voting_rights simply as the user trust scores,
         potentially multiplied by the privacy penalty if the vote is private.
@@ -28,9 +28,7 @@ class IsTrust(StateFunction):
         for user in users:
             for entity in entities:
                 for criterion in criteria:
-                    voting_right = users.loc[user, "trust_score"]
-                    if not made_public[user, entity]:
-                        voting_right *= self.privacy_penalty
-                    voting_rights.add_row((user, entity), { criterion: voting_right })
+                    penalty = made_public.penalty(self.privacy_penalty, user, entity)
+                    voting_rights[user, entity, criterion] = penalty * user["trust_score"]
         
         return voting_rights

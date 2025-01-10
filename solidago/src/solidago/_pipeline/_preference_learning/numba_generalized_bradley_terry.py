@@ -41,6 +41,8 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             which is exp(high_likelihood_range_threshold) times lower than score.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
+        last_comparison_only: bool=True
+            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
@@ -115,7 +117,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         prior_var = self.prior_std_dev**2
         cfg_deriv = self.cumulant_generating_function_derivative
 
-        # @njit
+        @njit
         def njit_partial_derivative(
             entity_index: int,
             scores: float,
@@ -138,10 +140,29 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         convergence_error: float=1e-5,
         last_comparison_only: bool=True,
     ):
-        """
-
-        Parameters (TODO)
+        """ Generalized Bradley Terry with a uniform root law is a straightforward
+        instance of the models introduced in the paper "Generalized Bradley-Terry 
+        Models for Score Estimation from Paired Comparisons" by Julien Fageot, 
+        Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud, and published at AAAI'24.
+        
+        This implementation leverages coordinate descent, and makes heavy use of numba 
+        to accelerate the computations.
+        
+        Parameters
         ----------
+        prior_std_dev: float=7.0
+            Typical scale of scores. 
+            Technical, it should be the standard deviation of the gaussian prior.
+        convergence_error: float=1e-5
+            Admissible error in score computations (obtained through optimization).
+        high_likelihood_range_threshold: float=1.0
+            To determine the uncertainty, we compute left_unc (respectively, right_unc)
+            such that score - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than score.
+        max_uncertainty: float=1e3
+            Replaces infinite uncertainties with max_uncertainty
+        last_comparison_only: bool=True
+            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
@@ -160,13 +181,12 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         and as it must be njit to be used by coordinate_descent,
         we write it as a cached property njit function.
         """
-        # @njit
+        @njit
         def njit_cumulant_generating_function_derivative(score_diffs: npt.NDArray):
-            with np.errstate(all='ignore'):
-                return np.where(
-                    np.abs(score_diffs) < 1e-2,
-                    score_diffs / 3,
-                    1 / np.tanh(score_diffs) - 1 / score_diffs,
-                )
+            return np.where(
+                np.abs(score_diffs) < 1e-2,
+                score_diffs / 3,
+                1 / np.tanh(score_diffs) - 1 / score_diffs,
+            )
 
         return njit_cumulant_generating_function_derivative

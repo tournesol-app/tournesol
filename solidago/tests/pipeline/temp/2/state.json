@@ -1,0 +1,93 @@
+{
+    "users": [
+        "VectorUsers",
+        [
+            "tests/pipeline/saved_2/users.csv",
+            "tests/pipeline/saved_2/user_vectors.csv"
+        ]
+    ],
+    "entities": [
+        "VectorEntities",
+        [
+            "tests/pipeline/saved_2/entities.csv",
+            "tests/pipeline/saved_2/entity_vectors.csv"
+        ]
+    ],
+    "vouches": [
+        "Vouches",
+        "tests/pipeline/saved_2/vouches.csv"
+    ],
+    "made_public": [
+        "MadePublic",
+        "tests/pipeline/saved_2/made_public.csv"
+    ],
+    "assessments": [
+        "Assessments",
+        "tests/pipeline/saved_2/assessments.csv"
+    ],
+    "comparisons": [
+        "Comparisons",
+        "tests/pipeline/saved_2/comparisons.csv"
+    ],
+    "voting_rights": [
+        "VotingRights",
+        "tests/pipeline/saved_2/voting_rights.csv"
+    ],
+    "user_models": [
+        "UserModels",
+        {
+            "users": {
+                "user_0": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_1": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_2": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_3": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_4": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_5": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_6": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_7": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_8": [
+                    "DirectScoring",
+                    {}
+                ],
+                "user_9": [
+                    "DirectScoring",
+                    {}
+                ]
+            },
+            "dataframes": {
+                "directs": "tests/pipeline/saved_2/user_directs.csv"
+            },
+            "default_model_cls": "DirectScoring"
+        }
+    ],
+    "global_model": [
+        "DirectScoring",
+        {
+            "directs": "tests/pipeline/saved_2/directs.csv"
+        }
+    ]
+}

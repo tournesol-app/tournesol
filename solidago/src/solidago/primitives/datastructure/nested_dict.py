@@ -147,7 +147,7 @@ class NestedDict(ABC):
         new2self_index = { i: self.key_names.index(key_names[i]) for i in range(len(key_names)) }
         result = type(self)(key_names=key_names)
         for self_keys, value in self.iter(value_process=False, key_process=False):
-            result[ [self_keys[new2self_index[i]] for i in range(len(key_names))] ] = value
+            result.add_row([self_keys[new2self_index[i]] for i in range(len(key_names))], value)
         return result
 
     @classmethod

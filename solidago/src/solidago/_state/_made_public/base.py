@@ -16,3 +16,6 @@ class MadePublic(NestedDictOfItems):
     def __setitem__(self, keys: Union[str, tuple, list], value: bool) -> None:
         if value:
             super().__setitem__(keys, value)
+
+    def penalty(self, privacy_penalty: float, *keys) -> float:
+        return 1 if self[keys] else privacy_penalty
