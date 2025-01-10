@@ -159,7 +159,7 @@ class MultiScore(NestedDictOfTuples):
     def sanitize(self, value: Union[tuple, Score, dict]) -> tuple[float, float, float]:
         if isinstance(value, (list, tuple)):
             assert len(value) == 3
-            return value
+            return tuple(float(v) for v in value)
         if isinstance(value, Score):
             return value.to_triplet()
         assert isinstance(value, (dict, Series))

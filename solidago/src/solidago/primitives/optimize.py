@@ -22,7 +22,7 @@ _xtol = 2e-12
 _rtol = 4 * np.finfo(float).eps
 
 
-@njit
+# @njit
 def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
     """Conditional checks for intervals in methods involving bisection"""
     if fa * fb > 0:
@@ -41,7 +41,7 @@ def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
     return root, status
 
 
-@njit
+# @njit
 def njit_brentq(
     f,
     args=(),
@@ -289,7 +289,7 @@ def coordinate_descent(
         coordinate: int, 
         variable: np.ndarray[np.float64],
     ) -> Callable[[float, Tuple], float]:
-        @njit
+        # @njit
         def f(value: np.float64, *partial_derivative_args) -> np.float64:
             return partial_derivative(coordinate, np.array([ 
                 variable[i] if i != coordinate else value

@@ -95,7 +95,9 @@ def test_coordinate_descent():
     def partial_derivative(coordinate: int, variable: np.ndarray, *args) -> float:
         if args != (1, 2):
             raise ValueError(args)
-        return (coordinate + 1) * variable[coordinate]
+        if coordinate == 0:
+            return variable[coordinate]
+        return (coordinate + 1) * (variable[coordinate] + coordinate + variable[coordinate - 1])
     
     @njit
     def get_partial_derivative_args(coordinate: int, variable: np.ndarray, *args) -> tuple: 
@@ -118,4 +120,5 @@ def test_coordinate_descent():
         np.arange(10),
         get_partial_derivative_args,
     ) 
-    assert all({ result[i] == result2[i] for i in range(len(result)) })
+    assert list(result) == list(result2)
+    assert list(result) == [0, -1, -1, -2, -2, -3 , -3, -4, -4, -5]

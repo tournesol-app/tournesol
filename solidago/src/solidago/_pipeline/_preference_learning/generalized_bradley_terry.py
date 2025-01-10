@@ -288,7 +288,7 @@ class UniformGBT(GeneralizedBradleyTerry):
             max_uncertainty=max_uncertainty,
             last_comparison_only=last_comparison_only,
         )
-
+    
     def cumulant_generating_function(self, score_diffs: npt.NDArray) -> npt.NDArray:
         """ The cgf of UniformGBT is simply log( sinh(score_diff) / score_diff ).
         However, numerical accuracy requires care in the cases 
@@ -296,15 +296,16 @@ class UniformGBT(GeneralizedBradleyTerry):
         or where it is large (because sinh explodes).
         """
         score_diffs_abs = np.abs(score_diffs)
-        return np.where(
-            score_diffs_abs > 1,
-            np.where(
-                score_diffs_abs < 10.0,
-                np.log(np.sinh(score_diffs) / score_diffs),
-                score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
-            ),
-            score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
-        )
+        with np.errstate(all='ignore'):
+            return np.where(
+                score_diffs_abs > 1e-1,
+                np.where(
+                    score_diffs_abs < 20.0,
+                    np.log(np.sinh(score_diffs) / score_diffs),
+                    score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
+                ),
+                score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
+            )
 
     def cumulant_generating_function_derivative(self, score_diffs: npt.NDArray) -> npt.NDArray:
         """ The cgf derivative of UniformGBT is simply 

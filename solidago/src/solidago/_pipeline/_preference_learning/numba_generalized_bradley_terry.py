@@ -55,7 +55,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
     def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
         """ To use numba, instead of defining directly the cgf derivative,
         it is useful to instead define this method as a property,
-        which outputs a callable function decorated with @njit.
+        which outputs a jitted callable function.
         This callable function must have the following annocations.
         
         Parameters
@@ -79,19 +79,30 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
     ) -> npt.NDArray:
         """ Computes the scores given comparisons """
         comparisons = comparisons.order_by_entities()
-        def get_partial_derivative_args(entity_index: int, scores: np.ndarray) -> tuple:
-            entity_name = entities.iloc[entity_index].name
-            normalized_comparisons = comparisons[entity_name].normalized_comparisons(self.last_comparison_only)
-            df = comparisons[entity_name].to_df(last_row_only=self.last_comparison_only)
-            indices = df["other_name"].map(entity_name2index)
-            return scores[indices], np.array(normalized_comparisons)
-
+        
         return coordinate_descent(
             self.partial_derivative,
-            get_partial_derivative_args=get_partial_derivative_args,
-            initialization=self.init_scores(entity_name2index, init_multiscores),
+            self.init_scores(entity_name2index, init_multiscores),
+            self.get_partial_derivative_args(entities, entity_name2index, comparisons),
             error=self.convergence_error,
         )
+    
+    def get_partial_derivative_args(self, 
+        entities: Entities, 
+        entity_name2index: dict[str, int],
+        entity_ordered_comparisons: Comparisons, # key_names == ["entity_name", "other_name"]
+    ) -> Callable[[int, np.ndarray], tuple[np.ndarray, np.ndarray]]:
+        
+        def f(entity_index: int, scores: np.ndarray) -> tuple:
+            entity_name = entities.iloc[entity_index].name
+            comparisons = entity_ordered_comparisons[entity_name]
+            normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
+            df = comparisons.to_df(last_row_only=self.last_comparison_only)
+            indices = df["other_name"].map(entity_name2index)
+            return scores[indices], np.array(normalized_comparisons)
+            
+        return f
+
 
     @cached_property
     def partial_derivative(self) -> Callable[[int, np.ndarray[np.float64], dict, dict], float]:
@@ -104,7 +115,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         prior_var = self.prior_std_dev**2
         cfg_deriv = self.cumulant_generating_function_derivative
 
-        @njit
+        # @njit
         def njit_partial_derivative(
             entity_index: int,
             scores: float,
@@ -112,7 +123,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             normalized_comparisons: npt.NDArray, 
         ) -> npt.NDArray:
             score_diffs = scores[entity_index] - compared_scores
-            nll_derivative = np.sum(cfg_deriv(score_diffs) - normalized_comparisons)
+            nll_derivative = np.sum(cfg_deriv(score_diffs) + normalized_comparisons)
             prior_derivative = scores[entity_index] / prior_var
             return prior_derivative + nll_derivative
         
@@ -149,12 +160,13 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         and as it must be njit to be used by coordinate_descent,
         we write it as a cached property njit function.
         """
-        @njit
+        # @njit
         def njit_cumulant_generating_function_derivative(score_diffs: npt.NDArray):
-            return np.where(
-                np.abs(score_diffs) < 1e-2,
-                score_diffs / 3,
-                1 / np.tanh(score_diffs) - 1 / score_diffs,
-            )
+            with np.errstate(all='ignore'):
+                return np.where(
+                    np.abs(score_diffs) < 1e-2,
+                    score_diffs / 3,
+                    1 / np.tanh(score_diffs) - 1 / score_diffs,
+                )
 
         return njit_cumulant_generating_function_derivative

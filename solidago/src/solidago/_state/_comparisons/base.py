@@ -46,6 +46,11 @@ class Comparisons(NestedDictOfRowLists):
             return self.reorder_keys(key_names)
         assert "left_name" in self.key_names and "right_name" in self.key_names, "" \
             "Comparisons must have columns `left_name` and `right_name`"
+        
+        def invert(comparison):
+            if "comparison" in comparison:
+                comparison["comparison"] = - comparison["comparison"]
+            return comparison
         key_names = ["entity_name", "other_name"] + [ 
             kn for kn in self.key_names if kn not in ("left_name", "right_name") 
         ]
@@ -65,7 +70,7 @@ class Comparisons(NestedDictOfRowLists):
             )
             result.add_row(
                 [right_name, left_name] + non_entity_keys,
-                new_comparison | dict(location="right")
+                invert(new_comparison) | dict(location="right")
             )
         return result
 

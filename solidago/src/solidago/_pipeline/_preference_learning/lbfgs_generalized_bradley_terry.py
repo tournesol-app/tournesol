@@ -66,7 +66,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         self.device = device
 
     @abstractmethod
-    def cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:
+    def torch_cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:
         """ To use the cumulant generating function in the context of pytorch,
         it is sufficent to write the cumulant generating function.
         This function must however be written as a torch function,
@@ -83,6 +83,19 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
             cgf[i] is the cumulant-generating function at score_diffs[i]
         """
 
+    def init_scores(self, 
+        entity_name2index: dict[str, int],
+        init_multiscores: MultiScore, # key_names == "entity_name"
+    ) -> torch.Tensor:
+        """ To avoid nan errors in autograd, we initialize at nonzero values """
+        scores = 1e-5 * torch.normal(0, 1, (len(entity_name2index),))
+        for entity, init_score in init_multiscores:
+            if not init_score.isnan():
+                scores[entity_name2index[str(entity)]] += init_score.value
+        scores.requires_grad = True
+        scores = scores.to(self.device)
+        return scores
+    
     def compute_scores(self, 
         entities: Entities,
         entity_name2index: dict[str, int],
@@ -90,11 +103,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         init_multiscores : MultiScore, # key_names == ["entity_name"]
     ) -> npt.NDArray:
         """ Computes the scores given comparisons """
-        scores = self.init_scores(entity_name2index, init_multiscores)
-        scores = torch.tensor(scores, dtype=torch.float64)
-        scores.requires_grad = True
-        scores = scores.to(self.device)
-
+        scores = self.init_scores(entity_name2index, init_multiscores)        
         lbfgs = torch.optim.LBFGS(
             (scores,),
             max_iter=self.max_iter,
@@ -129,8 +138,8 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         indices = comparisons.compared_entity_indices(entity_name2index, self.last_comparison_only)
         score_diffs = scores[indices["left"]] - scores[indices["right"]]
         normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
-        loss = self.cumulant_generating_function(score_diffs).sum()
-        loss -= (score_diffs * torch.tensor(normalized_comparisons)).sum()
+        loss = self.torch_cumulant_generating_function(score_diffs).sum()
+        loss += (score_diffs * torch.tensor(normalized_comparisons)).sum()
         return loss + (scores**2).sum() / (2 * self.prior_std_dev**2)
 
 
@@ -158,7 +167,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
             last_comparison_only=last_comparison_only
         )
 
-    def cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:
+    def torch_cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:
         """ Vectorized cumulant generating function adapted for pytorch
 
         Parameters
@@ -171,7 +180,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         cgf: torch.Tensor
             cfg[i] is the cgf of score_diff[i]
         """
-        score_diffs_abs = score_diffs.abs()
+        score_diffs_abs = torch.abs(score_diffs)
         return torch.where(
             score_diffs_abs > 1e-1,
             torch.where(
