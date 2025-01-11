@@ -25,12 +25,3 @@ from solidago.primitives.lipschitz import *
 pipeline= Sequential.load("tests/pipeline/test_pipeline.json")
 states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
 
-# for seed in range(5):
-    # s = states[seed]
-    
-s = states[0]
-# t = pipeline.aggregation.state2state_function(s)
-# s = pipeline.aggregation.state2state_function(s, save_directory=f"tests/pipeline/saved/{seed}")
-# s = pipeline.post_process.state2state_function(s, save_directory=f"tests/pipeline/saved/{seed}")
-
-

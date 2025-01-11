@@ -3,8 +3,8 @@ import numpy as np
 
 from solidago import *
 
-
 states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
+
 
 @pytest.mark.parametrize("seed", range(5))
 def test_learned_models(seed):
@@ -18,7 +18,10 @@ def test_learned_models(seed):
         n_entity_to_fully_compare_max=100,
         error=1e-5
     )
-    scaled_models = mehestan.state2objects_function(states[seed])
+    s = states[seed]
+    users, entities, made_public = s.users, s.entities, s.made_public
+    base_models = UserModels({ username: model.base_model()[0] for username, model in s.user_models })
+    users, scaled_models = mehestan(users, entities, made_public, base_models)
     
 @pytest.mark.parametrize("seed", range(5))
 def test_standardize(seed):
@@ -27,6 +30,7 @@ def test_standardize(seed):
         lipschitz=10.0, 
         error=1e-05
     )
+    s = states[seed]
     standardized_models = standardize.state2objects_function(states[seed])
     assert standardized_models.score(states[seed].entities).to_df()["score"].std() < 2
     assert standardized_models.score(states[seed].entities).to_df()["score"].std() > 0.5

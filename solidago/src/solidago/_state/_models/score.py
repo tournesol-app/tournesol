@@ -61,32 +61,32 @@ class Score:
         return (self.left_unc + self.right_unc) / 2
 
     def __eq__(self, score: Union[int, float, "Score"]) -> bool:
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return self.to_triplet() == score.to_triplet()
         
     def __neq__(self, score: Union[int, float, "Score"]) -> bool:
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return self.to_triplet() != score.to_triplet()
     
     def __lt__(self, score: Union[int, float, "Score"]) -> bool:
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return self.max < score.min
     
     def __gt__(self, score: Union[int, float, "Score"]) -> bool:
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return self.min > score.max
     
     def __le__(self, score: Union[int, float, "Score"]) -> bool:
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return self.min <= score.max
     
     def __ge__(self, score: Union[int, float, "Score"]) -> bool:
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return self.max >= score.min
     
@@ -94,7 +94,7 @@ class Score:
         return Score(- self.value, self.right_unc, self.left_unc)
     
     def __add__(self, score: Union[int, float, "Score"]) -> "Score":
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return Score(
             self.value + score.value,
@@ -103,7 +103,7 @@ class Score:
         )
     
     def __sub__(self, score: Union[int, float, "Score"]) -> "Score":
-        if isinstance(score, (int, float)):
+        if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return Score(
             self.value - score.value,
@@ -112,14 +112,14 @@ class Score:
         )
         
     def __mul__(self, s: Union[int, float, "Score"]) -> "Score":
-        if isinstance(s, (int, float)):
+        if not isinstance(s, Score):
             s = Score(s, 0, 0)
         value = self.value * s.value
         extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
         return Score(value, value - min(extremes), max(extremes) - value)
 
     def __truediv__(self, s: "Score") -> "Score":
-        if isinstance(s, (int, float)):
+        if not isinstance(s, Score):
             s = Score(s, 0, 0)
         if 0 in s:
             return Score.nan()

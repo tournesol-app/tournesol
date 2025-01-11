@@ -3,8 +3,41 @@ from solidago import *
 
 states = [ State.load(f"tests/pipeline/saved_{seed}") for seed in range(5) ]
 
-aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5)
+entities = Entities(["entity_0", "entity_1", "entity_2", "entity_3"])
+voting_rights = VotingRights()
+voting_rights["user_0", "entity_0", "default"] = 1
+voting_rights["user_0", "entity_1", "default"] = 1
+voting_rights["user_0", "entity_3", "default"] = 1
+voting_rights["user_1", "entity_0", "default"] = 1
+voting_rights["user_1", "entity_2", "default"] = 1
+voting_rights["user_1", "entity_3", "default"] = 1
+user_models = UserModels({
+    "user_0": DirectScoring({
+        "entity_0": { "default": (2, 1, 0.5) },
+        "entity_1": { "default": (1, 0.2, .1) },
+        "entity_3": { "default": (0.2, .4, .3) }
+    }),
+    "user_1": DirectScoring({
+        "entity_0": { "default": (-1.2, 1, .5) },
+        "entity_2": { "default": (-.3, .2, .1) },
+        "entity_3": { "default": (0.4, .4, .3) }
+    }),
+})
 
+def test_average_simple_instance():
+    global_model = Average()(entities, voting_rights, user_models)
+    assert global_model("entity_0")["default"].value == 0.4
+    assert global_model("entity_1")["default"].value == 1
+    assert global_model("entity_2")["default"].value == -.3
+    assert global_model("entity_3")["default"].to_triplet() == pytest.approx((0.3, .4, .3), abs=1e-2)
+
+def test_qr_quantile_simple_instance():
+    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5)
+    global_model = aggregator(entities, voting_rights, user_models)
+    assert global_model("entity_0")["default"].value < -1
+    assert global_model("entity_1")["default"].value == pytest.approx(1., abs=1e-2)
+    assert global_model("entity_2")["default"].value == pytest.approx(-.3, abs=1e-2)
+    assert global_model("entity_3")["default"].value > 0.2
 
 @pytest.mark.parametrize( "seed", list(range(5)) )
 def test_average(seed):
@@ -12,87 +45,6 @@ def test_average(seed):
 
 @pytest.mark.parametrize( "seed", list(range(5)) )
 def test_aggregation(seed):
-    global_model = EntitywiseQrQuantile().state2objects_function(states[seed])
+    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5)
+    global_model = aggregator.state2objects_function(states[seed])
 
-@pytest.mark.parametrize( "test", list(range(1, 5)) )
-def test_qtlstd(test):
-    """ The output of StandardizedQrMedian should be independent from
-    the multiplicative scales of input user models, as long as it is the same for all users.
-    """
-    td = importlib.import_module(f"data.data_{test}")
-    df = _get_user_scores(td.voting_rights, td.standardized_models, td.entities)
-    aggregation = StandardizedQrMedian(dev_quantile=0.9, lipschitz=1e20, error=1e-6)
-    std_dev = aggregation._compute_std_dev(df)
-    scaled_models = { 
-        u: ScaledScoringModel(base_model=td.standardized_models[u], multiplicator=2)
-        for u in td.standardized_models
-    }
-    df2 = _get_user_scores(td.voting_rights, scaled_models, td.entities)
-    std_dev2 = aggregation._compute_std_dev(df2)
-    assert 2 * std_dev == pytest.approx(std_dev2, abs=1e-4)
-
-@pytest.mark.parametrize( "test", list(range(5)) )
-def test_qtlstd_qrmed_invariance(test):
-    """ The output of StandardizedQrMedian should be independent from
-    the multiplicative scales of input user models, as long as it is the same for all users.
-    """
-    td = importlib.import_module(f"data.data_{test}")
-    aggregation = StandardizedQrMedian(dev_quantile=0.9, lipschitz=10000., error=1e-7)
-    user_models, global_model = aggregation(
-        td.voting_rights,
-        td.standardized_models,
-        td.users,
-        td.entities
-    )
-    user_models2, global_model2 = aggregation(
-        td.voting_rights,
-        { 
-            u: ScaledScoringModel(base_model=td.standardized_models[u], multiplicator=2)
-            for u in td.standardized_models
-        },
-        td.users,
-        td.entities
-    )
-    for u in user_models:
-        for e in user_models[u].scored_entities(td.entities):
-            score = user_models[u](e, td.entities.loc[e])
-            score2 = user_models2[u](e, td.entities.loc[e])
-            assert score == pytest.approx(score2, abs=1e-2)
-    
-    for e in global_model.scored_entities(td.entities):
-        score = global_model(e, td.entities.loc[e])
-        score2 = global_model2(e, td.entities.loc[e])
-        assert score == pytest.approx(score2, abs=1e-2)
-    
-
-@pytest.mark.parametrize( "test", list(range(5)) )
-def test_average(test):
-    td = importlib.import_module(f"data.data_{test}")
-    aggregation = Average()
-    user_models, global_model = aggregation(
-        td.voting_rights,
-        td.standardized_models,
-        td.users,
-        td.entities
-    )
-    user_models2, global_model2 = aggregation(
-        td.voting_rights,
-        { 
-            u: ScaledScoringModel(base_model=td.standardized_models[u], multiplicator=2)
-            for u in td.standardized_models
-        },
-        td.users,
-        td.entities
-    )
-    for u in user_models:
-        for e in user_models[u].scored_entities(td.entities):
-            score = user_models[u](e, td.entities.loc[e])
-            score2 = td.standardized_models[u](e, td.entities.loc[e])
-            assert score == pytest.approx(score2, abs=1e-2)
-    
-    for e in global_model.scored_entities(td.entities):
-        score = global_model(e, td.entities.loc[e])
-        score2 = global_model2(e, td.entities.loc[e])
-        for i in range(3):
-            assert 2 * score[i] == pytest.approx(score2[i], abs=1e-2)
-    

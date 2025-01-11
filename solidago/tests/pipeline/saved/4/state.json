@@ -38,7 +38,7 @@
         {
             "users": {
                 "user_0": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -47,17 +47,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_1": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -66,17 +74,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_2": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -85,17 +101,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_3": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -104,17 +128,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_4": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -123,17 +155,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_5": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -142,17 +182,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_6": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -161,17 +209,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_7": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -180,17 +236,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_8": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -199,17 +263,25 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ],
                 "user_9": [
-                    "ScaledModel",
+                    "SquashedModel",
                     {
                         "parent": [
                             "ScaledModel",
@@ -218,13 +290,21 @@
                                     "ScaledModel",
                                     {
                                         "parent": [
-                                            "DirectScoring",
-                                            {}
+                                            "ScaledModel",
+                                            {
+                                                "parent": [
+                                                    "DirectScoring",
+                                                    {}
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "args": {
+                            "max_score": 100
+                        }
                     }
                 ]
             },
@@ -236,9 +316,15 @@
         }
     ],
     "global_model": [
-        "DirectScoring",
+        "SquashedModel",
         {
-            "directs": "tests/pipeline/saved/4/directs.csv"
+            "parent": [
+                "DirectScoring",
+                {}
+            ],
+            "args": {
+                "max_score": 100
+            }
         }
     ]
 }

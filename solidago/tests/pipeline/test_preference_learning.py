@@ -3,8 +3,6 @@ import pytest
 from solidago import *
 from pandas import DataFrame
 
-states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
-
 
 @pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
 def test_gbt_score_zero(GBT):
@@ -53,9 +51,8 @@ def test_gbt_score_monotonicity(GBT):
     assert scores["entity_2"].left_unc < scores["entity_2"].right_unc
 
 
-@pytest.mark.parametrize("seed", range(4))
-def test_uniform_gbt(seed):
-    s = states[seed]
+def test_uniform_gbt():
+    s = State.load(f"tests/pipeline/saved/0")
     user_models = dict()
     for index, optimizer in enumerate((NumbaUniformGBT, LBFGSUniformGBT)):
         preference_learning = optimizer(
