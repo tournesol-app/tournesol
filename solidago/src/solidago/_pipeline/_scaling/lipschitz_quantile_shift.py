@@ -8,7 +8,7 @@ from solidago._state import *
 from solidago._pipeline.base import StateFunction
 
 
-class QuantileShift(StateFunction):
+class LipschitzQuantileShift(StateFunction):
     def __init__(self,
         quantile: float = 0.15,
         target_score: float = 0.0,
@@ -38,16 +38,14 @@ class QuantileShift(StateFunction):
         scales = ScaleDict(key_names=["criterion"]) # the same scale will apply to all users
         for criterion in scores.get_set("criterion"):
             scores_df = scores[criterion].to_df()
-            score_values = scores_df["score"]
-            left_uncertainties = scores_df["left_unc"]
-            right_uncertainties = scores_df["right_unc"]
+            weights = 1 / scores_df.groupby("username").transform("size")
             translation_value = - qr_quantile(
                 lipschitz=self.lipschitz,
                 quantile=self.quantile,
-                values=np.array(score_values),
-                voting_rights=np.array([1/len(entities)] * len(entities)),
-                left_uncertainties=np.array(left_uncertainties),
-                right_uncertainties=np.array(right_uncertainties),
+                values=np.array(scores_df["score"], dtype=np.float64),
+                voting_rights=np.array(weights, dtype=np.float64),
+                left_uncertainties=np.array(scores_df["left_unc"], dtype=np.float64),
+                right_uncertainties=np.array(scores_df["right_unc"], dtype=np.float64),
                 error=self.error,
             ) + self.target_score
             scales[criterion] = (1, 0, 0, translation_value, 0, 0)
@@ -58,7 +56,7 @@ class QuantileShift(StateFunction):
         })
 
 
-class QuantileZeroShift(QuantileShift):
+class LipschitzQuantileZeroShift(LipschitzQuantileShift):
     def __init__(self,
         zero_quantile: float = 0.15,
         lipschitz: float = 0.1,

@@ -51,12 +51,13 @@ class NestedDict(ABC):
         
     def get(self, *keys, process: bool=False) -> Union["NestedDict", Any]:
         assert len(keys) <= len(self.key_names), (keys, repr(self))
+        if len(keys) == 0:
+            return self
+        keys = tuple(set(key.index) if isinstance(key, DataFrame) else key for key in keys)
         out_key_names = [ 
             key_name for key_name, key in zip(self.key_names[:len(keys)], keys)
             if (isinstance(key, BuiltinFunctionType) and key == any) or isinstance(key, (set, tuple, list))
         ] + self.key_names[len(keys):]
-        if len(keys) == 0:
-            return self
         if _is_any(keys[0]) and len(keys) == 1:
             return self
         if _is_any(keys[0]) or isinstance(keys[0], (set, tuple, list)): # len(keys) > 1
@@ -76,7 +77,7 @@ class NestedDict(ABC):
             return value
         return self._dict[str(keys[0])].get(*keys[1:], process=process)
 
-    def __getitem__(self, keys: Union[str, tuple, list, dict]) -> Union["NestedDict", Any]:
+    def __getitem__(self, keys: Union[str, tuple, list, dict, DataFrame]) -> Union["NestedDict", Any]:
         """ __getitem___ postprocesses the result to make it readily usable for external use """
         if isinstance(keys, dict):
             keys = [(keys[key_name] if key_name in keys else any) for key_name in self.key_names]

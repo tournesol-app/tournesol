@@ -49,7 +49,7 @@ def test_qr_quantile_zero_uncertainty_incorrect_prior():
     quantile = qr_quantile(
         lipschitz=1e9,
         quantile=0.21,
-        voting_rights=1.0,
+        voting_rights=np.ones(10, dtype=np.float64),
         values=np.array([0.0, 1.0, 2.0, 6.0, 9.0, 5.0, 3.0, 5.0, 4.0, 7.0]),
         left_uncertainties=np.array([1e-6] * 10),
         right_uncertainties=np.array([1e-4] * 10),

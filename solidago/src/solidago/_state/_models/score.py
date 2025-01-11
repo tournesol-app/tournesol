@@ -32,7 +32,7 @@ class Score:
         else:
             assert isinstance(left_unc, (int, float)) and isinstance(right_unc, (int, float))
             values = value, left_unc, right_unc
-        assert values[1] >= 0 and values[2] >= 0
+        assert values[1] >= 0 and values[2] >= 0, values
         self.value, self.left_unc, self.right_unc = values
     
     @classmethod
@@ -102,17 +102,26 @@ class Score:
             self.right_unc + score.right_unc
         )
     
+    def __sub__(self, score: Union[int, float, "Score"]) -> "Score":
+        if isinstance(score, (int, float)):
+            score = Score(score, 0, 0)
+        return Score(
+            self.value - score.value,
+            self.left_unc + score.right_unc,
+            self.right_unc + score.left_unc
+        )
+        
     def __mul__(self, s: Union[int, float, "Score"]) -> "Score":
         if isinstance(s, (int, float)):
-            s = Score(score, 0, 0)
+            s = Score(s, 0, 0)
         value = self.value * s.value
         extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
         return Score(value, value - min(extremes), max(extremes) - value)
 
     def __truediv__(self, s: "Score") -> "Score":
-        if isinstance(score, (int, float)):
-            score = Score(score, 0, 0)
-        if 0 in self or 0 in s:
+        if isinstance(s, (int, float)):
+            s = Score(s, 0, 0)
+        if 0 in s:
             return Score.nan()
         value = self.value / s.value
         extremes = [ self.min / s.min, self.min / s.max, self.max / s.min, self.max / s.max ]
@@ -178,8 +187,20 @@ class MultiScore(NestedDictOfTuples):
         keys = self.get_set("criterion") & other.get_set("criterion")
         return MultiScore({ key: (self[key] + other[key]).to_triplet() for key in keys })
     
+    def __sub__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
+        if isinstance(other, Score):
+            return MultiScore({ key: value - other for key, value in self })
+        keys = self.get_set("criterion") & other.get_set("criterion")
+        return MultiScore({ key: (self[key] - other[key]).to_triplet() for key in keys })
+        
     def __mul__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
         if isinstance(other, Score):
             return MultiScore({ key: value * other for key, value in self })
         keys = self.get_set("criterion") & other.get_set("criterion")
         return MultiScore({ key: (self[key] * other[key]).to_triplet() for key in keys })
+        
+    def __truediv__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
+        if isinstance(other, Score):
+            return MultiScore({ key: value / other for key, value in self })
+        keys = self.get_set("criterion") & other.get_set("criterion")
+        return MultiScore({ key: (self[key] / other[key]).to_triplet() for key in keys })

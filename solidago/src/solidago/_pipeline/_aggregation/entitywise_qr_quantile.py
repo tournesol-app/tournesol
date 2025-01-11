@@ -7,18 +7,13 @@ from solidago._pipeline.base import StateFunction
 
 
 class EntitywiseQrQuantile(StateFunction):
-    def __init__(self, 
-        quantile: float=0.2, 
-        lipschitz: float=0.1, 
-        error: float=1e-5
-    ):
-        """ Standardize scores so that only a fraction 1 - dev_quantile
-        of the scores is further than 1 away from the median,
-        and then run qr_median to aggregate the scores.
+    def __init__(self, quantile: float=0.2, lipschitz: float=0.1, error: float=1e-5):
+        """ Aggregates scores using the quadratically regularized quantile,
+        for each entity and each criterion.
         
         Parameters
         ----------
-        qtl_std_dev: float
+        quantile: float
         lipschitz: float
         error: float
         """
@@ -31,64 +26,30 @@ class EntitywiseQrQuantile(StateFunction):
         voting_rights: VotingRights,
         user_models: UserModels,
     ) -> ScoringModel:
-        """ Returns scaled user models """
-        global_scores = DirectScoring()
         
-        voting_rights = voting_rights.reorder_keys(["entity_name", "username", "criterion"])
-        for entity in entities:
-            all_scores = self.get_scores(entity, user_models)
-            rights = self.get_voting_rights(entity, voting_rights, user_models)
-            for criterion, scores_list in all_scores.items():
-                if criterion not in rights:
-                    continue
-                scores, left_uncs, right_uncs = [ np.array(l) for l in zip(*scores_list) ]
-                score = qr_quantile(
-                    lipschitz=self.lipschitz,
-                    quantile=self.quantile,
-                    values=scores,
-                    voting_rights=np.array(rights[criterion]),
-                    left_uncertainties=left_uncs,
-                    right_uncertainties=right_uncs,
-                    error=self.error
-                )
-                uncertainty = qr_uncertainty(
-                    lipschitz=self.lipschitz, 
-                    values=np.array(dfe["scores"]), 
-                    voting_rights=np.array(dfe["voting_rights"]), 
-                    left_uncertainties=np.array(dfe["left_uncertainties"]),
-                    right_uncertainties=np.array(dfe["right_uncertainties"]),
-                    default_dev=1.0,
-                    error=self.error,
-                    median = score if self.quantile == 0.5 else None,
-                )
-                global_scores[entity, criterion] = score, uncertainty, uncertainty
+        global_model = DirectScoring()
+        voting_rights = voting_rights.reorder_keys(["entity_name", "criterion", "username"])
+        multiscores = user_models(entities).reorder_keys(["entity_name", "criterion", "username"])
+        common_kwargs = dict(lipschitz=self.lipschitz, error=self.error)
+
+        for entity_name in multiscores.get_set("entity_name"):
+            for criterion in multiscores[entity_name].get_set("criterion"):
                 
-        return global_scores
-    
-    def get_scores(self, 
-        entity: Entity,
-        user_models: UserModels,
-    ) -> dict[str, list[MultiScore]]:
-        """ Collect all user's multiscores of entity """
-        scores = dict()
-        for _, model in user_models:
-            multiscore = model(entity)
-            for criterion, score in multiscore:
-                if criterion not in scores:
-                    scores[criterion] = list()
-                scores[criterion].append(score.to_triplet())
-        return scores
-        
-    def get_voting_rights(self,
-        entity: Entity,
-        voting_rights: VotingRights,
-        user_models: UserModels
-    ) -> dict[str, list[float]]:
-        result = dict()
-        voting_rights = voting_rights.reorder_keys(["entity_name", "username", "criterion"])
-        for username, _ in user_models:
-            for criterion, value in voting_rights[entity, username]:
-                if criterion not in result:
-                    result[criterion] = list()
-                result[criterion].append(value)
-        return result
+                scores = multiscores[entity_name, criterion].to_df()
+                rights = [
+                    voting_rights[entity_name, criterion, username]
+                    for username, _ in multiscores[entity_name, criterion]
+                ]
+                kwargs = common_kwargs | dict(
+                    values=np.array(scores["score"]),
+                    voting_rights=np.array(rights, dtype=np.float64),
+                    left_uncertainties=np.array(scores["left_unc"]),
+                    right_uncertainties=np.array(scores["right_unc"]),
+                )                
+                quantile_score = qr_quantile(quantile=self.quantile, **kwargs)
+                median = quantile_score if self.quantile == 0.5 else None
+                uncertainty = qr_uncertainty(default_dev=1.0, median=median, **kwargs)
+                
+                global_model[entity_name, criterion] = quantile_score, uncertainty, uncertainty
+                
+        return global_model

@@ -2,17 +2,17 @@ import pytest
 from solidago import *
 
 states = [ State.load(f"tests/pipeline/saved_{seed}") for seed in range(5) ]
-pipeline = Sequential.load("tests/pipeline/test_pipeline.json")
+
+aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5)
+
 
 @pytest.mark.parametrize( "seed", list(range(5)) )
-def test_aggregation(test):
-    """ Basic run of pipelines on test data """
-    user_models, global_model = td.pipeline.aggregation(
-        td.voting_rights,
-        td.standardized_models,
-        td.users,
-        td.entities
-    )
+def test_average(seed):
+    global_model = Average().state2objects_function(states[seed])
+
+@pytest.mark.parametrize( "seed", list(range(5)) )
+def test_aggregation(seed):
+    global_model = EntitywiseQrQuantile().state2objects_function(states[seed])
 
 @pytest.mark.parametrize( "test", list(range(1, 5)) )
 def test_qtlstd(test):

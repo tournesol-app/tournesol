@@ -25,8 +25,12 @@ class NestedDictOfRowLists(NestedDict):
     def default_value(self) -> Any:
         return list()
         
-    def process_stored_value(self, keys: list[str], stored_value: dict) -> Any:
-        return self.row_cls(stored_value)
+    def process_stored_value(self, keys: list[str], stored_value: Union[list, dict]) -> Any:
+        if isinstance(stored_value, dict):
+            return self.row_cls(stored_value)
+        if isinstance(stored_value, list):
+            return [self.process_stored_value(keys, v) for v in stored_value]
+        return stored_value
         
     def add_row(self, keys: Union[str, list, tuple], row: Union[dict, Series]) -> None:
         keys = keys if isinstance(keys, (list, tuple)) else [str(keys)]
@@ -62,8 +66,20 @@ class NestedDictOfRowLists(NestedDict):
         if row_kwargs is None:
             row_kwargs = dict()
         returns = "last_row" if last_row_only else "rows"
+        def to_dict(row):
+            from solidago._state import Score
+            if isinstance(row, (dict, Series)):
+                return dict(row)
+            elif isinstance(row, Score):
+                return row.to_dict()
+            elif isinstance(row, Iterable):
+                return { i: r for i, r in enumerate(row) }
+            elif isinstance(row, (bool, int, float, str)):
+                return dict(row=row)
+            else:
+                raise ValueError(type(row))
         return [
-            dict(zip(self.key_names, keys)) | row_kwargs | row
+            dict(zip(self.key_names, keys)) | row_kwargs | to_dict(row)
             for keys, row in self.iter(returns=returns, value_process=False, key_process=False)
         ]
 
@@ -77,6 +93,7 @@ class NestedDictOfRowLists(NestedDict):
     ) -> Iterable:
         if len(self.key_names) == 1:
             for key, row_list in self._dict.items():
+                assert isinstance(row_list, list), (key, row_list)
                 if returns == "rows":
                     for row in row_list:
                         yield (

@@ -27,8 +27,16 @@ class NestedDictOfItems(NestedDict):
     def default_value(self) -> Any:
         return self._default_value
 
-    def add_row(self, keys: list[str], row: Union[dict, Series]) -> None:
-        self[keys] = row[self.value_name]
+    def add_row(self, keys: list[str], row: Union[dict, Series, int, float, str]) -> None:
+        if isinstance(row, (dict, Series)):
+            self[keys] = row[self.value_name]
+        elif isinstance(row, (int, float, str)):
+            self[keys] = row
+        elif isinstance(row, (tuple, list, set)):
+            assert len(row) == 1
+            self[keys] = next(iter(row))
+        else:
+            raise ValueError(f"{type(row)} not dealt with")
 
     def get_set(self, key_name: str, default_value: Optional[str]=None) -> set:
         try:

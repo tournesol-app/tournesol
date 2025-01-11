@@ -11,7 +11,8 @@ from pathlib import Path
 from numba import njit
 
 from solidago import *
-from solidago.primitives.optimize import coordinate_descent, njit_brentq
+from solidago.primitives.datastructure import *
+from solidago.primitives.lipschitz import *
 
 
 # t = TournesolExport("tests/tiny_tournesol.zip")
@@ -24,11 +25,12 @@ from solidago.primitives.optimize import coordinate_descent, njit_brentq
 pipeline= Sequential.load("tests/pipeline/test_pipeline.json")
 states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
 
-for seed in range(5):
-    s = states[seed]
-
-# s = pipeline.scaling.state2state_function(s, save_directory="tests/pipeline/saved")
-# s = pipeline.aggregation.state2state_function(s, save_directory="tests/pipeline/saved")
-# s = pipeline.post_process.state2state_function(s, save_directory="tests/pipeline/saved")
+# for seed in range(5):
+    # s = states[seed]
+    
+s = states[0]
+# t = pipeline.aggregation.state2state_function(s)
+# s = pipeline.aggregation.state2state_function(s, save_directory=f"tests/pipeline/saved/{seed}")
+# s = pipeline.post_process.state2state_function(s, save_directory=f"tests/pipeline/saved/{seed}")
 
 

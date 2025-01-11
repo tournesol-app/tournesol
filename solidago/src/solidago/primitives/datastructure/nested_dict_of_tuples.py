@@ -34,9 +34,9 @@ class NestedDictOfTuples(NestedDict):
         try:
             return super().get_set(key_name, default_value)
         except NestedKeyError:
-            if value_name not in self.value_names:
+            if key_name not in self.value_names:
                 raise NestedKeyError(key_name)
-            value_name_index = self.value_names.index(value_name)
+            value_name_index = self.value_names.index(key_name) # key_name is actually a value_name
             return { values[value_name_index] for _, values in self }
 
     def to_rows(self, row_kwargs: Optional[dict]=None) -> list[dict]:

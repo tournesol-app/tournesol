@@ -12,41 +12,20 @@ class Average(StateFunction):
         user_models: UserModels,
     ) -> ScoringModel:
         """ Returns weighted average of user's scores """
-        global_model = DirectScoringModel()
-        voting_rights = voting_rights.reorder_keys(["username", "entity_name", "criterion"])
-        
-        for entity in entities:
-        
-            total_voting_rights, total_scores = dict(), dict()
-            total_lefts, total_rights = dict(), dict()
-        
-            for user, model in user_models:
-                multiscore = model(entity)
-        
-                for criterion, score in multiscore:
-        
-                    if score.isnan():
-                        continue
-        
-                    for d in (total_voting_rights, total_scores, total_lefts, total_rights):
-                        if criterion not in d:
-                            d[criterion] = 0
-        
-                    total_voting_rights[criterion] += voting_rights[user, entity, criterion]
-                    total_scores[criterion] = voting_rights[user, entity, criterion] * output[0]
-                    total_lefts[criterion]  = voting_rights[user, entity, criterion] * output[1]
-                    total_rights[criterion] = voting_rights[user, entity, criterion] * output[2]
-        
-            for criterion in total_voting_rights:
+        global_model = DirectScoring()
+        voting_rights = voting_rights.reorder_keys(["entity_name", "criterion", "username"])
+        multiscores = user_models(entities).reorder_keys(["entity_name", "criterion", "username"])
+
+        for entity_name in multiscores.get_set("entity_name"):
+            for criterion in multiscores[entity_name].get_set("criterion"):
                 
-                if total_voting_rights[criterion] == 0:
-                    continue
-                
-                global_model[entity, criterion] = (
-                    total_scores[criterion] / total_voting_rights[criterion],
-                    total_lefts[criterion]  / total_voting_rights[criterion],
-                    total_rights[criterion] / total_voting_rights[criterion],
-                )
+                weights = voting_rights[entity_name, criterion]
+                weighted_sum = sum([
+                    score * weights[username]
+                    for username, score in multiscores[entity_name, criterion]
+                ], Score(0, 0, 0))
+                sum_of_weights = weights.to_df()["voting_right"].sum()
+                global_model[entity_name, criterion] = weighted_sum / sum_of_weights
         
         return global_model
         

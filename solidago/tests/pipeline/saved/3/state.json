@@ -38,48 +38,199 @@
         {
             "users": {
                 "user_0": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_1": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_2": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_3": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_4": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_5": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_6": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_7": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_8": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 "user_9": [
-                    "DirectScoring",
-                    {}
+                    "ScaledModel",
+                    {
+                        "parent": [
+                            "ScaledModel",
+                            {
+                                "parent": [
+                                    "ScaledModel",
+                                    {
+                                        "parent": [
+                                            "DirectScoring",
+                                            {}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ]
             },
             "dataframes": {
-                "directs": "tests/pipeline/saved/3/user_directs.csv"
+                "directs": "tests/pipeline/saved/3/user_directs.csv",
+                "scalings": "tests/pipeline/saved/3/user_scalings.csv"
             },
             "default_model_cls": "DirectScoring"
         }

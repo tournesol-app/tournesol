@@ -8,5 +8,5 @@ assuming each user has a very specific selection bias of rated entities.
 """
 
 from .mehestan import Mehestan
-from .quantile_shift import QuantileShift, QuantileZeroShift
-from .standardize import Standardize
+from .lipschitz_quantile_shift import LipschitzQuantileShift, LipschitzQuantileZeroShift
+from .lipschitz_standardize import LipschitzStandardize
