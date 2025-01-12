@@ -29,8 +29,6 @@ def test_evaluation_generator():
 def test_generative_model():
     generative_model = GenerativeModel.load("tests/generative_model/test_generative_model.json")
     for seed in range(5):
-        generative_model(seed=seed).save(f"tests/pipeline/saved_{seed}")
-    for seed in range(5):
-        state = State.load(f"tests/pipeline/saved_{seed}")
+        state = State.load(f"tests/pipeline/saved/{seed}")
         for key in ("users", "entities", "vouches", "made_public", "assessments", "comparisons"):
             assert len(getattr(state, key)) > 0
