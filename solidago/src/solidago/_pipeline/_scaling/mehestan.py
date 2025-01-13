@@ -163,9 +163,6 @@ class Mehestan(StateFunction):
         logger.info(f"Succesful Mehestan normalization on {criterion}, in {int(end - start)} seconds")
         return users, (scaler_scales | nonscaler_scales)
 
-    def penalty(self, public: bool):
-        return 1 if public else self.privacy_penalty
-
     ############################################
     ##  The three main steps are              ##
     ##  1. Select the subset of scalers       ##
@@ -301,8 +298,8 @@ class Mehestan(StateFunction):
             return 0.0
         
         sum_of_activities = sum([
-            self.penalty(made_public[entity])
-            for entity, score in scores if not (0 in score)
+            made_public.penalty(self.privacy_penalty, entity_name)
+            for entity_name, score in scores if not (0 in score)
         ])
         
         return trust * sum_of_activities
@@ -441,7 +438,7 @@ class Mehestan(StateFunction):
         """
         weight_sum, weighted_sum = 0., 0.
         for entity_name, score in scores:
-            weight = self.penalty(made_public[entity_name])
+            weight = made_public.penalty(self.privacy_penalty, entity_name)
             weight_sum += weight
             weighted_sum += weight * (score.value**self.p_norm_for_multiplicative_resilience)
     
@@ -526,11 +523,12 @@ class Mehestan(StateFunction):
     ) -> tuple[list[float], list[Score]]:
         """ Returns the scaler's voting right and ratios to multiplicatively scale scalee's model """
         weight_list, ratio_list = list(), list()
+        penalty = lambda entity_name: scaler_public.penalty(self.privacy_penalty, entity_name)
         for e, f in pairs:
             ratio = (scaler_scores[e] - scaler_scores[f]) / (scalee_scores[e] - scalee_scores[f])
             if ratio.isnan(): continue
             ratio_list.append(ratio.abs())
-            weight_list.append(self.penalty(scaler_public[e]) * self.penalty(scaler_public[f]))
+            weight_list.append(penalty(e) * penalty(f))
         return weight_list, ratio_list
 
     def compute_multiplicators(self, 
@@ -622,7 +620,7 @@ class Mehestan(StateFunction):
                         for entity_name in common_entity_names
                     ]
                     weight_lists[scalee_name, scaler_name] = [
-                        self.penalty(made_public[scaler_name, entity_name])
+                        made_public.penalty(self.privacy_penalty, scaler_name, entity_name)
                         for entity_name in common_entity_names
                     ]
 

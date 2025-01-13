@@ -9,7 +9,7 @@ class MadePublic(NestedDictOfItems):
         d: Optional[Union[dict, DataFrame]]=None, 
         key_names=["username", "entity_name"],
         value_name="public",
-        save_filename="made_public.csv"
+        save_filename="made_public.csv",
     ):
         super().__init__(d, key_names, value_name, save_filename, default_value=False)
     

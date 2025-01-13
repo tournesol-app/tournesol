@@ -80,31 +80,26 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         init_multiscores : MultiScore, # key_names == "entity_name"
     ) -> npt.NDArray:
         """ Computes the scores given comparisons """
-        comparisons = comparisons.order_by_entities()
-        
+        get_args = self.get_partial_derivative_args(entities, comparisons)
         return coordinate_descent(
             self.partial_derivative,
             self.init_scores(entity_name2index, init_multiscores),
-            self.get_partial_derivative_args(entities, entity_name2index, comparisons),
+            get_args,
             error=self.convergence_error,
         )
     
     def get_partial_derivative_args(self, 
         entities: Entities, 
-        entity_name2index: dict[str, int],
-        entity_ordered_comparisons: Comparisons, # key_names == ["entity_name", "other_name"]
-    ) -> Callable[[int, np.ndarray], tuple[np.ndarray, np.ndarray]]:
+        comparisons: Comparisons, # key_names == ["left_name", "right_name"]
+    ) -> Callable[[int, np.ndarray], tuple[np.ndarray, np.ndarray, np.ndarray]]:
         
+        comparison_dict = comparisons.to_comparison_dict(entities, self.last_comparison_only)
+
         def f(entity_index: int, scores: np.ndarray) -> tuple:
-            entity_name = entities.iloc[entity_index].name
-            comparisons = entity_ordered_comparisons[entity_name]
-            normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
-            df = comparisons.to_df(last_row_only=self.last_comparison_only)
-            indices = df["other_name"].map(entity_name2index)
-            return scores[indices], np.array(normalized_comparisons)
+            indices, normalized_comparisons = comparison_dict[entity_index]
+            return entity_index, scores, scores[indices], normalized_comparisons
             
         return f
-
 
     @cached_property
     def partial_derivative(self) -> Callable[[int, np.ndarray[np.float64], dict, dict], float]:
@@ -120,7 +115,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         @njit
         def njit_partial_derivative(
             entity_index: int,
-            scores: float,
+            scores: npt.NDArray,
             compared_scores: npt.NDArray, 
             normalized_comparisons: npt.NDArray, 
         ) -> npt.NDArray:
@@ -130,6 +125,19 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             return prior_derivative + nll_derivative
         
         return njit_partial_derivative
+
+    def gradient(self,
+        scores: float,
+        entities: Entities, 
+        entity_name2index: dict[str, int],
+        entity_ordered_comparisons: Comparisons, # key_names == ["entity_name", "other_name"]
+    ) -> np.array:
+        get_args = self.get_partial_derivative_args(entities, entity_name2index, entity_ordered_comparisons)
+        return np.array([ 
+            self.partial_derivative(entity_index, scores, *get_args(entity_index, scores))
+            for entity_index in range(len(scores))
+        ])
+            
 
 
 class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):

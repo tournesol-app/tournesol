@@ -13,7 +13,7 @@
     ],
     "made_public": [
         "AllPublic",
-        {}
+        "tests/load_save/save_tiny_tournesol/made_public.csv"
     ],
     "assessments": [
         "Assessments",

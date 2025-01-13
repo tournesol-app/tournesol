@@ -89,4 +89,33 @@ class Comparisons(NestedDictOfRowLists):
     
     def normalized_comparisons(self, last_comparison_only: bool) -> Series:
         df = self.to_df(last_row_only=last_comparison_only)
+        if df.empty:
+            return Series()
         return df["comparison"] / df["comparison_max"]
+
+    def to_comparison_dict(self, 
+        entities: "Entities", 
+        last_comparison_only: bool,
+    ) -> list[tuple[np.array, np.array]]:
+        """
+        Returns
+        -------
+        comparison_dict: dict[str, tuple[Series, Series]]
+            comparison_dict[entity_name] is a pair compared_indices, normalized_comparisons
+            which respectively contain the indices of compared entities
+            and the normalized comparisons against these compared entities
+        """
+        result = list()
+        entity_ordered_comparisons = self.order_by_entities()
+        entity_name2index = { str(entity): index for index, entity in enumerate(entities) }
+        for i, entity in enumerate(entities):
+            comparisons = entity_ordered_comparisons[str(entity)]
+            if len(comparisons) == 0:
+                result.append((list(), np.array([])))
+            else:
+                df = comparisons.to_df(last_row_only=last_comparison_only)
+                result.append((
+                    list(df["other_name"].map(entity_name2index)),
+                    np.array(comparisons.normalized_comparisons(last_comparison_only))
+                ))
+        return result

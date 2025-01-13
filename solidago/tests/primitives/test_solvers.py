@@ -103,7 +103,7 @@ def test_coordinate_descent():
     def get_partial_derivative_args(coordinate: int, variable: np.ndarray, *args) -> tuple: 
         if len(args) > 0 and args != (0, 8, 4):
             raise ValueError(args)
-        return (1, 2)
+        return coordinate, variable, 1, 2
     
     @njit
     def get_update_coordinate_function_args(coordinate: int, variable: np.ndarray) -> tuple:

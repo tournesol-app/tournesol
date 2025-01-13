@@ -13,15 +13,12 @@ from numba import njit
 from solidago import *
 from solidago.primitives.datastructure import *
 from solidago.primitives.lipschitz import *
+from solidago.primitives.optimize import *
 
 
-# t = TournesolExport("tests/tiny_tournesol.zip")
-
-# generative_model = GenerativeModel.load("tests/generative_model/test_generative_model.json")
-# s = generative_model()
-# s.save("tests/pipeline/saved")
-
-# s = State.load("tests/pipeline/saved")
+t = TournesolExport("tests/tiny_tournesol.zip")
+generative_model = GenerativeModel.load("tests/generative_model/test_generative_model.json")
 pipeline= Sequential.load("tests/pipeline/test_pipeline.json")
-states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
+s = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
 
+u = pipeline(t)

@@ -121,7 +121,9 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         comparisons = comparisons.reorder_keys(["criterion", "left_name", "right_name"])
         criteria = comparisons.get_set("criterion") | init.get_set("criterion")
         for criterion in criteria:
-            learned_scores = self.user_learn_criterion(entities, comparisons[criterion], init[criterion])
+            criterion_entity_names = comparisons.get_set("left_name") | comparisons.get_set("right_name")
+            criterion_entities = entities.get(criterion_entity_names) # Restrict to compared entities
+            learned_scores = self.user_learn_criterion(criterion_entities, comparisons[criterion], init[criterion])
             for entity_name, score in learned_scores:
                 if not score.isnan():
                     model[entity_name, criterion] = score
@@ -300,15 +302,16 @@ class UniformGBT(GeneralizedBradleyTerry):
         or where it is large (because sinh explodes).
         """
         score_diffs_abs = np.abs(score_diffs)
-        return np.where(
-            score_diffs_abs > 1e-1,
-            np.where(
-                score_diffs_abs < 20.0,
-                np.log(np.sinh(score_diffs) / score_diffs),
-                score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
-            ),
-            score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
-        )
+        with np.errstate(all='ignore'):
+            return np.where(
+                score_diffs_abs > 1e-1,
+                np.where(
+                    score_diffs_abs < 20.0,
+                    np.log(np.sinh(score_diffs) / score_diffs),
+                    score_diffs_abs - np.log(2) - np.log(score_diffs_abs),
+                ),
+                score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
+            )
 
     def cumulant_generating_function_derivative(self, score_diffs: npt.NDArray) -> npt.NDArray:
         """ The cgf derivative of UniformGBT is simply 

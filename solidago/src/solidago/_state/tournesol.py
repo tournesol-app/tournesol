@@ -50,6 +50,7 @@ class TournesolExport(State):
                 "uncertainty": "left_unc",                
             })
         
+        users["is_pretrusted"] = users["trust_score"] >= 0.8
         vouches["kind"] = "Personhood"
         vouches["priority"] = 0
         user_scores["depth"] = 0
@@ -59,7 +60,9 @@ class TournesolExport(State):
         from solidago.primitives.date import week_date_to_week_number as to_week_number
         comparisons["week_number"] = [to_week_number(wd) for wd in list(comparisons["week_date"])]
                 
-        entities = DataFrame({ "entity_name": list(set(global_scores["entity_name"])) })
+        entities = DataFrame({ "entity_name": list(
+            set(global_scores["entity_name"]) | set(comparisons["left_name"]) | set(comparisons["right_name"])
+        ) })
         
         return { "users": users, "vouches": vouches, "entities": entities, 
             "comparisons": comparisons, "user_scores": user_scores, "global_scores": global_scores }

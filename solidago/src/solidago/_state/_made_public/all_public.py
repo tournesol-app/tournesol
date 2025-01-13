@@ -3,28 +3,20 @@ from pandas import DataFrame
 from pathlib import Path
 
 from .base import MadePublic
+from solidago.primitives.datastructure import NestedDictOfItems
 
 
-class AllPublic(MadePublic):
-    def __init__(self):
-        super().__init__()
+class AllPublic(NestedDictOfItems):
+    def __init__(self, 
+        d: Optional[Union[dict, DataFrame]]=None, 
+        key_names=["username", "entity_name"],
+        value_name="public",
+        save_filename="made_public.csv"
+    ):
+        super().__init__(d, key_names, value_name, save_filename, default_value=True)
     
-    def __getitem__(self, args: tuple[Union[str, "User"], Union[str, "Entity"]]) -> bool:
-        return True
-    
-    def __setitem__(self, args: tuple[Union[str, "User"], Union[str, "Entity"]], public: bool=True) -> None:
-        if not public:
-            raise f"All public configuration does not allow private settings"
+    def __setitem__(self, keys: Union[str, tuple, list], value: bool) -> None:
+        pass
 
-    @classmethod
-    def load(cls, filename: Optional[str]="None") -> MadePublic:
-        return cls()
-    
-    def to_df(self) -> DataFrame:
-        return DataFrame()
-
-    def save(self, directory: Union[str, Path]) -> tuple[str, dict]:
-        return type(self).__name__, dict()
-        
-    def __repr__(self) -> str:
-        return type(self).__name__
+    def penalty(self, privacy_penalty: float, *keys) -> float:
+        return 1

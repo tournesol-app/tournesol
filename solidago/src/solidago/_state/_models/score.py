@@ -1,6 +1,8 @@
 from typing import Optional, Union
 from pandas import DataFrame, Series
 
+import math
+
 from solidago.primitives.datastructure import NestedDictOfTuples
 
 
@@ -32,8 +34,11 @@ class Score:
         else:
             assert isinstance(left_unc, (int, float)) and isinstance(right_unc, (int, float))
             values = value, left_unc, right_unc
-        assert values[1] >= 0 and values[2] >= 0, values
-        self.value, self.left_unc, self.right_unc = values
+        if math.isnan(values[0]):
+            self.value, self.left_unc, self.right_unc = float("nan"), float("inf"), float("inf")
+        else:
+            assert values[1] >= 0 and values[2] >= 0, values
+            self.value, self.left_unc, self.right_unc = values
     
     @classmethod
     def nan(cls):
