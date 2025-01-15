@@ -92,12 +92,12 @@ def test_brentq_on_partial_derivative():
 
 def test_coordinate_descent():
     @njit
-    def partial_derivative(coordinate: int, variable: np.ndarray, *args) -> float:
+    def partial_derivative(value: float, coordinate: int, variable: np.ndarray, *args) -> float:
         if args != (1, 2):
             raise ValueError(args)
         if coordinate == 0:
-            return variable[coordinate]
-        return (coordinate + 1) * (variable[coordinate] + coordinate + variable[coordinate - 1])
+            return value
+        return (coordinate + 1) * (value + coordinate + variable[coordinate - 1])
     
     @njit
     def get_partial_derivative_args(coordinate: int, variable: np.ndarray, *args) -> tuple: 

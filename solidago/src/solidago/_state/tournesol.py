@@ -50,6 +50,11 @@ class TournesolExport(State):
                 "uncertainty": "left_unc",                
             })
         
+        missing_usernames = set(vouches["by"]) | set(vouches["to"]) | set(user_scores["username"])
+        missing_usernames = missing_usernames.difference(set(users["username"]))
+        for username in missing_usernames:
+            users.loc[len(users)] = [username, 0.]
+
         users["is_pretrusted"] = users["trust_score"] >= 0.8
         vouches["kind"] = "Personhood"
         vouches["priority"] = 0

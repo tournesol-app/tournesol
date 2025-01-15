@@ -91,18 +91,18 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
     def get_partial_derivative_args(self, 
         entities: Entities, 
         comparisons: Comparisons, # key_names == ["left_name", "right_name"]
-    ) -> Callable[[int, np.ndarray], tuple[np.ndarray, np.ndarray, np.ndarray]]:
+    ) -> Callable[[int, np.ndarray], tuple[np.ndarray, np.ndarray]]:
         
         comparison_dict = comparisons.to_comparison_dict(entities, self.last_comparison_only)
 
         def f(entity_index: int, scores: np.ndarray) -> tuple:
             indices, normalized_comparisons = comparison_dict[entity_index]
-            return entity_index, scores, scores[indices], normalized_comparisons
+            return scores[indices], normalized_comparisons
             
         return f
 
     @cached_property
-    def partial_derivative(self) -> Callable[[int, np.ndarray[np.float64], dict, dict], float]:
+    def partial_derivative(self) -> Callable[[float, np.ndarray, np.ndarray], float]:
         """ Computes the partial derivative along a coordinate, 
         for a given value along the coordinate,
         when other coordinates' values are given by the solution.
@@ -114,14 +114,13 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
 
         @njit
         def njit_partial_derivative(
-            entity_index: int,
-            scores: npt.NDArray,
+            entity_score: float,
             compared_scores: npt.NDArray, 
             normalized_comparisons: npt.NDArray, 
         ) -> npt.NDArray:
-            score_diffs = scores[entity_index] - compared_scores
+            score_diffs = entity_score - compared_scores
             nll_derivative = np.sum(cfg_deriv(score_diffs) + normalized_comparisons)
-            prior_derivative = scores[entity_index] / prior_var
+            prior_derivative = entity_score / prior_var
             return prior_derivative + nll_derivative
         
         return njit_partial_derivative
@@ -138,7 +137,6 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             for entity_index in range(len(scores))
         ])
             
-
 
 class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
     def __init__(self,

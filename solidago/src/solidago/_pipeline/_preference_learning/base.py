@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("preference_learning")
 
 from solidago._state import *
 from solidago._pipeline.base import StateFunction

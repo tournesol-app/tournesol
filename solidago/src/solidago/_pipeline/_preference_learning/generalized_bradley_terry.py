@@ -122,6 +122,8 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         criteria = comparisons.get_set("criterion") | init.get_set("criterion")
         for criterion in criteria:
             criterion_entity_names = comparisons.get_set("left_name") | comparisons.get_set("right_name")
+            if len(criterion_entity_names) <= 1:
+                continue
             criterion_entities = entities.get(criterion_entity_names) # Restrict to compared entities
             learned_scores = self.user_learn_criterion(criterion_entities, comparisons[criterion], init[criterion])
             for entity_name, score in learned_scores:
@@ -176,6 +178,9 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             rights[i] is the right uncertainty on scores[i]
         """
         indices = comparisons.compared_entity_indices(entity_name2index, self.last_comparison_only)
+        if not indices["left"]:
+            inf_array = np.array([ float("inf") for _ in entity_name2index ])
+            return inf_array, inf_array
         indices = { loc: np.array(indices[loc]) for loc in ("left", "right") }
         score_diffs = scores[indices["left"]] - scores[indices["right"]]
         normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)

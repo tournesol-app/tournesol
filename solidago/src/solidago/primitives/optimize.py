@@ -236,10 +236,10 @@ def coordinate_updates(
 
 
 def coordinate_descent(
-    partial_derivative: Callable[[int, np.ndarray[np.float64], Tuple], float],
+    partial_derivative_function: Callable[[float, Tuple], float],
     initialization: np.ndarray,
-    get_partial_derivative_args: Optional[Callable[[int, np.ndarray[np.float64], Tuple], Tuple]]=None,
-    get_update_coordinate_function_args: Optional[Callable[[int, np.ndarray[np.float64]], Tuple]]=None,
+    get_partial_derivative_args: Optional[Callable[[int, np.ndarray, Tuple], Tuple]]=None,
+    get_update_coordinate_function_args: Optional[Callable[[int, np.ndarray], Tuple]]=None,
     updated_coordinates: Optional[list[int]]=None,
     error: float=1e-5,
     coordinate_optimization_xtol: float=1e-5
@@ -250,10 +250,11 @@ def coordinate_descent(
     Parameters
     ----------
     partial_derivative: jitted callable
-        (value: float, variable: np.ndarray, partial_derivative_args: Tuple) -> float
+        (value: float, partial_derivative_args: Tuple) -> float
         Returns the partial derivative of the loss to optimize
-    get_partial_derivative_args: jitted callable(
+    get_partial_derivative_args: callable(
             coordinate: int, 
+            variable: np.ndarray,
             coordinate_update_args: Tuple
         ) -> (partial_derivative_args: Tuple)
         retrieves the arguments needed to optimize `variable` along `coordinate`
@@ -282,27 +283,14 @@ def coordinate_descent(
         
     if get_update_coordinate_function_args is None:
         get_update_coordinate_function_args = empty_function
-    
-    @njit
-    def coordinate_function(
-        value: float, 
-        coordinate: int, 
-        variable: np.ndarray[np.float64], 
-        *partial_derivative_args
-    ) -> float:
-        modified_variable = np.array([ 
-            variable[i] if i != coordinate else value
-            for i in range(len(variable))
-        ], dtype=np.float64)
-        return partial_derivative(coordinate, modified_variable, *partial_derivative_args)
-    
+        
     def update_coordinate_function(
         coordinate: int, 
-        variable: np.ndarray[np.float64], 
+        variable: np.ndarray, 
         *coordinate_update_args
     ) -> float:
         return njit_brentq(
-            f=coordinate_function,
+            f=partial_derivative_function,
             args=get_partial_derivative_args(coordinate, variable, *coordinate_update_args),
             xtol=coordinate_optimization_xtol,
             a=variable[coordinate] - 1.0,
