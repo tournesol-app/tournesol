@@ -43,6 +43,7 @@
   "launch_handler": {
     "client_mode": ["focus-existing", "auto"]
   },
+  "handle_links": "preferred",
   "share_target": {
     "action": "/shared-content",
     "method": "GET",
