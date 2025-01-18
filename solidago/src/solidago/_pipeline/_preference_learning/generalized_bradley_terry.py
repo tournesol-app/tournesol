@@ -121,7 +121,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         comparisons = comparisons.reorder_keys(["criterion", "left_name", "right_name"])
         criteria = comparisons.get_set("criterion") | init.get_set("criterion")
         for criterion in criteria:
-            criterion_entity_names = comparisons.get_set("left_name") | comparisons.get_set("right_name")
+            criterion_entity_names = comparisons[criterion].get_set("left_name") | comparisons[criterion].get_set("right_name")
             if len(criterion_entity_names) <= 1:
                 continue
             criterion_entities = entities.get(criterion_entity_names) # Restrict to compared entities
@@ -157,7 +157,8 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         lefts, rights = self.compute_uncertainties(entities, entity_name2index, comparisons, scores)
         return MultiScore({
             entities.iloc[i].name: (scores[i], lefts[i], rights[i])
-            for i in range(len(scores))
+            for i in range(len(scores)) 
+            if not (lefts[i] == self.max_uncertainty and lefts[i] == self.max_uncertainty)
         }, key_names=["entity_name"])
     
     def compute_uncertainties(self,

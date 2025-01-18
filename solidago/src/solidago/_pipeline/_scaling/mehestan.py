@@ -143,11 +143,12 @@ class Mehestan(StateFunction):
         if not any(users[f"is_scaler_{criterion}"]):
             logger.warning("    No user qualifies as a scaler. No scaling performed.")
             return users, ScaleDict(key_names=["username"])
+        scalers = users.get({ f"is_scaler_{criterion}": True })
         end_step1 = timeit.default_timer()
-        logger.info(f"Mehestan 1 for {criterion}. Terminated in {int(end_step1 - start)} seconds")
+        logger.info(f"Mehestan 1 for {criterion}. Selected {len(scalers)} scalers. " \
+            f"Terminated in {int(end_step1 - start)} seconds")
 
         logger.info(f"Mehestan 2 for {criterion}. Collaborative scaling of scalers")
-        scalers = users.get({ f"is_scaler_{criterion}": True })
         scaler_scales, scaler_scores = self.scale_to_scalers(trusts, made_public, 
             scores[scalers], scores[scalers], scalees_are_scalers=True)
         end_step2 = timeit.default_timer()
@@ -175,7 +176,7 @@ class Mehestan(StateFunction):
         trusts: NestedDictOfItems, # key_names == ["username"]
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         scores: MultiScore, # key_names == ["username", "entity_name"]
-    ) -> np.ndarray:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """ Determines which users will be scalers.
         The set of scalers is restricted for two reasons.
         First, too inactive users are removed, because their lack of comparability
@@ -203,7 +204,7 @@ class Mehestan(StateFunction):
         scaler_scores: MultiScore, # key_names == ["username", "entity_name"]
         scalee_scores: MultiScore, # key_names == ["username", "entity_name"]
         scalees_are_scalers: bool=False
-    ):
+    ) -> tuple[ScaleDict, ScaleDict]:
         s = "2" if scalees_are_scalers else "3"
         start = timeit.default_timer()
         scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
@@ -234,7 +235,10 @@ class Mehestan(StateFunction):
         translations = self.compute_translations(voting_rights, diffs)
         end_g = timeit.default_timer()
         logger.info(f"    Mehestan {s}g. Translations in {int(end_g - end_f)} seconds")
-
+        
+        for (scalee_name, entity_name), score in scalee_scores:
+            scalee_scores[scalee_name, entity_name] = score + translations[scalee_name]
+        
         scalee_scales = ScaleDict({
             scalee_name: (
                 *multiplicators[scalee_name].to_triplet(), 

@@ -23,24 +23,10 @@ from solidago.primitives.optimize import *
 # tiny = TournesolExport("tests/tiny_tournesol.zip")
 
 t = TournesolExport("experiments/tournesol.zip")
-pipeline= Sequential.load("tests/pipeline/test_pipeline.json")
+# t = State.load("experiments/saved_tournesol")
+pipeline = Sequential.load("tests/pipeline/test_pipeline.json")
 
-print("Tournesol data loaded. Now running the pipeline.")
-r = pipeline(t, save_directory="experiments/saved_tournesol")
+# r = pipeline.voting_rights.state2state_function(r)
 
-# self = pipeline.preference_learning
-
-# username = "aunyx"
-# user = t.users.get(username)
-# entities = t.entities
-# comparisons = t.comparisons[user]
-# init_model = t.user_models[user]
-
-# compared_entity_names = comparisons.get_set("left_name") | comparisons.get_set("right_name")
-# entities = entities.get(compared_entity_names) # Restrict to compared entities
-# init = init_model(entities).reorder_keys(["criterion", "entity_name"])
-# comparisons = comparisons.reorder_keys(["criterion", "left_name", "right_name"])
-# criteria = comparisons.get_set("criterion") | init.get_set("criterion")
-
-# criterion = next(iter(criteria))
-# self.user_learn_criterion(entities, comparisons[criterion], init[criterion])
+# print("Tournesol data loaded. Now running the pipeline.")
+# r = pipeline(t)

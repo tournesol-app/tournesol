@@ -1,16 +1,19 @@
 {    
+    "name": "TestPipeline",
     "trust_propagation": ["LipschiTrust", {
         "pretrust_value": 0.8, 
         "decay": 0.8, 
         "sink_vouch": 5.0, 
         "error": 1e-08
     }], 
-    "preference_learning": ["NumbaUniformGBT", {
+    "preference_learning": ["LBFGSUniformGBT", {
         "prior_std_dev": 7, 
         "uncertainty_nll_increase": 1.0,
         "max_uncertainty": 1e3,
         "last_comparison_only": true,
-        "convergence_error": 1e-05
+        "convergence_error": 1e-05,
+        "max_iter": 100
+
     }], 
     "voting_rights": ["AffineOvertrust", {
         "privacy_penalty": 0.5, 
@@ -18,6 +21,7 @@
         "overtrust_ratio": 0.1
     }], 
     "scaling": ["Sequential", {
+        "name": "Scaling",
         "collaborative_scaling": ["Mehestan", {
             "lipschitz": 1.0, 
             "min_scaler_activity": 1.0, 

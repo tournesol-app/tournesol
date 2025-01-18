@@ -25,7 +25,7 @@ class Comparisons(NestedDictOfRowLists):
         evaluators = self[{ "left_name": entity }].get_set("username") 
         return evaluators | self[{ "right_name": entity }].get_set("username")
 
-    def order_by_entities(self) -> "Comparisons": # key_names == ["entity_name", "other_name", *]
+    def order_by_entities(self, other_keys_first: bool=False) -> "Comparisons":
         """ Returns an object Comparison, with the same set of comparisons,
         but now ordered by entities. Key names in self are replugged into the result,
         except for "left_name" and "right_name". Instead, an "other_name" is added
@@ -36,24 +36,33 @@ class Comparisons(NestedDictOfRowLists):
         Returns
         -------
         ordered_comparisons: Comparisons
-            With key_names == ["entity_name", "other_name", *]
+            With key_names == ["entity_name", "other_name", *] or [*, "entity_name", "other_name"]
+            depending on parameter other_keys_first
         """
+        other_key_names = [ 
+            kn for kn in self.key_names 
+            if kn not in ("entity_name", "other_name", "left_name", "right_name")
+        ]
+        if other_keys_first:
+            key_names = other_key_names + ["entity_name", "other_name"]
+        else:
+            key_names = ["entity_name", "other_name"] + other_key_names
+        
         if "entity_name" in self.key_names:
-            key_names = ["entity_name", "other_name"] + [ 
-                kn for kn in key_names 
-                if kn not in ("entity_name", "other_name", "left_name", "right_name")
-            ]
             return self.reorder_keys(key_names)
         assert "left_name" in self.key_names and "right_name" in self.key_names, "" \
             "Comparisons must have columns `left_name` and `right_name`"
         
+        def to_keys(non_entity_keys: list[str], entity_name: str, other_name: str) -> list[str]:
+            if other_keys_first:
+                return non_entity_keys + [entity_name, other_name]
+            return [entity_name, other_name] + non_entity_keys
+                
         def invert(comparison):
             if "comparison" in comparison:
                 comparison["comparison"] = - comparison["comparison"]
             return comparison
-        key_names = ["entity_name", "other_name"] + [ 
-            kn for kn in self.key_names if kn not in ("left_name", "right_name") 
-        ]
+        
         result = Comparisons(key_names=key_names)
         left_key_index = self.key_names.index("left_name")
         right_key_index = self.key_names.index("right_name")
@@ -65,11 +74,11 @@ class Comparisons(NestedDictOfRowLists):
             ]
             new_comparison = dict(zip(self.key_names, keys)) | dict(comparison)
             result.add_row(
-                [left_name, right_name] + non_entity_keys,  
+                to_keys(non_entity_keys, left_name, right_name),
                 new_comparison | dict(location="left")
             )
             result.add_row(
-                [right_name, left_name] + non_entity_keys,
+                to_keys(non_entity_keys, right_name, left_name),
                 invert(new_comparison) | dict(location="right")
             )
         return result

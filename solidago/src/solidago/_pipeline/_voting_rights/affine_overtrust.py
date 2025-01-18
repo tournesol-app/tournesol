@@ -46,16 +46,16 @@ class AffineOvertrust(StateFunction):
         voting_rights = VotingRights()
         assessments = assessments.reorder_keys(["criterion", "entity_name", "username"])
         comparisons = comparisons.reorder_keys(["criterion", "left_name", "right_name", "username"])
-
+        
         for criterion in assessments.get_set("criterion") | comparisons.get_set("criterion"):
             entity_names = assessments[criterion].get_set("entity_name")
-            entity_names |= comparisons[criterion].get_set("left_name")
-            entity_names |= comparisons[criterion].get_set("right_name")
+            ordered_comparisons = comparisons[criterion].order_by_entities(other_keys_first=True)
+            ordered_comparisons = ordered_comparisons.reorder_keys(["entity_name", "username", "other_name"])
+            entity_names |= ordered_comparisons.get_set("entity_name")
 
             for entity_name in entity_names:
                 evaluators = assessments[criterion, entity_name].get_set("username")
-                evaluators |= comparisons[criterion, entity_name].get_set("username")
-                evaluators |= comparisons[criterion, any, entity_name].get_set("username")
+                evaluators |= ordered_comparisons[entity_name].get_set("username")
                 trust_scores = { username: users.loc[username, "trust_score"] for username in evaluators }
                 public = { username: made_public[username, entity_name] for username in evaluators }
                 sub_voting_rights, sub_statistics = self.sub_main(trust_scores, public)
@@ -92,7 +92,7 @@ class AffineOvertrust(StateFunction):
     def computing_voting_rights_and_statistics(self,
         trust_scores: np.ndarray,
         privacy_weights: np.ndarray,
-    ) -> tuple[np.ndarray, dict[str, float]]:
+    ) -> tuple[np.ndarray, tuple[float, float, float]]:
         """ Computes voting rights and statistics without having to care about usernames """
         cumulative_trust = (trust_scores * privacy_weights).sum()
         max_overtrust = self.maximal_overtrust(cumulative_trust)

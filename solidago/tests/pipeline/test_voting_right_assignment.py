@@ -194,9 +194,7 @@ def test_affine_overtrust():
     assessments.add_row(("3", "default", "1"), dict(assessment=0))
     assessments.add_row(("4", "default", "3"), dict(assessment=5))
     
-    voting_rights_assignment = AffineOvertrust(
-        privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1
-    )
+    ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)
     entities, voting_rights = ao(users, entities, made_public, assessments, comparisons)
 
     assert len(entities) == 6  # 6 entities

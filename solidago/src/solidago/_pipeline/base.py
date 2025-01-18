@@ -11,7 +11,7 @@ class StateFunction:
     def __init__(self):
         assert "return" in self.__call__.__annotations__, f"{type(self).__name__} must have a return type"
         for key in self.__call__.__annotations__:
-            if key not in ("return", "state", "save_directory", "seed"):
+            if key not in ("return", "state", "save_directory", "seed", "skip_steps"):
                 assert key in self.state_cls.__init__.__annotations__, "" \
                     f"The argument `{key}` of function `main` of StateFunction {type(self).__name__} " \
                     f"must be an attribute of {self.state_cls.__name__}, which are " \

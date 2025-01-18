@@ -109,7 +109,7 @@ class NestedDict(ABC):
         """ If a conflict arises, other takes over """
         assert self.key_names == other.key_names
         result = type(self)(self, key_names=self.key_names)
-        for keys, value in other:
+        for keys, value in other.iter(value_process=False):
             result[keys] = value
         return result
     

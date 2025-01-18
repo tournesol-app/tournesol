@@ -115,7 +115,7 @@ class ScoringModel(ABC):
         return type(self).__name__
     
     def __repr__(self) -> str:
-        return type(self).__name__ + "\n\n".join([
+        return type(self).__name__ + "\n\n" + "\n\n".join([
             repr(df) for df in self.to_dfs().values() if not df.empty
         ])
 

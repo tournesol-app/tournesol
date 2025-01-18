@@ -13,8 +13,9 @@ from .base import StateFunction
 
 
 class Sequential(StateFunction):
-    def __init__(self, **kwargs):
+    def __init__(self, name: Optional[str]=None, **kwargs):
         super().__init__()
+        self.name = "Sequential" if name is None else name
         for key, value in kwargs.items():
             if isinstance(value, StateFunction):
                 setattr(self, key, value)
@@ -31,16 +32,18 @@ class Sequential(StateFunction):
     def state_function(self, state: State, save_directory: Optional[str]=None) -> State:
         return self(state, save_directory)
 
-    def __call__(self, state: State, save_directory: Optional[str]=None) -> State:
+    def __call__(self, state: State, save_directory: Optional[str]=None, skip_steps: set[int]={}) -> State:
         result = state.copy()
         if save_directory is not None:
             result.save(save_directory)
         start = timeit.default_timer()
         for step, (key, module) in enumerate(self.modules.items()):
-            logger.info(f"Step {step}. Doing {key} with {type(module).__name__}")
+            if step in skip_steps:
+                continue
+            logger.info(f"Step {step + 1} of {self.name}. Doing {key} with {type(module).__name__}")
             result = module.state2state_function(result, save_directory)
             stop = timeit.default_timer()
-            logger.info(f"Step {step}. Terminated in {round(stop - start, 2)} seconds")
+            logger.info(f"Step {step + 1} of {self.name}. Terminated in {round(stop - start, 2)} seconds")
             start = stop
         return result
     
@@ -53,7 +56,12 @@ class Sequential(StateFunction):
             with open(d) as f:
                 d = json.load(f)
         import solidago._pipeline as pipeline
-        return cls(**{ key: getattr(pipeline, d[key][0])(**d[key][1]) for key in d })
+        return cls(**{ 
+            key: getattr(pipeline, value[0])(**value[1]) 
+            for key, value in d.items() if key not in Sequential.__init__.__annotations__
+        }, **{ key: value 
+            for key, value in d.items() if key in Sequential.__init__.__annotations__ 
+        })
 
     def json_keys(self) -> list:
         return list(
