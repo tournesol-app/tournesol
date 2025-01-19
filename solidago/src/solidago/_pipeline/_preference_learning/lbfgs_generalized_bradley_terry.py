@@ -156,6 +156,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         max_iter: int=100,
         device: torch.device=default_device,
         last_comparison_only: bool=True,
+        cgf_epsilon: float=1e-8,
     ):
         """ Generalized Bradley Terry with a uniform root law is a straightforward
         instance of the models introduced in the paper "Generalized Bradley-Terry 
@@ -191,6 +192,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
             device=device,
             last_comparison_only=last_comparison_only
         )
+        self.cgf_epsilon = cgf_epsilon
 
     def torch_cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:
         """ Vectorized cumulant generating function adapted for pytorch
@@ -205,12 +207,12 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         cgf: torch.Tensor
             cfg[i] is the cgf of score_diff[i]
         """
-        score_diffs_abs = torch.abs(score_diffs)
+        score_diffs_abs = (score_diffs**2 + self.cgf_epsilon).sqrt()
         return torch.where(
             score_diffs_abs > 1e-1,
             torch.where(
                 score_diffs_abs < 20.0,
-                (torch.sinh(score_diffs) / score_diffs).log(),
+                (torch.sinh(score_diffs_abs.clip(max=20.)) / (self.cgf_epsilon + score_diffs_abs)).log(),
                 score_diffs_abs - np.log(2) - score_diffs_abs.log(),
             ),
             score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,

@@ -12,8 +12,8 @@
         "max_uncertainty": 1e3,
         "last_comparison_only": true,
         "convergence_error": 1e-05,
-        "max_iter": 100
-
+        "max_iter": 100,
+        "cgf_epsilon": 1e-8
     }], 
     "voting_rights": ["AffineOvertrust", {
         "privacy_penalty": 0.5, 
