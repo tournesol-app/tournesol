@@ -6,7 +6,7 @@ from solidago.state import *
 from solidago.modules import StateFunction
 
 
-class UserGenerator(StateFunction):
+class UserGen(StateFunction):
     output_key_names: list[str]=["users"]
     users_cls: type=Users
     

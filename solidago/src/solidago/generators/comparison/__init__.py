@@ -1,2 +1,2 @@
-from .base import ComparisonGenerator
+from .base import ComparisonGen
 from .thurston import *

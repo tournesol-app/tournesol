@@ -6,52 +6,30 @@ import logging
 import json
 
 from solidago.state import *
-from solidago.modules import Sequential
+from solidago.modules import StateFunction, Sequential
 
-from .user import UserGenerator
-from .vouch import VouchGenerator
-from .entity import EntityGenerator
-from .engagement import EngagementGenerator
-from .assessment import AssessmentGenerator
-from .comparison import ComparisonGenerator
+from .user import UserGen
+from .vouch import VouchGen
+from .entity import EntityGen
+from .engagement import EngagementGen
+from .assessment import AssessmentGen
+from .comparison import ComparisonGen
 
 logger = logging.getLogger(__name__)
 
 
 class Generator(Sequential):
     def __init__(self,
-        user_gen: UserGenerator = UserGenerator(),
-        entity_gen: EntityGenerator = EntityGenerator(),
-        vouch_gen: VouchGenerator = VouchGenerator(),
-        engagement_gen: EngagementGenerator = EngagementGenerator(),
-        assessment_gen: AssessmentGenerator = AssessmentGenerator(),
-        comparison_gen: ComparisonGenerator = ComparisonGenerator(),
+        user: UserGen = UserGen(),
+        entity: EntityGen = EntityGen(),
+        vouch: VouchGen = VouchGen(),
+        engagement: EngagementGen = EngagementGen(),
+        assessment: AssessmentGen = AssessmentGen(),
+        comparison: ComparisonGen = ComparisonGen(),
     ):
-        """ Pipeline to generate a random dataset
-        
-        Parameters
-        ----------
-        user_model: UserModel
-            Generates users
-        entity_model: EntityModel
-            Generates entities
-        vouch_model: VouchModel
-            Generates vouches
-        engagement_model: EngagementModel
-            Generates private/public selection, and comparisons to be made
-        assessment_model: AssessmentModel
-            Generates assessment values
-        comparison_model: ComparisonModel
-            Generates comparisons values
-        """
-        super().__init__(
-            user_gen = user_gen,
-            entity_gen = entity_gen,
-            vouch_gen = vouch_gen,
-            engagement_gen = engagement_gen,
-            assessment_gen = assessment_gen,
-            comparison_gen = comparison_gen,
-        )
+        """ Pipeline to generate a random dataset """
+        super().__init__(user=user, entity=entity, vouch=vouch, 
+            engagement=engagement, assessment=assessment, comparison=comparison)
  
     def __call__(self, state: Optional[State]=None, seed: Optional[int]=None) -> State:
         """ Generates a random dataset, presented as a state.
@@ -82,13 +60,10 @@ class Generator(Sequential):
         if isinstance(d, str):
             with open(d) as f:
                 d = json.load(f)
-        return cls(**{ key: cls.load_generator(d[key][0], d[key][1]) for key in d })
+        return cls(**{ key: cls.load_generator(key, d[key][0], d[key][1]) for key in d })
     
     @classmethod
-    def load_generator(cls, keys: str, kwargs: dict) -> StateFunction:
+    def load_generator(cls, key: str, cls_name: str, kwargs: dict) -> StateFunction:
         import solidago.generators as generators
-        gen_cls = generators
-        for key in keys.split("."):
-            gen_cls = getattr(gen_cls, key)
-        return gen_cls(**kwargs)
+        return getattr(getattr(generators, key), cls_name)(**kwargs)
         

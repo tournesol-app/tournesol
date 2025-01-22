@@ -5,10 +5,10 @@ import pandas as pd
 import numpy as np
 
 from solidago.state import *
-from .base import ComparisonGenerator
+from .base import ComparisonGen
 
 
-class ThurstonComparisonGenerator(ComparisonGenerator):
+class ThurstonComparison(ComparisonGen):
     def __init__(self, comparison_max: float=float("inf")):
         """ Louis Leon Thurston is a psychologist who modeled comparisons as resulting
         from an evaluation of alternative scores on a common scale,
@@ -43,7 +43,7 @@ class ThurstonComparisonGenerator(ComparisonGenerator):
         raise NotImplementedError
 
 
-class DiscreteGBT(ThurstonComparisonGenerator):
+class DiscreteGBT(ThurstonComparison):
     """ The Generalized Bradley-Terry model is a score-to-comparison model
     with numerous desirable properties, which was introduced in the paper
     "Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons"

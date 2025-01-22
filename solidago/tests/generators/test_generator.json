@@ -1,5 +1,5 @@
 {
-    "user_gen": ["NormalUserGenerator", {
+    "user": ["NormalUser", {
         "n_users": 10,
         "p_trustworthy": 0.8, 
         "p_pretrusted": 0.2, 
@@ -12,19 +12,19 @@
         "mean": 0.0,
         "dimension": 5
     }], 
-    "entity_gen": ["NormalEntityGenerator", {
+    "entity": ["NormalEntity", {
         "n_entities": 20,
         "mean": 0.0,
         "dimension": 5
     }], 
-    "vouch_gen": ["ErdosRenyiVouchGenerator", {}], 
-    "engagement_gen": ["SimpleEngagementGenerator", {
+    "vouch": ["ErdosRenyiVouch", {}], 
+    "engagement": ["SimpleEngagement", {
         "p_public": 0.8,
         "p_assessment": 0.5, 
         "p_comparison": 1.0
     }], 
-    "assessment_gen": ["NormalAssessmentGenerator", {}],
-    "comparison_gen": ["KnaryGBT", {
+    "assessment": ["NormalAssessment", {}],
+    "comparison": ["KnaryGBT", {
         "n_options": 21, 
         "comparison_max": 10
     }]

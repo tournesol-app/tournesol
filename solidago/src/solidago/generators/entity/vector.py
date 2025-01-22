@@ -5,10 +5,10 @@ import numpy as np
 
 from typing import Optional, Callable
 from solidago.state import VectorEntity, VectorEntities
-from .base import EntityGenerator
+from .base import EntityGen
 
 
-class NormalEntityGenerator(EntityGenerator):
+class NormalEntity(EntityGen):
     entities_cls: type=VectorEntities
     
     def __init__(self, 

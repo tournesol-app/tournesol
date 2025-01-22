@@ -1,2 +1,2 @@
-from .base import UserGenerator
-from .normal import NormalUserGenerator
+from .base import UserGen
+from .normal import NormalUser

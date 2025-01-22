@@ -4,8 +4,9 @@ import pandas as pd
 
 from solidago import *
 from pandas import DataFrame
+from solidago.modules.trust_propagation import LipschiTrust, TrustAll
 
-states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
+states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
 
 
 def test_lipschitrust_simple():
@@ -76,7 +77,7 @@ def test_lipschitrust_ten_users():
 
 @pytest.mark.parametrize("seed", range(4))
 def test_lipschitrust_test_data(seed):
-    pipeline = Sequential.load("tests/pipeline/test_pipeline.json")
+    pipeline = Sequential.load("tests/modules/test_pipeline.json")
     users = pipeline.trust_propagation(states[seed].users, states[seed].vouches)
     for user in users:
         assert user["is_trustworthy"] or (user["trust_score"] == 0)

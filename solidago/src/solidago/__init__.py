@@ -23,4 +23,5 @@ __all__ = [
     "PostProcessedModel", "SquashedModel",
     "State", "TournesolExport",
     "primitives", "modules", "generators",
+    "StateFunction", "Sequential", "Identity", "Generator", 
 ]

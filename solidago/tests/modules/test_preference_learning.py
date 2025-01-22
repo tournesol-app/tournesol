@@ -1,6 +1,7 @@
 import pytest
 
 from solidago import *
+from solidago.modules.preference_learning import NumbaUniformGBT, LBFGSUniformGBT
 from pandas import DataFrame
 
 
@@ -52,7 +53,7 @@ def test_gbt_score_monotonicity(GBT):
 
 
 def test_uniform_gbt():
-    s = State.load(f"tests/pipeline/saved/0")
+    s = State.load(f"tests/modules/saved/0")
     user_models = dict()
     for index, optimizer in enumerate((NumbaUniformGBT, LBFGSUniformGBT)):
         preference_learning = optimizer(

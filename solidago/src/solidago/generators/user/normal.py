@@ -4,10 +4,10 @@ from numpy.random import random, poisson, zipf, gamma, normal
 import numpy as np
 
 from solidago.state import *
-from .base import UserGenerator
+from .base import UserGen
 
 
-class NormalUserGenerator(UserGenerator):
+class NormalUser(UserGen):
     users_cls: type=VectorUsers
     
     def __init__(

@@ -4,7 +4,7 @@ from solidago.state import *
 from solidago.modules import StateFunction
 
 
-class AssessmentGenerator(StateFunction):
+class AssessmentGen(StateFunction):
     def __call__(self, 
         users: Users, 
         entities: Entities, 

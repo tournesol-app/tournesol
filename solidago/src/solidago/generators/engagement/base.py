@@ -4,7 +4,7 @@ from solidago.state import *
 from solidago.modules import StateFunction
 
 
-class EngagementGenerator(StateFunction):
+class EngagementGen(StateFunction):
     def __call__(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
         made_public, assessments, comparisons = MadePublic(), Assessments(), Comparisons()
         for user in users:

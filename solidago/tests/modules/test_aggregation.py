@@ -1,7 +1,8 @@
 import pytest
 from solidago import *
+from solidago.modules.aggregation import Average, EntitywiseQrQuantile
 
-states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
+states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
 
 entities = Entities(["entity_0", "entity_1", "entity_2", "entity_3"])
 voting_rights = VotingRights()

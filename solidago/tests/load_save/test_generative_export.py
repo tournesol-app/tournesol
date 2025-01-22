@@ -1,12 +1,13 @@
 import pytest
 from solidago import *
+import json 
 
 
 def test_generative_model():
-    with open("tests/generative_model/test_generative_model.json") as f: 
-        generative_model = GenerativeModel.load(json.load(f))
+    with open("tests/generators/test_generator.json") as f: 
+        generator = Generator.load(json.load(f))
 
-    s = generative_model(seed=0)
+    s = generator(seed=0)
     
     print("Saving data")
     s.save("tests/load_save/generated_state")

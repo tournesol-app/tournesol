@@ -6,8 +6,13 @@ from solidago.state import *
 from solidago.modules import StateFunction
 
 
-class ComparisonGenerator(StateFunction):
-    def __call__(self, users: Users, entities: Entities, made_public: MadePublic, comparisons: Comparisons) -> Comparisons:
+class ComparisonGen(StateFunction):
+    def __call__(self, 
+        users: Users, 
+        entities: Entities, 
+        made_public: MadePublic, 
+        comparisons: Comparisons
+    ) -> Comparisons:
         """ Fills in the comparisons """
         result = Comparisons()
         for (username, criterion, left_name, right_name), comparison in comparisons:

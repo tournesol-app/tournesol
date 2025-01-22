@@ -1,10 +1,10 @@
 from numpy.random import random
 
 from solidago.state import Users, Vouches
-from .base import VouchGenerator
+from .base import VouchGen
 
 
-class ErdosRenyiVouchGenerator(VouchGenerator):
+class ErdosRenyiVouch(VouchGen):
 
     def __call__(self, users: Users) -> Vouches:
         """ Each vouch is sampled independently, with a probability dependent on users' metadata.

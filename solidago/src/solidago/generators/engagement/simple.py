@@ -5,10 +5,10 @@ import pandas as pd
 import numpy as np
 
 from solidago.state import *
-from .base import EngagementGenerator
+from .base import EngagementGen
 
 
-class SimpleEngagementGenerator(EngagementGenerator):
+class SimpleEngagement(EngagementGen):
     def __init__(
         self, 
         p_public: float=0.8,

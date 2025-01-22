@@ -1,2 +1,2 @@
-from .base import VouchGenerator
-from .erdos_renyi import ErdosRenyiVouchGenerator
+from .base import VouchGen
+from .erdos_renyi import ErdosRenyiVouch

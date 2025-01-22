@@ -1,5 +1,6 @@
 import pytest
 from solidago import *
+import numpy as np
 
 
 def test_users():

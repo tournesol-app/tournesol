@@ -4,7 +4,7 @@ from solidago.state import *
 from solidago.modules import StateFunction
 
 
-class EntityGenerator(StateFunction):
+class EntityGen(StateFunction):
     entities_cls: type=Entities
     
     def __init__(self, n_entities: int=30):

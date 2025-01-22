@@ -2,36 +2,36 @@
     "users": [
         "VectorUsers",
         [
-            "tests/pipeline/saved/2/users.csv",
-            "tests/pipeline/saved/2/user_vectors.csv"
+            "tests/modules/saved/0/users.csv",
+            "tests/modules/saved/0/user_vectors.csv"
         ]
     ],
     "entities": [
         "VectorEntities",
         [
-            "tests/pipeline/saved/2/entities.csv",
-            "tests/pipeline/saved/2/entity_vectors.csv"
+            "tests/modules/saved/0/entities.csv",
+            "tests/modules/saved/0/entity_vectors.csv"
         ]
     ],
     "vouches": [
         "Vouches",
-        "tests/pipeline/saved/2/vouches.csv"
+        "tests/modules/saved/0/vouches.csv"
     ],
     "made_public": [
         "MadePublic",
-        "tests/pipeline/saved/2/made_public.csv"
+        "tests/modules/saved/0/made_public.csv"
     ],
     "assessments": [
         "Assessments",
-        "tests/pipeline/saved/2/assessments.csv"
+        "tests/modules/saved/0/assessments.csv"
     ],
     "comparisons": [
         "Comparisons",
-        "tests/pipeline/saved/2/comparisons.csv"
+        "tests/modules/saved/0/comparisons.csv"
     ],
     "voting_rights": [
         "VotingRights",
-        "tests/pipeline/saved/2/voting_rights.csv"
+        "tests/modules/saved/0/voting_rights.csv"
     ],
     "user_models": [
         "UserModels",
@@ -309,8 +309,8 @@
                 ]
             },
             "dataframes": {
-                "directs": "tests/pipeline/saved/2/user_directs.csv",
-                "scalings": "tests/pipeline/saved/2/user_scalings.csv"
+                "directs": "tests/modules/saved/0/user_directs.csv",
+                "scalings": "tests/modules/saved/0/user_scalings.csv"
             },
             "default_model_cls": "DirectScoring"
         }

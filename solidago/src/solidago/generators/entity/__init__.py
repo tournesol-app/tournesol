@@ -1,2 +1,2 @@
-from .base import EntityGenerator
-from .vector import NormalEntityGenerator
+from .base import EntityGen
+from .vector import NormalEntity

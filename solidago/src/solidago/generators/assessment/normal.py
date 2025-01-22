@@ -2,10 +2,10 @@ from numpy import sqrt
 from numpy.random import normal
 
 from solidago.state import *
-from .base import AssessmentGenerator
+from .base import AssessmentGen
 
 
-class NormalAssessmentGenerator(AssessmentGenerator):
+class NormalAssessment(AssessmentGen):
     def __init__(self, error_size: float=1):
         self.error_size = error_size
 

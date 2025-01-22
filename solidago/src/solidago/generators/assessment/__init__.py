@@ -1,2 +1,2 @@
-from .base import AssessmentGenerator
-from .normal import NormalAssessmentGenerator
+from .base import AssessmentGen
+from .normal import NormalAssessment

@@ -51,17 +51,25 @@ class Sequential(StateFunction):
         return [ module.save() for module in self.modules ]
 
     @classmethod
-    def load(cls, d: Union[dict, str]) -> "Sequential":
+    def load(cls, d: Union[dict, str], submodule=None) -> "Sequential":
         if isinstance(d, str):
             with open(d) as f:
                 d = json.load(f)
-        import solidago.modules as modules
         return cls(**{ 
-            key: getattr(modules, value[0])(**value[1]) 
+            key: cls.load_module(key if submodule is None else submodule, value[0], value[1]) 
             for key, value in d.items() if key not in Sequential.__init__.__annotations__
         }, **{ key: value 
             for key, value in d.items() if key in Sequential.__init__.__annotations__ 
         })
+        
+    @classmethod
+    def load_module(cls, key: str, cls_name: str, kwargs: dict) -> StateFunction:
+        if cls_name == "Sequential":
+            return cls.load(kwargs, key)
+        import solidago.modules
+        if cls_name == "Identity":
+            return solidago.modules.Identity()
+        return getattr(getattr(solidago.modules, key), cls_name)(**kwargs)
 
     def json_keys(self) -> list:
         return list(

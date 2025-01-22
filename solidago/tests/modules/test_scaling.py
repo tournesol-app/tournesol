@@ -2,8 +2,9 @@ import pytest
 import numpy as np
 
 from solidago import *
+from solidago.modules.scaling import Mehestan, LipschitzStandardize, LipschitzQuantileShift
 
-states = [ State.load(f"tests/pipeline/saved/{seed}") for seed in range(5) ]
+states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
 
 
 @pytest.mark.parametrize("seed", range(5))

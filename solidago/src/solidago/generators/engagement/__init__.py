@@ -1,2 +1,2 @@
-from .base import EngagementGenerator
-from .simple import SimpleEngagementGenerator
+from .base import EngagementGen
+from .simple import SimpleEngagement
