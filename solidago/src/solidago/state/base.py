@@ -51,14 +51,14 @@ class State:
     
     @classmethod
     def load(cls, directory: Union[Path, str]) -> "State":
-        import solidago._state
+        import solidago.state
         path = Path(directory)
         with open(path / "state.json") as f: 
             j = json.load(f)
         state = cls()
         for key, j_value in j.items():
             assert hasattr(state, key)
-            value = getattr(solidago._state, j_value[0]).load(j_value[1])
+            value = getattr(solidago.state, j_value[0]).load(j_value[1])
             setattr(state, key, value)
         return state
     

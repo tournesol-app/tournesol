@@ -23,7 +23,7 @@ class UserModels(dict):
         return self.score(entity)
     
     def score(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
-        from solidago._state._entities import Entity, Entities
+        from solidago.state.entities import Entity, Entities
         if isinstance(entity, (str, Entity)):
             result = MultiScore(key_names=["username", "criterion"])
             for username, model in self:
@@ -79,7 +79,7 @@ class UserModels(dict):
     def load(cls, d: dict, dfs: Optional[dict[str, dict[str, DataFrame]]]=None) -> "UserModels":
         if "users" not in d:
             return cls()
-        import solidago._state._models as models
+        import solidago.state.models as models
         if "dataframes" in d:
             dfs = cls.dfs_load(d["dataframes"], dfs)
         def user_dfs(username):

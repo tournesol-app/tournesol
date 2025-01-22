@@ -74,7 +74,10 @@ class TournesolExport(State):
     
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         dfs = TournesolExport.load_dfs(dataset_zip)
-        from solidago._state import Users, Vouches, Entities, AllPublic, Comparisons, VotingRights, UserModels, DirectScoring
+        from solidago.state import (
+            Users, Vouches, Entities, AllPublic, Comparisons, 
+            VotingRights, UserModels, DirectScoring
+        )
         voting_rights_columns = ["username", "entity_name", "criterion", "voting_right"]
         
         user_models_d = {

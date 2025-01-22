@@ -78,10 +78,17 @@ class Generator(Sequential):
         return super().__call__(state)
 
     @classmethod
-    def load(cls, d: Union[dict, str]) -> "GenerativeModel":
+    def load(cls, d: Union[dict, str]) -> "Generator":
         if isinstance(d, str):
             with open(d) as f:
                 d = json.load(f)
-        import solidago._generative_model as gen
-        return cls(**{ key: getattr(gen, d[key][0])(**d[key][1]) for key in d })
-       
+        return cls(**{ key: cls.load_generator(d[key][0], d[key][1]) for key in d })
+    
+    @classmethod
+    def load_generator(cls, keys: str, kwargs: dict) -> StateFunction:
+        import solidago.generators as generators
+        gen_cls = generators
+        for key in keys.split("."):
+            gen_cls = getattr(gen_cls, key)
+        return gen_cls(**kwargs)
+        

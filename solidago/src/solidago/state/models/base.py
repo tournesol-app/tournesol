@@ -31,7 +31,7 @@ class ScoringModel(ABC):
             If entities: Entities with unidimensional scoring, then out[entity_name] is a Score.
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
-        from solidago._state._entities import Entities
+        from solidago.state.entities import Entities
         if isinstance(entities, Entities):
             return MultiScore(
                 { str(entity): self(entity) for entity in entities },
@@ -67,7 +67,7 @@ class ScoringModel(ABC):
     
     @classmethod
     def load(cls, d: dict, dfs: Optional[dict[str, DataFrame]]=None, depth: int=0) -> "ScoringModel":
-        import solidago._state._models as models
+        import solidago.state.models as models
         dfs = cls.dfs_load(d, dfs)
         args = cls.args_load(d, dfs, depth) | (d["args"] if "args" in d else dict())
         if "parent" in d:
