@@ -1,11 +1,16 @@
-"""Solidago library, robust and secure algorithms for the Tournesol platform"""
+""" This defines the class State, which contains all updatable information by the pipeline. """
 
-from .__version__ import __version__
+from .users import *
+from .vouches import *
+from .entities import *
+from .made_public import *
+from .assessments import *
+from .comparisons import *
+from .voting_rights import *
+from .models import *
 
-from solidago.primitives import *
-from solidago.state import *
-from solidago.modules import *
-from solidago.generators import *
+from .base import State
+from .tournesol import TournesolExport
 
 __all__ = [
     "User", "Users", "VectorUser", "VectorUsers",
@@ -22,5 +27,4 @@ __all__ = [
     "ScaleDict", "ScaledModel",
     "PostProcessedModel", "SquashedModel",
     "State", "TournesolExport",
-    "primitives", "modules", "generators",
 ]

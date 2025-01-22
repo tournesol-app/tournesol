@@ -67,7 +67,7 @@ class NestedDictOfRowLists(NestedDict):
             row_kwargs = dict()
         returns = "last_row" if last_row_only else "rows"
         def to_dict(row):
-            from solidago._state import Score
+            from solidago.state import Score
             if isinstance(row, (dict, Series)):
                 return dict(row)
             elif isinstance(row, Score):
