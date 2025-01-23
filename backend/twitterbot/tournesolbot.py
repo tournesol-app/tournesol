@@ -3,6 +3,7 @@ import re
 import tempfile
 from datetime import timedelta
 from pathlib import Path
+from typing import Literal
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -40,7 +41,7 @@ def get_best_criteria(video, nb_criteria):
     return [(crit.criteria, crit.score) for crit in criteria_list]
 
 
-def prepare_tweet(video: Entity):
+def prepare_tweet(video: Entity, dest: Literal["twitter", "bluesky"]):
     """Create the tweet text from the video."""
 
     uploader = video.metadata["uploader"]
@@ -48,7 +49,11 @@ def prepare_tweet(video: Entity):
     video_id = video.metadata["video_id"]
 
     # Get twitter account
-    twitter_account = get_twitter_account_from_video_id(video_id)
+    if dest == "twitter":
+        twitter_account = get_twitter_account_from_video_id(video_id)
+    else:
+        # TODO: implement fetch Bluesky handle
+        twitter_account = ""
 
     if not twitter_account:
         twitter_account = f"'{uploader}'"
@@ -82,8 +87,7 @@ def prepare_tweet(video: Entity):
     # a margin of error for emoji which are counted as 2 characters
     diff = len(tweet_text) - 288
     if diff > 0:
-        video_title = video_title[: -diff - 3] + "..."
-
+        video_title = video_title[: -diff - 1] + "…"
         tweet_text = settings.tweet_text_template[language].format(
             title=video_title,
             twitter_account=twitter_account,
@@ -151,13 +155,14 @@ def select_a_video(tweetable_videos):
     return selected_video
 
 
-def tweet_video_recommendation(bot_name, assumeyes=False):
+def tweet_video_recommendation(bot_name, dest: list[str], assumeyes=False):
     """Tweet a video recommendation.
 
     Args:
         bot_name (str): The name of the bot.
         assumeyes (bool): If False, a confirmation will be asked before tweeting it.
-
+        dest (list[str]): List of destinations where to post the message
+            Accepted values are "twitter" and "bluesky".
     """
 
     twitterbot = TwitterBot(bot_name)
@@ -168,34 +173,40 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
         return
 
     video = select_a_video(tweetable_videos)
-    tweet_text = prepare_tweet(video)
 
     print("Today's video to tweet will be:")
-    print(tweet_text)
+    print(f"{video} '{video.metadata['name']}' by {video.metadata['uploader']}")
 
     if not assumeyes:
         confirmation = input("\nWould you like to tweet that? (y/n): ")
         if confirmation not in ["y", "yes"]:
             return
 
+    tweet_id = None
     # Tweet the video
-    resp = twitterbot.client.create_tweet(text=tweet_text)
-    tweet_id = resp.data['id']
+    if "twitter" in dest:
+        tweet_text = prepare_tweet(video, dest="twitter")
+        tweet_id = twitterbot.create_tweet(text=tweet_text)
 
-    # Post the tweet on Discord
-    discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
-    if discord_channel:
-        write_in_channel(
-            discord_channel,
-            f"https://twitter.com/{bot_name}/status/{tweet_id}",
-        )
+    if "bluesky" in dest:
+        pass
+        # TODO: implement bluesky integration
+        # post_text = prepare_tweet(video, dest="bluesky")
+
+    if tweet_id is None:
+        return
 
     # Add the video to the TweetInfo table
-    TweetInfo.objects.create(
+    tweet_info = TweetInfo.objects.create(
         video=video,
         tweet_id=tweet_id,
         bot_name=bot_name,
     )
+
+    # Post the tweet on Discord
+    discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
+    if discord_channel:
+        write_in_channel(discord_channel, message=tweet_info.tweet_url)
 
 
 def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
@@ -280,13 +291,9 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
         if confirmation not in ["y", "yes"]:
             return
 
-    # Upload image
-    media = twitterbot.api.media_upload(top_contributor_figure)
-
-    # Tweet the graph
-    resp = twitterbot.client.create_tweet(
+    tweet_id = twitterbot.create_tweet(
         text=settings.top_contrib_tweet_text_template[language],
-        media_ids=[media.media_id],
+        media_files=[top_contributor_figure]
     )
 
     # Post the tweet on Discord
@@ -294,5 +301,5 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
     if discord_channel:
         write_in_channel(
             discord_channel,
-            f"https://twitter.com/{bot_name}/status/{resp.data['id']}",
+            message=f"https://twitter.com/{bot_name}/status/{tweet_id}",
         )

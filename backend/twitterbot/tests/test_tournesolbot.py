@@ -174,7 +174,7 @@ class TestTournesolBot(TestCase):
 
         mock_get_twitter_account_from_video_id.return_value = "@TournesolApp"
 
-        assert prepare_tweet(self.videos[8]) == tweet_text
+        assert prepare_tweet(self.videos[8], dest="twitter") == tweet_text
 
         # Test automatic shortening of the video title to fit in the tweet
         self.videos[8].metadata[
@@ -183,14 +183,14 @@ class TestTournesolBot(TestCase):
 
         tweet_text_too_long = (
             "Aujourd'hui, je recommande 'Tournesol is great! But this title is way to long to fit"
-            " in one tw...' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
+            " in one twee…' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
             "contributeurs, critères favoris:"
             "\n- Important & actionnable"
             "\n- Stimulant & suscite la réflexion"
             "\ntournesol.app/entities/yt:AAAAAAAAAAA"
         )
 
-        assert prepare_tweet(self.videos[8]) == tweet_text_too_long
+        assert prepare_tweet(self.videos[8], dest="twitter") == tweet_text_too_long
 
         # Test replacement of special characters in the video title
         self.videos[8].metadata["name"] = "Tournesol.app is great but mention @twitter are not..."
@@ -204,7 +204,7 @@ class TestTournesolBot(TestCase):
             "\ntournesol.app/entities/yt:AAAAAAAAAAA"
         )
 
-        assert prepare_tweet(self.videos[8]) == tweet_special_characters
+        assert prepare_tweet(self.videos[8], dest="twitter") == tweet_special_characters
 
     def test_get_video_recommendations(self):
         """

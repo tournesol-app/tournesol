@@ -45,3 +45,9 @@ class TweetInfo(models.Model):
 
     def __str__(self):
         return f"{self.video.uid} tweeted at {self.datetime_tweet}"
+
+    @property
+    def tweet_url(self):
+        if not self.tweet_id:
+            return None
+        return f"https://twitter.com/{self.bot_name}/status/{self.tweet_id}"
