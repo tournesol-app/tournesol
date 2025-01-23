@@ -41,7 +41,7 @@
   "theme_color": "#ffc800",
   "background_color": "#a09b87",
   "launch_handler": {
-    "client_mode": ["focus-existing", "auto"]
+    "client_mode": ["auto"]
   },
   "handle_links": "preferred",
   "share_target": {
