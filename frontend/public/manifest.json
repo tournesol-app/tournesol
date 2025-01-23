@@ -45,7 +45,7 @@
   },
   "handle_links": "preferred",
   "share_target": {
-    "action": "/shared-content",
+    "action": "https://tournesol.app/shared-content",
     "method": "GET",
     "params": {
       "title": "title",
