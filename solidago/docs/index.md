@@ -2,6 +2,10 @@
 
 A toolbox for **Soli**d **A**lgorithmic **Go**vernance, used by the [Tournesol](https://tournesol.app) platform.
 
+!!! warning
+    This documentation is still a work in progress.
+    See [https://github.com/tournesol-app/tournesol/pull/1972](https://github.com/tournesol-app/tournesol/pull/1972)
+
 {{ version }}
 
 
