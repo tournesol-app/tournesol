@@ -22,6 +22,8 @@
   stat:
     path: "/home/react/tournesol-frontend/public/.well-known/assetlinks.{{ domain_name }}.json"
   register: assetlinks_file
+  become: yes
+  become_user: react
 
 - name: Copy assetlinks.json
   file:
