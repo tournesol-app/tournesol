@@ -27,6 +27,7 @@
   file:
     src: "/home/react/tournesol-frontend/public/.well-known/assetlinks.{{ domain_name }}.json"
     dest: /home/react/tournesol-frontend/public/.well-known/assetlinks.json
+    state: hard
   when: assetlinks_file.stat.exists
   become: yes
   become_user: react
