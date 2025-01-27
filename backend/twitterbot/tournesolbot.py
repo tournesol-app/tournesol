@@ -23,6 +23,9 @@ from twitterbot.twitter_api import TwitterBot
 from twitterbot.uploader_twitter_account import get_twitter_account_from_video_id
 
 
+def get_video_short_url(video: Entity):
+    return f"tournesol.app/entities/yt:{video.video_id}"
+
 def get_best_criteria(video, nb_criteria):
     """Get the nb_criteria best-rated criteria"""
 
@@ -50,13 +53,14 @@ def prepare_tweet(video: Entity, dest: Literal["twitter", "bluesky"]):
 
     # Get twitter account
     if dest == "twitter":
-        twitter_account = get_twitter_account_from_video_id(video_id)
+        channel_handle = get_twitter_account_from_video_id(video_id)
     else:
+        channel_handle = None
         # TODO: implement fetch Bluesky handle
-        twitter_account = ""
+        # twitter_account = get_bluesky_handle_from_video_id(video_id)
 
-    if not twitter_account:
-        twitter_account = f"'{uploader}'"
+    if not channel_handle:
+        channel_handle = f"'{uploader}'"
 
     # Get two best criteria and criteria dict name
     crit1, crit2 = get_best_criteria(video, 2)
@@ -74,7 +78,7 @@ def prepare_tweet(video: Entity, dest: Literal["twitter", "bluesky"]):
     poll_rating = video.all_poll_ratings.get(poll__name=DEFAULT_POLL_NAME)
     tweet_text = settings.tweet_text_template[language].format(
         title=video_title,
-        twitter_account=twitter_account,
+        twitter_account=channel_handle,
         n_comparison=poll_rating.n_comparisons,
         n_contributor=poll_rating.n_contributors,
         crit1=crit_dict[crit1[0]],
@@ -83,20 +87,24 @@ def prepare_tweet(video: Entity, dest: Literal["twitter", "bluesky"]):
     )
 
     # Check the total length of the tweet and shorten title if the tweet is too long
-    # 288 is used because the link will be count as 23 characters and not 37 so 274 which leaves
-    # a margin of error for emoji which are counted as 2 characters
-    diff = len(tweet_text) - 288
+    # 250 is used because the link will be counted as 23 characters, which leaves
+    # a margin of error for emoji which are counted as 2 characters before reaching
+    # the limit of 280 characters.
+    diff = len(tweet_text) - 250
     if diff > 0:
         video_title = video_title[: -diff - 1] + "…"
         tweet_text = settings.tweet_text_template[language].format(
             title=video_title,
-            twitter_account=twitter_account,
+            twitter_account=channel_handle,
             n_comparison=poll_rating.n_comparisons,
             n_contributor=poll_rating.n_contributors,
             crit1=crit_dict[crit1[0]],
             crit2=crit_dict[crit2[0]],
             video_id=video_id,
         )
+
+    if dest == "twitter":
+        tweet_text += f"\n{get_video_short_url(video)}"
 
     return tweet_text
 
@@ -183,30 +191,28 @@ def tweet_video_recommendation(bot_name, dest: list[str], assumeyes=False):
             return
 
     tweet_id = None
+    atproto_uri = None
     # Tweet the video
     if "twitter" in dest:
         tweet_text = prepare_tweet(video, dest="twitter")
         tweet_id = twitterbot.create_tweet(text=tweet_text)
 
     if "bluesky" in dest:
-        pass
-        # TODO: implement bluesky integration
-        # post_text = prepare_tweet(video, dest="bluesky")
-
-    if tweet_id is None:
-        return
+        text = prepare_tweet(video, dest="bluesky")
+        atproto_uri = twitterbot.create_bluesky_post(text=text, embed_video=video)
 
     # Add the video to the TweetInfo table
-    tweet_info = TweetInfo.objects.create(
+    tweet_info: TweetInfo = TweetInfo.objects.create(
         video=video,
         tweet_id=tweet_id,
+        atproto_uri=atproto_uri,
         bot_name=bot_name,
     )
 
     # Post the tweet on Discord
     discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
     if discord_channel:
-        write_in_channel(discord_channel, message=tweet_info.tweet_url)
+        write_in_channel(discord_channel, message=tweet_info.message_url)
 
 
 def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:

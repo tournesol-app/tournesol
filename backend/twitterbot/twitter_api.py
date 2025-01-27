@@ -4,6 +4,8 @@ from typing import List, Optional
 
 from django.conf import settings
 
+from tournesol.models import Entity
+
 
 class TwitterBot:
     def __init__(self, account):
@@ -41,6 +43,16 @@ class TwitterBot:
             access_token_secret=self.account_cred["ACCESS_TOKEN_SECRET"],
         )
 
+    @cached_property
+    def atproto_client(self):
+        from atproto import Client
+        client = Client()
+        client.login(
+            self.account_cred["ATPROTO_HANDLE"],
+            self.account_cred["ATPROTO_PASSWORD"],
+        )
+        return client
+
     def create_tweet(self, text: str, media_files: Optional[List[Path]] = None):
         if media_files is None:
             media_ids = []
@@ -53,3 +65,38 @@ class TwitterBot:
             media_ids=media_ids,
         )
         return resp.data["id"]
+
+    def create_bluesky_post(
+        self,
+        text,
+        embed_video: Optional[Entity] = None,
+        image_files: Optional[List[Path]] = None,
+        image_alts: Optional[List[str]] = None,
+    ):
+        from atproto import models
+        if image_files is None:
+            if embed_video is None:
+                embed = None
+            else:
+                embed = models.AppBskyEmbedExternal.Main(
+                    external=models.AppBskyEmbedExternal.External(
+                        title=embed_video.metadata.get("name", ""),
+                        description=embed_video.metadata.get("uploader", ""),
+                        uri=f"https://tournesolapp/entities/yt:{embed_video.video_id}",
+                        # TODO: fetch thumbnail from tournesol.app and upload blob
+                        # thumb=blob
+                    )
+                )
+            resp = self.atproto_client.send_post(
+                text=text,
+                embed=embed,
+                langs=[self.language],
+            )
+        else:
+            resp = self.atproto_client.send_images(
+                text=text,
+                langs=[self.language],
+                images=[p.read_bytes() for p in image_files],
+                image_alts=image_alts,
+            )
+        return resp.uri

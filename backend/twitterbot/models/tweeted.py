@@ -1,6 +1,7 @@
 """
 Models for Tournesol twitter bot already tweeted videos
 """
+import re
 
 from django.db import models
 
@@ -23,9 +24,17 @@ class TweetInfo(models.Model):
     )
 
     tweet_id = models.CharField(
-        null=False,
+        null=True,
+        default=None,
         max_length=22,
         help_text="Tweet ID from Twitter URL",
+    )
+
+    atproto_uri = models.CharField(
+        null=True,
+        default=None,
+        max_length=255,
+        help_text="URI of the post on the AT protocol network",
     )
 
     datetime_tweet = models.DateTimeField(
@@ -51,3 +60,24 @@ class TweetInfo(models.Model):
         if not self.tweet_id:
             return None
         return f"https://twitter.com/{self.bot_name}/status/{self.tweet_id}"
+
+    @property
+    def bluesky_url(self):
+        if not self.atproto_uri:
+            return None
+        match = re.match(
+            r"at://(?P<authority>.+)/(?P<collection>.+)/(?P<key>.+)",
+            self.atproto_uri,
+        )
+        if not match:
+            return None
+        if match.group("collection") != "app.bsky.feed.post":
+            return None
+        return f"https://bsky.app/profile/{match.group('authority')}/post/{match.group('key')}"
+
+    @property
+    def message_url(self):
+        bluesky_url = self.bluesky_url
+        if bluesky_url:
+            return self.bluesky_url
+        return self.tweet_url
