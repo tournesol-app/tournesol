@@ -84,7 +84,8 @@ class TwitterBot:
                 embed = None
             else:
                 preview_response = requests.get(
-                    f"https://api.tournesol.app/preview/entities/{embed_video.uid}"
+                    f"https://api.tournesol.app/preview/entities/{embed_video.uid}",
+                    timeout=10,
                 )
                 preview_response.raise_for_status()
                 img_data = preview_response.content
