@@ -18,6 +18,22 @@
   become: yes
   become_user: react
 
+- name: Check assetlinks.json
+  stat:
+    path: "/home/react/tournesol-frontend/public/.well-known/assetlinks.{{ domain_name }}.json"
+  register: assetlinks_file
+  become: yes
+  become_user: react
+
+- name: Copy assetlinks.json
+  file:
+    src: "/home/react/tournesol-frontend/public/.well-known/assetlinks.{{ domain_name }}.json"
+    dest: /home/react/tournesol-frontend/public/.well-known/assetlinks.json
+    state: hard
+  when: assetlinks_file.stat.exists
+  become: yes
+  become_user: react
+
 - name: Yarn build
   shell:
     cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && yarn build
