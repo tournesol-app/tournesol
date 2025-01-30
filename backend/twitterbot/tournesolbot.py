@@ -18,8 +18,8 @@ from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import DEFAULT_POLL_NAME, Poll
 from tournesol.utils.contributors import get_top_public_contributors_last_month
 from twitterbot import settings
-from twitterbot.models.history import TweetInfo
 from twitterbot.client import TournesolBotClient
+from twitterbot.models.history import TweetInfo
 from twitterbot.uploader_twitter_account import get_twitter_account_from_video_id
 
 
