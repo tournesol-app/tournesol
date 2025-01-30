@@ -8,7 +8,7 @@ from django.conf import settings
 from tournesol.models import Entity
 
 
-class TwitterBot:
+class TournesolBotClient:
     def __init__(self, account):
 
         credentials = settings.TWITTERBOT_CREDENTIALS

@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models.tweeted import TweetInfo
+from .models.history import TweetInfo
 
 
 @admin.register(TweetInfo)

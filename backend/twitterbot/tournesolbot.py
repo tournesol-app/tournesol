@@ -18,8 +18,8 @@ from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import DEFAULT_POLL_NAME, Poll
 from tournesol.utils.contributors import get_top_public_contributors_last_month
 from twitterbot import settings
-from twitterbot.models.tweeted import TweetInfo
-from twitterbot.twitter_api import TwitterBot
+from twitterbot.models.history import TweetInfo
+from twitterbot.client import TournesolBotClient
 from twitterbot.uploader_twitter_account import get_twitter_account_from_video_id
 
 
@@ -176,9 +176,9 @@ def tweet_video_recommendation(bot_name, dest: list[str], assumeyes=False):
             Accepted values are "twitter" and "bluesky".
     """
 
-    twitterbot = TwitterBot(bot_name)
+    bot_client = TournesolBotClient(bot_name)
 
-    tweetable_videos = get_video_recommendations(language=twitterbot.language)
+    tweetable_videos = get_video_recommendations(language=bot_client.language)
     if not tweetable_videos:
         print("No video reach the criteria to be tweeted today!!!")
         return
@@ -198,11 +198,11 @@ def tweet_video_recommendation(bot_name, dest: list[str], assumeyes=False):
     # Tweet the video
     if "twitter" in dest:
         tweet_text = prepare_text(video, dest="twitter")
-        tweet_id = twitterbot.create_tweet(text=tweet_text)
+        tweet_id = bot_client.create_tweet(text=tweet_text)
 
     if "bluesky" in dest:
         text = prepare_text(video, dest="bluesky")
-        atproto_uri = twitterbot.create_bluesky_post(text=text, embed_video=video)
+        atproto_uri = bot_client.create_bluesky_post(text=text, embed_video=video)
 
     # Add the video to the TweetInfo table
     tweet_info: TweetInfo = TweetInfo.objects.create(
@@ -280,8 +280,8 @@ def tweet_top_contributor_graph(bot_name, dest: list[str], assumeyes=False):
 
     """
 
-    twitterbot = TwitterBot(bot_name)
-    language = twitterbot.language
+    bot_client = TournesolBotClient(bot_name)
+    language = bot_client.language
 
     top_contributors_qs = get_top_public_contributors_last_month(
         poll_name=DEFAULT_POLL_NAME, top=10
@@ -302,20 +302,20 @@ def tweet_top_contributor_graph(bot_name, dest: list[str], assumeyes=False):
 
     message_url = None
     if "twitter" in dest:
-        tweet_id = twitterbot.create_tweet(
+        tweet_id = bot_client.create_tweet(
             text=settings.top_contrib_tweet_text_template[language],
             media_files=[top_contributor_figure]
         )
         message_url = f"https://twitter.com/{bot_name}/status/{tweet_id}"
 
     if "bluesky" in dest:
-        post_uri = twitterbot.create_bluesky_post(
+        post_uri = bot_client.create_bluesky_post(
             text=settings.top_contrib_tweet_text_template[language],
             image_files=[top_contributor_figure],
             image_alts=[settings.top_contrib_tweet_image_alt[language]]
         )
         post_id = post_uri.rsplit("/", 1)[-1]
-        message_url = f'https://bsky.app/profile/{twitterbot.bluesky_handle}/post/{post_id}'
+        message_url = f'https://bsky.app/profile/{bot_client.bluesky_handle}/post/{post_id}'
 
     if message_url is not None:
         # Post the tweet on Discord
