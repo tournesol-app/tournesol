@@ -69,9 +69,7 @@ class TweetInfo(models.Model):
             r"at://(?P<authority>.+)/(?P<collection>.+)/(?P<key>.+)",
             self.atproto_uri,
         )
-        if not match:
-            return None
-        if match.group("collection") != "app.bsky.feed.post":
+        if not match or match.group("collection") != "app.bsky.feed.post":
             return None
         return f"https://bsky.app/profile/{match.group('authority')}/post/{match.group('key')}"
 
