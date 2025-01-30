@@ -20,11 +20,16 @@ class QuantileShift(Scaling):
         lipschitz: float = 0.1,
         error: float = 1e-5,
     ):
-        """The scores are shifted so that their quantile zero_quantile equals zero
+        """Shifts the scores so that their `quantile` (computed with
+        [`qr_quantile`][solidago.primitives.qr_quantile]) value equals `target_score`.
 
         Parameters
         ----------
-        zero_quantile: float
+        quantile: float
+        target_score: float
+        lipschitz: float
+        error: float
+
         """
         self.quantile = quantile
         self.target_score = target_score
