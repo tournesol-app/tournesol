@@ -2,6 +2,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import List, Optional
 
+import requests
 from django.conf import settings
 
 from tournesol.models import Entity
@@ -43,9 +44,13 @@ class TwitterBot:
             access_token_secret=self.account_cred["ACCESS_TOKEN_SECRET"],
         )
 
+    @property
+    def bluesky_handle(self):
+        return self.account_cred["ATPROTO_HANDLE"]
+
     @cached_property
     def atproto_client(self):
-        from atproto import Client
+        from atproto import Client  # pylint:disable=import-outside-toplevel
         client = Client()
         client.login(
             self.account_cred["ATPROTO_HANDLE"],
@@ -73,18 +78,23 @@ class TwitterBot:
         image_files: Optional[List[Path]] = None,
         image_alts: Optional[List[str]] = None,
     ):
-        from atproto import models
+        from atproto import models  # pylint:disable=import-outside-toplevel
         if image_files is None:
             if embed_video is None:
                 embed = None
             else:
+                preview_response = requests.get(
+                    f"https://api.tournesol.app/preview/entities/{embed_video.uid}"
+                )
+                preview_response.raise_for_status()
+                img_data = preview_response.content
+                thumb_blob = self.atproto_client.upload_blob(img_data).blob
                 embed = models.AppBskyEmbedExternal.Main(
                     external=models.AppBskyEmbedExternal.External(
                         title=embed_video.metadata.get("name", ""),
                         description=embed_video.metadata.get("uploader", ""),
-                        uri=f"https://tournesolapp/entities/yt:{embed_video.video_id}",
-                        # TODO: fetch thumbnail from tournesol.app and upload blob
-                        # thumb=blob
+                        uri=f"https://tournesolapp/entities/{embed_video.uid}",
+                        thumb=thumb_blob,
                     )
                 )
             resp = self.atproto_client.send_post(

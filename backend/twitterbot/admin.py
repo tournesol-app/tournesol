@@ -37,7 +37,7 @@ class TwitterBotAdmin(admin.ModelAdmin):
         """Return the URI of the tweet."""
         return format_html(
             '<a href="{}" target="_blank">Link</a>',
-            obj.tweet_url,
+            obj.message_url,
         )
 
     @staticmethod

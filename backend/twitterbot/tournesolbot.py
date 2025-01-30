@@ -44,7 +44,7 @@ def get_best_criteria(video, nb_criteria):
     return [(crit.criteria, crit.score) for crit in criteria_list]
 
 
-def prepare_tweet(video: Entity, dest: Literal["twitter", "bluesky"]):
+def prepare_text(video: Entity, dest: Literal["twitter", "bluesky"]):
     """Create the tweet text from the video."""
 
     uploader = video.metadata["uploader"]
@@ -68,11 +68,12 @@ def prepare_tweet(video: Entity, dest: Literal["twitter", "bluesky"]):
         CriteriaLocale.objects.filter(language=language).values_list("criteria__name", "label")
     )
 
-    # Replace "@" by a smaller "@" to avoid false mentions in the tweet
-    video_title = video.metadata["name"].replace("@", "﹫")
+    if dest == "twitter":
+        # Replace "@" by a smaller "@" to avoid false mentions in the tweet
+        video_title = video.metadata["name"].replace("@", "﹫")
 
-    # Replace "." in between words to avoid in the tweet false detection of links
-    video_title = re.sub(r"\b(?:\.)\b", "․", video_title)
+        # Replace "." in between words to avoid in the tweet false detection of links
+        video_title = re.sub(r"\b(?:\.)\b", "․", video_title)
 
     # Generate the text of the tweet
     poll_rating = video.all_poll_ratings.get(poll__name=DEFAULT_POLL_NAME)
@@ -103,7 +104,8 @@ def prepare_tweet(video: Entity, dest: Literal["twitter", "bluesky"]):
             video_id=video_id,
         )
 
-    if dest == "twitter":
+    if dest != "bluesky":
+        # on Bluesky the URL preview is attached separately as "embed"
         tweet_text += f"\n{get_video_short_url(video)}"
 
     return tweet_text
@@ -194,11 +196,11 @@ def tweet_video_recommendation(bot_name, dest: list[str], assumeyes=False):
     atproto_uri = None
     # Tweet the video
     if "twitter" in dest:
-        tweet_text = prepare_tweet(video, dest="twitter")
+        tweet_text = prepare_text(video, dest="twitter")
         tweet_id = twitterbot.create_tweet(text=tweet_text)
 
     if "bluesky" in dest:
-        text = prepare_tweet(video, dest="bluesky")
+        text = prepare_text(video, dest="bluesky")
         atproto_uri = twitterbot.create_bluesky_post(text=text, embed_video=video)
 
     # Add the video to the TweetInfo table
@@ -268,7 +270,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     return figure_path
 
 
-def tweet_top_contributor_graph(bot_name, assumeyes=False):
+def tweet_top_contributor_graph(bot_name, dest: list[str], assumeyes=False):
     """Tweet the top contibutor graph of last month.
 
     Args:
@@ -297,15 +299,28 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
         if confirmation not in ["y", "yes"]:
             return
 
-    tweet_id = twitterbot.create_tweet(
-        text=settings.top_contrib_tweet_text_template[language],
-        media_files=[top_contributor_figure]
-    )
-
-    # Post the tweet on Discord
-    discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
-    if discord_channel:
-        write_in_channel(
-            discord_channel,
-            message=f"https://twitter.com/{bot_name}/status/{tweet_id}",
+    message_url = None
+    if "twitter" in dest:
+        tweet_id = twitterbot.create_tweet(
+            text=settings.top_contrib_tweet_text_template[language],
+            media_files=[top_contributor_figure]
         )
+        message_url = f"https://twitter.com/{bot_name}/status/{tweet_id}"
+
+    if "bluesky" in dest:
+        post_uri = twitterbot.create_bluesky_post(
+            text=settings.top_contrib_tweet_text_template[language],
+            image_files=[top_contributor_figure],
+            image_alts=[settings.top_contrib_tweet_image_alt[language]]
+        )
+        post_id = post_uri.rsplit("/", 1)[-1]
+        message_url = f'https://bsky.app/profile/{twitterbot.bluesky_handle}/post/{post_id}'
+
+    if message_url is not None:
+        # Post the tweet on Discord
+        discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
+        if discord_channel:
+            write_in_channel(
+                discord_channel,
+                message=message_url,
+            )

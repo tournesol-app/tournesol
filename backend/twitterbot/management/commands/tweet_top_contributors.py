@@ -26,5 +26,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
-        tweet_top_contributor_graph(options["bot_name"], assumeyes=options["assumeyes"])
+        tweet_top_contributor_graph(
+            options["bot_name"],
+            assumeyes=options["assumeyes"],
+            dest=["bluesky"],
+        )

@@ -47,6 +47,17 @@ top_contrib_tweet_text_template = {
     ),
 }
 
+top_contrib_tweet_image_alt = {
+    "en": (
+        "A bar plot showing the users who contributed the most comparisons on Tournesol "
+        "in the last month."
+    ),
+    "fr": (
+        "Un graphique en barres représentant les utilisateur·rice·s ayant effecturé le "
+        "plus de comparaisons sur Tournesol durant le mois dernier."
+    ),
+}
+
 # Name of the Discord channel where the twitterbot will post its tweets.
 # An empty value won't trigger any post.
 TWITTERBOT_DISCORD_CHANNEL = "twitter"
