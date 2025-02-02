@@ -15,6 +15,7 @@ class VotingRightsAssignment(ABC):
         entities: pd.DataFrame,
         vouches: pd.DataFrame,
         privacy: PrivacySettings,
+        user_models: dict[int, "ScoringModel"]
     ) -> tuple[VotingRights, pd.DataFrame]:
         """ Compute voting rights
         
@@ -31,6 +32,8 @@ class VotingRightsAssignment(ABC):
             * vouch (float)
         privacy: PrivacySettings
             privacy[user, entity] in { True, False, None }
+        user_models: dict[int, ScoringModel]
+            user_models[user_id] is the user's scoring model
         
         Returns
         -------
