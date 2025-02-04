@@ -29,6 +29,11 @@ class Trust2VotingRights(StateFunction):
             for entity in entities:
                 for criterion in criteria:
                     penalty = made_public.penalty(self.privacy_penalty, user, entity)
-                    voting_rights[user, entity, criterion] = penalty * user["trust_score"]
+                    voting_rights.add_row(
+                        username=str(user), 
+                        entity_name=str(entity), 
+                        criterion=str(criterion),
+                        voting_right=penalty * user["trust_score"]
+                    )
         
         return voting_rights

@@ -323,13 +323,9 @@ class Mehestan(StateFunction):
         
         Parameters
         ----------
-        voting_rights: VotingRights
-            Must have key_names == ["scalee_name", "scaler_name"]
-            voting_rights[scalee_name, scaler_name] is a list of weights
-        comparisons: NestedDictOfRowLists
-            Must have key_names == ["scalee_name", "scaler_name"]
-            comparisons[scalee, scaler] is a list of triplets that represent a Score,
-            which represent how scalee's scale should be set to match scaler's.
+        trusts: UnnamedDataFrame
+        weight_lists: UnnamedDataFrame
+        score_lists: UnnamedDataFrame
             
         Returns
         -------
@@ -352,7 +348,11 @@ class Mehestan(StateFunction):
             value = qr_median(**kwargs)
             uncertainty = qr_uncertainty(median=value, **kwargs)
             multiscores[scalee_name, scaler_name] = Score(value, uncertainty, uncertainty)
-            voting_rights[scalee_name, scaler_name] = trusts[scaler_name]
+            voting_rights.add_row(
+                scalee_name=scalee_name, 
+                scaler_name=scaler_name, 
+                voting_right=trusts[scaler_name]
+            )
                 
         return voting_rights, multiscores
 
@@ -559,13 +559,13 @@ class Mehestan(StateFunction):
         """
         return MultiScore({
             scalee_name: self.aggregate_scalers(
-                voting_rights[scalee_name], 
+                voting_rights2,
                 ratios[scalee_name],
                 self.lipschitz / (8 * (1e-9 + model_norms[scalee_name])), 
                 default_value=1.0, 
                 default_dev=self.default_multiplicator_dev
             ).to_triplet()
-            for scalee_name in voting_rights.get_set("scalee_name")
+            for scalee_name, voting_rights2 in voting_rights.iter(["scalee_name"])
         }, key_names=["scalee_name"])
 
     ############################################
@@ -651,12 +651,12 @@ class Mehestan(StateFunction):
         """
         return MultiScore({
             scalee_name: self.aggregate_scalers(
-                voting_rights[scalee_name], 
+                voting_rights2, 
                 diffs[scalee_name],
                 self.lipschitz / 8, 
                 default_value=0.0, 
                 default_dev=self.default_translation_dev
             ).to_triplet()
-            for scalee_name in voting_rights.get_set("scalee_name")
+            for scalee_name, voting_rights2 in voting_rights.iter(["scalee_name"])
         }, key_names=["scalee_name"])
 

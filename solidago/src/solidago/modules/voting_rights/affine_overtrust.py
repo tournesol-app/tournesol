@@ -46,6 +46,7 @@ class AffineOvertrust(StateFunction):
         voting_rights = VotingRights()
         assessments = assessments.reorder_keys(["criterion", "entity_name", "username"])
         comparisons = comparisons.reorder_keys(["criterion", "left_name", "right_name", "username"])
+        stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
         
         for criterion in assessments.get_set("criterion") | comparisons.get_set("criterion"):
             entity_names = assessments[criterion].get_set("entity_name")
@@ -56,17 +57,14 @@ class AffineOvertrust(StateFunction):
             for entity_name in entity_names:
                 evaluators = assessments[criterion, entity_name].get_set("username")
                 evaluators |= ordered_comparisons[entity_name].get_set("username")
-                trust_scores = { username: users.loc[username, "trust_score"] for username in evaluators }
-                public = { username: made_public[username, entity_name] for username in evaluators }
-                sub_voting_rights, sub_statistics = self.sub_main(trust_scores, public)
-
-                for username, voting_right in sub_voting_rights.items():
-                    voting_rights[username, entity_name, criterion] = voting_right
-
-                cumulative_trust, min_voting_right, overtrust = sub_statistics
-                entities.loc[entity_name, f"{criterion}_cumulative_trust"] = cumulative_trust
-                entities.loc[entity_name, f"{criterion}_min_voting_right"] = min_voting_right
-                entities.loc[entity_name, f"{criterion}_overtrust"] = overtrust
+                trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
+                public = { u: made_public[u, entity_name] for u in evaluators }
+                
+                sub_voting_rights, statistics = self.sub_main(trust_scores, public)
+                sub_voting_rights[["criterion", "entity_name"]] = criterion, entity_name
+                voting_rights = voting_rights | sub_voting_rights
+                keys = [ f"{criterion}_{name}" for name in stat_names ]
+                entities.loc[entity_name, [ f"{criterion}_{n}" for n in stat_names ]] = statistics
                 
         return entities, voting_rights
 
@@ -83,11 +81,14 @@ class AffineOvertrust(StateFunction):
         statistics: dict[str, float]
             statistics[statistics_name] is the value of statistics_name
         """
-        voting_rights, statistics = self.computing_voting_rights_and_statistics(
+        voting_rights_np, statistics = self.computing_voting_rights_and_statistics(
             trust_scores=np.nan_to_num(np.array(list(trust_scores.values())), nan=0.0),
             privacy_weights=( np.array(list(public.values())) * (1 - self.privacy_penalty) + self.privacy_penalty )
         )
-        return { username: voting_rights[i] for i, username in enumerate(trust_scores) }, statistics
+        voting_rights = VotingRights(key_names=["username"])
+        for i, username in enumerate(trust_scores):
+            voting_rights.add_row(username=username, voting_right=voting_rights_np[i])
+        return voting_rights, statistics
 
     def computing_voting_rights_and_statistics(self,
         trust_scores: np.ndarray,

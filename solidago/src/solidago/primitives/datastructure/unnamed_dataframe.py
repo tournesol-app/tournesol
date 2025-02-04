@@ -14,6 +14,7 @@ class UnnamedDataFrame(DataFrame):
         value_names: Optional[Union[str, list[str]]]=None,
         save_filename: Optional[str]=None, 
         default_value: Optional[Any]=None,
+        last_only: bool=False,
         *args, 
         **kwargs
     ):
@@ -31,6 +32,7 @@ class UnnamedDataFrame(DataFrame):
                 self[column] = float("nan")
         self.meta.save_filename = save_filename
         self.meta._default_value = default_value
+        self.meta._last_only = last_only
         
     @property
     def key_names(self):
@@ -48,8 +50,16 @@ class UnnamedDataFrame(DataFrame):
     def default_value(self) -> Any:
         return self.meta._default_value
     
-    def value2row(self, value: Any, **kwargs) -> Series:
-        return Series(kwargs | dict(value))
+    def value2row(self, value: Optional[Any]=None, **kwargs) -> Series:
+        if value is None:
+            value = dict()
+        elif isinstance(value, (dict, Series)):
+            value = dict(value)
+        elif isinstance(value, Iterable):
+            value = { self.value_names[index]: v for index, v in enumerate(value) }
+        else:
+            value = { self.value_names[0]: value }
+        return Series(kwargs | value)
     
     def row2key(self, row: Series) -> Any:
         if not self.key_names:
@@ -65,36 +75,45 @@ class UnnamedDataFrame(DataFrame):
             return row[self.value_names[0]]
         return [ row[name] for name in self.value_names ]
     
-    def df2value(self, df: DataFrame) -> Any:
+    def df2value(self, df: DataFrame, last_only: Optional[bool]=None) -> Any:
+        last_only = self.meta._last_only if last_only is None else last_only
+        if last_only:
+            return self.row2value(df.iloc[-1])
         return df
         
     """ The following methods are are more standard """
     def add_row(self, value: Optional[Any]=None, **kwargs) -> None:
         self.index = list(range(len(self)))
         self.loc[len(self)] = self.value2row(value, **kwargs) if value else Series(kwargs)
-    
-    def get(self, process: bool=False, last_only: bool=False, **kwargs) -> "UnnamedDataFrame":
-        fltr = True
-        for column, value in kwargs.items():
-            fltr &= (self[column] == value)
-        df = self[fltr]
-        if not process:
-            return type(self)(df)
-        if df.empty:
-            return self.default_value()
-        if last_only:
-            return self.row2value(df.iloc[-1])
-        return self.df2value(df)
+        
+    def get(self, 
+        *args, 
+        process: bool=True, 
+        last_only: Optional[bool]=None, 
+        **kwargs
+    ) -> "UnnamedDataFrame":
+        assert len(args) <= len(self.key_names)
+        assert all({ key not in self.key_names[:len(args)] for key in kwargs })
+        kwargs |= { key: value for key, value in zip(self.key_names[:len(args)], args) }
+        df = self[reduce(lambda a, x: a & x, [ self[k] == v for k, v in kwargs.items() ], True)]
+        key_names = [ n for n in self.key_names if n not in kwargs ]
+        if key_names or not process:
+            return type(self)(df, key_names=key_names)
+        return self.default_value() if df.empty else self.df2value(df, last_only)
 
     def __contains__(self, **kwargs) -> bool:
         return not self.get(**kwargs).empty
 
-    def set(self, value: Optional[Any]=None, **kwargs) -> None:
-        df = self,get(process=False, **kwargs)
+    def set(self, value: Optional[Any]=None, *args, **kwargs) -> None:
+        assert len(args) <= len(self.key_names)
+        assert all({ key not in self.key_names[:len(args)] for key in kwargs })
+        kwargs |= { k: v for k, v in zip(self.key_names[:len(args)], args) }
+        df = self.get(process=False, **kwargs)
         if df.empty:
             self.add_row(value, **kwargs)
         else: # Updates the last row of df
-            df.iloc[-1] = self.value2row(value, **kwargs)
+            name = df.iloc[-1].name
+            self.loc[name] = self.value2row(value, **kwargs)
 
     def __or__(self, other: "UnnamedDataFrame") -> "UnnamedDataFrame":
         return type(self)(pd.concat([self, other]))
@@ -104,6 +123,9 @@ class UnnamedDataFrame(DataFrame):
         try: return cls(pd.read_csv(filename, keep_default_na=False))
         except pd.errors.EmptyDataError: return cls()
 
+    def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> dict:
+        return { key: value for key, value in self.iter(columns, process) }
+    
     def iter(self, columns: Optional[list[str]]=None, process: bool=True) -> Iterable:
         columns = columns if columns else self.key_names
         if columns is None:
@@ -117,9 +139,11 @@ class UnnamedDataFrame(DataFrame):
             yield list(), self.df2value(self) if process else self
             return None
         groups = DataFrame(self).groupby(columns)
-        key_names = [ n for n in self.key_names if n not in columns ]
+        kn = [ n for n in self.key_names if n not in columns ]
         for key in list(groups.groups.keys()):
-            yield key, type(self)(groups.get_group(key), key_names=key_names)
+            key_tuple = key if isinstance(key, tuple) else (key,)
+            df = groups.get_group(key_tuple)
+            yield key, type(self)(df, key_names=kn) if kn or not process else self.df2value(df)
 
     def __iter__(self, process: bool=True) -> Iterable:
         return self.iter(process=process)
@@ -136,3 +160,5 @@ class UnnamedDataFrame(DataFrame):
         self.to_csv(path, index=False)
         return type(self).__name__, str(path)
 
+    def __repr__(self) -> str:
+        return f"key_names={self.key_names}\nvalue_names={self.value_names}\n\n{DataFrame(self)}"

@@ -169,9 +169,9 @@ def test_min_voting_right_more_than_min_trust(n_random_users):
 
 def test_voting_rights_abstraction():
     voting_rights = VotingRights()
-    voting_rights[3, 46, "default"] = 0.4
-    voting_rights[3, 46, "default"] *= 2
-    assert voting_rights[3, 46, "default"] == 0.8
+    voting_rights.set(0.4, 3, 46, "default")
+    voting_rights.set(2 * voting_rights.get(3, 46, "default"), 3, 46, "default")
+    assert voting_rights.get(3, 46, "default") == 0.8
 
 
 def test_affine_overtrust():
@@ -206,7 +206,7 @@ def test_affine_overtrust():
     ]
 
     # Voting rights are assigned only on entities where evaluations have been made.
-    assert voting_rights.get_set("entity_name") == {"0", "1", "3", "5"}
+    assert set(voting_rights["entity_name"]) == {"0", "1", "3", "5"}
 
 
 @pytest.mark.parametrize("seed", range(5))

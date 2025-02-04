@@ -11,4 +11,4 @@ class VotingRights(UnnamedDataFrame):
         value_name="voting_right",
         save_filename="voting_rights.csv"
     ):
-        super().__init__(key_names, value_name, save_filename, data=data, default_value=0)
+        super().__init__(key_names, value_name, save_filename, data=data, default_value=0, last_only=True)

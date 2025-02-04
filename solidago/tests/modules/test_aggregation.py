@@ -6,12 +6,12 @@ states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
 
 entities = Entities(["entity_0", "entity_1", "entity_2", "entity_3"])
 voting_rights = VotingRights()
-voting_rights["user_0", "entity_0", "default"] = 1
-voting_rights["user_0", "entity_1", "default"] = 1
-voting_rights["user_0", "entity_3", "default"] = 1
-voting_rights["user_1", "entity_0", "default"] = 1
-voting_rights["user_1", "entity_2", "default"] = 1
-voting_rights["user_1", "entity_3", "default"] = 1
+voting_rights.set(1, "user_0", "entity_0", "default")
+voting_rights.set(1, "user_0", "entity_1", "default")
+voting_rights.set(1, "user_0", "entity_3", "default")
+voting_rights.set(1, "user_1", "entity_0", "default")
+voting_rights.set(1, "user_1", "entity_2", "default")
+voting_rights.set(1, "user_1", "entity_3", "default")
 user_models = UserModels({
     "user_0": DirectScoring({
         "entity_0": { "default": (2, 1, 0.5) },

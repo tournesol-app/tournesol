@@ -68,18 +68,17 @@ class TournesolExport(State):
         entities = DataFrame({ "entity_name": list(
             set(global_scores["entity_name"]) | set(comparisons["left_name"]) | set(comparisons["right_name"])
         ) })
+        voting_rights = user_scores[["username", "entity_name", "criterion", "voting_right"]]
         
-        return { "users": users, "vouches": vouches, "entities": entities, 
-            "comparisons": comparisons, "user_scores": user_scores, "global_scores": global_scores }
+        return dict(users=users, vouches=vouches, entities=entities, comparisons= comparisons, 
+            voting_rights=voting_rights, user_scores=user_scores, global_scores=global_scores)
     
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         dfs = TournesolExport.load_dfs(dataset_zip)
         from solidago.state import (
             Users, Vouches, Entities, AllPublic, Comparisons, 
             VotingRights, UserModels, DirectScoring
-        )
-        voting_rights_columns = ["username", "entity_name", "criterion", "voting_right"]
-        
+        )        
         user_models_d = {
             "users": {
                 username: ["DirectScoring", dict()] 
@@ -103,7 +102,7 @@ class TournesolExport(State):
             entities=Entities(dfs["entities"]),
             made_public=AllPublic(),
             comparisons=Comparisons(dfs["comparisons"]),
-            voting_rights=VotingRights(dfs["user_scores"][voting_rights_columns]),
+            voting_rights=VotingRights(dfs["voting_rights"]),
             user_models=UserModels.load(user_models_d, user_dfs),
             global_model=DirectScoring.load(dict(), { "directs": dfs["global_scores"] })
         )

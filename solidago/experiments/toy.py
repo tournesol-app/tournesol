@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-logging.config.fileConfig('experiments/info.conf')
+# logging.config.fileConfig('experiments/info.conf')
 
 from pandas import DataFrame, Series
 from pathlib import Path
@@ -22,11 +22,25 @@ from solidago.primitives.optimize import *
 # states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
 # tiny = TournesolExport("tests/tiny_tournesol.zip")
 
-t = TournesolExport("experiments/tournesol.zip")
-# t = State.load("experiments/saved_tournesol")
-pipeline = solidago.Sequential.load("tests/pipeline/test_pipeline.json")
+dfs = TournesolExport.load_dfs("experiments/tournesol.zip")
+voting_rights = VotingRights(dfs["voting_rights"])
 
-entity_name = "SS2wkUtkw5Y"
-username = "A"
+def iter_and_get():
+    global voting_rights, keys
+    for username, entity_name, criterion in keys:
+        voting_rights.get(username=username, entity_name=entity_name, criterion=criterion)
+
+def group_and_iter():
+    global voting_rights, keys
+    groups = voting_rights.groupby()
+    for username, entity_name, criterion in keys:
+        groups[username, entity_name, criterion]
+    
+    
+
+# t = TournesolExport("experiments/tournesol.zip")
+# t = State.load("experiments/saved_tournesol")
+# pipeline = solidago.Sequential.load("tests/pipeline/test_pipeline.json")
 
 # r = pipeline(t)
+

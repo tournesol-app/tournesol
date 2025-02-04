@@ -28,7 +28,7 @@ class EntitywiseQrQuantile(StateFunction):
     ) -> ScoringModel:
         
         global_model = DirectScoring()
-        voting_rights = voting_rights.reorder_keys(["entity_name", "criterion", "username"])
+        voting_rights = voting_rights.groupby(["username", "entity_name", "criterion"])
         multiscores = user_models(entities).reorder_keys(["entity_name", "criterion", "username"])
         common_kwargs = dict(lipschitz=self.lipschitz, error=self.error)
 
@@ -36,13 +36,13 @@ class EntitywiseQrQuantile(StateFunction):
             for criterion in multiscores[entity_name].get_set("criterion"):
                 
                 scores = multiscores[entity_name, criterion].to_df()
-                rights = [
-                    voting_rights[entity_name, criterion, username]
+                rights = np.array([
+                    voting_rights[username, entity_name, criterion]
                     for username, _ in multiscores[entity_name, criterion]
-                ]
+                ], np.float64)
                 kwargs = common_kwargs | dict(
                     values=np.array(scores["score"]),
-                    voting_rights=np.array(rights, dtype=np.float64),
+                    voting_rights=rights,
                     left_uncertainties=np.array(scores["left_unc"]),
                     right_uncertainties=np.array(scores["right_unc"]),
                 )                
