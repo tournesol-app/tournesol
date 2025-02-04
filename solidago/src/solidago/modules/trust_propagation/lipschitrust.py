@@ -66,11 +66,11 @@ class LipschiTrust(StateFunction):
             users["trust_score"] = list()
             return users
         
-        vouches = vouches[any, any, "Personhood"]
-        total_vouches = NestedDictOfItems({
-            voucher_name: vouches[voucher_name].to_df()["weight"].sum()
-            for voucher_name in vouches.get_set("by")
-        }, key_names=["voucher_name"], default_value=0)
+        vouches = vouches.get(kind="Personhood")
+        total_vouches = {
+            voucher_name: voucher_vouches["weight"].sum()
+            for voucher_name, voucher_vouches in vouches.iter(["by"])
+        }
         pretrusts = users["is_pretrusted"] * self.pretrust_value
         trusts = pretrusts.copy()
 

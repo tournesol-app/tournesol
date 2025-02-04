@@ -18,7 +18,7 @@ class AssessmentGen(StateFunction):
                 assessment=assessment, 
                 user=users.get(username), 
                 entity=entities.get(entity_name), 
-                public=made_public[username, entity_name],
+                public=made_public.get(username, entity_name),
                 criterion=criterion
             )
             result.add_row((username, criterion, entity_name), assessment)

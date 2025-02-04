@@ -12,7 +12,7 @@ states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
 def test_is_trust(seed):
     voting_rights = Trust2VotingRights().state2objects_function(states[seed])
     for (username, entity_name, criterion), voting_right in voting_rights:
-        if states[seed].made_public[username, entity_name]:
+        if states[seed].made_public.get(username, entity_name):
             assert voting_right == states[seed].users.get(username)["trust_score"]
         else:
             assert voting_right == 0.5 * states[seed].users.get(username)["trust_score"]

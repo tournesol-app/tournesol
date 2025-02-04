@@ -6,8 +6,8 @@ def test_import():
     
     assert "biscuissec" in t.users, t.users
     assert t.users.loc["le_science4all", "trust_score"] == 1
-    assert "NatNgs" in t.vouches["aidjango"]
-    assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
+    assert "NatNgs" in set(t.vouches.get("aidjango")["to"])
+    assert t.vouches.get("aidjango", "biscuissec", "Personhood") == (1, 0)
     assert "aBdymwisfb4" in t.entities
     assert isinstance(t.made_public, AllPublic)
     assert len(t.assessments) == 0
@@ -38,8 +38,8 @@ def test_reimport():
     
     assert "biscuissec" in t.users, t.users
     assert t.users.loc["le_science4all", "trust_score"] == 1
-    assert "NatNgs" in t.vouches["aidjango"]
-    assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
+    assert "NatNgs" in set(t.vouches.get("aidjango")["to"])
+    assert t.vouches.get("aidjango", "biscuissec", "Personhood") == (1, 0)
     assert isinstance(t.made_public, AllPublic)
     assert len(t.assessments) == 0
     assert len(t.comparisons) == 2268

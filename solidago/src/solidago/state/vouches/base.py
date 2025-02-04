@@ -1,17 +1,17 @@
-from typing import Union, Optional
-from pandas import DataFrame, Series
+from typing import Optional, Any
 
-from solidago.primitives.datastructure import NestedDictOfTuples
+from solidago.primitives.datastructure import UnnamedDataFrame
 
 
-class Vouches(NestedDictOfTuples):
+class Vouches(UnnamedDataFrame):
     def __init__(self, 
-        d: Optional[Union[dict, DataFrame]]=None, 
+        data: Optional[Any]=None, 
         key_names=["by", "to", "kind"],
         value_names=["weight", "priority"],
-        save_filename="vouches.csv"
+        name="vouches",
+        default_value=(0, - float("inf")),
+        last_only=True,
+        **kwargs
     ):
-        super().__init__(d, key_names, value_names, save_filename)
+        super().__init__(key_names, value_names, name, default_value, last_only, data, **kwargs)
     
-    def default_value(self) -> tuple[float, float]:
-        return 0, - float("inf")

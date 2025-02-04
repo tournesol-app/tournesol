@@ -116,7 +116,7 @@ class Mehestan(StateFunction):
         scores: MultiScore
             Must have key_names == ["criterion", "username", "entity_name"]
         made_public: MadePublic
-            Must have key_names == ["criterion", "username", "entity_name"]
+            Must have key_names == ["username", "entity_name"]
         
         Returns
         -------
@@ -276,9 +276,8 @@ class Mehestan(StateFunction):
             activities[i] is a measure of user i's trustworthy activeness,
             where i is the iloc of the user in users
         """
-        made_public = made_public.reorder_keys(["username", "entity_name"])
         return np.array([
-            self.compute_user_activities(trusts[user], made_public[user], scores[user])
+            self.compute_user_activities(trusts[user], made_public.get(user), scores[user])
             for user in users
         ])
     
@@ -420,7 +419,7 @@ class Mehestan(StateFunction):
             out[username] is the norm of user's score vector
         """
         return { 
-            username: self.compute_model_norm(made_public[username], scores[username]) 
+            username: self.compute_model_norm(made_public.get(username), scores[username]) 
             for username in scores.get_set("username")
         }
 
@@ -510,7 +509,7 @@ class Mehestan(StateFunction):
                 weight_list, ratio_list = self.compute_ratios(
                     scalee_scores[scalee_name], 
                     scaler_scores[scaler_name], 
-                    made_public[scaler_name],
+                    made_public.get(scaler_name),
                     pairs
                 )
                 if weight_list:

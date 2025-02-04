@@ -25,6 +25,6 @@ class ErdosRenyiVouch(VouchGen):
                 p_vouch = users.loc[voucher_name, "n_expected_vouches"] / (len(usernames_subset) - 1)
                 for vouchee_name in usernames_subset:
                     if (voucher_name != vouchee_name) and (random() < p_vouch):
-                        vouches[voucher_name, vouchee_name, "Personhood"] = 1 - random()**2, 0
+                        vouches.set((1 - random()**2, 0), voucher_name, vouchee_name, "Personhood")
         
         return vouches

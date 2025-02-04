@@ -21,8 +21,8 @@ class ComparisonGen(StateFunction):
                 user=users.get(username), 
                 left=entities.get(left_name), 
                 right=entities.get(right_name),
-                left_public=made_public[username, left_name],
-                right_public=made_public[username, right_name], 
+                left_public=made_public.get(username, left_name),
+                right_public=made_public.get(username, right_name), 
                 criterion=criterion
             )
             result.add_row((username, criterion, left_name, right_name), comparison)

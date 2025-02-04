@@ -1,14 +1,16 @@
-from typing import Union, Optional
-from pandas import DataFrame
+from typing import Optional, Any
 
 from solidago.primitives.datastructure import UnnamedDataFrame
 
 
 class VotingRights(UnnamedDataFrame):
     def __init__(self, 
-        data: Optional[Union[dict, DataFrame]]=None, 
+        data: Optional[Any]=None, 
         key_names=["username", "entity_name", "criterion"],
         value_name="voting_right",
-        save_filename="voting_rights.csv"
+        name="voting_rights",
+        default_value=0,
+        last_only=True,
+        **kwargs
     ):
-        super().__init__(key_names, value_name, save_filename, data=data, default_value=0, last_only=True)
+        super().__init__(key_names, value_name, name, default_value, last_only, data, **kwargs)

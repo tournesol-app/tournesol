@@ -11,7 +11,7 @@ class EngagementGen(StateFunction):
             eval_entities = self.sample_evaluated_entities(user, entities)
             for index, entity in enumerate(eval_entities):
                 public = self.public(user, entity, eval_entities)
-                made_public[user, entity] = public
+                made_public.set(public, user, entity)
                 assess = self.assess(user, entity, eval_entities)
                 if assess:
                     assessments.add(user, "default", entity)

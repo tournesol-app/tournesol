@@ -1,22 +1,32 @@
-from typing import Optional, Union
-from pandas import DataFrame
-from pathlib import Path
+from typing import Optional, Any
 
 from .base import MadePublic
-from solidago.primitives.datastructure import NestedDictOfItems
 
 
-class AllPublic(NestedDictOfItems):
+class AllPublic(MadePublic):
     def __init__(self, 
-        d: Optional[Union[dict, DataFrame]]=None, 
+        data: Optional[Any]=None, 
         key_names=["username", "entity_name"],
         value_name="public",
-        save_filename="made_public.csv"
+        name="made_public",
+        default_value=True,
+        last_only=True,
+        **kwargs
     ):
-        super().__init__(d, key_names, value_name, save_filename, default_value=True)
+        super().__init__(data, key_names, value_name, name, default_value, last_only, **kwargs)
     
-    def __setitem__(self, keys: Union[str, tuple, list], value: bool) -> None:
+    def add_row(*args, **kwargs):
+        pass
+        
+    def set(*args, **kwargs):
         pass
 
     def penalty(self, privacy_penalty: float, *keys) -> float:
         return 1
+
+    @classmethod
+    def load(cls, *args, **kwargs) -> "AllPublic":
+        return cls()
+
+    def save(self, *arg, **kwargs) -> tuple[str, str]:
+        return type(self).__name__, None

@@ -58,7 +58,7 @@ class AffineOvertrust(StateFunction):
                 evaluators = assessments[criterion, entity_name].get_set("username")
                 evaluators |= ordered_comparisons[entity_name].get_set("username")
                 trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
-                public = { u: made_public[u, entity_name] for u in evaluators }
+                public = { u: made_public.get(u, entity_name) for u in evaluators }
                 
                 sub_voting_rights, statistics = self.sub_main(trust_scores, public)
                 sub_voting_rights[["criterion", "entity_name"]] = criterion, entity_name

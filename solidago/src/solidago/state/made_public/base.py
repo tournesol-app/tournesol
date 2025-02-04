@@ -1,21 +1,19 @@
-from typing import Union, Optional
-from pandas import DataFrame
+from typing import Optional, Any
 
-from solidago.primitives.datastructure import NestedDictOfItems
+from solidago.primitives.datastructure import UnnamedDataFrame
 
 
-class MadePublic(NestedDictOfItems):
+class MadePublic(UnnamedDataFrame):
     def __init__(self, 
-        d: Optional[Union[dict, DataFrame]]=None, 
+        data: Optional[Any]=None, 
         key_names=["username", "entity_name"],
         value_name="public",
-        save_filename="made_public.csv",
+        name="made_public",
+        default_value=False,
+        last_only=True,
+        **kwargs
     ):
-        super().__init__(d, key_names, value_name, save_filename, default_value=False)
-    
-    def __setitem__(self, keys: Union[str, tuple, list], value: bool) -> None:
-        if value:
-            super().__setitem__(keys, value)
+        super().__init__(key_names, value_name, name, default_value, last_only, data, **kwargs)
 
-    def penalty(self, privacy_penalty: float, *keys) -> float:
-        return 1 if self[keys] else privacy_penalty
+    def penalty(self, privacy_penalty: float, *args, **kwargs) -> float:
+        return 1 if self.get(*args, **kwargs) else privacy_penalty
