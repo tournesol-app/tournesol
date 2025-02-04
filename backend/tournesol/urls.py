@@ -38,7 +38,7 @@ from .views.previews import (
 )
 from .views.previews.recommendations import get_preview_recommendations_redirect_params
 from .views.proof import ProofView
-from .views.rate_later import RateLaterDetail, RateLaterList
+from .views.rate_later import RateLaterBulkCreate, RateLaterDetail, RateLaterList
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -112,6 +112,11 @@ urlpatterns = [
         "users/me/rate_later/<str:poll_name>/",
         RateLaterList.as_view(),
         name="usersme_ratelater_list",
+    ),
+    path(
+        "users/me/rate_later/<str:poll_name>/bulk_create",
+        RateLaterBulkCreate.as_view(),
+        name="usersme_ratelater_bulk_create",
     ),
     path(
         "users/me/rate_later/<str:poll_name>/<str:uid>/",

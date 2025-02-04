@@ -2104,6 +2104,47 @@ paths:
       responses:
         '204':
           description: No response body
+  /users/me/rate_later/{poll_name}/bulk_create:
+    post:
+      operationId: users_me_rate_later_bulk_create_create
+      description: Add a multiple new entities to the logged user's rate-later list,
+        for a given poll.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RateLaterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RateLaterRequest'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RateLaterRequest'
+        required: true
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLater'
+          description: ''
   /users/me/recommendations/{poll_name}:
     get:
       operationId: users_me_recommendations_list

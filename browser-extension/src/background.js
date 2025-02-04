@@ -1,5 +1,6 @@
 import {
   addRateLater,
+  addRateLaterBulk,
   alertOnCurrentTab,
   alertUseOnLinkToYoutube,
   fetchTournesolApi,
@@ -72,6 +73,12 @@ function getDateThreeWeeksAgo() {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Returns a boolean indicating whether the user is logged in on Tournesol from the extension's perspective
+  if (request.message === 'isLoggedIn') {
+    getAccessToken().then((token) => sendResponse(!!token));
+    return true;
+  }
+
   // Return the current access token in the chrome.storage.local.
   if (request.message === 'extAccessTokenNeeded') {
     getAccessToken().then((token) => sendResponse({ access_token: token }));
@@ -112,6 +119,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.message == 'addRateLater') {
     addRateLater(request.video_id).then(sendResponse);
+    return true;
+  }
+
+  if (request.message == 'addRateLaterBulk') {
+    addRateLaterBulk(request.videoIds).then(sendResponse).catch(sendResponse);
     return true;
   }
 

@@ -14,6 +14,9 @@
   "menuPreferences": {
     "message": "Préférences"
   },
+  "menuRateLaterHistory": {
+    "message": "Importer l'historique YouTube"
+  },
   "recommendedByTournesol": {
     "message": "Recommandées par Tournesol",
     "description": "Titre du conteneur principal affichant les recommandations."
@@ -147,5 +150,33 @@
   "watchOnTournesolButtonLabel": {
     "message": "Regarder sur Tournesol",
     "description": "Label du bouton affiché sur les pages de vidéo."
+  },
+  "rateLaterHistoryImportButton": {
+    "message": "Importer l'historique dans Tournesol",
+    "description": "Label du  bouton affiché sur l'historique YouTube pour l'importer dans les vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryStatusBoxTitle": {
+    "message": "Les vidéos sont en train d'être importées, veuillez patienter.",
+    "description": "Titre de l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryStatusBoxMessage": {
+    "message": "Appuyez sur Stop quand le nombre de vidéos visibles n'augmente plus ou que vous pensez que suffisamment de vidéos ont été importées.",
+    "description": "Instructions affichées sur l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryVideoCount": {
+    "message": "Vidéos visibles dans l'historique :",
+    "description": "Étiquette indiquant le nombre de vidéos trouvées dans l'historique YouTube pendant l'import."
+  },
+  "rateLaterHistoryAddedCount": {
+    "message": "Vidéos importées dans les vidéos à comparer :",
+    "description": "Étiquette indiquant le nombre de vidéos ajoutées avec succès à la liste des vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryFailureCount": {
+    "message": "Échecs :",
+    "description": "Étiquette indiquant le nombre de vidéos qui n'ont pas pu être ajoutées à la liste."
+  },
+  "rateLaterHistoryStopButtonLabel": {
+    "message": "Stop",
+    "description": "Texte du bouton permettant d'arrêter le processus d'import de l'historique YouTube."
   }
 }

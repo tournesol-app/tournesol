@@ -89,6 +89,20 @@ export const addRateLater = async (video_id) => {
   };
 };
 
+export const addRateLaterBulk = async (videoIds) => {
+  const ratingStatusReponse = await fetchTournesolApi(
+    'users/me/rate_later/videos/bulk_create',
+    {
+      method: 'POST',
+      data: videoIds.map((videoId) => ({ entity: { uid: 'yt:' + videoId } })),
+    }
+  );
+  if (!ratingStatusReponse?.ok)
+    throw new Error('addRateLaterBulk request failed');
+
+  return await ratingStatusReponse.json();
+};
+
 /**
  * Retrieve the user proof related to the given keyword from the API.
  */

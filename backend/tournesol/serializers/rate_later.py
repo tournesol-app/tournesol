@@ -1,4 +1,4 @@
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
@@ -14,6 +14,20 @@ class RateLaterMetadataSerializer(ModelSerializer):
     class Meta:
         model = RateLater
         fields = ["created_at"]
+
+
+class RateLaterListSerializer(serializers.ListSerializer):
+    def create(self, validated_data):
+        result = []
+        for attrs in validated_data:
+            try:
+                with transaction.atomic():
+                    result.append(self.child.create(attrs))
+            except ConflictError:
+                # Ignore conflicts in bulk create
+                pass
+
+        return result
 
 
 class RateLaterSerializer(ModelSerializer):
@@ -46,6 +60,7 @@ class RateLaterSerializer(ModelSerializer):
             "entity_contexts",
             "rate_later_metadata",
         ]
+        list_serializer_class = RateLaterListSerializer
 
     def create(self, validated_data):
         entity_id = validated_data.pop("entity")["pk"]

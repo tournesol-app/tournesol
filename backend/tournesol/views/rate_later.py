@@ -65,6 +65,35 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
 
 
 @extend_schema_view(
+    post=extend_schema(
+        description="Add a multiple new entities to the logged user's rate-later list,"
+        " for a given poll.",
+        request=RateLaterSerializer(many=True),
+        responses={
+            201: RateLaterSerializer,
+        },
+    ),
+)
+class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
+    """
+    Create multiple rate-later entries at once.
+    Accepts an array of entities to be added to the rate-later list.
+    """
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = RateLaterSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        kwargs["many"] = True
+        return super().get_serializer(*args, **kwargs)
+
+    def perform_create(self, serializer):
+        rate_later_instances = serializer.save()
+        for rate_later in rate_later_instances:
+            self.prefetch_entity(rate_later)
+
+
+@extend_schema_view(
     get=extend_schema(description="Get an entity from the logged user's rate-later list."),
     delete=extend_schema(description="Delete an entity from the logged user's rate-later list."),
 )

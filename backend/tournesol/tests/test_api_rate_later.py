@@ -35,6 +35,7 @@ class RateLaterCommonMixinTestCase:
 
         self.poll = PollFactory()
         self.rate_later_base_url = f"/users/me/rate_later/{self.poll.name}/"
+        self.rate_later_bulk_base_url = f"/users/me/rate_later/{self.poll.name}/bulk_create"
 
         self.entity_in_ratelater = VideoFactory()
 
@@ -269,6 +270,150 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
         response = self.client.post(
             f"/users/me/rate_later/{self._invalid_poll_name}/", data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class RateLaterBulkCreateTestCase(RateLaterCommonMixinTestCase, TestCase):
+    """
+    TestCase of the `RateLaterBulkCreate` API.
+
+    The `RateLaterBulkCreate` API provides an endpoint to add multiple entities to the rate-later list.
+    """
+
+    _other_uid_not_in_db = "yt:n-oujbO9fdQ"
+
+    def test_anon_401_create(self) -> None:
+        """
+        An anonymous user cannot add entities to its rate-later list, even if
+        the poll exists.
+        """
+        data = [
+            {"entity": {"uid": self._uid_not_in_db}},
+            {"entity": {"uid": self._other_uid_not_in_db}},
+        ]
+        response = self.client.post(self.rate_later_bulk_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_anon_401_create_invalid_poll(self) -> None:
+        """
+        An anonymous user cannot add entities to its rate-later list, even if
+        the poll doesn't exist.
+        """
+        data = [
+            {"entity": {"uid": self._uid_not_in_db}},
+            {"entity": {"uid": self._other_uid_not_in_db}},
+        ]
+        response = self.client.post(
+            f"/users/me/rate_later/{self._invalid_poll_name}/bulk_create", data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_auth_201_create(self) -> None:
+        """
+        An authenticated user can add entities to its rate-later list from a
+        specific poll, even if the entity doesn't exist in the database yet.
+        """
+        # A second poll ensures the create operation is poll specific.
+        other_poll = PollFactory()
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+
+        self.client.force_authenticate(self.user)
+        data = [
+            {"entity": {"uid": self._uid_not_in_db}},
+            {"entity": {"uid": self._other_uid_not_in_db}},
+        ]
+        response = self.client.post(self.rate_later_bulk_base_url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertListEqual(
+            response.data,
+            [
+                {
+                    "entity": {
+                        "uid": self._uid_not_in_db,
+                        "type": "video",
+                        "metadata": ANY,
+                    },
+                    "entity_contexts": [],
+                    "collective_rating": None,
+                    "individual_rating": None,
+                    "rate_later_metadata": {"created_at": ANY},
+                },
+                {
+                    "entity": {
+                        "uid": self._other_uid_not_in_db,
+                        "type": "video",
+                        "metadata": ANY,
+                    },
+                    "entity_contexts": [],
+                    "collective_rating": None,
+                    "individual_rating": None,
+                    "rate_later_metadata": {"created_at": ANY},
+                },
+            ],
+        )
+
+        self.assertEqual(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr + 2,
+        )
+
+        # Rate-later items are saved per poll.
+        self.assertEqual(RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0)
+
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_auth_201_create_two_times(self) -> None:
+        """
+        An authenticated user can request to add two times the same entity to a
+        rate-later list of a specific poll. In this case the duplicates are ignored.
+        """
+        other_poll = PollFactory()
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+
+        self.client.force_authenticate(self.user)
+        data = [
+            {"entity": {"uid": self.entity_in_ratelater.uid}},
+            {"entity": {"uid": self._uid_not_in_db}},
+        ]
+
+        response = self.client.post(self.rate_later_bulk_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.assertListEqual(
+            response.data,
+            [
+                {
+                    "entity": {
+                        "uid": self._uid_not_in_db,
+                        "type": "video",
+                        "metadata": ANY,
+                    },
+                    "entity_contexts": [],
+                    "collective_rating": None,
+                    "individual_rating": None,
+                    "rate_later_metadata": {"created_at": ANY},
+                },
+            ],
+        )
+        self.assertEqual(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr + 1,
+        )
+
+    def test_auth_404_create_invalid_poll(self) -> None:
+        """
+        An authenticated user cannot add entities in a rate-later list from a
+        non-existing poll.
+        """
+        self.client.force_authenticate(self.user)
+        data = [
+            {"entity": {"uid": self._uid_not_in_db}},
+            {"entity": {"uid": self._other_uid_not_in_db}},
+        ]
+        response = self.client.post(
+            f"/users/me/rate_later/{self._invalid_poll_name}/bulk_create", data, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 

@@ -14,6 +14,9 @@
   "menuPreferences": {
     "message": "Preferences"
   },
+  "menuRateLaterHistory": {
+    "message": "Import YouTube watch history"
+  },
   "recommendedByTournesol": {
     "message": "Recommended by Tournesol",
     "description": "Title of the main Tournesol container."
@@ -149,5 +152,33 @@
   "watchOnTournesolButtonLabel": {
     "message": "Watch on Tournesol",
     "description": "Label of the button displayed on video pages."
+  },
+  "rateLaterHistoryImportButton": {
+    "message": "Import history to Tournesol",
+    "description": "Label of the button displayed on the YouTube history page to import the history into your 'rate later' list."
+  },
+  "rateLaterHistoryStatusBoxTitle": {
+    "message": "Videos are being imported, please wait.",
+    "description": "Title of the the rate later history import status box."
+  },
+  "rateLaterHistoryStatusBoxMessage": {
+    "message": "Press Stop when the visible videos count doesn't increase anymore or when you think enough videos have been imported.",
+    "description": "Instructions displayed on the rate later history import status box."
+  },
+  "rateLaterHistoryVideoCount": {
+    "message": "Videos visible in history:",
+    "description": "Label showing the count of videos found in the YouTube history during import."
+  },
+  "rateLaterHistoryAddedCount": {
+    "message": "Videos added to rate later:",
+    "description": "Label showing the count of videos successfully added to the rate later list."
+  },
+  "rateLaterHistoryFailureCount": {
+    "message": "Failures:",
+    "description": "Label showing the count of videos that failed to be added to the rate later list."
+  },
+  "rateLaterHistoryStopButtonLabel": {
+    "message": "Stop",
+    "description": "Label of the button to stop the YouTube history import process."
   }
 }
