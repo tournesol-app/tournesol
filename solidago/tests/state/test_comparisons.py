@@ -4,8 +4,8 @@ from solidago import *
 
 def test_comparisons():
     comparisons = Comparisons()
-    comparisons["user_0", "default", "entity_4", "entity_2"] = [ dict(comparison=5, comparison_max=10) ]
-    comparisons.add_row(["user_0", "default", "entity_4", "entity_2"], dict(comparison=8, comparison_max=10))
+    comparisons.set("user_0", "default", "entity_4", "entity_2", value=5, max=10)
+    comparisons.set("user_0", "default", "entity_4", "entity_2", value=8, max=10)
     assert len(comparisons["user_2"]) == 0
     for (username, criterion, left_name, right_name), comparison in comparisons.iter("rows"):
         assert isinstance(comparison, Comparison)

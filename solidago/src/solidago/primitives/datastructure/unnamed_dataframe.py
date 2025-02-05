@@ -21,7 +21,13 @@ class UnnamedDataFrame(DataFrame):
         **kwargs
     ):
         """ Defines a DataFrame wrapper """
-        to_list = lambda l: [l] if isinstance(l, str) else l
+        def to_list(l):
+            if l is None:
+                return list()
+            elif isinstance(l, str):
+                return [l]
+            else: 
+                return l
         key_names, value_names = to_list(key_names), to_list(value_names)
         columns = sum([ n if n else list() for n in (key_names, value_names) ], list())
         super().__init__(*args, **kwargs, columns=columns)
@@ -58,7 +64,7 @@ class UnnamedDataFrame(DataFrame):
         
     def row2value(self, row: Series) -> Any:
         if not self.value_names:
-            return row if row_cls is None else row_cls(row)
+            return row if self.row_cls is None else self.row_cls(row)
         if len(self.value_names) == 1:
             return row[self.value_names[0]]
         return tuple( row[name] for name in self.value_names )
