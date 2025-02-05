@@ -1,9 +1,9 @@
 import numpy as np
 
-from typing import Optional, Union, Mapping, Literal
+from typing import Optional, Union, Mapping, Literal, Any
 from pandas import DataFrame, Series
 
-from solidago.primitives.datastructure import NestedDictOfRowLists
+from solidago.primitives.datastructure import UnnamedDataFrame
 
 
 class Comparison(Series):
@@ -11,96 +11,36 @@ class Comparison(Series):
         super().__init__(*args, **kwargs)
 
 
-class Comparisons(NestedDictOfRowLists):
+class Comparisons(UnnamedDataFrame):
     row_cls: type=Comparison
     
     def __init__(self, 
-        d: Optional[Union[NestedDictOfRowLists, dict, DataFrame]]=None, 
+        data: Optional[Any]=None, 
         key_names=["username", "criterion", "left_name", "right_name"],
-        save_filename="comparisons.csv"
+        name="comparisons",
+        last_only=True,
+        **kwargs
     ):
-        super().__init__(d, key_names, save_filename)
+        super().__init__(key_names, None, name, None, last_only, data, **kwargs)
         
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
-        evaluators = self[{ "left_name": entity }].get_set("username") 
-        return evaluators | self[{ "right_name": entity }].get_set("username")
-
-    def order_by_entities(self, other_keys_first: bool=False) -> "Comparisons":
-        """ Returns an object Comparison, with the same set of comparisons,
-        but now ordered by entities. Key names in self are replugged into the result,
-        except for "left_name" and "right_name". Instead, an "other_name" is added
-        to account for the other entity that the comparison is against.
-        Moreover, we add an entry to each dict, which says whether "entity_name" 
-        was the left or the right video.
-        
-        Returns
-        -------
-        ordered_comparisons: Comparisons
-            With key_names == ["entity_name", "other_name", *] or [*, "entity_name", "other_name"]
-            depending on parameter other_keys_first
-        """
-        other_key_names = [ 
-            kn for kn in self.key_names 
-            if kn not in ("entity_name", "other_name", "left_name", "right_name")
-        ]
-        if other_keys_first:
-            key_names = other_key_names + ["entity_name", "other_name"]
-        else:
-            key_names = ["entity_name", "other_name"] + other_key_names
-        
-        if "entity_name" in self.key_names:
-            return self.reorder_keys(key_names)
-        assert "left_name" in self.key_names and "right_name" in self.key_names, "" \
-            "Comparisons must have columns `left_name` and `right_name`"
-        
-        def to_keys(non_entity_keys: list[str], entity_name: str, other_name: str) -> list[str]:
-            if other_keys_first:
-                return non_entity_keys + [entity_name, other_name]
-            return [entity_name, other_name] + non_entity_keys
-                
-        def invert(comparison):
-            if "comparison" in comparison:
-                comparison["comparison"] = - comparison["comparison"]
-            return comparison
-        
-        result = Comparisons(key_names=key_names)
-        left_key_index = self.key_names.index("left_name")
-        right_key_index = self.key_names.index("right_name")
-        for keys, comparison in self:
-            left_name, right_name = keys[left_key_index], keys[right_key_index]
-            non_entity_keys = [ 
-                key for index, key in enumerate(keys) 
-                if index not in (left_key_index, right_key_index) 
-            ]
-            new_comparison = dict(zip(self.key_names, keys)) | dict(comparison)
-            result.add_row(
-                to_keys(non_entity_keys, left_name, right_name),
-                new_comparison | dict(location="left")
-            )
-            result.add_row(
-                to_keys(non_entity_keys, right_name, left_name),
-                invert(new_comparison) | dict(location="right")
-            )
-        return result
+        evaluators = set(self.get(left_name=entity)["username"])
+        return evaluators | set(self.get(right_name=entity)["username"])
 
     def compared_entity_indices(self, 
         entity_name2index: dict[str, int], 
-        last_comparison_only: bool=True,
+        last_only: bool=True,
     ) -> dict[str, list[int]]:
         key_indices = { loc: self.key_names.index(f"{loc}_name") for loc in ("left", "right") }
-        returns = "last_row" if last_comparison_only else "rows"
         return {
             location: [ 
                 entity_name2index[keys[key_indices[location]]] 
-                for keys, _ in self.iter(returns)
+                for keys, _ in self.iter(last_only=last_only)
             ] for location in ("left", "right")
         }
     
-    def normalized_comparisons(self, last_comparison_only: bool) -> Series:
-        df = self.to_df(last_row_only=last_comparison_only)
-        if df.empty:
-            return Series()
-        return df["comparison"] / df["comparison_max"]
+    def normalized_comparisons(self) -> Series:
+        return Series() if self.empty else self["comparison"] / self["comparison_max"]
 
     def to_comparison_dict(self, 
         entities: "Entities", 

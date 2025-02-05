@@ -9,6 +9,8 @@ import pandas as pd
 
 
 class UnnamedDataFrame(DataFrame):
+    row_cls: Optional[type]=None
+    
     def __init__(self, 
         key_names: Optional[Union[str, list[str]]]=None, 
         value_names: Optional[Union[str, list[str]]]=None,
@@ -19,14 +21,15 @@ class UnnamedDataFrame(DataFrame):
         **kwargs
     ):
         """ Defines a DataFrame wrapper """
-        super().__init__(*args, **kwargs)
         to_list = lambda l: [l] if isinstance(l, str) else l
+        key_names, value_names = to_list(key_names), to_list(value_names)
+        columns = sum([ n if n else list() for n in (key_names, value_names) ], list())
+        super().__init__(*args, **kwargs, columns=columns)
         self.meta = SimpleNamespace()
         self.meta.name = name
-        self.meta.key_names, self.meta.value_names = to_list(key_names), to_list(value_names)
+        self.meta.key_names, self.meta.value_names = key_names, value_names
         assert isinstance(self.key_names, list) or not self.key_names
         assert isinstance(self.value_names, list) or not self.value_names
-        columns = sum([ n if n else list() for n in (self.key_names, self.value_names) ], list())
         for column in columns:
             if column not in self.columns:
                 self[column] = float("nan")
@@ -46,17 +49,6 @@ class UnnamedDataFrame(DataFrame):
     def default_value(self) -> Any:
         return self.meta._default_value
     
-    def value2row(self, value: Optional[Any]=None, **kwargs) -> Series:
-        if value is None:
-            value = dict()
-        elif isinstance(value, (dict, Series)):
-            value = { key: v for key, v in value.items() }
-        elif isinstance(value, Iterable):
-            value = { self.value_names[index]: v for index, v in enumerate(value) }
-        else:
-            value = { self.value_names[0]: value }
-        return Series(kwargs | value)
-    
     def row2key(self, row: Series) -> Any:
         if not self.key_names:
             return row
@@ -66,7 +58,7 @@ class UnnamedDataFrame(DataFrame):
         
     def row2value(self, row: Series) -> Any:
         if not self.value_names:
-            return row
+            return row if row_cls is None else row_cls(row)
         if len(self.value_names) == 1:
             return row[self.value_names[0]]
         return tuple( row[name] for name in self.value_names )
@@ -75,13 +67,23 @@ class UnnamedDataFrame(DataFrame):
         last_only = self.meta._last_only if last_only is None else last_only
         if last_only:
             return self.row2value(df.iloc[-1])
-        return df
+        return type(self)(df)
         
     """ The following methods are are more standard """
-    def add_row(self, value: Optional[Any]=None, **kwargs) -> None:
+    def input2dict(self, *args, keys_only: bool=False, **kwargs) -> dict:
+        """ args is assumed to list keys and then values, 
+        though some may be specified through kwargs """
+        key_value_columns = self.key_names if keys_only else (self.key_names + self.value_names)
+        assert len(args) <= len(key_value_columns)
+        assert all({ key not in key_value_columns[:len(args)] for key in kwargs })
+        assert (not keys_only) or all({ key in self.key_names for key in kwargs })
+        to_value = lambda v, k: str(v) if k in self.key_names else v
+        kwargs = { k: to_value(v, k) for k, v in kwargs.items() }
+        return kwargs | { k: to_value(v, k) for k, v in zip(key_value_columns[:len(args)], args) }
+    
+    def add_row(self, *args, **kwargs) -> None:
         self.index = list(range(len(self)))
-        kwargs = { k: (str(v) if k in self.key_names else v) for k, v in kwargs.items() }
-        self.loc[len(self)] = Series(kwargs) if value is None else self.value2row(value, **kwargs)
+        self.loc[len(self)] = Series(self.input2dict(*args, **kwargs))
         
     def get(self, 
         *args, 
@@ -89,30 +91,27 @@ class UnnamedDataFrame(DataFrame):
         last_only: Optional[bool]=None, 
         **kwargs
     ) -> Union["UnnamedDataFrame", tuple]:
-        assert len(args) <= len(self.key_names)
-        assert all({ key not in self.key_names[:len(args)] for key in kwargs })
-        kwargs = { k: str(v) for k, v in kwargs.items() }
-        kwargs |= { key: str(value) for key, value in zip(self.key_names[:len(args)], args) }
+        kwargs = self.input2dict(*args, keys_only=True, **kwargs)
         df = self[reduce(lambda a, x: a & x, [ self[k] == v for k, v in kwargs.items() ], True)]
-        key_names = [ n for n in self.key_names if n not in kwargs ]
+        key_names = [ key_name for key_name in self.key_names if key_name not in kwargs ]
         if key_names or not process:
             return type(self)(df, key_names=key_names)
         return self.default_value if df.empty else self.df2value(df, last_only)
 
     def __contains__(self, *args, **kwargs) -> bool:
-        return not self.get(*args, **kwargs).empty
+        return not self.get(*args, process=False, **kwargs).empty
 
-    def set(self, value: Optional[Any]=None, *args, **kwargs) -> None:
-        assert len(args) <= len(self.key_names)
-        assert all({ key not in self.key_names[:len(args)] for key in kwargs })
-        kwargs = { k: str(v) for k, v in kwargs.items() }
-        kwargs |= { k: str(v) for k, v in zip(self.key_names[:len(args)], args) }
-        df = self.get(process=False, **kwargs)
+    def set(self, *args, **kwargs) -> None:
+        """ args is assumed to list keys and then values, 
+        though some may be specified through kwargs """
+        kwargs_keys_only = self.input2dict(*args[:len(self.key_names)], **kwargs)
+        kwargs = self.input2dict(*args, **kwargs)
+        df = self.get(process=False, **kwargs_keys_only)
         if df.empty:
-            self.add_row(value, **kwargs)
+            self.add_row(**kwargs)
         else: # Updates the last row of df
             name = df.iloc[-1].name
-            self.loc[name] = self.value2row(value, **kwargs)
+            self.loc[name] = Series(kwargs)
 
     def __or__(self, other: "UnnamedDataFrame") -> "UnnamedDataFrame":
         return type(self)(pd.concat([self, other]))
@@ -122,11 +121,26 @@ class UnnamedDataFrame(DataFrame):
         try: return cls(pd.read_csv(filename, keep_default_na=False))
         except pd.errors.EmptyDataError: return cls()
 
+    def last_only(self) -> "UnnamedDataFrame":
+        return type(self)(
+            data=[ row for _, row in self.iter(process=False, last_only=True) ],
+            key_names=self.key_names,
+            value_names=self.value_names,
+            name=self.meta.name, 
+            default_value=self.meta._default_value,
+            last_only=self.meta._last_only,
+        )
+    
     def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> dict:
         return { key: value for key, value in self.iter(columns, process) }
     
-    def iter(self, columns: Optional[list[str]]=None, process: bool=True) -> Iterable:
+    def iter(self, 
+        columns: Optional[list[str]]=None, 
+        process: bool=True, 
+        last_only: Optional[bool]=None
+    ) -> Iterable:
         columns = columns if columns else self.key_names
+        last_only = self.meta._last_only if last_only is None else last_only
         if columns is None:
             for _, row in self.iterrows():
                 if process:
@@ -135,14 +149,15 @@ class UnnamedDataFrame(DataFrame):
                     yield row
             return None            
         if not columns:
-            yield list(), self.df2value(self) if process else self
+            yield list(), self.df2value(self, last_only) if process else self
             return None
         groups = DataFrame(self).groupby(columns)
         kn = [ n for n in self.key_names if n not in columns ]
         for key in list(groups.groups.keys()):
             key_tuple = key if isinstance(key, tuple) else (key,)
             df = groups.get_group(key_tuple)
-            yield key, type(self)(df, key_names=kn) if kn or not process else self.df2value(df)
+            v = type(self)(df, key_names=kn) if kn or not process else self.df2value(df, last_only)
+            yield key, v
 
     def __iter__(self, process: bool=True) -> Iterable:
         return self.iter(process=process)

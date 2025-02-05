@@ -15,7 +15,7 @@ def test_lipschitrust_simple():
         ["0", "2", "Personhood", 1, 0],
         ["2", "3", "Personhood", 1, 0],
         ["3", "4", "Personhood", 1, 0]
-    ], columns=["by", "to", "kind", "weight", "priority"])
+    ])
     users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)(users, vouches)
     assert users.get("0")["trust_score"] == 0.8
     assert users.get("4")["trust_score"] > 0
@@ -50,7 +50,7 @@ def test_lipschitrust_ten_users():
         ["8", "3", "Personhood", 1, 0],
         ["9", "4", "Personhood", 1, 0],
         ["9", "5", "Personhood", 1, 0],
-    ], columns=["by", "to", "kind", "weight", "priority"])
+    ])
     
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
     users = trust_propagator(users, vouches)

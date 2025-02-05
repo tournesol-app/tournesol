@@ -178,11 +178,11 @@ def test_affine_overtrust():
     users = Users(dict(username=list(range(5)), trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
     entities = Entities(list(range(6)))
     made_public = MadePublic()
-    made_public["0", "0"] = True
-    made_public["0", "3"] = True
-    made_public["1", "5"] = True
-    made_public["2", "1"] = True
-    made_public["4", "3"] = True
+    made_public.set(True, "0", "0")
+    made_public.set(True, "0", "3")
+    made_public.set(True, "1", "5")
+    made_public.set(True, "2", "1")
+    made_public.set(True, "4", "3")
     
     assessments = Assessments()
     comparisons = Comparisons()

@@ -1,7 +1,7 @@
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from pandas import DataFrame, Series
 
-from solidago.primitives.datastructure import NestedDictOfRowLists
+from solidago.primitives.datastructure import UnnamedDataFrame
 
 
 class Assessment(Series):
@@ -9,16 +9,18 @@ class Assessment(Series):
         super().__init__(*args, **kwargs)
         
 
-class Assessments(NestedDictOfRowLists):
+class Assessments(UnnamedDataFrame):
     row_cls: type=Assessment
     
     def __init__(self, 
-        d: Optional[Union[NestedDictOfRowLists, dict, DataFrame]]=None, 
+        data: Optional[Any]=None, 
         key_names=["username", "criterion", "entity_name"],
-        save_filename="assessments.csv"
+        name="assessments",
+        last_only=True,
+        **kwargs
     ):
-        super().__init__(d, key_names, save_filename)
+        super().__init__(key_names, None, name, None, last_only, data, **kwargs)
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
-        return self[{ "entity_name": entity }].get_set("username")
+        return set(self.get(entity_name=entity)["username"])
     
