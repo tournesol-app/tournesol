@@ -165,16 +165,19 @@ class TestTournesolBot(TestCase):
     @mock.patch("twitterbot.tournesolbot.get_twitter_account_from_video_id")
     def test_prepare_tweet(self, mock_get_twitter_account_from_video_id):
 
-        tweet_text = (
+        message_text = (
             "Aujourd'hui, je recommande 'Tournesol is great! 🌻 #tournesol' de @TournesolApp, "
             "comparée 77 fois sur #Tournesol🌻 par 28 contributeurs, critères favoris:"
             "\n- Important & actionnable\n- Stimulant & suscite la réflexion"
-            "\ntournesol.app/entities/yt:AAAAAAAAAAA"
         )
+        message_end = "\ntournesol.app/entities/yt:AAAAAAAAAAA"
 
         mock_get_twitter_account_from_video_id.return_value = "@TournesolApp"
 
-        assert prepare_text(self.videos[8], dest="twitter") == tweet_text
+        assert prepare_text(self.videos[8], dest="twitter") == message_text + message_end
+        assert prepare_text(self.videos[8], dest="bluesky") == message_text.replace(
+            "@TournesolApp", "'Tournesol'"
+        )
 
         # Test automatic shortening of the video title to fit in the tweet
         self.videos[8].metadata[
@@ -187,12 +190,15 @@ class TestTournesolBot(TestCase):
             "contributeurs, critères favoris:"
             "\n- Important & actionnable"
             "\n- Stimulant & suscite la réflexion"
-            "\ntournesol.app/entities/yt:AAAAAAAAAAA"
+        )
+        message_end = "\ntournesol.app/entities/yt:AAAAAAAAAAA"
+
+        assert prepare_text(self.videos[8], dest="twitter") == tweet_text_too_long + message_end
+        assert prepare_text(self.videos[8], dest="bluesky").startswith(
+            "Aujourd'hui, je recommande 'Tournesol is great!"
         )
 
-        assert prepare_text(self.videos[8], dest="twitter") == tweet_text_too_long
-
-        # Test replacement of special characters in the video title
+        # Test replacement of special characters in the video title for Twitter
         self.videos[8].metadata["name"] = "Tournesol.app is great but mention @twitter are not..."
 
         tweet_special_characters = (

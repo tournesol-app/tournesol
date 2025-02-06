@@ -69,9 +69,10 @@ def prepare_text(video: Entity, dest: Literal["twitter", "bluesky"]):
         CriteriaLocale.objects.filter(language=language).values_list("criteria__name", "label")
     )
 
+    video_title = video.metadata["name"]
     if dest == "twitter":
         # Replace "@" by a smaller "@" to avoid false mentions in the tweet
-        video_title = video.metadata["name"].replace("@", "﹫")
+        video_title = video_title.replace("@", "﹫")
 
         # Replace "." in between words to avoid in the tweet false detection of links
         video_title = re.sub(r"\b(?:\.)\b", "․", video_title)
