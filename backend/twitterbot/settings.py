@@ -53,7 +53,7 @@ top_contrib_tweet_image_alt = {
         "in the last month."
     ),
     "fr": (
-        "Un graphique en barres représentant les utilisateur·rice·s ayant effecturé le "
+        "Un graphique en barres représentant les utilisateur·rice·s ayant effectué le "
         "plus de comparaisons sur Tournesol durant le mois dernier."
     ),
 }
