@@ -53,7 +53,7 @@ class TweetInfo(models.Model):
     )
 
     def __str__(self):
-        return f"{self.video.uid} tweeted at {self.datetime_tweet}"
+        return f"{self.video.uid} posted at {self.datetime_tweet}"
 
     @property
     def tweet_url(self):

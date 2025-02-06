@@ -271,7 +271,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     return figure_path
 
 
-def tweet_top_contributor_graph(bot_name, dest: list[str], assumeyes=False):
+def tweet_top_contributor_graph(bot_name, dest: Literal["twitter", "bluesky"], assumeyes=False):
     """Tweet the top contibutor graph of last month.
 
     Args:
