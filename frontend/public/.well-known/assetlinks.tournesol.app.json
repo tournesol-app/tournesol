@@ -1,8 +1,14 @@
 [{
-  "relation": ["delegate_permission/common.handle_all_urls"],
+  "relation": [
+    "delegate_permission/common.get_login_creds",
+    "delegate_permission/common.handle_all_urls"
+  ],
   "target": {
   "namespace": "android_app",
   "package_name": "app.tournesol.twa",
-    "sha256_cert_fingerprints": ["27:C5:B9:36:69:2E:5A:46:96:50:4A:3F:BB:65:A1:44:BE:46:6D:CC:93:0E:BE:18:70:EF:80:2D:DC:87:BC:8E"]
+    "sha256_cert_fingerprints": [
+      "27:C5:B9:36:69:2E:5A:46:96:50:4A:3F:BB:65:A1:44:BE:46:6D:CC:93:0E:BE:18:70:EF:80:2D:DC:87:BC:8E",
+      "7F:59:66:CF:30:10:94:F4:C2:1C:88:A9:6A:BC:AB:B9:16:10:D9:7F:87:56:79:AB:DC:98:18:CF:27:B9:CE:6B"
+    ]
   }
 }]
