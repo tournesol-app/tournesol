@@ -12,10 +12,12 @@ export const tournesolTalksMailingListUrl =
 export const discordTournesolInviteUrl =
   'https://discord.com/invite/TvsFB8RNBV';
 
-// Twitter
-export const twitterTournesolUrl = 'https://twitter.com/TournesolApp';
-export const twitterTournesolBotEnUrl = 'https://twitter.com/tournesolbot';
-export const twitterTournesolBotFrUrl = 'https://twitter.com/tournesolbotfr';
+// Bluesky
+export const blueskyTournesolUrl = 'https://bsky.app/profile/tournesol.app';
+export const blueskyTournesolBotEnUrl =
+  'https://bsky.app/profile/tournesolbot.tournesol.app';
+export const blueskyTournesolBotFrUrl =
+  'https://bsky.app/profile/tournesolbotfr.tournesol.app';
 
 // Twitch
 export const twitchTournesolUrl = 'https://twitch.tv/tournesolapp';

@@ -9,11 +9,11 @@ import { theme } from 'src/theme';
 import { getPollName, polls } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import {
+  blueskyTournesolBotEnUrl,
+  blueskyTournesolBotFrUrl,
+  blueskyTournesolUrl,
   linkedInTournesolUrl,
   twitchTournesolUrl,
-  twitterTournesolBotEnUrl,
-  twitterTournesolBotFrUrl,
-  twitterTournesolUrl,
   youtubePlaylistEnUrl,
   youtubePlaylistFrUrl,
   discordTournesolInviteUrl,
@@ -53,8 +53,8 @@ const Footer = () => {
           name: t('footer.firefoxExtension'),
           to: getWebExtensionUrl('firefox') || '',
         },
-        { name: 'Twitter Bot EN', to: twitterTournesolBotEnUrl },
-        { name: 'Twitter Bot FR', to: twitterTournesolBotFrUrl },
+        { name: 'Bluesky Bot EN', to: blueskyTournesolBotEnUrl },
+        { name: 'Bluesky Bot FR', to: blueskyTournesolBotFrUrl },
         { name: t('footer.youtubePlaylistEn'), to: youtubePlaylistEnUrl },
         { name: t('footer.youtubePlaylistFr'), to: youtubePlaylistFrUrl },
       ],
@@ -64,7 +64,7 @@ const Footer = () => {
       title: t('footer.followUs'),
       items: [
         { name: t('footer.events'), to: '/events' },
-        { name: 'Twitter', to: twitterTournesolUrl },
+        { name: 'Bluesky', to: blueskyTournesolUrl },
         { name: 'YouTube', to: youtubeTournesolUrl },
         { name: 'Twitch', to: twitchTournesolUrl },
         { name: 'Discord', to: discordTournesolInviteUrl },
