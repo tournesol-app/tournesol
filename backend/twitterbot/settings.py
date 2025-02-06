@@ -16,14 +16,12 @@ tweet_text_template = {
     "en": (
         "Today, I recommend '{title}' by {twitter_account}"
         ", compared {n_comparison} times on #Tournesol\U0001F33B by {n_contributor}"
-        " contributors, favorite criteria:\n- {crit1}\n- {crit2}\n"
-        "tournesol.app/entities/yt:{video_id}"
+        " contributors, favorite criteria:\n- {crit1}\n- {crit2}"
     ),
     "fr": (
         "Aujourd'hui, je recommande '{title}' de {twitter_account}"
         ", comparée {n_comparison} fois sur #Tournesol\U0001F33B par {n_contributor}"
-        " contributeurs, critères favoris:\n- {crit1}\n- {crit2}\n"
-        "tournesol.app/entities/yt:{video_id}"
+        " contributeurs, critères favoris:\n- {crit1}\n- {crit2}"
     ),
 }
 
@@ -46,6 +44,17 @@ top_contrib_tweet_text_template = {
     "fr": (
         "Merci à tout·es nos contributeur·rice·s. Voici le top 10 du mois dernier. "
         "Et vous, combien de comparaisons avez-vous faites le mois dernier? \U0001F33B"
+    ),
+}
+
+top_contrib_tweet_image_alt = {
+    "en": (
+        "A bar plot showing the users who contributed the most comparisons on Tournesol "
+        "in the last month."
+    ),
+    "fr": (
+        "Un graphique en barres représentant les utilisateur·rice·s ayant effectué le "
+        "plus de comparaisons sur Tournesol durant le mois dernier."
     ),
 }
 

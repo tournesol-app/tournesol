@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models.tweeted import TweetInfo
+from .models.history import TweetInfo
 
 
 @admin.register(TweetInfo)
@@ -32,13 +32,12 @@ class TwitterBotAdmin(admin.ModelAdmin):
     list_filter = ["bot_name"]
 
     @staticmethod
-    @admin.display(description="URL of the tweet")
+    @admin.display(description="Post URL")
     def get_twitter_link(obj):
         """Return the URI of the tweet."""
         return format_html(
-            '<a href="https://twitter.com/{}/status/{}" target="_blank">Tweet</a>',
-            obj.bot_name,
-            obj.tweet_id,
+            '<a href="{}" target="_blank">Link</a>',
+            obj.message_url,
         )
 
     @staticmethod
