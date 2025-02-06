@@ -124,8 +124,8 @@
   },
   "submit": "enregistrer",
   "comparisonCriteriaButtons": {
-    "nextQualityCriterion": "Critère de qualité suivant",
-    "previousQualityCriterion": "Critère de qualité précédent"
+    "previousQualityCriterion": "Critère de qualité précédent",
+    "nextQualityCriterion": "Critère de qualité suivant"
   },
   "comparisonSeries": {
     "skipTheSeries": "Passer la série"
@@ -564,9 +564,6 @@
         "topVideosLanguages": "Langues des Top vidéos",
         "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner."
       }
-    },
-    "recommendations": {
-      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne"
     }
   },
   "generalUserSettingsForm": {
@@ -692,13 +689,14 @@
     "weThankOurContributors": "Nous sommes extrêmement reconnaissant envers les contributrices et contributeurs qui ont eu un très grand impact sur le projet.",
     "sergeiDescription": "Sergei était une des quelques personnes qui ont décidé de développer le projet Tournesol. Il a au début assumé la majorité des efforts de developpement pour le back end, les algorithmes et le front end de la première vesion de la plateforme.",
     "sigmikeDescription": "Michael contribue volontairement au développement open source de beaucoup d'aspects du project comme le site web et l'extension navigateur.",
-    "weThankOurPartners": "Nous remercions nos partenaires",
+    "weThankOurPartners": "Partenariats & Collaborations",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
     "partenershipWithEpflDetail": "Pendant une courte période, un ingénieur de recherche à l'École Polytechnique Fédérale de Lausanne (EPFL) s'est consacré au développement de la plateforme Tournesol. Plusieurs chercheurs et chercheuses du laboratoire d'informatique distributée (DCL) ont également participé à la conception et poursuivent la recherche sur les algorithmes de Tournesol.",
     "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
-    "partnershipWithPolyconseilDetail": "Nous sommes également accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Depuis août 2021, Polyconseil met à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous apporte chaque mois des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
+    "partnershipWithPolyconseilDetail": "Nous avons été accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Polyconseil a mis à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous a apporté des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
     "partnershipWithKleis": "Partenariat avec Kleis Technology",
     "partnershipWithKleisDetail": "Nous avons pu bénéficier de l'accompagnement de l'entreprise Kleis Technology pour définir nos processus organisationnels, et adopter des pratiques de développement efficaces. Notre partenariat avec Kleis est extrêmement structurant pour le développement de la vision de notre produit et nous apporte des solutions pour réaliser des choix techniques essentiels. Merci beaucoup !",
+    "collaborationWithDevoxx": "Devoxx France est une conférence pour les développeurs et les développeuses organisée à Paris, et qui s'engage pour un numérique plus éthique. L'association a été invitée à y présenter Tournesol lors d'une keynote en 2022. Merci !",
     "openSourceContributions": "Contributions Bénévoles",
     "openSourceContributors": "Tournesol étant un projet de développement ouvert, nous avons la chance de pouvoir bénéficier des contributions de nombreux volontaires. Consultez la liste de nos merveilleux contributeurs sur <2>leur page Github</2>.",
     "donateHowTo": "Comment faire un don ?",
