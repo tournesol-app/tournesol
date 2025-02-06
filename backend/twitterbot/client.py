@@ -94,7 +94,7 @@ class TournesolBotClient:
                     external=models.AppBskyEmbedExternal.External(
                         title=embed_video.metadata.get("name", ""),
                         description=embed_video.metadata.get("uploader", ""),
-                        uri=f"https://tournesolapp/entities/{embed_video.uid}",
+                        uri=f"https://tournesol.app/entities/{embed_video.uid}",
                         thumb=thumb_blob,
                     )
                 )

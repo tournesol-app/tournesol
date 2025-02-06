@@ -24,7 +24,7 @@ from twitterbot.uploader_twitter_account import get_twitter_account_from_video_i
 
 
 def get_video_short_url(video: Entity):
-    return f"tournesol.app/entities/yt:{video.video_id}"
+    return f"tournesol.app/entities/{video.uid}"
 
 
 def get_best_criteria(video, nb_criteria):
