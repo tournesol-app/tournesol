@@ -185,7 +185,7 @@ def tweet_video_recommendation(bot_name, dest: list[str], assumeyes=False):
 
     video = select_a_video(tweetable_videos)
 
-    print("Today's video to tweet will be:")
+    print("Today's video to post will be:")
     print(f"{video} '{video.metadata['name']}' by {video.metadata['uploader']}")
 
     if not assumeyes:

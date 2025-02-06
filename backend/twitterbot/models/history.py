@@ -1,5 +1,5 @@
 """
-Models for Tournesol twitter bot already tweeted videos
+Models related to the Twitter bot.
 """
 import re
 
@@ -20,7 +20,7 @@ class TweetInfo(models.Model):
         Entity,
         on_delete=models.CASCADE,
         related_name="tweets",
-        help_text="Tweeted video",
+        help_text="Posted video",
     )
 
     tweet_id = models.CharField(
@@ -39,7 +39,7 @@ class TweetInfo(models.Model):
 
     datetime_tweet = models.DateTimeField(
         auto_now_add=True,
-        help_text="Time when the video was tweeted",
+        help_text="Time when the video was posted",
         null=True,
         blank=True,
     )
@@ -48,7 +48,7 @@ class TweetInfo(models.Model):
         null=True,
         blank=True,
         max_length=200,
-        help_text="Name of the twitter bot",
+        help_text="Name of the bot",
         choices=BOT_NAME,
     )
 
