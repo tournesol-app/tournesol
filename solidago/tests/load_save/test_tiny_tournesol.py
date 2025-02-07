@@ -12,8 +12,8 @@ def test_import():
     assert isinstance(t.made_public, AllPublic)
     assert len(t.assessments) == 0
     assert len(t.comparisons) == 2268
-    assert len(t.comparisons["amatissart"]) == 19
-    assert t.comparisons[any, any, "Tt5AwEU_BiM", any].get_set("username") == {'amatissart', 'biscuissec'}
+    assert len(t.comparisons.get("amatissart")) == 19
+    assert set(t.comparisons.get(left_name="Tt5AwEU_BiM")["username"]) == {'amatissart', 'biscuissec'}
     assert t.comparisons.get_evaluators("N8G-KGqn2Lg") == {'amatissart'}
     assert t.voting_rights.get("Tit0uan", "xMxo9pIC0GA", "largely_recommended") == 0.86
     assert len(t.voting_rights.get("Tit0uan")) == 3
@@ -43,8 +43,8 @@ def test_reimport():
     assert isinstance(t.made_public, AllPublic)
     assert len(t.assessments) == 0
     assert len(t.comparisons) == 2268
-    assert len(t.comparisons["amatissart"]) == 19
-    assert t.comparisons[any, any, "Tt5AwEU_BiM", any].get_set("username") == {'amatissart', 'biscuissec'}
+    assert len(t.comparisons.get("amatissart")) == 19
+    assert set(t.comparisons.get(left_name="Tt5AwEU_BiM")["username"]) == {'amatissart', 'biscuissec'}
     assert t.comparisons.get_evaluators("N8G-KGqn2Lg") == {'amatissart'}
     assert t.voting_rights.get("Tit0uan", "xMxo9pIC0GA", "largely_recommended") == 0.86
     assert len(t.voting_rights.get("Tit0uan")) == 3

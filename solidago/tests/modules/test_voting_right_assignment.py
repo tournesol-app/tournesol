@@ -169,8 +169,8 @@ def test_min_voting_right_more_than_min_trust(n_random_users):
 
 def test_voting_rights_abstraction():
     voting_rights = VotingRights()
-    voting_rights.set(0.4, 3, 46, "default")
-    voting_rights.set(2 * voting_rights.get(3, 46, "default"), 3, 46, "default")
+    voting_rights.set(3, 46, "default", 0.4)
+    voting_rights.set(3, 46, "default", 2 * voting_rights.get(3, 46, "default"))
     assert voting_rights.get(3, 46, "default") == 0.8
 
 
@@ -178,22 +178,22 @@ def test_affine_overtrust():
     users = Users(dict(username=list(range(5)), trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
     entities = Entities(list(range(6)))
     made_public = MadePublic()
-    made_public.set(True, "0", "0")
-    made_public.set(True, "0", "3")
-    made_public.set(True, "1", "5")
-    made_public.set(True, "2", "1")
-    made_public.set(True, "4", "3")
+    made_public.set("0", "0", True)
+    made_public.set("0", "3", True)
+    made_public.set("1", "5", True)
+    made_public.set("2", "1", True)
+    made_public.set("4", "3", True)
     
     assessments = Assessments()
     comparisons = Comparisons()
     
-    assessments.add_row(("0", "default", "0"), dict(assessment=2))
-    comparisons.add_row(("0", "default", "3", "5"), dict(comparison=-1))
-    comparisons.add_row(("1", "default", "1", "5"), dict(comparison=1))
-    comparisons.add_row(("2", "default", "0", "1"), dict(comparison=5))
-    assessments.add_row(("3", "default", "0"), dict(assessment=-1))
-    assessments.add_row(("3", "default", "1"), dict(assessment=0))
-    assessments.add_row(("4", "default", "3"), dict(assessment=5))
+    assessments.add_row("0", "default", "0", value=2)
+    assessments.add_row("3", "default", "0", value=-1)
+    assessments.add_row("3", "default", "1", value=0)
+    assessments.add_row("4", "default", "3", value=5)
+    comparisons.add_row("0", "default", "3", "5", value=-1)
+    comparisons.add_row("1", "default", "1", "5", value=1)
+    comparisons.add_row("2", "default", "0", "1", value=5)
     
     ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)
     entities, voting_rights = ao(users, entities, made_public, assessments, comparisons)

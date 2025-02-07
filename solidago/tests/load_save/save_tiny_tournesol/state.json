@@ -222,8 +222,8 @@
                 ]
             },
             "dataframes": {
-                "scalings": "tests/load_save/save_tiny_tournesol/user_scalings.csv",
-                "directs": "tests/load_save/save_tiny_tournesol/user_directs.csv"
+                "directs": "tests/load_save/save_tiny_tournesol/user_directs.csv",
+                "scalings": "tests/load_save/save_tiny_tournesol/user_scalings.csv"
             },
             "default_model_cls": "DirectScoring"
         }

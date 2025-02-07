@@ -25,7 +25,7 @@ class ComparisonGen(StateFunction):
                 right_public=made_public.get(username, right_name), 
                 criterion=criterion
             )
-            result.add_row((username, criterion, left_name, right_name), comparison)
+            result.add_row(username, criterion, left_name, right_name, comparison)
         return result
     
     def sample(self, 
@@ -38,6 +38,6 @@ class ComparisonGen(StateFunction):
         criterion: str
     ) -> Comparison:
         """ Returns comparison max and value """
-        comparison["comparison"] = (2 * np.random.random() - 1)**2
-        comparison["comparison_max"] = 1
+        comparison["value"] = (2 * np.random.random() - 1)**2
+        comparison["max"] = 1
         return comparison

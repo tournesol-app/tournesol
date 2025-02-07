@@ -21,6 +21,6 @@ def test_generative_model():
     assert "entity_3" in s2.entities
     assert len(s2.entities) == 20
     assert set(s.made_public.get("user_1")["entity_name"]) == set(s2.made_public.get("user_1")["entity_name"])
-    assert s.assessments["user_2", "default"].get_set("entity_name") == s2.assessments["user_2", "default"].get_set("entity_name")
-    assert s.comparisons["user_0", "default", "entity_7"].get_set("right_name") == s2.comparisons["user_0", "default", "entity_7"].get_set("right_name")
+    assert set(s.assessments.get("user_2", "default")["entity_name"]) == set(s2.assessments.get("user_2", "default")["entity_name"])
+    assert set(s.comparisons.get("user_0", "default", "entity_7")["right_name"]) == set(s2.comparisons.get("user_0", "default", "entity_7")["right_name"])
 

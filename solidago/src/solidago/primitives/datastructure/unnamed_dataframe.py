@@ -29,16 +29,18 @@ class UnnamedDataFrame(DataFrame):
             else: 
                 return l
         key_names, value_names = to_list(key_names), to_list(value_names)
-        columns = sum([ n if n else list() for n in (key_names, value_names) ], list())
-        super().__init__(*args, **kwargs, columns=columns)
+        key_value_columns = key_names + value_names
+        if isinstance(args[0], list) or ("data" in kwargs and isinstance(kwargs["data"], list)):
+            kwargs["columns"] = kwargs["columns"] if "columns" in kwargs else key_value_columns
+        super().__init__(*args, **kwargs)
         self.meta = SimpleNamespace()
         self.meta.name = name
         self.meta.key_names, self.meta.value_names = key_names, value_names
         assert isinstance(self.key_names, list) or not self.key_names
         assert isinstance(self.value_names, list) or not self.value_names
-        for column in columns:
+        for column in key_value_columns:
             if column not in self.columns:
-                self[column] = float("nan")
+                self[column] = "NaN"
         self.meta._default_value = default_value
         self.meta._last_only = last_only
         
@@ -80,16 +82,21 @@ class UnnamedDataFrame(DataFrame):
         """ args is assumed to list keys and then values, 
         though some may be specified through kwargs """
         key_value_columns = self.key_names if keys_only else (self.key_names + self.value_names)
-        assert len(args) <= len(key_value_columns)
+        if keys_only:
+            args = args[:len(self.key_names)]
+        assert len(args) <= len(key_value_columns) + 1
         assert all({ key not in key_value_columns[:len(args)] for key in kwargs })
-        assert (not keys_only) or all({ key in self.key_names for key in kwargs })
-        to_value = lambda v, k: str(v) if k in self.key_names else v
-        kwargs = { k: to_value(v, k) for k, v in kwargs.items() }
-        return kwargs | { k: to_value(v, k) for k, v in zip(key_value_columns[:len(args)], args) }
+        f = lambda v, k: str(v) if k in self.key_names else v
+        kwargs = { k: f(v, k) for k, v in kwargs.items() if (not keys_only or k in self.key_names) }
+        if not self.value_names and len(args) > len(self.key_names):
+            assert len(args) == len(self.key_names) + 1
+            return kwargs | dict(args[-1])
+        return kwargs | { k: f(v, k) for k, v in zip(key_value_columns[:len(args)], args) }
     
     def add_row(self, *args, **kwargs) -> None:
         self.index = list(range(len(self)))
-        self.loc[len(self)] = Series(self.input2dict(*args, **kwargs))
+        d = self.input2dict(*args, **kwargs)
+        self.loc[len(self), list(d.keys())] = list(d.values())
         
     def get(self, 
         *args, 
@@ -110,7 +117,7 @@ class UnnamedDataFrame(DataFrame):
     def set(self, *args, **kwargs) -> None:
         """ args is assumed to list keys and then values, 
         though some may be specified through kwargs """
-        kwargs_keys_only = self.input2dict(*args[:len(self.key_names)], **kwargs)
+        kwargs_keys_only = self.input2dict(*args, keys_only=True, **kwargs)
         kwargs = self.input2dict(*args, **kwargs)
         df = self.get(process=False, **kwargs_keys_only)
         if df.empty:
@@ -137,8 +144,10 @@ class UnnamedDataFrame(DataFrame):
             last_only=self.meta._last_only,
         )
     
-    def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> dict:
-        return { key: value for key, value in self.iter(columns, process) }
+    def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> "UnnamedDataFrameDict":
+        from solidago.primitives.datastructure import UnnamedDataFrameDict
+        data = { key: value for key, value in self.iter(columns, process) }
+        return UnnamedDataFrameDict(data, df_cls=type(self))
     
     def iter(self, 
         columns: Optional[list[str]]=None, 

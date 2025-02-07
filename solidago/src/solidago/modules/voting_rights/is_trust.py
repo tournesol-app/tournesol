@@ -23,12 +23,12 @@ class Trust2VotingRights(StateFunction):
     ) -> VotingRights:
         """ Compute voting rights as trust_scores """
         voting_rights = VotingRights()
-        criteria = assessments.get_set("criterion") | comparisons.get_set("criterion")
+        criteria = set(assessments["criterion"]) | set(comparisons["criterion"])
         
         for user in users:
             for entity in entities:
                 for criterion in criteria:
                     penalty = made_public.penalty(self.privacy_penalty, user, entity)
-                    voting_rights.set(penalty * user["trust_score"], user, entity, criterion)
+                    voting_rights.set(user, entity, criterion, penalty * user["trust_score"])
         
         return voting_rights

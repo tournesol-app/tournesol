@@ -1,4 +1,4 @@
-username,criterion,entity_name,assessment,assessment_min,assessment_max
+username,criterion,entity_name,value,min,max
 user_0,default,entity_6,-1.9327272573340728,-inf,inf
 user_0,default,entity_3,-1.973279631423118,-inf,inf
 user_0,default,entity_12,-1.033932427514736,-inf,inf

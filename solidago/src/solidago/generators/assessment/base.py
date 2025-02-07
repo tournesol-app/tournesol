@@ -21,7 +21,7 @@ class AssessmentGen(StateFunction):
                 public=made_public.get(username, entity_name),
                 criterion=criterion
             )
-            result.add_row((username, criterion, entity_name), assessment)
+            result.add_row(username, criterion, entity_name, assessment)
         return result
         
     def sample(self, 
@@ -31,7 +31,7 @@ class AssessmentGen(StateFunction):
         public: bool, 
         criterion: str
     ) -> Assessment:
-        assessment["assessment"] = np.random.random()
-        assessment["assessment_min"] = 0
-        assessment["assessment_max"] = 1
+        assessment["value"] = np.random.random()
+        assessment["min"] = 0
+        assessment["max"] = 1
         return assessment

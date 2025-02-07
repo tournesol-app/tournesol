@@ -60,7 +60,7 @@ def test_lipschitrust_ten_users():
     assert users.get("9")["trust_score"] == 0.0
 
     # Add one vouch: 1 -> 8
-    vouches.set((1, 0), "1", "8", "Personhood")
+    vouches.set("1", "8", "Personhood", 1, 0)
     users = trust_propagator(users, vouches)
     assert users.get("8")["trust_score"] > 0.0
 

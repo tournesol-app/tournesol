@@ -21,7 +21,7 @@ class NormalAssessment(AssessmentGen):
             score = - score
         else:
             score += self.error_size * normal()
-        assessment["assessment"] = score
-        assessment["assessment_min"] = -float("inf")
-        assessment["assessment_max"] = float("inf")
+        assessment["value"] = score
+        assessment["min"] = -float("inf")
+        assessment["max"] = float("inf")
         return assessment

@@ -35,8 +35,8 @@ class TournesolExport(State):
                 "video_a": "left_name",
                 "video_b": "right_name",
                 "criteria": "criterion",
-                "score": "comparison",
-                "score_max": "comparison_max"
+                "score": "value",
+                "score_max": "max"
             })
             global_scores = load("collective_criteria_scores", { 
                 "criteria": "criterion", 

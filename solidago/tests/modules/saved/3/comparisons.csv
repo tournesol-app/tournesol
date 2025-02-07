@@ -1,4 +1,4 @@
-username,criterion,left_name,right_name,comparison,comparison_max
+username,criterion,left_name,right_name,value,max
 user_0,default,entity_5,entity_11,9.0,10.0
 user_0,default,entity_17,entity_15,10.0,10.0
 user_0,default,entity_17,entity_14,10.0,10.0

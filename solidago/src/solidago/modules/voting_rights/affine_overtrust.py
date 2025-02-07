@@ -44,19 +44,24 @@ class AffineOvertrust(StateFunction):
             return None
 
         voting_rights = VotingRights()
-        assessments = assessments.reorder_keys(["criterion", "entity_name", "username"])
-        comparisons = comparisons.reorder_keys(["criterion", "left_name", "right_name", "username"])
+        criteria = set(assessments["criterion"]) | set(comparisons["criterion"])
+        comparisons = comparisons.order_by_entities()
+        assessments = assessments.groupby(["criterion"])
+        comparisons = comparisons.groupby(["criterion"])
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
+        entity_names = { 
+            c: set(d[c]["entity_name"]) | set(d[c]["entity_name"])
+            for d in (assessments, comparisons)
+            for c in criteria
+        }
         
-        for criterion in assessments.get_set("criterion") | comparisons.get_set("criterion"):
-            entity_names = assessments[criterion].get_set("entity_name")
-            ordered_comparisons = comparisons[criterion].order_by_entities(other_keys_first=True)
-            ordered_comparisons = ordered_comparisons.reorder_keys(["entity_name", "username", "other_name"])
-            entity_names |= ordered_comparisons.get_set("entity_name")
-
-            for entity_name in entity_names:
-                evaluators = assessments[criterion, entity_name].get_set("username")
-                evaluators |= ordered_comparisons[entity_name].get_set("username")
+        for criterion in criteria:
+            criterion_assessments = assessments[criterion].groupby(["entity_name"])
+            criterion_comparisons = comparisons[criterion].groupby(["entity_name"])
+            
+            for entity_name in entity_names[criterion]:
+                evaluators = set(criterion_assessments[entity_name]["username"])
+                evaluators |= set(criterion_comparisons[entity_name]["username"])
                 trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
                 public = { u: made_public.get(u, entity_name) for u in evaluators }
                 

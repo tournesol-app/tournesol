@@ -32,10 +32,10 @@ class ThurstonComparison(ComparisonGen):
         """ `lpublic` and `rpublic` are not used.
         Returns comparison max and value. """
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        comparison["comparison"] = self.sample_comparison(score_diff)
+        comparison["value"] = self.sample_comparison(score_diff)
         if "is_trustworthy" in user and not user["is_trustworthy"]:
-            comparison["comparison"] = - comparison["comparison"]
-        comparison["comparison_max"] = self.comparison_max
+            comparison["value"] = - comparison["value"]
+        comparison["max"] = self.comparison_max
         return comparison
     
     @abstractmethod
