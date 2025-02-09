@@ -13,5 +13,5 @@ class Vouches(UnnamedDataFrame):
         last_only=True,
         **kwargs
     ):
-        super().__init__(key_names, value_names, name, default_value, last_only, data, **kwargs)
+        super().__init__(data, key_names, value_names, name, default_value, last_only, **kwargs)
     

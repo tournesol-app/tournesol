@@ -22,7 +22,7 @@ class Comparisons(UnnamedDataFrame):
         last_only=True,
         **kwargs
     ):
-        super().__init__(key_names, None, name, None, last_only, data, **kwargs)
+        super().__init__(data, key_names, None, name, None, last_only, **kwargs)
         
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
         evaluators = set(self.get(left_name=entity)["username"])
@@ -60,20 +60,17 @@ class Comparisons(UnnamedDataFrame):
         
         return type(self)(pd.concat([left, right]), key_names=key_names)
 
-    def compared_entity_indices(self, 
-        entity_name2index: dict[str, int], 
-        last_only: bool=True,
-    ) -> dict[str, list[int]]:
+    def compared_entity_indices(self, entity_name2index: dict[str, int]) -> dict[str, list[int]]:
         key_indices = { loc: self.key_names.index(f"{loc}_name") for loc in ("left", "right") }
         return {
             location: [ 
                 entity_name2index[keys[key_indices[location]]] 
-                for keys, _ in self.iter(last_only=last_only)
+                for keys, _ in self.iter(last_only=self.meta._last_only)
             ] for location in ("left", "right")
         }
     
-    def normalized_comparisons(self) -> Series:
-        return Series() if self.empty else self["value"] / self["max"]
+    def normalized_comparisons(self) -> np.ndarray:
+        return np.array() if self.empty else np.array(self["value"] / self["max"])
 
     def to_comparison_dict(self, 
         entities: "Entities", 

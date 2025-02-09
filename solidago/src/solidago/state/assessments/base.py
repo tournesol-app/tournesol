@@ -19,7 +19,7 @@ class Assessments(UnnamedDataFrame):
         last_only=True,
         **kwargs
     ):
-        super().__init__(key_names, None, name, None, last_only, data, **kwargs)
+        super().__init__(data, key_names, None, name, None, last_only, **kwargs)
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
         return set(self.get(entity_name=entity)["username"])

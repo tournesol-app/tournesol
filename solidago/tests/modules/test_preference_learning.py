@@ -16,7 +16,7 @@ def test_gbt_score_zero(GBT):
         DataFrame([
             ["entity_1", "entity_2", 0, 10],
             ["entity_1", "entity_3", 0, 10],
-        ], columns=["left_name", "right_name", "comparison", "comparison_max"]), 
+        ], columns=["left_name", "right_name", "value", "max"]), 
         key_names=["left_name", "right_name"]
     )
     init_multiscores = MultiScore(key_names=["entity_name"])
@@ -39,7 +39,7 @@ def test_gbt_score_monotonicity(GBT):
         DataFrame([
             ["entity_1", "entity_2", 5, 10],
             ["entity_1", "entity_3", 2, 10],
-        ], columns=["left_name", "right_name", "comparison", "comparison_max"]), 
+        ], columns=["left_name", "right_name", "value", "max"]), 
         key_names=["left_name", "right_name"]
     )
     init_multiscores = MultiScore(key_names=["entity_name"])

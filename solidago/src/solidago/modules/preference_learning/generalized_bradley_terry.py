@@ -114,12 +114,14 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         init_model: BaseModel,
     ) -> DirectScoring:
         """ Learns only based on comparisons """
+        if self.last_comparison_only:
+            comparisons = comparisons.last_only()
         model = DirectScoring()
         compared_entity_names = set(comparisons["left_name"]) | set(comparisons["right_name"])
         entities = entities.get(compared_entity_names) # Restrict to compared entities
         init = init_model(entities).reorder_keys(["criterion", "entity_name"])
         criteria = set(comparisons["criterion"]) | init.get_set("criterion")
-        for criterion, cmps in comparisons.groupby(["criterion"]).items():
+        for criterion, cmps in comparisons.groupby(["criterion"]):
             criterion_entity_names = set(cmps["left_name"]) | set(cmps["right_name"])
             if len(criterion_entity_names) <= 1:
                 continue
@@ -177,13 +179,13 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         rights: npt.NDArray
             rights[i] is the right uncertainty on scores[i]
         """
-        indices = comparisons.compared_entity_indices(entity_name2index, self.last_comparison_only)
+        indices = comparisons.compared_entity_indices(entity_name2index)
         if not indices["left"]:
             inf_array = np.array([ float("inf") for _ in entity_name2index ])
             return inf_array, inf_array
         indices = { loc: np.array(indices[loc]) for loc in ("left", "right") }
         score_diffs = scores[indices["left"]] - scores[indices["right"]]
-        normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
+        normalized_comparisons = comparisons.normalized_comparisons()
         score_negative_log_likelihood = self.negative_log_likelihood(score_diffs, normalized_comparisons)
         
         kwargs = dict(

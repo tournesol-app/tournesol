@@ -13,7 +13,7 @@ class MadePublic(UnnamedDataFrame):
         last_only=True,
         **kwargs
     ):
-        super().__init__(key_names, value_name, name, default_value, last_only, data, **kwargs)
+        super().__init__(data, key_names, value_name, name, default_value, last_only, **kwargs)
 
     def penalty(self, privacy_penalty: float, *args, **kwargs) -> float:
         return 1 if self.get(*args, **kwargs) else privacy_penalty

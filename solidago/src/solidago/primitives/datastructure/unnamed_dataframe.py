@@ -12,6 +12,7 @@ class UnnamedDataFrame(DataFrame):
     row_cls: Optional[type]=None
     
     def __init__(self, 
+        data: Optional[Any]=None,
         key_names: Optional[Union[str, list[str]]]=None, 
         value_names: Optional[Union[str, list[str]]]=None,
         name: Optional[str]=None, 
@@ -30,9 +31,9 @@ class UnnamedDataFrame(DataFrame):
                 return l
         key_names, value_names = to_list(key_names), to_list(value_names)
         key_value_columns = key_names + value_names
-        if isinstance(args[0], list) or ("data" in kwargs and isinstance(kwargs["data"], list)):
+        if isinstance(data, list):
             kwargs["columns"] = kwargs["columns"] if "columns" in kwargs else key_value_columns
-        super().__init__(*args, **kwargs)
+        super().__init__(data=data, *args, **kwargs)
         self.meta = SimpleNamespace()
         self.meta.name = name
         self.meta.key_names, self.meta.value_names = key_names, value_names
@@ -136,33 +137,25 @@ class UnnamedDataFrame(DataFrame):
 
     def last_only(self) -> "UnnamedDataFrame":
         return type(self)(
-            data=[ row for _, row in self.iter(process=False, last_only=True) ],
+            data=DataFrame([ df.iloc[-1] for _, df in self.iter(process=False, last_only=True) ]),
             key_names=self.key_names,
-            value_names=self.value_names,
-            name=self.meta.name, 
-            default_value=self.meta._default_value,
-            last_only=self.meta._last_only,
+            last_only=True
         )
     
     def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> "UnnamedDataFrameDict":
         from solidago.primitives.datastructure import UnnamedDataFrameDict
+        columns = columns if columns else self.key_names
         data = { key: value for key, value in self.iter(columns, process) }
-        return UnnamedDataFrameDict(data, df_cls=type(self))
+        sub_key_names = [ key for key in self.key_names if key not in columns ]
+        return UnnamedDataFrameDict(data, df_cls=type(self), main_key_names=columns, sub_key_names=sub_key_names)
     
     def iter(self, 
         columns: Optional[list[str]]=None, 
         process: bool=True, 
         last_only: Optional[bool]=None
     ) -> Iterable:
-        columns = columns if columns else self.key_names
         last_only = self.meta._last_only if last_only is None else last_only
-        if columns is None:
-            for _, row in self.iterrows():
-                if process:
-                    yield self.row2key(row), self.row2value(row)
-                else:
-                    yield row
-            return None            
+        columns = self.key_names if columns is None else columns
         if not columns:
             yield list(), self.df2value(self, last_only) if process else self
             return None
@@ -171,11 +164,14 @@ class UnnamedDataFrame(DataFrame):
         for key in list(groups.groups.keys()):
             key_tuple = key if isinstance(key, tuple) else (key,)
             df = groups.get_group(key_tuple)
-            v = type(self)(df, key_names=kn) if kn or not process else self.df2value(df, last_only)
-            yield key, v
+            if len(kn) > 0 or not process:
+                df = DataFrame([df.iloc[-1]]) if last_only and len(kn) == 0 else df
+                yield key, type(self)(df, key_names=kn)
+            else:
+                yield key, self.df2value(df, last_only)
 
     def __iter__(self, process: bool=True) -> Iterable:
-        return self.iter(process=process)
+        return self.iter(self.key_names, process=process)
 
     def keys(self, columns: Optional[list[str]]=None) -> list:
         return [ keys for keys, _ in self.iter(columns=columns, process=True) ]

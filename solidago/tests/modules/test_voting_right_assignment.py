@@ -185,12 +185,12 @@ def test_affine_overtrust():
     made_public.set("4", "3", True)
     
     assessments = Assessments()
-    comparisons = Comparisons()
-    
     assessments.add_row("0", "default", "0", value=2)
     assessments.add_row("3", "default", "0", value=-1)
     assessments.add_row("3", "default", "1", value=0)
     assessments.add_row("4", "default", "3", value=5)
+    
+    comparisons = Comparisons()
     comparisons.add_row("0", "default", "3", "5", value=-1)
     comparisons.add_row("1", "default", "1", "5", value=1)
     comparisons.add_row("2", "default", "0", "1", value=5)

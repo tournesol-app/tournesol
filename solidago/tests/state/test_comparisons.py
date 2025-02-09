@@ -16,7 +16,7 @@ def test_comparisons():
     assert "entity_4" in set(ordered_comparisons.get("entity_2")["other_name"])
     
     entity_name2index = { "entity_2": 0, "entity_4": 1 }
-    indices = comparisons.compared_entity_indices(entity_name2index, True)
+    indices = comparisons.compared_entity_indices(entity_name2index)
     assert indices["left"] == [1]
     assert indices["right"] == [0]
     normalized_comparisons = comparisons.normalized_comparisons()

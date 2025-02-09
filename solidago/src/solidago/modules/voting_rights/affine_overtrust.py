@@ -50,8 +50,7 @@ class AffineOvertrust(StateFunction):
         comparisons = comparisons.groupby(["criterion"])
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
         entity_names = { 
-            c: set(d[c]["entity_name"]) | set(d[c]["entity_name"])
-            for d in (assessments, comparisons)
+            c: set(assessments[c]["entity_name"]) | set(comparisons[c]["entity_name"])
             for c in criteria
         }
         

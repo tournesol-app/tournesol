@@ -139,9 +139,9 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         comparisons: Comparisons,
     ) -> torch.Tensor:
         """ Negative log posterior """
-        indices = comparisons.compared_entity_indices(entity_name2index, self.last_comparison_only)
+        indices = comparisons.compared_entity_indices(entity_name2index)
         score_diffs = scores[indices["left"]] - scores[indices["right"]]
-        normalized_comparisons = comparisons.normalized_comparisons(self.last_comparison_only)
+        normalized_comparisons = comparisons.normalized_comparisons()
         loss = self.torch_cumulant_generating_function(score_diffs).sum()
         loss += (score_diffs * torch.tensor(normalized_comparisons)).sum()
         return loss + (scores**2).sum() / (2 * self.prior_std_dev**2)
