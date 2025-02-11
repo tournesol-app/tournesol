@@ -122,7 +122,7 @@ const manifest = {
     {
       matches: selectValue(env, {
         production: ['https://tournesol.app/*'],
-        'dev-env': ['http://localhost:3000/*'],
+        'dev-env': ['http://localhost/*'],
       }),
       js: ['fetchTournesolToken.js'],
       run_at: 'document_end',
