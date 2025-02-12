@@ -1,9 +1,8 @@
-from typing import Optional, Union
-from pandas import DataFrame, Series
-
 import math
 
-from solidago.primitives.datastructure import NestedDictOfTuples
+from typing import Optional, Union, Any
+
+from solidago.primitives.datastructure import UnnamedDataFrame
 
 
 class Score:
@@ -27,7 +26,7 @@ class Score:
             values = value.value, value.left_unc, value.right_unc
         elif isinstance(value, (dict, Series)):
             assert left_unc is None and right_unc is None
-            values = value["score"], value["left_unc"], value["right_unc"]
+            values = value["value"], value["left_unc"], value["right_unc"]
         elif isinstance(value, (list, tuple)):
             assert left_unc is None and right_unc is None
             values = value
@@ -151,61 +150,100 @@ class Score:
         return self.min <= value and value <= self.max
 
 
-class MultiScore(NestedDictOfTuples):
+class MultiScore(UnnamedDataFrame):
     def __init__(self, 
-        d: Optional[Union[NestedDictOfTuples, dict, DataFrame]]=None,
+        data: Optional[Any]=None, 
         key_names: list[str]=["criterion"], 
-        value_names: list[str]=["score", "left_unc", "right_unc"],
-        save_filename: Optional[str]=None,
+        value_names: list[str]=["value", "left_unc", "right_unc"],
+        name="multiscore",
+        last_only=True,
+        **kwargs
     ):
         """ We consider the possibility of multidimensional scoring.
         In the context of Tournesol, for instance, the dimensions are the criteria.
         For scientific peer reviewing, it could be the criteria may be
         {'clarity', 'correctness', 'originality', 'rating'}. """
-        super().__init__(d=d, key_names=key_names, value_names=value_names, save_filename=None)
-
-    def default_value(self) -> Score:
-        return Score.nan()
+        super().__init__(data, key_names, value_names, name, Score.nan(), last_only, **kwargs)
     
-    def process_stored_value(self, keys: list[str], stored_value: tuple[float, float, float]) -> Score:
-        return Score(*stored_value)
+    def row2value(self, row: Series) -> Any:
+        return Score(row["value"], row["left_unc"], row["right_unc"])
     
-    def sanitize(self, value: Union[tuple, Score, dict]) -> tuple[float, float, float]:
-        if isinstance(value, (list, tuple)):
-            assert len(value) == 3
-            return tuple(float(v) for v in value)
-        if isinstance(value, Score):
-            return value.to_triplet()
-        assert isinstance(value, (dict, Series))
-        return Score(value).to_triplet()
+    def input2dict(self, *args, keys_only: bool=False, **kwargs) -> dict:
+        key_value_columns = self.key_names if keys_only else (self.key_names + self.value_names)
+        if keys_only:
+            args = args[:len(self.key_names)]
+        assert len(args) <= len(key_value_columns) + 1
+        assert all({ key not in key_value_columns[:len(args)] for key in kwargs })
+        f = lambda v, k: str(v) if k in self.key_names else v
+        if "score" in kwargs:
+            kwargs["value"] = kwargs["score"].value
+            kwargs["left_unc"] = kwargs["score"].left_unc
+            kwargs["right_unc"] = kwargs["score"].right_unc
+            del kwargs["score"]
+        kwargs = { k: f(v, k) for k, v in kwargs.items() if (not keys_only or k in self.key_names) }
+        if not self.value_names and len(args) > len(self.key_names):
+            assert len(args) == len(self.key_names) + 1
+            return kwargs | args[-1].to_dict()
+        return kwargs | { k: f(v, k) for k, v in zip(key_value_columns[:len(args)], args) }
     
     @classmethod
     def nan(cls) -> "MultiScore":
         return MultiScore()
 
     def __neg__(self) -> "MultiScore":
-        return MultiScore({ key: (- value).to_triplet() for key, value in self })
+        return MultiScore(
+            data=[ (*tuple(key), *(- score).to_triplet()) for key, score in self ],
+            key_names=self.key_names
+        )
     
     def __add__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, Score):
-            return MultiScore({ key: value + other for key, value in self })
-        keys = self.get_set("criterion") & other.get_set("criterion")
-        return MultiScore({ key: (self[key] + other[key]).to_triplet() for key in keys })
+        if isinstance(other, (int, float, Score)):
+            return MultiScore(
+                data=[ (*tuple(key), *(score + other).to_triplet()) for key, score in self ],
+                key_names=self.key_names
+            )
+        assert self.key_names == other.key_names
+        keys = set(self["criterion"]) & set(other["criterion"])
+        return MultiScore(
+            data=[ (*tuple(key), *(self[key] + other[key]).to_triplet() for key in keys ],
+            key_names=self.key_names
+        )
     
     def __sub__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, Score):
-            return MultiScore({ key: value - other for key, value in self })
-        keys = self.get_set("criterion") & other.get_set("criterion")
-        return MultiScore({ key: (self[key] - other[key]).to_triplet() for key in keys })
+        if isinstance(other, (int, float, Score)):
+            return MultiScore(
+                data=[ (*tuple(key), *(score - other).to_triplet()) for key, score in self ],
+                key_names=self.key_names
+            )
+        assert self.key_names == other.key_names
+        keys = set(self["criterion"]) & set(other["criterion"])
+        return MultiScore(
+            data=[ (*tuple(key), *(self[key] - other[key]).to_triplet() for key in keys ],
+            key_names=self.key_names
+        )
         
     def __mul__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, Score):
-            return MultiScore({ key: value * other for key, value in self })
-        keys = self.get_set("criterion") & other.get_set("criterion")
-        return MultiScore({ key: (self[key] * other[key]).to_triplet() for key in keys })
+        if isinstance(other, (int, float, Score)):
+            return MultiScore(
+                data=[ (*tuple(key), *(score * other).to_triplet()) for key, score in self ],
+                key_names=self.key_names
+            )
+        assert self.key_names == other.key_names
+        keys = set(self["criterion"]) & set(other["criterion"])
+        return MultiScore(
+            data=[ (*tuple(key), *(self[key] * other[key]).to_triplet() for key in keys ],
+            key_names=self.key_names
+        )
         
     def __truediv__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, Score):
-            return MultiScore({ key: value / other for key, value in self })
-        keys = self.get_set("criterion") & other.get_set("criterion")
-        return MultiScore({ key: (self[key] / other[key]).to_triplet() for key in keys })
+        if isinstance(other, (int, float, Score)):
+            return MultiScore(
+                data=[ (*tuple(key), *(score / other).to_triplet()) for key, score in self ],
+                key_names=self.key_names
+            )
+        assert self.key_names == other.key_names
+        keys = set(self["criterion"]) & set(other["criterion"])
+        return MultiScore(
+            data=[ (*tuple(key), *(self[key] / other[key]).to_triplet() for key in keys ],
+            key_names=self.key_names
+        )

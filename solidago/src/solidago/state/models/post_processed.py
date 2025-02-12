@@ -9,10 +9,8 @@ from .base import ScoringModel
 
 
 class PostProcessedModel(ScoringModel):
-    def __init__(self, parent: ScoringModel):
-        """ Abstract class that defines a derived scoring model, by post-processing the outputs
-        of a base model """
-        self.parent = parent
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
     @abstractmethod
     def post_process_fn(self, x: float) -> float:
@@ -20,7 +18,7 @@ class PostProcessedModel(ScoringModel):
         raise NotImplemented
     
     def score(self, entity: "Entity") -> Union[Score, MultiScore]:
-        return self.post_process(self.parent(entity))
+        return self.post_process(self.parent.score(entity))
 
     def post_process(self, score: Union[Score, MultiScore]) -> Union[Score, MultiScore]:
         if isinstance(score, Score):
@@ -35,18 +33,11 @@ class PostProcessedModel(ScoringModel):
 
 
 class SquashedModel(PostProcessedModel):
-    def __init__(self, parent: ScoringModel, max_score: float=100.):
-        super().__init__(parent)
+    saved_argsnames: list[str]=["note", "max_score"]    
+    
+    def __init__(self, *args, max_score: float=100., **kwargs):
+        super().__init__(*args, **kwargs)
         self.max_score = max_score
         
     def post_process_fn(self, x: float) -> float:
         return self.max_score * x / sqrt(1+x**2)
-
-    def save(self, 
-        directory: Optional[Union[Path, str]]=None, 
-        depth: int=0
-    ) -> tuple[str, dict]:
-        return type(self).__name__, { 
-            "parent": self.parent.save(directory, depth + 1), 
-            "args": { "max_score": self.max_score },
-        }
