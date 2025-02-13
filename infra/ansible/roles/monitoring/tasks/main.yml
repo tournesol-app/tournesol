@@ -240,6 +240,16 @@
   notify:
     - Enable and restart Grafana
 
+- name: Setup Grafana database parameters
+  blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: "\\[database\\]"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK DATABASE"
+    block: |
+      wal = true
+  notify:
+    - Enable and restart Grafana
+
 - name: Create Grafana Prometheus datasource
   template:
     dest: /etc/grafana/provisioning/datasources/prometheus.yaml
