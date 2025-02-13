@@ -3,6 +3,7 @@
   "name": "Tournesol",
   "description": "Compare online content and contribute to the development of responsible content recommendations.",
   "categories": ["video_players", "entertainment", "research", "democracy", "crowdsourcing"],
+  "iarc_rating_id": "5510f1c2-d410-4ef1-9033-56b6459d50e1",
   "icons": [
     {
       "src": "/icons/favicon.ico",
