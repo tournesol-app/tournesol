@@ -1,6 +1,7 @@
 import math
 
 from typing import Optional, Union, Any
+from pandas import Series, DataFrame
 
 from solidago.primitives.datastructure import UnnamedDataFrame
 
@@ -172,15 +173,27 @@ class MultiScore(UnnamedDataFrame):
         key_value_columns = self.key_names if keys_only else (self.key_names + self.value_names)
         if keys_only:
             args = args[:len(self.key_names)]
-        assert len(args) <= len(key_value_columns) + 1
+        assert len(args) <= len(key_value_columns) + 3
         assert all({ key not in key_value_columns[:len(args)] for key in kwargs })
         f = lambda v, k: str(v) if k in self.key_names else v
+        kwargs = { k: f(v, k) for k, v in kwargs.items() if (not keys_only or k in self.key_names) }
+        args_key_names = [ kn for kn in self.key_names if kn not in kwargs ]
+        kwargs |= { k: f(v, k) for k, v  in zip(args_key_names, args[:len(args_key_names)]) }
+        args_values = args[len(args_key_names):]
+        if len(args_values) > 0 and isinstance(args_values[0], Score):
+            assert "score" not in kwargs
+            kwargs["score"] = args_values[0]
+        elif len(args_values) > 0:
+            assert "score" not in kwargs
+            if len(args_values) == 1:
+                args_values = (args_values[0], 0, 0)
+            assert len(args_values) == 3, args
+            kwargs["score"] = Score(*args_values)
         if "score" in kwargs:
             kwargs["value"] = kwargs["score"].value
             kwargs["left_unc"] = kwargs["score"].left_unc
             kwargs["right_unc"] = kwargs["score"].right_unc
             del kwargs["score"]
-        kwargs = { k: f(v, k) for k, v in kwargs.items() if (not keys_only or k in self.key_names) }
         if not self.value_names and len(args) > len(self.key_names):
             assert len(args) == len(self.key_names) + 1
             return kwargs | args[-1].to_dict()
@@ -205,7 +218,7 @@ class MultiScore(UnnamedDataFrame):
         assert self.key_names == other.key_names
         keys = set(self["criterion"]) & set(other["criterion"])
         return MultiScore(
-            data=[ (*tuple(key), *(self[key] + other[key]).to_triplet() for key in keys ],
+            data=[ (*tuple(key), *(self[key] + other[key]).to_triplet()) for key in keys ],
             key_names=self.key_names
         )
     
@@ -218,7 +231,7 @@ class MultiScore(UnnamedDataFrame):
         assert self.key_names == other.key_names
         keys = set(self["criterion"]) & set(other["criterion"])
         return MultiScore(
-            data=[ (*tuple(key), *(self[key] - other[key]).to_triplet() for key in keys ],
+            data=[ (*tuple(key), *(self[key] - other[key]).to_triplet()) for key in keys ],
             key_names=self.key_names
         )
         
@@ -231,7 +244,7 @@ class MultiScore(UnnamedDataFrame):
         assert self.key_names == other.key_names
         keys = set(self["criterion"]) & set(other["criterion"])
         return MultiScore(
-            data=[ (*tuple(key), *(self[key] * other[key]).to_triplet() for key in keys ],
+            data=[ (*tuple(key), *(self[key] * other[key]).to_triplet()) for key in keys ],
             key_names=self.key_names
         )
         
@@ -244,6 +257,6 @@ class MultiScore(UnnamedDataFrame):
         assert self.key_names == other.key_names
         keys = set(self["criterion"]) & set(other["criterion"])
         return MultiScore(
-            data=[ (*tuple(key), *(self[key] / other[key]).to_triplet() for key in keys ],
+            data=[ (*tuple(key), *(self[key] / other[key]).to_triplet()) for key in keys ],
             key_names=self.key_names
         )

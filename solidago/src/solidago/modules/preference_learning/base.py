@@ -23,7 +23,7 @@ class PreferenceLearning(StateFunction, ABC):
         for user in users:
             logger.info(f"  Learning user {user}'s base model")
             result[user] = self.user_learn(user, entities, 
-                assessments.get(user), comparisons.get(user), user_models[user].base_model()[0])
+                assessments.get(user), comparisons.get(user), user_models[user].base_model())
         return result
 
     @abstractmethod
@@ -32,7 +32,7 @@ class PreferenceLearning(StateFunction, ABC):
         entities: Entities,
         assessments: Assessments, # key_names == ["criterion", "entity_name"]
         comparisons: Comparisons, # key_names == ["criterion", "left_name", "right_name"]
-        base_model: BaseModel
-    ) -> BaseModel:
+        base_model: ScoringModel
+    ) -> ScoringModel:
         """Learns a scoring model, given user judgments of entities """
         raise NotImplementedError

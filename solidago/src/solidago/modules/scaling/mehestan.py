@@ -93,10 +93,17 @@ class Mehestan(StateFunction):
         scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
         logger.info(f"Mehestan 0. Terminated")
         
-        users, scales = self.compute_scales(users, scores, made_public)
+        users, multiplicators, translations = self.compute_scales(users, scores, made_public)
+        multiplicators = multiplicators.groupby(["username"])
+        translations = translations.groupby(["username"])
         
         return users, UserModels({
-            username: ScaledModel(model, scales[username], note="Mehestan")
+            username: ScaledModel(
+                model, 
+                multiplicators=multiplicators[username], 
+                translations=translations[username], 
+                note="Mehestan"
+            )
             for username, model in user_models
         })
     
@@ -105,7 +112,7 @@ class Mehestan(StateFunction):
         users: Users, # Must have column "trust_score"
         scores: MultiScore, # key_names == ["criterion", "username", "entity_name"]
         made_public: MadePublic, # key_names == ["username", "entity_name"]
-    ) -> ScaleDict: # key_names == ["username", "criterion"]
+    ) -> tuple[Users, MultiScore, MultiScore]: # key_names == ["username", "criterion"]
         """ Compute the scales for all criteria. This method should be inherited and parallelized
         for heavy-load applications that can afford multi-core operations. 
         
@@ -123,10 +130,15 @@ class Mehestan(StateFunction):
         scales: ScaleDict
             With key_names == ["username", "criterion"]
         """
-        scales = ScaleDict(key_names=["criterion", "username"])
+        multiplicators = MultiScore(key_names=["criterion", "username"])
+        translations = MultiScore(key_names=["criterion", "username"])
         for criterion in scores.get_set("criterion"):
-            users, scales[criterion] = self.scale_criterion(users, scores[criterion], made_public, criterion)
-        return users, scales.reorder_keys(["username", "criterion"])
+            users, m, t = self.scale_criterion(users, scores[criterion], made_public, criterion)
+            m["criterion"] = criterion
+            t["criterion"] = criterion
+            multiplicators = multiplicators | m
+            translations = translations | t
+        return users, multiplicators, translations
     
     def scale_criterion(self, 
         users: Users,

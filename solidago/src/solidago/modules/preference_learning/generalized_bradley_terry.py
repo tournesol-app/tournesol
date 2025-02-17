@@ -111,7 +111,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         entities: Entities,
         assessments: Assessments, # Not used
         comparisons: Comparisons, # key_names == ["criterion", "left_name", "right_name"]
-        init_model: BaseModel,
+        init_model: ScoringModel,
     ) -> DirectScoring:
         """ Learns only based on comparisons """
         if self.last_comparison_only:

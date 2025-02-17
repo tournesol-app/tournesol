@@ -15,6 +15,7 @@ class ScoringModel(ABC):
     saved_argsnames: list[str]=["note"]
     
     def __init__(self, 
+        parent: Optional["ScoringModel"]=None,
         dataframes: Optional[dict[str, DataFrame]]=None, 
         depth: int=0, 
         note: str="None",
@@ -34,15 +35,16 @@ class ScoringModel(ABC):
             if name == "directs":
                 self.dfs[name] = MultiScore(df, key_names=["entity_name", "criterion"])
             elif name == "multiplicators" and isinstance(df, DataFrame):
-                self.dfs[name] = MultiScore(df, key_names=["depth", "criterion"]).groupby(["depth"])
+                self.dfs[name] = MultiScore(df, key_names=["depth", "criterion"])
             elif name == "translations" and isinstance(df, DataFrame):
-                self.dfs[name] = MultiScore(df, key_names=["depth", "criterion"]).groupby(["depth"])
-        if "parent" in kwargs:
-            if isinstance(kwargs["parent"], ScoringModel):
-                self.parent = kwargs["parent"]
-            elif isinstance(kwargs["parent"], ScoringModel):
+                self.dfs[name] = MultiScore(df, key_names=["depth", "criterion"])
+        if parent is not None:
+            if isinstance(parent, ScoringModel):
+                parent.set_depth(depth + 1)
+                self.parent = parent
+            elif isinstance(parent, ScoringModel):
                 import solidago.state.models as models
-                parent_cls, parent_kwargs = kwargs["parent"]
+                parent_cls, parent_kwargs = parent
                 self.parent = getattr(models, parent_cls)(self.dfs, depth + 1, **parent_kwargs)
             else:
                 raise ValueError(f"{kwargs['parent']} has unhandled type {type(kwargs['parent'])}")
@@ -81,6 +83,11 @@ class ScoringModel(ABC):
     
     def evaluated_entities(self, entities: "Entities") -> "Entities":
         return entities if self.is_base() else self.parent.evaluated_entities(entities)
+    
+    def set_depth(self, depth: int) ->  None:
+        self.depth = depth
+        if not self.is_base():
+            self.parent.set_depth(depth + 1)
     
     def to_direct(self, entities: "Entities") -> "DirectScoring":
         from .direct import DirectScoring

@@ -9,13 +9,31 @@ from .score import MultiScore
 from .direct import DirectScoring
 
 
-class UserModels(dict):
-    def __init__(self, *args, default_model_cls: type=DirectScoring, **kwargs):
+class UserModels:
+    def __init__(self, 
+        dataframes: Optional[dict[str, DataFrame]]=None, 
+        default_model_cls: type=DirectScoring,
+        *args, 
+        **kwargs
+    ):
         """ Maps usernames to ScoringModel objects.
         Useful to export/import `glued` directs / scalings dataframes. """
-        super().__init__(*args, **kwargs)
+        self.dfs = dict() if dataframes is None else dataframes
+        for name, df in self.dfs.items():
+            if isinstance(df, (str, Path)):
+                df_filename = df
+                try: df = pd.read_csv(df_filename, keep_default_na=False)
+                except pd.errors.EmptyDataError: df = DataFrame()
+                self.dfs[name] = df
+            if name == "directs":
+                self.dfs[name] = MultiScore(df, key_names=["username", "entity_name", "criterion"])
+            elif name == "multiplicators" and isinstance(df, DataFrame):
+                self.dfs[name] = MultiScore(df, key_names=["username", "depth", "criterion"])
+            elif name == "translations" and isinstance(df, DataFrame):
+                self.dfs[name] = MultiScore(df, key_names=["username", "depth", "criterion"])
         self.default_model_cls = default_model_cls
-
+        self._groups = None
+        
     def default_value(self) -> ScoringModel:
         return self.default_model_cls()
     

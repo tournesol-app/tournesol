@@ -21,10 +21,8 @@ __all__ = [
     "Comparison", "Comparisons",
     "VotingRights",
     "Score", "MultiScore",
-    "ScoringModel", "BaseModel",
-    "UserModels",
-    "DirectScoring",
-    "ScaleDict", "ScaledModel",
+    "ScoringModel", "DirectScoring", "ScaledModel",
     "PostProcessedModel", "SquashedModel",
+    "UserModels",
     "State", "TournesolExport",
 ]

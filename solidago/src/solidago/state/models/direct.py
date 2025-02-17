@@ -3,7 +3,7 @@ from pathlib import Path
 from pandas import DataFrame, Series
 
 from .score import Score, MultiScore
-from .base import ScoringModel, BaseModel
+from .base import ScoringModel
 
 
 class DirectScoring(ScoringModel):

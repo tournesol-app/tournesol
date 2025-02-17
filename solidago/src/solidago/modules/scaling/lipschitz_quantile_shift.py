@@ -35,7 +35,7 @@ class LipschitzQuantileShift(StateFunction):
             Will be scaled by the Scaling method
         """
         scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
-        scales = ScaleDict(key_names=["criterion"]) # the same scale will apply to all users
+        translations = MultiScore()
         for criterion in scores.get_set("criterion"):
             scores_df = scores[criterion].to_df()
             weights = 1 / scores_df.groupby("username").transform("size")
@@ -48,10 +48,10 @@ class LipschitzQuantileShift(StateFunction):
                 right_uncertainties=np.array(scores_df["right_unc"], dtype=np.float64),
                 error=self.error,
             ) + self.target_score
-            scales[criterion] = (1, 0, 0, translation_value, 0, 0)
+            translations.set(criterion, translation_value)
 
         return UserModels({
-            username: ScaledModel(model, scales, note="quantile_shift")
+            username: ScaledModel(model, translations=translations, note="quantile_shift")
             for username, model in user_models
         })
 
