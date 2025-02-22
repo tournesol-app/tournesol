@@ -19,7 +19,7 @@ class NormalUser(UserGen):
         zipf_compare: float=1.5,
         poisson_compare: float=30.0,
         n_comparisons_per_entity: float=3.0,
-        multiplicator_std_dev: float=0.0,
+        multiplier_std_dev: float=0.0,
         engagement_bias_std_dev: float=0.0,
         mean: Optional[Union[float, list[float]]]=None, 
         dimension: Optional[int]=None,
@@ -46,10 +46,10 @@ class NormalUser(UserGen):
             while poisson_compare is the expectation of the Poisson law
         n_comparisons_per_entity: float=3.0
             Expected number of comparisons per entity
-        multiplicator_std_dev: float=0.0
+        multiplier_std_dev: float=0.0
             Users may use varying multiplicative scales to compare entities (e.g in Bradley-Terry)
-            The scale multiplicator follows a gamma distribution of mean 1,
-            and whose standard deviation is multiplicator_std_dev
+            The scale multiplier follows a gamma distribution of mean 1,
+            and whose standard deviation is multiplier_std_dev
         engagement_bias_std_dev: float=0.0
             Assumes that, when they select entities to compare, 
             different users may be more or less biased towards selecting their preferred entities
@@ -79,7 +79,7 @@ class NormalUser(UserGen):
         self.zipf_compare = zipf_compare
         self.poisson_compare = poisson_compare
         self.n_comparisons_per_entity = n_comparisons_per_entity
-        self.multiplicator_std_dev = multiplicator_std_dev
+        self.multiplier_std_dev = multiplier_std_dev
         self.engagement_bias_std_dev = engagement_bias_std_dev
         self.mean = list(mean)
     
@@ -93,9 +93,9 @@ class NormalUser(UserGen):
         user["n_expected_vouches"] = zipf(self.zipf_vouch) - 1
         user["n_comparisons"] = zipf(self.zipf_compare) + poisson(self.poisson_compare)
         user["n_comparisons_per_entity"] = 1 + poisson(self.n_comparisons_per_entity)
-        user["multiplicator"] = 1 if self.multiplicator_std_dev == 0 else gamma(
-            shape=self.multiplicator_std_dev ** -2,
-            scale=self.multiplicator_std_dev ** 2
+        user["multiplier"] = 1 if self.multiplier_std_dev == 0 else gamma(
+            shape=self.multiplier_std_dev ** -2,
+            scale=self.multiplier_std_dev ** 2
         )
         user["engagement_bias"] = normal(0, self.engagement_bias_std_dev)
         return user
@@ -104,4 +104,4 @@ class NormalUser(UserGen):
     def json_keys(cls):
         return ["n_users", "p_trustworthy", "p_pretrusted", "zipf_vouch", "zipf_compare", 
             "poisson_compare", "n_comparisons_per_entity", "mean", 
-            "multiplicator_std_dev", "engagement_bias_std_dev"]
+            "multiplier_std_dev", "engagement_bias_std_dev"]

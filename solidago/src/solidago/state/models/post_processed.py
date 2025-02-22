@@ -9,8 +9,15 @@ from .base import ScoringModel
 
 
 class PostProcessedModel(ScoringModel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self,
+        parent: ScoringModel, 
+        depth: int=0, 
+        note: str="None",
+        username: Optional[str]=None,
+        user_models: Optional["UserModels"]=None,
+        **kwargs
+    ):
+        super().__init__(parent, depth, note, username, user_models, **kwargs)
     
     @abstractmethod
     def post_process_fn(self, x: float) -> float:

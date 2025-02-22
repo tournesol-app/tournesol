@@ -44,6 +44,7 @@ class UnnamedDataFrame(DataFrame):
                 self[column] = "NaN"
         self.meta._default_value = default_value
         self.meta._last_only = last_only
+        self.meta._group_cache = dict()
         
     @property
     def key_names(self):
@@ -94,27 +95,38 @@ class UnnamedDataFrame(DataFrame):
             return kwargs | dict(args[-1])
         return kwargs | { k: f(v, k) for k, v in zip(key_value_columns[:len(args)], args) }
     
-    def add_row(self, *args, **kwargs) -> None:
-        self.index = list(range(len(self)))
-        d = self.input2dict(*args, **kwargs)
-        self.loc[len(self), list(d.keys())] = list(d.values())
-        
     def get(self, 
         *args, 
         process: bool=True, 
-        last_only: Optional[bool]=None, 
+        last_only: Optional[bool]=None,
+        cache_groups: bool=False,
         **kwargs
     ) -> Union["UnnamedDataFrame", tuple]:
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)
+        if cache_groups:
+            return self.groupby(list(kwargs.keys()), process=process).get(
+                process=process, 
+                last_only=last_only, 
+                **kwargs
+            )
         df = self[reduce(lambda a, x: a & x, [ self[k] == v for k, v in kwargs.items() ], True)]
-        key_names = [ key_name for key_name in self.key_names if key_name not in kwargs ]
-        if key_names or not process:
-            return type(self)(df, key_names=key_names)
+        other_key_names = [ key_name for key_name in self.key_names if key_name not in kwargs ]
+        if other_key_names or not process:
+            return type(self)(df, key_names=other_key_names)
         return self.default_value if df.empty else self.df2value(df, last_only)
 
     def __contains__(self, *args, **kwargs) -> bool:
         return not self.get(*args, process=False, **kwargs).empty
 
+    def __or__(self, other: "UnnamedDataFrame") -> "UnnamedDataFrame":
+        return type(self)(pd.concat([self, other]))
+    
+    def add_row(self, *args, **kwargs) -> None:
+        self.index = list(range(len(self)))
+        d = self.input2dict(*args, **kwargs)
+        self.loc[len(self), list(d.keys())] = list(d.values())
+        self.meta._group_cache = dict()
+        
     def set(self, *args, **kwargs) -> None:
         """ args is assumed to list keys and then values, 
         though some may be specified through kwargs """
@@ -126,14 +138,14 @@ class UnnamedDataFrame(DataFrame):
         else: # Updates the last row of df
             name = df.iloc[-1].name
             self.loc[name] = Series(kwargs)
+        self.meta._group_cache = dict()
 
-    def __or__(self, other: "UnnamedDataFrame") -> "UnnamedDataFrame":
-        return type(self)(pd.concat([self, other]))
-    
     @classmethod
-    def load(cls, filename: str) -> "UnnamedDataFrame":
-        try: return cls(pd.read_csv(filename, keep_default_na=False))
-        except pd.errors.EmptyDataError: return cls()
+    def load(cls, filename: Optional[Union[str, Path]]=None, *args, **kwargs) -> "UnnamedDataFrame":
+        try: 
+            return cls(pd.read_csv(filename, keep_default_na=False), *args, **kwargs)
+        except (pd.errors.EmptyDataError, ValueError):
+            return cls(*args, **kwargs)
 
     def last_only(self) -> "UnnamedDataFrame":
         return type(self)(
@@ -141,13 +153,21 @@ class UnnamedDataFrame(DataFrame):
             key_names=self.key_names,
             last_only=True
         )
-    
+
     def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> "UnnamedDataFrameDict":
-        from solidago.primitives.datastructure import UnnamedDataFrameDict
         columns = columns if columns else self.key_names
+        if (columns, process) in self.meta._group_cache:
+            return self.meta._group_cache[columns, process]
         data = { key: value for key, value in self.iter(columns, process) }
         sub_key_names = [ key for key in self.key_names if key not in columns ]
-        return UnnamedDataFrameDict(data, df_cls=type(self), main_key_names=columns, sub_key_names=sub_key_names)
+        from solidago.primitives.datastructure import UnnamedDataFrameDict
+        self.meta._group_cache[columns, process] = UnnamedDataFrameDict(
+            data, 
+            df_cls=type(self), 
+            main_key_names=columns, 
+            sub_key_names=sub_key_names
+        )
+        return self.meta._group_cache[columns, process]
     
     def iter(self, 
         columns: Optional[list[str]]=None, 

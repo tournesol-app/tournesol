@@ -19,7 +19,7 @@ class LipschitzStandardize(StateFunction):
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
         scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
-        multiplicators = MultiScore()
+        multipliers = MultiScore()
         for criterion in scores.get_set("criterion"):
             scores_df = scores.to_df()
             weights = 1 / scores_df.groupby("username").transform("size")
@@ -33,9 +33,9 @@ class LipschitzStandardize(StateFunction):
                 default_dev=1.0,
                 error=self.error,
             )
-            multiplicators.set(criterion, 1 / std_dev)
+            multipliers.set(criterion, 1 / std_dev)
         
         return UserModels({
-            username: ScaledModel(model, multiplicators=multiplicators, note="standardize")
+            username: ScaledModel(model, multipliers=multipliers, note="standardize")
             for username, model in user_models
         })

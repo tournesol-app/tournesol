@@ -1,4 +1,4 @@
-from typing import Union, Optional, Any
+from typing import Union, Optional, Any, Literal
 from pathlib import Path
 from pandas import DataFrame
 
@@ -10,27 +10,51 @@ from .base import ScoringModel
 class ScaledModel(ScoringModel):
     def __init__(self, 
         parent: ScoringModel, 
-        dataframes: Optional[dict[str, DataFrame]]=None, 
+        scales: Optional[Union[str, DataFrame, MultiScore]]=None,
         depth: int=0, 
         note: str="None",
-        multipliers: Optional[MultiScore]=None,
-        translations: Optional[MultiScore]=None,
-        *args, 
+        username: Optional[str]=None,
+        user_models: Optional["UserModels"]=None,
         **kwargs
     ):
-        super().__init__(parent=parent, *args, **kwargs)
-        if "multipliers" not in self.dfs:
-            self.dfs["multipliers"] = MultiScore(key_names=["depth", "criterion"])
-        if "translations" not in self.dfs:
-            self.dfs["translations"] = MultiScore(key_names=["depth", "criterion"])
+        super().__init__(parent, depth, note, username, user_models, scales=scales, **kwargs)
+        self.scales = MultiScore.load(directs, key_names=["depth", "kind", "criterion"])
     
     @property
     def multiplier(self) -> MultiScore:
-        return self.dfs["multipliers"].get(depth=self.depth)
+        return self.scales.get(depth=self.depth, kind="multiplier")
     
     @property
     def translation(self) -> MultiScore:
-        return self.dfs["translation"].get(depth=self.depth)
+        return self.scales.get(depth=self.depth, kind="translation")
+    
+    def set(self, 
+        kind: Literal["multiplier", "translation"], 
+        criterion: Optional[Union[str, MultiScore]]=None, 
+        score: Optional[Union[Score, MultiScore]]=None
+    ) -> None:
+        if isinstance(criterion, str) and isinstance(score, Score):
+            if self.user_models is None:
+                self.directs.set(self.depth, kind, criterion, score)
+            else:
+                self.user_models.scales.set(self.username, self.depth, kind, criterion, score)
+        else:
+            assert isinstance(criterion, MultiScore) ^ isinstance(score, MultiScore)
+            multiscore = score if isinstance(score, MultiScore) else criterion
+            for criterion, score in multiscore:
+                self.set(kind, criterion, score)
+    
+    def set_multiplier(self, 
+        criterion: Optional[Union[str, MultiScore]]=None, 
+        score: Optional[Union[Score, MultiScore]]=None
+    ) -> None:
+        self.set("multiplier", criterion, score)
+    
+    def set_translation(self, 
+        criterion: Optional[Union[str, MultiScore]]=None, 
+        score: Optional[Union[Score, MultiScore]]=None
+    ) -> None:
+        self.set("translation", criterion, score)
     
     def score(self, entity: "Entity") -> MultiScore:
         return self.scale(self.parent.score(entity))

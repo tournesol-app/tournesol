@@ -24,7 +24,7 @@ class Mehestan(StateFunction):
         p_norm_for_multiplicative_resilience: float=4.0,
         n_entity_to_fully_compare_max: float=100,
         n_diffs_sample_max: float=1000,
-        default_multiplicator_dev: float=0.5,
+        default_multiplier_dev: float=0.5,
         default_translation_dev: float=1.,
         error: float=1e-5
     ):
@@ -51,7 +51,7 @@ class Mehestan(StateFunction):
             Penalty to private ratings when selecting scalers
         p_norm_for_multiplicative_resilience: float
             To provide stronger security, 
-            we enforce a large resilience on multiplicator estimation,
+            we enforce a large resilience on multiplier estimation,
             when the model scores of a user are large.
             The infinite norm may be to sensitive to extreme values,
             thus we propose to use an l_p norm.
@@ -66,7 +66,7 @@ class Mehestan(StateFunction):
         self.p_norm_for_multiplicative_resilience = p_norm_for_multiplicative_resilience
         self.n_entity_to_fully_compare_max = n_entity_to_fully_compare_max
         self.n_diffs_sample_max = n_diffs_sample_max
-        self.default_multiplicator_dev = default_multiplicator_dev
+        self.default_multiplier_dev = default_multiplier_dev
         self.default_translation_dev = default_translation_dev
         self.error = error
 
@@ -93,14 +93,14 @@ class Mehestan(StateFunction):
         scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
         logger.info(f"Mehestan 0. Terminated")
         
-        users, multiplicators, translations = self.compute_scales(users, scores, made_public)
-        multiplicators = multiplicators.groupby(["username"])
+        users, multipliers, translations = self.compute_scales(users, scores, made_public)
+        multipliers = multipliers.groupby(["username"])
         translations = translations.groupby(["username"])
         
         return users, UserModels({
             username: ScaledModel(
                 model, 
-                multiplicators=multiplicators[username], 
+                multipliers=multipliers[username], 
                 translations=translations[username], 
                 note="Mehestan"
             )
@@ -130,15 +130,15 @@ class Mehestan(StateFunction):
         scales: ScaleDict
             With key_names == ["username", "criterion"]
         """
-        multiplicators = MultiScore(key_names=["criterion", "username"])
+        multipliers = MultiScore(key_names=["criterion", "username"])
         translations = MultiScore(key_names=["criterion", "username"])
         for criterion in scores.get_set("criterion"):
             users, m, t = self.scale_criterion(users, scores[criterion], made_public, criterion)
             m["criterion"] = criterion
             t["criterion"] = criterion
-            multiplicators = multiplicators | m
+            multipliers = multipliers | m
             translations = translations | t
-        return users, multiplicators, translations
+        return users, multipliers, translations
     
     def scale_criterion(self, 
         users: Users,
@@ -229,12 +229,12 @@ class Mehestan(StateFunction):
         voting_rights, ratios = self.aggregate_scaler_scores(trusts, weight_lists, ratio_lists)
         end_c = timeit.default_timer()
         logger.info(f"    Mehestan {s}c. Aggregate ratios in {int(end_c - end_b)} seconds")
-        multiplicators = self.compute_multiplicators(voting_rights, ratios, scalee_model_norms)
+        multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
         end_d = timeit.default_timer()
         logger.info(f"    Mehestan {s}d. Multiplicators in {int(end_d - end_c)} seconds")
 
         for (scalee_name, entity_name), score in scalee_scores:
-            scalee_scores[scalee_name, entity_name] = score * multiplicators[scalee_name]
+            scalee_scores[scalee_name, entity_name] = score * multipliers[scalee_name]
         if scalees_are_scalers:
             scaler_scores = scalee_scores
         
@@ -253,9 +253,9 @@ class Mehestan(StateFunction):
         
         scalee_scales = ScaleDict({
             scalee_name: (
-                *multiplicators[scalee_name].to_triplet(), 
+                *multipliers[scalee_name].to_triplet(), 
                 *translations[scalee_name].to_triplet()
-            ) for scalee_name in multiplicators.get_set("scalee_name")
+            ) for scalee_name in multipliers.get_set("scalee_name")
         }, key_names=["username"])
 
         return scalee_scales, scalee_scores
@@ -320,7 +320,7 @@ class Mehestan(StateFunction):
         return trust * sum_of_activities
 
     #############################################################
-    ##  Methods used for both multiplicators and translations  ##
+    ##  Methods used for both multipliers and translations  ##
     #############################################################
     
     def aggregate_scaler_scores(self,
@@ -375,7 +375,7 @@ class Mehestan(StateFunction):
         default_dev: float, 
         aggregator: Callable = qr_median,
     ) -> Score:
-        """ Computes the multiplicators of users with given user_ratios
+        """ Computes the multipliers of users with given user_ratios
         
         Parameters
         ----------
@@ -388,9 +388,9 @@ class Mehestan(StateFunction):
             
         Returns
         -------
-        multiplicators: dict[int, tuple[float, float]]
-            multiplicators[user][0] is the multiplicative scaling of user
-            multiplicators[user][1] is the uncertainty on the multiplicator
+        multipliers: dict[int, tuple[float, float]]
+            multipliers[user][0] is the multiplicative scaling of user
+            multipliers[user][1] is the uncertainty on the multiplier
         """
         kwargs = dict(
             lipschitz=lipschitz, 
@@ -406,7 +406,7 @@ class Mehestan(StateFunction):
 
 
     ############################################
-    ##  Methods to esimate the multiplicators ##
+    ##  Methods to esimate the multipliers ##
     ############################################
 
     def compute_model_norms(self,
@@ -546,12 +546,12 @@ class Mehestan(StateFunction):
             weight_list.append(penalty(e) * penalty(f))
         return weight_list, ratio_list
 
-    def compute_multiplicators(self, 
+    def compute_multipliers(self, 
         voting_rights: VotingRights, # key_names == ["scalee_name", "scaler_name"]
         ratios: MultiScore, # key_names == ["scalee_name", "scaler_name"]
         model_norms: dict[str, float]
     ) -> MultiScore: # key_names = ["scalee_name"]
-        """ Computes the multiplicators of users with given user_ratios
+        """ Computes the multipliers of users with given user_ratios
         
         Parameters
         ----------
@@ -564,9 +564,9 @@ class Mehestan(StateFunction):
             
         Returns
         -------
-        multiplicators: dict[int, tuple[float, float]]
-            multiplicators[user][0] is the multiplicative scaling of user
-            multiplicators[user][1] is the uncertainty on the multiplicator
+        multipliers: dict[int, tuple[float, float]]
+            multipliers[user][0] is the multiplicative scaling of user
+            multipliers[user][1] is the uncertainty on the multiplier
         """
         return MultiScore({
             scalee_name: self.aggregate_scalers(
@@ -574,7 +574,7 @@ class Mehestan(StateFunction):
                 ratios[scalee_name],
                 self.lipschitz / (8 * (1e-9 + model_norms[scalee_name])), 
                 default_value=1.0, 
-                default_dev=self.default_multiplicator_dev
+                default_dev=self.default_multiplier_dev
             ).to_triplet()
             for scalee_name, voting_rights2 in voting_rights.iter(["scalee_name"])
         }, key_names=["scalee_name"])
@@ -645,7 +645,7 @@ class Mehestan(StateFunction):
         voting_rights: VotingRights, # key_names == ["scalee_name", "scaler_name"]
         diffs: MultiScore, # key_names == ["scalee_name", "scaler_name"]
     ) -> MultiScore: # key_names = ["scalee_name"]
-        """ Computes the multiplicators of users with given user_ratios
+        """ Computes the multipliers of users with given user_ratios
         
         Parameters
         ----------
@@ -658,7 +658,7 @@ class Mehestan(StateFunction):
         -------
         translations: dict[int, tuple[float, float]]
             translations[user][0] is the multiplicative scaling of user
-            translations[user][1] is the uncertainty on the multiplicator
+            translations[user][1] is the uncertainty on the multiplier
         """
         return MultiScore({
             scalee_name: self.aggregate_scalers(

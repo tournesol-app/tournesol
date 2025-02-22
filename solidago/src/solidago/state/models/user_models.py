@@ -11,32 +11,16 @@ from .direct import DirectScoring
 
 class UserModels:
     def __init__(self, 
-        dataframes: Optional[dict[str, DataFrame]]=None, 
-        default_model_cls: type=DirectScoring,
-        *args, 
-        **kwargs
+        directs: Optional[Union[str, DataFrame, MultiScore]]=None,
+        scales: Optional[Union[str, DataFrame, MultiScore]]=None,
+        default_model_cls: tuple[str, dict]=("DirectScoring", None),
+        user_model_cls_dict: Optional[dict[str, tuple]]=None
     ):
-        """ Maps usernames to ScoringModel objects.
-        Useful to export/import `glued` directs / scalings dataframes. """
-        self.dfs = dict() if dataframes is None else dataframes
-        for name, df in self.dfs.items():
-            if isinstance(df, (str, Path)):
-                df_filename = df
-                try: df = pd.read_csv(df_filename, keep_default_na=False)
-                except pd.errors.EmptyDataError: df = DataFrame()
-                self.dfs[name] = df
-            if name == "directs":
-                self.dfs[name] = MultiScore(df, key_names=["username", "entity_name", "criterion"])
-            elif name == "multiplicators" and isinstance(df, DataFrame):
-                self.dfs[name] = MultiScore(df, key_names=["username", "depth", "criterion"])
-            elif name == "translations" and isinstance(df, DataFrame):
-                self.dfs[name] = MultiScore(df, key_names=["username", "depth", "criterion"])
+        self.directs = MultiScore.load(directs, key_names=["username", "entity_name", "criterion"])
+        self.scales = MultiScore.load(scales, key_names=["username", "depth", "kind", "criterion"])
         self.default_model_cls = default_model_cls
-        self._groups = None
-        
-    def default_value(self) -> ScoringModel:
-        return self.default_model_cls()
-    
+        self.user_model_cls_dict = user_model_cls_dict or dict()
+
     def __call__(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
         return self.score(entity)
     
@@ -45,24 +29,31 @@ class UserModels:
         if isinstance(entity, (str, Entity)):
             result = MultiScore(key_names=["username", "criterion"])
             for username, model in self:
-                multiscore = model(entity)
-                for criterion, score in multiscore:
-                    result[username, criterion] = score
+                for criterion, score in model(entity):
+                    result.set(username, criterion, score)
             return result
         assert isinstance(entity, Entities)
         entities = entity
         result = MultiScore(key_names=["username", "entity_name", "criterion"])
         for username, model in self:
             for entity in model.evaluated_entities(entities):
-                multiscore = model(entity)
-                for criterion, score in multiscore:
-                    result[username, str(entity), criterion] = score
+                for criterion, score in model(entity):
+                    result.set(username, str(entity), criterion, score)
         return result
-    
+
+    def model_cls(self, user: Union[str, "User"]) -> tuple[str, dict]:
+        if str(user) in self.user_model_cls_dict:
+            return self.user_model_cls_dict[str(user)]
+        return self.default_model_cls
+
     def __getitem__(self, user: Union[str, "User"]) -> ScoringModel:
-        if str(user) not in self.keys():
-            return self.default_value()
-        return super().__getitem__(str(user))
+        import solidago.state.models as models
+        constructor_name, kwargs = self.model_cls(user)
+        return models.constructor_name(
+            directs=self.directs.get(username=user, cache_group=True), 
+            scales=self.scales.get(username=user, cache_group=True), 
+            **kwargs
+        )
     
     def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
         super().__setitem__(str(user), model)

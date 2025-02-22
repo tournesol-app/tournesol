@@ -15,39 +15,34 @@ class ScoringModel(ABC):
     saved_argsnames: list[str]=["note"]
     
     def __init__(self, 
-        parent: Optional["ScoringModel"]=None,
-        dataframes: Optional[dict[str, DataFrame]]=None, 
-        depth: int=0, 
+        depth: int=0,
+        parent: Optional[Union["ScoringModel", tuple[str, dict]]]=None,
         note: str="None",
-        *args, 
+        username: Optional[str]=None,
+        user_models: Optional["UserModels"]=None,
         **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        """ If user_models is not None, then recording new data will be done through user_models """
         self.depth = depth
         self.note = note
-        self.dfs = dict() if dataframes is None else dataframes
-        for name, df in self.dfs.items():
-            if isinstance(df, (str, Path)):
-                df_filename = df
-                try: df = pd.read_csv(df_filename, keep_default_na=False)
-                except pd.errors.EmptyDataError: df = DataFrame()
-                self.dfs[name] = df
-            if name == "directs":
-                self.dfs[name] = MultiScore(df, key_names=["entity_name", "criterion"])
-            elif name == "multiplicators" and isinstance(df, DataFrame):
-                self.dfs[name] = MultiScore(df, key_names=["depth", "criterion"])
-            elif name == "translations" and isinstance(df, DataFrame):
-                self.dfs[name] = MultiScore(df, key_names=["depth", "criterion"])
+        self.username = username
+        self.user_models = user_models
         if parent is not None:
             if isinstance(parent, ScoringModel):
                 parent.set_depth(depth + 1)
                 self.parent = parent
-            elif isinstance(parent, ScoringModel):
-                import solidago.state.models as models
+            elif isinstance(parent, tuple):
+                assert len(parent) == 2 and isinstance(parent[0], str) and isinstance(parent[1], dict)
                 parent_cls, parent_kwargs = parent
-                self.parent = getattr(models, parent_cls)(self.dfs, depth + 1, **parent_kwargs)
+                import solidago.state.models as models
+                self.parent = getattr(models, parent_cls)(
+                    depth=depth + 1, 
+                    username=username,
+                    user_models=user_models,
+                    **(kwargs | parent_kwargs)
+                )
             else:
-                raise ValueError(f"{kwargs['parent']} has unhandled type {type(kwargs['parent'])}")
+                raise ValueError(f"{parent} has unhandled type {type(parent)}")
 
     def __call__(self, entities: Union["Entity", "Entities"]) -> MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
@@ -131,5 +126,6 @@ class ScoringModel(ABC):
     
     def __repr__(self) -> str:
         return type(self).__name__ + "\n\n" + "\n\n".join([
-            f"{df_name}\n{repr(df)}" for df_name, df in self.dfs.items() if not df.empty
+            f"Directs\n{repr(self.directs)}",
+            f"Scales\n{repr(self.scales)}"
         ])
