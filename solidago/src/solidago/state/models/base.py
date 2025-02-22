@@ -15,6 +15,8 @@ class ScoringModel(ABC):
     saved_argsnames: list[str]=["note"]
     
     def __init__(self, 
+        directs: Optional[Union[str, DataFrame, MultiScore]]=None,
+        scales: Optional[Union[str, DataFrame, MultiScore]]=None,
         depth: int=0,
         parent: Optional[Union["ScoringModel", tuple[str, dict]]]=None,
         note: str="None",
@@ -25,6 +27,8 @@ class ScoringModel(ABC):
         """ If user_models is not None, then recording new data will be done through user_models """
         self.depth = depth
         self.note = note
+        self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"])
+        self.scales = MultiScore.load(directs, key_names=["depth", "kind", "criterion"])
         self.username = username
         self.user_models = user_models
         if parent is not None:

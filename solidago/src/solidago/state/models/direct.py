@@ -7,17 +7,10 @@ from .base import ScoringModel
 
 
 class DirectScoring(ScoringModel):
-    def __init__(self, 
-        directs: Optional[Union[str, DataFrame, MultiScore]]=None,
-        depth: int=0,
-        note: str="None",
-        username: Optional[str]=None,
-        user_models: Optional["UserModels"]=None,
-        **kwargs
-    ):
-        super().__init__(depth, note=note, username=username, user_models=user_models, **kwargs)
-        self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"])
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        assert self.is_base()
+        
     def score(self, entity: Union[str, "Entity"]) -> MultiScore:
         return self.directs.get(entity)
         

@@ -11,15 +11,27 @@ from .direct import DirectScoring
 
 class UserModels:
     def __init__(self, 
-        directs: Optional[Union[str, DataFrame, MultiScore]]=None,
-        scales: Optional[Union[str, DataFrame, MultiScore]]=None,
+        user_directs: Optional[Union[str, DataFrame, MultiScore]]=None,
+        user_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
+        common_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
         default_model_cls: tuple[str, dict]=("DirectScoring", None),
         user_model_cls_dict: Optional[dict[str, tuple]]=None
     ):
-        self.directs = MultiScore.load(directs, key_names=["username", "entity_name", "criterion"])
-        self.scales = MultiScore.load(scales, key_names=["username", "depth", "kind", "criterion"])
+        self.user_directs = user_directs or MultiScore.load(directs, 
+            key_names=["username", "entity_name", "criterion"],
+            name="user_directs"
+        )
+        self.user_scales = user_scales or MultiScore.load(scales, 
+            key_names=["username", "depth", "kind", "criterion"],
+            name="user_scales"
+        )
+        self.common_scales = common_scales or MultiScore.load(scales, 
+            key_names=["depth", "kind", "criterion"],
+            name="common_scales"
+        )
         self.default_model_cls = default_model_cls
         self.user_model_cls_dict = user_model_cls_dict or dict()
+        self._cache_users = set()
 
     def __call__(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
         return self.score(entity)
@@ -52,88 +64,63 @@ class UserModels:
         return models.constructor_name(
             directs=self.directs.get(username=user, cache_group=True), 
             scales=self.scales.get(username=user, cache_group=True), 
+            username=str(user),
+            user_models=self,
             **kwargs
         )
     
+    def __delitem__(self, user: Union[str, "User"]) -> None:
+        self.directs = self.directs.delete(username=str(user))
+        self.scales = self.scales.delete(username=str(user))
+        if str(user) in self.user_model_cls_dict:
+            del self.user_model_cls_dict[str(user)]
+        if self._cache_users is not None:
+            self._cache_users.remove(str(user))
+        
     def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
-        super().__setitem__(str(user), model)
+        del self[user]
+        self.directs = self.directs | model.directs.assign(username=str(user))
+        self.scales = self.scales | model.scales.assign(username=str(user))
+        self.user_model_cls_dict[str(user)] = model.save()
+        if self._cache_users is not None:
+            self._cache_users.add(str(user))
+    
+    def users(self) -> set[str]:
+        if self._cache_users is None:
+            self._cache_users = set(self.directs["username"]) | set(self.scales["username"]) \
+                | set(self.user_model_cls_dict.keys())
+        return self._cache_users
     
     def __contains__(self, user: Union[str, "User"]) -> bool:
-        return super().__contains__(str(user))
+        return str(user) in self.users()
     
     def __iter__(self) -> Iterable:
-        for username, model in self.items():
-            yield username, model
+        for username in self.users():
+            yield username, self[username]
     
-    @classmethod
-    def dfs_load(cls, d: dict, loaded_dfs: Optional[dict]) -> dict[str, dict[str, DataFrame]]:
-        if loaded_dfs is None:
-            loaded_dfs = dict()
-        for df_name in set(d):
-            df = pd.read_csv(d[df_name], keep_default_na=False)
-            for _, r in df.iterrows():
-                if r["username"] not in loaded_dfs:
-                    loaded_dfs[r["username"]] = dict()
-                if df_name not in loaded_dfs[r["username"]]:
-                    loaded_dfs[r["username"]][df_name] = list()
-                loaded_dfs[r["username"]][df_name].append(r)
-        return {
-            username: {
-                df_name: DataFrame(rows_list)
-                for df_name, rows_list in loaded_dfs[username].items()
-            } for username in loaded_dfs
-        }       
+    def scale(self, 
+        mutlipliers: Optional[MultiScore]=None, 
+        translations: Optional[MultiScore]=None
+    ) -> UserModels:
+        scale_key_names = ["username", "depth", "kind", "criterion"]
+        multipliers = multipliers or MultiScore(key_names=scale_key_names)
+        translations = translations or MultiScore(key_names=scale_key_names)
     
-    @classmethod
-    def load(cls, d: dict, dfs: Optional[dict[str, dict[str, DataFrame]]]=None) -> "UserModels":
-        if "users" not in d:
-            return cls()
-        import solidago.state.models as models
-        if "dataframes" in d:
-            dfs = cls.dfs_load(d["dataframes"], dfs)
-        def user_dfs(username):
-            if dfs is None or username not in dfs:
-                return dict()
-            return { df_name.split("_")[-1]: df for df_name, df in dfs[username].items() }
-        kwargs = dict()
-        if "default_model_cls" in d:
-            kwargs |= dict(default_model_cls=getattr(models, d["default_model_cls"]))
-        return cls({
-            username: getattr(models, user_d[0]).load(user_d[1], user_dfs(username))
-            for username, user_d in d["users"].items()
-        }, **kwargs)
-    
-    def to_dfs(self) -> dict[str, DataFrame]:
-        return { df_name: DataFrame(rows) for df_name, rows in self.to_rows().items() }
-        
-    def to_rows(self, depth: int=0) -> dict[str, list]:
-        """ Must return a dict, with df_name as keys, and a list of rows as values """
-        rows = dict()
-        for username, model in self:
-            for key_name, user_rows in model.to_rows(depth=0, kwargs=dict(username=username)).items():
-                if key_name not in rows:
-                    rows[key_name] = list()
-                rows[key_name] += user_rows
-        return rows
-
-    def save(self, directory: Union[Path, str]=None, json_dump: bool=False) -> tuple[str, dict]:
+    def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict]:
         assert isinstance(directory, (Path, str)), directory
-        df_filenames = dict()
-        for df_name, df in self.to_dfs().items():
-            if df.empty:
-                continue
-            filename = Path(directory) / f"user_{df_name}.csv"
-            df.to_csv(filename, index=False)
-            df_filenames[df_name] = str(filename)
-        j = type(self).__name__, {
-            "users": { username: model.save() for username, model in self },
-            "dataframes": df_filenames,
-            "default_model_cls": self.default_model_cls.__name__,
-        }, 
+        j = type(self).__name__, dict()
+        if not self.directs.empty:
+            j[1]["directs"] = self.directs.to_csv(directory)[1]
+        if not self.scales.empty:
+            j[1]["scales"] = self.scales.to_csv(directory)[1]
+        if self.default_model_cls is not None:
+            j[1]["default_model_cls"] = self.default_model_cls
+        if len(self.user_model_cls_dict) > 0:
+            j[1]["user_model_cls_dict"] = self.user_model_cls_dict
         if json_dump:
             with open(directory / "user_models.json", "w") as f:
                 json.dump(j, f)
         return j
 
     def __repr__(self) -> str:
-        return "\n\n".join([repr(df) for df in self.to_dfs().values()])
+        return f"{repr(self.directs)}\n\n{repr(self.scales)}"

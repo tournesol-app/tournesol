@@ -120,6 +120,14 @@ class UnnamedDataFrame(DataFrame):
 
     def __or__(self, other: "UnnamedDataFrame") -> "UnnamedDataFrame":
         return type(self)(pd.concat([self, other]))
+
+    def delete(self, *args, **kwargs) -> "UnnamedDataFrame":
+        kwargs = self.input2dict(*args, keys_only=True, **kwargs)
+        indices = self.get(process=False, last_only=False, cache_groups=False, **kwargs)
+        self_with_deletion = type(self)(data=self.drop(indices), key_names=self.key_names)
+        self_with_deletion.index = range(len(self_with_deletion))
+        self.meta._group_cache = dict()
+        return self_with_deletion
     
     def add_row(self, *args, **kwargs) -> None:
         self.index = list(range(len(self)))

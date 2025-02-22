@@ -8,18 +8,10 @@ from .base import ScoringModel
 
 
 class ScaledModel(ScoringModel):
-    def __init__(self, 
-        parent: ScoringModel, 
-        scales: Optional[Union[str, DataFrame, MultiScore]]=None,
-        depth: int=0, 
-        note: str="None",
-        username: Optional[str]=None,
-        user_models: Optional["UserModels"]=None,
-        **kwargs
-    ):
-        super().__init__(parent, depth, note, username, user_models, scales=scales, **kwargs)
-        self.scales = MultiScore.load(directs, key_names=["depth", "kind", "criterion"])
-    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        assert not self.is_base()
+        
     @property
     def multiplier(self) -> MultiScore:
         return self.scales.get(depth=self.depth, kind="multiplier")
