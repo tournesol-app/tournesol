@@ -34,26 +34,21 @@ class LipschitzQuantileShift(StateFunction):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
-        translations = MultiScore()
-        for criterion in scores.get_set("criterion"):
-            scores_df = scores[criterion].to_df()
-            weights = 1 / scores_df.groupby("username").transform("size")
+        scores = user_models.score(entities) # key_names == ["username", "criterion", "entity_name"]
+        scales = MultiScore(key_names=["depth", "kind", "criterion"])
+        for criterion, user_scores in scores.groupby(["criterion"]):
+            weights = 1 / user_scores.groupby("username").transform("size")
             translation_value = - qr_quantile(
                 lipschitz=self.lipschitz,
                 quantile=self.quantile,
-                values=np.array(scores_df["score"], dtype=np.float64),
+                values=np.array(user_scores["score"], dtype=np.float64),
                 voting_rights=np.array(weights, dtype=np.float64),
-                left_uncertainties=np.array(scores_df["left_unc"], dtype=np.float64),
-                right_uncertainties=np.array(scores_df["right_unc"], dtype=np.float64),
+                left_uncertainties=np.array(user_scores["left_unc"], dtype=np.float64),
+                right_uncertainties=np.array(user_scores["right_unc"], dtype=np.float64),
                 error=self.error,
             ) + self.target_score
-            translations.set(criterion, translation_value)
-
-        return UserModels({
-            username: ScaledModel(model, translations=translations, note="quantile_shift")
-            for username, model in user_models
-        })
+            scales.set(0, "translations", criterion, Score(translation_value, 0, 0))
+        return user_models.scale(scales, note="quantile_shift")
 
 
 class LipschitzQuantileZeroShift(LipschitzQuantileShift):

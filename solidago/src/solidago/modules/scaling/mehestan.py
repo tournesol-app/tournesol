@@ -93,26 +93,15 @@ class Mehestan(StateFunction):
         scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
         logger.info(f"Mehestan 0. Terminated")
         
-        users, multipliers, translations = self.compute_scales(users, scores, made_public)
-        multipliers = multipliers.groupby(["username"])
-        translations = translations.groupby(["username"])
-        
-        return users, UserModels({
-            username: ScaledModel(
-                model, 
-                multipliers=multipliers[username], 
-                translations=translations[username], 
-                note="Mehestan"
-            )
-            for username, model in user_models
-        })
+        users, scales = self.compute_scales(users, scores, made_public)
+        return users, user_models.scale(scales, note="Mehestan")
     
     """ A simple way to distribute computations is to parallelize `compute_scales` """
     def compute_scales(self, 
         users: Users, # Must have column "trust_score"
         scores: MultiScore, # key_names == ["criterion", "username", "entity_name"]
         made_public: MadePublic, # key_names == ["username", "entity_name"]
-    ) -> tuple[Users, MultiScore, MultiScore]: # key_names == ["username", "criterion"]
+    ) -> tuple[Users, MultiScore]: # key_names == ["username", "depth", "kind", "criterion"]
         """ Compute the scales for all criteria. This method should be inherited and parallelized
         for heavy-load applications that can afford multi-core operations. 
         
@@ -127,34 +116,30 @@ class Mehestan(StateFunction):
         
         Returns
         -------
-        scales: ScaleDict
-            With key_names == ["username", "criterion"]
+        scales: MultiScore
+            With key_names == ["username", "depth", "kind", "criterion"]
         """
-        multipliers = MultiScore(key_names=["criterion", "username"])
-        translations = MultiScore(key_names=["criterion", "username"])
-        for criterion in scores.get_set("criterion"):
-            users, m, t = self.scale_criterion(users, scores[criterion], made_public, criterion)
-            m["criterion"] = criterion
-            t["criterion"] = criterion
-            multipliers = multipliers | m
-            translations = translations | t
-        return users, multipliers, translations
+        scales = MultiScore(key_names=["username", "depth", "kind", "criterion"])
+        for criterion, user_scores in scores.groupby(["criterion"]):
+            users, subscales = self.scale_criterion(users, user_scores, made_public, criterion)
+            scales = scales | subscales.assign(criterion=criterion, depth="0")
+        return users, scales
     
     def scale_criterion(self, 
         users: Users,
         scores: MultiScore, # key_names == ["username", "entity_name"]
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         criterion: str,
-    ) -> tuple[Users, ScaleDict]:
+    ) -> tuple[Users, MultiScore]: # key_names == ["username", "kind"]
         start = timeit.default_timer()
         logger.info(f"Mehestan 1 for {criterion}. Select scalers.")
-        trusts = NestedDictOfItems(dict(users["trust_score"]), key_names=["username"], default_value=0)
+        trusts = dict(zip(users["username"], users["trust_score"]))
         activities, is_scaler = self.compute_activities_and_scalers(users, trusts, made_public, scores)
         users[f"activities_{criterion}"] = activities
         users[f"is_scaler_{criterion}"] = is_scaler
         if not any(users[f"is_scaler_{criterion}"]):
             logger.warning("    No user qualifies as a scaler. No scaling performed.")
-            return users, ScaleDict(key_names=["username"])
+            return users, MultiScore(key_names=["username", "kind"])
         scalers = users.get({ f"is_scaler_{criterion}": True })
         end_step1 = timeit.default_timer()
         logger.info(f"Mehestan 1 for {criterion}. Selected {len(scalers)} scalers. " \
@@ -185,7 +170,7 @@ class Mehestan(StateFunction):
 
     def compute_activities_and_scalers(self,
         users: Users,
-        trusts: NestedDictOfItems, # key_names == ["username"]
+        trusts: dict[str, float],
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         scores: MultiScore, # key_names == ["username", "entity_name"]
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -211,12 +196,12 @@ class Mehestan(StateFunction):
         return activities, is_scaler
 
     def scale_to_scalers(self, 
-        trusts: NestedDictOfItems, # key_names == ["username"]
+        trusts: dict[str, float],
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         scaler_scores: MultiScore, # key_names == ["username", "entity_name"]
         scalee_scores: MultiScore, # key_names == ["username", "entity_name"]
         scalees_are_scalers: bool=False
-    ) -> tuple[ScaleDict, ScaleDict]:
+    ) -> tuple[MultiScore, MultiScore]: # scalee_scales, scalee_scores
         s = "2" if scalees_are_scalers else "3"
         start = timeit.default_timer()
         scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
@@ -251,12 +236,9 @@ class Mehestan(StateFunction):
         for (scalee_name, entity_name), score in scalee_scores:
             scalee_scores[scalee_name, entity_name] = score + translations[scalee_name]
         
-        scalee_scales = ScaleDict({
-            scalee_name: (
-                *multipliers[scalee_name].to_triplet(), 
-                *translations[scalee_name].to_triplet()
-            ) for scalee_name in multipliers.get_set("scalee_name")
-        }, key_names=["username"])
+        multipliers["kind"] = "multiplier"
+        translations["kind"] = "translation"
+        scalee_scales = MultiScore(multipliers | translations, key_names=["username", "kind"])
 
         return scalee_scales, scalee_scores
 
@@ -266,7 +248,7 @@ class Mehestan(StateFunction):
 
     def compute_activities(self,
         users: Users, 
-        trusts: NestedDictOfItems, # key_names == ["username"]
+        trusts: dict[str, float],
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         scores: MultiScore, # key_names == ["username", "entity_name"]
     ) -> np.ndarray:
@@ -275,8 +257,8 @@ class Mehestan(StateFunction):
         Parameters
         ----------
         users: Users
-        trusts: NestedDictOfItems
-            key_names == ["username"]
+        trusts: dict[str, float]
+            trusts[username] is the user's trust
         made_public: MadePublic
             Must have key_names "username" and "entity_name"
         scores: MultiScore
@@ -324,7 +306,7 @@ class Mehestan(StateFunction):
     #############################################################
     
     def aggregate_scaler_scores(self,
-        trusts: NestedDictOfRowLists, # key_names == ["username"]
+        trusts: dict[str, float],
         weight_lists: NestedDictOfRowLists, # key_names == ["scalee_name", "scaler_name"]
         score_lists: NestedDictOfRowLists, # key_names == ["scalee_name", "scaler_name"]
     ) -> tuple[VotingRights, MultiScore]: # key_names == ["scalee_name", "scaler_name"]
@@ -334,7 +316,8 @@ class Mehestan(StateFunction):
         
         Parameters
         ----------
-        trusts: UnnamedDataFrame
+        trusts: dict[str, float]
+            trusts[username] is the user's trust
         weight_lists: UnnamedDataFrame
         score_lists: UnnamedDataFrame
             

@@ -17,15 +17,15 @@ class UserModels:
         default_model_cls: Optional[tuple[str, dict]]=None,
         user_model_cls_dict: Optional[dict[str, tuple]]=None
     ):
-        self.user_directs = user_directs or MultiScore.load(directs, 
+        self.user_directs = user_directs or MultiScore.load(user_directs, 
             key_names=["username", "entity_name", "criterion"],
             name="user_directs"
         )
-        self.user_scales = user_scales or MultiScore.load(scales, 
+        self.user_scales = user_scales or MultiScore.load(user_scales, 
             key_names=["username", "depth", "kind", "criterion"],
             name="user_scales"
         )
-        self.common_scales = common_scales or MultiScore.load(scales, 
+        self.common_scales = common_scales or MultiScore.load(common_scales, 
             key_names=["depth", "kind", "criterion"],
             name="common_scales"
         )
@@ -101,20 +101,13 @@ class UserModels:
         for username in self.users():
             yield username, self[username]
     
-    def scale(self, 
-        mutlipliers: Optional[MultiScore]=None, 
-        translations: Optional[MultiScore]=None,
-        note: str="None",
-    ) -> UserModels:
-        assert multipliers is not None or translations is not None
-        multipliers = multipliers or MultiScore(key_names=translations.key_names)
-        translations = translations or MultiScore(key_names=multipliers.key_names)
+    def scale(self, scales: MultiScore, note: str="None") -> "UserModels":
         user_scales = self.user_scales.assign(depth=self.user_scales["depth"] + 1)
         common_scales = self.common_scales.assign(depth=self.common_scales["depth"] + 1)
         if "username" in multipliers.key_names:
-            user_scales = user_scales | multipliers | translations
+            user_scales = user_scales | scales
         else:
-            common_scales = common_scales | multipliers | translations
+            common_scales = common_scales | scales
         return UserModels(
             user_directs=self.user_directs,
             user_scales=user_scales,

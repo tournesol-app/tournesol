@@ -16,25 +16,30 @@ def test_multiscore():
         "importance": Score(2, 1, 0)
     })
     s.add_row("fun", Score(1, 0, 2))
-    assert s["fun"] + s["importance"] == Score(3, 1, 2)
-    assert s["diversity"].isnan()
+    assert s.get("fun") + s.get("importance") == Score(3, 1, 2)
+    assert s.get("diversity").isnan()
     t = MultiScore({
         "default": (1, 0, 0)
     })
-    assert (s*t)["default"] == s["default"]
-    assert (s*t)["importance"].isnan()
-    assert (s+t)["default"].average_uncertainty() == 3
+    assert (s*t).get("default") == s.get("default")
+    assert (s*t).get("importance").isnan()
+    assert (s+t).get("default").average_uncertainty() == 3
 
 def test_direct():
     direct = DirectScoring()
     entities = Entities(["entity_1", "entity_2"])
-    direct["entity_1", "default"] = Score(1, 5, 2)
-    direct["entity_2", "default"] = (2, 3, 1)
-    direct["entity_2", "importance"] = (2, 0, 1)
-    scaled = ScaledModel(direct, ScaleDict({
-        "default": (1, 0, 0, 1, 0, 0),
-        "importance": (2, 1, 1, 3, 2, 0)
-    }))
+    direct.set("entity_1", "default", Score(1, 5, 2))
+    direct.set("entity_2", "default", (2, 3, 1))
+    direct.set("entity_2", "importance", (2, 0, 1))
+    scaled = ScaledModel(
+        parent=direct, 
+        scales=MultiScore([
+            ["default", "multiplier", 1, 0, 0],
+            ["default", "translation", 1, 0, 0],
+            ["importance", "multiplier", 2, 1, 1],
+            ["importance", "translation", 3, 2, 0],
+        ], key_names=["criterion", "kind"])
+    )
     post_process = SquashedModel(scaled, 100)
     assert post_process("entity_1")["importance"].isnan()
     assert post_process("entity_2")["importance"] > 0

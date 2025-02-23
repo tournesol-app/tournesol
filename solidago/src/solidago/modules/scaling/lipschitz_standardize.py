@@ -18,21 +18,21 @@ class LipschitzStandardize(StateFunction):
         self.error = error
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
-        scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
-        multipliers = MultiScore()
-        for criterion in scores.get_set("criterion"):
-            scores_df = scores.to_df()
-            weights = 1 / scores_df.groupby("username").transform("size")
+        scores = user_models.score(entities) # key_names == ["username", "criterion", "entity_name"]
+        scales = MultiScore(key_names=["depth", "kind", "criterion"])
+        for criterion, user_scores in scores.groupby(["criterion"]):
+            weights = 1 / user_scores.groupby("username").transform("size")
             std_dev = qr_standard_deviation(
                 lipschitz=self.lipschitz,
-                values=scores_df["score"].to_numpy(),
+                values=user_scores["score"].to_numpy(),
                 quantile_dev=self.dev_quantile,
                 voting_rights=weights.to_numpy(),
-                left_uncertainties=scores_df["left_unc"].to_numpy(),
-                right_uncertainties=scores_df["right_unc"].to_numpy(),
+                left_uncertainties=user_scores["left_unc"].to_numpy(),
+                right_uncertainties=user_scores["right_unc"].to_numpy(),
                 default_dev=1.0,
                 error=self.error,
             )
+            scales.set(0, "multipliers", criterion, Score(translation_value, 0, 0))
             multipliers.set(criterion, 1 / std_dev)
         
         return UserModels({

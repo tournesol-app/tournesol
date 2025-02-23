@@ -78,7 +78,7 @@ class ScoringModel(ABC):
         raise NotImplementedError
     
     def is_base(self) -> bool:
-        return not hasattr(self, parent)
+        return not hasattr(self, "parent")
     
     def evaluated_entities(self, entities: "Entities") -> "Entities":
         return entities if self.is_base() else self.parent.evaluated_entities(entities)
