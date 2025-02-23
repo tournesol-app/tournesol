@@ -14,7 +14,7 @@ class UserModels:
         user_directs: Optional[Union[str, DataFrame, MultiScore]]=None,
         user_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
         common_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
-        default_model_cls: tuple[str, dict]=("DirectScoring", None),
+        default_model_cls: Optional[tuple[str, dict]]=None,
         user_model_cls_dict: Optional[dict[str, tuple]]=None
     ):
         self.user_directs = user_directs or MultiScore.load(directs, 
@@ -29,7 +29,7 @@ class UserModels:
             key_names=["depth", "kind", "criterion"],
             name="common_scales"
         )
-        self.default_model_cls = default_model_cls
+        self.default_model_cls = default_model_cls or ("DirectScoring", dict())
         self.user_model_cls_dict = user_model_cls_dict or dict()
         self._cache_users = set()
 
@@ -62,16 +62,17 @@ class UserModels:
         import solidago.state.models as models
         constructor_name, kwargs = self.model_cls(user)
         return models.constructor_name(
-            directs=self.directs.get(username=user, cache_group=True), 
-            scales=self.scales.get(username=user, cache_group=True), 
+            directs=self.user_directs.get(username=user, cache_group=True), 
+            scales=self.user_scales.get(username=user, cache_group=True) \
+                | self.common_scales.assign(username=str(user)), 
             username=str(user),
             user_models=self,
             **kwargs
         )
     
     def __delitem__(self, user: Union[str, "User"]) -> None:
-        self.directs = self.directs.delete(username=str(user))
-        self.scales = self.scales.delete(username=str(user))
+        self.user_directs = self.user_directs.delete(username=str(user))
+        self.user_scales = self.user_scales.delete(username=str(user))
         if str(user) in self.user_model_cls_dict:
             del self.user_model_cls_dict[str(user)]
         if self._cache_users is not None:
@@ -79,15 +80,17 @@ class UserModels:
         
     def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
         del self[user]
-        self.directs = self.directs | model.directs.assign(username=str(user))
-        self.scales = self.scales | model.scales.assign(username=str(user))
-        self.user_model_cls_dict[str(user)] = model.save()
+        self.user_directs = self.user_directs | model.directs.assign(username=str(user))
+        self.user_scales = self.user_scales | model.scales.assign(username=str(user))
+        if not model.is_cls(self.default_model_cls):
+            self.user_model_cls_dict[str(user)] = model.save()
         if self._cache_users is not None:
             self._cache_users.add(str(user))
     
     def users(self) -> set[str]:
         if self._cache_users is None:
-            self._cache_users = set(self.directs["username"]) | set(self.scales["username"]) \
+            self._cache_users = set(self.user_directs["username"]) \
+                | set(self.user_scales["username"]) \
                 | set(self.user_model_cls_dict.keys())
         return self._cache_users
     
@@ -100,19 +103,38 @@ class UserModels:
     
     def scale(self, 
         mutlipliers: Optional[MultiScore]=None, 
-        translations: Optional[MultiScore]=None
+        translations: Optional[MultiScore]=None,
+        note: str="None",
     ) -> UserModels:
-        scale_key_names = ["username", "depth", "kind", "criterion"]
-        multipliers = multipliers or MultiScore(key_names=scale_key_names)
-        translations = translations or MultiScore(key_names=scale_key_names)
+        assert multipliers is not None or translations is not None
+        multipliers = multipliers or MultiScore(key_names=translations.key_names)
+        translations = translations or MultiScore(key_names=multipliers.key_names)
+        user_scales = self.user_scales.assign(depth=self.user_scales["depth"] + 1)
+        common_scales = self.common_scales.assign(depth=self.common_scales["depth"] + 1)
+        if "username" in multipliers.key_names:
+            user_scales = user_scales | multipliers | translations
+        else:
+            common_scales = common_scales | multipliers | translations
+        return UserModels(
+            user_directs=self.user_directs,
+            user_scales=user_scales,
+            common_scales=common_scales,
+            default_model_cls=("ScaledModel", dict(note=note, parent=self.default_model_cls)),
+            user_model_cls_dict={
+                username: ("ScaledModel", dict(note=note, parent=model_cls))
+                for username, model_cls in self.user_model_cls_dict.items()
+            }
+        )
     
     def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict]:
         assert isinstance(directory, (Path, str)), directory
         j = type(self).__name__, dict()
-        if not self.directs.empty:
-            j[1]["directs"] = self.directs.to_csv(directory)[1]
-        if not self.scales.empty:
-            j[1]["scales"] = self.scales.to_csv(directory)[1]
+        if not self.user_directs.empty:
+            j[1]["user_directs"] = self.user_directs.to_csv(directory)[1]
+        if not self.user_scales.empty:
+            j[1]["user_scales"] = self.user_scales.to_csv(directory)[1]
+        if not self.common_scales.empty:
+            j[1]["common_scales"] = self.common_scales.to_csv(directory)[1]
         if self.default_model_cls is not None:
             j[1]["default_model_cls"] = self.default_model_cls
         if len(self.user_model_cls_dict) > 0:
@@ -123,4 +145,8 @@ class UserModels:
         return j
 
     def __repr__(self) -> str:
-        return f"{repr(self.directs)}\n\n{repr(self.scales)}"
+        return "\n\n".join([
+            repr(df) 
+            for df in (self.user_directs, self.user_scales, self.common_scales)
+        ])
+        

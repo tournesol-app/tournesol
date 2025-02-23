@@ -83,10 +83,17 @@ class ScoringModel(ABC):
     def evaluated_entities(self, entities: "Entities") -> "Entities":
         return entities if self.is_base() else self.parent.evaluated_entities(entities)
     
-    def set_depth(self, depth: int) ->  None:
+    def set_depth(self, depth: int, change_scales=True) ->  None:
         self.depth = depth
+        if self.user_models is None:
+            self.scales["depth"] = self.scales["depth"] + 1
+        else:
+            scales = self.user_models.user_scales
+            indices = scales.get(username=self.username).index
+            for i in indices:
+                self.user_models.user_scales.iloc[i, "depth"] = scales.iloc[i, "depth"] + 1
         if not self.is_base():
-            self.parent.set_depth(depth + 1)
+            self.parent.set_depth(depth + 1, change_scales=False)
     
     def to_direct(self, entities: "Entities") -> "DirectScoring":
         from .direct import DirectScoring
@@ -121,6 +128,13 @@ class ScoringModel(ABC):
             with open(filename, "w") as f:
                 json.dump([type(self).__name__, saved_dict], f, indent=4)
         return type(self).__name__, kwargs
+
+    def is_cls(self, cls: tuple[str, dict]) -> bool:
+        if type(self).__name__ != cls[0]:
+            return False
+        if any({ getattr(self, key) != value for key, value in cls[1].items() if key != "parent" }):
+            return False
+        return self.is_base() or self.parent.is_cls(cls[1]["parent"])
     
     def base_model(self) -> "BaseModel":
         return self if self.is_base() else self.parent.base_model()
