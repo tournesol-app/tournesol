@@ -15,10 +15,10 @@ class ScoringModel(ABC):
     saved_argsnames: list[str]=["note"]
     
     def __init__(self, 
+        parent: Optional[Union["ScoringModel", tuple[str, dict]]]=None,
         directs: Optional[Union[str, DataFrame, MultiScore]]=None,
         scales: Optional[Union[str, DataFrame, MultiScore]]=None,
         depth: int=0,
-        parent: Optional[Union["ScoringModel", tuple[str, dict]]]=None,
         note: str="None",
         username: Optional[str]=None,
         user_models: Optional["UserModels"]=None,
@@ -28,7 +28,7 @@ class ScoringModel(ABC):
         self.depth = depth
         self.note = note
         self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"])
-        self.scales = MultiScore.load(directs, key_names=["depth", "kind", "criterion"])
+        self.scales = MultiScore.load(scales, key_names=["depth", "kind", "criterion"], default_keys=dict(depth="0"))
         self.username = username
         self.user_models = user_models
         if parent is not None:
@@ -47,6 +47,10 @@ class ScoringModel(ABC):
                 )
             else:
                 raise ValueError(f"{parent} has unhandled type {type(parent)}")
+            if directs is None:
+                self.directs = parent.directs
+            if scales is None:
+                self.scales = parent.scales
 
     def __call__(self, entities: Union["Entity", "Entities"]) -> MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
@@ -86,12 +90,12 @@ class ScoringModel(ABC):
     def set_depth(self, depth: int, change_scales=True) ->  None:
         self.depth = depth
         if self.user_models is None:
-            self.scales["depth"] = self.scales["depth"] + 1
+            self.scales["depth"] = (self.scales["depth"].astype(int) + 1).astype(str)
         else:
             scales = self.user_models.user_scales
             indices = scales.get(username=self.username).index
             for i in indices:
-                self.user_models.user_scales.iloc[i, "depth"] = scales.iloc[i, "depth"] + 1
+                self.user_models.user_scales.iloc[i, "depth"] = str(int(scales.iloc[i, "depth"]) + 1)
         if not self.is_base():
             self.parent.set_depth(depth + 1, change_scales=False)
     

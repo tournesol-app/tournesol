@@ -36,8 +36,8 @@ class PostProcessedModel(ScoringModel):
 class SquashedModel(PostProcessedModel):
     saved_argsnames: list[str]=["note", "max_score"]    
     
-    def __init__(self, *args, max_score: float=100., **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parent, max_score: float=100., *args, **kwargs):
+        super().__init__(*args, parent=parent, **kwargs)
         self.max_score = max_score
         
     def post_process_fn(self, x: float) -> float:

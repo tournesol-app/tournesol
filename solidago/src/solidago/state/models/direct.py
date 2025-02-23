@@ -1,3 +1,5 @@
+import numbers
+
 from typing import Optional, Union, Any
 from pathlib import Path
 from pandas import DataFrame, Series
@@ -20,21 +22,43 @@ class DirectScoring(ScoringModel):
     def evaluated_entities(self, entities: "Entities") -> "Entities":
         return entities.get(set(self.directs["entity_name"]))
     
-    def set(self, 
-        entity: Union[str, "Entity"], 
-        criterion: Optional[Union[str, MultiScore]]=None, 
-        score: Optional[Union[Score, MultiScore]]=None
-    ) -> None:
-        if isinstance(criterion, str) and isinstance(score, Score):
+    def set(self, entity: Union[str, "Entity"], *args, **kwargs) -> None:
+        """ Valid values include
+        - self.set(entity, multiscore: MultiScore)
+        - self.set(entity, criterion: str, score: Score)
+        - self.set(entity, criterion: str, value: float, left_unc: float, right_unc: float)
+        """
+        assert len(args) + len(kwargs) > 0
+        # First construct a kwargs with all args
+        if len(args) == 1 and len(kwargs) == 0:
+            kwargs = dict(multiscore=args[0])
+        elif len(args) + len(kwargs) == 2:
+            args_keys = [k for k in ["criterion", "score"] if k not in kwargs]
+            kwargs = kwargs | dict(zip(args_keys, args))
+        elif len(args) + len(kwargs) == 4:
+            args_keys = [k for k in ["criterion", "value", "left_unc", "right_unc"] if k not in kwargs]
+            kwargs = kwargs | dict(zip(args_keys, args))
+        # Now handle the different kwargs cases
+        if len(kwargs) == 2: # The main one - others will call this section
+            assert "criterion" in kwargs and isinstance(kwargs["criterion"], str)
+            assert "score" in kwargs and isinstance(kwargs["score"], Score)
             if self.user_models is None:
-                self.directs.set(entity, criterion, score)
+                self.directs.set(entity, kwargs["criterion"], kwargs["score"])
             else:
-                self.user_models.directs.set(self.username, entity, criterion, score)
+                self.user_models.directs.set(self.username, entity, kwargs["criterion"], kwargs["score"])
+        elif len(args) == 1:
+            assert "multiscore" in kwargs and isinstance(kwargs["multiscore"], MultiScore)
+            for criterion, score in kwargs["multiscore"]:
+                self.set(entity, criterion=criterion, score=score)
+        elif len(kwargs) == 4:
+            assert "criterion" in kwargs and isinstance(kwargs["criterion"], str)
+            assert "value" in kwargs and isinstance(kwargs["value"], numbers.Number)
+            assert "left_unc" in kwargs and isinstance(kwargs["left_unc"], numbers.Number)
+            assert "right_unc" in kwargs and isinstance(kwargs["right_unc"], numbers.Number)
+            score = Score(kwargs["value"], kwargs["left_unc"], kwargs["right_unc"])
+            self.set(entity, criterion=kwargs["criterion"], score=score)
         else:
-            assert isinstance(criterion, MultiScore) ^ isinstance(score, MultiScore)
-            multiscore = score if isinstance(score, MultiScore) else criterion
-            for criterion, score in multiscore:
-                self.set(entity, criterion, score)
+            raise ValueError(kwargs)
     
     def __repr__(self) -> str:
         return repr(self.directs)

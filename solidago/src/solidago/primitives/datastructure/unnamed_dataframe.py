@@ -18,6 +18,7 @@ class UnnamedDataFrame(DataFrame):
         name: Optional[str]=None, 
         default_value: Optional[Any]=None,
         last_only: bool=False,
+        default_keys: Optional[dict]=None,
         *args, 
         **kwargs
     ):
@@ -34,6 +35,10 @@ class UnnamedDataFrame(DataFrame):
         if isinstance(data, list):
             kwargs["columns"] = kwargs["columns"] if "columns" in kwargs else key_value_columns
         super().__init__(data=data, *args, **kwargs)
+        if default_keys is not None:
+            assert isinstance(default_keys, dict)
+            for key, value in default_keys.items():
+                self[key] = value
         self.meta = SimpleNamespace()
         self.meta.name = name
         self.meta.key_names, self.meta.value_names = key_names, value_names
@@ -149,7 +154,12 @@ class UnnamedDataFrame(DataFrame):
         self.meta._group_cache = dict()
 
     @classmethod
-    def load(cls, filename: Optional[Union[str, Path]]=None, *args, **kwargs) -> "UnnamedDataFrame":
+    def load(cls, 
+        filename: Optional[Union[str, Path, "UnnamedDataFrame"]]=None, 
+        *args, **kwargs
+    ) -> "UnnamedDataFrame":
+        if isinstance(filename, UnnamedDataFrame):
+            return cls(data=filename, *args, **kwargs)
         try: 
             return cls(pd.read_csv(filename, keep_default_na=False), *args, **kwargs)
         except (pd.errors.EmptyDataError, ValueError):
@@ -190,8 +200,7 @@ class UnnamedDataFrame(DataFrame):
         groups = DataFrame(self).groupby(columns)
         kn = [ n for n in self.key_names if n not in columns ]
         for key in list(groups.groups.keys()):
-            key_tuple = key if isinstance(key, tuple) else (key,)
-            df = groups.get_group(key_tuple)
+            df = groups.get_group(key)
             if len(kn) > 0 or not process:
                 df = DataFrame([df.iloc[-1]]) if last_only and len(kn) == 0 else df
                 yield key, type(self)(df, key_names=kn)

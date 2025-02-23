@@ -1,6 +1,7 @@
 import math
+import numbers
 
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, Callable
 from pandas import Series, DataFrame
 
 from solidago.primitives.datastructure import UnnamedDataFrame
@@ -32,7 +33,7 @@ class Score:
             assert left_unc is None and right_unc is None
             values = value
         else:
-            assert isinstance(left_unc, (int, float)) and isinstance(right_unc, (int, float))
+            assert isinstance(left_unc, numbers.Number) and isinstance(right_unc, numbers.Number)
             values = value, left_unc, right_unc
         if math.isnan(values[0]):
             self.value, self.left_unc, self.right_unc = float("nan"), float("inf"), float("inf")
@@ -68,12 +69,12 @@ class Score:
     def __eq__(self, score: Union[int, float, "Score"]) -> bool:
         if not isinstance(score, Score):
             score = Score(score, 0, 0)
+        if self.isnan():
+            return score.isnan()
         return self.to_triplet() == score.to_triplet()
         
     def __neq__(self, score: Union[int, float, "Score"]) -> bool:
-        if not isinstance(score, Score):
-            score = Score(score, 0, 0)
-        return self.to_triplet() != score.to_triplet()
+        return not (self == score)
     
     def __lt__(self, score: Union[int, float, "Score"]) -> bool:
         if not isinstance(score, Score):
@@ -203,60 +204,59 @@ class MultiScore(UnnamedDataFrame):
     def nan(cls) -> "MultiScore":
         return MultiScore()
 
+    def __eq__(self, other: "MultiScore") -> bool:
+        for key in set(self.keys()) | set(other.keys()):
+            if self.get(key) != other.get(key):
+                return False
+        return True
+        
+    def __neq__(self, other: "MultiScore") -> bool:
+        return not (self == other)
+
     def __neg__(self) -> "MultiScore":
         return MultiScore(
-            data=[ (*tuple(key), *(- score).to_triplet()) for key, score in self ],
+            data=[ 
+                (*(key if isinstance(key, tuple) else (key,)), *(- score).to_triplet()) 
+                for key, score in self 
+            ],
+            key_names=self.key_names
+        )
+    
+    def coordinate_wise_operation(self, 
+        other: Union[Score, "MultiScore"], 
+        score_operation: Callable
+    ) -> "MultiScore":
+        if isinstance(other, (numbers.Number, Score)):
+            return MultiScore(
+                data=[ 
+                    (
+                        *(key if isinstance(key, tuple) else (key,)), 
+                        *(score_operation(score, other)).to_triplet()
+                    )
+                    for key, score in self 
+                ],
+                key_names=self.key_names
+            )
+        assert self.key_names == other.key_names
+        return MultiScore(
+            data=[ 
+                (
+                    *(key if isinstance(key, tuple) else (key,)), 
+                    *score_operation(self.get(key), other.get(key)).to_triplet()
+                ) 
+                for key in set(self.keys()) & set(other.keys())
+            ],
             key_names=self.key_names
         )
     
     def __add__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, (int, float, Score)):
-            return MultiScore(
-                data=[ (*tuple(key), *(score + other).to_triplet()) for key, score in self ],
-                key_names=self.key_names
-            )
-        assert self.key_names == other.key_names
-        keys = set(self["criterion"]) & set(other["criterion"])
-        return MultiScore(
-            data=[ (*tuple(key), *(self[key] + other[key]).to_triplet()) for key in keys ],
-            key_names=self.key_names
-        )
-    
-    def __sub__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, (int, float, Score)):
-            return MultiScore(
-                data=[ (*tuple(key), *(score - other).to_triplet()) for key, score in self ],
-                key_names=self.key_names
-            )
-        assert self.key_names == other.key_names
-        keys = set(self["criterion"]) & set(other["criterion"])
-        return MultiScore(
-            data=[ (*tuple(key), *(self[key] - other[key]).to_triplet()) for key in keys ],
-            key_names=self.key_names
-        )
+        return self.coordinate_wise_operation(other, Score.__add__)
         
+    def __sub__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
+        return self.coordinate_wise_operation(other, Score.__sub__)
+    
     def __mul__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, (int, float, Score)):
-            return MultiScore(
-                data=[ (*tuple(key), *(score * other).to_triplet()) for key, score in self ],
-                key_names=self.key_names
-            )
-        assert self.key_names == other.key_names
-        keys = set(self["criterion"]) & set(other["criterion"])
-        return MultiScore(
-            data=[ (*tuple(key), *(self[key] * other[key]).to_triplet()) for key in keys ],
-            key_names=self.key_names
-        )
+        return self.coordinate_wise_operation(other, Score.__mul__)
         
     def __truediv__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        if isinstance(other, (int, float, Score)):
-            return MultiScore(
-                data=[ (*tuple(key), *(score / other).to_triplet()) for key, score in self ],
-                key_names=self.key_names
-            )
-        assert self.key_names == other.key_names
-        keys = set(self["criterion"]) & set(other["criterion"])
-        return MultiScore(
-            data=[ (*tuple(key), *(self[key] / other[key]).to_triplet()) for key in keys ],
-            key_names=self.key_names
-        )
+        return self.coordinate_wise_operation(other, Score.__truediv__)
