@@ -38,7 +38,8 @@ class UnnamedDataFrame(DataFrame):
         if default_keys is not None:
             assert isinstance(default_keys, dict)
             for key, value in default_keys.items():
-                self[key] = value
+                if key not in self.columns:
+                    self[key] = value
         self.meta = SimpleNamespace()
         self.meta.name = name
         self.meta.key_names, self.meta.value_names = key_names, value_names
@@ -60,8 +61,7 @@ class UnnamedDataFrame(DataFrame):
         return self.meta.value_names
     
     """ The following methods could be worth redefining in derived classes """
-    @property
-    def default_value(self) -> Any:
+    def default_value(self, **kwargs) -> Any:
         return self.meta._default_value
     
     def row2key(self, row: Series) -> Any:
@@ -118,7 +118,7 @@ class UnnamedDataFrame(DataFrame):
         other_key_names = [ key_name for key_name in self.key_names if key_name not in kwargs ]
         if other_key_names or not process:
             return type(self)(df, key_names=other_key_names)
-        return self.default_value if df.empty else self.df2value(df, last_only)
+        return self.default_value(**kwargs) if df.empty else self.df2value(df, last_only)
 
     def __contains__(self, *args, **kwargs) -> bool:
         return not self.get(*args, process=False, **kwargs).empty

@@ -157,15 +157,16 @@ class MultiScore(UnnamedDataFrame):
         data: Optional[Any]=None, 
         key_names: list[str]=["criterion"], 
         value_names: list[str]=["value", "left_unc", "right_unc"],
-        name="multiscore",
-        last_only=True,
+        name: str="multiscore",
+        default_value: Score=Score.nan(),
+        last_only: bool=True,
         **kwargs
     ):
         """ We consider the possibility of multidimensional scoring.
         In the context of Tournesol, for instance, the dimensions are the criteria.
         For scientific peer reviewing, it could be the criteria may be
         {'clarity', 'correctness', 'originality', 'rating'}. """
-        super().__init__(data, key_names, value_names, name, Score.nan(), last_only, **kwargs)
+        super().__init__(data, key_names, value_names, name, default_value, last_only, **kwargs)
     
     def row2value(self, row: Series) -> Any:
         return Score(row["value"], row["left_unc"], row["right_unc"])
@@ -239,14 +240,12 @@ class MultiScore(UnnamedDataFrame):
                 key_names=self.key_names
             )
         assert self.key_names == other.key_names
+        data = [
+            (k if isinstance(k, tuple) else (k,), score_operation(self.get(k), other.get(k))) 
+            for k in set(self.keys()) | set(other.keys())
+        ]
         return MultiScore(
-            data=[ 
-                (
-                    *(key if isinstance(key, tuple) else (key,)), 
-                    *score_operation(self.get(key), other.get(key)).to_triplet()
-                ) 
-                for key in set(self.keys()) & set(other.keys())
-            ],
+            data=[(*key, *score.to_triplet()) for key, score in data if not score.isnan()],
             key_names=self.key_names
         )
     

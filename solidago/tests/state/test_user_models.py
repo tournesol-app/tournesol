@@ -23,6 +23,8 @@ def test_user_models():
             data=[
                 ("aidjango", "default", "multiplier", 2, 0.1, 1),
                 ("aidjango", "default", "translation", -1, 1, 1),
+                ("aidjango", "importance", "multiplier", 1, 0, 0),
+                ("aidjango", "importance", "translation", 0, 0, 0),
                 ("le_science4all", "default", "multiplier", 1, 0, 0),
                 ("le_science4all", "default", "translation", 1, 1, 1),
             ],
