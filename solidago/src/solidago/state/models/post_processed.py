@@ -27,10 +27,10 @@ class PostProcessedModel(ScoringModel):
             extremes = [self.post_process_fn(score.max), self.post_process_fn(score.min)]
             return Score(value, value - min(extremes), max(extremes) - value)
         assert isinstance(score, MultiScore)
-        return MultiScore({
-            criterion: self.post_process(criterion_score)
+        return MultiScore([
+            (criterion, *self.post_process(criterion_score).to_triplet())
             for criterion, criterion_score in score
-        })
+        ])
 
 
 class SquashedModel(PostProcessedModel):

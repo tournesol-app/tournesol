@@ -124,7 +124,14 @@ class UnnamedDataFrame(DataFrame):
         return not self.get(*args, process=False, **kwargs).empty
 
     def __or__(self, other: "UnnamedDataFrame") -> "UnnamedDataFrame":
-        return type(self)(pd.concat([self, other]))
+        if self.empty:
+            data = other
+        elif other.empty:
+            data = self
+        else:
+            data = pd.concat([self, other])
+            data.index = range(len(data))
+        return type(self)(data=data, key_names=self.key_names)
 
     def delete(self, *args, **kwargs) -> "UnnamedDataFrame":
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)
@@ -200,7 +207,8 @@ class UnnamedDataFrame(DataFrame):
         groups = DataFrame(self).groupby(columns)
         kn = [ n for n in self.key_names if n not in columns ]
         for key in list(groups.groups.keys()):
-            df = groups.get_group(key)
+            key_tuple = key if isinstance(key, tuple) else (key, )
+            df = groups.get_group(key_tuple)
             if len(kn) > 0 or not process:
                 df = DataFrame([df.iloc[-1]]) if last_only and len(kn) == 0 else df
                 yield key, type(self)(df, key_names=kn)

@@ -39,4 +39,4 @@ def test_direct():
     assert post_process("entity_1").get("importance").isnan()
     assert post_process("entity_2").get("importance") > 0
     assert len(post_process(entities)) == 3
-    assert scaled(entities)["entity_1", "default"] == Score(2, 5, 2)
+    assert scaled(entities).get("entity_1", "default") == Score(2, 5, 2)

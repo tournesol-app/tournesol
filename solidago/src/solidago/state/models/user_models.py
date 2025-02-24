@@ -17,21 +17,24 @@ class UserModels:
         default_model_cls: Optional[tuple[str, dict]]=None,
         user_model_cls_dict: Optional[dict[str, tuple]]=None
     ):
-        self.user_directs = user_directs or MultiScore.load(user_directs, 
+        self.user_directs = user_directs if user_directs is not None else MultiScore.load(
+            data=user_directs, 
             key_names=["username", "entity_name", "criterion"],
             name="user_directs"
         )
-        self.user_scales = user_scales or MultiScore.load(user_scales, 
-            key_names=["username", "depth", "kind", "criterion"],
+        self.user_scales = user_scales if user_scales is not None else MultiScore.load(
+            data=user_scales, 
+            key_names=["username", "depth", "criterion", "kind"],
             name="user_scales"
         )
-        self.common_scales = common_scales or MultiScore.load(common_scales, 
-            key_names=["depth", "kind", "criterion"],
+        self.common_scales = common_scales if common_scales is not None else MultiScore.load(
+            data=common_scales, 
+            key_names=["depth", "criterion", "kind"],
             name="common_scales"
         )
         self.default_model_cls = default_model_cls or ("DirectScoring", dict())
         self.user_model_cls_dict = user_model_cls_dict or dict()
-        self._cache_users = set()
+        self._cache_users = None
 
     def __call__(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
         return self.score(entity)
@@ -61,7 +64,7 @@ class UserModels:
     def __getitem__(self, user: Union[str, "User"]) -> ScoringModel:
         import solidago.state.models as models
         constructor_name, kwargs = self.model_cls(user)
-        return models.constructor_name(
+        return getattr(models, constructor_name)(
             directs=self.user_directs.get(username=user, cache_group=True), 
             scales=self.user_scales.get(username=user, cache_group=True) \
                 | self.common_scales.assign(username=str(user)), 
@@ -101,10 +104,24 @@ class UserModels:
         for username in self.users():
             yield username, self[username]
     
+    def _depth_shifted_scales(self, added_depth: int=1) -> tuple[MultiScore, MultiScore]:
+        user_scales_depth = (self.user_scales["depth"].astype(int) + added_depth).astype(str)
+        user_scales = type(self.user_scales)(
+            data=self.user_scales.assign(depth=user_scales_depth), 
+            key_names=self.user_scales.key_names
+        )
+        common_scales_depth = (self.common_scales["depth"].astype(int) + added_depth).astype(str)
+        common_scales = type(self.common_scales)(
+            data=self.common_scales.assign(depth=common_scales_depth), 
+            key_names=self.common_scales.key_names
+        )
+        return user_scales, common_scales
+    
     def scale(self, scales: MultiScore, note: str="None") -> "UserModels":
-        user_scales = self.user_scales.assign(depth=self.user_scales["depth"] + 1)
-        common_scales = self.common_scales.assign(depth=self.common_scales["depth"] + 1)
-        if "username" in multipliers.key_names:
+        user_scales, common_scales = self._depth_shifted_scales()
+        if "depth" not in scales.columns:
+            scales["depth"] = "0"
+        if "username" in scales.key_names:
             user_scales = user_scales | scales
         else:
             common_scales = common_scales | scales
@@ -115,6 +132,19 @@ class UserModels:
             default_model_cls=("ScaledModel", dict(note=note, parent=self.default_model_cls)),
             user_model_cls_dict={
                 username: ("ScaledModel", dict(note=note, parent=model_cls))
+                for username, model_cls in self.user_model_cls_dict.items()
+            }
+        )
+    
+    def post_process(self, cls_name: str, **kwargs) -> "UserModels":
+        user_scales, common_scales = self._depth_shifted_scales()
+        return UserModels(
+            user_directs=self.user_directs,
+            user_scales=user_scales,
+            common_scales=common_scales,
+            default_model_cls=(cls_name, kwargs | dict(parent=self.default_model_cls)),
+            user_model_cls_dict={
+                username: (cls_name, kwargs | dict(parent=model_cls))
                 for username, model_cls in self.user_model_cls_dict.items()
             }
         )

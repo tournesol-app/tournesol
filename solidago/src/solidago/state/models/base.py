@@ -28,29 +28,31 @@ class ScoringModel(ABC):
         self.depth = depth
         self.note = note
         self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"])
-        self.scales = MultiScore.load(scales, key_names=["depth", "kind", "criterion"], default_keys=dict(depth="0"))
+        self.scales = MultiScore.load(scales, key_names=["depth", "criterion", "kind"], default_keys=dict(depth="0"))
         self.username = username
         self.user_models = user_models
         if parent is not None:
             if isinstance(parent, ScoringModel):
                 parent.set_depth(depth + 1)
                 self.parent = parent
+                if directs is None:
+                    self.directs = parent.directs
+                if scales is None:
+                    self.scales = parent.scales
             elif isinstance(parent, tuple):
                 assert len(parent) == 2 and isinstance(parent[0], str) and isinstance(parent[1], dict)
                 parent_cls, parent_kwargs = parent
                 import solidago.state.models as models
                 self.parent = getattr(models, parent_cls)(
                     depth=depth + 1, 
+                    directs=self.directs,
+                    scales=self.scales,
                     username=username,
                     user_models=user_models,
                     **(kwargs | parent_kwargs)
                 )
             else:
                 raise ValueError(f"{parent} has unhandled type {type(parent)}")
-            if directs is None:
-                self.directs = parent.directs
-            if scales is None:
-                self.scales = parent.scales
 
     def __call__(self, entities: Union["Entity", "Entities"]) -> MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
@@ -72,7 +74,7 @@ class ScoringModel(ABC):
             results = MultiScore(key_names=["entity_name", "criterion"])
             for entity in entities:
                 for criterion, score in self(entity):
-                    results.add_row([ str(entity), criterion, *score.to_triplet() ])
+                    results.add_row(str(entity), criterion, *score.to_triplet())
             return results
         entity = entities
         return self.score(entity)
@@ -88,14 +90,15 @@ class ScoringModel(ABC):
         return entities if self.is_base() else self.parent.evaluated_entities(entities)
     
     def set_depth(self, depth: int, change_scales=True) ->  None:
+        added_depth = depth - self.depth
         self.depth = depth
         if self.user_models is None:
-            self.scales["depth"] = (self.scales["depth"].astype(int) + 1).astype(str)
+            self.scales["depth"] = (self.scales["depth"].astype(int) + added_depth).astype(str)
         else:
             scales = self.user_models.user_scales
             indices = scales.get(username=self.username).index
             for i in indices:
-                self.user_models.user_scales.iloc[i, "depth"] = str(int(scales.iloc[i, "depth"]) + 1)
+                self.user_models.user_scales.iloc[i, "depth"] = str(int(scales.iloc[i, "depth"]) + added_depth)
         if not self.is_base():
             self.parent.set_depth(depth + 1, change_scales=False)
     

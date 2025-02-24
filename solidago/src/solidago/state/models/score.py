@@ -184,6 +184,7 @@ class MultiScore(UnnamedDataFrame):
         if len(args_values) > 0 and isinstance(args_values[0], Score):
             assert "score" not in kwargs
             kwargs["score"] = args_values[0]
+            args = args[:-1]
         elif len(args_values) > 0:
             assert "score" not in kwargs
             if len(args_values) == 1:

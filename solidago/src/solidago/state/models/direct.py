@@ -42,10 +42,11 @@ class DirectScoring(ScoringModel):
         if len(kwargs) == 2: # The main one - others will call this section
             assert "criterion" in kwargs and isinstance(kwargs["criterion"], str)
             assert "score" in kwargs and isinstance(kwargs["score"], Score)
+            args = (kwargs["criterion"], *kwargs["score"].to_triplet())
             if self.user_models is None:
-                self.directs.set(entity, kwargs["criterion"], kwargs["score"])
+                self.directs.set(entity, *args)
             else:
-                self.user_models.directs.set(self.username, entity, kwargs["criterion"], kwargs["score"])
+                self.user_models.directs.set(self.username, entity, *args)
         elif len(args) == 1:
             assert "multiscore" in kwargs and isinstance(kwargs["multiscore"], MultiScore)
             for criterion, score in kwargs["multiscore"]:
