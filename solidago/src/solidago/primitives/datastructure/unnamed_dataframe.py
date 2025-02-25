@@ -226,6 +226,8 @@ class UnnamedDataFrame(DataFrame):
         
     def save(self, directory: Union[str, Path]) -> tuple[str, str]:
         assert self.meta.name is not None, f"{type(self).__name__} has no save filename"
+        if self.empty:
+            return type(self).__name__, None
         path = Path(directory) / f"{self.meta.name}.csv"
         self.to_csv(path, index=False)
         return type(self).__name__, str(path)

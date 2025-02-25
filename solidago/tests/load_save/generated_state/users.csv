@@ -1,4 +1,4 @@
-username,is_trustworthy,is_pretrusted,n_expected_vouches,n_comparisons,n_comparisons_per_entity,multiplicator,engagement_bias,vector_index
+username,is_trustworthy,is_pretrusted,n_expected_vouches,n_comparisons,n_comparisons_per_entity,multiplier,engagement_bias,vector_index
 user_0,True,False,26,54,2,0.02042558668422495,-0.977277879876411,0
 user_1,True,True,17,37,2,0.9613809291948594,0.27519831557632024,1
 user_2,True,True,0,33,3,0.1759135534346029,-1.980796468223927,2

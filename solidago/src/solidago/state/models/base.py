@@ -27,8 +27,13 @@ class ScoringModel(ABC):
         """ If user_models is not None, then recording new data will be done through user_models """
         self.depth = depth
         self.note = note
-        self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"])
-        self.scales = MultiScore.load(scales, key_names=["depth", "criterion", "kind"], default_keys=dict(depth="0"))
+        self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"], name="directs")
+        self.scales = MultiScore.load(
+            scales, 
+            key_names=["depth", "criterion", "kind"], 
+            name="scales",
+            default_keys=dict(depth="0")
+        )
         self.username = username
         self.user_models = user_models
         if parent is not None:
@@ -117,23 +122,18 @@ class ScoringModel(ABC):
             kwargs["parent"] = self.parent.saved_kwargs()
         return kwargs
 
-    def save(self, filename: Optional[Union[str, Path]]=None) -> tuple[str, dict]:
+    def save(self, directory: Optional[Union[str, Path]]=None, json_dump: bool=False) -> tuple[str, dict]:
         """ save must be given a filename_root (typically without extension),
         as multiple csv files may be saved, with a name derived from the filename_root
         (in addition to the json description) """
         kwargs = self.saved_kwargs()
-        if depth > 0 or filename is None:
+        if self.depth > 0 or directory is None:
             return type(self).__name__, kwargs
-        if filename is not None:
-            assert str(filename)[-5:] == ".json", filename
-            directory = "/".join(filename.split("/")[:-1])
-            kwargs["dataframes"] = dict()
-            for df_name, df in dfs.items():
-                save_filename = f"{directory}/{df_name}.csv"
-                df.to_csv(save_filename, index=False)
-                kwargs["dataframes"][df_name] = save_filename
-            with open(filename, "w") as f:
-                json.dump([type(self).__name__, saved_dict], f, indent=4)
+        if directory is not None:
+            kwargs |= dict(directs=self.directs.save(directory), scales=self.scales.save(directory))
+            if json_dump:
+                with open(Path(directory) / "model.json", "w") as f:
+                    json.dump([type(self).__name__, kwargs], f, indent=4)
         return type(self).__name__, kwargs
 
     def is_cls(self, cls: tuple[str, dict]) -> bool:

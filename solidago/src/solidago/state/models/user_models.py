@@ -35,6 +35,16 @@ class UserModels:
         self.default_model_cls = default_model_cls or ("DirectScoring", dict())
         self.user_model_cls_dict = user_model_cls_dict or dict()
         self._cache_users = None
+    
+    @classmethod
+    def load(cls,
+        user_directs: Optional[Union[str, DataFrame, MultiScore]]=None,
+        user_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
+        common_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
+        default_model_cls: Optional[tuple[str, dict]]=None,
+        user_model_cls_dict: Optional[dict[str, tuple]]=None
+    ) -> "UserModels":
+        return cls(user_directs, user_scales, common_scales, default_model_cls, user_model_cls_dict)
 
     def __call__(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
         return self.score(entity)

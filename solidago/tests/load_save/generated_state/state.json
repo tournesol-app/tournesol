@@ -31,20 +31,29 @@
     ],
     "voting_rights": [
         "VotingRights",
-        "tests/load_save/generated_state/voting_rights.csv"
+        null
     ],
     "user_models": [
         "UserModels",
         {
-            "users": {},
-            "dataframes": {},
-            "default_model_cls": "DirectScoring"
+            "default_model_cls": [
+                "DirectScoring",
+                {}
+            ]
         }
     ],
     "global_model": [
         "DirectScoring",
         {
-            "directs": "tests/load_save/generated_state/directs.csv"
+            "note": "None",
+            "directs": [
+                "MultiScore",
+                null
+            ],
+            "scales": [
+                "MultiScore",
+                null
+            ]
         }
     ]
 }
