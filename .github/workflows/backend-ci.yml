@@ -5,10 +5,12 @@ on:
   push:
     paths:
       - 'backend/**'
+      - 'solidago/**'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     paths:
       - 'backend/**'
+      - 'solidago/**'
       - '.github/workflows/backend-ci.yml'
 
 defaults:
