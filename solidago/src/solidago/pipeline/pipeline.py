@@ -76,6 +76,7 @@ class DefaultPipeline:
 class Pipeline:
     def __init__(
         self,
+        *,
         trust_propagation: TrustPropagation = DefaultPipeline.trust_propagation,
         preference_learning: PreferenceLearning = DefaultPipeline.preference_learning,
         voting_rights: VotingRightsAssignment = DefaultPipeline.voting_rights,
