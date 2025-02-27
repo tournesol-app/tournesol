@@ -161,6 +161,10 @@
     "message": "Videos are being imported, please wait.",
     "description": "Title of the the rate later history import status box."
   },
+  "rateLaterHistoryStatusBoxTitleFinish": {
+    "message": "✅️ Import complete!",
+    "description": "When the import is complete, it replaces the title of the import status box."
+  },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Press Stop when the visible videos count doesn't increase anymore or when you think enough videos have been imported.",
     "description": "Instructions displayed on the rate later history import status box."

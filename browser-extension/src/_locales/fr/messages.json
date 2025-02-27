@@ -159,6 +159,10 @@
     "message": "Les vidéos sont en train d'être importées, veuillez patienter.",
     "description": "Titre de l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
   },
+  "rateLaterHistoryStatusBoxTitleFinish": {
+    "message": "✅️ L'import est terminé !",
+    "description": "Remplace le titre de l'écran d'import lorsque celui-ci est terminé."
+  },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Appuyez sur Stop quand le nombre de vidéos visibles n'augmente plus ou que vous pensez que suffisamment de vidéos ont été importées.",
     "description": "Instructions affichées sur l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."

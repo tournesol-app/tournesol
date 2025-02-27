@@ -35,6 +35,13 @@ const addOverlay = () => {
   loader.classList.add('lds-dual-ring');
   statusBox.append(loader);
 
+  const importComplete = () => {
+    loader.classList.remove('lds-dual-ring');
+    title.textContent = chrome.i18n.getMessage(
+      'rateLaterHistoryStatusBoxTitleFinish'
+    );
+  };
+
   const addCounter = ({ label, initialValue = 0 }) => {
     const container = document.createElement('div');
 
@@ -91,6 +98,7 @@ const addOverlay = () => {
     displayHistoryVideoCount,
     displaySentVideoCount,
     displayFailedVideoCount,
+    importComplete,
     stopButton,
   };
 };
@@ -143,7 +151,15 @@ const forEachVisibleVideoId = (callback) => {
 const loadMoreVideos = () => {
   // Scroll to the bottom of the page to trigger the infinite loader
   const previews = document.querySelectorAll('ytd-video-renderer');
-  previews[previews.length - 1].scrollIntoView(true);
+  const lastPreview = previews[previews.length - 1];
+  lastPreview.scrollIntoView(true);
+
+  const videoTitle = lastPreview.querySelector('#video-title');
+  if (videoTitle) {
+    return videoTitle.getAttribute('href').split('&')[0];
+  }
+
+  return null;
 };
 
 const startHistoryCapture = async () =>
@@ -152,7 +168,7 @@ const startHistoryCapture = async () =>
     let sentVideoIdSet = new Set();
     let addedCount = 0;
     let failedCount = 0;
-
+    let lastVideoHref = '';
     let abort = false;
 
     document.body.classList.add('tournesol-capturing-history');
@@ -162,12 +178,13 @@ const startHistoryCapture = async () =>
       displayHistoryVideoCount,
       displaySentVideoCount,
       displayFailedVideoCount,
+      importComplete,
       stopButton,
     } = addOverlay();
 
     let timeout;
 
-    const captureStep = async () => {
+    const captureStep = async (onEndOfHistory) => {
       forEachVisibleVideoId((videoId) => {
         historyVideoIdSet.add(videoId);
       });
@@ -191,13 +208,19 @@ const startHistoryCapture = async () =>
 
       if (abort) return;
 
-      loadMoreVideos();
+      const lastHref = loadMoreVideos();
+      if (lastHref === lastVideoHref) {
+        if (onEndOfHistory) onEndOfHistory();
+        return;
+      }
+
+      lastVideoHref = lastHref;
 
       if (abort) return;
 
-      timeout = setTimeout(captureStep, 1000);
+      timeout = setTimeout(captureStep, 1000, onEndOfHistory);
     };
-    captureStep();
+    captureStep(importComplete);
 
     stopButton.addEventListener('click', () => {
       abort = true;
