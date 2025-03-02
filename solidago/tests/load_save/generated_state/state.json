@@ -45,15 +45,7 @@
     "global_model": [
         "DirectScoring",
         {
-            "note": "None",
-            "directs": [
-                "MultiScore",
-                null
-            ],
-            "scales": [
-                "MultiScore",
-                null
-            ]
+            "note": "None"
         }
     ]
 }

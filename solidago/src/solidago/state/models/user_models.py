@@ -17,34 +17,26 @@ class UserModels:
         default_model_cls: Optional[tuple[str, dict]]=None,
         user_model_cls_dict: Optional[dict[str, tuple]]=None
     ):
-        self.user_directs = user_directs if user_directs is not None else MultiScore.load(
-            data=user_directs, 
+        self.user_directs = MultiScore.load(user_directs, 
             key_names=["username", "entity_name", "criterion"],
             name="user_directs"
         )
-        self.user_scales = user_scales if user_scales is not None else MultiScore.load(
-            data=user_scales, 
+        self.user_scales = MultiScore.load(user_scales, 
             key_names=["username", "depth", "criterion", "kind"],
             name="user_scales"
         )
-        self.common_scales = common_scales if common_scales is not None else MultiScore.load(
-            data=common_scales, 
+        self.common_scales = MultiScore.load(common_scales, 
             key_names=["depth", "criterion", "kind"],
             name="common_scales"
         )
         self.default_model_cls = default_model_cls or ("DirectScoring", dict())
         self.user_model_cls_dict = user_model_cls_dict or dict()
         self._cache_users = None
+        self._cache_criteria = None
     
     @classmethod
-    def load(cls,
-        user_directs: Optional[Union[str, DataFrame, MultiScore]]=None,
-        user_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
-        common_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
-        default_model_cls: Optional[tuple[str, dict]]=None,
-        user_model_cls_dict: Optional[dict[str, tuple]]=None
-    ) -> "UserModels":
-        return cls(user_directs, user_scales, common_scales, default_model_cls, user_model_cls_dict)
+    def load(cls, kwargs) -> "UserModels":
+        return cls(**kwargs)
 
     def __call__(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
         return self.score(entity)
@@ -90,6 +82,7 @@ class UserModels:
             del self.user_model_cls_dict[str(user)]
         if self._cache_users is not None:
             self._cache_users.remove(str(user))
+        self._cache_criteria = None
         
     def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
         del self[user]
@@ -99,6 +92,7 @@ class UserModels:
             self.user_model_cls_dict[str(user)] = model.save()
         if self._cache_users is not None:
             self._cache_users.add(str(user))
+        self._cache_criteria.add(set(model.directs["criterion"]))
     
     def users(self) -> set[str]:
         if self._cache_users is None:
@@ -106,6 +100,11 @@ class UserModels:
                 | set(self.user_scales["username"]) \
                 | set(self.user_model_cls_dict.keys())
         return self._cache_users
+
+    def criteria(self) -> set[str]:
+        if self._cache_criteria is None:
+            self._cache_criteria = set(self.user_directs["criterion"])
+        return self._cache_criteria
     
     def __contains__(self, user: Union[str, "User"]) -> bool:
         return str(user) in self.users()
@@ -159,15 +158,18 @@ class UserModels:
             }
         )
     
+    def save_df(self, directory: Union[Path, str], df_name: str) -> str:
+        if not getattr(self, df_name).empty:
+            getattr(self, df_name).save(directory)
+            return f"{directory}/{df_name}.csv"
+        return None
+    
     def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict]:
-        assert isinstance(directory, (Path, str)), directory
         j = type(self).__name__, dict()
-        if not self.user_directs.empty:
-            j[1]["user_directs"] = self.user_directs.to_csv(directory)[1]
-        if not self.user_scales.empty:
-            j[1]["user_scales"] = self.user_scales.to_csv(directory)[1]
-        if not self.common_scales.empty:
-            j[1]["common_scales"] = self.common_scales.to_csv(directory)[1]
+        for df_name in ("user_directs", "user_scales", "common_scales"):
+            filename = self.save_df(directory, df_name)
+            if filename is not None:
+                j[1][df_name] = filename
         if self.default_model_cls is not None:
             j[1]["default_model_cls"] = self.default_model_cls
         if len(self.user_model_cls_dict) > 0:

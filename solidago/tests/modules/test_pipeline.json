@@ -31,7 +31,7 @@
             "p_norm_for_multiplicative_resilience": 4.0, 
             "n_entity_to_fully_compare_max": 100,
             "n_diffs_sample_max": 1000,
-            "default_multiplicator_dev": 0.5,
+            "default_multiplier_dev": 0.5,
             "default_translation_dev": 1.0,
             "error": 1e-05
         }], 

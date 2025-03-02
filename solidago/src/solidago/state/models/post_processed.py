@@ -18,8 +18,8 @@ class PostProcessedModel(ScoringModel):
         """ This must be a monotonous function """
         raise NotImplemented
     
-    def score(self, entity: "Entity") -> Union[Score, MultiScore]:
-        return self.post_process(self.parent.score(entity))
+    def score(self, entity: "Entity", criterion: str) -> Union[Score, MultiScore]:
+        return self.post_process(self.parent.score(entity, criterion))
 
     def post_process(self, score: Union[Score, MultiScore]) -> Union[Score, MultiScore]:
         if isinstance(score, Score):
@@ -34,11 +34,11 @@ class PostProcessedModel(ScoringModel):
 
 
 class SquashedModel(PostProcessedModel):
-    saved_argsnames: list[str]=["note", "max_score"]    
+    saved_argsnames: list[str]=["note", "score_max"]    
     
-    def __init__(self, parent, max_score: float=100., *args, **kwargs):
+    def __init__(self, parent, score_max: float=100., *args, **kwargs):
         super().__init__(*args, parent=parent, **kwargs)
-        self.max_score = max_score
+        self.score_max = score_max
         
     def post_process_fn(self, x: float) -> float:
-        return self.max_score * x / sqrt(1+x**2)
+        return self.score_max * x / sqrt(1+x**2)

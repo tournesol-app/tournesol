@@ -41,12 +41,14 @@ class TournesolExport(State):
             global_scores = load("collective_criteria_scores", { 
                 "criteria": "criterion", 
                 "video": "entity_name",
+                "score": "value",
                 "uncertainty": "left_unc",
             })
             user_scores = load("individual_criteria_scores", { 
                 "criteria": "criterion", 
                 "video": "entity_name",
                 "public_username": "username",
+                "score": "value",
                 "uncertainty": "left_unc",                
             })
         
@@ -78,24 +80,7 @@ class TournesolExport(State):
         from solidago.state import (
             Users, Vouches, Entities, AllPublic, Comparisons, 
             VotingRights, UserModels, DirectScoring
-        )        
-        user_models_d = {
-            "users": {
-                username: ["DirectScoring", dict()] 
-                for username in dfs["users"]["username"]
-            },
-            "model_cls": "DirectScoring"
-        }
-        user_dfs = dict()
-        for _, r in dfs["user_scores"].iterrows():
-            if r["username"] not in user_dfs:
-                user_dfs[r["username"]] = { "directs": list() }
-            user_dfs[r["username"]]["directs"].append(r)
-        user_dfs = { 
-            username: { "directs": DataFrame(user_dfs[username]["directs"]) } 
-            for username in user_dfs
-        }
-        
+        )
         super().__init__(
             users=Users(dfs["users"]),
             vouches=Vouches(dfs["vouches"]),
@@ -103,8 +88,8 @@ class TournesolExport(State):
             made_public=AllPublic(),
             comparisons=Comparisons(dfs["comparisons"]),
             voting_rights=VotingRights(dfs["voting_rights"]),
-            user_models=UserModels.load(user_models_d, user_dfs),
-            global_model=DirectScoring.load(dict(), { "directs": dfs["global_scores"] })
+            user_models=UserModels(user_directs=dfs["user_scores"]),
+            global_model=DirectScoring(directs=dfs["global_scores"])
         )
 
     @classmethod

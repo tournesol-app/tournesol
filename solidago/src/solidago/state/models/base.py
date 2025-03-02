@@ -28,8 +28,7 @@ class ScoringModel(ABC):
         self.depth = depth
         self.note = note
         self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"], name="directs")
-        self.scales = MultiScore.load(
-            scales, 
+        self.scales = MultiScore.load(scales, 
             key_names=["depth", "criterion", "kind"], 
             name="scales",
             default_keys=dict(depth="0")
@@ -44,7 +43,7 @@ class ScoringModel(ABC):
                     self.directs = parent.directs
                 if scales is None:
                     self.scales = parent.scales
-            elif isinstance(parent, tuple):
+            elif isinstance(parent, (list, tuple)):
                 assert len(parent) == 2 and isinstance(parent[0], str) and isinstance(parent[1], dict)
                 parent_cls, parent_kwargs = parent
                 import solidago.state.models as models
@@ -59,7 +58,14 @@ class ScoringModel(ABC):
             else:
                 raise ValueError(f"{parent} has unhandled type {type(parent)}")
 
-    def __call__(self, entities: Union["Entity", "Entities"]) -> MultiScore:
+    @classmethod
+    def load(cls, kwargs) -> "ScoringModel":
+        return cls(**kwargs)
+
+    def __call__(self, 
+        entities: Union["Entity", "Entities"], 
+        criterion: Optional[str]=None
+    ) -> MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
         
         Parameters
@@ -75,24 +81,39 @@ class ScoringModel(ABC):
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
         from solidago.state.entities import Entities
+        criteria = self.criteria() if criterion is None else { criterion }
+        # TODO: Simplify code by transforming Entity into Entities
+        # entities = entities if isinstance(entities, Entities) else entities.to_df()
         if isinstance(entities, Entities):
-            results = MultiScore(key_names=["entity_name", "criterion"])
-            for entity in entities:
-                for criterion, score in self(entity):
-                    results.add_row(str(entity), criterion, *score.to_triplet())
-            return results
+            return MultiScore(
+                data=[
+                    (entity, criterion, *self.score(entity, c).to_triplet())
+                    for entity in self.evaluated_entities(entities)
+                    for c in criteria
+                ],
+                key_names=["entity_name", "criterion"]
+            )
         entity = entities
-        return self.score(entity)
+        return MultiScore(
+            data=[
+                (entity, criterion, *self.score(entity, c).to_triplet())
+                for c in self.criteria()
+            ],
+            key_names="criterion"
+        )
     
     @abstractmethod
-    def score(self, entity: "Entity") -> MultiScore:
+    def score(self, entity: "Entity", criterion: str) -> MultiScore:
         raise NotImplementedError
+    
+    def criteria(self) -> set[str]:
+        return set(self.directs["criterion"])
     
     def is_base(self) -> bool:
         return not hasattr(self, "parent")
     
-    def evaluated_entities(self, entities: "Entities") -> "Entities":
-        return entities if self.is_base() else self.parent.evaluated_entities(entities)
+    def evaluated_entities(self, entities: "Entities", criterion: Optional[str]=None) -> "Entities":
+        return entities if self.is_base() else self.parent.evaluated_entities(entities, criterion)
     
     def set_depth(self, depth: int, change_scales=True) ->  None:
         added_depth = depth - self.depth
@@ -130,7 +151,9 @@ class ScoringModel(ABC):
         if self.depth > 0 or directory is None:
             return type(self).__name__, kwargs
         if directory is not None:
-            kwargs |= dict(directs=self.directs.save(directory), scales=self.scales.save(directory))
+            for df_name in ("directs", "scales"):
+                if not getattr(self, df_name).empty:
+                    kwargs[df_name] = getattr(self, df_name).save(directory)[1]
             if json_dump:
                 with open(Path(directory) / "model.json", "w") as f:
                     json.dump([type(self).__name__, kwargs], f, indent=4)

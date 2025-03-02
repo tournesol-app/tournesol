@@ -165,12 +165,13 @@ class UnnamedDataFrame(DataFrame):
         filename: Optional[Union[str, Path, "UnnamedDataFrame"]]=None, 
         *args, **kwargs
     ) -> "UnnamedDataFrame":
-        if isinstance(filename, UnnamedDataFrame):
+        if isinstance(filename, (DataFrame, UnnamedDataFrame)):
             return cls(data=filename, *args, **kwargs)
         try: 
             return cls(pd.read_csv(filename, keep_default_na=False), *args, **kwargs)
         except (pd.errors.EmptyDataError, ValueError):
-            return cls(*args, **kwargs)
+            return cls(*args, **kwargs) if "data" in kwargs else cls(data=filename, *args, **kwargs)
+                
 
     def last_only(self) -> "UnnamedDataFrame":
         return type(self)(
@@ -181,18 +182,18 @@ class UnnamedDataFrame(DataFrame):
 
     def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> "UnnamedDataFrameDict":
         columns = columns if columns else self.key_names
-        if (columns, process) in self.meta._group_cache:
-            return self.meta._group_cache[columns, process]
+        if (tuple(columns), process) in self.meta._group_cache:
+            return self.meta._group_cache[tuple(columns), process]
         data = { key: value for key, value in self.iter(columns, process) }
         sub_key_names = [ key for key in self.key_names if key not in columns ]
         from solidago.primitives.datastructure import UnnamedDataFrameDict
-        self.meta._group_cache[columns, process] = UnnamedDataFrameDict(
+        self.meta._group_cache[tuple(columns), process] = UnnamedDataFrameDict(
             data, 
             df_cls=type(self), 
             main_key_names=columns, 
             sub_key_names=sub_key_names
         )
-        return self.meta._group_cache[columns, process]
+        return self.meta._group_cache[tuple(columns), process]
     
     def iter(self, 
         columns: Optional[list[str]]=None, 

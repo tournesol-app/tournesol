@@ -19,9 +19,7 @@ class Squash(StateFunction):
         """ Post-processes user models and global models,
         typically to yield human-readible scores, 
         by squashing scores into [-self.score_max, self.score_max] """
-        squashed_user_models = UserModels({
-            username: SquashedModel(model, self.score_max) 
-            for username, model in user_models
-        })
-        squashed_global_model = SquashedModel(global_model, self.score_max)
-        return squashed_user_models, squashed_global_model
+        return (
+            user_models.post_process("SquashedModel", score_max=self.score_max),
+            SquashedModel(global_model, self.score_max)
+        )

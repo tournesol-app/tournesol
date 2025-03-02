@@ -9,18 +9,21 @@ from .base import ScoringModel
 
 
 class DirectScoring(ScoringModel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, directs: Optional[Union[str, DataFrame, MultiScore]]=None, *args, **kwargs):
+        super().__init__(*args, directs=directs, **kwargs)
         assert self.is_base()
         
-    def score(self, entity: Union[str, "Entity"]) -> MultiScore:
-        return self.directs.get(entity)
+    def score(self, entity: Union[str, "Entity"], criterion: str) -> MultiScore:
+        return self.directs.get(entity, criterion)
         
     def to_direct(self, entities: Optional["Entities"]=None) -> "DirectScoring":
         return self
 
-    def evaluated_entities(self, entities: "Entities") -> "Entities":
-        return entities.get(set(self.directs["entity_name"]))
+    def evaluated_entities(self, entities: "Entities", criterion: Optional[str]=None) -> "Entities":
+        if criterion is None:
+            return entities.get(set(self.directs["entity_name"]))
+        else:
+            return entities.get(set(self.directs.get(criterion=criterion)["entity_name"]))
     
     def set(self, entity: Union[str, "Entity"], *args, **kwargs) -> None:
         """ Valid values include
@@ -60,6 +63,9 @@ class DirectScoring(ScoringModel):
             self.set(entity, criterion=kwargs["criterion"], score=score)
         else:
             raise ValueError(kwargs)
+
+    def __len__(self) -> int:
+        return len(self.directs)
     
     def __repr__(self) -> str:
         return repr(self.directs)

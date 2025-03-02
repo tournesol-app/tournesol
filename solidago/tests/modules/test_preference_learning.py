@@ -23,9 +23,9 @@ def test_gbt_score_zero(GBT):
     
     scores = NumbaUniformGBT().user_learn_criterion(entities, comparisons, init_multiscores)
     
-    assert scores["entity_1"].to_triplet() == pytest.approx((0, 1.8, 1.8), abs=0.1)
-    assert scores["entity_2"].to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
-    assert scores["entity_3"].to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
+    assert scores.get("entity_1").to_triplet() == pytest.approx((0, 1.8, 1.8), abs=0.1)
+    assert scores.get("entity_2").to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
+    assert scores.get("entity_3").to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
     
     
 @pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
@@ -46,10 +46,10 @@ def test_gbt_score_monotonicity(GBT):
     
     scores = GBT().user_learn_criterion(entities, comparisons, init_multiscores)
     
-    assert scores["entity_1"].value < scores["entity_3"].value
-    assert scores["entity_3"].value < scores["entity_2"].value
-    assert scores["entity_1"].left_unc > scores["entity_1"].right_unc
-    assert scores["entity_2"].left_unc < scores["entity_2"].right_unc
+    assert scores.get("entity_1").value < scores.get("entity_3").value
+    assert scores.get("entity_3").value < scores.get("entity_2").value
+    assert scores.get("entity_1").left_unc > scores.get("entity_1").right_unc
+    assert scores.get("entity_2").left_unc < scores.get("entity_2").right_unc
 
 
 def test_uniform_gbt():
@@ -66,6 +66,6 @@ def test_uniform_gbt():
     for user in s.users:
         for entity in s.entities:
             for criterion, score in user_models[0][user](entity):
-                lbfgs_score = user_models[1][user](entity)[criterion]
+                lbfgs_score = user_models[1][user](entity).get(criterion)
                 assert score.to_triplet() == pytest.approx(lbfgs_score.to_triplet(), abs=2e-1)
 

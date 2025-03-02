@@ -99,7 +99,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         scores = scores.to(self.device)
         return scores
     
-    def compute_scores(self, 
+    def compute_values(self, 
         entities: Entities,
         entity_name2index: dict[str, int],
         comparisons: Comparisons, # key_names == ["left_name, right_name"]

@@ -17,7 +17,7 @@
     ],
     "assessments": [
         "Assessments",
-        "tests/load_save/save_tiny_tournesol/assessments.csv"
+        null
     ],
     "comparisons": [
         "Comparisons",
@@ -30,207 +30,31 @@
     "user_models": [
         "UserModels",
         {
-            "users": {
-                "aidjango": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "amatissart": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "Antarctus": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "biscuissec": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "Foebus": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "Fungus-Bob": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "Guigui220D": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "Jean-Lou": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "joleenj": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "lafabriquesociale": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "LapinLambda": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "le_science4all": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "lpfaucon": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "MrChamo": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "NatNgs": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "oscarv": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "Pierre-Yves": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "timber": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "Tit0uan": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "vero": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ],
-                "white": [
-                    "ScaledModel",
-                    {
-                        "parent": [
-                            "DirectScoring",
-                            {}
-                        ]
-                    }
-                ]
-            },
-            "dataframes": {
-                "directs": "tests/load_save/save_tiny_tournesol/user_directs.csv",
-                "scalings": "tests/load_save/save_tiny_tournesol/user_scalings.csv"
-            },
-            "default_model_cls": "DirectScoring"
+            "user_directs": "tests/load_save/save_tiny_tournesol/user_directs.csv",
+            "user_scales": "tests/load_save/save_tiny_tournesol/user_scales.csv",
+            "common_scales": "tests/load_save/save_tiny_tournesol/common_scales.csv",
+            "default_model_cls": [
+                "ScaledModel",
+                {
+                    "note": "common_scale_test_export",
+                    "parent": [
+                        "ScaledModel",
+                        {
+                            "note": "user_scale_test_export",
+                            "parent": [
+                                "DirectScoring",
+                                {}
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "global_model": [
         "DirectScoring",
         {
+            "note": "None",
             "directs": "tests/load_save/save_tiny_tournesol/directs.csv"
         }
     ]

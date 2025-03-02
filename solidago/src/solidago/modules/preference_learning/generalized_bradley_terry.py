@@ -90,7 +90,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         """
 
     @abstractmethod
-    def compute_scores(self, 
+    def compute_values(self, 
         entities: Entities,
         entity_name2index: dict[str, int],
         comparisons: Comparisons, # key_names == ["left_name, right_name"]
@@ -119,8 +119,8 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         model = DirectScoring()
         compared_entity_names = set(comparisons["left_name"]) | set(comparisons["right_name"])
         entities = entities.get(compared_entity_names) # Restrict to compared entities
-        init = init_model(entities).reorder_keys(["criterion", "entity_name"])
-        criteria = set(comparisons["criterion"]) | init.get_set("criterion")
+        init = init_model(entities).groupby(["criterion"])
+        criteria = set(comparisons["criterion"]) | set(init["criterion"])
         for criterion, cmps in comparisons.groupby(["criterion"]):
             criterion_entity_names = set(cmps["left_name"]) | set(cmps["right_name"])
             if len(criterion_entity_names) <= 1:
@@ -129,7 +129,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             learned_scores = self.user_learn_criterion(criterion_entities, cmps, init[criterion])
             for entity_name, score in learned_scores:
                 if not score.isnan():
-                    model[entity_name, criterion] = score
+                    model.set(entity_name, criterion, score)
         return model
 
     def init_scores(self, 
@@ -154,13 +154,13 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             out[entity_name] must be of type Score (i.e. with a value and left/right uncertainties
         """
         entity_name2index = { str(entity): index for index, entity in enumerate(entities) }
-        scores = self.compute_scores(entities, entity_name2index, comparisons, init_multiscores)
-        lefts, rights = self.compute_uncertainties(entities, entity_name2index, comparisons, scores)
-        return MultiScore({
-            entities.iloc[i].name: (scores[i], lefts[i], rights[i])
-            for i in range(len(scores)) 
+        values = self.compute_values(entities, entity_name2index, comparisons, init_multiscores)
+        lefts, rights = self.compute_uncertainties(entities, entity_name2index, comparisons, values)
+        return MultiScore([
+            (entities.iloc[i].name, values[i], lefts[i], rights[i])
+            for i in range(len(values)) 
             if not (lefts[i] == self.max_uncertainty and lefts[i] == self.max_uncertainty)
-        }, key_names=["entity_name"])
+        ], key_names=["entity_name"])
     
     def compute_uncertainties(self,
         entities: Entities,

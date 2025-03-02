@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives.lipschitz import qr_median, qr_uncertainty, lipschitz_resilient_mean
 from solidago.primitives.pairs import UnorderedPairs
-from solidago.primitives.datastructure import NestedDictOfItems, NestedDictOfRowLists
 from solidago.state import *
 from solidago.modules.base import StateFunction
 
@@ -70,6 +69,7 @@ class Mehestan(StateFunction):
         self.default_translation_dev = default_translation_dev
         self.error = error
 
+    """ A simple way to distribute computations is to parallelize the loop of __call__ """
     def __call__(self, 
         users: Users,
         entities: Entities,
@@ -86,54 +86,29 @@ class Mehestan(StateFunction):
             Scaled user models
         """
         logger.info("Starting Mehestan's collaborative scaling")
-        if "trust_score" not in users:
-            users["trust_score"] = 1
+        assert "trust_score" in users, "No trust scores. Consider running TrustAll first."
 
-        logger.info("Mehestan 0. Compute user scores")
-        scores = user_models.score(entities).reorder_keys(["criterion", "username", "entity_name"])
-        logger.info(f"Mehestan 0. Terminated")
-        
-        users, scales = self.compute_scales(users, scores, made_public)
-        return users, user_models.scale(scales, note="Mehestan")
-    
-    """ A simple way to distribute computations is to parallelize `compute_scales` """
-    def compute_scales(self, 
-        users: Users, # Must have column "trust_score"
-        scores: MultiScore, # key_names == ["criterion", "username", "entity_name"]
-        made_public: MadePublic, # key_names == ["username", "entity_name"]
-    ) -> tuple[Users, MultiScore]: # key_names == ["username", "depth", "kind", "criterion"]
-        """ Compute the scales for all criteria. This method should be inherited and parallelized
-        for heavy-load applications that can afford multi-core operations. 
-        
-        Parameters
-        ----------
-        users: Users
-            Must have column "trust_score"
-        scores: MultiScore
-            Must have key_names == ["criterion", "username", "entity_name"]
-        made_public: MadePublic
-            Must have key_names == ["username", "entity_name"]
-        
-        Returns
-        -------
-        scales: MultiScore
-            With key_names == ["username", "depth", "kind", "criterion"]
-        """
         scales = MultiScore(key_names=["username", "depth", "kind", "criterion"])
-        for criterion, user_scores in scores.groupby(["criterion"]):
-            users, subscales = self.scale_criterion(users, user_scores, made_public, criterion)
+        for criterion in user_models.criteria():
+            users, subscales = self.scale_criterion(users, entities, made_public, user_models, criterion)
             scales = scales | subscales.assign(criterion=criterion, depth="0")
-        return users, scales
+        return updated_users, scales
     
     def scale_criterion(self, 
         users: Users,
-        scores: MultiScore, # key_names == ["username", "entity_name"]
+        entities: Entities,
         made_public: MadePublic, # key_names == ["username", "entity_name"]
+        user_models: UserModels,
         criterion: str,
     ) -> tuple[Users, MultiScore]: # key_names == ["username", "kind"]
         start = timeit.default_timer()
+        logger.info(f"Mehestan 0 for {criterion}. Compute scores.")
+        scores = user_models(entities, criterion)
+        end_step0 = timeit.default_timer()
+        logger.info(f"Mehestan 0 for {criterion}. Terminated in {int(end_step0 - start)} seconds")
+
         logger.info(f"Mehestan 1 for {criterion}. Select scalers.")
-        trusts = dict(zip(users["username"], users["trust_score"]))
+        trusts = dict(zip(users.index, users["trust_score"]))
         activities, is_scaler = self.compute_activities_and_scalers(users, trusts, made_public, scores)
         users[f"activities_{criterion}"] = activities
         users[f"is_scaler_{criterion}"] = is_scaler
@@ -143,7 +118,7 @@ class Mehestan(StateFunction):
         scalers = users.get({ f"is_scaler_{criterion}": True })
         end_step1 = timeit.default_timer()
         logger.info(f"Mehestan 1 for {criterion}. Selected {len(scalers)} scalers. " \
-            f"Terminated in {int(end_step1 - start)} seconds")
+            f"Terminated in {int(end_step1 - end_step0)} seconds")
 
         logger.info(f"Mehestan 2 for {criterion}. Collaborative scaling of scalers")
         scaler_scales, scaler_scores = self.scale_to_scalers(trusts, made_public, 
@@ -271,8 +246,11 @@ class Mehestan(StateFunction):
             where i is the iloc of the user in users
         """
         return np.array([
-            self.compute_user_activities(trusts[user], made_public.get(user), scores[user])
-            for user in users
+            self.compute_user_activities(
+                trusts[str(user)], 
+                made_public.get(user), 
+                scores.get(username=user)
+            ) for user in users
         ])
     
     def compute_user_activities(self,
@@ -414,8 +392,10 @@ class Mehestan(StateFunction):
             out[username] is the norm of user's score vector
         """
         return { 
-            username: self.compute_model_norm(made_public.get(username), scores[username]) 
-            for username in scores.get_set("username")
+            username: self.compute_model_norm(
+                made_public.get(username), 
+                scores.get(username)
+            ) for username in set(scores["username"])
         }
 
     def compute_model_norm(self, made_public: MadePublic, scores: MultiScore) -> float:

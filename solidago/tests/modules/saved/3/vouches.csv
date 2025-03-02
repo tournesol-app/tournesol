@@ -1,10 +1,8 @@
 by,to,kind,weight,priority
-user_4,user_0,Personhood,0.9083001457635504,0
-user_4,user_2,Personhood,0.4424822818764308,0
-user_6,user_0,Personhood,0.6164337288199317,0
-user_6,user_3,Personhood,0.8923728677435672,0
-user_6,user_2,Personhood,0.8441709608141535,0
-user_6,user_1,Personhood,0.5639417706571119,0
-user_6,user_5,Personhood,0.6360287923585212,0
-user_6,user_9,Personhood,0.5129289649072062,0
-user_7,user_8,Personhood,0.7556382707446725,0
+user_6,user_5,Personhood,0.21414539498317675,0
+user_6,user_2,Personhood,0.8542096387434243,0
+user_6,user_0,Personhood,0.48751299251263003,0
+user_6,user_4,Personhood,0.16545231988416076,0
+user_6,user_9,Personhood,0.7689354045307883,0
+user_6,user_1,Personhood,0.8677704101679322,0
+user_7,user_8,Personhood,0.9194211253534792,0

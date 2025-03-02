@@ -25,9 +25,8 @@ def test_evaluation_generator():
     made_public, assessments, comparisons = generators.engagement.SimpleEngagement()(users, entities)
     assessments = generators.assessment.NormalAssessment(error_size=2)(users, entities, made_public, assessments)
     comparisons = generators.comparison.KnaryGBT(21, 10)(users, entities, made_public, comparisons)
-
+            
 def test_generative_model():
-    generative_model = Generator.load("tests/generators/test_generator.json")
     for seed in range(5):
         state = State.load(f"tests/modules/saved/{seed}")
         for key in ("users", "entities", "vouches", "made_public", "assessments", "comparisons"):
