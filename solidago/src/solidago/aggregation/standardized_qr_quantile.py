@@ -11,13 +11,15 @@ from solidago.primitives import qr_quantile, qr_standard_deviation, qr_uncertain
 
 class StandardizedQrQuantile(Aggregation):
     def __init__(self, quantile=0.2, dev_quantile=0.9, lipschitz=0.1, error=1e-5):
-        """ Standardize scores so that only a fraction 1 - dev_quantile
-        of the scores is further than 1 away from the median,
-        and then run qr_median to aggregate the scores.
-        
+        """
+        Standardize scores so that only a fraction `1 - dev_quantile`
+        of the scores is further than 1 away from the requested `quantile`,
+        and then run [`qr_quantile`][solidago.primitives.qr_quantile] to aggregate the scores.
+
         Parameters
         ----------
-        qtl_std_dev: float
+        quantile: float
+        dev_quantile: float
         lipschitz: float
         error: float
         """
