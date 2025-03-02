@@ -81,29 +81,23 @@ class ScoringModel(ABC):
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
         from solidago.state.entities import Entities
-        criteria = self.criteria() if criterion is None else { criterion }
-        # TODO: Simplify code by transforming Entity into Entities
-        # entities = entities if isinstance(entities, Entities) else entities.to_df()
+        key_names = list()
         if isinstance(entities, Entities):
-            return MultiScore(
-                data=[
-                    (entity, criterion, *self.score(entity, c).to_triplet())
-                    for entity in self.evaluated_entities(entities)
-                    for c in criteria
-                ],
-                key_names=["entity_name", "criterion"]
-            )
-        entity = entities
-        return MultiScore(
-            data=[
-                (entity, criterion, *self.score(entity, c).to_triplet())
-                for c in self.criteria()
-            ],
-            key_names="criterion"
+            key_names.append("entity_name")
+        if criterion is not None:
+            key_names.append("criterion")
+        criteria = self.criteria() if criterion is None else { criterion }
+        entities = self.evaluated_entities(entities) if isinstance(entities, Entities) else [entities]
+        scores = [ (str(e), c, self.score(e, c)) for e in entities for c in criteria ]
+        results = MultiScore(
+            data=[(e, c, *s.to_triplet()) for e, c, s in scores if not s.isnan()],
+            key_names=["entity_name", "criterion"]
         )
+        results.key_names = key_names
+        return results
     
     @abstractmethod
-    def score(self, entity: "Entity", criterion: str) -> MultiScore:
+    def score(self, entity: "Entity", criterion: str) -> Score:
         raise NotImplementedError
     
     def criteria(self) -> set[str]:

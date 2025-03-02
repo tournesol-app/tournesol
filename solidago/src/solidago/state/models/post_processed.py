@@ -18,7 +18,7 @@ class PostProcessedModel(ScoringModel):
         """ This must be a monotonous function """
         raise NotImplemented
     
-    def score(self, entity: "Entity", criterion: str) -> Union[Score, MultiScore]:
+    def score(self, entity: "Entity", criterion: str) -> Score:
         return self.post_process(self.parent.score(entity, criterion))
 
     def post_process(self, score: Union[Score, MultiScore]) -> Union[Score, MultiScore]:

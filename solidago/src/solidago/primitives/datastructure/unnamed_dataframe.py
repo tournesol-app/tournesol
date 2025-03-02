@@ -82,7 +82,13 @@ class UnnamedDataFrame(DataFrame):
         last_only = self.meta._last_only if last_only is None else last_only
         if last_only:
             return self.row2value(df.iloc[-1])
-        return type(self)(df)
+        return type(self)(
+            data=df,
+            key_names=self.key_names, 
+            name=self.meta.name,
+            default_value=self.meta._default_value,
+            last_only=self.meta._last_only,
+        )
         
     """ The following methods are are more standard """
     def input2dict(self, *args, keys_only: bool=False, **kwargs) -> dict:
@@ -109,7 +115,7 @@ class UnnamedDataFrame(DataFrame):
     ) -> Union["UnnamedDataFrame", tuple]:
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)
         if cache_groups:
-            return self.groupby(list(kwargs.keys()), process=process).get(
+            return self.groupby(list(kwargs.keys()), process=process, last_only=last_only).get(
                 process=process, 
                 last_only=last_only, 
                 **kwargs
@@ -117,7 +123,12 @@ class UnnamedDataFrame(DataFrame):
         df = self[reduce(lambda a, x: a & x, [ self[k] == v for k, v in kwargs.items() ], True)]
         other_key_names = [ key_name for key_name in self.key_names if key_name not in kwargs ]
         if other_key_names or not process:
-            return type(self)(df, key_names=other_key_names)
+            return type(self)(df, 
+                key_names=other_key_names, 
+                name=self.meta.name,
+                default_value=self.meta._default_value,
+                last_only=self.meta._last_only,
+            )
         return self.default_value(**kwargs) if df.empty else self.df2value(df, last_only)
 
     def __contains__(self, *args, **kwargs) -> bool:
@@ -131,12 +142,24 @@ class UnnamedDataFrame(DataFrame):
         else:
             data = pd.concat([self, other])
             data.index = range(len(data))
-        return type(self)(data=data, key_names=self.key_names)
+        return type(self)(
+            data=data, 
+            key_names=self.key_names, 
+            name=self.meta.name,
+            default_value=self.meta._default_value,
+            last_only=self.meta._last_only,
+        )
 
     def delete(self, *args, **kwargs) -> "UnnamedDataFrame":
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)
         indices = self.get(process=False, last_only=False, cache_groups=False, **kwargs)
-        self_with_deletion = type(self)(data=self.drop(indices), key_names=self.key_names)
+        self_with_deletion = type(self)(
+            data=self.drop(indices), 
+            key_names=self.key_names,
+            name=self.meta.name,
+            default_value=self.meta._default_value,
+            last_only=self.meta._last_only,
+        )
         self_with_deletion.index = range(len(self_with_deletion))
         self.meta._group_cache = dict()
         return self_with_deletion
@@ -177,23 +200,28 @@ class UnnamedDataFrame(DataFrame):
         return type(self)(
             data=DataFrame([ df.iloc[-1] for _, df in self.iter(process=False, last_only=True) ]),
             key_names=self.key_names,
+            default_value=self.meta._default_value,
             last_only=True
         )
 
-    def groupby(self, columns: Optional[list[str]]=None, process: bool=True) -> "UnnamedDataFrameDict":
+    def groupby(self, 
+        columns: Optional[list[str]]=None, 
+        process: bool=True, 
+        last_only: Optional[bool]=None,
+    ) -> "UnnamedDataFrameDict":
         columns = columns if columns else self.key_names
-        if (tuple(columns), process) in self.meta._group_cache:
-            return self.meta._group_cache[tuple(columns), process]
+        if (tuple(columns), process, last_only) in self.meta._group_cache:
+            return self.meta._group_cache[tuple(columns), process, last_only]
         data = { key: value for key, value in self.iter(columns, process) }
         sub_key_names = [ key for key in self.key_names if key not in columns ]
         from solidago.primitives.datastructure import UnnamedDataFrameDict
-        self.meta._group_cache[tuple(columns), process] = UnnamedDataFrameDict(
+        self.meta._group_cache[tuple(columns), process, last_only] = UnnamedDataFrameDict(
             data, 
             df_cls=type(self), 
             main_key_names=columns, 
             sub_key_names=sub_key_names
         )
-        return self.meta._group_cache[tuple(columns), process]
+        return self.meta._group_cache[tuple(columns), process, last_only]
     
     def iter(self, 
         columns: Optional[list[str]]=None, 
@@ -212,7 +240,13 @@ class UnnamedDataFrame(DataFrame):
             df = groups.get_group(key_tuple)
             if len(kn) > 0 or not process:
                 df = DataFrame([df.iloc[-1]]) if last_only and len(kn) == 0 else df
-                yield key, type(self)(df, key_names=kn)
+                yield key, type(self)(
+                    data=df, 
+                    key_names=kn, 
+                    name=self.meta.name, 
+                    default_value=self.meta._default_value, 
+                    last_only=self.meta._last_only
+                )
             else:
                 yield key, self.df2value(df, last_only)
 

@@ -54,10 +54,10 @@ class ScaledModel(ScoringModel):
     ) -> None:
         self.set("translation", criterion, score)
     
-    def score(self, entity: "Entity", criterion: str) -> MultiScore:
+    def score(self, entity: "Entity", criterion: str) -> Score:
         return self.scale(self.parent.score(entity, criterion), criterion)
 
-    def scale(self, score: Score, criterion: str) -> MultiScore:
+    def scale(self, score: Score, criterion: str) -> Score:
         return self.multiplier.get(criterion) * score + self.translation.get(criterion)
     
     def rescale(self, multiplier: Score, translation: Score) -> None:

@@ -13,7 +13,7 @@ class DirectScoring(ScoringModel):
         super().__init__(*args, directs=directs, **kwargs)
         assert self.is_base()
         
-    def score(self, entity: Union[str, "Entity"], criterion: str) -> MultiScore:
+    def score(self, entity: Union[str, "Entity"], criterion: str) -> Score:
         return self.directs.get(entity, criterion)
         
     def to_direct(self, entities: Optional["Entities"]=None) -> "DirectScoring":

@@ -86,7 +86,7 @@ class Mehestan(StateFunction):
             Scaled user models
         """
         logger.info("Starting Mehestan's collaborative scaling")
-        assert "trust_score" in users, "No trust scores. Consider running TrustAll first."
+        assert "trust_score" in users.columns, "No trust scores. Consider running TrustAll first."
 
         scales = MultiScore(key_names=["username", "depth", "kind", "criterion"])
         for criterion in user_models.criteria():
@@ -282,11 +282,79 @@ class Mehestan(StateFunction):
     #############################################################
     ##  Methods used for both multipliers and translations  ##
     #############################################################
+
+    def scaler_scalee_comparison_lists(self, 
+        made_public: MadePublic, # key_names == ["username", "entity_name"]
+        scaler_scores: MultiScore, # key_names == ["username", "entity_name"]
+        scalee_scores: MultiScore, # key_names == ["username", "entity_name"]
+        compute_scaler_scalee_comparisons: Callable,
+        default_value: Score,
+    ) -> tuple[VotingRights, MultiScore]: # key_names == ["scalee_name", "scaler_name"]
+        """ Computes the comparisons of scores, with uncertainties,
+        for comparable entities of any pair of scalers (x_{uvef} in paper) (for x=s or tau),
+        for u in scalees and v in scalers.
+        
+        Parameters
+        ----------
+        made_public: MadePublic
+            Must have key_names == ["username", "entity_name"]
+        scalee_scores: MultiScore
+            Must have key_names == ["username", "entity_name"]
+        scaler_scores: MultiScore
+            Must have key_names == ["username", "entity_name"]
+        
+        Returns
+        -------
+        weight_lists: VotingRights
+            With key_names == ["scalee_name", "scaler_name"] and last_only == False
+            weight_lists.get(scalee_name, scaler_name) is a list of weights, for pairs
+            of entities.
+        comparison_lists: MultiScore
+            With key_names == ["scalee_name", "scaler_name"] and last_only == False
+            multiscore.get(scalee_name, scaler_name) is a list of comparisons of score differences,
+            each of which is of type Score.
+        """
+        key_names = ["scalee_name", "scaler_name"]
+        weight_lists = VotingRights(key_names=key_names, last_only=False)
+        comparison_lists = MultiScore(key_names=key_names, last_only=False)
+        
+        for scalee_name in set(scalee_scores["username"]):
+            scalee_name_scores = scalee_scores.get(username=scalee_name, cache_groups=True)
+            scalee_entity_names = set(scalee_name_scores["entity_name"])
+            scaler_names = set.union(*[
+                scaler_scores.get(entity_name=entity_name, cache_groups=True)["username"]
+                for entity_name in scalee_entity_names
+            ])
+        
+            for scaler_name in scaler_names:
+                
+                if scalee_name == scaler_name:
+                    weight_lists[scalee_name, scaler_name] = [1]
+                    comparison_lists[scalee_name, scaler_name] = [default_value]
+                    continue
+                
+                scaler_name_scores = scaler_scores.get(username=scaler_name, cache_groups=True)
+                scaler_entity_names = set(scaler_name_scores["entity_name"])
+                common_entity_names = scalee_entity_names & scaler_entity_names
+                
+                output = compute_scaler_scalee_comparisons(
+                    self,
+                    scalee_name_scores, 
+                    scaler_name_scores, 
+                    made_public.get(username=scaler_name, cache_groups=True),
+                    common_entity_names
+                )
+                
+                for weight, scaler_scalee_comparison in zip(*output):
+                    weight_lists.add_row(scalee_name, scaler_name, weight)
+                    comparison_lists.add_row(scalee_name, scaler_name, ratio)
+
+        return weight_lists, comparison_lists
     
     def aggregate_scaler_scores(self,
         trusts: dict[str, float],
-        weight_lists: NestedDictOfRowLists, # key_names == ["scalee_name", "scaler_name"]
-        score_lists: NestedDictOfRowLists, # key_names == ["scalee_name", "scaler_name"]
+        weight_lists: VotingRights, # key_names == ["scalee_name", "scaler_name"], last_only == False
+        score_lists: MultiScore, # key_names == ["scalee_name", "scaler_name"], last_only == False
     ) -> tuple[VotingRights, MultiScore]: # key_names == ["scalee_name", "scaler_name"]
         """ For any two pairs (scalee, scaler), aggregates their ratio or diff data.
         Typically used to transform s_{uvef}'s into s_{uv}, and tau_{uve}'s into tau_{uv}.
@@ -296,8 +364,8 @@ class Mehestan(StateFunction):
         ----------
         trusts: dict[str, float]
             trusts[username] is the user's trust
-        weight_lists: UnnamedDataFrame
-        score_lists: UnnamedDataFrame
+        weight_lists: VotingRights
+        score_lists: MultiScore
             
         Returns
         -------
@@ -310,21 +378,19 @@ class Mehestan(StateFunction):
         multiscores = MultiScore(key_names=["scalee_name", "scaler_name"])
         
         common_kwargs = dict(lipschitz=self.user_comparison_lipschitz, error=self.error)
-        for (scalee_name, scaler_name), score_list in score_lists.iter("row_list"):
+        for (scalee_name, scaler_name), score_df in score_lists.iter("row_list"):
             kwargs = common_kwargs | dict(
-                values=np.array([ score.value for score in score_list ], dtype=np.float64),
-                voting_rights=np.array(weight_lists[scalee_name, scaler_name], dtype=np.float64),
-                left_uncertainties=np.array([ score.left_unc for score in score_list ], dtype=np.float64),
-                right_uncertainties=np.array([ score.right_unc for score in score_list ], dtype=np.float64),
+                values=np.array(score_df["value"], dtype=np.float64),
+                voting_rights=np.array(
+                    weight_lists.get(scalee_name, scaler_name, cache_groups=True)["voting_right"]
+                , dtype=np.float64),
+                left_uncertainties=np.array(scores_df["left_unc"], dtype=np.float64),
+                right_uncertainties=np.array(scores_df["right_unc"], dtype=np.float64),
             )
             value = qr_median(**kwargs)
             uncertainty = qr_uncertainty(median=value, **kwargs)
-            multiscores[scalee_name, scaler_name] = Score(value, uncertainty, uncertainty)
-            voting_rights.add_row(
-                scalee_name=scalee_name, 
-                scaler_name=scaler_name, 
-                voting_right=trusts[scaler_name]
-            )
+            multiscores.set(scalee_name, scaler_name, value, uncertainty, uncertainty)
+            voting_rights.set(scalee_name, scaler_name, trusts[scaler_name])
                 
         return voting_rights, multiscores
 
@@ -355,10 +421,10 @@ class Mehestan(StateFunction):
         """
         kwargs = dict(
             lipschitz=lipschitz, 
-            voting_rights=np.array([ voting_right for scaler_name, voting_right in voting_rights ], dtype=np.float64),
-            values=np.array([ score.value for scaler_name, score in multiscore ], dtype=np.float64),
-            left_uncertainties=np.array([ score.left_unc for scaler_name, score in multiscore ], dtype=np.float64),
-            right_uncertainties=np.array([ score.right_unc for scaler_name, score in multiscore ], dtype=np.float64),
+            voting_rights=np.array(voting_rights["voting_right"], dtype=np.float64),
+            values=np.array(scores["value"], dtype=np.float64),
+            left_uncertainties=np.array(scores["left_unc"], dtype=np.float64),
+            right_uncertainties=np.array(scores["right_unc"], dtype=np.float64),
             error=self.error
         )
         value = aggregator(default_value=default_value, **kwargs)
@@ -429,13 +495,10 @@ class Mehestan(StateFunction):
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         scaler_scores: MultiScore, # key_names == ["username", "entity_name"]
         scalee_scores: MultiScore, # key_names == ["username", "entity_name"]
-    ) -> tuple[NestedDictOfRowLists, NestedDictOfRowLists]: # key_names == ["scalee_name", "scaler_name"]
-    # ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
+    ) -> tuple[VotingRights, MultiScore]: # key_names == ["scalee_name", "scaler_name"]
         """ Computes the ratios of score differences, with uncertainties,
         for comparable entities of any pair of scalers (s_{uvef} in paper),
         for u in scalees and v in scalers.
-        Note that the output rations[u][v] is given as a 1-dimensional np.ndarray
-        without any reference to e and f.
         
         Parameters
         ----------
@@ -448,60 +511,39 @@ class Mehestan(StateFunction):
         
         Returns
         -------
-        weight_lists: NestedDictOfRowLists
-            With key_names == ["scalee_name", "scaler_name"]
-            weight_lists[scalee_name, scaler_name] is a list of weights, for pairs
+        weight_lists: VotingRights
+            With key_names == ["scalee_name", "scaler_name"] and last_only == False
+            weight_lists.get(scalee_name, scaler_name) is a list of weights, for pairs
             of entities.
-        ratio_lists: NestedDictOfRowLists
-            With key_names == ["scalee_name", "scaler_name"]
-            multiscore[scalee_name, scaler_name] is a list of ratios of score differences,
+        ratio_lists: MultiScore
+            With key_names == ["scalee_name", "scaler_name"] and last_only == False
+            multiscore.get(scalee_name, scaler_name) is a list of ratios of score differences,
             each of which is of type Score.
         """
-        reordered_scaler_scores = scaler_scores.reorder_keys(["entity_name", "username"])
-        weight_lists = NestedDictOfRowLists(key_names=["scalee_name", "scaler_name"])
-        ratio_lists = NestedDictOfRowLists(key_names=["scalee_name", "scaler_name"])
-        
-        for scalee_name in scalee_scores.get_set("username"):
-            scalee_entity_names = scalee_scores[scalee_name].get_set("entity_name")
-            scaler_names = reordered_scaler_scores[scalee_entity_names].get_set("username")
-        
-            for scaler_name in scaler_names:
-                
-                if scalee_name == scaler_name:
-                    weight_lists[scalee_name, scaler_name] = [1]
-                    ratio_lists[scalee_name, scaler_name] = [Score(1, 0, 0)]
-                    continue
-                
-                common_entity_names = scalee_entity_names & scaler_scores[scaler_name].get_set("entity_name")
-                
-                if len(common_entity_names) <= 1:
-                    continue
-                if len(common_entity_names) <= self.n_entity_to_fully_compare_max:
-                    pairs = UnorderedPairs(common_entity_names)
-                else:
-                    pairs = UnorderedPairs(common_entity_names).n_samples(self.n_diffs_sample_max)
-                
-                weight_list, ratio_list = self.compute_ratios(
-                    scalee_scores[scalee_name], 
-                    scaler_scores[scaler_name], 
-                    made_public.get(scaler_name),
-                    pairs
-                )
-                if weight_list:
-                    weight_lists[scalee_name, scaler_name] = weight_list
-                    ratio_lists[scalee_name, scaler_name] = ratio_list
-
-        return weight_lists, ratio_lists
+        return self.scaler_scalee_comparison_lists(
+            made_public, 
+            scaler_scores, 
+            scalee_scores,
+            Mehestan.compute_ratios,
+            Score(1, 0, 0)
+        )
 
     def compute_ratios(self,
         scalee_scores: MultiScore, # key_name == ["entity_name"]
         scaler_scores: MultiScore, # key_name == ["entity_name"]
         scaler_public: MadePublic, # key_name == ["entity_name"]
-        pairs: Iterable # outputs list of pairs (e, f) of entity names
+        common_entity_names: set[str],
     ) -> tuple[list[float], list[Score]]:
         """ Returns the scaler's voting right and ratios to multiplicatively scale scalee's model """
+        if len(common_entity_names) <= 1:
+            return list(), list()
+        pairs = UnorderedPairs(common_entity_names)
+        if len(common_entity_names) > self.n_entity_to_fully_compare_max:
+            pairs = pairs.n_samples(self.n_diffs_sample_max)
         weight_list, ratio_list = list(), list()
         penalty = lambda entity_name: scaler_public.penalty(self.privacy_penalty, entity_name)
+        scalee_scores = scalee_scores.groupby(["entity_name"])
+        scaler_scores = scaler_scores.groupby(["entity_name"])
         for e, f in pairs:
             ratio = (scaler_scores[e] - scaler_scores[f]) / (scalee_scores[e] - scalee_scores[f])
             if ratio.isnan(): continue
@@ -531,16 +573,12 @@ class Mehestan(StateFunction):
             multipliers[user][0] is the multiplicative scaling of user
             multipliers[user][1] is the uncertainty on the multiplier
         """
-        return MultiScore({
-            scalee_name: self.aggregate_scalers(
-                voting_rights2,
-                ratios[scalee_name],
-                self.lipschitz / (8 * (1e-9 + model_norms[scalee_name])), 
-                default_value=1.0, 
-                default_dev=self.default_multiplier_dev
-            ).to_triplet()
-            for scalee_name, voting_rights2 in voting_rights.iter(["scalee_name"])
-        }, key_names=["scalee_name"])
+        kwargs = dict(default_value=1.0, default_dev=self.default_multiplier_dev)
+        l = lambda name: self.lipschitz / (8 * (1e-9 + model_norms[scalee_name]))
+        return MultiScore([
+            (name, *self.aggregate_scalers(weights, ratios[name], l(name), **kwargs).to_triplet())
+            for name, weights in voting_rights.iter(["scalee_name"])
+        ], key_names=["scalee_name"])
 
     ############################################
     ##   Methods to esimate the translations  ##
@@ -550,7 +588,7 @@ class Mehestan(StateFunction):
         made_public: MadePublic, # key_names == ["username", "entity_name"]
         scaler_scores: MultiScore, # key_names == ["username", "entity_name"]
         scalee_scores: MultiScore, # key_names == ["username", "entity_name"]
-    ) -> tuple[NestedDictOfRowLists, NestedDictOfRowLists]: # key_names == ["scalee_name", "scaler_name"]
+    ) -> tuple[VotingRights, MultiScore]: # key_names == ["scalee_name", "scaler_name"]
         """ Computes the score differences on entities that both scaler and scalee evaluated.
         This corresponds to tau_{uve} in paper.
         
@@ -567,42 +605,21 @@ class Mehestan(StateFunction):
         
         Returns
         -------
-        weight_lists: NestedDictOfRowLists
-            With key_names == ["scalee_name", "scaler_name"]
+        weight_lists: VotingRights
+            With key_names == ["scalee_name", "scaler_name"], last_only == True
             weight_lists[scalee_name, scaler_name] is a list of weights for common entities
-        diff_lists: NestedDictOfRowLists
-            With key_names == ["scalee_name", "scaler_name"]
+        diff_lists: MultiScore
+            With key_names == ["scalee_name", "scaler_name"], last_only == True
             diff_lists[user][user_bis] is a a list of score differences,
             of type Score (i.e. with left and right uncertainties).
         """
-        reordered_scaler_scores = scaler_scores.reorder_keys(["entity_name", "username"])
-        weight_lists = NestedDictOfRowLists(key_names=["scalee_name", "scaler_name"])
-        diff_lists = NestedDictOfRowLists(key_names=["scalee_name", "scaler_name"])
-                
-        for scalee_name in scalee_scores.get_set("username"):
-            scalee_entity_names = scalee_scores[scalee_name].get_set("entity_name")
-            scaler_names = reordered_scaler_scores[scalee_entity_names].get_set("username")
-        
-            for scaler_name in scaler_names:
-                
-                if scalee_name == scaler_name:
-                    weight_lists[scalee_name, scaler_name] = [1]
-                    diff_lists[scalee_name, scaler_name] = [Score(0, 0, 0)]
-                    continue
-                
-                common_entity_names = scalee_entity_names & scaler_scores[scaler_name].get_set("entity_name")
-                
-                if len(common_entity_names) > 0:
-                    diff_lists[scalee_name, scaler_name] = [
-                        scaler_scores[scaler_name, entity_name] - scalee_scores[scalee_name, entity_name]
-                        for entity_name in common_entity_names
-                    ]
-                    weight_lists[scalee_name, scaler_name] = [
-                        made_public.penalty(self.privacy_penalty, scaler_name, entity_name)
-                        for entity_name in common_entity_names
-                    ]
-
-        return weight_lists, diff_lists
+        return self.scaler_scalee_comparison_lists(
+            made_public, 
+            scaler_scores, 
+            scalee_scores,
+            Mehestan.compute_translations,
+            Score(0, 0, 0)
+        )
 
     def compute_translations(self, 
         voting_rights: VotingRights, # key_names == ["scalee_name", "scaler_name"]
@@ -623,14 +640,13 @@ class Mehestan(StateFunction):
             translations[user][0] is the multiplicative scaling of user
             translations[user][1] is the uncertainty on the multiplier
         """
-        return MultiScore({
-            scalee_name: self.aggregate_scalers(
-                voting_rights2, 
-                diffs[scalee_name],
-                self.lipschitz / 8, 
-                default_value=0.0, 
-                default_dev=self.default_translation_dev
-            ).to_triplet()
-            for scalee_name, voting_rights2 in voting_rights.iter(["scalee_name"])
-        }, key_names=["scalee_name"])
+        kwargs = dict(
+            lipschitz=self.lipschitz / 8, 
+            default_value=0.0, 
+            default_dev=self.default_translation_dev
+        )
+        return MultiScore([
+            (name, *self.aggregate_scalers(weights, diffs[name], **kwargs).to_triplet())
+            for name, weights in voting_rights.iter(["scalee_name"])
+        ], key_names=["scalee_name"])
 

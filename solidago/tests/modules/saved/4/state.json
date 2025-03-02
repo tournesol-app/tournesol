@@ -31,11 +31,12 @@
     ],
     "voting_rights": [
         "VotingRights",
-        null
+        "tests/modules/saved/4/voting_rights.csv"
     ],
     "user_models": [
         "UserModels",
         {
+            "user_directs": "tests/modules/saved/4/user_directs.csv",
             "default_model_cls": [
                 "DirectScoring",
                 {}

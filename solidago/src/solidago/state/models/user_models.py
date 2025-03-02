@@ -38,25 +38,35 @@ class UserModels:
     def load(cls, kwargs) -> "UserModels":
         return cls(**kwargs)
 
-    def __call__(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
-        return self.score(entity)
+    def __call__(self, 
+        entities: Union[str, "Entity", "Entities"],
+        criterion: Optional[str]=None,
+    ) -> MultiScore:
+        return self.score(entity, criterion)
     
-    def score(self, entity: Union[str, "Entity", "Entities"]) -> MultiScore:
-        from solidago.state.entities import Entity, Entities
-        if isinstance(entity, (str, Entity)):
-            result = MultiScore(key_names=["username", "criterion"])
-            for username, model in self:
-                for criterion, score in model(entity):
-                    result.set(username, criterion, score)
-            return result
-        assert isinstance(entity, Entities)
-        entities = entity
-        result = MultiScore(key_names=["username", "entity_name", "criterion"])
-        for username, model in self:
-            for entity in model.evaluated_entities(entities):
-                for criterion, score in model(entity):
-                    result.set(username, str(entity), criterion, score)
-        return result
+    def score(self, 
+        entities: Union[str, "Entity", "Entities"],
+        criterion: Optional[str]=None,
+    ) -> MultiScore:
+        key_names = ["username"]
+        if isinstance(entities, Entities):
+            key_names.append("entity_name")
+        if criterion is not None:
+            key_names.append("criterion")
+        criteria = self.criteria() if criterion is None else { criterion }
+        entities = self.evaluated_entities(entities) if isinstance(entities, Entities) else [entities]
+        scores = [ 
+            (str(user), str(entity), c, model.score(entity, c)) 
+            for user, model in self
+            for entity in entities 
+            for c in criteria 
+        ]
+        results = MultiScore(
+            data=[(u, e, c, *s.to_triplet()) for u, e, c, s in scores if not s.isnan()],
+            key_names=["username", "entity_name", "criterion"]
+        )
+        results.key_names = key_names
+        return results
 
     def model_cls(self, user: Union[str, "User"]) -> tuple[str, dict]:
         if str(user) in self.user_model_cls_dict:
@@ -92,7 +102,8 @@ class UserModels:
             self.user_model_cls_dict[str(user)] = model.save()
         if self._cache_users is not None:
             self._cache_users.add(str(user))
-        self._cache_criteria.add(set(model.directs["criterion"]))
+        if self._cache_criteria is not None:
+            self._cache_criteria.add(set(model.directs["criterion"]))
     
     def users(self) -> set[str]:
         if self._cache_users is None:
@@ -100,6 +111,9 @@ class UserModels:
                 | set(self.user_scales["username"]) \
                 | set(self.user_model_cls_dict.keys())
         return self._cache_users
+
+    def __len__(self) -> int:
+        return len(self.users())
 
     def criteria(self) -> set[str]:
         if self._cache_criteria is None:

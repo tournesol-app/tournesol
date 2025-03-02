@@ -18,9 +18,22 @@ from solidago.primitives.lipschitz import *
 from solidago.primitives.optimize import *
 
 
-generative_model = GenerativeModel.load("tests/generative_model/test_generative_model.json")
-states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
-tiny = TournesolExport("tests/tiny_tournesol.zip")
+generator = Generator.load("tests/generators/test_generator.json")
+pipeline = Sequential.load("tests/modules/test_pipeline.json")
+
+# from tests.generate_test_states import *
+# save_generated_data()
+
+# states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
+# out = [ pipeline(s, skip_steps={3, 4, 5}) for s in states ]
+
+s = State.load("tests/modules/saved/0")
+
+# for seed in range(5):
+    # directory = f"tests/modules/saved/{seed}"
+    # pipeline(State.load(directory), directory, skip_steps={3, 4, 5})
+
+# tiny = TournesolExport("tests/tiny_tournesol.zip")
 
 # t = TournesolExport("experiments/tournesol.zip")
 # t = State.load("experiments/saved_tournesol")
