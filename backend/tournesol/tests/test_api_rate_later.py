@@ -14,6 +14,7 @@ from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollFactory
 from tournesol.tests.factories.ratings import ContributorRatingFactory
+from tournesol.utils.constants import RATE_LATER_BULK_MAX_SIZE
 
 
 class RateLaterCommonMixinTestCase:
@@ -400,6 +401,33 @@ class RateLaterBulkCreateTestCase(RateLaterCommonMixinTestCase, TestCase):
         self.assertEqual(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
             initial_nbr + 1,
+        )
+
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_create_size_limit(self) -> None:
+        """
+        An authenticated user can only add a limited number of entities.
+        """
+        self.client.force_authenticate(self.user)
+
+        limit = RATE_LATER_BULK_MAX_SIZE
+
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+        data = [{"entity": {"uid": "yt:entity1-{:03d}".format(n)}} for n in range(limit)]
+        response = self.client.post(self.rate_later_bulk_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr + 20,
+        )
+
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+        data = [{"entity": {"uid": "yt:entity2-{:03d}".format(n)}} for n in range(limit + 1)]
+        response = self.client.post(self.rate_later_bulk_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr,
         )
 
     def test_auth_404_create_invalid_poll(self) -> None:

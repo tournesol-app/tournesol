@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tournesol.models import Entity, RateLater
 from tournesol.serializers.rate_later import RateLaterSerializer
+from tournesol.utils.constants import RATE_LATER_BULK_MAX_SIZE
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
@@ -85,6 +86,7 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
 
     def get_serializer(self, *args, **kwargs):
         kwargs["many"] = True
+        kwargs["max_length"] = RATE_LATER_BULK_MAX_SIZE
         return super().get_serializer(*args, **kwargs)
 
     def perform_create(self, serializer):

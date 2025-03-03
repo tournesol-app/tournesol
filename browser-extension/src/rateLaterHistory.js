@@ -1,3 +1,5 @@
+const RATE_LATER_BULK_MAX_SIZE = 20;
+
 const onYoutubeReady = (callback) => {
   /**
    * Youtube doesnt completely load a video page, so content script doesn't
@@ -111,19 +113,44 @@ const addRateLaterBulk = async (videoIds) =>
     );
   });
 
-const addVideoIdsToRateLater = async (videos) => {
-  let addedSet;
-  let failedSet;
-
-  try {
-    await addRateLaterBulk(Array.from(videos));
-    addedSet = videos;
-    failedSet = new Set();
-  } catch (e) {
-    console.error(e);
-    addedSet = new Set();
-    failedSet = videos;
+const chunkArray = (array, chunkSize) => {
+  if (chunkSize <= 0) {
+    throw new Error('Chunk size must be greater than 0');
   }
+
+  const chunks = [];
+
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+
+  return chunks;
+};
+
+const addVideoIdsToRateLater = async (videoIds) => {
+  let promise = Promise.resolve();
+
+  const addedSet = new Set();
+  const failedSet = new Set();
+
+  const chunkedVideoIds = chunkArray(
+    Array.from(videoIds),
+    RATE_LATER_BULK_MAX_SIZE
+  );
+
+  chunkedVideoIds.forEach((chunk) => {
+    promise = promise.then(async () => {
+      try {
+        await addRateLaterBulk(chunk);
+        chunk.forEach((videoId) => addedSet.add(videoId));
+      } catch (e) {
+        console.error(e);
+        chunk.forEach((videoId) => failedSet.add(videoId));
+      }
+    });
+  });
+
+  await promise;
 
   return { addedSet, failedSet };
 };

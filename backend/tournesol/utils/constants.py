@@ -17,3 +17,6 @@ MEHESTAN_MAX_SCALED_SCORE = 100.0
 # Default weight for a criteria in the recommendations
 # FIXME: the default weight used by the front end is 50, not 10
 CRITERIA_DEFAULT_WEIGHT = 10
+
+# Maximum number of "rate later" entries that can be created in a bulk create request
+RATE_LATER_BULK_MAX_SIZE = 20
