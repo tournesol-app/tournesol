@@ -103,11 +103,10 @@ const addRateLaterBulk = async (videoIds) =>
         videoIds,
       },
       (response) => {
-        if (response === undefined) {
+        if (response === undefined)
           reject(new Error('addRateLaterBulk failed'));
-          return;
-        }
-        resolve(response);
+        else if (response instanceof Error) reject(response);
+        else resolve(response);
       }
     );
   });
