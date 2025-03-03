@@ -84,7 +84,7 @@ class ScoringModel(ABC):
         key_names = list()
         if isinstance(entities, Entities):
             key_names.append("entity_name")
-        if criterion is not None:
+        if criterion is None:
             key_names.append("criterion")
         criteria = self.criteria() if criterion is None else { criterion }
         entities = self.evaluated_entities(entities) if isinstance(entities, Entities) else [entities]

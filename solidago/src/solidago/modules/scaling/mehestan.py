@@ -542,8 +542,8 @@ class Mehestan(StateFunction):
             pairs = pairs.n_samples(self.n_diffs_sample_max)
         weight_list, ratio_list = list(), list()
         penalty = lambda entity_name: scaler_public.penalty(self.privacy_penalty, entity_name)
-        scalee_scores = scalee_scores.groupby(["entity_name"])
-        scaler_scores = scaler_scores.groupby(["entity_name"])
+        scalee_scores = scalee_scores.to_dict("entity_name")
+        scaler_scores = scaler_scores.to_dict("entity_name")
         for e, f in pairs:
             ratio = (scaler_scores[e] - scaler_scores[f]) / (scalee_scores[e] - scalee_scores[f])
             if ratio.isnan(): continue

@@ -119,9 +119,9 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         model = DirectScoring()
         compared_entity_names = set(comparisons["left_name"]) | set(comparisons["right_name"])
         entities = entities.get(compared_entity_names) # Restrict to compared entities
-        init = init_model(entities).groupby(["criterion"])
+        init = init_model(entities).to_dict("criterion")
         criteria = set(comparisons["criterion"]) | set(init["criterion"])
-        for criterion, cmps in comparisons.groupby(["criterion"]):
+        for criterion, cmps in comparisons.to_dict("criterion"):
             criterion_entity_names = set(cmps["left_name"]) | set(cmps["right_name"])
             if len(criterion_entity_names) <= 1:
                 continue

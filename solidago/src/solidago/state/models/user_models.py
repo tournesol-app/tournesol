@@ -42,19 +42,20 @@ class UserModels:
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
     ) -> MultiScore:
-        return self.score(entity, criterion)
+        return self.score(entities, criterion)
     
     def score(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
     ) -> MultiScore:
         key_names = ["username"]
+        from solidago.state.entities import Entities
         if isinstance(entities, Entities):
             key_names.append("entity_name")
-        if criterion is not None:
+        if criterion is None:
             key_names.append("criterion")
         criteria = self.criteria() if criterion is None else { criterion }
-        entities = self.evaluated_entities(entities) if isinstance(entities, Entities) else [entities]
+        entities = entities if isinstance(entities, Entities) else [entities]
         scores = [ 
             (str(user), str(entity), c, model.score(entity, c)) 
             for user, model in self

@@ -89,7 +89,7 @@ class Comparisons(UnnamedDataFrame):
         result = list()
         last_only = self.meta._last_only if last_only is None else last_only
         comparisons = self.last_only() if last_only else self
-        entity_ordered_comparisons = comparisons.order_by_entities().groupby(["entity_name"])
+        entity_ordered_comparisons = comparisons.order_by_entities().to_dict(["entity_name"])
         entity_name2index = { str(entity): index for index, entity in enumerate(entities) }
         for i, entity in enumerate(entities):
             comparisons = entity_ordered_comparisons[str(entity)]

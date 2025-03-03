@@ -28,11 +28,11 @@ class EntitywiseQrQuantile(StateFunction):
     ) -> ScoringModel:
         
         global_model = DirectScoring()
-        voting_rights = voting_rights.groupby(["username", "entity_name", "criterion"])
+        voting_rights = voting_rights.to_dict(["username", "entity_name", "criterion"])
         multiscores = user_models(entities)
         common_kwargs = dict(lipschitz=self.lipschitz, error=self.error)
 
-        for (entity_name, criterion), scores in multiscores.groupby(["entity_name", "criterion"]):
+        for (entity_name, criterion), scores in multiscores.to_dict(["entity_name", "criterion"]):
             rights = np.array([
                 voting_rights[username, entity_name, criterion]
                 for username, _ in scores

@@ -46,8 +46,8 @@ class AffineOvertrust(StateFunction):
         voting_rights = VotingRights()
         criteria = set(assessments["criterion"]) | set(comparisons["criterion"])
         comparisons = comparisons.order_by_entities()
-        assessments = assessments.groupby(["criterion"])
-        comparisons = comparisons.groupby(["criterion"])
+        assessments = assessments.to_dict("criterion")
+        comparisons = comparisons.to_dict("criterion")
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
         entity_names = { 
             c: set(assessments[c]["entity_name"]) | set(comparisons[c]["entity_name"])

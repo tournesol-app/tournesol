@@ -1,5 +1,3 @@
-import pandas as pd
-
 from solidago.primitives import qr_standard_deviation
 from solidago.state import *
 from solidago.modules.base import StateFunction
@@ -20,11 +18,11 @@ class LipschitzStandardize(StateFunction):
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
         scores = user_models.score(entities) # key_names == ["username", "criterion", "entity_name"]
         scales = MultiScore(key_names=["depth", "kind", "criterion"])
-        for criterion, user_scores in scores.groupby(["criterion"]):
+        for criterion, user_scores in scores.to_dict(["criterion"]):
             weights = 1 / user_scores.groupby("username").transform("size")
             std_dev = qr_standard_deviation(
                 lipschitz=self.lipschitz,
-                values=user_scores["score"].to_numpy(),
+                values=user_scores["value"].to_numpy(),
                 quantile_dev=self.dev_quantile,
                 voting_rights=weights.to_numpy(),
                 left_uncertainties=user_scores["left_unc"].to_numpy(),
@@ -32,10 +30,5 @@ class LipschitzStandardize(StateFunction):
                 default_dev=1.0,
                 error=self.error,
             )
-            scales.set(0, "multipliers", criterion, Score(translation_value, 0, 0))
-            multipliers.set(criterion, 1 / std_dev)
-        
-        return UserModels({
-            username: ScaledModel(model, multipliers=multipliers, note="standardize")
-            for username, model in user_models
-        })
+            scales.set(0, "multipliers", criterion, std_dev, 0, 0)
+        return user_models.scale(scales, note="lipschitz_standardardize")

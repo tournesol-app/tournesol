@@ -53,11 +53,15 @@ class UnnamedDataFrame(DataFrame):
         self.meta._group_cache = dict()
         
     @property
-    def key_names(self):
+    def key_names(self) -> list[str]:
         return self.meta.key_names
         
+    @key_names.setter
+    def key_names(self, key_names: list[str]) -> None:
+        self.meta.key_names = key_names
+        
     @property
-    def value_names(self):
+    def value_names(self) -> list[str]:
         return self.meta.value_names
     
     """ The following methods could be worth redefining in derived classes """
@@ -115,7 +119,7 @@ class UnnamedDataFrame(DataFrame):
     ) -> Union["UnnamedDataFrame", tuple]:
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)
         if cache_groups:
-            return self.groupby(list(kwargs.keys()), process=process, last_only=last_only).get(
+            return self.to_dict(list(kwargs.keys()), process=process, last_only=last_only).get(
                 process=process, 
                 last_only=last_only, 
                 **kwargs
@@ -204,11 +208,15 @@ class UnnamedDataFrame(DataFrame):
             last_only=True
         )
 
-    def groupby(self, 
-        columns: Optional[list[str]]=None, 
+    def groupby(self, *args, **kwargs) -> "DataFrameGroupBy":
+        return DataFrame(self).groupby(*args, **kwargs)
+
+    def to_dict(self, 
+        columns: Optional[Union[str, list[str]]]=None, 
         process: bool=True, 
         last_only: Optional[bool]=None,
     ) -> "UnnamedDataFrameDict":
+        columns = [columns] if isinstance(columns, str) else columns
         columns = columns if columns else self.key_names
         if (tuple(columns), process, last_only) in self.meta._group_cache:
             return self.meta._group_cache[tuple(columns), process, last_only]
@@ -229,6 +237,7 @@ class UnnamedDataFrame(DataFrame):
         last_only: Optional[bool]=None
     ) -> Iterable:
         last_only = self.meta._last_only if last_only is None else last_only
+        columns = [columns] if isinstance(columns, str) else columns
         columns = self.key_names if columns is None else columns
         if not columns:
             yield list(), self.df2value(self, last_only) if process else self
