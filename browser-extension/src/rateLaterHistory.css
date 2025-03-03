@@ -50,10 +50,12 @@ body.tournesol-capturing-history ytd-thumbnail {
 
 #tournesol-rate-later-history-status-box {
   position: absolute;
-  --width: 500px;
+  --width: min(500px, 60vw);
   left: calc(50% - var(--width) / 2);
   width: var(--width);
-  top: 100px;
+  top: min(100px, calc(10vh));
+  max-height: 70vh;
+  overflow: auto;
   background: #1282b2;
   color: white;
   padding: 16px;
