@@ -71,6 +71,10 @@ body.tournesol-capturing-history ytd-thumbnail {
   gap: 8px;
 }
 
+#tournesol-rate-later-history-status-box .count {
+  font-weight: bold;
+}
+
 #tournesol-rate-later-history-stop-button {
   justify-content: center;
   margin-top: 16px;

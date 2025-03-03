@@ -47,6 +47,7 @@ const addOverlay = () => {
     container.append(document.createTextNode(' '));
 
     const countElement = document.createElement('span');
+    countElement.classList.add('count');
     container.append(countElement);
 
     const displayCount = (count) => {
