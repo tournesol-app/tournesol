@@ -27,7 +27,7 @@ class EntitywiseQrQuantile(StateFunction):
         user_models: UserModels,
     ) -> ScoringModel:
         
-        global_model = DirectScoring()
+        global_model = DirectScoring(note="entitywise_qr_quantile")
         voting_rights = voting_rights.to_dict(["username", "entity_name", "criterion"])
         multiscores = user_models(entities)
         common_kwargs = dict(lipschitz=self.lipschitz, error=self.error)

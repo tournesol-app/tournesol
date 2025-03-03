@@ -134,7 +134,24 @@ class UnnamedDataFrame(DataFrame):
                 last_only=self.meta._last_only,
             )
         return self.default_value(**kwargs) if df.empty else self.df2value(df, last_only)
-
+    
+    def get_all(self, *args, **kwargs) -> "UnnamedDataFrame":
+        kwargs = self.input2dict(*args, keys_only=True, **kwargs)
+        if not kwargs:
+            return self
+        match = lambda k, v: (self[k] == v) if isinstance(v, str) else self[k].isin(v)
+        df = self[reduce(lambda a, x: a & x, [ match(k, v) for k, v in kwargs.items() ], True)]
+        other_key_names = [ 
+            k for k in self.key_names 
+            if k not in kwargs or not isinstance(kwargs[k], str) 
+        ]
+        return type(self)(df, 
+            key_names=other_key_names, 
+            name=self.meta.name,
+            default_value=self.meta._default_value,
+            last_only=self.meta._last_only,
+        )
+        
     def __contains__(self, *args, **kwargs) -> bool:
         return not self.get(*args, process=False, **kwargs).empty
 
@@ -188,17 +205,14 @@ class UnnamedDataFrame(DataFrame):
         self.meta._group_cache = dict()
 
     @classmethod
-    def load(cls, 
-        filename: Optional[Union[str, Path, "UnnamedDataFrame"]]=None, 
-        *args, **kwargs
-    ) -> "UnnamedDataFrame":
-        if isinstance(filename, (DataFrame, UnnamedDataFrame)):
-            return cls(data=filename, *args, **kwargs)
-        try: 
-            return cls(pd.read_csv(filename, keep_default_na=False), *args, **kwargs)
+    def load(cls, directory: Union[str, Path], *args, **kwargs) -> "UnnamedDataFrame":
+        if args and not isinstance(args[0], str):
+            return cls(*args, **kwargs)
+        filename = f"{directory}/{args[0]}"
+        try:
+            return cls(pd.read_csv(filename, keep_default_na=False), *args[1:], **kwargs)
         except (pd.errors.EmptyDataError, ValueError):
-            return cls(*args, **kwargs) if "data" in kwargs else cls(data=filename, *args, **kwargs)
-                
+            return cls(*args[1:], **kwargs)
 
     def last_only(self) -> "UnnamedDataFrame":
         return type(self)(
@@ -274,7 +288,8 @@ class UnnamedDataFrame(DataFrame):
             return type(self).__name__, None
         path = Path(directory) / f"{self.meta.name}.csv"
         self.to_csv(path, index=False)
-        return type(self).__name__, str(path)
+        return type(self).__name__, f"{self.meta.name}.csv"
 
     def __repr__(self) -> str:
-        return f"key_names={self.key_names}\nvalue_names={self.value_names}\n\n{DataFrame(self)}"
+        return f"name={self.meta.name}\nkey_names={self.key_names}\nvalue_names={self.value_names}" \
+            f"\n\n{DataFrame(self)}"

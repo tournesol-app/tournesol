@@ -66,10 +66,10 @@ class VectorDataFrame(NamedDataFrame):
         self.meta.save_vector_filename = value
 
     @classmethod
-    def load(cls, filenames: tuple[str, str]) -> "VectorDataFrame":
+    def load(cls, directory: Union[Path, str], filenames: tuple[str, str]) -> "VectorDataFrame":
         return cls(
-            np.loadtxt(filenames[1], delimiter=","),
-            pd.read_csv(filenames[0], keep_default_na=False)
+            np.loadtxt(f"{directory}/{filenames[1]}", delimiter=","),
+            pd.read_csv(f"{directory}/{filenames[0]}", keep_default_na=False)
         )
 
     def save(self, directory: Union[Path, str]) -> tuple[str, tuple[str, str]]:
@@ -77,7 +77,7 @@ class VectorDataFrame(NamedDataFrame):
         vectors_path = Path(directory) / self.meta.save_vector_filename
         np.savetxt(vectors_path, self.vectors, delimiter=",")
         class_name, df_path = super().save(directory)
-        return type(self).__name__, (df_path, str(vectors_path))
+        return type(self).__name__, (df_path, self.meta.save_vector_filename)
 
     def get(self, key: Union[str, NamedSeries, Iterable, dict]) -> Union[VectorSeries, "VectorDataFrame"]:
         """ Extract carefully typed objects given index names (default) or attributes

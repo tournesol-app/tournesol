@@ -58,7 +58,7 @@ class State:
         import solidago.state
         for key, j_value in j.items():
             assert hasattr(state, key)
-            value = getattr(solidago.state, j_value[0]).load(j_value[1])
+            value = getattr(solidago.state, j_value[0]).load(directory, j_value[1])
             setattr(state, key, value)
         return state
     

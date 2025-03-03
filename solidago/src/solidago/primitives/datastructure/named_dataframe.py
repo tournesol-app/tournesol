@@ -43,13 +43,13 @@ class NamedDataFrame(DataFrame):
         self.meta.save_filename = save_filename
 
     @classmethod
-    def load(cls, filename: Union[Path, str]):
-        return cls(pd.read_csv(filename, keep_default_na=False))
+    def load(cls, directory: Union[Path, str], filename: Union[Path, str]):
+        return cls(pd.read_csv(f"{directory}/{filename}", keep_default_na=False))
 
     def save(self, directory: Union[Path, str]) -> tuple[str, str]:
         path = Path(directory) / self.save_filename
         self.to_csv(path)
-        return type(self).__name__, str(path)
+        return type(self).__name__, self.save_filename
 
     def get(self, key: Union[str, NamedSeries, Iterable, dict]) -> Union[NamedSeries, "NamedDataFrame"]:
         """ Extract carefully typed objects given index names (default) or attributes

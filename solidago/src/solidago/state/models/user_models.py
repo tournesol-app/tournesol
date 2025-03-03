@@ -15,17 +15,17 @@ class UserModels:
         user_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
         common_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
         default_model_cls: Optional[tuple[str, dict]]=None,
-        user_model_cls_dict: Optional[dict[str, tuple]]=None
+        user_model_cls_dict: Optional[dict[str, tuple]]=None,
     ):
-        self.user_directs = MultiScore.load(user_directs, 
+        self.user_directs = MultiScore(user_directs, 
             key_names=["username", "entity_name", "criterion"],
             name="user_directs"
         )
-        self.user_scales = MultiScore.load(user_scales, 
+        self.user_scales = MultiScore(user_scales, 
             key_names=["username", "depth", "criterion", "kind"],
             name="user_scales"
         )
-        self.common_scales = MultiScore.load(common_scales, 
+        self.common_scales = MultiScore(common_scales, 
             key_names=["depth", "criterion", "kind"],
             name="common_scales"
         )
@@ -35,7 +35,10 @@ class UserModels:
         self._cache_criteria = None
     
     @classmethod
-    def load(cls, kwargs) -> "UserModels":
+    def load(cls, directory: Union[str, Path], kwargs) -> "UserModels":
+        for name in ("user_directs", "user_scales", "common_scales"):
+            if name in kwargs and isinstance(kwargs[name], str):
+                kwargs[name] = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
         return cls(**kwargs)
 
     def __call__(self, 
@@ -176,7 +179,7 @@ class UserModels:
     def save_df(self, directory: Union[Path, str], df_name: str) -> str:
         if not getattr(self, df_name).empty:
             getattr(self, df_name).save(directory)
-            return f"{directory}/{df_name}.csv"
+            return f"{df_name}.csv"
         return None
     
     def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict]:

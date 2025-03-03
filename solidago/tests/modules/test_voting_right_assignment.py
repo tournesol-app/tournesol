@@ -6,7 +6,7 @@ from solidago import *
 from solidago.modules.voting_rights import Trust2VotingRights, AffineOvertrust
 
 
-states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
+states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 @pytest.mark.parametrize("seed", range(4))
 def test_is_trust(seed):

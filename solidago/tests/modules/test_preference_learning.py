@@ -53,7 +53,7 @@ def test_gbt_score_monotonicity(GBT):
 
 
 def test_uniform_gbt():
-    s = State.load(f"tests/modules/saved/0")
+    s = State.load(f"tests/saved/0")
     user_models = dict()
     for index, optimizer in enumerate((NumbaUniformGBT, LBFGSUniformGBT)):
         preference_learning = optimizer(

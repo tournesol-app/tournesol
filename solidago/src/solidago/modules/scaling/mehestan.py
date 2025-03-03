@@ -92,7 +92,7 @@ class Mehestan(StateFunction):
         for criterion in user_models.criteria():
             users, subscales = self.scale_criterion(users, entities, made_public, user_models, criterion)
             scales = scales | subscales.assign(criterion=criterion, depth="0")
-        return updated_users, scales
+        return users, user_models.scale(scales, note="mehestan")
     
     def scale_criterion(self, 
         users: Users,
@@ -122,13 +122,13 @@ class Mehestan(StateFunction):
 
         logger.info(f"Mehestan 2 for {criterion}. Collaborative scaling of scalers")
         scaler_scales, scaler_scores = self.scale_to_scalers(trusts, made_public, 
-            scores[scalers], scores[scalers], scalees_are_scalers=True)
+            scores.get_all(scalers), scores.get_all(scalers), scalees_are_scalers=True)
         end_step2 = timeit.default_timer()
         logger.info(f"Mehestan 2 for {criterion}. Terminated in {int(end_step2 - end_step1)} seconds")
 
         logger.info(f"Mehestan 3 for {criterion}. Scaling of non-scalers")
         nonscalers = users.get({ f"is_scaler_{criterion}": False })
-        nonscaler_scores = scores[nonscalers]
+        nonscaler_scores = scores.get_all(nonscalers)
         nonscaler_scales, _ = self.scale_to_scalers(trusts, made_public, scaler_scores, nonscaler_scores)
         end = timeit.default_timer()
         logger.info(f"Mehestan 3 for {criterion}. Terminated in {int(end - end_step2)} seconds")
@@ -194,7 +194,7 @@ class Mehestan(StateFunction):
         logger.info(f"    Mehestan {s}d. Multiplicators in {int(end_d - end_c)} seconds")
 
         for (scalee_name, entity_name), score in scalee_scores:
-            scalee_scores[scalee_name, entity_name] = score * multipliers[scalee_name]
+            scalee_scores.set(scalee_name, entity_name, score * multipliers.get(username=scalee_name))
         if scalees_are_scalers:
             scaler_scores = scalee_scores
         
@@ -209,7 +209,7 @@ class Mehestan(StateFunction):
         logger.info(f"    Mehestan {s}g. Translations in {int(end_g - end_f)} seconds")
         
         for (scalee_name, entity_name), score in scalee_scores:
-            scalee_scores[scalee_name, entity_name] = score + translations[scalee_name]
+            scalee_scores.set(scalee_name, entity_name, score + translations.get(username=scalee_name))
         
         multipliers["kind"] = "multiplier"
         translations["kind"] = "translation"
@@ -378,7 +378,7 @@ class Mehestan(StateFunction):
         multiscores = MultiScore(key_names=["scalee_name", "scaler_name"])
         
         common_kwargs = dict(lipschitz=self.user_comparison_lipschitz, error=self.error)
-        for (scalee_name, scaler_name), score_df in score_lists.iter("row_list"):
+        for (scalee_name, scaler_name), score_df in score_lists:
             kwargs = common_kwargs | dict(
                 values=np.array(score_df["value"], dtype=np.float64),
                 voting_rights=np.array(

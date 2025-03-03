@@ -5,7 +5,7 @@ import pandas as pd
 from solidago import *
 from solidago.modules.trust_propagation import LipschiTrust, TrustAll
 
-states = [ State.load(f"tests/modules/saved/{seed}") for seed in range(5) ]
+states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 
 def test_lipschitrust_simple():

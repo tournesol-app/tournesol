@@ -12,7 +12,7 @@ class Average(StateFunction):
         user_models: UserModels,
     ) -> ScoringModel:
         """ Returns weighted average of user's scores """
-        global_model = DirectScoring()
+        global_model = DirectScoring(note="average")
         multiscores = user_models(entities)
         voting_rights = voting_rights.to_dict(["entity_name", "criterion"])
 

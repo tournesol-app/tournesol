@@ -2,32 +2,32 @@
     "users": [
         "VectorUsers",
         [
-            "tests/load_save/generated_state/users.csv",
-            "tests/load_save/generated_state/user_vectors.csv"
+            "users.csv",
+            "user_vectors.csv"
         ]
     ],
     "entities": [
         "VectorEntities",
         [
-            "tests/load_save/generated_state/entities.csv",
-            "tests/load_save/generated_state/entity_vectors.csv"
+            "entities.csv",
+            "entity_vectors.csv"
         ]
     ],
     "vouches": [
         "Vouches",
-        "tests/load_save/generated_state/vouches.csv"
+        "vouches.csv"
     ],
     "made_public": [
         "MadePublic",
-        "tests/load_save/generated_state/made_public.csv"
+        "made_public.csv"
     ],
     "assessments": [
         "Assessments",
-        "tests/load_save/generated_state/assessments.csv"
+        "assessments.csv"
     ],
     "comparisons": [
         "Comparisons",
-        "tests/load_save/generated_state/comparisons.csv"
+        "comparisons.csv"
     ],
     "voting_rights": [
         "VotingRights",

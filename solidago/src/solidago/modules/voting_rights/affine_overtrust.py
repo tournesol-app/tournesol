@@ -55,8 +55,8 @@ class AffineOvertrust(StateFunction):
         }
         
         for criterion in criteria:
-            criterion_assessments = assessments[criterion].groupby(["entity_name"])
-            criterion_comparisons = comparisons[criterion].groupby(["entity_name"])
+            criterion_assessments = assessments[criterion].to_dict(["entity_name"])
+            criterion_comparisons = comparisons[criterion].to_dict(["entity_name"])
             
             for entity_name in entity_names[criterion]:
                 evaluators = set(criterion_assessments[entity_name]["username"])

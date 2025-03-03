@@ -27,8 +27,8 @@ class ScoringModel(ABC):
         """ If user_models is not None, then recording new data will be done through user_models """
         self.depth = depth
         self.note = note
-        self.directs = MultiScore.load(directs, key_names=["entity_name", "criterion"], name="directs")
-        self.scales = MultiScore.load(scales, 
+        self.directs = MultiScore(directs, key_names=["entity_name", "criterion"], name="directs")
+        self.scales = MultiScore(scales, 
             key_names=["depth", "criterion", "kind"], 
             name="scales",
             default_keys=dict(depth="0")
@@ -59,7 +59,10 @@ class ScoringModel(ABC):
                 raise ValueError(f"{parent} has unhandled type {type(parent)}")
 
     @classmethod
-    def load(cls, kwargs) -> "ScoringModel":
+    def load(cls, directory: Union[str, Path], kwargs) -> "ScoringModel":
+        for name in ("directs", "scales"):
+            if name in kwargs and isinstance(kwargs[name], str):
+                kwargs[name] = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
         return cls(**kwargs)
 
     def __call__(self, 
@@ -134,7 +137,7 @@ class ScoringModel(ABC):
     def saved_kwargs(self) -> dict:
         kwargs = { name: getattr(self, name) for name in self.saved_argsnames }
         if not self.is_base():
-            kwargs["parent"] = self.parent.saved_kwargs()
+            kwargs["parent"] = (type(self.parent).__name__, self.parent.saved_kwargs())
         return kwargs
 
     def save(self, directory: Optional[Union[str, Path]]=None, json_dump: bool=False) -> tuple[str, dict]:

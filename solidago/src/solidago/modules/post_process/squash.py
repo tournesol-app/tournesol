@@ -20,6 +20,6 @@ class Squash(StateFunction):
         typically to yield human-readible scores, 
         by squashing scores into [-self.score_max, self.score_max] """
         return (
-            user_models.post_process("SquashedModel", score_max=self.score_max),
-            SquashedModel(global_model, self.score_max)
+            user_models.post_process("SquashedModel", score_max=self.score_max, note="squash"),
+            SquashedModel(global_model, self.score_max, note="squash")
         )

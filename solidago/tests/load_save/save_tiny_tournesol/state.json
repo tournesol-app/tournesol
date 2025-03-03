@@ -1,15 +1,15 @@
 {
     "users": [
         "Users",
-        "tests/load_save/save_tiny_tournesol/users.csv"
+        "users.csv"
     ],
     "entities": [
         "Entities",
-        "tests/load_save/save_tiny_tournesol/entities.csv"
+        "entities.csv"
     ],
     "vouches": [
         "Vouches",
-        "tests/load_save/save_tiny_tournesol/vouches.csv"
+        "vouches.csv"
     ],
     "made_public": [
         "AllPublic",
@@ -21,18 +21,18 @@
     ],
     "comparisons": [
         "Comparisons",
-        "tests/load_save/save_tiny_tournesol/comparisons.csv"
+        "comparisons.csv"
     ],
     "voting_rights": [
         "VotingRights",
-        "tests/load_save/save_tiny_tournesol/voting_rights.csv"
+        "voting_rights.csv"
     ],
     "user_models": [
         "UserModels",
         {
-            "user_directs": "tests/load_save/save_tiny_tournesol/user_directs.csv",
-            "user_scales": "tests/load_save/save_tiny_tournesol/user_scales.csv",
-            "common_scales": "tests/load_save/save_tiny_tournesol/common_scales.csv",
+            "user_directs": "user_directs.csv",
+            "user_scales": "user_scales.csv",
+            "common_scales": "common_scales.csv",
             "default_model_cls": [
                 "ScaledModel",
                 {
@@ -55,7 +55,7 @@
         "DirectScoring",
         {
             "note": "None",
-            "directs": "tests/load_save/save_tiny_tournesol/directs.csv"
+            "directs": "directs.csv"
         }
     ]
 }
