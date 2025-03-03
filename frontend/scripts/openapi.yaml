@@ -2104,9 +2104,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /users/me/rate_later/{poll_name}/bulk_create:
+  /users/me/rate_later/{poll_name}/_bulk_create:
     post:
-      operationId: users_me_rate_later_bulk_create_create
+      operationId: users_me_rate_later__bulk_create_create
       description: Add a multiple new entities to the logged user's rate-later list,
         for a given poll.
       parameters:

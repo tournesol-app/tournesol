@@ -36,7 +36,7 @@ class RateLaterCommonMixinTestCase:
 
         self.poll = PollFactory()
         self.rate_later_base_url = f"/users/me/rate_later/{self.poll.name}/"
-        self.rate_later_bulk_base_url = f"/users/me/rate_later/{self.poll.name}/bulk_create"
+        self.rate_later_bulk_base_url = f"/users/me/rate_later/{self.poll.name}/_bulk_create"
 
         self.entity_in_ratelater = VideoFactory()
 
@@ -306,7 +306,7 @@ class RateLaterBulkCreateTestCase(RateLaterCommonMixinTestCase, TestCase):
             {"entity": {"uid": self._other_uid_not_in_db}},
         ]
         response = self.client.post(
-            f"/users/me/rate_later/{self._invalid_poll_name}/bulk_create", data, format="json"
+            f"/users/me/rate_later/{self._invalid_poll_name}/_bulk_create", data, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -441,7 +441,7 @@ class RateLaterBulkCreateTestCase(RateLaterCommonMixinTestCase, TestCase):
             {"entity": {"uid": self._other_uid_not_in_db}},
         ]
         response = self.client.post(
-            f"/users/me/rate_later/{self._invalid_poll_name}/bulk_create", data, format="json"
+            f"/users/me/rate_later/{self._invalid_poll_name}/_bulk_create", data, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 

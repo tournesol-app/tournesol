@@ -114,7 +114,7 @@ urlpatterns = [
         name="usersme_ratelater_list",
     ),
     path(
-        "users/me/rate_later/<str:poll_name>/bulk_create",
+        "users/me/rate_later/<str:poll_name>/_bulk_create",
         RateLaterBulkCreate.as_view(),
         name="usersme_ratelater_bulk_create",
     ),
