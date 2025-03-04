@@ -24,6 +24,7 @@ class UnnamedDataFrameDict:
         
     def __getitem__(self, key: Union[Any, tuple[str]]) -> DataFrame:
         keys = tuple(str(k) for k in key) if isinstance(key, tuple) else str(key)
+        keys = keys[0] if len(keys) == 1 else keys
         return self.dict[keys] if keys in self.dict else self.df_cls()
     
     def __repr__(self) -> str:

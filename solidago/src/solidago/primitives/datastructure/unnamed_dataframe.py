@@ -103,7 +103,15 @@ class UnnamedDataFrame(DataFrame):
             args = args[:len(self.key_names)]
         assert len(args) <= len(key_value_columns) + 1
         assert all({ key not in key_value_columns[:len(args)] for key in kwargs })
-        f = lambda v, k: str(v) if k in self.key_names else v
+        def f(v, k):
+            if k in self.key_names and isinstance(v, DataFrame):
+                return set(v.index)
+            elif k in self.key_names and isinstance(v, (set, list, tuple)):
+                return v
+            elif k in self.key_names:
+                return str(v)
+            else:
+                return v
         kwargs = { k: f(v, k) for k, v in kwargs.items() if (not keys_only or k in self.key_names) }
         if not self.value_names and len(args) > len(self.key_names):
             assert len(args) == len(self.key_names) + 1
@@ -118,12 +126,11 @@ class UnnamedDataFrame(DataFrame):
         **kwargs
     ) -> Union["UnnamedDataFrame", tuple]:
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)
+        last_only = self.meta._last_only if last_only is None else last_only
         if cache_groups:
-            return self.to_dict(list(kwargs.keys()), process=process, last_only=last_only).get(
-                process=process, 
-                last_only=last_only, 
-                **kwargs
-            )
+            key_names = [ k for k in self.key_names if k in kwargs ]
+            key_values = [ kwargs[k] for k in key_names ]
+            return self.to_dict(key_names, process, last_only).__getitem__(tuple(key_values))
         df = self[reduce(lambda a, x: a & x, [ self[k] == v for k, v in kwargs.items() ], True)]
         other_key_names = [ key_name for key_name in self.key_names if key_name not in kwargs ]
         if other_key_names or not process:

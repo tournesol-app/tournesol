@@ -322,15 +322,15 @@ class Mehestan(StateFunction):
             scalee_name_scores = scalee_scores.get(username=scalee_name, cache_groups=True)
             scalee_entity_names = set(scalee_name_scores["entity_name"])
             scaler_names = set.union(*[
-                scaler_scores.get(entity_name=entity_name, cache_groups=True)["username"]
+                set(scaler_scores.get(entity_name=entity_name, cache_groups=True)["username"])
                 for entity_name in scalee_entity_names
             ])
         
             for scaler_name in scaler_names:
                 
                 if scalee_name == scaler_name:
-                    weight_lists[scalee_name, scaler_name] = [1]
-                    comparison_lists[scalee_name, scaler_name] = [default_value]
+                    weight_lists.set(scalee_name, scaler_name, 1)
+                    comparison_lists.set(scalee_name, scaler_name, default_value)
                     continue
                 
                 scaler_name_scores = scaler_scores.get(username=scaler_name, cache_groups=True)
@@ -347,7 +347,7 @@ class Mehestan(StateFunction):
                 
                 for weight, scaler_scalee_comparison in zip(*output):
                     weight_lists.add_row(scalee_name, scaler_name, weight)
-                    comparison_lists.add_row(scalee_name, scaler_name, ratio)
+                    comparison_lists.add_row(scalee_name, scaler_name, scaler_scalee_comparison)
 
         return weight_lists, comparison_lists
     
@@ -384,8 +384,8 @@ class Mehestan(StateFunction):
                 voting_rights=np.array(
                     weight_lists.get(scalee_name, scaler_name, cache_groups=True)["voting_right"]
                 , dtype=np.float64),
-                left_uncertainties=np.array(scores_df["left_unc"], dtype=np.float64),
-                right_uncertainties=np.array(scores_df["right_unc"], dtype=np.float64),
+                left_uncertainties=np.array(score_df["left_unc"], dtype=np.float64),
+                right_uncertainties=np.array(score_df["right_unc"], dtype=np.float64),
             )
             value = qr_median(**kwargs)
             uncertainty = qr_uncertainty(median=value, **kwargs)
@@ -574,9 +574,14 @@ class Mehestan(StateFunction):
             multipliers[user][1] is the uncertainty on the multiplier
         """
         kwargs = dict(default_value=1.0, default_dev=self.default_multiplier_dev)
-        l = lambda name: self.lipschitz / (8 * (1e-9 + model_norms[scalee_name]))
+        l = lambda scalee_name: self.lipschitz / (8 * (1e-9 + model_norms[scalee_name]))
         return MultiScore([
-            (name, *self.aggregate_scalers(weights, ratios[name], l(name), **kwargs).to_triplet())
+            (name, *self.aggregate_scalers(
+                weights, 
+                ratios.get(scalee_name=name), 
+                l(name), 
+                **kwargs
+            ).to_triplet())
             for name, weights in voting_rights.iter(["scalee_name"])
         ], key_names=["scalee_name"])
 

@@ -177,7 +177,15 @@ class MultiScore(UnnamedDataFrame):
             args = args[:len(self.key_names)]
         assert len(args) <= len(key_value_columns) + 3
         assert all({ key not in key_value_columns[:len(args)] for key in kwargs })
-        f = lambda v, k: str(v) if k in self.key_names else v
+        def f(v, k):
+            if k in self.key_names and isinstance(v, DataFrame):
+                return set(v.index)
+            elif k in self.key_names and isinstance(v, (set, list, tuple)):
+                return v
+            elif k in self.key_names:
+                return str(v)
+            else:
+                return v
         kwargs = { k: f(v, k) for k, v in kwargs.items() if (not keys_only or k in self.key_names) }
         args_key_names = [ kn for kn in self.key_names if kn not in kwargs ]
         kwargs |= { k: f(v, k) for k, v  in zip(args_key_names, args[:len(args_key_names)]) }
