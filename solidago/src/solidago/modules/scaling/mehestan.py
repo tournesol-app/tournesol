@@ -209,7 +209,7 @@ class Mehestan(StateFunction):
         logger.info(f"    Mehestan {s}g. Translations in {int(end_g - end_f)} seconds")
         
         for (scalee_name, entity_name), score in scalee_scores:
-            scalee_scores.set(scalee_name, entity_name, score + translations.get(username=scalee_name))
+            scalee_scores.set(scalee_name, entity_name, score + translations.get(scalee_name))
         
         multipliers["kind"] = "multiplier"
         translations["kind"] = "translation"
@@ -555,24 +555,8 @@ class Mehestan(StateFunction):
         voting_rights: VotingRights, # key_names == ["scalee_name", "scaler_name"]
         ratios: MultiScore, # key_names == ["scalee_name", "scaler_name"]
         model_norms: dict[str, float]
-    ) -> MultiScore: # key_names = ["scalee_name"]
-        """ Computes the multipliers of users with given user_ratios
-        
-        Parameters
-        ----------
-        ratios: dict[int, tuple[list[float], list[float], list[float]]]
-            ratios[u][0] is a list of voting rights
-            ratios[u][1] is a list of ratios
-            ratios[u][2] is a list of (symmetric) uncertainties
-        model_norms: dict[int, float]
-            model_norms[u] estimates the norm of user u's score model
-            
-        Returns
-        -------
-        multipliers: dict[int, tuple[float, float]]
-            multipliers[user][0] is the multiplicative scaling of user
-            multipliers[user][1] is the uncertainty on the multiplier
-        """
+    ) -> MultiScore: # key_names = ["username"]
+        """ Computes the multipliers of users with given user_ratios """
         kwargs = dict(default_value=1.0, default_dev=self.default_multiplier_dev)
         l = lambda scalee_name: self.lipschitz / (8 * (1e-9 + model_norms[scalee_name]))
         return MultiScore([
@@ -583,7 +567,7 @@ class Mehestan(StateFunction):
                 **kwargs
             ).to_triplet())
             for name, weights in voting_rights.iter(["scalee_name"])
-        ], key_names=["scalee_name"])
+        ], key_names=["username"])
 
     ############################################
     ##   Methods to esimate the translations  ##
@@ -626,7 +610,7 @@ class Mehestan(StateFunction):
             Score(0, 0, 0)
         )
 
-    def compute_ratios(self,
+    def compute_diffs(self,
         scalee_scores: MultiScore, # key_name == ["entity_name"]
         scaler_scores: MultiScore, # key_name == ["entity_name"]
         scaler_public: MadePublic, # key_name == ["entity_name"]
@@ -637,12 +621,10 @@ class Mehestan(StateFunction):
         penalty = lambda entity_name: scaler_public.penalty(self.privacy_penalty, entity_name)
         scalee_scores = scalee_scores.to_dict("entity_name")
         scaler_scores = scaler_scores.to_dict("entity_name")
-        for e in common_entity_names:
-            diff = (scaler_scores[e] - scaler_scores[f]) / (scalee_scores[e] - scalee_scores[f])
-            if ratio.isnan(): continue
-            ratio_list.append(ratio.abs())
-            weight_list.append(penalty(e) * penalty(f))
-        return weight_list, ratio_list
+        for entity_name in common_entity_names:
+            diff_list.append(scaler_scores[entity_name] - scalee_scores[entity_name])
+            weight_list.append(scaler_public.penalty(self.privacy_penalty, entity_name))
+        return weight_list, diff_list
 
     def compute_translations(self, 
         voting_rights: VotingRights, # key_names == ["scalee_name", "scaler_name"]
@@ -669,7 +651,7 @@ class Mehestan(StateFunction):
             default_dev=self.default_translation_dev
         )
         return MultiScore([
-            (name, *self.aggregate_scalers(weights, diffs[name], **kwargs).to_triplet())
+            (name, *self.aggregate_scalers(weights, diffs.get(name), **kwargs).to_triplet())
             for name, weights in voting_rights.iter(["scalee_name"])
         ], key_names=["scalee_name"])
 

@@ -33,49 +33,49 @@ s = State.load("tests/saved/0")
 # s1 = pipeline.trust_propagation.state2state_function(s)
 # s2 = pipeline.preference_learning.state2state_function(s1)
 # s3 = pipeline.voting_rights.state2state_function(s2)
-# s4 = pipeline.scaling.state2state_function(s3)
+# s4 = pipeline.scaling.state2state_function(s)
 # s5 = pipeline.aggregation.state2state_function(s4)
 # s6 = pipeline.post_process.state2state_function(s5)
 
-# t = pipeline(s)
+t = pipeline(s)
 
-users, entities, made_public, user_models = s.users, s.entities, s.made_public, s.user_models
-criterion = next(iter(user_models.criteria()))
-scores = user_models(entities, criterion)
-trusts = dict(zip(users.index, users["trust_score"]))
+# users, entities, made_public, user_models = s.users, s.entities, s.made_public, s.user_models
+# criterion = next(iter(user_models.criteria()))
+# scores = user_models(entities, criterion)
+# trusts = dict(zip(users.index, users["trust_score"]))
 
-self = pipeline.scaling.collaborative_scaling
-activities, is_scaler = self.compute_activities_and_scalers(users, trusts, made_public, scores)
-users[f"activities_{criterion}"] = activities
-users[f"is_scaler_{criterion}"] = is_scaler
-scalers = users.get({ f"is_scaler_{criterion}": True })
+# self = pipeline.scaling.collaborative_scaling
+# activities, is_scaler = self.compute_activities_and_scalers(users, trusts, made_public, scores)
+# users[f"activities_{criterion}"] = activities
+# users[f"is_scaler_{criterion}"] = is_scaler
+# scalers = users.get({ f"is_scaler_{criterion}": True })
 
-# scaler_scales, scaler_scores = self.scale_to_scalers(trusts, made_public, 
-    # scores.get_all(scalers), scores.get_all(scalers), scalees_are_scalers=True)
-scaler_scores = scores.get_all(scalers)
-scalee_scores = scores.get_all(scalers)
-scalees_are_scalers = True
-scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
+# # scaler_scales, scaler_scores = self.scale_to_scalers(trusts, made_public, 
+    # # scores.get_all(scalers), scores.get_all(scalers), scalees_are_scalers=True)
+# scaler_scores = scores.get_all(scalers)
+# scalee_scores = scores.get_all(scalers)
+# scalees_are_scalers = True
+# scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
 
-weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
-voting_rights, ratios = self.aggregate_scaler_scores(trusts, weight_lists, ratio_lists)
-multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
+# weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
+# voting_rights, ratios = self.aggregate_scaler_scores(trusts, weight_lists, ratio_lists)
+# multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
 
-for (scalee_name, entity_name), score in scalee_scores:
-	scalee_scores.set(scalee_name, entity_name, score * multipliers.get(scalee_name))
-if scalees_are_scalers:
-	scaler_scores = scalee_scores
+# for (scalee_name, entity_name), score in scalee_scores:
+	# scalee_scores.set(scalee_name, entity_name, score * multipliers.get(scalee_name))
+# if scalees_are_scalers:
+	# scaler_scores = scalee_scores
 
-weight_lists, diff_lists = self.diffs(made_public, scaler_scores, scalee_scores)
-voting_rights, diffs = self.aggregate_scaler_scores(trusts, weight_lists, diff_lists)
-translations = self.compute_translations(voting_rights, diffs)
+# weight_lists, diff_lists = self.diffs(made_public, scaler_scores, scalee_scores)
+# voting_rights, diffs = self.aggregate_scaler_scores(trusts, weight_lists, diff_lists)
+# translations = self.compute_translations(voting_rights, diffs)
 
-for (scalee_name, entity_name), score in scalee_scores:
-	scalee_scores.set(scalee_name, entity_name, score + translations.get(username=scalee_name))
+# for (scalee_name, entity_name), score in scalee_scores:
+	# scalee_scores.set(scalee_name, entity_name, score + translations.get(scalee_name))
 
-multipliers["kind"] = "multiplier"
-translations["kind"] = "translation"
-scalee_scales = MultiScore(multipliers | translations, key_names=["username", "kind"])
+# multipliers["kind"] = "multiplier"
+# translations["kind"] = "translation"
+# scalee_scales = MultiScore(multipliers | translations, key_names=["username", "kind"])
         
 # key_names = ["scalee_name", "scaler_name"]
 # weight_lists = VotingRights(key_names=key_names, last_only=False)

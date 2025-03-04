@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from solidago import *
+import logging.config
+logging.config.fileConfig('experiments/info.conf')
 
 generator = Generator.load("tests/generators/test_generator.json")
 pipeline = Sequential.load("tests/modules/test_pipeline.json")
@@ -32,5 +34,5 @@ if __name__ == "__main__":
                 if f.is_file():
                     f.unlink()
     save_generated_data()
-    save_pipeline_results(skip_steps={3, 4, 5})
+    save_pipeline_results()
 
