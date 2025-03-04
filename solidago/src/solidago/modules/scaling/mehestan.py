@@ -194,7 +194,7 @@ class Mehestan(StateFunction):
         logger.info(f"    Mehestan {s}d. Multiplicators in {int(end_d - end_c)} seconds")
 
         for (scalee_name, entity_name), score in scalee_scores:
-            scalee_scores.set(scalee_name, entity_name, score * multipliers.get(username=scalee_name))
+            scalee_scores.set(scalee_name, entity_name, score * multipliers.get(scalee_name))
         if scalees_are_scalers:
             scaler_scores = scalee_scores
         
@@ -396,7 +396,7 @@ class Mehestan(StateFunction):
 
     def aggregate_scalers(self,
         voting_rights: VotingRights, # key_names = ["scaler_name"]
-        multiscore: MultiScore, # key_names = ["scaler_name"]
+        scores: MultiScore, # key_names = ["scaler_name"]
         lipschitz: float,
         default_value: float, 
         default_dev: float, 
@@ -622,9 +622,27 @@ class Mehestan(StateFunction):
             made_public, 
             scaler_scores, 
             scalee_scores,
-            Mehestan.compute_translations,
+            Mehestan.compute_diffs,
             Score(0, 0, 0)
         )
+
+    def compute_ratios(self,
+        scalee_scores: MultiScore, # key_name == ["entity_name"]
+        scaler_scores: MultiScore, # key_name == ["entity_name"]
+        scaler_public: MadePublic, # key_name == ["entity_name"]
+        common_entity_names: set[str],
+    ) -> tuple[list[float], list[Score]]:
+        """ Returns the scaler's voting right and ratios to multiplicatively scale scalee's model """
+        weight_list, diff_list = list(), list()
+        penalty = lambda entity_name: scaler_public.penalty(self.privacy_penalty, entity_name)
+        scalee_scores = scalee_scores.to_dict("entity_name")
+        scaler_scores = scaler_scores.to_dict("entity_name")
+        for e in common_entity_names:
+            diff = (scaler_scores[e] - scaler_scores[f]) / (scalee_scores[e] - scalee_scores[f])
+            if ratio.isnan(): continue
+            ratio_list.append(ratio.abs())
+            weight_list.append(penalty(e) * penalty(f))
+        return weight_list, ratio_list
 
     def compute_translations(self, 
         voting_rights: VotingRights, # key_names == ["scalee_name", "scaler_name"]

@@ -57,25 +57,44 @@ scalee_scores = scores.get_all(scalers)
 scalees_are_scalers = True
 scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
 
-# weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
-key_names = ["scalee_name", "scaler_name"]
-weight_lists = VotingRights(key_names=key_names, last_only=False)
-comparison_lists = MultiScore(key_names=key_names, last_only=False)
-scalee_name = next(iter(set(scalee_scores["username"])))
-kwargs = scalee_scores.input2dict(username=scalee_name, keys_only=True)
-last_only = scalee_scores.meta._last_only
-scalee_name_scores = scalee_scores.get(username=scalee_name, cache_groups=True)
-scalee_entity_names = set(scalee_name_scores["entity_name"])
-scaler_names = set.union(*[
-	set(scaler_scores.get(entity_name=entity_name, cache_groups=True)["username"])
-	for entity_name in scalee_entity_names
-])
-scaler_name = next(iter(scaler_names))
+weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
+voting_rights, ratios = self.aggregate_scaler_scores(trusts, weight_lists, ratio_lists)
+multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
 
-scaler_name_scores = scaler_scores.get(username=scaler_name, cache_groups=True)
-scaler_entity_names = set(scaler_name_scores["entity_name"])
-common_entity_names = scalee_entity_names & scaler_entity_names
-scaler_public = made_public.get(username=scaler_name, cache_groups=True)
+for (scalee_name, entity_name), score in scalee_scores:
+	scalee_scores.set(scalee_name, entity_name, score * multipliers.get(scalee_name))
+if scalees_are_scalers:
+	scaler_scores = scalee_scores
+
+weight_lists, diff_lists = self.diffs(made_public, scaler_scores, scalee_scores)
+voting_rights, diffs = self.aggregate_scaler_scores(trusts, weight_lists, diff_lists)
+translations = self.compute_translations(voting_rights, diffs)
+
+for (scalee_name, entity_name), score in scalee_scores:
+	scalee_scores.set(scalee_name, entity_name, score + translations.get(username=scalee_name))
+
+multipliers["kind"] = "multiplier"
+translations["kind"] = "translation"
+scalee_scales = MultiScore(multipliers | translations, key_names=["username", "kind"])
+        
+# key_names = ["scalee_name", "scaler_name"]
+# weight_lists = VotingRights(key_names=key_names, last_only=False)
+# comparison_lists = MultiScore(key_names=key_names, last_only=False)
+# scalee_name = next(iter(set(scalee_scores["username"])))
+# kwargs = scalee_scores.input2dict(username=scalee_name, keys_only=True)
+# last_only = scalee_scores.meta._last_only
+# scalee_name_scores = scalee_scores.get(username=scalee_name, cache_groups=True)
+# scalee_entity_names = set(scalee_name_scores["entity_name"])
+# scaler_names = set.union(*[
+	# set(scaler_scores.get(entity_name=entity_name, cache_groups=True)["username"])
+	# for entity_name in scalee_entity_names
+# ])
+# scaler_name = next(iter(scaler_names))
+
+# scaler_name_scores = scaler_scores.get(username=scaler_name, cache_groups=True)
+# scaler_entity_names = set(scaler_name_scores["entity_name"])
+# common_entity_names = scalee_entity_names & scaler_entity_names
+# scaler_public = made_public.get(username=scaler_name, cache_groups=True)
                 
 # voting_rights, ratios = self.aggregate_scaler_scores(trusts, weight_lists, ratio_lists)
 # multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
