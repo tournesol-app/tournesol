@@ -35,6 +35,9 @@ class UnnamedDataFrame(DataFrame):
         if isinstance(data, list):
             kwargs["columns"] = kwargs["columns"] if "columns" in kwargs else key_value_columns
         super().__init__(data=data, *args, **kwargs)
+        if not self.empty:
+            for key_name in key_names:
+                self[key_name] = self[key_name].astype(str)
         if default_keys is not None:
             assert isinstance(default_keys, dict)
             for key, value in default_keys.items():

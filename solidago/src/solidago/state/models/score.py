@@ -167,6 +167,9 @@ class MultiScore(UnnamedDataFrame):
         For scientific peer reviewing, it could be the criteria may be
         {'clarity', 'correctness', 'originality', 'rating'}. """
         super().__init__(data, key_names, value_names, name, default_value, last_only, **kwargs)
+        if not self.empty:
+            for value_name in value_names:
+                self[value_name] = self[value_name].astype(float)
     
     def row2value(self, row: Series) -> Any:
         return Score(row["value"], row["left_unc"], row["right_unc"])
