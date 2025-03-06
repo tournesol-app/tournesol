@@ -108,6 +108,12 @@ function openOptionsPage() {
   chrome.runtime.openOptionsPage();
 }
 
+function rateLaterHistory() {
+  browser.tabs.create({
+    url: 'https://www.youtube.com/feed/history',
+  });
+}
+
 /**
  * Create the action menu.
  */
@@ -117,15 +123,18 @@ document.addEventListener('DOMContentLoaded', function () {
   const rateLaterButton = document.getElementById('rate_later');
   const analysisButton = document.getElementById('analysis');
   const preferencesButton = document.getElementById('preferences');
+  const rateLaterHistoryButton = document.getElementById('rate_later_history');
 
   tournesolHomeLink.addEventListener('click', openTournesolHome);
   rateNowButton.addEventListener('click', rateNowAction);
   rateLaterButton.addEventListener('click', addToRateLaterAction);
   analysisButton.addEventListener('click', openAnalysisPageAction);
   preferencesButton.addEventListener('click', openOptionsPage);
+  rateLaterHistoryButton.addEventListener('click', rateLaterHistory);
 
   rateNowButton.textContent = i18n.getMessage('menuRateNow');
   rateLaterButton.textContent = i18n.getMessage('menuRateLater');
   analysisButton.textContent = i18n.getMessage('menuAnalysis');
   preferencesButton.textContent = i18n.getMessage('menuPreferences');
+  rateLaterHistoryButton.textContent = i18n.getMessage('menuRateLaterHistory');
 });
