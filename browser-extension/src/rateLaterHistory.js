@@ -39,6 +39,7 @@ const addOverlay = () => {
 
   const addCounter = ({ label, initialValue = 0 }) => {
     const container = document.createElement('div');
+    container.classList.add('counter-section');
 
     const labelElement = document.createElement('span');
     labelElement.textContent = label;
@@ -61,6 +62,41 @@ const addOverlay = () => {
     return { displayCount };
   };
 
+  const addCounterList = ({ labels, initialValue = 0 }) => {
+    const container = document.createElement('div');
+    const uList = document.createElement('ul');
+
+    const counters = [];
+
+    labels.forEach((label) => {
+      const lineElement = document.createElement('li');
+      const labelElement = document.createElement('span');
+      labelElement.textContent = label;
+      lineElement.append(labelElement);
+
+      lineElement.append(document.createTextNode(' '));
+
+      const countElement = document.createElement('span');
+      countElement.classList.add('count');
+      lineElement.append(countElement);
+      counters.push(countElement);
+      uList.append(lineElement);
+    });
+
+    container.append(uList);
+
+    const displayCounts = (counts) => {
+      for (let i = 0; i < counts.length; i ++) {
+        counters[i].textContent = counts[i].toString();
+      }
+    };
+
+    displayCounts(new Array(labels.length).fill(initialValue));
+    statusBox.append(container);
+
+    return { displayCounts };
+  };
+
   const { displayCount: displayHistoryVideoCount } = addCounter({
     label: chrome.i18n.getMessage('rateLaterHistoryVideoCount'),
   });
@@ -69,11 +105,16 @@ const addOverlay = () => {
     label: chrome.i18n.getMessage('rateLaterHistoryAddedCount'),
   });
 
+  const { displayCounts: displayNewVideosCount } = addCounterList({
+    labels: ["nouvelle vidéos", "déjà dans votre liste"], // todo: translate
+  });
+
   const { displayCount: displayFailedVideoCount } = addCounter({
     label: chrome.i18n.getMessage('rateLaterHistoryFailureCount'),
   });
 
   const message = document.createElement('p');
+  message.id = 'when-to-stop';
   message.textContent = chrome.i18n.getMessage(
     'rateLaterHistoryStatusBoxMessage'
   );
@@ -93,6 +134,7 @@ const addOverlay = () => {
     removeOverlay,
     displayHistoryVideoCount,
     displaySentVideoCount,
+    displayNewVideosCount,
     displayFailedVideoCount,
     stopButton,
   };
@@ -134,6 +176,9 @@ const addVideoIdsToRateLater = async (videoIds) => {
   const addedSet = new Set();
   const failedSet = new Set();
 
+  let addedNbr = 0;
+  let alreadyExistingNbr = 0;
+
   const chunkedVideoIds = chunkArray(
     Array.from(videoIds),
     RATE_LATER_BULK_MAX_SIZE
@@ -142,7 +187,9 @@ const addVideoIdsToRateLater = async (videoIds) => {
   chunkedVideoIds.forEach((chunk) => {
     promise = promise.then(async () => {
       try {
-        await addRateLaterBulk(chunk);
+        const videosAddedByChunk = await addRateLaterBulk(chunk);
+        addedNbr += videosAddedByChunk.length;
+        alreadyExistingNbr += (chunk.length - videosAddedByChunk.length);
         chunk.forEach((videoId) => addedSet.add(videoId));
       } catch (e) {
         console.error(e);
@@ -153,7 +200,7 @@ const addVideoIdsToRateLater = async (videoIds) => {
 
   await promise;
 
-  return { addedSet, failedSet };
+  return { addedSet, failedSet, addedNbr, alreadyExistingNbr };
 };
 
 const forEachVisibleVideoId = (callback) => {
@@ -180,6 +227,9 @@ const startHistoryCapture = async () =>
     let addedCount = 0;
     let failedCount = 0;
 
+    let newlyImportedTotal = 0
+    let previouslyImportedTotal = 0;
+
     let abort = false;
 
     document.body.classList.add('tournesol-capturing-history');
@@ -188,6 +238,7 @@ const startHistoryCapture = async () =>
       removeOverlay,
       displayHistoryVideoCount,
       displaySentVideoCount,
+      displayNewVideosCount,
       displayFailedVideoCount,
       stopButton,
     } = addOverlay();
@@ -203,7 +254,7 @@ const startHistoryCapture = async () =>
 
       const videosToSend = historyVideoIdSet.difference(sentVideoIdSet);
       if (videosToSend.size > 0) {
-        const { addedSet, failedSet } = await addVideoIdsToRateLater(
+        const { addedSet, failedSet, addedNbr, alreadyExistingNbr } = await addVideoIdsToRateLater(
           videosToSend
         );
 
@@ -211,6 +262,10 @@ const startHistoryCapture = async () =>
 
         addedCount += addedSet.size;
         displaySentVideoCount(addedCount);
+
+        newlyImportedTotal += addedNbr;
+        previouslyImportedTotal += alreadyExistingNbr;
+        displayNewVideosCount([newlyImportedTotal, previouslyImportedTotal]);
 
         failedCount += failedSet.size;
         displayFailedVideoCount(failedCount);
