@@ -1,26 +1,24 @@
-from typing import Optional
-
 import pandas as pd
-import numpy as np
 
+from solidago.scoring_model import ScoringModel
 from .voting_rights import VotingRights
-from .base import VotingRightsAssignment
+from .base import PrivacySettings, VotingRightsAssignment
 
 
 class IsTrust(VotingRightsAssignment):
-    def __init__(self, privacy_penalty: float=0.5):
+    def __init__(self, privacy_penalty: float = 0.5):
         self.privacy_penalty = privacy_penalty
-    
+
     def __call__(
         self,
         users: pd.DataFrame,
         entities: pd.DataFrame,
         vouches: pd.DataFrame,
-        privacy: "PrivacySettings",
-        user_models: Optional[dict[int, "ScoringModel"]]=None
+        privacy: PrivacySettings,
+        user_models: dict[int, ScoringModel],
     ) -> tuple[VotingRights, pd.DataFrame]:
-        """ Compute voting rights
-        
+        """Compute voting rights
+
         Parameters
         ----------
         users: DataFrame with columns
@@ -31,8 +29,8 @@ class IsTrust(VotingRightsAssignment):
         vouches: Not used
         privacy: PrivacySettings
             privacy[user, entity] in { True, False, None }
-        user_models: Not used
-        
+        user_models: Invidiual scoring model per user
+
         Returns
         -------
         voting_rights[user, entity] is the voting right
@@ -41,16 +39,15 @@ class IsTrust(VotingRightsAssignment):
             * entity_id (int, index)
         """
         voting_rights = VotingRights()
-        
-        for user in users.index:
-            for entity in entities.index:
-                if privacy[user, entity] is None:
-                    continue
-                voting_rights[user, entity] = privacy[user, entity] * self.privacy_penalty
-                voting_rights[user, entity] *= users.loc[user, "trust_score"]
-                
-        return voting_rights
-    
+
+        for user, model in user_models.items():
+            for entity in model.scored_entities():
+                is_private = privacy[user, entity] == True
+                voting_rights[user, entity] = (
+                    is_private * self.privacy_penalty * users.loc[user, "trust_score"]
+                )
+
+        return voting_rights, entities
+
     def to_json(self):
-        return (type(self).__name__, )
-    
+        return (type(self).__name__,)

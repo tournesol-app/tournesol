@@ -111,12 +111,8 @@ class PipelineInput(ABC):
         entities = pd.DataFrame(index=list(entities_ids))
 
         privacy = PrivacySettings()
-        user_entity_pairs = set(
-            comparisons[["user_id", "entity_a"]].itertuples(index=False, name=None)
-        ).union(comparisons[["user_id", "entity_b"]].itertuples(index=False, name=None))
         for rating in ratings_properties.itertuples():
-            if (rating.user_id, rating.entity_id) in user_entity_pairs:
-                privacy[(rating.user_id, rating.entity_id)] = not rating.is_public
+            privacy[(rating.user_id, rating.entity_id)] = not rating.is_public
 
         judgments = DataFrameJudgments(
             comparisons=comparisons.rename(

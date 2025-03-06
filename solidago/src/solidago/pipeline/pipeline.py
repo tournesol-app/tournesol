@@ -194,9 +194,6 @@ class Pipeline:
         raw_scorings = user_models
             
         logger.info(f"Pipeline 3. Computing voting rights with {str(self.voting_rights)}")
-        # WARNING: `privacy` may contain (user, entity) even if user has expressed no judgement
-        # about the entity. These users should not be given a voting right on the entity.
-        # For now, irrelevant privacy values are excluded in `input.get_pipeline_kwargs()`
         voting_rights, entities = self.voting_rights(users, entities, vouches, privacy, user_models)
         start_step4 = timeit.default_timer()
         logger.info(f"Pipeline 3. Terminated in {np.round(start_step4 - start_step3, 2)} seconds")

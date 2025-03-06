@@ -190,7 +190,9 @@ def test_affine_overtrust():
     voting_rights_assignment = AffineOvertrust(
         privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1
     )
-    voting_rights, entities = voting_rights_assignment(users, entities, vouches, privacy)
+    voting_rights, entities = voting_rights_assignment(
+        users, entities, vouches, privacy, user_models=None
+    )
 
     assert len(entities) == 6  # 6 entities
     assert list(entities.columns) == [
@@ -208,7 +210,7 @@ def test_affine_overtrust():
 def test_affine_overtrust_test_data(test):
     td = importlib.import_module(f"data.data_{test}")
     voting_rights, entities = td.pipeline.voting_rights(
-        td.users, td.entities, td.vouches, td.privacy
+        td.users, td.entities, td.vouches, td.privacy, user_models=None,
     )
     for entity in td.voting_rights.entities():
         for user in td.voting_rights.on_entity(entity):

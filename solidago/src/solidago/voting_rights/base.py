@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 
 import pandas as pd
 
+from solidago.scoring_model import ScoringModel
 from solidago.privacy_settings import PrivacySettings
 from .voting_rights import VotingRights
-from solidago.privacy_settings import PrivacySettings
 
 
 class VotingRightsAssignment(ABC):
