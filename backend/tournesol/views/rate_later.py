@@ -71,7 +71,7 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
         " for a given poll.",
         request=RateLaterSerializer(many=True),
         responses={
-            201: RateLaterSerializer,
+            201: RateLaterSerializer(many=True),
         },
     ),
 )
@@ -81,6 +81,7 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
     Accepts an array of entities to be added to the rate-later list.
     """
 
+    pagination_class = None
     permission_classes = [IsAuthenticated]
     serializer_class = RateLaterSerializer
 

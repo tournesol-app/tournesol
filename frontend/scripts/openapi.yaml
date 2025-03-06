@@ -2143,7 +2143,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RateLater'
+                type: array
+                items:
+                  $ref: '#/components/schemas/RateLater'
           description: ''
   /users/me/recommendations/{poll_name}:
     get:
@@ -3337,12 +3339,12 @@ components:
         * `candidate_fr_2022` - Candidate (FR 2022)
     EventTypeEnum:
       enum:
-      - talk
       - live
+      - talk
       type: string
       description: |-
-        * `talk` - Tournesol Talk
         * `live` - Tournesol Live
+        * `talk` - Tournesol Talk
     ExtendedCollectiveRating:
       type: object
       properties:
