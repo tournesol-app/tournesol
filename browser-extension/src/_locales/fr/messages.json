@@ -159,6 +159,10 @@
     "message": "Les vidéos sont en train d'être importées, veuillez patienter.",
     "description": "Titre de l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
   },
+  "rateLaterHistoryStatusBoxRateLimited": {
+    "message": "Vous avez atteint le nombre maximal de vidéos importées pour le moment.",
+    "description": "Titre de l'écran d'import de l'historique YouTube lorsque la limite quotidienne est atteinte."
+  },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Appuyez sur Stop quand le nombre de vidéos visibles n'augmente plus ou que vous pensez que suffisamment de vidéos ont été importées.",
     "description": "Instructions affichées sur l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."

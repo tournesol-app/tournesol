@@ -97,8 +97,11 @@ export const addRateLaterBulk = async (videoIds) => {
       data: videoIds.map((videoId) => ({ entity: { uid: 'yt:' + videoId } })),
     }
   );
-  if (!ratingStatusReponse?.ok)
-    throw new Error('addRateLaterBulk request failed');
+  if (!ratingStatusReponse?.ok) {
+    throw new Error('addRateLaterBulk request failed', {
+      cause: ratingStatusReponse,
+    });
+  }
 
   return await ratingStatusReponse.json();
 };

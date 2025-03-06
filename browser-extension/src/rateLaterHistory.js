@@ -21,6 +21,8 @@ const onYoutubeReady = (callback) => {
 };
 
 const addOverlay = () => {
+  document.body.classList.add('tournesol-capturing-history');
+
   const overlay = document.createElement('div');
   overlay.id = 'tournesol-rate-later-history-overlay';
   document.body.append(overlay);
@@ -36,6 +38,13 @@ const addOverlay = () => {
   const loader = document.createElement('div');
   loader.classList.add('lds-dual-ring');
   statusBox.append(loader);
+
+  const showTooManyRequests = () => {
+    loader.classList.remove('lds-dual-ring');
+    title.textContent = chrome.i18n.getMessage(
+      'rateLaterHistoryStatusBoxRateLimited'
+    );
+  };
 
   const addCounter = ({ label, initialValue = 0 }) => {
     const container = document.createElement('div');
@@ -86,7 +95,7 @@ const addOverlay = () => {
     container.append(uList);
 
     const displayCounts = (counts) => {
-      for (let i = 0; i < counts.length; i ++) {
+      for (let i = 0; i < counts.length; i++) {
         counters[i].textContent = counts[i].toString();
       }
     };
@@ -108,7 +117,7 @@ const addOverlay = () => {
   const { displayCounts: displayNewVideosCount } = addCounterList({
     labels: [
       chrome.i18n.getMessage('rateLaterHistoryAddedNewCount'),
-      chrome.i18n.getMessage('rateLaterHistoryAddedExistingCount')
+      chrome.i18n.getMessage('rateLaterHistoryAddedExistingCount'),
     ],
   });
 
@@ -131,7 +140,10 @@ const addOverlay = () => {
   );
   statusBox.append(stopButton);
 
-  const removeOverlay = () => overlay.remove();
+  const removeOverlay = () => {
+    overlay.remove();
+    document.body.classList.remove('tournesol-capturing-history');
+  };
 
   return {
     removeOverlay,
@@ -139,6 +151,7 @@ const addOverlay = () => {
     displaySentVideoCount,
     displayNewVideosCount,
     displayFailedVideoCount,
+    showTooManyRequests,
     stopButton,
   };
 };
@@ -174,36 +187,41 @@ const chunkArray = (array, chunkSize) => {
 };
 
 const addVideoIdsToRateLater = async (videoIds) => {
-  let promise = Promise.resolve();
-
-  const addedSet = new Set();
+  const processedSet = new Set();
   const failedSet = new Set();
 
   let addedNbr = 0;
   let alreadyExistingNbr = 0;
+  let tooManyRequests = false;
 
   const chunkedVideoIds = chunkArray(
     Array.from(videoIds),
     RATE_LATER_BULK_MAX_SIZE
   );
 
-  chunkedVideoIds.forEach((chunk) => {
-    promise = promise.then(async () => {
-      try {
-        const videosAddedByChunk = await addRateLaterBulk(chunk);
-        addedNbr += videosAddedByChunk.length;
-        alreadyExistingNbr += (chunk.length - videosAddedByChunk.length);
-        chunk.forEach((videoId) => addedSet.add(videoId));
-      } catch (e) {
-        console.error(e);
-        chunk.forEach((videoId) => failedSet.add(videoId));
+  for (const chunk of chunkedVideoIds) {
+    try {
+      const videosAddedByChunk = await addRateLaterBulk(chunk);
+      addedNbr += videosAddedByChunk.length;
+      alreadyExistingNbr += chunk.length - videosAddedByChunk.length;
+      chunk.forEach((videoId) => processedSet.add(videoId));
+    } catch (e) {
+      console.error(e);
+      chunk.forEach((videoId) => failedSet.add(videoId));
+      if (e?.cause?.status === 429) {
+        tooManyRequests = true;
+        break;
       }
-    });
-  });
+    }
+  }
 
-  await promise;
-
-  return { addedSet, failedSet, addedNbr, alreadyExistingNbr };
+  return {
+    processedSet,
+    failedSet,
+    addedNbr,
+    alreadyExistingNbr,
+    tooManyRequests,
+  };
 };
 
 const forEachVisibleVideoId = (callback) => {
@@ -230,12 +248,10 @@ const startHistoryCapture = async () =>
     let addedCount = 0;
     let failedCount = 0;
 
-    let newlyImportedTotal = 0
+    let newlyImportedTotal = 0;
     let previouslyImportedTotal = 0;
 
     let abort = false;
-
-    document.body.classList.add('tournesol-capturing-history');
 
     const {
       removeOverlay,
@@ -248,6 +264,15 @@ const startHistoryCapture = async () =>
 
     let timeout;
 
+    const abortCapture = ({ close = false }) => {
+      abort = true;
+      if (timeout) clearTimeout(timeout);
+      if (close) {
+        removeOverlay();
+        resolve();
+      }
+    };
+
     const captureStep = async () => {
       forEachVisibleVideoId((videoId) => {
         historyVideoIdSet.add(videoId);
@@ -257,13 +282,17 @@ const startHistoryCapture = async () =>
 
       const videosToSend = historyVideoIdSet.difference(sentVideoIdSet);
       if (videosToSend.size > 0) {
-        const { addedSet, failedSet, addedNbr, alreadyExistingNbr } = await addVideoIdsToRateLater(
-          videosToSend
-        );
+        const {
+          processedSet,
+          failedSet,
+          addedNbr,
+          alreadyExistingNbr,
+          tooManyRequests,
+        } = await addVideoIdsToRateLater(videosToSend);
 
         sentVideoIdSet = sentVideoIdSet.union(videosToSend);
 
-        addedCount += addedSet.size;
+        addedCount += processedSet.size;
         displaySentVideoCount(addedCount);
 
         newlyImportedTotal += addedNbr;
@@ -272,6 +301,11 @@ const startHistoryCapture = async () =>
 
         failedCount += failedSet.size;
         displayFailedVideoCount(failedCount);
+
+        if (tooManyRequests) {
+          abortCapture();
+          return;
+        }
       }
 
       if (abort) return;
@@ -285,11 +319,7 @@ const startHistoryCapture = async () =>
     captureStep();
 
     stopButton.addEventListener('click', () => {
-      abort = true;
-      if (timeout) clearTimeout(timeout);
-      removeOverlay();
-      document.body.classList.remove('tournesol-capturing-history');
-      resolve();
+      abortCapture({ close: true });
     });
   });
 

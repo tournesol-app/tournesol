@@ -161,6 +161,10 @@
     "message": "Videos are being imported, please wait.",
     "description": "Title of the the rate later history import status box."
   },
+  "rateLaterHistoryStatusBoxRateLimited": {
+    "message": "The limit of videos imported in your Rate-Later list has been reached for now.",
+    "description": "Title of the the rate later history import status box after rate limit has been reached."
+  },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Press Stop when the visible videos count doesn't increase anymore or when you think enough videos have been imported.",
     "description": "Instructions displayed on the rate later history import status box."
