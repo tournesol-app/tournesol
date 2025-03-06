@@ -1,24 +1,28 @@
+from collections import defaultdict
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 
-from solidago import PrivacySettings
+from solidago import PrivacySettings, ScoringModel
 from solidago.solvers.dichotomy import solve
 from .base import VotingRights, VotingRightsAssignment
 
 
 class AffineOvertrust(VotingRightsAssignment):
     def __init__(
-        self, 
-        privacy_penalty: float = 0.5, 
+        self,
+        privacy_penalty: float = 0.5,
         min_overtrust: float = 2.0,
         overtrust_ratio: float = 0.1,
     ):
-        """ privately scored entities are given 
-        
+        """
         Parameters
         ----------
         privacy_penalty: float
             Penalty on private comparisons
+        min_overtrust: float
+        overtrust_ratio: float
         """
         self.privacy_penalty = privacy_penalty
         self.min_overtrust = min_overtrust
@@ -30,8 +34,9 @@ class AffineOvertrust(VotingRightsAssignment):
         entities: pd.DataFrame,
         vouches: pd.DataFrame,
         privacy: PrivacySettings,
+        user_models: Optional[dict[int, ScoringModel]],
     ) -> tuple[VotingRights, pd.DataFrame]:
-        """Compute voting rights
+        """Compute voting rights.
 
         Parameters
         ----------
@@ -40,11 +45,11 @@ class AffineOvertrust(VotingRightsAssignment):
             * trust_score (float)
         entities: DataFrame with columns
             * entity_id (int, index)
-        vouches: DataFrame
-            This is not used by VotingRightsWithLimitedOvertrust
+        vouches: not used
         privacy: PrivacySettings
             privacy[user, entity] is the privacy setting of user for entity
             May be True, False or None
+        user_models: scoring model per user
 
         Returns
         -------
@@ -60,15 +65,25 @@ class AffineOvertrust(VotingRightsAssignment):
         if len(users) == 0 or len(entities) == 0:
             return voting_rights, entities
 
+        entity_to_users: dict[int, set[int]] = {
+            entity_id: set()
+            for entity_id in entities.index
+        }
+        if user_models is None:
+            # In this case it's assumed that for any pair (entity, user) the privacy
+            # is defined if and only if `user` expressed a judgement on `entity`.
+            for entity_id in privacy.entities():
+                entity_to_users[entity_id] = privacy.users(entity_id)
+        else:
+            for user_id, model in user_models.items():
+                for entity_id in model.scored_entities():
+                    entity_to_users[entity_id].add(user_id)
+
         trust_scores = users["trust_score"]
-        new_records = list()
-        for e in entities.index:
-            user_ids = privacy.users(e)
+        new_records = []
+        for entity_id, user_ids in entity_to_users.items():
             privacy_weights = pd.Series(
-                {
-                    u: self.privacy_penalty if privacy[u, e] else 1.0
-                    for u in user_ids
-                }
+                {u: self.privacy_penalty if privacy[u, entity_id] else 1.0 for u in user_ids}
             )
             (voting_rights_series, cumulative_trust, min_voting_right, overtrust) = (
                 self.compute_entity_voting_rights(
@@ -77,7 +92,7 @@ class AffineOvertrust(VotingRightsAssignment):
                 )
             )
             for user_id, voting_right in voting_rights_series.items():
-                voting_rights[user_id, e] = voting_right  # type: ignore
+                voting_rights[user_id, entity_id] = voting_right  # type: ignore
             new_records.append((cumulative_trust, min_voting_right, overtrust))
 
         r = list(zip(*new_records))
@@ -142,7 +157,7 @@ class AffineOvertrust(VotingRightsAssignment):
         -------
         out: float
         """
-        return trust * self.overtrust_ratio + self.min_overtrust 
+        return trust * self.overtrust_ratio + self.min_overtrust
 
     def overtrust(
         self,
@@ -202,9 +217,9 @@ class AffineOvertrust(VotingRightsAssignment):
 
     def to_json(self):
         return "AffineOvertrust", dict(
-            privacy_penalty=self.privacy_penalty, 
+            privacy_penalty=self.privacy_penalty,
             min_overtrust=self.min_overtrust,
-            overtrust_ratio=self.overtrust_ratio
+            overtrust_ratio=self.overtrust_ratio,
         )
 
     def __str__(self):
