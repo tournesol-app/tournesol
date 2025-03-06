@@ -44,6 +44,12 @@ const addOverlay = () => {
     title.textContent = chrome.i18n.getMessage(
       'rateLaterHistoryStatusBoxRateLimited'
     );
+    message.textContent = chrome.i18n.getMessage(
+      'rateLaterHistoryStatusBoxMessageRateLimited'
+    );
+    stopButton.textContent = chrome.i18n.getMessage(
+      'rateLaterHistoryCloseButtonLabel'
+    );
   };
 
   const addCounter = ({ label, initialValue = 0 }) => {
@@ -208,7 +214,7 @@ const addVideoIdsToRateLater = async (videoIds) => {
     } catch (e) {
       console.error(e);
       chunk.forEach((videoId) => failedSet.add(videoId));
-      if (e?.cause?.status === 429) {
+      if (e?.message === 'http429') {
         tooManyRequests = true;
         break;
       }
@@ -259,12 +265,13 @@ const startHistoryCapture = async () =>
       displaySentVideoCount,
       displayNewVideosCount,
       displayFailedVideoCount,
+      showTooManyRequests,
       stopButton,
     } = addOverlay();
 
     let timeout;
 
-    const abortCapture = ({ close = false }) => {
+    const abortCapture = ({ close = false } = {}) => {
       abort = true;
       if (timeout) clearTimeout(timeout);
       if (close) {
@@ -304,6 +311,7 @@ const startHistoryCapture = async () =>
 
         if (tooManyRequests) {
           abortCapture();
+          showTooManyRequests();
           return;
         }
       }

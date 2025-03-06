@@ -98,9 +98,11 @@ export const addRateLaterBulk = async (videoIds) => {
     }
   );
   if (!ratingStatusReponse?.ok) {
-    throw new Error('addRateLaterBulk request failed', {
-      cause: ratingStatusReponse,
-    });
+    if (ratingStatusReponse?.status === 429) {
+      throw new Error('http429');
+    } else {
+      throw new Error('addRateLaterBulk request failed');
+    }
   }
 
   return await ratingStatusReponse.json();

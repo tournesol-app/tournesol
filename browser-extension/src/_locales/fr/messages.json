@@ -160,12 +160,16 @@
     "description": "Titre de l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
   },
   "rateLaterHistoryStatusBoxRateLimited": {
-    "message": "Vous avez atteint le nombre maximal de vidéos importées pour le moment.",
+    "message": "Vous avez importé le nombre maximal de vidéos autorisé aujourd'hui.",
     "description": "Titre de l'écran d'import de l'historique YouTube lorsque la limite quotidienne est atteinte."
   },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Appuyez sur Stop quand le nombre de vidéos visibles n'augmente plus ou que vous pensez que suffisamment de vidéos ont été importées.",
     "description": "Instructions affichées sur l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryStatusBoxMessageRateLimited": {
+    "message": "Vous pourrez relancer un import dans 24 heures, après avoir vu de nouvelles vidéos.",
+    "description": "Instructions affichées sur l'écran d'import de l'historique YouTube, lorsque la limite quotidienne est atteinte."
   },
   "rateLaterHistoryVideoCount": {
     "message": "Vidéos visibles dans l'historique :",
@@ -186,6 +190,10 @@
   "rateLaterHistoryFailureCount": {
     "message": "Échecs :",
     "description": "Étiquette indiquant le nombre de vidéos qui n'ont pas pu être ajoutées à la liste."
+  },
+  "rateLaterHistoryCloseButtonLabel": {
+    "message": "Fermer",
+    "description": "Texte du bouton permettant de fermer l'écran d'import, lorsque celui-ci est terminé."
   },
   "rateLaterHistoryStopButtonLabel": {
     "message": "Stop",

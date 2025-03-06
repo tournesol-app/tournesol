@@ -162,12 +162,16 @@
     "description": "Title of the the rate later history import status box."
   },
   "rateLaterHistoryStatusBoxRateLimited": {
-    "message": "The limit of videos imported in your Rate-Later list has been reached for now.",
+    "message": "You have imported the maximum number of videos allowed today.",
     "description": "Title of the the rate later history import status box after rate limit has been reached."
   },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Press Stop when the visible videos count doesn't increase anymore or when you think enough videos have been imported.",
     "description": "Instructions displayed on the rate later history import status box."
+  },
+  "rateLaterHistoryStatusBoxMessageRateLimited": {
+    "message": "You'll be able to start a new import in 24 hours, after having watched new videos.",
+    "description": "Instructions displayed on the rate later history import status box after rate limist has been reached."
   },
   "rateLaterHistoryVideoCount": {
     "message": "Videos visible in history:",
@@ -188,6 +192,10 @@
   "rateLaterHistoryFailureCount": {
     "message": "Failures:",
     "description": "Label showing the count of videos that failed to be added to the rate later list."
+  },
+  "rateLaterHistoryCloseButtonLabel": {
+    "message": "Close",
+    "description": "Label of the button to close the import status box, when the import is over."
   },
   "rateLaterHistoryStopButtonLabel": {
     "message": "Stop",
