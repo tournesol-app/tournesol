@@ -173,6 +173,14 @@
     "message": "Videos added to rate later:",
     "description": "Label showing the count of videos successfully added to the rate later list."
   },
+  "rateLaterHistoryAddedNewCount": {
+    "message": "new videos:",
+    "description": "Label showing the number of successfully imported videos that were NOT already in the rate later list before the import."
+  },
+  "rateLaterHistoryAddedExistingCount": {
+    "message": "already in your list:",
+    "description": "Label showing the number of successfully imported videos that were already in the rate later list before the import."
+  },
   "rateLaterHistoryFailureCount": {
     "message": "Failures:",
     "description": "Label showing the count of videos that failed to be added to the rate later list."

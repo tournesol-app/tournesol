@@ -106,7 +106,10 @@ const addOverlay = () => {
   });
 
   const { displayCounts: displayNewVideosCount } = addCounterList({
-    labels: ["nouvelle vidéos", "déjà dans votre liste"], // todo: translate
+    labels: [
+      chrome.i18n.getMessage('rateLaterHistoryAddedNewCount'),
+      chrome.i18n.getMessage('rateLaterHistoryAddedExistingCount')
+    ],
   });
 
   const { displayCount: displayFailedVideoCount } = addCounter({
