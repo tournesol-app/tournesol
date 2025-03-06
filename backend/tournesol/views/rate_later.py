@@ -82,6 +82,7 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
     """
 
     permission_classes = [IsAuthenticated]
+    throttle_scope = "api_rate_later_bulk_create"
     serializer_class = RateLaterSerializer
 
     def get_serializer(self, *args, **kwargs):
