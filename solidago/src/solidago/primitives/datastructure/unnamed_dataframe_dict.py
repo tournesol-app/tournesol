@@ -13,12 +13,14 @@ class UnnamedDataFrameDict:
     def __init__(self, 
         *args, 
         df_cls: type=DataFrame, 
+        df_kwargs: dict=None,
         main_key_names=list[str], 
         sub_key_names=list[str], 
         **kwargs
     ):
         self.dict = dict(*args, **kwargs)
         self.df_cls = df_cls
+        self.df_kwargs = df_kwargs or dict()
         self.main_key_names = main_key_names
         self.sub_key_names = sub_key_names
         

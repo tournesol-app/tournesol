@@ -6,6 +6,8 @@ from pandas import DataFrame, Series
 from functools import reduce
 
 import pandas as pd
+import math
+import numbers
 
 
 class UnnamedDataFrame(DataFrame):
@@ -43,6 +45,10 @@ class UnnamedDataFrame(DataFrame):
             for key, value in default_keys.items():
                 if key not in self.columns:
                     self[key] = value
+                else:
+                    for index, row in DataFrame(self).iterrows():
+                        if isinstance(row[key], numbers.Number) and math.isnan(row[key]):
+                            self.loc[index, key] = "0"
         self.meta = SimpleNamespace()
         self.meta.name = name
         self.meta.key_names, self.meta.value_names = key_names, value_names
@@ -250,6 +256,12 @@ class UnnamedDataFrame(DataFrame):
         self.meta._group_cache[tuple(columns), process, last_only] = UnnamedDataFrameDict(
             data, 
             df_cls=type(self), 
+            df_kwargs=dict(
+                key_names=sub_key_names,
+                name=self.meta.name,
+                default_value=self.meta._default_value,
+                last_only=self.meta._last_only,
+            ),
             main_key_names=columns, 
             sub_key_names=sub_key_names
         )
@@ -285,6 +297,12 @@ class UnnamedDataFrame(DataFrame):
 
     def __iter__(self, process: bool=True) -> Iterable:
         return self.iter(self.key_names, process=process)
+
+    def __getitem__(self, *args, **kwargs) -> Series:
+        try:
+            return super().__getitem__(*args, **kwargs)
+        except KeyError:
+            return Series()
 
     def keys(self, columns: Optional[list[str]]=None) -> list:
         return [ keys for keys, _ in self.iter(columns=columns, process=True) ]

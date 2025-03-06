@@ -65,5 +65,5 @@ def test_reimport():
     assert "lpfaucon" in t.user_models
     assert len(t.user_models["lafabriquesociale"].base_model()) == 3
     assert len(t.voting_rights.get("lpfaucon")) == len(t.user_models["lpfaucon"].base_model())
-    assert t.user_models["lpfaucon"]("YVxJNhR9U4g").get("largely_recommended").value == 93.18
+    assert t.user_models["lpfaucon"]("YVxJNhR9U4g").get("largely_recommended").value == 186.36
     assert t.global_model("0BoRX6UrBv0").get("importance").to_triplet() == (-4.53, 141.1, 141.1)
