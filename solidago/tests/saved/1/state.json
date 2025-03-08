@@ -1,0 +1,87 @@
+{
+    "users": [
+        "VectorUsers",
+        [
+            "users.csv",
+            "user_vectors.csv"
+        ]
+    ],
+    "entities": [
+        "VectorEntities",
+        [
+            "entities.csv",
+            "entity_vectors.csv"
+        ]
+    ],
+    "vouches": [
+        "Vouches",
+        "vouches.csv"
+    ],
+    "made_public": [
+        "MadePublic",
+        "made_public.csv"
+    ],
+    "assessments": [
+        "Assessments",
+        "assessments.csv"
+    ],
+    "comparisons": [
+        "Comparisons",
+        "comparisons.csv"
+    ],
+    "voting_rights": [
+        "VotingRights",
+        "voting_rights.csv"
+    ],
+    "user_models": [
+        "UserModels",
+        {
+            "user_directs": "user_directs.csv",
+            "user_scales": "user_scales.csv",
+            "common_scales": "common_scales.csv",
+            "default_model_cls": [
+                "SquashedModel",
+                {
+                    "score_max": 100,
+                    "note": "squash",
+                    "parent": [
+                        "ScaledModel",
+                        {
+                            "note": "lipschitz_quantile_shift",
+                            "parent": [
+                                "ScaledModel",
+                                {
+                                    "note": "lipschitz_standardardize",
+                                    "parent": [
+                                        "ScaledModel",
+                                        {
+                                            "note": "mehestan",
+                                            "parent": [
+                                                "DirectScoring",
+                                                {}
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "global_model": [
+        "SquashedModel",
+        {
+            "note": "squash",
+            "score_max": 100,
+            "parent": [
+                "DirectScoring",
+                {
+                    "note": "entitywise_qr_quantile"
+                }
+            ],
+            "directs": "directs.csv"
+        }
+    ]
+}

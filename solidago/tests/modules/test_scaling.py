@@ -33,8 +33,9 @@ def test_standardize(seed):
     )
     s = states[seed]
     standardized_models = standardize.state2objects_function(states[seed])
-    assert standardized_models.score(states[seed].entities)["value"].std() < 2
-    assert standardized_models.score(states[seed].entities)["value"].std() > 0.5
+    scores = standardized_models(states[seed].entities)
+    assert scores["value"].std() < 2
+    assert scores["value"].std() > 0.5
     
 @pytest.mark.parametrize("seed", range(5))
 def test_quantile_shift(seed):
@@ -45,4 +46,4 @@ def test_quantile_shift(seed):
         target_score=0.21,
     )
     shifted_models = quantile_shift.state2objects_function(states[seed])
-    assert shifted_models.score(states[seed].entities)["value"].median() > 0
+    assert shifted_models(states[seed].entities)["value"].median() > 0

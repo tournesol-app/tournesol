@@ -46,7 +46,7 @@ class LipschitzQuantileShift(StateFunction):
                 right_uncertainties=np.array(user_scores["right_unc"], dtype=np.float64),
                 error=self.error,
             ) + self.target_score
-            scales.set(0, "translations", criterion, translation_value, 0, 0)
+            scales.set(0, "translation", criterion, translation_value, 0, 0)
         return user_models.scale(scales, note="lipschitz_quantile_shift")
 
 

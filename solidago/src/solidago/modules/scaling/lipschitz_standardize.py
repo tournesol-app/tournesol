@@ -30,5 +30,5 @@ class LipschitzStandardize(StateFunction):
                 default_dev=1.0,
                 error=self.error,
             )
-            scales.set(0, "multipliers", criterion, std_dev, 0, 0)
+            scales.set(0, "multiplier", criterion, 1/std_dev, 0, 0)
         return user_models.scale(scales, note="lipschitz_standardardize")

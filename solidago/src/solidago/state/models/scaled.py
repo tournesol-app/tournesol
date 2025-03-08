@@ -15,7 +15,7 @@ class ScaledModel(ScoringModel):
     @property
     def multiplier(self) -> MultiScore:
         return MultiScore(
-            data=self.scales.get(depth=self.depth, kind="multiplier"),
+            data=self.scales.get(depth=str(self.depth), kind="multiplier"),
             default_value=Score(1, 0, 0)
         )
     

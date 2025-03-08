@@ -51,7 +51,10 @@ class NamedDataFrame(DataFrame):
         self.to_csv(path)
         return type(self).__name__, self.save_filename
 
-    def get(self, key: Union[str, NamedSeries, Iterable, dict]) -> Union[NamedSeries, "NamedDataFrame"]:
+    def get(self, 
+        key: Union[str, NamedSeries, Iterable, dict],
+        ignore_missing_keys: bool=True
+    ) -> Union[NamedSeries, "NamedDataFrame"]:
         """ Extract carefully typed objects given index names (default) or attributes
         
         Returns
@@ -68,7 +71,8 @@ class NamedDataFrame(DataFrame):
             for key, value in key_values.items():
                 filtered &= (self[key] == value)
             return type(self)(self[filtered])
-        return type(self)(self.loc[list(key)])
+        keys = [k for k in key if k in self.index] if ignore_missing_keys else list(key)
+        return type(self)(self.loc[keys])
     
     def __iter__(self):
         for _, row in self.iterrows():
