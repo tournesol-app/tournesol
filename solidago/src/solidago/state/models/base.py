@@ -77,7 +77,7 @@ class ScoringModel(ABC):
             
         Returns
         -------
-        out: Score or MultiScore or NestedDict
+        out: Score or MultiScore
             If entities: Entity with unidimensional scoring, the output is a Score.
             If entities: Entity with multivariate scoring, then out[criterion_name] is a Score.
             If entities: Entities with unidimensional scoring, then out[entity_name] is a Score.

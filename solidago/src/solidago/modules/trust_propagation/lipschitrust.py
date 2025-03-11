@@ -5,7 +5,6 @@
 
 import numpy as np
 
-from solidago.primitives.datastructure import NestedDictOfItems
 from solidago.state import *
 from solidago.modules.base import StateFunction
 

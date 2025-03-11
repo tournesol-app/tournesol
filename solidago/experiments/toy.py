@@ -27,7 +27,7 @@ pipeline = Sequential.load("tests/modules/test_pipeline.json")
 # s = State.load("tests/saved/0")
 # s = generator(seed=0)
 
-pipeline(TournesolExport("tests/tiny_tournesol.zip"))
+s = TournesolExport("tests/tiny_tournesol.zip")
 
 # s1 = pipeline.trust_propagation.state2state_function(s)
 # s2 = pipeline.preference_learning.state2state_function(s1)

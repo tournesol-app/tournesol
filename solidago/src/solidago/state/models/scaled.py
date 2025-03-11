@@ -2,7 +2,6 @@ from typing import Union, Optional, Any, Literal
 from pathlib import Path
 from pandas import DataFrame
 
-from solidago.primitives.datastructure import NestedDictOfTuples
 from .score import Score, MultiScore
 from .base import ScoringModel
 
