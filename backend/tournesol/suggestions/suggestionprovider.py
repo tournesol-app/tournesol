@@ -1,12 +1,17 @@
+import logging
+import time
 from typing import Optional
 
+import numpy as np
 from django.db.models import F, QuerySet
 
 from core.models import User
 from tournesol.models import Comparison, ComparisonCriteriaScore, Entity, Poll
 from tournesol.suggestions.graph import CompleteGraph, Graph
-from tournesol.suggestions.suggested_user import SuggestedUser as RecommendationUser
+from tournesol.suggestions.suggested_user import SuggestedUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
+
+logger = logging.getLogger(__name__)
 
 
 class SuggestionProvider:
@@ -81,11 +86,15 @@ class SuggestionProvider:
             for entity_uid in comparison
         )
 
-        return [
+        supertursted_compared_entities = [
             self._entity_to_video[uid]
             for uid in supertursted_compared_entities
             if self._entity_to_video.get(uid)
         ]
+
+        np.random.shuffle(supertursted_compared_entities)
+
+        return supertursted_compared_entities[:100]
 
     def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
         """
@@ -118,7 +127,7 @@ class SuggestionProvider:
         Function used to register a new user wanting suggestions, it thus initializes its
         comparison graph
         """
-        recommendation_user = RecommendationUser(
+        recommendation_user = SuggestedUser(
             self._entity_to_video, new_user, self.criteria, self.poll
         )
         self._user_specific_graphs[new_user.id] = Graph(
@@ -165,22 +174,35 @@ class SuggestionProvider:
         """
         # Lazily load the user graph
         if user.id not in self._user_specific_graphs:
+            begin = time.perf_counter()
             self.register_new_user(user)
+            logger.debug("Registered new user: %.3fs" % (time.perf_counter() - begin))
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
         user_graph = self._user_specific_graphs[user.id]
-        user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
+        begin = time.perf_counter()
+        scaling_factor_increasing_videos = self._get_user_comparability_augmenting_videos()
+        user_graph.compute_offline_parameters(scaling_factor_increasing_videos)
+        logger.debug("Offline parameters for user graph: %.3fs" % (time.perf_counter() - begin))
+        begin = time.perf_counter()
         self._complete_graph.compute_offline_parameters()
+        logger.debug("Offline parameters for complete graph: %.3fs" % (time.perf_counter() - begin))
 
         # Prepare the set of videos to sort, taking the videos present in the graph
         # and append the ones that are not yet compared by the user
         considered_vid_list = self._prepare_video_list(user, None)
 
+        # TODO Get rate later videos for the user
+        rate_later = []
+
         max_vid_pref = 0
         # Todo : take into account the rate later list / already seen videos ?
         for v in considered_vid_list:
             v.user_pref = max(v.nb_comparison_with.values()) / v.comparison_nb
+            v.user_pref += v.score/100
+            if v in rate_later:
+                v.user_pref += 0.5
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
@@ -223,9 +245,15 @@ class SuggestionProvider:
         # the ones that are not yet compared by the user
         considered_vid_list = self._prepare_video_list(user, first_video)
 
+        # TODO Get rate later videos for the user
+        rate_later = []
+
         max_vid_pref = 0
         for v in considered_vid_list:
             v.user_pref = v.nb_comparison_with[first_video_id] / v.comparison_nb
+            v.user_pref += v.score/100
+            if v in rate_later:
+                v.user_pref += 0.5
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
