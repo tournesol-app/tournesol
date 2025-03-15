@@ -5,6 +5,7 @@ from pandas import DataFrame
 
 import pandas as pd
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 

@@ -3,6 +3,7 @@ from pathlib import Path
 from pandas import DataFrame
 
 import pandas as pd
+import json
 
 from .base import ScoringModel
 from .score import MultiScore
