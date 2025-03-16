@@ -21,7 +21,7 @@ def test_gbt_score_zero(GBT):
     )
     init_multiscores = MultiScore(key_names=["entity_name"])
     
-    scores = NumbaUniformGBT().user_learn_criterion(entities, comparisons, init_multiscores)
+    scores = GBT().user_learn_criterion(entities, comparisons, init_multiscores)
     
     assert scores.get("entity_1").to_triplet() == pytest.approx((0, 1.8, 1.8), abs=0.1)
     assert scores.get("entity_2").to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)

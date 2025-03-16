@@ -91,10 +91,10 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
     ) -> torch.Tensor:
         """ To avoid nan errors in autograd, we initialize at nonzero values """
         scores = 1e-3 * torch.normal(0, 1, (len(entity_name2index),))
-        for entity, init_score in init_multiscores:
+        for entity, index in entity_name2index.items():
+            init_score = init_multiscores.get(entity_name=entity, cache_groups=True)
             if not init_score.isnan():
-                noise = 1 + scores[entity_name2index[str(entity)]]
-                scores[entity_name2index[str(entity)]] = init_score.value * noise
+                scores[index] = init_score.value * (1 + scores[index])
         scores.requires_grad = True
         scores = scores.to(self.device)
         return scores

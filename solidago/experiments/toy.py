@@ -26,8 +26,9 @@ pipeline = Sequential.load("tests/modules/test_pipeline.json")
 
 # s = State.load("tests/saved/0")
 # s = generator(seed=0)
+# s = TournesolExport("tests/tiny_tournesol.zip")
+s = TournesolExport("experiments/tournesol.zip")
 
-s = TournesolExport("tests/tiny_tournesol.zip")
 t = pipeline(s)
 
 # s1 = pipeline.trust_propagation.state2state_function(s)
@@ -37,49 +38,26 @@ t = pipeline(s)
 # s5 = pipeline.aggregation.state2state_function(s4)
 # s6 = pipeline.post_process.state2state_function(s5)
 
-# users, entities, made_public, user_models = s.users, s.entities, s.made_public, s.user_models
-# criterion = "default"
-# scores = user_models(entities, criterion)
-# trusts = dict(zip(users.index, users["trust_score"]))
-# self = pipeline.scaling.collaborative_scaling
+# user = s.users.get("A")
+# entities = s.entities
+# assessments = s.assessments.get(user)
+# comparisons = s.comparisons.get(user)
+# init_model = s.user_models[user].base_model()
 
-# activities, is_scaler = self.compute_activities_and_scalers(users, trusts, made_public, scores)
-# users[f"activities_{criterion}"] = activities
-# users[f"is_scaler_{criterion}"] = is_scaler
-# scalers = users.get({ f"is_scaler_{criterion}": True })
-
-# scaler_scales, scaler_scores = self.scale_to_scalers(trusts, made_public, 
-    # scores.get_all(scalers), scores.get_all(scalers), scalees_are_scalers=True)
-
-# nonscalers = users.get({ f"is_scaler_{criterion}": False })
-# nonscaler_scores = scores.get_all(nonscalers)
-# scalee_scores = nonscaler_scores
-# scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
-
-# key_names = ["scalee_name", "scaler_name"]
-# weight_lists = VotingRights(key_names=key_names, last_only=False)
-# comparison_lists = MultiScore(key_names=key_names, last_only=False)
-
-# scalee_name = next(iter(set(scalee_scores["username"])))
-# scalee_name_scores = scalee_scores.get(username=scalee_name, cache_groups=True)
-# scalee_entity_names = set(scalee_name_scores["entity_name"])
-
-# scaler_names = set.union(*[
-	# set(scaler_scores.get(entity_name=entity_name, cache_groups=True)["username"])
-	# for entity_name in scalee_entity_names
-# ])
-            
-# t = pipeline(s)
-        
-# for seed in range(5):
-    # directory = f"tests/modules/saved/{seed}"
-    # pipeline(State.load(directory), directory, skip_steps={3, 4, 5})
-
-# tiny = TournesolExport("tests/tiny_tournesol.zip")
-
-# t = TournesolExport("experiments/tournesol.zip")
-# t = State.load("experiments/saved_tournesol")
-# pipeline = solidago.Sequential.load("tests/pipeline/test_pipeline.json")
-
-# r = pipeline(t)
+# # self = pipeline.preference_learning
+# self = modules.preference_learning.NumbaUniformGBT()
+# # self.user_learn(user, entities, assessments, comparisons, init_model)
+# if self.last_comparison_only:
+	# comparisons = comparisons.last_only()
+# model = DirectScoring()
+# compared_entity_names = set(comparisons["left_name"]) | set(comparisons["right_name"])
+# entities = entities.get(compared_entity_names) # Restrict to compared entities
+# init = init_model(entities).to_dict("criterion")
+# criteria = set(comparisons["criterion"]) | set(init["criterion"])
+# criterion = next(iter(criteria))
+# cmps = comparisons.get(criterion=criterion)
+# criterion_entity_names = set(cmps["left_name"]) | set(cmps["right_name"])
+# if len(criterion_entity_names) > 1:
+	# criterion_entities = entities.get(criterion_entity_names) # Restrict to compared entities
+	# learned_scores = self.user_learn_criterion(criterion_entities, cmps, init[criterion])
 

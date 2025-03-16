@@ -137,9 +137,10 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         init_multiscores: MultiScore, # key_names == "entity_name"
     ) -> npt.NDArray:
         scores = np.zeros(len(entity_name2index), dtype=np.float64)
-        for entity, init_score in init_multiscores:
+        for entity, index in entity_name2index.items():
+            init_score = init_multiscores.get(entity_name=entity, cache_groups=True)
             if not init_score.isnan():
-                scores[entity_name2index[str(entity)]] = init_score.value
+                scores[index] = init_score.value
         return scores
     
     def user_learn_criterion(self, 

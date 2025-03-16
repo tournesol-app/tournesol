@@ -4,6 +4,7 @@ from types import BuiltinFunctionType, SimpleNamespace
 from pathlib import Path
 from pandas import DataFrame, Series
 from functools import reduce
+from collections import defaultdict
 
 import pandas as pd
 import math
@@ -248,10 +249,14 @@ class UnnamedDataFrame(DataFrame):
     ) -> "UnnamedDataFrameDict":
         columns = [columns] if isinstance(columns, str) else columns
         columns = columns if columns else self.key_names
-        if (tuple(columns), process, last_only) in self.meta._group_cache:
-            return self.meta._group_cache[tuple(columns), process, last_only]
+        group_keys = (tuple(columns), process, last_only)
+        if group_keys in self.meta._group_cache:
+            return self.meta._group_cache[group_keys]
         data = { key: value for key, value in self.iter(columns, process) }
         sub_key_names = [ key for key in self.key_names if key not in columns ]
+        if process and not sub_key_names:
+            self.meta._group_cache[group_keys] = defaultdict(self.default_value, data)
+            return self.meta._group_cache[tuple(columns), process, last_only]
         from solidago.primitives.datastructure import UnnamedDataFrameDict
         self.meta._group_cache[tuple(columns), process, last_only] = UnnamedDataFrameDict(
             data, 

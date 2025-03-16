@@ -79,8 +79,8 @@ class UserModels:
         import solidago.state.models as models
         constructor_name, kwargs = self.model_cls(user)
         return getattr(models, constructor_name)(
-            directs=self.user_directs.get(username=user, cache_group=True), 
-            scales=self.user_scales.get(username=user, cache_group=True) \
+            directs=self.user_directs.get(username=user, cache_groups=True), 
+            scales=self.user_scales.get(username=user, cache_groups=True) \
                 | self.common_scales.assign(username=str(user)), 
             username=str(user),
             user_models=self,
