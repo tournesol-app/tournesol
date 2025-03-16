@@ -58,18 +58,15 @@ class UserModels:
             key_names.append("entity_name")
         if criterion is None:
             key_names.append("criterion")
-        criteria = self.criteria() if criterion is None else { criterion }
         entities = entities if isinstance(entities, Entities) else [entities]
-        scores = [ 
-            (str(user), str(entity), c, model.score(entity, c)) 
-            for user, model in self
-            for entity in entities 
-            for c in criteria 
-        ]
-        results = MultiScore(
-            data=[(u, e, c, *s.to_triplet()) for u, e, c, s in scores if not s.isnan()],
-            key_names=["username", "entity_name", "criterion"]
-        )
+        scores_list = list()
+        for user, model in self:
+            scores = model(entities, criterion)
+            for keys, score in scores:
+                k = keys if criterion is None else (keys,)
+                scores_list.append((str(user), *k, *score.to_triplet()))
+        key_names = ["username", "entity_name"] + (["criterion"] if criterion is None else list())
+        results = MultiScore(data=scores_list, key_names=key_names)
         results.key_names = key_names
         return results
 
