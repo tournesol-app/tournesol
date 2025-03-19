@@ -212,6 +212,13 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       displayText: t('menu.about'),
       ariaLabel: t('menu.aboutAriaLabel'),
     },
+    {
+      id: RouteID.Manifesto,
+      targetUrl: '/manifesto',
+      IconComponent: InfoIcon,
+      displayText: 'Manifesto',
+      ariaLabel: 'Manifesto',
+    },
   ];
 
   return (

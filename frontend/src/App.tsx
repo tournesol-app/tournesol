@@ -25,6 +25,7 @@ import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import TermsOfService from './pages/about/TermsOfService/TermsOfService';
 import About from './pages/about/About';
+import Manifesto from './pages/about/Manifesto';
 import AllEvents from './pages/events/AllEventsPage';
 import TournesolLivePage from './pages/events/TournesolLivePage';
 import TournesolTalksPage from './pages/events/TournesolTalksPage';
@@ -121,6 +122,9 @@ function App() {
             </PublicRoute>
             <PublicRoute path="/about/donate">
               <DonatePage />
+            </PublicRoute>
+            <PublicRoute path="/manifesto">
+              <Manifesto />
             </PublicRoute>
             <PublicRoute path="/about">
               <About />
