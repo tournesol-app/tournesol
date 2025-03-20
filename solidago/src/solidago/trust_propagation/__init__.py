@@ -1,4 +1,4 @@
-""" **Step 1 in the pipeline**
+""" **Step 1 in pipeline**
     
 Trust propagation is tasked to combine pretrusts and vouches
 to derive trust scores for the different users.

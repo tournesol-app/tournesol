@@ -41,8 +41,8 @@ nav:
     - "structures/privacy_settings.md"
   - Modules: 
     - "modules/trust_propagation.md"
-    - "modules/voting_rights.md"
     - "modules/preference_learning.md"
+    - "modules/voting_rights.md"
     - "modules/scaling.md"
     - "modules/aggregation.md"
     - "modules/post_process.md"

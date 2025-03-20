@@ -8,6 +8,11 @@ import numpy as np
 class ScoringModel:
     """
     Abstract class that defines the interface for models that can score individual entities.
+
+    !!! note
+        This abstract class provides a default implementation that for `iter_entities()`
+        calling `scored_entities()` and `__call__()` to score each entity.
+        `scored_entities()` and `__call__()` need to be implemented by subclasses.
     """
 
     @abstractmethod
@@ -33,7 +38,8 @@ class ScoringModel:
             Returns `None` if the entity cannot be scored
         """
         raise NotImplementedError
-        
+
+    @abstractmethod
     def scored_entities(self, entities: Optional[pd.DataFrame] = None) -> set[int]:
         """
         Get the set of entity IDs that can be scored by this model.
@@ -65,11 +71,6 @@ class ScoringModel:
         -------
         tuple[int, tuple[float, float, float]]
             Pairs of (entity_id, scoring_results) for each entity that can be scored.
-
-        Notes
-        -----
-        This method provides a default implementation that calls `scored_entities()`
-        to get available IDs and `__call__()` to score each entity.
         """
         for entity_id in self.scored_entities(entities):
             if entities is None:

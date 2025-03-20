@@ -1,4 +1,4 @@
-""" Step 6 of the pipeline.
+""" **Step 6 in pipeline**
     
 Post-process modifies the user and global models, typically with the goal
 of yielding more human-readible scores.

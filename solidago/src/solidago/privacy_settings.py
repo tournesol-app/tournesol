@@ -5,16 +5,17 @@ class PrivacySettings:
         self._dict = dict() if dct is None else dct
         
     def __getitem__(self, user_entity_tuple: tuple[int, int]) -> Optional[bool]:
-        """ Returns the user's privacy setting for a given entity
-        The result may be True (for private), False (for public) or None (if undefined).
+        """ Returns the user's privacy setting for a given entity.  
         
         Parameters
         ----------
-        user_entity_tuple: (user: int, entity: int)
+        user_entity_tuple:
+            (user_id, entity_id)
         
         Returns
         -------
-        True (private), False (public) or None (undefined)
+        Optional[bool]
+            True (private), False (public) or None (undefined)
         """
         user, entity = user_entity_tuple
         entity_settings = self._dict.get(entity)
@@ -23,13 +24,14 @@ class PrivacySettings:
         return entity_settings.get(user)
     
     def __setitem__(self, user_entity_tuple: tuple[int, int], is_private: Optional[bool]):
-        """ Returns the user's privacy setting for a given entity
-        The result may be True (for private), False (for public) or None (if undefined).
+        """ Store the user's privacy setting for a given entity.
         
         Parameters
         ----------
-        user_entity_tuple: (user: int, entity: int)
-        is_private: True (private), False (public) or None (undefined)
+        user_entity_tuple:
+            (user_id, entity_id)
+        is_private:
+            True (private), False (public) or None (undefined)
         """
         user, entity = user_entity_tuple
         if is_private is None:

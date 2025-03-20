@@ -90,10 +90,10 @@ class Pipeline:
         ----------
         trust_propagation: TrustPropagation
             Algorithm to spread trust based on pretrusts and vouches
-        voting_rights: VotingRights
-            Algorithm to assign voting rights to each user
         preference_learning: PreferenceLearning
             Algorithm to learn a user model based on each user's data
+        voting_rights: VotingRights
+            Algorithm to assign voting rights to each user
         scaling: Scaling
             Algorithm to put user models on a common scale
         aggregation: Aggregation
