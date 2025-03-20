@@ -45,7 +45,10 @@ Using `pip`:
 pip install solidago
 ```
 
-
 ### From source
 
-_TODO_
+To install `solidago` from branch "main":
+
+```bash
+pip install "git+https://github.com/tournesol-app/tournesol.git@main#egg=solidago&subdirectory=solidago"
+```
