@@ -132,7 +132,7 @@ class UnnamedDataFrame(DataFrame):
         *args, 
         process: bool=True, 
         last_only: Optional[bool]=None,
-        cache_groups: bool=False,
+        cache_groups: bool=True,
         **kwargs
     ) -> Union["UnnamedDataFrame", tuple]:
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)

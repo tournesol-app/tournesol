@@ -5,6 +5,7 @@ import logging.config
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import timeit
 
 logging.config.fileConfig('experiments/info.conf')
 
@@ -26,10 +27,35 @@ pipeline = Sequential.load("tests/modules/test_pipeline.json")
 
 # s = State.load("tests/saved/0")
 # s = generator(seed=0)
-# s = TournesolExport("tests/tiny_tournesol.zip")
-s = TournesolExport("experiments/tournesol.zip")
+s = TournesolExport("tests/tiny_tournesol.zip")
+# s = TournesolExport("experiments/tournesol.zip")
 
-t = pipeline(s)
+users, entities = s.users, s.entities
+vouches, made_public = s.vouches, s.made_public
+assessments, comparisons = s.assessments, s.comparisons
+voting_rights = s.voting_rights
+user_models, global_models = s.user_models, s.global_model
+
+start = timeit.default_timer()
+for user in users:
+    model = DirectScoring()
+    user_entities = entities.get(compared_entity_names) # Restrict to compared entities
+    compared_entity_names = set(comparisons["left_name"]) | set(comparisons["right_name"])
+    init = init_model(user_entities).to_dict("criterion")
+    criteria = set(comparisons["criterion"]) | set(init["criterion"])
+    for criterion, cmps in comparisons.to_dict("criterion"):
+        criterion_entity_names = set(cmps["left_name"]) | set(cmps["right_name"])
+        if len(criterion_entity_names) <= 1:
+            continue
+        criterion_entities = entities.get(criterion_entity_names) # Restrict to compared entities
+        learned_scores = self.user_learn_criterion(criterion_entities, cmps, init[criterion])
+        for entity_name, score in learned_scores:
+            if not score.isnan():
+                model.set(entity_name, criterion, score)
+stop = timeit.default_timer()
+print(f"Terminated in {round(stop - start, 2)} seconds")
+
+# t = pipeline(s)
 
 # s1 = pipeline.trust_propagation.state2state_function(s)
 # s2 = pipeline.preference_learning.state2state_function(s1)
