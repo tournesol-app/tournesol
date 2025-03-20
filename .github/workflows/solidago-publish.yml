@@ -2,10 +2,10 @@ name: Publish Solidago
 
 on:
   push:
-    # branches:
-    #   - main
-    # paths:
-    #   - 'solidago/src/solidago/__version__.py'
+    branches:
+      - main
+    paths:
+      - 'solidago/src/solidago/__version__.py'
 
 defaults:
   run:
@@ -28,11 +28,11 @@ jobs:
       - name: Build distribution
         run: python -m build
 
-      # - name: Publish package to PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
-      #   with:
-      #     packages-dir: solidago/dist/
-      #     password: ${{ secrets.SOLIDAGO_PYPI_API_TOKEN }}
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: solidago/dist/
+          password: ${{ secrets.SOLIDAGO_PYPI_API_TOKEN }}
 
       - name: Publish documentation on GitHub Pages
         run: |
