@@ -177,21 +177,21 @@
     "message": "Videos visible in history:",
     "description": "Label showing the count of videos found in the YouTube history during import."
   },
-  "rateLaterHistoryAddedCount": {
-    "message": "Videos added to rate later:",
-    "description": "Label showing the count of videos successfully added to the rate later list."
+  "rateLaterHistoryProcessedCount": {
+    "message": "Videos processed during the import:",
+    "description": "Label showing the count of videos processed by the import."
   },
-  "rateLaterHistoryAddedNewCount": {
-    "message": "new videos:",
-    "description": "Label showing the number of successfully imported videos that were NOT already in the rate later list before the import."
+  "rateLaterHistorySentCount": {
+    "message": "imported videos:",
+    "description": "Label showing the number of sent videos successfully imported in the rate later list (including those already present)."
   },
-  "rateLaterHistoryAddedExistingCount": {
-    "message": "already in your list:",
-    "description": "Label showing the number of successfully imported videos that were already in the rate later list before the import."
+  "rateLaterHistorySkippedCount": {
+    "message": "skipped videos (previously imported):",
+    "description": "Label showing the number of videos that have NOT been sent to the Tournesol server, because they were present in the cache of previously imported videos."
   },
   "rateLaterHistoryFailureCount": {
-    "message": "Failures:",
-    "description": "Label showing the count of videos that failed to be added to the rate later list."
+    "message": "failures:",
+    "description": "Label showing the count of sent videos that failed to be added to the rate later list, because of a server error."
   },
   "rateLaterHistoryCloseButtonLabel": {
     "message": "Close",

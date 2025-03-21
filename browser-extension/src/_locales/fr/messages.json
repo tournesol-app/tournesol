@@ -175,21 +175,21 @@
     "message": "Vidéos visibles dans l'historique :",
     "description": "Étiquette indiquant le nombre de vidéos trouvées dans l'historique YouTube pendant l'import."
   },
-  "rateLaterHistoryAddedCount": {
-    "message": "Vidéos importées dans les vidéos à comparer :",
-    "description": "Étiquette indiquant le nombre total de vidéos envoyées avec succès à la liste des vidéos à comparer plus tard."
+  "rateLaterHistoryProcessedCount": {
+    "message": "Vidéos traitées par le processus d'import :",
+    "description": "Étiquette indiquant le nombre total de vidéos traitées par le processus d'import."
   },
-  "rateLaterHistoryAddedNewCount": {
-    "message": "nouvelles vidéos :",
-    "description": "Étiquette indiquant le nombre de vidéos envoyées avec succès qui n'étaient PAS déjà présentes dans la liste à comparer plus tard avant l'import."
+  "rateLaterHistorySentCount": {
+    "message": "vidéos importées :",
+    "description": "Étiquette indiquant le nombre de vidéos envoyées qui ont été ajoutées avec succès dans la liste à comparer plus tard (inclus les vidéos déjà présentes)."
   },
-  "rateLaterHistoryAddedExistingCount": {
-    "message": "déjà présentes dans votre liste :",
-    "description": "Étiquette indiquant le nombre de vidéos envoyées avec succès qui étaient déjà présentes dans la liste à comparer plus tard avant l'import."
+  "rateLaterHistorySkippedCount": {
+    "message": "vidéos évitées (importées précédemment) :",
+    "description": "Étiquette indiquant le nombre de vidéos non envoyées au serveur Tournesol, car déjà présentes dans le cache de vidéos précédement envoyées."
   },
   "rateLaterHistoryFailureCount": {
-    "message": "Échecs :",
-    "description": "Étiquette indiquant le nombre de vidéos qui n'ont pas pu être ajoutées à la liste."
+    "message": "échecs :",
+    "description": "Étiquette indiquant le nombre de vidéos envoyées qui n'ont pas pu être ajoutées à la liste à comparer plus tard, à cause d'une erreur du serveur."
   },
   "rateLaterHistoryCloseButtonLabel": {
     "message": "Fermer",

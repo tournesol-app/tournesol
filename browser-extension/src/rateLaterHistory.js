@@ -116,19 +116,16 @@ const addOverlay = () => {
     label: chrome.i18n.getMessage('rateLaterHistoryVideoCount'),
   });
 
-  const { displayCount: displaySentVideoCount } = addCounter({
-    label: chrome.i18n.getMessage('rateLaterHistoryAddedCount'),
+  const { displayCount: displayProcessedVideoCount } = addCounter({
+    label: chrome.i18n.getMessage('rateLaterHistoryProcessedCount'),
   });
 
-  const { displayCounts: displayNewVideosCount } = addCounterList({
+  const { displayCounts: displayDetailedVideoCounts } = addCounterList({
     labels: [
-      chrome.i18n.getMessage('rateLaterHistoryAddedNewCount'),
-      chrome.i18n.getMessage('rateLaterHistoryAddedExistingCount'),
+      chrome.i18n.getMessage('rateLaterHistorySentCount'),
+      chrome.i18n.getMessage('rateLaterHistorySkippedCount'),
+      chrome.i18n.getMessage('rateLaterHistoryFailureCount'),
     ],
-  });
-
-  const { displayCount: displayFailedVideoCount } = addCounter({
-    label: chrome.i18n.getMessage('rateLaterHistoryFailureCount'),
   });
 
   const message = document.createElement('p');
@@ -154,9 +151,8 @@ const addOverlay = () => {
   return {
     removeOverlay,
     displayHistoryVideoCount,
-    displaySentVideoCount,
-    displayNewVideosCount,
-    displayFailedVideoCount,
+    displayProcessedVideoCount,
+    displayDetailedVideoCounts,
     showTooManyRequests,
     stopButton,
   };
@@ -177,6 +173,45 @@ const addRateLaterBulk = async (videoIds) =>
       }
     );
   });
+
+const skipPreviouslyImported = async (videoSet) => {
+  const newVideos = new Set();
+  const localStorage = await chrome.storage.local.get('youtubeHistoryImported');
+  const historyInStorage = localStorage?.youtubeHistoryImported;
+
+  for (const video of videoSet) {
+    if (!historyInStorage?.includes(video)) {
+      newVideos.add(video);
+    }
+  }
+
+  return newVideos;
+};
+
+const saveImportedToLocalStorage = async (importedVideosSet) => {
+  const localStorage = await chrome.storage.local.get('youtubeHistoryImported');
+  const historyInStorage = localStorage?.youtubeHistoryImported;
+
+  let videosStr = '';
+  for (const video of importedVideosSet) {
+    if (!historyInStorage?.includes(video)) {
+      videosStr += `,${video}`;
+    }
+  }
+
+  if (!historyInStorage) {
+    videosStr = videosStr.substring(1);
+  }
+
+  console.log('found ', historyInStorage);
+  console.log('new ', videosStr);
+
+  await chrome.storage.local.set({
+    youtubeHistoryImported: historyInStorage
+      ? historyInStorage + videosStr
+      : videosStr,
+  });
+};
 
 const chunkArray = (array, chunkSize) => {
   if (chunkSize <= 0) {
@@ -249,22 +284,23 @@ const loadMoreVideos = () => {
 
 const startHistoryCapture = async () =>
   new Promise((resolve) => {
+    // Videos currently visible in the YT history.
     const historyVideoIdSet = new Set();
+    // Visible videos that have been sent to the Tournesol API.
     let sentVideoIdSet = new Set();
+    // Visible videos that have been skipped, and not sent to the Tournesol API.
+    let skippedVideoIdSet = new Set();
+
     let addedCount = 0;
     let failedCount = 0;
-
-    let newlyImportedTotal = 0;
-    let previouslyImportedTotal = 0;
-
+    let skippedCount = 0;
     let abort = false;
 
     const {
       removeOverlay,
       displayHistoryVideoCount,
-      displaySentVideoCount,
-      displayNewVideosCount,
-      displayFailedVideoCount,
+      displayProcessedVideoCount,
+      displayDetailedVideoCounts,
       showTooManyRequests,
       stopButton,
     } = addOverlay();
@@ -287,27 +323,33 @@ const startHistoryCapture = async () =>
 
       displayHistoryVideoCount(historyVideoIdSet.size);
 
-      const videosToSend = historyVideoIdSet.difference(sentVideoIdSet);
-      if (videosToSend.size > 0) {
-        const {
-          processedSet,
-          failedSet,
-          addedNbr,
-          alreadyExistingNbr,
-          tooManyRequests,
-        } = await addVideoIdsToRateLater(videosToSend);
+      const videosToSend = historyVideoIdSet
+        .difference(sentVideoIdSet)
+        .difference(skippedVideoIdSet);
 
-        sentVideoIdSet = sentVideoIdSet.union(videosToSend);
+      let newVideosToSend = new Set();
+
+      try {
+        newVideosToSend = await skipPreviouslyImported(videosToSend);
+      } catch (error) {
+        console.log(error);
+        newVideosToSend = videosToSend;
+      }
+
+      if (newVideosToSend.size > 0) {
+        const { processedSet, failedSet, tooManyRequests } =
+          await addVideoIdsToRateLater(newVideosToSend);
+
+        try {
+          await saveImportedToLocalStorage(processedSet);
+        } catch (error) {
+          console.error(error);
+        }
 
         addedCount += processedSet.size;
-        displaySentVideoCount(addedCount);
-
-        newlyImportedTotal += addedNbr;
-        previouslyImportedTotal += alreadyExistingNbr;
-        displayNewVideosCount([newlyImportedTotal, previouslyImportedTotal]);
-
         failedCount += failedSet.size;
-        displayFailedVideoCount(failedCount);
+
+        sentVideoIdSet = sentVideoIdSet.union(newVideosToSend);
 
         if (tooManyRequests) {
           abortCapture();
@@ -315,6 +357,15 @@ const startHistoryCapture = async () =>
           return;
         }
       }
+
+      const skipped = videosToSend.difference(newVideosToSend);
+      if (skipped.size > 0) {
+        skippedCount += skipped.size;
+        skippedVideoIdSet = skippedVideoIdSet.union(skipped);
+      }
+
+      displayProcessedVideoCount(addedCount + skippedCount + failedCount);
+      displayDetailedVideoCounts([addedCount, skippedCount, failedCount]);
 
       if (abort) return;
 
