@@ -31,8 +31,8 @@ dynamic = ["version"]
 [project.optional-dependencies]
 docs = [
     "mkdocs-material==9.*",
-    "mkdocstrings-python",
-    "markdown-include"
+    "mkdocstrings[python]==0.*",
+    "markdown-include==0.8.1",
 ]
 test = [
     "pytest >=7.1.3,<9.0.0",

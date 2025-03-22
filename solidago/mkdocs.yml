@@ -98,7 +98,7 @@ plugins:
             show_root_toc_entry: false
             # extensions:
             #   - docs/plugins/griffe_doclinks.py
-          import:
+          inventories:
             - https://docs.python.org/3/objects.inv
           # rendering:
           #   show_root_heading: true
