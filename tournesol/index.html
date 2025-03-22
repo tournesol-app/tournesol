@@ -446,11 +446,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/voting_rights/" class="md-nav__link">
+      <a href="../modules/preference_learning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Voting rights
+    Preference learning
     
   </span>
   
@@ -468,11 +468,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/preference_learning/" class="md-nav__link">
+      <a href="../modules/voting_rights/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Preference learning
+    Voting rights
     
   </span>
   
@@ -1102,7 +1102,9 @@ or a URL.</p>
 
 
 <a href="#solidago.pipeline.inputs.TournesolDataset.username_to_user_id" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">username_to_user_id</span> <span class="o">=</span> <span class="n"><span title="pandas.Series">Series</span></span><span class="p">(</span><span class="n"><span title="pandas.Series(data)">data</span></span><span class="o">=</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset(self).users.index">index</span></span><span class="p">,</span> <span class="n"><span title="pandas.Series(index)">index</span></span><span class="o">=</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset(self).users">users</span></span><span class="p">[</span><span class="s1">&#39;public_username&#39;</span><span class="p">])</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">username_to_user_id</span> <span class="o">=</span> <span class="n"><span title="pandas.Series">Series</span></span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><span title="pandas.Series(data)">data</span></span><span class="o">=</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset(self).users.index">index</span></span><span class="p">,</span> <span class="n"><span title="pandas.Series(index)">index</span></span><span class="o">=</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset(self).users">users</span></span><span class="p">[</span><span class="s2">&quot;public_username&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1120,7 +1122,10 @@ or a URL.</p>
 
 
 <a href="#solidago.pipeline.inputs.TournesolDataset.entity_id_to_video_id" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">entity_id_to_video_id</span> <span class="o">=</span> <span class="n"><span title="pandas.Series">Series</span></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#sorted">sorted</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">(</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset.comparisons.video_a">video_a</span></span><span class="p">)</span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">(</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset.comparisons.video_b">video_b</span></span><span class="p">)</span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">(</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset.collective_scores.video">video</span></span><span class="p">)),</span> <span class="n"><span title="pandas.Series(name)">name</span></span><span class="o">=</span><span class="s1">&#39;video_id&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">entity_id_to_video_id</span> <span class="o">=</span> <span class="n"><span title="pandas.Series">Series</span></span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#sorted">sorted</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">(</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset.comparisons.video_a">video_a</span></span><span class="p">)</span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">(</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset.comparisons.video_b">video_b</span></span><span class="p">)</span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">(</span><span class="n"><span title="solidago.pipeline.inputs.TournesolDataset.collective_scores.video">video</span></span><span class="p">)),</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><span title="pandas.Series(name)">name</span></span><span class="o">=</span><span class="s2">&quot;video_id&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1138,7 +1143,9 @@ or a URL.</p>
 
 
 <a href="#solidago.pipeline.inputs.TournesolDataset.video_id_to_entity_id" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">video_id_to_entity_id</span> <span class="o">=</span> <span class="p">{</span><span class="n"><span title="video_id">video_id</span></span><span class="p">:</span> <span class="n">_3O9Vzlq6for</span> <span class="p">(</span><span class="n"><span title="entity_id">entity_id</span></span><span class="p">,</span> <span class="n"><span title="video_id">video_id</span></span><span class="p">)</span> <span class="ow">in</span> <span class="n"><span title="solidago.pipeline.inputs.TournesolDataset(self).entity_id_to_video_id.items">items</span></span><span class="p">()}</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">video_id_to_entity_id</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><span title="video_id">video_id</span></span><span class="p">:</span> <span class="n">_vHdvuXrCfor</span><span class="p">(</span><span class="n"><span title="entity_id">entity_id</span></span><span class="p">,</span> <span class="n"><span title="video_id">video_id</span></span><span class="p">)</span> <span class="ow">in</span> <span class="n"><span title="solidago.pipeline.inputs.TournesolDataset(self).entity_id_to_video_id.items">items</span></span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">}</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1192,7 +1199,9 @@ or a URL.</p>
 
 
 <a href="#solidago.pipeline.inputs.TournesolDataset.individual_scores" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">individual_scores</span> <span class="o">=</span> <span class="n"><span title="drop">drop</span></span><span class="p">(</span><span class="n"><span title="drop(columns)">columns</span></span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;public_username&#39;</span><span class="p">,</span> <span class="s1">&#39;video&#39;</span><span class="p">])</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">individual_scores</span> <span class="o">=</span> <span class="n"><span title="drop">drop</span></span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><span title="drop(columns)">columns</span></span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;public_username&quot;</span><span class="p">,</span> <span class="s2">&quot;video&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1265,7 +1274,11 @@ or a URL.</p>
 
 
 <a href="#solidago.pipeline.inputs.TournesolDataset.get_individual_scores" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_individual_scores</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">with_n_comparisons</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_individual_scores</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">user_id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">criterion</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">with_n_comparisons</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1283,7 +1296,10 @@ or a URL.</p>
 
 
 <a href="#solidago.pipeline.inputs.TournesolDataset.get_collective_scores" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_collective_scores</span><span class="p">(</span><span class="n">entity_id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_collective_scores</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">entity_id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">criterion</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">

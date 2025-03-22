@@ -536,11 +536,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modules/voting_rights/" class="md-nav__link">
+      <a href="../../modules/preference_learning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Voting rights
+    Preference learning
     
   </span>
   
@@ -558,11 +558,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modules/preference_learning/" class="md-nav__link">
+      <a href="../../modules/voting_rights/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Preference learning
+    Voting rights
     
   </span>
   
@@ -850,13 +850,14 @@
 
 
 <a href="#solidago.privacy_settings.PrivacySettings.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="fm">__getitem__</span><span class="p">(</span><span class="nf">user_entity_tuple</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="fm">__getitem__</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="nf">user_entity_tuple</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Returns the user's privacy setting for a given entity
-The result may be True (for private), False (for public) or None (if undefined).</p>
+        <p>Returns the user's privacy setting for a given entity.  </p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -879,7 +880,7 @@ The result may be True (for private), False (for public) or None (if undefined).
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>(user_id, entity_id)</p>
               </div>
             </td>
             <td>
@@ -901,11 +902,11 @@ The result may be True (for private), False (for public) or None (if undefined).
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code>(True(<span title="private">private</span>), False(<span title="public">public</span>) or None(<span title="undefined">undefined</span>))</code>
+                  <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>True (private), False (public) or None (undefined)</p>
               </div>
             </td>
           </tr>
@@ -925,13 +926,15 @@ The result may be True (for private), False (for public) or None (if undefined).
 
 
 <a href="#solidago.privacy_settings.PrivacySettings.__setitem__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="fm">__setitem__</span><span class="p">(</span><span class="nf">user_entity_tuple</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">],</span> <span class="n">is_private</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">])</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="fm">__setitem__</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="nf">user_entity_tuple</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">],</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">is_private</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">],</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Returns the user's privacy setting for a given entity
-The result may be True (for private), False (for public) or None (if undefined).</p>
+        <p>Store the user's privacy setting for a given entity.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -954,7 +957,7 @@ The result may be True (for private), False (for public) or None (if undefined).
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>(user_id, entity_id)</p>
               </div>
             </td>
             <td>
@@ -970,7 +973,7 @@ The result may be True (for private), False (for public) or None (if undefined).
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>True (private), False (public) or None (undefined)</p>
               </div>
             </td>
             <td>
