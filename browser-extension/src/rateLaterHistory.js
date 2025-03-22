@@ -217,9 +217,6 @@ const saveImportedToLocalStorage = async (importedVideosSet) => {
     videosStr = videosStr.substring(1);
   }
 
-  console.log('found ', historyInStorage);
-  console.log('new ', videosStr);
-
   await chrome.storage.local.set({
     youtubeHistoryImported: historyInStorage
       ? historyInStorage + videosStr
@@ -346,7 +343,7 @@ const startHistoryCapture = async () =>
       try {
         newVideosToSend = await skipPreviouslyImported(videosToSend);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         newVideosToSend = videosToSend;
       }
 
