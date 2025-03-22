@@ -1,13 +1,10 @@
 # Solidago
 
-<a href="https://pypi.org/project/solidago" target="_blank">
-    <img src="https://img.shields.io/pypi/v/solidago?color=%2334D058" alt="Package version">
-</a>
-<a href="#copyright--license">
-    <img alt="PyPI - License" src="https://img.shields.io/pypi/l/solidago">
-</a>
+[![PyPi](https://img.shields.io/pypi/v/solidago)](https://pypi.org/project/solidago)
+[![License](https://img.shields.io/pypi/l/solidago.svg)](https://github.com/tournesol-app/tournesol/tree/main/solidago#copyright--license)
+[![CI status](https://github.com/tournesol-app/tournesol/actions/workflows/solidago-test.yml/badge.svg)](https://github.com/tournesol-app/tournesol/actions/workflows/solidago-test.yml)
 
-A toolbox for **Solid** **A**lgorithmic **Go**vernance, used by the Tournesol platform
+A toolbox for **Solid** **A**lgorithmic **Go**vernance, used by the Tournesol platform.
 
 **Documentation**: https://solidago.tournesol.app
 
