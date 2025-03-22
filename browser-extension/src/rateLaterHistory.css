@@ -122,9 +122,7 @@ body.tournesol-capturing-history ytd-thumbnail {
 }
 
 .lds-dual-ring {
-  margin: auto;
-  margin-top: 16px;
-  margin-bottom: 16px;
+  margin: 16px auto;
 }
 
 .lds-dual-ring,
