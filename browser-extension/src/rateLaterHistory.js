@@ -35,15 +35,29 @@ const addOverlay = () => {
   title.textContent = chrome.i18n.getMessage('rateLaterHistoryStatusBoxTitle');
   statusBox.append(title);
 
+  const alertBox = document.createElement('div');
+  alertBox.classList.add('alert-box', 'display-none');
+  const alertBoxText1 = document.createElement('p');
+  alertBoxText1.textContent = chrome.i18n.getMessage(
+    'rateLaterHistoryStatusBox429AlertP1'
+  );
+  const alertBoxText2 = document.createElement('p');
+  alertBoxText2.textContent = chrome.i18n.getMessage(
+    'rateLaterHistoryStatusBox429AlertP2'
+  );
+  alertBox.append(alertBoxText1);
+  alertBox.append(alertBoxText2);
+  statusBox.append(alertBox);
+
   const loader = document.createElement('div');
   loader.classList.add('lds-dual-ring');
   statusBox.append(loader);
 
   const showTooManyRequests = () => {
+    loader.classList.add('display-none');
     loader.classList.remove('lds-dual-ring');
-    title.textContent = chrome.i18n.getMessage(
-      'rateLaterHistoryStatusBoxRateLimited'
-    );
+    alertBox.classList.remove('display-none');
+
     message.textContent = chrome.i18n.getMessage(
       'rateLaterHistoryStatusBoxMessageRateLimited'
     );

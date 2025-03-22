@@ -161,9 +161,13 @@
     "message": "Videos are being imported, please wait.",
     "description": "Title of the the rate later history import status box."
   },
-  "rateLaterHistoryStatusBoxRateLimited": {
+  "rateLaterHistoryStatusBox429AlertP1" : {
+    "message": "The import is complete.",
+    "description": "First paragraph of the alert message, displayed when the daily import limit is reached."
+  },
+  "rateLaterHistoryStatusBox429AlertP2" : {
     "message": "You have imported the maximum number of videos allowed today.",
-    "description": "Title of the the rate later history import status box after rate limit has been reached."
+    "description": "Second paragraph of the alert message, displayed when the daily import limit is reached."
   },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Press Stop when the visible videos count doesn't increase anymore or when you think enough videos have been imported.",

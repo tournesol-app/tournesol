@@ -156,7 +156,7 @@
     "description": "Label du  bouton affiché sur l'historique YouTube pour l'importer dans les vidéos à comparer plus tard."
   },
   "rateLaterHistoryStatusBoxTitle": {
-    "message": "Les vidéos sont en train d'être importées, veuillez patienter.",
+    "message": "Import de l'historique YouTube",
     "description": "Titre de l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
   },
   "rateLaterHistoryStatusBoxRateLimited": {
@@ -166,6 +166,14 @@
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Appuyez sur Stop quand le nombre de vidéos visibles n'augmente plus ou que vous pensez que suffisamment de vidéos ont été importées.",
     "description": "Instructions affichées sur l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryStatusBox429AlertP1" : {
+    "message": "L'import est terminée.",
+    "description": "Premier paragraphe du message d'alerte, lorsque la limite d'import quotidienne est atteinte."
+  },
+  "rateLaterHistoryStatusBox429AlertP2" : {
+    "message": "Vous avez importé le nombre maximal de vidéos autorisé aujourd'hui.",
+    "description": "Deuxième paragraphe du message d'alerte, lorsque la limite d'import quotidienne est atteinte."
   },
   "rateLaterHistoryStatusBoxMessageRateLimited": {
     "message": "Vous pourrez relancer un import dans 24 heures, après avoir vu de nouvelles vidéos.",
