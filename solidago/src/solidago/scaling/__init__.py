@@ -1,4 +1,4 @@
-""" Step 4 of the pipeline.
+""" **Step 4 in pipeline**
     
 Scaling addresses the "Parisian" and the "Marseillais" problems,
 i.e. users with too extreme scores, 
@@ -13,3 +13,5 @@ from .no_scaling import NoScaling
 from .mehestan import Mehestan
 from .quantile_zero_shift import QuantileShift, QuantileZeroShift
 from .standardize import Standardize
+
+__all__ = ["Scaling", "ScalingCompose", "NoScaling", "Mehestan", "QuantileShift", "Standardize"]

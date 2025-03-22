@@ -22,7 +22,8 @@ def qr_quantile(
     the quantile of values,weighted by voting_rights, given left and right 
     uncertainties, and with lipschitz resilience. 
     
-    See "Solidago: A Modular Pipeline for Collaborative Scoring".
+    !!! abstract "See Article"
+        **["Solidago: A Modular Pipeline for Collaborative Scoring"](https://arxiv.org/abs/2211.01179)** on arXiv.
     
     Parameters
     ----------
@@ -115,10 +116,11 @@ def qr_median(
     error: float = 1e-5,
 ):
     """ The quadratically regularized median is a Lipschitz-resilient median estimator. 
-    It equals to the qr_quantile, for quantile = 0.5.
+    It is equal to the [qr_quantile][solidago.primitives.qr_quantile], for quantile = 0.5.
     
-    See "Robust Sparse Voting", by Youssef Allouah, Rachid Guerraoui, Lê Nguyên Hoang
-    and Oscar Villemaud, published at AISTATS 2024.
+    !!! abstract "See Article"
+        **["Robust Sparse Voting"](https://arxiv.org/abs/2202.08656)**.
+        Youssef Allouah, Rachid Guerraoui, Lê Nguyên Hoang and Oscar Villemaud (2024). AISTATS.
     
     Parameters
     ----------
@@ -234,7 +236,10 @@ def qr_uncertainty(
 ):
     """
     Quadratically regularized uncertainty
-    TODO : search for a better formula for qr_uncertainty if possible
+
+    !!! note "TODO"
+        Search for a better formula for `qr_uncertainty` if possible.
+
     """    
     return qr_standard_deviation(lipschitz, values, 0.5, voting_rights, left_uncertainties,
         right_uncertainties, default_dev, error, median)
@@ -270,8 +275,9 @@ def lipschitz_resilient_mean(
     """ Lipschitz-robustified mean. Lipschitz-resilient mean estimator.
     It provably returns the mean, given sufficient participation and bounded values
     
-    See "Robust Sparse Voting", by Youssef Allouah, Rachid Guerraoui, Lê Nguyên Hoang
-    and Oscar Villemaud, published at AISTATS 2024.
+    !!! abstract "See Article"
+        **["Robust Sparse Voting"](https://arxiv.org/abs/2202.08656)**.
+        Youssef Allouah, Rachid Guerraoui, Lê Nguyên Hoang and Oscar Villemaud (2024). AISTATS.
     
     Parameters
     ----------

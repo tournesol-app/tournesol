@@ -1,4 +1,4 @@
-""" **Step 1 in the pipeline**
+""" **Step 1 in pipeline**
     
 Trust propagation is tasked to combine pretrusts and vouches
 to derive trust scores for the different users.
@@ -9,3 +9,5 @@ from .no_trust_propagation import NoTrustPropagation
 from .lipschitrust import LipschiTrust
 from .noop import NoopTrust
 from .trust_all import TrustAll
+
+__all__ = ["TrustPropagation", "NoTrustPropagation", "LipschiTrust", "TrustAll", "NoopTrust"]

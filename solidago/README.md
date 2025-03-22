@@ -1,18 +1,14 @@
 # Solidago
-**Solid** **A**lgorithmic **Go**vernance, used by the Tournesol platform
 
-<a href="https://pypi.org/project/solidago" target="_blank">
-    <img src="https://img.shields.io/pypi/v/solidago?color=%2334D058" alt="Package version">
-</a>
-<a href="#copyright--license">
-    <img alt="PyPI - License" src="https://img.shields.io/pypi/l/solidago">
-</a>
+[![PyPi](https://img.shields.io/pypi/v/solidago)](https://pypi.org/project/solidago)
+[![License](https://img.shields.io/pypi/l/solidago.svg)](https://github.com/tournesol-app/tournesol/tree/main/solidago#copyright--license)
+[![CI status](https://github.com/tournesol-app/tournesol/actions/workflows/solidago-test.yml/badge.svg)](https://github.com/tournesol-app/tournesol/actions/workflows/solidago-test.yml)
 
+A toolbox for **Solid** **A**lgorithmic **Go**vernance, used by the Tournesol platform.
 
-## Publish a new release
+**Documentation**: https://solidago.tournesol.app
 
-1. In a Pull Request, update the version number in [`./src/solidago/__version__.py`](./src/solidago/__version__.py)
-2. The package will be published automatically when the new version is merged into "main", by [this Github Action](../.github/workflows/solidago-publish.yml).
+---
 
 ## Tests
 
@@ -26,6 +22,7 @@ pytest
 Depending on the platform, you may need to replace ```source devenv/bin/activate``` by another call.
 See the [venv doc](https://docs.python.org/3/library/venv.html#how-venvs-work) for more information.
 
+
 ## Synthetic experiments
 
 To run experiments, once the virtual environement setup, you may run the experiments on synthetic data using.
@@ -36,6 +33,12 @@ python3 experiments/synthetic.py experiments/engagement_bias.json
 The results will be exported in ```experiments/results```.
 You may modify the experiments by editing ```experiments/resilience.json```, 
 or by creating a new ```.json``` file.
+
+
+## Publish a new release
+
+1. In a Pull Request, update the version number in [`./src/solidago/__version__.py`](./src/solidago/__version__.py)
+2. The package will be published automatically when the new version is merged into "main", by [this Github Action](../.github/workflows/solidago-publish.yml).
 
 
 ## Copyright & License

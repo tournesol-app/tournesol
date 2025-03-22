@@ -6,6 +6,9 @@ from .base import TrustPropagation
 class NoTrustPropagation(TrustPropagation):
     def __init__(self, pretrust_value: float=0.8,):
         """
+        Implements no trust propagation.
+        The result trust_score is directly based on the "pretrusted" status of each user.
+
         Parameters
         ----------
         pretrust_value:

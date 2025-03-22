@@ -22,15 +22,15 @@ logger = logging.getLogger(__name__)
 
 class Mehestan(Scaling):
     def __init__(
-        self, 
-        lipschitz=0.1, 
-        min_activity=10.0,
-        n_scalers_max=100, 
-        privacy_penalty=0.5,
-        user_comparison_lipschitz=10.0,
-        p_norm_for_multiplicative_resilience=4.0,
-        n_diffs_sample_max=1000,
-        error=1e-5
+        self,
+        lipschitz: float = 0.1,
+        min_activity: float = 10.0,
+        n_scalers_max: int = 100,
+        privacy_penalty: float = 0.5,
+        user_comparison_lipschitz: float = 10.0,
+        p_norm_for_multiplicative_resilience: float = 4.0,
+        n_diffs_sample_max: int = 1000,
+        error: float = 1e-5,
     ):
         """ Mehestan performs Lipschitz-resilient ollaborative scaling.
         
@@ -45,8 +45,8 @@ class Mehestan(Scaling):
         ----------
         lipschitz: float
             Resilience parameters. Larger values are more resilient, but less accurate.
-        min_n_comparison: float
-            Minimal number of comparisons to be a potential scaler
+        min_activity: float
+            Minimal activity (e.g based on number of comparisons) to be a potential scaler.
         n_scalers_max: float
             Maximal number of scalers
         privacy_penalty: float
@@ -147,17 +147,17 @@ class Mehestan(Scaling):
         Second, scaling scalers is the most computationally demanding step of Mehestan.
         Reducing the number of scalers accelerates the computation.
         
-        Parameters
+        Parameters (TODO)
         ----------
-        activities: np.ndarray
-            activities[user] is the activity of user, 
-            weighted by their trustworthiness and how public their activity is
             
         Returns
         -------
         is_scaler: np.ndarray
             is_scaler[user]: bool says whether user is a scaler
         """
+
+        # activities[user] is the activity of user,
+        # weighted by their trustworthiness and how public their activity is
         activities = self.compute_activities(user_models, entities, users, privacy)
         index_to_user = { index: user for index, user in enumerate(users.index) }
         np_activities = np.array([
@@ -288,13 +288,11 @@ class Mehestan(Scaling):
         
         Parameters
         ----------
-        users: DataFrame with columns
-            * user_id (int, index)
-            * trust_score (float)
-        privacy: PrivacySettings
+        user_models:
+        entities:
+        users:
+        privacy: PrivacySettings, optional
             privacy[user, entity] in { True, False, None }
-        privacy_penalty: float
-            Penalty for privacy
     
         Returns
         -------
@@ -339,8 +337,7 @@ class Mehestan(Scaling):
             * entity_id (int, ind)
         privacy: PrivacySettings
             privacy[user, entity] in { True, False, None }
-        privacy_penalty: float
-            Penalty for privacy
+
     
         Returns
         -------
@@ -367,27 +364,25 @@ class Mehestan(Scaling):
         privacy: PrivacySettings
     ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
         """ Computes the ratios of score differences, with uncertainties,
-        for comparable entities of any pair of scalers (s_{uvef} in paper),
-        for u in scalees and v in scalers.
-        Note that the output rations[u][v] is given as a 1-dimensional np.ndarray
+        for comparable entities of any pair of scalers ($s_{uvef}$ in paper),
+        for $u$ in scalees and $v$ in scalers.
+        Note that the output `ratios[u][v]` is given as a 1-dimensional np.ndarray
         without any reference to e and f.
         
         Parameters
         ----------
-        user_models: dict[int, ScoringModel]
-            user_models[user] is a scoring model
         entities: DataFrame with columns
             * entity_id (int, index)
-        scalees: DataFrame with columns
-            * user_id (int, index)
-        scalers: DataFrame with columns
-            * user_id (int, index)
+        scalee_models: dict[int, ScoringModel]
+            scalee_models[user_id] is a scoring model
+        scaler_models: dict[int, ScoringModel]
+            scaler_models[user_id] is a scoring model
         privacy: PrivacySettings
         
         Returns
         -------
         out: dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]
-            out[user][user_bis] is a tuple (ratios, voting_rights, lefts, rights),
+            `out[user][user_bis]` is a tuple (ratios, voting_rights, lefts, rights),
             where ratios is a list of ratios of score differences,
             and left and right are the left and right ratio uncertainties.
         """
@@ -513,17 +508,17 @@ class Mehestan(Scaling):
         Parameters
         ----------
         ratios: dict[int, tuple[list[float], list[float], list[float]]]
-            ratios[u][0] is a list of voting rights
-            ratios[u][1] is a list of ratios
-            ratios[u][2] is a list of (symmetric) uncertainties
+            `ratios[u][0]` is a list of voting rights
+            `ratios[u][1]` is a list of ratios
+            `ratios[u][2]` is a list of (symmetric) uncertainties
         model_norms: dict[int, float]
             model_norms[u] estimates the norm of user u's score model
             
         Returns
         -------
         multiplicators: dict[int, tuple[float, float]]
-            multiplicators[user][0] is the multiplicative scaling of user
-            multiplicators[user][1] is the uncertainty on the multiplicator
+            `multiplicators[user][0]` is the multiplicative scaling of user
+            `multiplicators[user][1]` is the uncertainty on the multiplicator
         """
         return {
             u: _aggregate(self.lipschitz / (8 * (1e-9 + model_norms[u])), 
@@ -544,31 +539,25 @@ class Mehestan(Scaling):
         privacy: PrivacySettings,
         multiplicators: dict[int, tuple[float, float]]
     ) -> dict[int, dict[int, tuple[list[float], list[float], list[float], list[float]]]]:
-        """ Computes the ratios of score differences, with uncertainties,
-        for comparable entities of any pair of scalers (s_{uvef} in paper).
-        Note that the output rations[u][v] is given as a 1-dimensional np.ndarray
+        """ Computes the differences of scores, with uncertainties,
+        for shared entities of any pair of scalers ($s_{uvef}$ in paper).
+        Note that the output is given as a 1-dimensional np.ndarray
         without any reference to e and f.
         
         Parameters
         ----------
-        user_models: dict[int, ScoringModel]
-            user_models[user] is user's scoring model
-        scalees: DataFrame with columns
-            * user_id (int, index)
-        scalers: DataFrame with columns
-            * user_id (int, index)
+        scalee_models: dict[int, ScoringModel]
+        scaler_models: dict[int, ScoringModel]
         entities: DataFrame with columns
             * entity_id (int, index)
         multiplicators: dict[int, tuple[float, float]]
-            multiplicators[user][0] is the multiplicative scaling of user
-            multiplicators[user][1] is the uncertainty on the multiplicator
+            `multiplicators[user][0]` is the multiplicative scaling of user
+            `multiplicators[user][1]` is the uncertainty on the multiplicator
         
         Returns
         -------
         out: dict[int, dict[int, tuple[list[float], list[float], list[float]]]]
-            out[user][user_bis] is a tuple (differences, lefts, rights),
-            where differences has score differences,
-            and left and right are the left and right ratio uncertainties.
+            `out[user][user_bis]` is a tuple (differences, voting_rights, lefts, rights).
         """
         differences = dict()
         entities_ids = set(entities.index)
@@ -628,20 +617,13 @@ class Mehestan(Scaling):
         diffs: dict[int, list[float]], 
         uncertainties: dict[int, list[float]]
     ) -> dict[int, tuple[float, float]]:
-        """ Computes the multiplicators of users with given user_ratios
-        
-        Parameters
-        ----------
-        diffs: dict[int, tuple[list[float], list[float], list[float]]]
-            diffs[u][0] is a list of voting rights
-            diffs[u][1] is a list of ratios
-            diffs[u][2] is a list of (symmetric) uncertainties
+        """ Computes the translation of users with given `diffs`.
             
         Returns
         -------
         translations: dict[int, tuple[float, float]]
-            translations[user][0] is the multiplicative scaling of user
-            translations[user][1] is the uncertainty on the multiplicator
+            `translations[user][0]` is the multiplicative scaling of user
+            `translations[user][1]` is the uncertainty on the translation
         """
         return {
             u: _aggregate(self.lipschitz / 8, 
@@ -666,6 +648,7 @@ class Mehestan(Scaling):
             "user_comparison_lipschitz", "p_norm_for_multiplicative_resilience", "error"]
         prop = ", ".join([f"{p}={getattr(self, p)}" for p in prop_names])
         return f"{type(self).__name__}({prop})"
+
 
 ##############################################
 ## Preprocessing to facilitate computations ##

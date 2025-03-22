@@ -18,7 +18,7 @@ class Squash(PostProcess):
         entities: Optional[pd.DataFrame] = None
     ) -> tuple[Mapping[int, ScoringModel], ScoringModel]:
         """ Post-processes user models and global models,
-        typically to yield human-readible scores
+        typically to yield human-readable scores
         
         Parameters
         ----------

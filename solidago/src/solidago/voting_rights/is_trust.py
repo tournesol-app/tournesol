@@ -7,6 +7,15 @@ from .base import PrivacySettings, VotingRightsAssignment
 
 class IsTrust(VotingRightsAssignment):
     def __init__(self, privacy_penalty: float = 0.5):
+        """
+        Implements voting rights assignment directly based on user trust scores
+        and applying some privacy penalty.
+
+        Parameters
+        ----------
+        privacy_penalty : float
+            Penalty on private comparisons.
+        """
         self.privacy_penalty = privacy_penalty
 
     def __call__(

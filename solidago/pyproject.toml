@@ -7,7 +7,7 @@ name = "solidago"
 authors = [
   { name="Tournesol Association", email="hello@tournesol.app" },
 ]
-description = "Algorithms for Secure Algorithmic Governance"
+description = "A toolbox for Solid Algorithmic Governance"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "LGPL-3.0-or-later"
@@ -27,8 +27,14 @@ dynamic = ["version"]
 [project.urls]
 "Homepage" = "https://github.com/tournesol-app/tournesol/tree/main/solidago"
 "Bug Tracker" = "https://github.com/tournesol-app/tournesol/issues"
+"Documentation" = "https://solidago.tournesol.app"
 
 [project.optional-dependencies]
+docs = [
+    "mkdocs-material==9.*",
+    "mkdocstrings[python]==0.*",
+    "markdown-include==0.8.1",
+]
 test = [
     "pytest >=7.1.3,<9.0.0",
 ]
@@ -40,7 +46,4 @@ torch = [
 path = "src/solidago/__version__.py"
 
 [tool.pytest.ini_options]
-filterwarnings = [
-    # Will be removed in Numba 0.58. See https://github.com/numba/numba/issues/8936
-    "ignore:Use of isinstance():numba.NumbaExperimentalFeatureWarning",
-]
+filterwarnings = []

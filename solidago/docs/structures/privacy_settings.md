@@ -1,0 +1,2 @@
+::: solidago.privacy_settings
+

@@ -17,12 +17,16 @@ class AffineOvertrust(VotingRightsAssignment):
         overtrust_ratio: float = 0.1,
     ):
         """
+        Initializes the AffineOvertrust model with the specified parameters.
+
         Parameters
         ----------
-        privacy_penalty: float
-            Penalty on private comparisons
-        min_overtrust: float
-        overtrust_ratio: float
+        privacy_penalty : float, optional
+            Penalty on private comparisons.
+        min_overtrust : float, optional
+            Minimum overtrust amount to distribute over all users.
+        overtrust_ratio : float, optional
+            Trust ratio used to compute maximal allowed overtrust.
         """
         self.privacy_penalty = privacy_penalty
         self.min_overtrust = min_overtrust
@@ -36,7 +40,7 @@ class AffineOvertrust(VotingRightsAssignment):
         privacy: PrivacySettings,
         user_models: Optional[dict[int, ScoringModel]],
     ) -> tuple[VotingRights, pd.DataFrame]:
-        """Compute voting rights.
+        """Compute voting rights for users on entities
 
         Parameters
         ----------
