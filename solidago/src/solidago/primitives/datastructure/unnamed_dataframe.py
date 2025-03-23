@@ -60,7 +60,7 @@ class UnnamedDataFrame(DataFrame):
                 self[column] = "NaN"
         self.meta._default_value = default_value
         self.meta._last_only = last_only
-        self.meta._group_cache = dict()
+        self.meta._cache = None
         
     @property
     def key_names(self) -> list[str]:
@@ -242,13 +242,31 @@ class UnnamedDataFrame(DataFrame):
     def groupby(self, *args, **kwargs) -> "DataFrameGroupBy":
         return DataFrame(self).groupby(*args, **kwargs)
 
+    def cache(self, columns: Optional[str, list[str]]=None, recompute: bool=False) -> defaultdict:
+        """ Caches and returns a nested dict
+        For instance, self.caches(["username", "entity_name"]) caches and returns d,
+        where d[username][entity_name] is a list of corresponding rows.
+        Such caching is useful and important to define sub-unnamed dataframe,
+        e.g. reconstructing an object d: dict[str, UnnamedDataFrame]
+        with d[username] being an UnnamedDataFrame object with key_names "entity_name"
+        """
+        if self.meta._cache is not None and not recompute:
+            return self.meta._cache
+        self.meta._cache = defaultdict(list)
+        for _, row in self.iterrows():
+            keys = tuple(str(row[k]) for k in self.key_names)
+            self.meta._cache[keys].append(row)
+        return self.meta._cache
+
     def to_dict(self, 
         columns: Optional[Union[str, list[str]]]=None, 
         process: bool=True, 
         last_only: Optional[bool]=None,
     ) -> "UnnamedDataFrameDict":
         columns = [columns] if isinstance(columns, str) else columns
-        columns = columns if columns else self.key_names
+        columns = columns if columns is not None else self.key_names
+        assert all({c in self.key_names for c in columns}), (columns, self.key_names)
+        columns = [c for c in self.key_names if c in columns]
         group_keys = (tuple(columns), process, last_only)
         if group_keys in self.meta._group_cache:
             return self.meta._group_cache[group_keys]
@@ -258,7 +276,7 @@ class UnnamedDataFrame(DataFrame):
             self.meta._group_cache[group_keys] = defaultdict(self.default_value, data)
             return self.meta._group_cache[tuple(columns), process, last_only]
         from solidago.primitives.datastructure import UnnamedDataFrameDict
-        self.meta._group_cache[tuple(columns), process, last_only] = UnnamedDataFrameDict(
+        self.meta._group_cache[group_keys] = UnnamedDataFrameDict(
             data, 
             df_cls=type(self), 
             df_kwargs=dict(
