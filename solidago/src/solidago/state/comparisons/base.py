@@ -1,103 +1,115 @@
+from typing import Optional, Callable, Union, Any
+from pandas import Series, DataFrame
+from collections import defaultdict
+
 import numpy as np
-import pandas as pd
 
-from typing import Optional, Union, Mapping, Literal, Any
-from pandas import DataFrame, Series
-
-from solidago.primitives.datastructure import UnnamedDataFrame
+from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 
-class Comparison(Series):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class Comparison:
+    def __init__(self, value: float=float("nan"), max: float=float("inf"), **kwargs):
+        self.value = value
+        self.max = max
+    
+    @classmethod
+    def from_series(cls, row: Series) -> "Comparison":
+        return cls(**dict(row))
+
+    def to_series(self) -> Series:
+        return Series(dict(value=self.value, max=self.max))
+    
+    def __neg__(self) -> "Comparison":
+        return Comparison(- self.value, self.max)
 
 
-class Comparisons(UnnamedDataFrame):
-    row_cls: type=Comparison
+class Comparisons(MultiKeyTable):
+    name: str="comparisons"
+    value_factory: Callable=lambda: None
     
     def __init__(self, 
-        data: Optional[Any]=None,
-        key_names=["username", "criterion", "left_name", "right_name"],
-        value_names=None,
-        name="comparisons",
-        default_value=None,
-        last_only=True,
-        **kwargs
+        keynames: list[str]=["username", "criterion", "entity_name", "other_name"], 
+        init_data: Optional[Union[NestedDict, Any]]=None,
+        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        *args, **kwargs
     ):
-        super().__init__(data, key_names, value_names, name, default_value, last_only, **kwargs)
-        
-    def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
-        evaluators = set(self.get(left_name=entity)["username"])
-        return evaluators | set(self.get(right_name=entity)["username"])
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+        self._ordered_by_entities = None # Cache for entity-ordered table
 
-    def order_by_entities(self, other_keys_first: bool=True) -> "Comparisons":
-        """ Returns an object Comparison, with the same set of comparisons,
-        but now ordered by entities. Key names in self are replugged into the result,
-        except for "left_name" and "right_name". Instead, an "other_name" is added
-        to account for the other entity that the comparison is against.
-        Moreover, we add an entry to each dict, which says whether "entity_name" 
-        was the left or the right video.
-        
-        Returns
-        -------
-        ordered_comparisons: Comparisons
-            With key_names == ["entity_name", "other_name", *] or [*, "entity_name", "other_name"]
-            depending on parameter other_keys_first
-        """
-        if "entity_name" in self.key_names:
-            return self
-        assert "left_name" in self.key_names and "right_name" in self.key_names, "" \
-            "Comparisons must have columns `left_name` and `right_name`"
-        
-        left, right = self.copy(), self.copy()
-        left[["entity_name", "other_name"]] = self[["left_name", "right_name"]]
-        left["location"] = "left"
-        right[["entity_name", "other_name"]] = self[["right_name", "left_name"]]
-        right["location"] = "right"
-        right["value"] = - self["value"]
-        
-        key_names = [ kn for kn in self.key_names if kn not in ["left_name", "right_name"] ]
-        new_key_names = ["entity_name", "other_name"]
-        key_names = (key_names + new_key_names) if other_keys_first else (new_key_names + key_names)
-        
-        return type(self)(pd.concat([left, right]), key_names=key_names)
-
-    def compared_entity_indices(self, entity_name2index: dict[str, int]) -> dict[str, list[int]]:
-        key_indices = { loc: self.key_names.index(f"{loc}_name") for loc in ("left", "right") }
-        return {
-            location: [ 
-                entity_name2index[keys[key_indices[location]]] 
-                for keys, _ in self.iter(last_only=self.meta._last_only)
-            ] for location in ("left", "right")
-        }
+    def value2series(self, comparison: Comparison) -> Series:
+        return comparison.to_series()
     
-    def normalized_comparisons(self) -> np.ndarray:
-        return np.array() if self.empty else np.array(self["value"] / self["max"])
+    def series2value(self, previous_stored_value: Any, row: Series) -> Comparison:
+        return Comparison.from_series(row)
 
-    def to_comparison_dict(self, 
-        entities: "Entities", 
-        last_only: Optional[bool]=None,
-    ) -> list[tuple[list, np.array]]:
-        """
-        Returns
-        -------
-        result: list[tuple[np.array, np.array]]
-            result[i] is a pair compared_indices, normalized_comparisons
-            which respectively contain the indices of entities compared to entities.iloc[i]
-            and the normalized comparisons against these compared entities
-        """
-        result = list()
-        last_only = self.meta._last_only if last_only is None else last_only
-        comparisons = self.last_only() if last_only else self
-        entity_ordered_comparisons = comparisons.order_by_entities().to_dict(["entity_name"])
-        entity_name2index = { str(entity): index for index, entity in enumerate(entities) }
-        for i, entity in enumerate(entities):
-            comparisons = entity_ordered_comparisons[str(entity)]
-            if len(comparisons) == 0:
-                result.append((list(), np.array([])))
+    def _keys(self, **kwargs) -> tuple[tuple, tuple]:
+        keys1, keys2 = list(), list()
+        for keyname in self.keynames:
+            keys1.append(kwargs[keyname])
+            if keyname in {"entity_name", "left_name"}:
+                keys2.append(kwargs["other_name" if keyname == "entity_name" else "right_name"])
+            elif keyname in {"other_name", "right_name"}:
+                keys2.append(kwargs["entity_name" if keyname == "other_name" else "left_name"])
             else:
-                result.append((
-                    list(comparisons["other_name"].map(entity_name2index)),
-                    np.array(comparisons.normalized_comparisons())
-                ))
-        return result
+                keys2.append(kwargs[keyname])
+        return tuple(keys1), tuple(keys2)
+
+    def set(self, *args, **kwargs) -> None:
+        """ args is assumed to list keys and then value, 
+        though some may be specified through kwargs """
+        assert len(args) + len(kwargs) == self.depth + 1
+        if "value" not in kwargs: # args[-1] is value
+            value = args[-1]
+            args = args[:-1]
+        else:
+            assert "value" in kwargs
+            value = kwargs["value"]
+            del kwargs["value"]
+        kwargs = self.keys2kwargs(*args, **kwargs)
+        self._main_cache()
+        for keynames in self._cache:
+            keys1, keys2 = self._keys(**kwargs)
+            self._cache[keynames][keys1] = value
+            self._cache[keynames][keys2] = - value
+        if self.parent: # Required because child may have created a cache absent from parent
+            kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
+            self.parent.set(value, **kwargs)
+    
+    def to_df(self) -> DataFrame:
+        try:
+            entity_name_index = self.keynames.index("entity_name")
+            other_name_index = self.keynames.index("other_name")
+            return DataFrame([ 
+                Series(dict(zip(self.keynames, keys)) | dict(self.value2series(value)))
+                for keys, value in self
+                if keys[entity_name_index] < keys[other_name_index]
+            ])
+        except ValueError:
+            return DataFrame([ 
+                Series(dict(zip(self.keynames, keys)) | dict(self.value2series(value)))
+                for keys, value in self
+            ])
+
+    def get_evaluators(self, entity: Union[str, "Entity"]) -> set:
+        nested_dict = self.nested_dict("entity_name", "username")
+        return nested_dict[str(entity)].key_set()
+
+    def compared_entity_indices(self, entities: "Entities") -> defaultdict[int, list]:
+        """ Returns a dict, where dict[i] is a list of j,
+        which correspond to the indices of the entities that i was compared to """
+        entity_keys_index = self.keynames.index("entity_name")
+        other_keys_index = self.keynames.index("other_name")
+        d = defaultdict(list)
+        for keys in self.keys():
+            entity_index = entities.name2index[keys[entity_keys_index]]
+            other_index = entities.name2index[keys[other_keys_index]]
+            d[entity_index].append(other_index)
+        return d
+
+    def normalized_comparisons(self, entities: "Entities") -> defaultdict[int, list]:
+        entity_keys_index = self.keynames.index("entity_name")
+        d = defaultdict(list)
+        for keys, comparison in self:
+            entity_index = entities.name2index[keys[entity_keys_index]]
+            d[entity_index].append(comparison.value / comparison.max)
+        return d

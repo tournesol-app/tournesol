@@ -18,4 +18,6 @@ def test_nested_dict():
     d2[1, 1, 1] = 1
     d2[1, 2, 2] = 2
     assert len(d | d2) == 3
-
+    d3 = NestedDict(list, 3)
+    d3.get_value(4, 1, 2).append(2)
+    assert d3[4, 1, 2][0] == 2

@@ -1,28 +1,45 @@
-from typing import Optional, Union, Any
-from pandas import DataFrame, Series
+from typing import Optional, Callable, Union, Any
+from pandas import Series
 
-from solidago.primitives.datastructure import UnnamedDataFrame
+from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 
-class Assessment(Series):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-
-class Assessments(UnnamedDataFrame):
-    row_cls: type=Assessment
-    
+class Assessment:
     def __init__(self, 
-        data: Optional[Any]=None,
-        key_names=["username", "criterion", "entity_name"],
-        value_names=None,
-        name="assessments",
-        default_value=None,
-        last_only=True,
+        value: float=float("nan"), 
+        min: float=-float("inf"), 
+        max: float=float("inf"), 
         **kwargs
     ):
-        super().__init__(data, key_names, value_names, name, default_value, last_only, **kwargs)
+        self.value = value
+        self.min = min
+        self.max = max
+    
+    @classmethod
+    def from_series(cls, row: Series) -> "Assessment":
+        return cls(**dict(row))
+
+    def to_series(self) -> Series:
+        return Series(dict(value=self.value, min=self.min, max=self.max))
+
+
+class Assessments(MultiKeyTable):
+    name: str="assessments"
+    value_factory: Callable=lambda: None
+    
+    def __init__(self, 
+        keynames: list[str]=["username", "criterion", "entity_name"], 
+        init_data: Optional[Union[NestedDict, Any]]=None,
+        parent_tuple: Optional[tuple["Assessments", tuple, tuple]]=None,
+        *args, **kwargs
+    ):
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    def value2series(self, assessment: Assessment) -> Series:
+        return assessment.to_series()
+    
+    def series2value(self, previous_stored_value: Any, row: Series) -> Assessment:
+        return Assessment.from_series(row)
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
-        return set(self.get(entity_name=entity)["username"])
-    
+        return { keys[0] for keys in self.get(entity_name=entity).keys("username") }

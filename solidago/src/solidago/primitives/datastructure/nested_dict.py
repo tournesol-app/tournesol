@@ -8,10 +8,11 @@ class NestedDict:
         self.value_factory = value_factory
         self.depth = depth
         self._dict = dict()
-    
-    def load(self, data: dict) -> None:
-        for keys, value in data.items():
-            self[keys] = value
+        
+    def deepcopy(self) -> "NestedDict":
+        copy = NestedDict(self.value_factory, self.depth)
+        copy._dict = deepcopy(self._dict)
+        return copy
         
     def __getitem__(self, keys: Union[tuple, str, int]) -> Union["NestedDict", "Value"]:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
@@ -28,6 +29,15 @@ class NestedDict:
         subdict = NestedDict(self.value_factory, self.depth - 1)
         subdict._dict = self._dict[keys[0]]
         return subdict[keys[1:]]
+    
+    def get_value(self, *args, record_missing_value: bool=True) -> "Value":
+        assert len(args) == self.depth
+        if args in self:
+            return self[args]
+        value = self.value_factory()
+        if record_missing_value:
+            self[args] = value
+        return self[args]
     
     def __setitem__(self, keys: tuple, value: Any) -> None:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
@@ -48,6 +58,7 @@ class NestedDict:
         del subdict[keys[-1]]
     
     def __contains__(self, keys: tuple) -> Iterable:
+        keys = (keys,) if isinstance(keys, (str, int)) else keys
         subdict = self._dict
         for key in keys:
             if key not in subdict:
@@ -71,10 +82,12 @@ class NestedDict:
                 else:
                     for subkeys, value in sub_nested_dict.iter(depth - 1):
                         yield tuple([key] + list(subkeys)), value
-        
 
     def __len__(self) -> int:
         return len([x for x in self])
+    
+    def __bool__(self) -> bool:
+        return bool(self._dict)
 
     def __or__(self, other: "NestedDict") -> "NestedDict":
         assert self.value_factory() == other.value_factory() and self.depth == other.depth
@@ -83,6 +96,9 @@ class NestedDict:
         for keys, value in other:
             result[keys] = value
         return result
+
+    def key_set(self) -> set:
+        return set(self._dict.keys())
 
     def __repr__(self) -> str:
         return "NestedDict({\n  " \

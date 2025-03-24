@@ -1,19 +1,26 @@
-from typing import Optional, Any
+from typing import Optional, Callable, Union, Any
+from pandas import Series
 
-from solidago.primitives.datastructure import UnnamedDataFrame
+from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 
-class MadePublic(UnnamedDataFrame):
+class MadePublic(MultiKeyTable):
+    name: str="made_public"
+    value_factory: Callable=lambda: False
+    
     def __init__(self, 
-        data: Optional[Any]=None, 
-        key_names=["username", "entity_name"],
-        value_name="public",
-        name="made_public",
-        default_value=False,
-        last_only=True,
-        **kwargs
+        keynames: list[str]=["username", "entity_name"], 
+        init_data: Optional[Union[NestedDict, Any]]=None,
+        parent_tuple: Optional[tuple["MadePublic", tuple, tuple]]=None,
+        *args, **kwargs
     ):
-        super().__init__(data, key_names, value_name, name, default_value, last_only, **kwargs)
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    def value2series(self, value: bool) -> Series:
+        return Series(dict(public=value))
+    
+    def series2value(self, previous_value: Any, row: Series) -> bool:
+        return row["public"]
 
     def penalty(self, privacy_penalty: float, *args, **kwargs) -> float:
         return 1 if self.get(*args, **kwargs) else privacy_penalty

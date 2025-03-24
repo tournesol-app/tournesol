@@ -33,10 +33,17 @@ class NamedDataFrame(DataFrame):
             self.set_index(self.index_name, inplace=True)
         self.index = [str(name) for name in self.index]
         self.index.name = self.index_name
+        self.meta._name2index = None
 
     @property
     def save_filename(self):
         return self.meta.save_filename
+    
+    @property
+    def name2index(self):
+        if self.meta._name2index is None:
+            self.meta._name2index = { str(name): i for i, name in enumerate(self.index) }
+        return self.meta._name2index
 
     @save_filename.setter
     def save_filename(self, save_filename: Union[Path, str]):

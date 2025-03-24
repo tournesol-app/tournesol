@@ -4,20 +4,19 @@ from solidago import *
 
 def test_comparisons():
     comparisons = Comparisons()
-    comparisons.set("user_0", "default", "entity_4", "entity_2", value=5, max=10)
-    comparisons.set("user_0", "default", "entity_4", "entity_2", value=8, max=10)
+    comparisons["user_0", "default", "entity_4", "entity_2"] = Comparison(value=5, max=10)
+    comparisons["user_0", "default", "entity_4", "entity_2"] = Comparison(8, 10)
     assert len(comparisons.get("user_2")) == 0
     for (username, criterion, left_name, right_name), comparison in comparisons:
         assert isinstance(comparison, Comparison)
     assert comparisons.get_evaluators("entity_2") == {"user_0"}
-    ordered_comparisons = comparisons.order_by_entities(other_keys_first=False)
-    assert "entity_2" in set(ordered_comparisons["entity_name"])
-    assert "entity_4" in set(ordered_comparisons["entity_name"])
-    assert "entity_4" in set(ordered_comparisons.get("entity_2")["other_name"])
+    assert "entity_2" in comparisons.nested_dict("entity_name").key_set()
+    assert "entity_4" in comparisons.nested_dict("entity_name").key_set()
+    assert "entity_4" in comparisons.nested_dict("entity_name", "other_name")["entity_2"].key_set()
     
-    entity_name2index = { "entity_2": 0, "entity_4": 1 }
-    indices = comparisons.compared_entity_indices(entity_name2index)
-    assert indices["left"] == [1]
-    assert indices["right"] == [0]
-    normalized_comparisons = comparisons.normalized_comparisons()
-    assert normalized_comparisons[0] == 0.8
+    entities = Entities(["entity_4", "entity_2"])
+    indices = comparisons.compared_entity_indices(entities)
+    assert indices[0] == [1]
+    assert indices[1] == [0]
+    normalized_comparisons = comparisons.normalized_comparisons(entities)
+    assert normalized_comparisons[0] == [0.8]

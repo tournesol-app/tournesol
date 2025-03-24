@@ -242,7 +242,7 @@ class UnnamedDataFrame(DataFrame):
     def groupby(self, *args, **kwargs) -> "DataFrameGroupBy":
         return DataFrame(self).groupby(*args, **kwargs)
 
-    def cache(self, columns: Optional[str, list[str]]=None, recompute: bool=False) -> defaultdict:
+    def cache(self, columns: Optional[Union[str, list[str]]]=None, recompute: bool=False) -> defaultdict:
         """ Caches and returns a nested dict
         For instance, self.caches(["username", "entity_name"]) caches and returns d,
         where d[username][entity_name] is a list of corresponding rows.

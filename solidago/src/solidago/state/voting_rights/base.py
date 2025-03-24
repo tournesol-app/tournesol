@@ -1,16 +1,23 @@
-from typing import Optional, Any
+from typing import Optional, Callable, Union, Any
+from pandas import Series
 
-from solidago.primitives.datastructure import UnnamedDataFrame
+from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 
-class VotingRights(UnnamedDataFrame):
+class VotingRights(MultiKeyTable):
+    name: str="voting_rights"
+    value_factory: Callable=lambda: 0
+    
     def __init__(self, 
-        data: Optional[Any]=None, 
-        key_names=["username", "entity_name", "criterion"],
-        value_name="voting_right",
-        name="voting_rights",
-        default_value=0,
-        last_only=True,
-        **kwargs
+        keynames: list[str]=["username", "entity_name", "criterion"], 
+        init_data: Optional[Union[NestedDict, Any]]=None,
+        parent_tuple: Optional[tuple["VotingRights", tuple, tuple]]=None,
+        *args, **kwargs
     ):
-        super().__init__(data, key_names, value_name, name, default_value, last_only, **kwargs)
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    def value2series(self, value: float) -> Series:
+        return Series(dict(voting_right=value))
+    
+    def series2value(self, previous_value: Any, row: Series) -> float:
+        return row["voting_right"]

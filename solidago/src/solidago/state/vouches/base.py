@@ -1,17 +1,23 @@
-from typing import Optional, Any
+from typing import Optional, Callable, Union, Any
+from pandas import Series
 
-from solidago.primitives.datastructure import UnnamedDataFrame
+from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 
-class Vouches(UnnamedDataFrame):
-    def __init__(self, 
-        data: Optional[Any]=None, 
-        key_names=["by", "to", "kind"],
-        value_names=["weight", "priority"],
-        name="vouches",
-        default_value=(0, - float("inf")),
-        last_only=True,
-        **kwargs
-    ):
-        super().__init__(data, key_names, value_names, name, default_value, last_only, **kwargs)
+class Vouches(MultiKeyTable):
+    name: str="vouches"
+    value_factory: Callable=lambda: (0, - float("inf"))
     
+    def __init__(self, 
+        keynames: list[str]=["by", "to", "kind"], 
+        init_data: Optional[Union[NestedDict, Any]]=None,
+        parent_tuple: Optional[tuple["Vouches", tuple, tuple]]=None,
+        *args, **kwargs
+    ):
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    def value2series(self, value: tuple[float, float]) -> Series:
+        return Series(dict(weight=value[0], priority=value[1]))
+    
+    def series2value(self, previous_value: Any, row: Series) -> tuple[float, float]:
+        return row["weight"], row["priority"]
