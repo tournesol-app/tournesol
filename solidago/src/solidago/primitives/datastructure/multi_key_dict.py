@@ -9,38 +9,29 @@ import pandas as pd
 import math
 import numbers
 
-
-def nested_dict(default_factory: Callable, depth: int) -> defaultdict:
-    if depth == 1:
-        return defaultdict(default_factory)
-    assert isinstance(depth, int) and depth > 1
-    return defaultdict(lambda: nested_dict(default_factory, depth - 1))
-    
-def get_nested_dict_depth(d: defaultdict) -> int:
-    assert isinstance(d, defaultdict)
-    subdict = d.default_factory()
-    return (get_nested_dict_depth(subdict) + 1) if isinstance(subdict, defaultdict) else 1
+from solidago.primitives.datastructure.nested_dict import NestedDict
 
 
-class MultiKeyDict:
-    name: str="multi_key_dict"
-    default_factory: Callable=lambda: None
+class MultiKeyTable:
+    name: str="multi_key_table"
+    value_factory: Callable=lambda: None
     
     def __init__(self, 
         keynames: Optional[Union[str, list[str]]]=None, 
-        raw_data: Optional[dict[tuple, Any]]=None,
-        parent: Optional["MultiKeyDict"]=None,
+        init_data: Optional[Union[NestedDict, Any]]=None,
+        parent: Optional["MultiKeyTable"]=None,
         parent_keys: Optional[tuple]=None,
-        cache: Optional[dict]=None
         *args,
         **kwargs
     ):
-        self.keynames = tuple(keynames)
-        self.raw_data = raw_data # Only used for initialization before caching
-        self._cache = cache or dict() # No cache at initialization for fast instantation
-        if not cache and isinstance(raw_data, default_dict) and get_nested_dict_depth(raw_data) == self.keynames:
-            self.default_factory = raw_data.default_factory
-            self._cache[self.keynames] = raw_data
+        self.keynames = tuple(keynames) # Defines the default caching
+        self._cache = dict() # No cache at initialization for fast instantation
+        if isinstance(init_data, NestedDict): # Can be directly plugged in
+            assert self.value_factory() == init_data.value_factory()
+            assert self.depth == init_data.depth
+            self._cache[self.keynames] = init_data
+        else:
+            self.init_data = init_data
         self.parent = parent
         self.parent_keys = parent_keys
         
@@ -59,43 +50,41 @@ class MultiKeyDict:
         return dict(row)
 
     """ The following methods are are more standard """
-    def _first_cache(self) -> defaultdict:
+    def _main_cache(self) -> NestedDict:
+        """ This method is complicated because it handles multiple structures of self.init_data 
+        to construct a first main cache that corresponds to self.keynames
+        """
         if self.keynames in self._cache:
             return self._cache[self.keynames]
-        self._cache[self.keynames] = self.defaultdict()
-        if isinstance(self.raw_data, DataFrame):
-            for _, row in self.raw_data.iterrows():
-                keys = [row[keyname] for keyname in self.keynames]
-                subdict = self._cache[self.keynames]
-                for key in keys[:-1]:
-                    subdict = subdict[key]
-                subdict[keys[-1]] = self.series2stored_value(row)
+        if self._cache:
+            keynames, d = next(iter(self._cache))
+            assert set(keynames) == set(self.keynames)
+            self._cache[self.keynames] = NestedDict(self.value_factory, self.depth)
+            for d_keys, value in d:
+                kwargs = { kn: d_keys[kn] for kn in keynames }
+                keys = [ kwargs[kn] for kn in self.keynames ]
+                self._cache[self.keynames][keys] = value
+        self._cache[self.keynames] = NestedDict(self.value_factory, self.depth)
+        if isinstance(self.init_data, DataFrame):
+            for _, row in self.init_data.iterrows():
+                keys = [row[kn] for kn in self.keynames]
+                self._cache[self.keynames][keys] = self.series2stored_value(row)
             return self._cache[self.keynames]
-        if isinstance(self.raw_data, list):
-            self.raw_data = dict(self.raw_data)
-        if isinstance(self.raw_data, dict):
-            if not self.raw_data:
-                return self._cache[self.key_names]
-            first_key = next(iter(self.raw_data))
-            if isinstance(first_key, tuple) and len(first_key) == self.depth:
-                subdict = self._cache[self.keynames]
-                for keys, value in self.raw_data.items():
-                    for key in keys[:-1]:
-                        subdict = subdict[key]
-                    subdict[keys[-1]] = self.value2stored_value(value)
-                return self._cache[self.keynames]
-            def set_subdicts(input_dict, output_defaultdict, depth):
-                for key, subdict in d.items():
-                    if depth == 1:
-                        output_defaultdict[key] = self.value2stored_value(subdict)
-                    else:
-                        set_subdicts(subdict, output_defaultdict[key], depth - 1)
-            set_subdicts(self.raw_data, self._cache[self.keynames], self.depth)
+        if isinstance(self.init_data, list):
+            for entry in self.init_data:
+                assert len(entry) == self.depth + 1
+                if isinstance(entry, (tuple, list)):
+                    keys, value = tuple(entry[:-1]), entry[-1]
+                elif isinstance(entry, dict):
+                    assert len(entry) == self.depth + 1
+                    keys, value = tuple(entry[kn] for kn in self.keynames), entry["value"]
+                self._cache[self.keynames][keys] = self.value2stored_value(value)
+            return self._cache[self.keynames]
+        if isinstance(self.init_data, dict):
+            init_data = { k: self.value2stored_value(v) for k, v in self.init_data.items() }
+            self._cache[self.keynames].load(init_data)
             return self._cache[self.key_names]
-        raise ValueError(f"Type {type(self.raw_data)} of raw data {self.raw_data} not handled")
-    
-    def __iter__(self, process: bool=True) -> Iterable:
-        return self.iter(self.keynames, process)
+        raise ValueError(f"Type {type(self.init_data)} of raw data {self.init_data} not handled")
     
     def iter(self, keynames: Union[str, Iterable], process: bool=True) -> Iterable:
         returns_values = (len(keynames) == self.depth)
@@ -113,21 +102,19 @@ class MultiKeyDict:
                 for key, subdict in d.items():
                     yield iter_defaultdict(subdict, depth - 1, prekeys + [key], other_keynames)
         return iter_defaultdict(self.cache(keynames), len(keynames), list())
-
+        self._cache
+        return self._cache
+        
+    def __iter__(self, process: bool=True) -> Iterable:
+        return self.iter(self.keynames, process)
+    
     def keys2kwargs(self, *args, **kwargs) -> dict:
         """ args is assumed to list keys, though some may be specified through kwargs """
+        assert len(args) + len(kwargs) <= self.depth
         kwargs = { k: str(v) for k, v in kwargs.items() }
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
         return kwargs | { k: str(v) for k, v in zip(other_keynames, args) }
-
-    def defaultdict(self) -> defaultdict:
-        def nested_dict(depth):
-            if depth == 1:
-                return defaultdict(self.default_value)
-            assert isinstance(depth, int) and depth > 1
-            return defaultdict(lambda: nested_dict(depth - 1))
-        return nested_dict(len(self.keynames))
-            
+    
     def cache(self, keynames: Union[str, Iterable]) -> defaultdict:
         keynames = (keynames,) if isinstance(keynames, str) else list(keynames)
         keynames = tuple(keynames + [k for k in self.keynames if k not in keynames])
@@ -160,7 +147,13 @@ class MultiKeyDict:
         if not other_keynames: # value is a stored value
             return self.process_stored_value(value) if process else value
         # value is a nested_dict, which we wrap
-        return type(self)(other_keynames, value, self, [kwargs[n] for n in keynames])
+        parent_keys = [kwargs[kn] for kn in keynames]
+        cache = {
+            kns[len(keynames:]): d[tuple(kwargs[kn] for kn in kns[:len(keynames)])]
+            for kns, d in self._cache.items()
+            if set(kns[:len(keynames)]) == set(keynames)
+        }
+        return type(self)(other_keynames, value, self, parent_keys, cache)
     
     def __getitem__(self, keys: tuple) -> Union["MultiKeyDict", "StoredValue", "Value"]:
         return self.get(*keys)
@@ -176,26 +169,35 @@ class MultiKeyDict:
             value = value[key]
         return True
 
-
-    # Below is TBD
-
     def __or__(self, other: "MultiKeyDict") -> "MultiKeyDict":
         main, other = (self, other) if isinstance(other, type(self)) else (other, self)
         assert isinstance(other, type(main)) and set(main.keynames) == set(other.keynames)
-        result = type(main)(main.keynames, main.raw_data, main.parent, main.parent_keys)
-            data = other
-        elif other.empty:
-            data = self
+        result = type(main)(main.keynames, None, main.parent, main.parent_keys, main._cache)
+        for keys, value in others:
+            main_keys = [keys[kn] for kn in main.keynames]
+            result[keys] = value
+        return result
+        
+    def set(self, *args, **kwargs) -> None:
+        """ args is assumed to list keys and then value, 
+        though some may be specified through kwargs """
+        assert len(args) + len(kwargs) == self.depth + 1
+        if "value" not in kwargs: # args[-1] is value
+            value = args[-1]
+            args = args[:-1]
         else:
-            data = pd.concat([self, other])
-            data.index = range(len(data))
-        return type(self)(
-            data=data, 
-            key_names=self.key_names, 
-            name=self.meta.name,
-            default_value=self.meta._default_value,
-            last_only=self.meta._last_only,
-        )
+            assert "value" in kwargs
+            value = kwargs["value"]
+            del kwargs["value"]
+        kwargs = self.keys2kwargs(*args, **kwargs)
+        keys = [kwargs[kn] for kn in self.keynames]
+        
+    
+    def __setitem__(self, keys: tuple, value: "Value") -> None:
+        self.set(*keys, value)
+
+
+    # Below is TBD
 
     def delete(self, *args, **kwargs) -> "UnnamedDataFrame":
         kwargs = self.input2dict(*args, keys_only=True, **kwargs)
@@ -215,19 +217,6 @@ class MultiKeyDict:
         self.index = list(range(len(self)))
         d = self.input2dict(*args, **kwargs)
         self.loc[len(self), list(d.keys())] = list(d.values())
-        self.meta._group_cache = dict()
-        
-    def set(self, *args, **kwargs) -> None:
-        """ args is assumed to list keys and then values, 
-        though some may be specified through kwargs """
-        kwargs_keys_only = self.input2dict(*args, keys_only=True, **kwargs)
-        kwargs = self.input2dict(*args, **kwargs)
-        df = self.get(process=False, **kwargs_keys_only)
-        if df.empty:
-            self.add_row(**kwargs)
-        else: # Updates the last row of df
-            name = df.iloc[-1].name
-            self.loc[name] = Series(kwargs)
         self.meta._group_cache = dict()
 
     @classmethod
@@ -293,7 +282,7 @@ class MultiKeyDict:
             yield list(), self.df2value(self, last_only) if process else self
             return None
         groups = DataFrame(self).groupby(columns)
-        kn = [ n for n in self.key_names if n not in columns ]
+        kns = [ kn for kn in self.key_names if kn not in columns ]
         for key in list(groups.groups.keys()):
             key_tuple = key if isinstance(key, tuple) else (key, )
             df = groups.get_group(key_tuple)
