@@ -11,36 +11,77 @@ from .direct import DirectScoring
 
 
 class UserModels:
+    table_keynames: dict[str, tuple]={
+        "user_directs": ("username", "entity_name", "criterion"),
+        "user_scales": ("username", "height", "kind", "criterion"),
+        "common_scales": ("height", "kind", "criterion"),
+    }
+    
     def __init__(self, 
         user_directs: Optional[MultiScore]=None,
         user_scales: Optional[MultiScore]=None,
         common_scales: Optional[MultiScore]=None,
         default_model_cls: Optional[tuple[str, dict]]=None,
         user_model_cls_dict: Optional[dict[str, tuple]]=None,
+        user_models_dict: Optional[dict[str, ScoringModel]]=None
     ):
-        self.user_directs = user_directs or MultiScore(, 
-            key_names=["username", "entity_name", "criterion"],
-            name="user_directs"
-        )
-        self.user_scales = MultiScore(user_scales, 
-            key_names=["username", "depth", "criterion", "kind"],
-            name="user_scales"
-        )
-        self.common_scales = MultiScore(common_scales, 
-            key_names=["depth", "criterion", "kind"],
-            name="common_scales"
-        )
+        for name, table in zip(self.table_keynames, (user_directs, user_scales, common_scales)):
+            setattr(self, name, table or MultiScore(self.table_keynames[name]))
+            getattr(self, name).name = name
         self.default_model_cls = default_model_cls or ("DirectScoring", dict())
         self.user_model_cls_dict = user_model_cls_dict or dict()
-        self._cache_users = None
-        self._cache_criteria = None
+        self._cache_users = user_models_dict
     
     @classmethod
     def load(cls, directory: Union[str, Path], kwargs) -> "UserModels":
-        for name in ("user_directs", "user_scales", "common_scales"):
+        for name, keynames in self.table_keynames.items():
             if name in kwargs and isinstance(kwargs[name], str):
-                kwargs[name] = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
+                df = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
+                kwargs[name] = MultiScore(keynames, df, name=name)
         return cls(**kwargs)
+
+    def model_cls(self, user: Union[str, "User"]) -> tuple[str, dict]:
+        if str(user) in self.user_model_cls_dict:
+            return self.user_model_cls_dict[str(user)]
+        return self.default_model_cls
+
+    def criteria(self) -> set[str]:
+        return set.union(*[getattr(self, name).keys("criterion") for name in self.table_keynames])
+        
+    def to_dict(self) -> dict[str, ScoringModel]:
+        if self._cache_users is None:
+            self._cache_users = dict()
+            import solidago.state.models as models
+            for username in self.user_directs.keys("username") | self.user_scales.keys("username"):
+                constructor_name, kwargs = self.model_cls(username)
+                kwargs["directs"] = self.user_directs[username]
+                kwargs["scales"] = self.user_scales[username] | self.common_scales
+                self._cache_users[username] = getattr(models, constructor_name)(**kwargs)
+        return self._cache_users
+
+    def __getitem__(self, user: Union[str, "User"]) -> ScoringModel:
+        return self.to_dict()[str(user)]
+    
+    def __delitem__(self, user: Union[str, "User"]) -> None:
+        if user in self.user_directs:
+            del self.user_directs[user]
+        if user in self.user_scales:
+            del self.user_scales[user]
+        if str(user) in self.user_model_cls_dict:
+            del self.user_model_cls_dict[str(user)]
+        if self._cache_users is not None and str(user) in self._cache_users:
+            del self._cache_users[str(user)]
+        
+    def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
+        del self[user]
+        self.user_directs[user] = model.get_directs()
+        for keys, value in model.get_scales():
+            if keys not in self.common_scales:
+                self.user_scales[str(user), *keys] = value
+        if not model.is_cls(self.default_model_cls):
+            self.user_model_cls_dict[str(user)] = model.save()
+        if self._cache_users is not None:
+            self._cache_users[str(user)] = model
 
     def __call__(self, 
         entities: Union[str, "Entity", "Entities"],
@@ -52,140 +93,71 @@ class UserModels:
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
     ) -> MultiScore:
-        key_names = ["username"]
+        keynames = ["username"]
         from solidago.state.entities import Entities
-        if isinstance(entities, Entities):
-            key_names.append("entity_name")
-        if criterion is None:
-            key_names.append("criterion")
-        entities = entities if isinstance(entities, Entities) else [entities]
-        scores_list = list()
-        for user, model in self:
+        keynames += ["entity_name"] if isinstance(entities, Entities) else list()
+        keynames += ["criterion"] if criterion is None else list()
+        results = MultiScore(keynames)
+        for username, model in self:
             scores = model(entities, criterion)
             for keys, score in scores:
-                k = keys if criterion is None else (keys,)
-                scores_list.append((str(user), *k, *score.to_triplet()))
-        key_names = ["username", "entity_name"] + (["criterion"] if criterion is None else list())
-        results = MultiScore(data=scores_list, key_names=key_names)
-        results.key_names = key_names
+                results[username, *keys] = score
         return results
 
-    def model_cls(self, user: Union[str, "User"]) -> tuple[str, dict]:
-        if str(user) in self.user_model_cls_dict:
-            return self.user_model_cls_dict[str(user)]
-        return self.default_model_cls
-
-    def __getitem__(self, user: Union[str, "User"]) -> ScoringModel:
-        import solidago.state.models as models
-        constructor_name, kwargs = self.model_cls(user)
-        return getattr(models, constructor_name)(
-            directs=self.user_directs.get(username=user, cache_groups=True), 
-            scales=self.user_scales.get(username=user, cache_groups=True) \
-                | self.common_scales.assign(username=str(user)), 
-            username=str(user),
-            user_models=self,
-            **kwargs
-        )
-    
-    def __delitem__(self, user: Union[str, "User"]) -> None:
-        self.user_directs = self.user_directs.delete(username=str(user))
-        self.user_scales = self.user_scales.delete(username=str(user))
-        if str(user) in self.user_model_cls_dict:
-            del self.user_model_cls_dict[str(user)]
-        if self._cache_users is not None:
-            self._cache_users.remove(str(user))
-        self._cache_criteria = None
-        
-    def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
-        del self[user]
-        self.user_directs = self.user_directs | model.directs.assign(username=str(user))
-        self.user_scales = self.user_scales | model.scales.assign(username=str(user))
-        if not model.is_cls(self.default_model_cls):
-            self.user_model_cls_dict[str(user)] = model.save()
-        if self._cache_users is not None:
-            self._cache_users.add(str(user))
-        if self._cache_criteria is not None:
-            self._cache_criteria.add(set(model.directs["criterion"]))
-    
-    def users(self) -> set[str]:
-        if self._cache_users is None:
-            self._cache_users = set(self.user_directs["username"]) \
-                | set(self.user_scales["username"]) \
-                | set(self.user_model_cls_dict.keys())
-        return self._cache_users
-
     def __len__(self) -> int:
-        return len(self.users())
-
-    def criteria(self) -> set[str]:
-        if self._cache_criteria is None:
-            self._cache_criteria = set(self.user_directs["criterion"])
-        return self._cache_criteria
+        return len(self.to_dict())
     
     def __contains__(self, user: Union[str, "User"]) -> bool:
-        return str(user) in self.users()
+        return str(user) in self.to_dict()
     
     def __iter__(self) -> Iterable:
-        for username in self.users():
-            yield username, self[username]
+        for username, model in self.to_dict().items():
+            yield username, model
+        
+    def default_height(self) -> int:
+        return ScoringModel.model_cls_height(self.default_model_cls)
     
-    def _depth_shifted_scales(self, added_depth: int=1) -> tuple[MultiScore, MultiScore]:
-        user_scales_depth = (self.user_scales["depth"].astype(int) + added_depth).astype(str)
-        user_scales = type(self.user_scales)(
-            data=self.user_scales.assign(depth=user_scales_depth), 
-            key_names=self.user_scales.key_names
-        )
-        common_scales_depth = (self.common_scales["depth"].astype(int) + added_depth).astype(str)
-        common_scales = type(self.common_scales)(
-            data=self.common_scales.assign(depth=common_scales_depth), 
-            key_names=self.common_scales.key_names
-        )
-        return user_scales, common_scales
+    def height(self, user: Optional[Union[str, "User"]]=None) -> int:
+        if user is None or str(user) not in self.user_model_cls_dict:
+            return self.default_height()
+        return ScoringModel.model_cls_height(self.user_model_cls_dict[str(user)])
     
-    def scale(self, scales: MultiScore, note: str="None") -> "UserModels":
-        user_scales, common_scales = self._depth_shifted_scales()
-        if "depth" not in scales.columns:
-            scales["depth"] = "0"
-        if "username" in scales.key_names:
-            user_scales = user_scales | scales
+    def scale(self, scales: MultiScore, **kwargs) -> None:
+        def add_scales_to(table, height):
+            for keys, value in scales:
+                kwargs = scales.keys2kwargs(*keys)
+                kwargs["height"] = height
+                new_keys = tuple(kwargs[kn] for kn in table.keynames)
+                table[new_keys] = value
+        if "username" in scales.keynames:
+            for username in scales.keys("username"):
+                add_scales_to(self.user_scales, self.height(username) + 1)
         else:
-            common_scales = common_scales | scales
-        return UserModels(
-            user_directs=self.user_directs,
-            user_scales=user_scales,
-            common_scales=common_scales,
-            default_model_cls=("ScaledModel", dict(note=note, parent=self.default_model_cls)),
-            user_model_cls_dict={
-                username: ("ScaledModel", dict(note=note, parent=model_cls))
-                for username, model_cls in self.user_model_cls_dict.items()
-            }
-        )
+            add_scales_to(self.common_scales, self.default_height() + 1)
+            for username in self.user_model_cls_dict:
+                add_scales_to(self.user_scales, self.height(username) + 1)
+                self.user_model_cls_dict[username] = ("ScaledModel", kwargs | {"parent": model_cls})
+        self.default_model_cls = ("ScaledModel", kwargs | {"parent": self.default_model_cls})
+        self._cache_users = None
     
-    def post_process(self, cls_name: str, **kwargs) -> "UserModels":
-        user_scales, common_scales = self._depth_shifted_scales()
-        return UserModels(
-            user_directs=self.user_directs,
-            user_scales=user_scales,
-            common_scales=common_scales,
-            default_model_cls=(cls_name, kwargs | dict(parent=self.default_model_cls)),
-            user_model_cls_dict={
-                username: (cls_name, kwargs | dict(parent=model_cls))
-                for username, model_cls in self.user_model_cls_dict.items()
-            }
-        )
+    def post_process(self, cls_name: str, **kwargs) -> None:
+        for username, model_cls in self.user_model_cls_dict.items():
+            self.user_model_cls_dict[username] = (cls_name, kwargs | {"parent": model_cls})
+        self.default_model_cls = (cls_name, kwargs | {"parent": self.default_model_cls})
+        self._cache_users = None
     
-    def save_df(self, directory: Union[Path, str], df_name: str) -> str:
-        if not getattr(self, df_name).empty:
-            getattr(self, df_name).save(directory)
-            return f"{df_name}.csv"
+    def save_tables(self, directory: Union[Path, str], table_name: str) -> str:
+        if not getattr(self, table_name).empty:
+            getattr(self, table_name).save(directory)
+            return f"{table_name}.csv"
         return None
     
     def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict]:
         j = type(self).__name__, dict()
-        for df_name in ("user_directs", "user_scales", "common_scales"):
-            filename = self.save_df(directory, df_name)
+        for table_name in self.table_keynames:
+            filename = self.save_tables(directory, table_name)
             if filename is not None:
-                j[1][df_name] = filename
+                j[1][table_name] = filename
         if self.default_model_cls is not None:
             j[1]["default_model_cls"] = self.default_model_cls
         if len(self.user_model_cls_dict) > 0:
@@ -196,8 +168,5 @@ class UserModels:
         return j
 
     def __repr__(self) -> str:
-        return "\n\n".join([
-            repr(df) 
-            for df in (self.user_directs, self.user_scales, self.common_scales)
-        ])
+        return "\n\n".join([repr(getattr(self, table_name)) for table_name in self.table_keynames])
         

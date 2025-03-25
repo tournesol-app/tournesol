@@ -33,10 +33,12 @@ class MultiKeyTable:
         if isinstance(init_data, MultiKeyTable):
             assert self.depth == init_data.depth
             self._cache = init_data._cache
+            for keynames, nested_dict in self._cache.items():
+                nested_dict.value_factory = type(self).value_factory
             self.init_data = None
         elif isinstance(init_data, NestedDict): # Can be directly plugged in
-            assert type(self).value_factory() == init_data.value_factory()
             assert self.depth == init_data.depth
+            init_data.value_factory = type(self).value_factory
             self._cache[self.keynames] = init_data
             self.init_data = None
         elif isinstance(init_data, dict) and init_data:
@@ -74,8 +76,8 @@ class MultiKeyTable:
         if self.keynames in self._cache:
             return self._cache[self.keynames]
         if self._cache:
-            keynames, d = next(iter(self._cache))
-            assert set(keynames) == set(self.keynames)
+            keynames, d = next(iter(self._cache.items()))
+            assert set(keynames) == set(self.keynames), (keynames, self.keynames)
             self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
             for d_keys, value in d:
                 kwargs = { kn: d_keys[kn] for kn in keynames }
@@ -266,6 +268,12 @@ class MultiKeyTable:
     def __delitem__(self, keys: Union[str, tuple]) -> None:
         keys = (keys,) if isinstance(keys, str) else keys
         self.delete(*keys)
+
+    def prepend_keyname(self, keyname: str, key: Union[int, str]) -> "MultiKeyTable":
+        assert self.parent is None, "Cannot prepend keyname to MultiKeyTablel with a parent"
+        nd = NestedDict(type(self).value_factory, self.depth + 1)
+        nd._dict[key] = self._cache
+        return type(self)((keyname, *self.keynames), nd)
     
     @classmethod
     def load(cls, 

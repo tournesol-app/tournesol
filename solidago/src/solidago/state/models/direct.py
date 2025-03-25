@@ -11,7 +11,7 @@ from .base import BaseModel
 class DirectScoring(BaseModel):
     def __init__(self, directs: Optional[MultiScore]=None, note: str="None", *args, **kwargs):
         super().__init__(note, *args, **kwargs)
-        self.directs = directs or MultiScore(["entity_name", "criterion"])
+        self.directs = directs or MultiScore(["entity_name", "criterion"], name="directs")
         
     def __call__(self, 
         entities: Union["Entity", "Entities"], 

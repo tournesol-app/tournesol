@@ -153,7 +153,6 @@ class Score:
 
 
 class MultiScore(MultiKeyTable):
-    name: str="multi_score"
     value_factory: Callable=Score.nan
     value_cls: type=Score
     
@@ -161,6 +160,7 @@ class MultiScore(MultiKeyTable):
         keynames: list[str]=["criterion"], 
         init_data: Optional[Union[NestedDict, Any]]=None,
         parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        name: Optional[str]=None,
         *args, **kwargs
     ):
         """ We consider the possibility of multidimensional scoring.
@@ -168,6 +168,7 @@ class MultiScore(MultiKeyTable):
         For scientific peer reviewing, it could be the criteria may be
         {'clarity', 'correctness', 'originality', 'rating'}. """
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+        self.name = name or type(self).name
     
     def value2series(self, score: Score) -> Series:
         return Series(score.to_dict())

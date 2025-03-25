@@ -116,6 +116,14 @@ class ScoringModel(ABC):
                     json.dump([type(self).__name__, kwargs], f, indent=4)
         return type(self).__name__, kwargs
 
+    def model_cls_height(model_cls) -> int:
+        height, cls = 0, model_cls
+        while True:
+            if "parent" not in cls[1]:
+                return height
+            cls = cls[1]["parent"]
+            height += 1
+            
     def is_cls(self, cls: tuple[str, dict]) -> bool:
         if type(self).__name__ != cls[0]:
             return False
