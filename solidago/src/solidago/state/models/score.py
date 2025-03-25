@@ -4,7 +4,7 @@ import numbers
 from typing import Optional, Union, Any, Callable
 from pandas import Series, DataFrame
 
-from solidago.primitives.datastructure import UnnamedDataFrame
+from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 
 class Score:
@@ -152,74 +152,40 @@ class Score:
         return self.min <= value and value <= self.max
 
 
-class MultiScore(UnnamedDataFrame):
+class MultiScore(MultiKeyTable):
+    name: str="multi_score"
+    value_factory: Callable=Score.nan
+    value_cls: type=Score
+    
     def __init__(self, 
-        data: Optional[Any]=None, 
-        key_names: list[str]=["criterion"], 
-        value_names: list[str]=["value", "left_unc", "right_unc"],
-        name: str="multiscore",
-        default_value: Score=Score.nan(),
-        last_only: bool=True,
-        **kwargs
+        keynames: list[str]=["criterion"], 
+        init_data: Optional[Union[NestedDict, Any]]=None,
+        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        *args, **kwargs
     ):
         """ We consider the possibility of multidimensional scoring.
         In the context of Tournesol, for instance, the dimensions are the criteria.
         For scientific peer reviewing, it could be the criteria may be
         {'clarity', 'correctness', 'originality', 'rating'}. """
-        super().__init__(data, key_names, value_names, name, default_value, last_only, **kwargs)
-        if not self.empty:
-            for value_name in value_names:
-                self[value_name] = self[value_name].astype(float)
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
     
-    def row2value(self, row: Series) -> Any:
-        return Score(row["value"], row["left_unc"], row["right_unc"])
+    def value2series(self, score: Score) -> Series:
+        return Series(score.to_dict())
     
-    def input2dict(self, *args, keys_only: bool=False, **kwargs) -> dict:
-        key_value_columns = self.key_names if keys_only else (self.key_names + self.value_names)
-        if keys_only:
-            args = args[:len(self.key_names)]
-        assert len(args) <= len(key_value_columns) + 3
-        assert all({ key not in key_value_columns[:len(args)] for key in kwargs })
-        def f(v, k):
-            if k in self.key_names and isinstance(v, DataFrame):
-                return set(v.index)
-            elif k in self.key_names and isinstance(v, (set, list, tuple)):
-                return v
-            elif k in self.key_names:
-                return str(v)
-            else:
-                return v
-        kwargs = { k: f(v, k) for k, v in kwargs.items() if (not keys_only or k in self.key_names) }
-        args_key_names = [ kn for kn in self.key_names if kn not in kwargs ]
-        kwargs |= { k: f(v, k) for k, v  in zip(args_key_names, args[:len(args_key_names)]) }
-        args_values = args[len(args_key_names):]
-        if len(args_values) > 0 and isinstance(args_values[0], Score):
-            assert "score" not in kwargs
-            kwargs["score"] = args_values[0]
-            args = args[:-1]
-        elif len(args_values) > 0:
-            assert "score" not in kwargs
-            if len(args_values) == 1:
-                args_values = (args_values[0], 0, 0)
-            assert len(args_values) == 3, args
-            kwargs["score"] = Score(*args_values)
-        if "score" in kwargs:
-            kwargs["value"] = kwargs["score"].value
-            kwargs["left_unc"] = kwargs["score"].left_unc
-            kwargs["right_unc"] = kwargs["score"].right_unc
-            del kwargs["score"]
-        if not self.value_names and len(args) > len(self.key_names):
-            assert len(args) == len(self.key_names) + 1
-            return kwargs | args[-1].to_dict()
-        return kwargs | { k: f(v, k) for k, v in zip(key_value_columns[:len(args)], args) }
+    def series2value(self, previous_value: Any, row: Series) -> Score:
+        return Score(row)
     
     @classmethod
     def nan(cls) -> "MultiScore":
         return MultiScore()
 
+    def __setitem__(self, keys: Union[str, tuple], score: Score) -> None:
+        if not score.isnan():
+            super().__setitem__(keys, score)
+
     def __eq__(self, other: "MultiScore") -> bool:
-        for key in set(self.keys()) | set(other.keys()):
-            if self.get(key) != other.get(key):
+        for keys in set(self.keys()) | set(other.keys()):
+            if self[keys] != other[keys]:
                 return False
         return True
         
@@ -227,38 +193,22 @@ class MultiScore(UnnamedDataFrame):
         return not (self == other)
 
     def __neg__(self) -> "MultiScore":
-        return MultiScore(
-            data=[ 
-                (*(key if isinstance(key, tuple) else (key,)), *(- score).to_triplet()) 
-                for key, score in self 
-            ],
-            key_names=self.key_names
-        )
+        result = MultiScore(self.keynames)
+        for keys, score in self:
+            result[keys] = - score
+        return result
     
     def coordinate_wise_operation(self, 
         other: Union[Score, "MultiScore"], 
         score_operation: Callable
     ) -> "MultiScore":
-        if isinstance(other, (numbers.Number, Score)):
-            return MultiScore(
-                data=[ 
-                    (
-                        *(key if isinstance(key, tuple) else (key,)), 
-                        *(score_operation(score, other)).to_triplet()
-                    )
-                    for key, score in self 
-                ],
-                key_names=self.key_names
-            )
-        assert self.key_names == other.key_names
-        data = [
-            (k if isinstance(k, tuple) else (k,), score_operation(self.get(k), other.get(k))) 
-            for k in set(self.keys()) | set(other.keys())
-        ]
-        return MultiScore(
-            data=[(*key, *score.to_triplet()) for key, score in data if not score.isnan()],
-            key_names=self.key_names
-        )
+        result = MultiScore(self.keynames)
+        for keys, score in self:
+            other_score = other if isinstance(other, (numbers.Number, Score)) else other[keys]
+            s = score_operation(score, other_score)
+            if not s.isnan():
+                result[keys] = s
+        return result
     
     def __add__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
         return self.coordinate_wise_operation(other, Score.__add__)

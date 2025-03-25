@@ -7,6 +7,7 @@ from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 class MadePublic(MultiKeyTable):
     name: str="made_public"
     value_factory: Callable=lambda: False
+    value_cls: type=bool
     
     def __init__(self, 
         keynames: list[str]=["username", "entity_name"], 

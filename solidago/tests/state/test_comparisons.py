@@ -10,9 +10,9 @@ def test_comparisons():
     for (username, criterion, left_name, right_name), comparison in comparisons:
         assert isinstance(comparison, Comparison)
     assert comparisons.get_evaluators("entity_2") == {"user_0"}
-    assert "entity_2" in comparisons.nested_dict("entity_name").key_set()
-    assert "entity_4" in comparisons.nested_dict("entity_name").key_set()
-    assert "entity_4" in comparisons.nested_dict("entity_name", "other_name")["entity_2"].key_set()
+    assert "entity_2" in comparisons.keys("entity_name")
+    assert "entity_4" in comparisons.keys("entity_name")
+    assert "entity_4" in comparisons.get(entity_name="entity_2").keys("other_name")
     
     entities = Entities(["entity_4", "entity_2"])
     indices = comparisons.compared_entity_indices(entities)

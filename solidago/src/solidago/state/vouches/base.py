@@ -7,6 +7,7 @@ from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 class Vouches(MultiKeyTable):
     name: str="vouches"
     value_factory: Callable=lambda: (0, - float("inf"))
+    value_cls: type=tuple
     
     def __init__(self, 
         keynames: list[str]=["by", "to", "kind"], 

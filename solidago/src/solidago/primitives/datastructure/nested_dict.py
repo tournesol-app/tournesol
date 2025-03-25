@@ -97,9 +97,6 @@ class NestedDict:
             result[keys] = value
         return result
 
-    def key_set(self) -> set:
-        return set(self._dict.keys())
-
     def __repr__(self) -> str:
         return "NestedDict({\n  " \
             + "\n  ".join([ f"{keys}: {value}" for keys, value in self ]) \

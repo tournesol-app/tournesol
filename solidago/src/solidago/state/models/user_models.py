@@ -12,13 +12,13 @@ from .direct import DirectScoring
 
 class UserModels:
     def __init__(self, 
-        user_directs: Optional[Union[str, DataFrame, MultiScore]]=None,
-        user_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
-        common_scales: Optional[Union[str, DataFrame, MultiScore]]=None,
+        user_directs: Optional[MultiScore]=None,
+        user_scales: Optional[MultiScore]=None,
+        common_scales: Optional[MultiScore]=None,
         default_model_cls: Optional[tuple[str, dict]]=None,
         user_model_cls_dict: Optional[dict[str, tuple]]=None,
     ):
-        self.user_directs = MultiScore(user_directs, 
+        self.user_directs = user_directs or MultiScore(, 
             key_names=["username", "entity_name", "criterion"],
             name="user_directs"
         )

@@ -8,9 +8,10 @@ from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 
 class Comparison:
-    def __init__(self, value: float=float("nan"), max: float=float("inf"), **kwargs):
+    def __init__(self, value: float=float("nan"), max: float=float("inf"), location: str="left", **kwargs):
         self.value = value
         self.max = max
+        self.location = location
     
     @classmethod
     def from_series(cls, row: Series) -> "Comparison":
@@ -20,12 +21,13 @@ class Comparison:
         return Series(dict(value=self.value, max=self.max))
     
     def __neg__(self) -> "Comparison":
-        return Comparison(- self.value, self.max)
+        return Comparison(- self.value, self.max, self.location)
 
 
 class Comparisons(MultiKeyTable):
     name: str="comparisons"
     value_factory: Callable=lambda: None
+    value_cls: type=Comparison
     
     def __init__(self, 
         keynames: list[str]=["username", "criterion", "entity_name", "other_name"], 
@@ -34,12 +36,11 @@ class Comparisons(MultiKeyTable):
         *args, **kwargs
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
-        self._ordered_by_entities = None # Cache for entity-ordered table
 
     def value2series(self, comparison: Comparison) -> Series:
         return comparison.to_series()
     
-    def series2value(self, previous_stored_value: Any, row: Series) -> Comparison:
+    def series2value(self, previous_value: Any, row: Series) -> Comparison:
         return Comparison.from_series(row)
 
     def _keys(self, **kwargs) -> tuple[tuple, tuple]:
@@ -80,19 +81,16 @@ class Comparisons(MultiKeyTable):
             entity_name_index = self.keynames.index("entity_name")
             other_name_index = self.keynames.index("other_name")
             return DataFrame([ 
-                Series(dict(zip(self.keynames, keys)) | dict(self.value2series(value)))
-                for keys, value in self
-                if keys[entity_name_index] < keys[other_name_index]
-            ])
+                Series(dict(zip(self.keynames, keys)) | dict(self.value2series(comparison)))
+                for keys, comparison in self
+                if comparison.location == "left"
+            ]).rename({ "entity_name": "left_name", "other_name": "right_name" })
         except ValueError:
-            return DataFrame([ 
-                Series(dict(zip(self.keynames, keys)) | dict(self.value2series(value)))
-                for keys, value in self
-            ])
+            return super().to_df()
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set:
-        nested_dict = self.nested_dict("entity_name", "username")
-        return nested_dict[str(entity)].key_set()
+        self.nested_dict("entity_name", "username")
+        return self.get(entity_name=str(entity)).keys("username")
 
     def compared_entity_indices(self, entities: "Entities") -> defaultdict[int, list]:
         """ Returns a dict, where dict[i] is a list of j,

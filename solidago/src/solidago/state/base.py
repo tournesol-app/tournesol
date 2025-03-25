@@ -14,7 +14,7 @@ from .made_public.base import MadePublic
 from .assessments.base import Assessments
 from .comparisons.base import Comparisons
 from .voting_rights.base import VotingRights
-from .models.direct import ScoringModel, DirectScoring
+from .models import ScoringModel, DirectScoring
 from .models.user_models import UserModels
 
 

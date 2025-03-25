@@ -26,6 +26,7 @@ class Assessment:
 class Assessments(MultiKeyTable):
     name: str="assessments"
     value_factory: Callable=lambda: None
+    value_cls: type=Assessment
     
     def __init__(self, 
         keynames: list[str]=["username", "criterion", "entity_name"], 
@@ -42,4 +43,4 @@ class Assessments(MultiKeyTable):
         return Assessment.from_series(row)
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
-        return { keys[0] for keys in self.get(entity_name=entity).keys("username") }
+        return { username for username in self.get(entity_name=entity).keys("username") }

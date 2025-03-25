@@ -11,6 +11,7 @@ from solidago.primitives.datastructure.nested_dict import NestedDict
 class MultiKeyTable:
     name: str="multi_key_table"
     value_factory: Callable=lambda: None
+    value_cls: type=object
     
     def __init__(self, 
         keynames: Union[str, list[str]]=None, 
@@ -29,7 +30,11 @@ class MultiKeyTable:
         self.keynames = (keynames,) if isinstance(keynames, str) else tuple(keynames)
         self._cache = dict() # No cache at initialization for fast instantation
         self.init_data = init_data
-        if isinstance(init_data, NestedDict): # Can be directly plugged in
+        if isinstance(init_data, MultiKeyTable):
+            assert self.depth == init_data.depth
+            self._cache = init_data._cache
+            self.init_data = None
+        elif isinstance(init_data, NestedDict): # Can be directly plugged in
             assert type(self).value_factory() == init_data.value_factory()
             assert self.depth == init_data.depth
             self._cache[self.keynames] = init_data
@@ -110,7 +115,12 @@ class MultiKeyTable:
             return self._cache[self.keynames]
         raise ValueError(f"Type {type(self.init_data)} of raw data {self.init_data} not handled")
 
+    def cache(self, *keynames) -> None:
+        """ Caches but does not return the cached nested dict """
+        self.nested_dict(*keynames)
+
     def nested_dict(self, *keynames) -> NestedDict:
+        """ Caches and returns the cached nested dict """
         self._main_cache()
         keynames = [keynames] if isinstance(keynames, str) else list(keynames or list())
         keynames = tuple(keynames + [k for k in self.keynames if k not in keynames])
@@ -154,8 +164,9 @@ class MultiKeyTable:
     def __iter__(self) -> Iterable:
         return self.iter()
     
-    def keys(self, *keynames) -> list:
-        return [ keys for keys, _ in self.iter(*keynames) ]
+    def keys(self, *keynames) -> set:
+        f = lambda k: k[0] if len(k) == 1 else k
+        return { f(keys) for keys, _ in self.iter(*keynames) }
 
     def values(self) -> list:
         return [ value for _, value in self ]
@@ -163,9 +174,10 @@ class MultiKeyTable:
     def keys2kwargs(self, *args, **kwargs) -> dict:
         """ args is assumed to list keys, though some may be specified through kwargs """
         assert len(args) + len(kwargs) <= self.depth
-        kwargs = { k: str(v) for k, v in kwargs.items() }
+        f = lambda v: v if isinstance(v, (str, int)) else str(v)
+        kwargs = { k: f(v) for k, v in kwargs.items() }
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
-        return kwargs | { k: str(v) for k, v in zip(other_keynames, args) }
+        return kwargs | { k: f(v) for k, v in zip(other_keynames, args) }
     
     def get(self, *args, **kwargs) -> Union["MultiKeyTable", "Value"]:
         kwargs = self.keys2kwargs(*args, **kwargs)
@@ -203,8 +215,15 @@ class MultiKeyTable:
         result = type(self)(self.keynames, init_data, self.parent_tuple)
         for keys, value in other:
             kwargs = dict(zip(other.keynames, keys))
-            result[[kwargs[kn] for kn in self.keynames]] = value
+            result[tuple(kwargs[kn] for kn in self.keynames)] = value
         return result
+        
+    def __ior__(self, other: "MultiKeyTable") -> None:
+        assert set(self.keynames) == set(other.keynames)
+        for keys, value in other:
+            kwargs = dict(zip(other.keynames, keys))
+            new_keys = tuple(kwargs[kn] for kn in self.keynames)
+            self[new_keys] = value
         
     def set(self, *args, **kwargs) -> None:
         """ args is assumed to list keys and then value, 
@@ -217,6 +236,7 @@ class MultiKeyTable:
             assert "value" in kwargs
             value = kwargs["value"]
             del kwargs["value"]
+        assert isinstance(value, object)
         kwargs = self.keys2kwargs(*args, **kwargs)
         self._main_cache()
         for keynames in self._cache:
@@ -250,7 +270,7 @@ class MultiKeyTable:
     @classmethod
     def load(cls, 
         keynames: Union[str, Iterable], 
-        directory: Union[str, Path], 
+        directory: Union[str, Path],
         *args, **kwargs
     ) -> "MultiKeyTable":
         filename = f"{directory}/{cls.name}.csv"

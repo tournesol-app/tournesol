@@ -1,5 +1,6 @@
 from typing import Optional, Callable, Union, Any
 from pandas import Series
+import numbers
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
@@ -7,6 +8,7 @@ from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 class VotingRights(MultiKeyTable):
     name: str="voting_rights"
     value_factory: Callable=lambda: 0
+    value_cls: type=numbers.Number
     
     def __init__(self, 
         keynames: list[str]=["username", "entity_name", "criterion"], 
