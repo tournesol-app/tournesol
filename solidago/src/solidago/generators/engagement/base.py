@@ -11,10 +11,10 @@ class EngagementGen(StateFunction):
             eval_entities = self.sample_evaluated_entities(user, entities)
             for index, entity in enumerate(eval_entities):
                 public = self.public(user, entity, eval_entities)
-                made_public.set(user, entity, public)
+                made_public[user, entity] = public
                 assess = self.assess(user, entity, eval_entities)
                 if assess:
-                    assessments.add_row(user, "default", entity)
+                    assessments[user, "default", entity] = Assessment()
                 for index2, entity2 in enumerate(eval_entities):
                     if index2 >= index:
                         break
@@ -22,7 +22,7 @@ class EngagementGen(StateFunction):
                     if compare:
                         shuffle = self.shuffle(user, entity, entity2, eval_entities)
                         left, right = (entity, entity2) if shuffle else (entity2, entity)
-                        comparisons.add_row(user, "default", left, right)
+                        comparisons[user, "default", left, right] = Comparison()
         return made_public, assessments, comparisons
         
     def sample_evaluated_entities(self, user: User, entities: Entities) -> Entities:

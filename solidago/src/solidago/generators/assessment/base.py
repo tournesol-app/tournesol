@@ -14,14 +14,9 @@ class AssessmentGen(StateFunction):
         """ Fills in the assessments """
         result = Assessments()
         for (username, criterion, entity_name), assessment in assessments:
-            assessment = self.sample(
-                assessment=assessment, 
-                user=users.get(username), 
-                entity=entities.get(entity_name), 
-                public=made_public.get(username, entity_name),
-                criterion=criterion
-            )
-            result.add_row(username, criterion, entity_name, assessment)
+            user, entity = users.get(username), entities.get(entity_name)
+            assessment = self.sample(assessment, user, entity, made_public[user, entity], criterion)
+            result[username, criterion, entity_name] = assessment
         return result
         
     def sample(self, 
@@ -31,7 +26,4 @@ class AssessmentGen(StateFunction):
         public: bool, 
         criterion: str
     ) -> Assessment:
-        assessment["value"] = np.random.random()
-        assessment["min"] = 0
-        assessment["max"] = 1
-        return assessment
+        return Assessment(np.random.random(), 0, 1)

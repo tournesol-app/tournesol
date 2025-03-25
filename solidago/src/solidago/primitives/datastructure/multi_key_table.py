@@ -14,11 +14,10 @@ class MultiKeyTable:
     value_cls: type=object
     
     def __init__(self, 
-        keynames: Union[str, list[str]]=None, 
+        keynames: Union[str, list[str]], 
         init_data: Optional[Union[NestedDict, Any]]=None,
         parent_tuple: Optional[tuple["MultiKeyTable", tuple, tuple]]=None,
-        *args,
-        **kwargs
+        *args, **kwargs
     ):
         """ This class aims to facilitate the use of multi-key tables, like pandas DataFrame.
         In particular, it heavily leverages caching to accelerate access,
@@ -276,16 +275,14 @@ class MultiKeyTable:
         return type(self)((keyname, *self.keynames), nd)
     
     @classmethod
-    def load(cls, 
-        keynames: Union[str, Iterable], 
-        directory: Union[str, Path],
-        *args, **kwargs
-    ) -> "MultiKeyTable":
-        filename = f"{directory}/{cls.name}.csv"
+    def load(cls, directory: str, name: Optional[str]=None, **kwargs) -> "MultiKeyTable":
+        if name is None:
+            return cls(**kwargs)
+        filename = f"{directory}/{name}"
         try:
-            return cls(keynames, pd.read_csv(filename, keep_default_na=False), *args, **kwargs)
+            return cls(init_data=pd.read_csv(filename, keep_default_na=False), **kwargs)
         except (pd.errors.EmptyDataError, ValueError):
-            return cls(keynames, None, *args, **kwargs)
+            return cls(**kwargs)
     
     def to_df(self) -> DataFrame:
         return DataFrame([ 
@@ -293,12 +290,13 @@ class MultiKeyTable:
             for keys, value in self
         ])
 
-    def save(self, directory: Union[str, Path]) -> tuple[str, str]:
+    def save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
         if not self:
-            return type(self).__name__, None
-        filename = f"{directory}/{self.name}.csv"
+            return type(self).__name__, dict(keynames=self.keynames)
+        name = name or f"{self.name}.csv"
+        filename = f"{directory}/{name}"
         self.to_df().to_csv(filename, index=False)
-        return type(self).__name__, f"{self.name}.csv"
+        return type(self).__name__, dict(name=name, keynames=self.keynames)
 
     def __repr__(self) -> str:
         return f"name={self.name}\nkeynames={self.keynames}\n\n{self.to_df()}"

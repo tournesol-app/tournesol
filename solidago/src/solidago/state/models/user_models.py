@@ -1,6 +1,7 @@
 from typing import Union, Optional, Iterable
 from pathlib import Path
 from pandas import DataFrame
+from copy import deepcopy
 
 import pandas as pd
 import json
@@ -32,18 +33,10 @@ class UserModels:
         self.user_model_cls_dict = user_model_cls_dict or dict()
         self._cache_users = user_models_dict
     
-    @classmethod
-    def load(cls, directory: Union[str, Path], kwargs) -> "UserModels":
-        for name, keynames in self.table_keynames.items():
-            if name in kwargs and isinstance(kwargs[name], str):
-                df = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
-                kwargs[name] = MultiScore(keynames, df, name=name)
-        return cls(**kwargs)
-
     def model_cls(self, user: Union[str, "User"]) -> tuple[str, dict]:
         if str(user) in self.user_model_cls_dict:
             return self.user_model_cls_dict[str(user)]
-        return self.default_model_cls
+        return deepcopy(self.default_model_cls)
 
     def criteria(self) -> set[str]:
         return set.union(*[getattr(self, name).keys("criterion") for name in self.table_keynames])
@@ -125,18 +118,19 @@ class UserModels:
     def scale(self, scales: MultiScore, **kwargs) -> None:
         def add_scales_to(table, height):
             for keys, value in scales:
-                kwargs = scales.keys2kwargs(*keys)
-                kwargs["height"] = height
-                new_keys = tuple(kwargs[kn] for kn in table.keynames)
+                keys_kwargs = scales.keys2kwargs(*keys)
+                keys_kwargs["height"] = height
+                new_keys = tuple(keys_kwargs[kn] for kn in table.keynames)
                 table[new_keys] = value
         if "username" in scales.keynames:
             for username in scales.keys("username"):
                 add_scales_to(self.user_scales, self.height(username) + 1)
         else:
             add_scales_to(self.common_scales, self.default_height() + 1)
-            for username in self.user_model_cls_dict:
+            for username, model_cls in self.user_model_cls_dict.items():
                 add_scales_to(self.user_scales, self.height(username) + 1)
                 self.user_model_cls_dict[username] = ("ScaledModel", kwargs | {"parent": model_cls})
+        assert all({ not isinstance(v, MultiKeyTable) for v in kwargs.values() })
         self.default_model_cls = ("ScaledModel", kwargs | {"parent": self.default_model_cls})
         self._cache_users = None
     
@@ -146,8 +140,16 @@ class UserModels:
         self.default_model_cls = (cls_name, kwargs | {"parent": self.default_model_cls})
         self._cache_users = None
     
+    @classmethod
+    def load(cls, directory: str, **kwargs) -> "UserModels":
+        for name, keynames in cls.table_keynames.items():
+            if name in kwargs and isinstance(kwargs[name], str):
+                df = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
+                kwargs[name] = MultiScore(keynames, df, name=name)
+        return cls(**kwargs)
+
     def save_tables(self, directory: Union[Path, str], table_name: str) -> str:
-        if not getattr(self, table_name).empty:
+        if getattr(self, table_name):
             getattr(self, table_name).save(directory)
             return f"{table_name}.csv"
         return None

@@ -50,13 +50,13 @@ class NamedDataFrame(DataFrame):
         self.meta.save_filename = save_filename
 
     @classmethod
-    def load(cls, directory: Union[Path, str], filename: Union[Path, str]):
-        return cls(pd.read_csv(f"{directory}/{filename}", keep_default_na=False))
+    def load(cls, directory: str, df_name: str):
+        return cls(pd.read_csv(f"{directory}/{df_name}", keep_default_na=False))
 
-    def save(self, directory: Union[Path, str]) -> tuple[str, str]:
+    def save(self, directory: Union[Path, str]) -> tuple[str, dict]:
         path = Path(directory) / self.save_filename
         self.to_csv(path)
-        return type(self).__name__, self.save_filename
+        return type(self).__name__, dict(df_name=self.save_filename)
 
     def get(self, 
         key: Union[str, NamedSeries, Iterable, dict],
@@ -81,12 +81,15 @@ class NamedDataFrame(DataFrame):
         keys = [k for k in key if k in self.index] if ignore_missing_keys else list(key)
         return type(self)(self.loc[keys])
     
-    def __iter__(self):
+    def __iter__(self) -> Iterable:
         for _, row in self.iterrows():
             yield self.series_cls(row)
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(DataFrame(self))
     
     def __contains__(self, series: Union[str, NamedSeries]):
         return str(series) in set(self.index)
+
+    def __bool__(self) -> bool:
+        return not self.empty

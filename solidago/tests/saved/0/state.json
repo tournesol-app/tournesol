@@ -1,87 +1,85 @@
 {
     "users": [
         "VectorUsers",
-        [
-            "users.csv",
-            "user_vectors.csv"
-        ]
+        {
+            "df_name": "users.csv",
+            "vector_name": "user_vectors.csv"
+        }
     ],
     "entities": [
         "VectorEntities",
-        [
-            "entities.csv",
-            "entity_vectors.csv"
-        ]
+        {
+            "df_name": "entities.csv",
+            "vector_name": "entity_vectors.csv"
+        }
     ],
     "vouches": [
         "Vouches",
-        "vouches.csv"
+        {
+            "name": "vouches.csv",
+            "keynames": [
+                "by",
+                "to",
+                "kind"
+            ]
+        }
     ],
     "made_public": [
         "MadePublic",
-        "made_public.csv"
+        {
+            "name": "made_public.csv",
+            "keynames": [
+                "username",
+                "entity_name"
+            ]
+        }
     ],
     "assessments": [
         "Assessments",
-        "assessments.csv"
+        {
+            "name": "assessments.csv",
+            "keynames": [
+                "username",
+                "criterion",
+                "entity_name"
+            ]
+        }
     ],
     "comparisons": [
         "Comparisons",
-        "comparisons.csv"
+        {
+            "name": "comparisons.csv",
+            "keynames": [
+                "username",
+                "criterion",
+                "entity_name",
+                "other_name"
+            ]
+        }
     ],
     "voting_rights": [
         "VotingRights",
-        "voting_rights.csv"
+        {
+            "keynames": [
+                "username",
+                "entity_name",
+                "criterion"
+            ]
+        }
     ],
     "user_models": [
         "UserModels",
         {
-            "user_directs": "user_directs.csv",
-            "user_scales": "user_scales.csv",
-            "common_scales": "common_scales.csv",
             "default_model_cls": [
-                "SquashedModel",
-                {
-                    "score_max": 100,
-                    "note": "squash",
-                    "parent": [
-                        "ScaledModel",
-                        {
-                            "note": "lipschitz_quantile_shift",
-                            "parent": [
-                                "ScaledModel",
-                                {
-                                    "note": "lipschitz_standardardize",
-                                    "parent": [
-                                        "ScaledModel",
-                                        {
-                                            "note": "mehestan",
-                                            "parent": [
-                                                "DirectScoring",
-                                                {}
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
+                "DirectScoring",
+                {}
             ]
         }
     ],
     "global_model": [
-        "SquashedModel",
+        "DirectScoring",
         {
-            "note": "squash",
-            "score_max": 100,
-            "parent": [
-                "DirectScoring",
-                {
-                    "note": "entitywise_qr_quantile"
-                }
-            ],
-            "directs": "directs.csv"
+            "note": "None"
         }
     ]
 }

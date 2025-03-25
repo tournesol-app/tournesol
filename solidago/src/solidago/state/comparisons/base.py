@@ -1,4 +1,4 @@
-from typing import Optional, Callable, Union, Any
+from typing import Optional, Callable, Iterable, Union, Any
 from pandas import Series, DataFrame
 from collections import defaultdict
 
@@ -21,6 +21,7 @@ class Comparison:
         return Series(dict(value=self.value, max=self.max))
     
     def __neg__(self) -> "Comparison":
+        location = "right" if self.location == "left" else "left"
         return Comparison(- self.value, self.max, self.location)
 
 
@@ -31,10 +32,12 @@ class Comparisons(MultiKeyTable):
     
     def __init__(self, 
         keynames: list[str]=["username", "criterion", "entity_name", "other_name"], 
-        init_data: Optional[Union[NestedDict, Any]]=None,
+        init_data: Optional[Union[Any]]=None,
         parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
         *args, **kwargs
     ):
+        if isinstance(init_data, DataFrame):
+            init_data = init_data.rename(columns={"left_name": "entity_name", "right_name": "other_name"})
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
 
     def value2series(self, comparison: Comparison) -> Series:
@@ -60,10 +63,8 @@ class Comparisons(MultiKeyTable):
         though some may be specified through kwargs """
         assert len(args) + len(kwargs) == self.depth + 1
         if "value" not in kwargs: # args[-1] is value
-            value = args[-1]
-            args = args[:-1]
+            args, value = args[:-1], args[-1]
         else:
-            assert "value" in kwargs
             value = kwargs["value"]
             del kwargs["value"]
         kwargs = self.keys2kwargs(*args, **kwargs)

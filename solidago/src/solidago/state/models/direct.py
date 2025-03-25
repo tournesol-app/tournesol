@@ -52,6 +52,9 @@ class DirectScoring(BaseModel):
     
     def __setitem__(self, keys: tuple, value: Score) -> None:
         self.directs[keys] = value
+
+    def __len__(self) -> int:
+        return len(self.directs)
     
     def to_direct(self, entities: Optional["Entities"]=None) -> "DirectScoring":
         return self.directs

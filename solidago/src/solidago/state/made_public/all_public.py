@@ -4,16 +4,8 @@ from .base import MadePublic
 
 
 class AllPublic(MadePublic):
-    def __init__(self, 
-        data: Optional[Any]=None, 
-        key_names=["username", "entity_name"],
-        value_name="public",
-        name="made_public",
-        default_value=True,
-        last_only=True,
-        **kwargs
-    ):
-        super().__init__(data, key_names, value_name, name, default_value, last_only, **kwargs)
+    def __init__(self, keynames: list[str]=["username", "entity_name"], *args, **kwargs):
+        super().__init__(keynames, *args, **kwargs)
     
     def add_row(*args, **kwargs):
         pass
@@ -25,8 +17,8 @@ class AllPublic(MadePublic):
         return 1
 
     @classmethod
-    def load(cls, *args, **kwargs) -> "AllPublic":
-        return cls()
+    def load(cls, directory: str, *args, **kwargs) -> "AllPublic":
+        return cls(*args, **kwargs)
 
-    def save(self, *arg, **kwargs) -> tuple[str, str]:
-        return type(self).__name__, None
+    def save(self, *arg, **kwargs) -> tuple[str, dict]:
+        return type(self).__name__, dict(keynames=self.keynames)

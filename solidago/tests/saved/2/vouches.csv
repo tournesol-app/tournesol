@@ -1,6 +1,7 @@
 by,to,kind,weight,priority
-user_8,user_1,Personhood,0.906140688001547,0
-user_8,user_7,Personhood,0.3825217192562818,0
-user_8,user_0,Personhood,0.604347102792513,0
-user_9,user_2,Personhood,0.3398346800439999,0
-user_2,user_9,Personhood,0.3498235220015455,0
+user_8,user_6,Personhood,0.604347102792513,0.0
+user_8,user_7,Personhood,0.18306211024095942,0.0
+user_8,user_0,Personhood,0.9620551695858472,0.0
+user_8,user_3,Personhood,0.9047605307065835,0.0
+user_9,user_2,Personhood,0.7160805886126386,0.0
+user_2,user_9,Personhood,0.9988251914975288,0.0

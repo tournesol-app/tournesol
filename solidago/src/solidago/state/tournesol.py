@@ -79,17 +79,19 @@ class TournesolExport(State):
         dfs = TournesolExport.load_dfs(dataset_zip)
         from solidago.state import (
             Users, Vouches, Entities, AllPublic, Comparisons, 
-            VotingRights, UserModels, DirectScoring
+            VotingRights, UserModels, DirectScoring, MultiScore
         )
+        user_directs = MultiScore(UserModels.table_keynames["user_directs"], dfs["user_scores"])
+        directs = MultiScore(["entity_name", "criterion"], dfs["global_scores"])
         super().__init__(
             users=Users(dfs["users"]),
-            vouches=Vouches(dfs["vouches"]),
+            vouches=Vouches(init_data=dfs["vouches"]),
             entities=Entities(dfs["entities"]),
             made_public=AllPublic(),
-            comparisons=Comparisons(dfs["comparisons"]),
-            voting_rights=VotingRights(dfs["voting_rights"]),
-            user_models=UserModels(user_directs=dfs["user_scores"]),
-            global_model=DirectScoring(directs=dfs["global_scores"])
+            comparisons=Comparisons(init_data=dfs["comparisons"]),
+            voting_rights=VotingRights(init_data=dfs["voting_rights"]),
+            user_models=UserModels(user_directs=user_directs),
+            global_model=DirectScoring(directs=directs)
         )
 
     @classmethod

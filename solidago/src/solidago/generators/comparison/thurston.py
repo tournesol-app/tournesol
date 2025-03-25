@@ -20,23 +20,13 @@ class ThurstonComparison(ComparisonGen):
     def score_matrix(self, users: VectorUsers, entities: VectorEntities):
         return users.vectors @ entities.vectors.T / users.vectors.shape[1]
     
-    def sample(self, 
-        comparison: Comparison,
-        user: User, 
-        left: Entity, 
-        right: Entity, 
-        left_public: bool, 
-        right_public: bool, 
-        criterion: str
-    ) -> Comparison:
-        """ `lpublic` and `rpublic` are not used.
-        Returns comparison max and value. """
+    def sample(self, comparison: Comparison, user: User, left: Entity, right: Entity, 
+            left_public: bool, right_public: bool, criterion: str) -> Comparison:
+        """ `lpublic` and `rpublic` are not used. Returns comparison max and value. """
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        comparison["value"] = self.sample_comparison(score_diff)
-        if "is_trustworthy" in user and not user["is_trustworthy"]:
-            comparison["value"] = - comparison["value"]
-        comparison["max"] = self.comparison_max
-        return comparison
+        comparison = Comparison(self.sample_comparison(score_diff), self.comparison_max)
+        malicious = "is_trustworthy" in user and not user["is_trustworthy"]
+        return - comparison if malicious else comparison 
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:

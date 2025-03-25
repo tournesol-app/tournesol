@@ -1,37 +1,71 @@
 {
     "users": [
         "VectorUsers",
-        [
-            "users.csv",
-            "user_vectors.csv"
-        ]
+        {
+            "df_name": "users.csv",
+            "vector_name": "user_vectors.csv"
+        }
     ],
     "entities": [
         "VectorEntities",
-        [
-            "entities.csv",
-            "entity_vectors.csv"
-        ]
+        {
+            "df_name": "entities.csv",
+            "vector_name": "entity_vectors.csv"
+        }
     ],
     "vouches": [
         "Vouches",
-        "vouches.csv"
+        {
+            "name": "vouches.csv",
+            "keynames": [
+                "by",
+                "to",
+                "kind"
+            ]
+        }
     ],
     "made_public": [
         "MadePublic",
-        "made_public.csv"
+        {
+            "name": "made_public.csv",
+            "keynames": [
+                "username",
+                "entity_name"
+            ]
+        }
     ],
     "assessments": [
         "Assessments",
-        "assessments.csv"
+        {
+            "name": "assessments.csv",
+            "keynames": [
+                "username",
+                "criterion",
+                "entity_name"
+            ]
+        }
     ],
     "comparisons": [
         "Comparisons",
-        "comparisons.csv"
+        {
+            "name": "comparisons.csv",
+            "keynames": [
+                "username",
+                "criterion",
+                "entity_name",
+                "other_name"
+            ]
+        }
     ],
     "voting_rights": [
         "VotingRights",
-        null
+        {
+            "keynames": [
+                "username",
+                "entity_name",
+                "criterion"
+            ]
+        }
     ],
     "user_models": [
         "UserModels",

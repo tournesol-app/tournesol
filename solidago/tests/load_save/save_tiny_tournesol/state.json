@@ -1,31 +1,68 @@
 {
     "users": [
         "Users",
-        "users.csv"
+        {
+            "df_name": "users.csv"
+        }
     ],
     "entities": [
         "Entities",
-        "entities.csv"
+        {
+            "df_name": "entities.csv"
+        }
     ],
     "vouches": [
         "Vouches",
-        "vouches.csv"
+        {
+            "name": "vouches.csv",
+            "keynames": [
+                "by",
+                "to",
+                "kind"
+            ]
+        }
     ],
     "made_public": [
         "AllPublic",
-        null
+        {
+            "keynames": [
+                "username",
+                "entity_name"
+            ]
+        }
     ],
     "assessments": [
         "Assessments",
-        null
+        {
+            "keynames": [
+                "username",
+                "criterion",
+                "entity_name"
+            ]
+        }
     ],
     "comparisons": [
         "Comparisons",
-        "comparisons.csv"
+        {
+            "name": "comparisons.csv",
+            "keynames": [
+                "username",
+                "criterion",
+                "entity_name",
+                "other_name"
+            ]
+        }
     ],
     "voting_rights": [
         "VotingRights",
-        "voting_rights.csv"
+        {
+            "name": "voting_rights.csv",
+            "keynames": [
+                "username",
+                "entity_name",
+                "criterion"
+            ]
+        }
     ],
     "user_models": [
         "UserModels",
@@ -36,11 +73,9 @@
             "default_model_cls": [
                 "ScaledModel",
                 {
-                    "note": "common_scale_test_export",
                     "parent": [
                         "ScaledModel",
                         {
-                            "note": "user_scale_test_export",
                             "parent": [
                                 "DirectScoring",
                                 {}
@@ -55,7 +90,13 @@
         "DirectScoring",
         {
             "note": "None",
-            "directs": "directs.csv"
+            "directs": {
+                "name": "directs.csv",
+                "keynames": [
+                    "entity_name",
+                    "criterion"
+                ]
+            }
         }
     ]
 }

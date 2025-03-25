@@ -19,14 +19,6 @@ class ScoringModel(ABC):
         self.height = height
         self.note = note
 
-    @classmethod
-    def load(cls, directory: Union[str, Path], kwargs) -> "ScoringModel":
-        for name in ("directs", "scales"):
-            if name in kwargs and isinstance(kwargs[name], str):
-                init_data = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
-                kwargs[name] = MultiScore.load(keynames, init_data)
-        return cls(**kwargs)
-
     def __call__(self, 
         entities: Union["Entity", "Entities"], 
         criterion: Optional[str]=None
@@ -99,21 +91,33 @@ class ScoringModel(ABC):
             return self.parent.get_scales()
         return MultiScore(["height", "kind", "criterion"])
 
+    @classmethod
+    def load(cls, directory: Union[str, Path], **kwargs) -> "ScoringModel":
+        for name in ("directs", "scales"):
+            if name not in kwargs:
+                continue
+            try:
+                filename = f"{directory}/{kwargs[name]['name']}"
+                init_data = pd.read_csv(filename, keep_default_na=False)
+            except (pd.errors.EmptyDataError, ValueError):
+                init_data = None
+            kwargs[name] = MultiScore(kwargs[name]["keynames"], init_data)
+        return cls(**kwargs)
+
     def save(self, directory: Optional[Union[str, Path]]=None, json_dump: bool=False) -> tuple[str, dict]:
         """ save must be given a filename_root (typically without extension),
         as multiple csv files may be saved, with a name derived from the filename_root
         (in addition to the json description) """
         kwargs = self.saved_kwargs()
-        if self.depth > 0 or directory is None:
+        if directory is None:
             return type(self).__name__, kwargs
-        if directory is not None:
-            for df_name in ("directs", "scales"):
-                table = getattr(self, df_name)()
-                if table:
-                    kwargs[df_name] = table.save(directory)[1]
-            if json_dump:
-                with open(Path(directory) / "model.json", "w") as f:
-                    json.dump([type(self).__name__, kwargs], f, indent=4)
+        for table_name in ("directs", "scales"):
+            table = getattr(self, f"get_{table_name}")()
+            if table:
+                kwargs[table_name] = table.save(directory, f"{table_name}.csv")[1]
+        if json_dump:
+            with open(Path(directory) / "model.json", "w") as f:
+                json.dump([type(self).__name__, kwargs], f, indent=4)
         return type(self).__name__, kwargs
 
     def model_cls_height(model_cls) -> int:

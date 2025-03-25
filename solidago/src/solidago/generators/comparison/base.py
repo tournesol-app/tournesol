@@ -16,28 +16,13 @@ class ComparisonGen(StateFunction):
         """ Fills in the comparisons """
         result = Comparisons()
         for (username, criterion, left_name, right_name), comparison in comparisons:
-            comparison = self.sample(
-                comparison=comparison,
-                user=users.get(username), 
-                left=entities.get(left_name), 
-                right=entities.get(right_name),
-                left_public=made_public.get(username, left_name),
-                right_public=made_public.get(username, right_name), 
-                criterion=criterion
-            )
-            result.add_row(username, criterion, left_name, right_name, comparison)
+            user = users.get(username)
+            left, right = entities.get(left_name), entities.get(right_name)
+            left_public, right_public = made_public[user, left], made_public[user, right]
+            comparison = self.sample(comparison, user, left, right, left_public, right_public, criterion)
+            result[username, criterion, left_name, right_name] = comparison
         return result
     
-    def sample(self, 
-        comparison: Comparison,
-        user: User, 
-        left: Entity, 
-        right: Entity, 
-        left_public: bool, 
-        right_public: bool, 
-        criterion: str
-    ) -> Comparison:
-        """ Returns comparison max and value """
-        comparison["value"] = (2 * np.random.random() - 1)**2
-        comparison["max"] = 1
-        return comparison
+    def sample(self, comparison: Comparison, user: User, left: Entity, right: Entity, 
+            left_public: bool, right_public: bool, criterion: str) -> Comparison:
+        return Comparison((2 * np.random.random() - 1)**2, 1)
