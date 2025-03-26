@@ -158,7 +158,7 @@
     "description": "Label of the button displayed on the YouTube history page to import the history into your 'rate later' list."
   },
   "rateLaterHistoryStatusBoxTitle": {
-    "message": "Videos are being imported, please wait.",
+    "message": "Import of the YouTube history",
     "description": "Title of the the rate later history import status box."
   },
   "rateLaterHistoryStatusBox429AlertP1" : {
