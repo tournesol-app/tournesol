@@ -85,31 +85,29 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
             cgf[i] is the cumulant-generating function at score_diffs[i]
         """
 
-    def init_scores(self, 
-        entity_name2index: dict[str, int],
-        init_multiscores: MultiScore, # key_names == "entity_name"
-    ) -> torch.Tensor:
+    def init_values(self, entities: Entities, init: MultiScore) -> torch.Tensor:
         """ To avoid nan errors in autograd, we initialize at nonzero values """
-        scores = 1e-3 * torch.normal(0, 1, (len(entity_name2index),))
-        for entity, index in entity_name2index.items():
-            init_score = init_multiscores.get(entity_name=entity, cache_groups=True)
-            if not init_score.isnan():
-                scores[index] = init_score.value * (1 + scores[index])
-        scores.requires_grad = True
-        scores = scores.to(self.device)
-        return scores
+        values = 1e-3 * torch.normal(0, 1, (len(entities),))
+        for index, entity in enumerate(entities):
+            if not np.isnan(init[entity].value):
+                values[index] = init[entity].value * (1 + values[index])
+        values.requires_grad = True
+        values = values.to(self.device)
+        return values
     
     def compute_values(self, 
         entities: Entities,
-        entity_name2index: dict[str, int],
-        comparisons: Comparisons, # key_names == ["left_name, right_name"]
-        init_multiscores : MultiScore, # key_names == ["entity_name"]
+        comparisons: Comparisons, # keynames == ["entity_name", "other_name"]
+        init : MultiScore, # keynames == "entity_name"
     ) -> npt.NDArray:
         """ Computes the scores given comparisons """
-        scores = self.init_scores(entity_name2index, init_multiscores)
+        values = self.init_values(entities, init)
+        left_indices, right_indices = comparisons.left_right_indices(entities)
+        normalized_comparisons = torch.tensor(comparisons.normalized_comparison_list())
+        negative_log_posterior_args = left_indices, right_indices, normalized_comparisons
             
         lbfgs = torch.optim.LBFGS(
-            (scores,),
+            (values,),
             max_iter=self.max_iter,
             tolerance_change=self.convergence_error,
             line_search_fn="strong_wolfe",
@@ -117,7 +115,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         
         def closure():
             lbfgs.zero_grad()
-            loss = self.negative_log_posterior(scores, entities, entity_name2index, comparisons)
+            loss = self.negative_log_posterior(values, *negative_log_posterior_args)
             loss.backward()
             return loss
 
@@ -127,24 +125,22 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         if n_iter >= self.max_iter:
             raise RuntimeError(f"LBFGS failed to converge in {n_iter} iterations")
 
-        scores = scores.detach()
-        if scores.isnan().any():
+        values = values.detach()
+        if values.isnan().any():
             raise RuntimeError(f"Nan in solution, state: {lbfgs.state_dict()}")
-        return np.array(scores)
+        return np.array(values)
             
     def negative_log_posterior(self, 
-        scores: torch.Tensor,
-        entities: Entities,
-        entity_name2index: dict[str, int],
-        comparisons: Comparisons,
+        values: torch.Tensor,
+        left_indices: list[int],
+        right_indices: list[int],
+        normalized_comparisons: torch.Tensor,
     ) -> torch.Tensor:
         """ Negative log posterior """
-        indices = comparisons.compared_entity_indices(entity_name2index)
-        score_diffs = scores[indices["left"]] - scores[indices["right"]]
-        normalized_comparisons = comparisons.normalized_comparisons()
-        loss = self.torch_cumulant_generating_function(score_diffs).sum()
-        loss += (score_diffs * torch.tensor(normalized_comparisons)).sum()
-        return loss + (scores**2).sum() / (2 * self.prior_std_dev**2)
+        value_diffs = values[left_indices] - values[right_indices]
+        loss = self.torch_cumulant_generating_function(value_diffs).sum()
+        loss += (value_diffs * normalized_comparisons).sum()
+        return loss + (values**2).sum() / (2 * self.prior_std_dev**2)
 
 
 class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
@@ -170,14 +166,14 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         Parameters
         ----------
         prior_std_dev: float=7.0
-            Typical scale of scores. 
+            Typical scale of values. 
             Technical, it should be the standard deviation of the gaussian prior.
         convergence_error: float=1e-5
-            Admissible error in score computations (obtained through optimization).
+            Admissible error in value computations (obtained through optimization).
         high_likelihood_range_threshold: float=1.0
             To determine the uncertainty, we compute left_unc (respectively, right_unc)
-            such that score - left_unc (respectively, + right_unc) has a likelihood
-            which is exp(high_likelihood_range_threshold) times lower than score.
+            such that value - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
         last_comparison_only: bool=True
@@ -194,26 +190,26 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         )
         self.cgf_epsilon = cgf_epsilon
 
-    def torch_cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:
+    def torch_cumulant_generating_function(self, value_diffs: torch.Tensor) -> torch.Tensor:
         """ Vectorized cumulant generating function adapted for pytorch
 
         Parameters
         ----------
-        score_diffs: torch.Tensor
+        value_diffs: torch.Tensor
             Score difference
 
         Returns
         -------
         cgf: torch.Tensor
-            cfg[i] is the cgf of score_diff[i]
+            cfg[i] is the cgf of value_diff[i]
         """
-        score_diffs_abs = (score_diffs**2 + self.cgf_epsilon).sqrt()
+        value_diffs_abs = (value_diffs**2 + self.cgf_epsilon).sqrt()
         return torch.where(
-            score_diffs_abs > 1e-1,
+            value_diffs_abs > 1e-1,
             torch.where(
-                score_diffs_abs < 20.0,
-                (torch.sinh(score_diffs_abs.clip(max=20.)) / (self.cgf_epsilon + score_diffs_abs)).log(),
-                score_diffs_abs - np.log(2) - score_diffs_abs.log(),
+                value_diffs_abs < 20.0,
+                (torch.sinh(value_diffs_abs.clip(max=20.)) / (self.cgf_epsilon + value_diffs_abs)).log(),
+                value_diffs_abs - np.log(2) - value_diffs_abs.log(),
             ),
-            score_diffs_abs ** 2 / 6 - score_diffs_abs ** 4 / 180,
+            value_diffs_abs ** 2 / 6 - value_diffs_abs ** 4 / 180,
         )

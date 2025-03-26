@@ -53,7 +53,12 @@ class UserModels:
         return self._cache_users
 
     def __getitem__(self, user: Union[str, "User"]) -> ScoringModel:
-        return self.to_dict()[str(user)]
+        d = self.to_dict()
+        if str(user) in d:
+            return d[str(user)]
+        constructor_name, kwargs = self.model_cls(str(user))
+        import solidago.state.models as models
+        return getattr(models, constructor_name)(**kwargs)
     
     def __delitem__(self, user: Union[str, "User"]) -> None:
         if user in self.user_directs:
@@ -67,7 +72,8 @@ class UserModels:
         
     def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
         del self[user]
-        self.user_directs[user] = model.get_directs()
+        for keys, value in model.get_directs():
+            self.user_directs[str(user), *keys] = value
         for keys, value in model.get_scales():
             if keys not in self.common_scales:
                 self.user_scales[str(user), *keys] = value

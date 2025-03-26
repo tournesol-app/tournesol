@@ -81,13 +81,13 @@ class MultiKeyTable:
             for d_keys, value in d:
                 kwargs = { kn: d_keys[kn] for kn in keynames }
                 keys = tuple(kwargs[kn] for kn in self.keynames)
-                self._cache[self.keynames][keys] = value
+                self._cache[self.keynames][*keys] = value
         self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
         if self.init_data is None:
             return self._cache[self.keynames]
         if isinstance(self.init_data, DataFrame):
             for _, row in self.init_data.iterrows():
-                keys = [row[kn] for kn in self.keynames]
+                keys = tuple(row[kn] for kn in self.keynames)
                 value = self._cache[self.keynames][keys]
                 self._cache[self.keynames][keys] = self.series2value(value, row)
             return self._cache[self.keynames]
@@ -125,6 +125,7 @@ class MultiKeyTable:
         self._main_cache()
         keynames = [keynames] if isinstance(keynames, str) else list(keynames or list())
         keynames = tuple(keynames + [k for k in self.keynames if k not in keynames])
+        assert set(keynames) == set(self.keynames)
         if keynames in self._cache:
             return self._cache[keynames]
         self._cache[keynames] = NestedDict(type(self).value_factory, self.depth)
@@ -159,8 +160,13 @@ class MultiKeyTable:
     def iter(self, *keynames) -> Iterable:
         keynames = (keynames,) if isinstance(keynames, str) else keynames
         keynames = keynames if keynames else self.keynames
+        other_keynames = [kn for kn in self.keynames if kn not in keynames]
         for keys, value in self.nested_dict(*keynames).iter(len(keynames)):
-            yield keys, value
+            if len(keynames) == self.depth:
+                yield keys, value
+            else:
+                init_data = dict()
+                yield keys, self.get(*keys)
         
     def __iter__(self) -> Iterable:
         return self.iter()
@@ -187,22 +193,23 @@ class MultiKeyTable:
             return self.nested_dict()[keys]
         other_keynames = [kn for kn in self.keynames if kn not in kwargs]
         keynames_set = self.get_matching_prefix_caches(*kwargs.keys())
-        init_data = dict()
-        for keynames in keynames_set:
-            keys = tuple(kwargs[kn] for kn in keynames[:len(kwargs)])
-            init_data[keynames[len(kwargs):]] = self._cache[keynames][keys]
+        to_keys = lambda keynames: [kwargs[kn] for kn in keynames[:len(kwargs)]]
         parent_keynames = next(iter(keynames_set))[:len(kwargs)]
         parent_keys = tuple(kwargs[kn] for kn in parent_keynames)
-        return type(self)(other_keynames, init_data, (self, parent_keynames, parent_keys))
+        return type(self)(other_keynames, {
+            keynames[len(kwargs):]: self._cache[keynames][*to_keys(keynames)]
+            for keynames in keynames_set
+        }, (self, parent_keynames, parent_keys))
 
-    def __getitem__(self, keys: Union[str, tuple]) -> Union["MultiKeyTable", "Value"]:
-        keys = (keys,) if isinstance(keys, str) else keys
+    def __getitem__(self, keys: Union[str, tuple, list]) -> Union["MultiKeyTable", "Value"]:
+        keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         return self.get(*keys)
             
     def __contains__(self, *args, **kwargs) -> bool:
         kwargs = self.keys2kwargs(*args, **kwargs)
-        keys = tuple(kwargs[kn] for kn in self.keynames)
-        return keys in self.nested_dict()
+        keynames = next(iter(self.get_matching_prefix_caches(*kwargs.keys())))[:len(kwargs)]
+        keys = tuple(kwargs[kn] for kn in keynames[:len(kwargs)])
+        return keys in self.nested_dict(*keynames)
 
     def __len__(self) -> int:
         return len(self._main_cache())
@@ -241,14 +248,14 @@ class MultiKeyTable:
         kwargs = self.keys2kwargs(*args, **kwargs)
         self._main_cache()
         for keynames in self._cache:
-            keys = [kwargs[kn] for kn in keynames]
+            keys = tuple(kwargs[kn] for kn in keynames)
             self._cache[keynames][keys] = value
         if self.parent: # Required because child may have created a cache absent from parent
             kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
             self.parent.set(value, **kwargs)
     
-    def __setitem__(self, keys: Union[str, tuple], value: "Value") -> None:
-        keys = (keys,) if isinstance(keys, str) else keys
+    def __setitem__(self, keys: Union[str, tuple, list], value: "Value") -> None:
+        keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         self.set(*keys, value)
 
     def delete(self, *args, tolerate_key_error: bool=False, **kwargs) -> None:
@@ -264,8 +271,8 @@ class MultiKeyTable:
             kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
             self.parent.delete(tolerate_key_error=True, **kwargs)
     
-    def __delitem__(self, keys: Union[str, tuple]) -> None:
-        keys = (keys,) if isinstance(keys, str) else keys
+    def __delitem__(self, keys: Union[str, tuple, list]) -> None:
+        keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         self.delete(*keys)
 
     def prepend_keyname(self, keyname: str, key: Union[int, str]) -> "MultiKeyTable":

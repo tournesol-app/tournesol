@@ -31,14 +31,14 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         Parameters
         ----------
         prior_std_dev: float=7.0
-            Typical scale of scores. 
+            Typical scale of values. 
             Technical, it should be the standard deviation of the gaussian prior.
         convergence_error: float=1e-5
-            Admissible error in score computations (obtained through optimization).
+            Admissible error in value computations (obtained through optimization).
         high_likelihood_range_threshold: float=1.0
             To determine the uncertainty, we compute left_unc (respectively, right_unc)
-            such that score - left_unc (respectively, + right_unc) has a likelihood
-            which is exp(high_likelihood_range_threshold) times lower than score.
+            such that value - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
         last_comparison_only: bool=True
@@ -62,42 +62,44 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         
         Parameters
         ----------
-        score_diffs: npt.NDArray
+        value_diffs: npt.NDArray
             Score differences
             
         Returns
         -------
         cgf_derivative: npt.NDArray
             cgf_derivative[i] is the derivative of the cumulant-generating function 
-            at score_diffs[i]
+            at value_diffs[i]
         """
         raise NotImplemented
 
-    def compute_values(self, 
+    def compute_values(self,
         entities: Entities,
-        entity_name2index: dict[str, int],
-        comparisons: Comparisons, # key_names == ["left_name, right_name"]
-        init_multiscores : MultiScore, # key_names == "entity_name"
+        comparisons: Comparisons, # keynames == ["entity_name", "other_name"]
+        init : MultiScore, # keynames == "entity_name"
     ) -> npt.NDArray:
-        """ Computes the scores given comparisons """
+        """ Computes the values of the entities given comparisons """
         get_args = self.get_partial_derivative_args(entities, comparisons)
         return coordinate_descent(
             self.partial_derivative,
-            self.init_scores(entity_name2index, init_multiscores),
+            self.init_values(entities, init),
             get_args,
             error=self.convergence_error,
         )
     
     def get_partial_derivative_args(self, 
         entities: Entities, 
-        comparisons: Comparisons, # key_names == ["left_name", "right_name"]
+        comparisons: Comparisons, # keynames == ["entity_name", "other_name"]
     ) -> Callable[[int, np.ndarray], tuple[np.ndarray, np.ndarray]]:
         
-        comparison_dict = comparisons.to_comparison_dict(entities, self.last_comparison_only)
+        indices = comparisons.compared_entity_indices(entities) # defaultdict[int, list]
+        indices = [ indices[i] for i in range(len(entities)) ]
+        normalized_comparisons = comparisons.entity_normalized_comparisons(entities) # defaultdict
+        normalized_comparisons = [ np.array(normalized_comparisons[i]) for i in range(len(entities)) ]
 
-        def f(entity_index: int, scores: np.ndarray) -> tuple:
-            indices, normalized_comparisons = comparison_dict[entity_index]
-            return scores[indices], normalized_comparisons
+        def f(entity_index: int, values: np.ndarray) -> tuple[np.array, np.array]:
+            """ Returns compared_values and normalized_comparisons against compared entities """
+            return values[indices[entity_index]], normalized_comparisons[entity_index]
             
         return f
 
@@ -110,32 +112,29 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         which is given by coordinate_comparisons.
         """
         prior_var = self.prior_std_dev**2
-        cfg_deriv = self.cumulant_generating_function_derivative
+        cgf_deriv = self.cumulant_generating_function_derivative
 
         @njit
         def njit_partial_derivative(
-            entity_score: float,
-            compared_scores: npt.NDArray, 
+            entity_value: float,
+            compared_values: npt.NDArray, 
             normalized_comparisons: npt.NDArray, 
         ) -> npt.NDArray:
-            score_diffs = entity_score - compared_scores
-            nll_derivative = np.sum(cfg_deriv(score_diffs) + normalized_comparisons)
-            prior_derivative = entity_score / prior_var
+            value_diffs = entity_value - compared_values
+            nll_derivative = np.sum(cgf_deriv(value_diffs) + normalized_comparisons)
+            prior_derivative = entity_value / prior_var
             return prior_derivative + nll_derivative
         
         return njit_partial_derivative
 
-    def gradient(self,
-        scores: float,
-        entities: Entities, 
-        entity_name2index: dict[str, int],
-        entity_ordered_comparisons: Comparisons, # key_names == ["entity_name", "other_name"]
-    ) -> np.array:
-        get_args = self.get_partial_derivative_args(entities, entity_name2index, entity_ordered_comparisons)
-        return np.array([ 
-            self.partial_derivative(entity_index, scores, *get_args(entity_index, scores))
-            for entity_index in range(len(scores))
-        ])
+    def gradient(self, values: float, entities: Entities, comparisons: Comparisons) -> np.array:
+        """ comparisons.keynames == ["entity_name", "other_name"] """
+        get_args = self.get_partial_derivative_args(entities, comparisons)
+        gradient = np.zeros(len(values))
+        for entity_index in range(len(values)):
+            args = get_args(entity_index, values)
+            gradient[entity_index] = self.partial_derivative(entity_index, values, *args)
+        return gradient
             
 
 class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
@@ -157,14 +156,14 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         Parameters
         ----------
         prior_std_dev: float=7.0
-            Typical scale of scores. 
+            Typical scale of values. 
             Technical, it should be the standard deviation of the gaussian prior.
         convergence_error: float=1e-5
-            Admissible error in score computations (obtained through optimization).
+            Admissible error in value computations (obtained through optimization).
         high_likelihood_range_threshold: float=1.0
             To determine the uncertainty, we compute left_unc (respectively, right_unc)
-            such that score - left_unc (respectively, + right_unc) has a likelihood
-            which is exp(high_likelihood_range_threshold) times lower than score.
+            such that value - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
         last_comparison_only: bool=True
@@ -180,19 +179,19 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
 
     @cached_property
     def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
-        """ The cgf derivative of UniformGBT is simply 1 / tanh(score_diff) - 1 / score_diff.
+        """ The cgf derivative of UniformGBT is simply 1 / tanh(value_diff) - 1 / value_diff.
         However, numerical accuracy requires care in the cases 
-        where abs(score_diff) is small (because of division by zero).
+        where abs(value_diff) is small (because of division by zero).
         Moreover, as this method is widely used in Numba coordinate descent,
         and as it must be njit to be used by coordinate_descent,
         we write it as a cached property njit function.
         """
         @njit
-        def njit_cumulant_generating_function_derivative(score_diffs: npt.NDArray):
+        def njit_cumulant_generating_function_derivative(value_diffs: npt.NDArray):
             return np.where(
-                np.abs(score_diffs) < 1e-2,
-                score_diffs / 3,
-                1 / np.tanh(score_diffs) - 1 / score_diffs,
+                np.abs(value_diffs) < 1e-2,
+                value_diffs / 3,
+                1 / np.tanh(value_diffs) - 1 / value_diffs,
             )
 
         return njit_cumulant_generating_function_derivative

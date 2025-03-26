@@ -83,32 +83,46 @@ class Comparisons(MultiKeyTable):
             other_name_index = self.keynames.index("other_name")
             return DataFrame([ 
                 Series(dict(zip(self.keynames, keys)) | dict(self.value2series(comparison)))
-                for keys, comparison in self
-                if comparison.location == "left"
+                for keys, comparison in self.left_right_iter()
             ]).rename({ "entity_name": "left_name", "other_name": "right_name" })
         except ValueError:
             return super().to_df()
+
+    def left_right_iter(self) -> Iterable:
+        for keys, comparison in self:
+            if comparison.location == "left":
+                yield keys, comparison
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set:
         self.nested_dict("entity_name", "username")
         return self.get(entity_name=str(entity)).keys("username")
 
+    def left_right_indices(self, entities: "Entities") -> tuple[list[int], list[int]]:
+        """ Returns a dict, where dict[i] is a list of j,
+        which correspond to the indices of the entities that i was compared to """
+        lk_index, rk_index = self.keynames.index("entity_name"), self.keynames.index("other_name")
+        return tuple([
+            entities.name2index[keys[key_index]]
+            for keys, comparison in self.left_right_iter()
+        ] for key_index in (lk_index, rk_index))
+
+    def normalized_comparison_list(self) -> list[float]:
+        return [ float(comparison.value / comparison.max) for _, comparison in self.left_right_iter()]
+
     def compared_entity_indices(self, entities: "Entities") -> defaultdict[int, list]:
         """ Returns a dict, where dict[i] is a list of j,
         which correspond to the indices of the entities that i was compared to """
-        entity_keys_index = self.keynames.index("entity_name")
-        other_keys_index = self.keynames.index("other_name")
+        ek_index, ok_index = self.keynames.index("entity_name"), self.keynames.index("other_name")
         d = defaultdict(list)
         for keys in self.keys():
-            entity_index = entities.name2index[keys[entity_keys_index]]
-            other_index = entities.name2index[keys[other_keys_index]]
-            d[entity_index].append(other_index)
+            entity_index = entities.name2index[keys[ek_index]]
+            d[entity_index].append(entities.name2index[keys[ok_index]])
         return d
-
-    def normalized_comparisons(self, entities: "Entities") -> defaultdict[int, list]:
+        
+    def entity_normalized_comparisons(self, entities: "Entities") -> defaultdict[int, list]:
         entity_keys_index = self.keynames.index("entity_name")
         d = defaultdict(list)
         for keys, comparison in self:
             entity_index = entities.name2index[keys[entity_keys_index]]
-            d[entity_index].append(comparison.value / comparison.max)
+            d[entity_index].append(float(comparison.value / comparison.max))
         return d
