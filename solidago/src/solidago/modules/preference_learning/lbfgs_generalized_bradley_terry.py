@@ -28,7 +28,6 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         convergence_error: float=1e-5,
         max_iter: int=100,
         device: torch.device=default_device,
-        last_comparison_only: bool=True,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -54,14 +53,11 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
             Replaces infinite uncertainties with max_uncertainty
         max_iter: int=100
             Maximal number of iterations used
-        last_comparison_only: bool=True
-            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
-            last_comparison_only=last_comparison_only,
         )
         self.convergence_error = convergence_error
         self.max_iter = max_iter
@@ -151,7 +147,6 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         convergence_error: float=1e-5,
         max_iter: int=100,
         device: torch.device=default_device,
-        last_comparison_only: bool=True,
         cgf_epsilon: float=1e-8,
     ):
         """ Generalized Bradley Terry with a uniform root law is a straightforward
@@ -176,8 +171,6 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
             which is exp(high_likelihood_range_threshold) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
-        last_comparison_only: bool=True
-            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
@@ -186,7 +179,6 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
             convergence_error=convergence_error,
             max_iter=max_iter,
             device=device,
-            last_comparison_only=last_comparison_only
         )
         self.cgf_epsilon = cgf_epsilon
 

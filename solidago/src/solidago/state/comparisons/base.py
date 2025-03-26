@@ -22,7 +22,10 @@ class Comparison:
     
     def __neg__(self) -> "Comparison":
         location = "right" if self.location == "left" else "left"
-        return Comparison(- self.value, self.max, self.location)
+        return Comparison(- self.value, self.max, location)
+
+    def __repr__(self) -> str:
+        return f"{self.value} (max={self.max}, location={self.location})"
 
 
 class Comparisons(MultiKeyTable):
@@ -46,7 +49,8 @@ class Comparisons(MultiKeyTable):
     def series2value(self, previous_value: Any, row: Series) -> Comparison:
         return Comparison.from_series(row)
 
-    def _keys(self, **kwargs) -> tuple[tuple, tuple]:
+    def _keys(self, *args, **kwargs) -> tuple[tuple, tuple]:
+        kwargs = self.keys2kwargs(*args, **kwargs)
         keys1, keys2 = list(), list()
         for keyname in self.keynames:
             keys1.append(kwargs[keyname])
@@ -57,25 +61,63 @@ class Comparisons(MultiKeyTable):
             else:
                 keys2.append(kwargs[keyname])
         return tuple(keys1), tuple(keys2)
+        
+    def _main_cache(self) -> NestedDict:
+        """ This method is complicated because it handles multiple structures of self.init_data 
+        to construct a first main cache that corresponds to self.keynames
+        """
+        if self.keynames in self._cache:
+            return self._cache[self.keynames]
+        if self._cache:
+            keynames, d = next(iter(self._cache.items()))
+            assert set(keynames) == set(self.keynames), (keynames, self.keynames)
+            self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
+            for d_keys, value in d:
+                kwargs = { kn: d_keys[kn] for kn in keynames }
+                keys1, keys2 = self._keys(**kwargs)
+                self._cache[self.keynames][keys1] = value
+                self._cache[self.keynames][keys2] = - value
+        self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
+        if self.init_data is None:
+            return self._cache[self.keynames]
+        if isinstance(self.init_data, DataFrame):
+            for _, row in self.init_data.iterrows():
+                keys = tuple(row[kn] for kn in self.keynames)
+                value = self.series2value(self._cache[self.keynames][keys], row)
+                keys1, keys2 = self._keys(*keys)
+                self._cache[self.keynames][keys1] = value
+                self._cache[self.keynames][keys2] = - value
+            return self._cache[self.keynames]
+        kns_and_nd = isinstance(self.init_data, tuple) and len(self.init_data) == 2 
+        kns_and_nd = kns_and_nd and isinstance(self.init_data[0], tuple)
+        kns_and_nd = kns_and_nd and isinstance(self.init_data[1], NestedDict)
+        if kns_and_nd:
+            keynames, nested_dict = self.init_data
+            for keys, value in nested_dict:
+                kwargs = dict(zip(keynames, keys))
+                keys1, keys2 = self._keys(**kwargs)
+                self._cache[self.keynames][keys1] = value
+                self._cache[self.keynames][keys2] = - value
+        if isinstance(self.init_data, list):
+            for entry in self.init_data:
+                assert len(entry) == self.depth + 1
+                if isinstance(entry, (tuple, list)):
+                    keys, value = tuple(entry[:-1]), entry[-1]
+                elif isinstance(entry, dict):
+                    assert len(entry) == self.depth + 1
+                    keys, value = tuple(entry[kn] for kn in self.keynames), entry["value"]
+                keys1, keys2 = self._keys(*keys)
+                self._cache[self.keynames][keys1] = value
+                self._cache[self.keynames][keys2] = - value
+            return self._cache[self.keynames]
+        if isinstance(self.init_data, dict):
+            for keys, value in self.init_data.items():
+                keys1, keys2 = self._keys(*keys)
+                self._cache[self.keynames][keys1] = value
+                self._cache[self.keynames][keys2] = - value
+            return self._cache[self.keynames]
+        raise ValueError(f"Type {type(self.init_data)} of raw data {self.init_data} not handled")
 
-    def set(self, *args, **kwargs) -> None:
-        """ args is assumed to list keys and then value, 
-        though some may be specified through kwargs """
-        assert len(args) + len(kwargs) == self.depth + 1
-        if "value" not in kwargs: # args[-1] is value
-            args, value = args[:-1], args[-1]
-        else:
-            value = kwargs["value"]
-            del kwargs["value"]
-        kwargs = self.keys2kwargs(*args, **kwargs)
-        self._main_cache()
-        for keynames in self._cache:
-            keys1, keys2 = self._keys(**kwargs)
-            self._cache[keynames][keys1] = value
-            self._cache[keynames][keys2] = - value
-        if self.parent: # Required because child may have created a cache absent from parent
-            kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
-            self.parent.set(value, **kwargs)
     
     def to_df(self) -> DataFrame:
         try:

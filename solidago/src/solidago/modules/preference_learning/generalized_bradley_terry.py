@@ -17,7 +17,6 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         prior_std_dev: float=7.0,
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
-        last_comparison_only: bool=True,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -40,13 +39,10 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             which is exp(uncertainty_nll_increase) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
-        last_comparison_only: bool=True
-            Ignores all comparisons between two entities prior to the last provided.
         """
         self.prior_std_dev = prior_std_dev
         self.uncertainty_nll_increase = uncertainty_nll_increase
         self.max_uncertainty = max_uncertainty
-        self.last_comparison_only = last_comparison_only
 
     @abstractmethod
     def cumulant_generating_function_derivative(self, value_diffs: npt.NDArray) -> npt.NDArray:
@@ -252,7 +248,6 @@ class UniformGBT(GeneralizedBradleyTerry):
         prior_std_dev: float = 7.0,
         uncertainty_nll_increase: float = 1.0,
         max_uncertainty: float=1e3,
-        last_comparison_only: bool=True,
     ):
         """ UniformGBT is the specific instance of the generalized Bradley-Terry models
         with a uniform distribution over [-1, 1] as a root law. Find out more 
@@ -272,14 +267,11 @@ class UniformGBT(GeneralizedBradleyTerry):
             which is exp(uncertainty_nll_increase) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
-        last_comparison_only: bool=True
-            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
-            last_comparison_only=last_comparison_only,
         )
     
     def cumulant_generating_function(self, value_diffs: npt.NDArray) -> npt.NDArray:

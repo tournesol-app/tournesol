@@ -22,6 +22,9 @@ class Assessment:
     def to_series(self) -> Series:
         return Series(dict(value=self.value, min=self.min, max=self.max))
 
+    def __repr__(self) -> str:
+        return f"{self.value} (min={self.min}, max={self.max})"
+
 
 class Assessments(MultiKeyTable):
     name: str="assessments"

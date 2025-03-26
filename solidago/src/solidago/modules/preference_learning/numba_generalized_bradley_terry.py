@@ -18,7 +18,6 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
-        last_comparison_only: bool=True,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -41,14 +40,11 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             which is exp(high_likelihood_range_threshold) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
-        last_comparison_only: bool=True
-            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
-            last_comparison_only=last_comparison_only,
         )
         self.convergence_error = convergence_error
 
@@ -133,7 +129,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         gradient = np.zeros(len(values))
         for entity_index in range(len(values)):
             args = get_args(entity_index, values)
-            gradient[entity_index] = self.partial_derivative(entity_index, values, *args)
+            gradient[entity_index] = self.partial_derivative(values[entity_index], *args)
         return gradient
             
 
@@ -143,7 +139,6 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
-        last_comparison_only: bool=True,
     ):
         """ Generalized Bradley Terry with a uniform root law is a straightforward
         instance of the models introduced in the paper "Generalized Bradley-Terry 
@@ -166,15 +161,12 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
             which is exp(high_likelihood_range_threshold) times lower than value.
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
-        last_comparison_only: bool=True
-            Ignores all comparisons between two entities prior to the last provided.
         """
         super().__init__(
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             convergence_error=convergence_error,
-            last_comparison_only=last_comparison_only,
         )
 
     @cached_property
