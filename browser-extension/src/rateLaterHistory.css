@@ -158,3 +158,6 @@ body.tournesol-capturing-history ytd-thumbnail {
   display: none;
 }
 
+.visibility-hidden {
+  visibility: hidden;
+}

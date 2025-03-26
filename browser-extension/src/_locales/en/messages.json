@@ -166,16 +166,12 @@
     "description": "First paragraph of the alert message, displayed when the daily import limit is reached."
   },
   "rateLaterHistoryStatusBox429AlertP2" : {
-    "message": "You have imported the maximum number of videos allowed today.",
+    "message": "You have imported the maximum number of videos allowed today. You can start a new import in 24 hours.",
     "description": "Second paragraph of the alert message, displayed when the daily import limit is reached."
   },
   "rateLaterHistoryStatusBoxMessage": {
     "message": "Press Stop when the visible videos count doesn't increase anymore or when you think enough videos have been imported.",
     "description": "Instructions displayed on the rate later history import status box."
-  },
-  "rateLaterHistoryStatusBoxMessageRateLimited": {
-    "message": "You'll be able to start a new import in 24 hours, after having watched new videos.",
-    "description": "Instructions displayed on the rate later history import status box after rate limist has been reached."
   },
   "rateLaterHistoryVideoCount": {
     "message": "Videos visible in history:",

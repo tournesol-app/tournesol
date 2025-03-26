@@ -57,10 +57,8 @@ const addOverlay = () => {
     loader.classList.add('display-none');
     loader.classList.remove('lds-dual-ring');
     alertBox.classList.remove('display-none');
+    message.classList.add('visibility-hidden');
 
-    message.textContent = chrome.i18n.getMessage(
-      'rateLaterHistoryStatusBoxMessageRateLimited'
-    );
     stopButton.textContent = chrome.i18n.getMessage(
       'rateLaterHistoryCloseButtonLabel'
     );
