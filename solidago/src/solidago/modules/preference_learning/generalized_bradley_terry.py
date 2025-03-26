@@ -111,16 +111,14 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         entities: Entities,
         assessments: Assessments, # Not used
         comparisons: Comparisons, # key_names == ["criterion", "left_name", "right_name"]
-        init_model: ScoringModel,
+        init_model: Optional[ScoringModel]=None,
     ) -> DirectScoring:
         """ Learns only based on comparisons """
-        if self.last_comparison_only:
-            comparisons = comparisons.last_only()
+        init_model = DirectScoring() if init_model is None else init_model
         model = DirectScoring()
-        compared_entity_names = set(comparisons["left_name"]) | set(comparisons["right_name"])
-        entities = entities.get(compared_entity_names) # Restrict to compared entities
-        init = init_model(entities).to_dict("criterion")
-        criteria = set(comparisons["criterion"]) | set(init["criterion"])
+        entities = entities.get(comparisons.keys("entity_name")) # Restrict to compared entities
+        init = init_model(entities).nested_dict("criterion", "entity_name")
+        criteria = comparisons.keys("criterion") | init.get_keys()
         for criterion, cmps in comparisons.to_dict("criterion"):
             criterion_entity_names = set(cmps["left_name"]) | set(cmps["right_name"])
             if len(criterion_entity_names) <= 1:
@@ -146,7 +144,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
     def user_learn_criterion(self, 
         entities: Entities,
         comparisons: Comparisons, # key_names == ["left_name, right_name"]
-        init_multiscores: MultiScore, # key_names == ["entity_name"]
+        init_multiscores: Optional[MultiScore]=None, # key_names == ["entity_name"]
     ) -> MultiScore: # key_names == ["entity_name"]
         """
         Returns
@@ -154,6 +152,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         out: dict
             out[entity_name] must be of type Score (i.e. with a value and left/right uncertainties
         """
+        init_multiscores = MultiScore(["entity_name"]) if init_multiscores is None else init_multiscores
         entity_name2index = { str(entity): index for index, entity in enumerate(entities) }
         values = self.compute_values(entities, entity_name2index, comparisons, init_multiscores)
         lefts, rights = self.compute_uncertainties(entities, entity_name2index, comparisons, values)

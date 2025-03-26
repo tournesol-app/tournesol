@@ -22,8 +22,8 @@ class PreferenceLearning(StateFunction, ABC):
         result = UserModels()
         for user in users:
             logger.info(f"  Learning user {user}'s base model")
-            result[user] = self.user_learn(user, entities, 
-                assessments.get(user), comparisons.get(user), user_models[user].base_model())
+            user_args = assessments[user], comparisons[user], user_models[user].base_model()
+            result[user] = self.user_learn(user, entities, *user_args)
         return result
 
     @abstractmethod

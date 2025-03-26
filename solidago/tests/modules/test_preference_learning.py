@@ -12,16 +12,11 @@ def test_gbt_score_zero(GBT):
         pytest.importorskip("torch")
         
     entities=Entities(["entity_1", "entity_2", "entity_3"])
-    comparisons=Comparisons(
-        DataFrame([
-            ["entity_1", "entity_2", 0, 10],
-            ["entity_1", "entity_3", 0, 10],
-        ], columns=["left_name", "right_name", "value", "max"]), 
-        key_names=["left_name", "right_name"]
-    )
-    init_multiscores = MultiScore(key_names=["entity_name"])
+    comparisons=Comparisons(["left_name", "right_name"])
+    comparisons["entity_1", "entity_2"] = Comparison(0, 10)
+    comparisons["entity_1", "entity_3"] = Comparison(0, 10)
     
-    scores = GBT().user_learn_criterion(entities, comparisons, init_multiscores)
+    scores = GBT().user_learn_criterion(entities, comparisons)
     
     assert scores.get("entity_1").to_triplet() == pytest.approx((0, 1.8, 1.8), abs=0.1)
     assert scores.get("entity_2").to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
@@ -35,21 +30,16 @@ def test_gbt_score_monotonicity(GBT):
         pytest.importorskip("torch")
         
     entities=Entities(["entity_1", "entity_2", "entity_3"])
-    comparisons=Comparisons(
-        DataFrame([
-            ["entity_1", "entity_2", 5, 10],
-            ["entity_1", "entity_3", 2, 10],
-        ], columns=["left_name", "right_name", "value", "max"]), 
-        key_names=["left_name", "right_name"]
-    )
-    init_multiscores = MultiScore(key_names=["entity_name"])
+    comparisons=Comparisons(["left_name", "right_name"])
+    comparisons["entity_1", "entity_2"] = Comparison(5, 10)
+    comparisons["entity_1", "entity_3"] = Comparison(2, 10))
     
     scores = GBT().user_learn_criterion(entities, comparisons, init_multiscores)
     
-    assert scores.get("entity_1").value < scores.get("entity_3").value
-    assert scores.get("entity_3").value < scores.get("entity_2").value
-    assert scores.get("entity_1").left_unc > scores.get("entity_1").right_unc
-    assert scores.get("entity_2").left_unc < scores.get("entity_2").right_unc
+    assert scores["entity_1"].value < scores["entity_3"].value
+    assert scores["entity_3"].value < scores["entity_2"].value
+    assert scores["entity_1"].left_unc > scores["entity_1"].right_unc
+    assert scores["entity_2"].left_unc < scores["entity_2"].right_unc
 
 
 def test_uniform_gbt():
@@ -66,6 +56,6 @@ def test_uniform_gbt():
     for user in s.users:
         for entity in s.entities:
             for criterion, score in user_models[0][user](entity):
-                lbfgs_score = user_models[1][user](entity).get(criterion)
+                lbfgs_score = user_models[1][user](entity, criterion)
                 assert score.to_triplet() == pytest.approx(lbfgs_score.to_triplet(), abs=2e-1)
 

@@ -29,7 +29,7 @@ class NestedDict:
         subdict = NestedDict(self.value_factory, self.depth - 1)
         subdict._dict = self._dict[keys[0]]
         return subdict[keys[1:]]
-    
+            
     def get_value(self, *args, record_missing_value: bool=True) -> "Value":
         assert len(args) == self.depth
         if args in self:
@@ -39,6 +39,13 @@ class NestedDict:
             self[args] = value
         return self[args]
     
+    def get_keys(self, depths: Union[int, set[int]]=0) -> set:
+        depths = depths if isinstance(depths, set) else {depths}
+        return {
+            tuple(k for i, k in enumerate(keys) if i in depths)
+            for keys, value in self.iter(max(depths) + 1)
+        }            
+        
     def __setitem__(self, keys: tuple, value: Any) -> None:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
         assert len(keys) == self.depth
@@ -52,10 +59,13 @@ class NestedDict:
     def __delitem__(self, keys: tuple) -> None:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
         assert len(keys) == self.depth
-        subdict = self._dict
+        subdict_list = [self._dict]
         for key in keys[:-1]:
-            subdict = subdict[key]
-        del subdict[keys[-1]]
+            subdict_list.append(subdict_list[-1][key])
+        del subdict_list[-1][keys[-1]]
+        for index in range(1, len(keys) - 1):
+            if not subdict_list[-index]:
+                del subdict_list[-index-1][keys[-index-1]]
     
     def __contains__(self, keys: tuple) -> Iterable:
         keys = (keys,) if isinstance(keys, (str, int)) else keys

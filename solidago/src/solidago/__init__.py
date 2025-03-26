@@ -8,6 +8,7 @@ from solidago.modules import *
 from solidago.generators import *
 
 __all__ = [
+    "NestedDict", "MultiKeyTable",
     "User", "Users", "VectorUser", "VectorUsers",
     "Vouches",
     "Entity", "Entities", "VectorEntity", "VectorEntities",
