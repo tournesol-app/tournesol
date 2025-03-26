@@ -10,7 +10,6 @@
         "prior_std_dev": 7, 
         "uncertainty_nll_increase": 1.0,
         "max_uncertainty": 1e3,
-        "last_comparison_only": true,
         "convergence_error": 1e-05,
         "max_iter": 100,
         "cgf_epsilon": 1e-8

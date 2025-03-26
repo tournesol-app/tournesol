@@ -1,6 +1,7 @@
 from typing import Union, Optional, Callable, Any, Iterable
 from pathlib import Path
 from pandas import DataFrame, Series
+from collections import defaultdict
 
 import pandas as pd
 import math
@@ -68,53 +69,49 @@ class MultiKeyTable:
         return row["value"]
 
     """ The following methods are are more standard """
+    def _init_data_to_dict(self) -> dict:
+        if self.init_data is None and not self._cache:
+            return dict()
+        if self._cache:
+            keynames, d = next(iter(self._cache.items()))
+            return { self.keys2tuple(keys): value for keys, value in d }
+        if isinstance(self.init_data, DataFrame):
+            d = defaultdict(lambda: None)
+            for _, row in self.init_data.iterrows():
+                keys = tuple(row[kn] for kn in self.keynames)
+                d[keys] = self.series2value(d[keys], row)
+            return d
+        kns_and_nd = isinstance(self.init_data, tuple) and len(self.init_data) == 2 
+        kns_and_nd = kns_and_nd and isinstance(self.init_data[0], tuple)
+        kns_and_nd = kns_and_nd and isinstance(self.init_data[1], NestedDict)
+        if kns_and_nd:
+            keynames, nested_dict = self.init_data
+            return { self.keys2tuple(**dict(zip(k, keynames))): v for k, v in nested_dict }
+        if isinstance(self.init_data, list):
+            d = dict()
+            for entry in self.init_data:
+                assert len(entry) == self.depth + 1
+                if isinstance(entry, (tuple, list)):
+                    d[tuple(entry[:-1])] = entry[-1]
+                elif isinstance(entry, dict):
+                    assert len(entry) == self.depth + 1
+                    d[tuple(entry[kn] for kn in self.keynames)] = entry["value"]
+            return d
+        if isinstance(self.init_data, dict):
+            return self.init_data
+        raise ValueError(f"Type {type(self.init_data)} of raw data {self.init_data} not handled")
+    
     def _main_cache(self) -> NestedDict:
         """ This method is complicated because it handles multiple structures of self.init_data 
         to construct a first main cache that corresponds to self.keynames
         """
         if self.keynames in self._cache:
             return self._cache[self.keynames]
-        if self._cache:
-            keynames, d = next(iter(self._cache.items()))
-            assert set(keynames) == set(self.keynames), (keynames, self.keynames)
-            self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
-            for d_keys, value in d:
-                kwargs = { kn: d_keys[kn] for kn in keynames }
-                keys = tuple(kwargs[kn] for kn in self.keynames)
-                self._cache[self.keynames][*keys] = value
+        d = self._init_data_to_dict()
         self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
-        if self.init_data is None:
-            return self._cache[self.keynames]
-        if isinstance(self.init_data, DataFrame):
-            for _, row in self.init_data.iterrows():
-                keys = tuple(row[kn] for kn in self.keynames)
-                value = self._cache[self.keynames][keys]
-                self._cache[self.keynames][keys] = self.series2value(value, row)
-            return self._cache[self.keynames]
-        kns_and_nd = isinstance(self.init_data, tuple) and len(self.init_data) == 2 
-        kns_and_nd = kns_and_nd and isinstance(self.init_data[0], tuple)
-        kns_and_nd = kns_and_nd and isinstance(self.init_data[1], NestedDict)
-        if kns_and_nd:
-            keynames, nested_dict = self.init_data
-            for keys, value in nested_dict:
-                kwargs = dict(zip(keynames, keys))
-                new_keys = tuple(kwargs[kn] for kn in self.keynames)
-                self._cache[self.keynames][new_keys] = value
-        if isinstance(self.init_data, list):
-            for entry in self.init_data:
-                assert len(entry) == self.depth + 1
-                if isinstance(entry, (tuple, list)):
-                    keys, value = tuple(entry[:-1]), entry[-1]
-                elif isinstance(entry, dict):
-                    assert len(entry) == self.depth + 1
-                    keys, value = tuple(entry[kn] for kn in self.keynames), entry["value"]
-                self._cache[self.keynames][keys] = value
-            return self._cache[self.keynames]
-        if isinstance(self.init_data, dict):
-            for keys, value in self.init_data.items():
-                self._cache[self.keynames][keys] = value
-            return self._cache[self.keynames]
-        raise ValueError(f"Type {type(self.init_data)} of raw data {self.init_data} not handled")
+        for keys, value in d.items():
+            self._cache[self.keynames][keys] = value
+        return self._cache[self.keynames]
 
     def cache(self, *keynames) -> None:
         """ Caches but does not return the cached nested dict """
@@ -186,6 +183,11 @@ class MultiKeyTable:
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
         return kwargs | { k: f(v) for k, v in zip(other_keynames, args) }
     
+    def keys2tuple(self, *args, keynames: Optional[tuple]=None, **kwargs) -> tuple:
+        keynames = keynames or self.keynames
+        kwargs = self.keys2kwargs(*args, **kwargs)
+        return tuple(kwargs[kn] for kn in keynames)
+    
     def get(self, *args, **kwargs) -> Union["MultiKeyTable", "Value"]:
         kwargs = self.keys2kwargs(*args, **kwargs)
         if len(kwargs) == self.depth:
@@ -237,14 +239,12 @@ class MultiKeyTable:
         """ args is assumed to list keys and then value, 
         though some may be specified through kwargs """
         assert len(args) + len(kwargs) == self.depth + 1
-        if "value" not in kwargs: # args[-1] is value
-            value = args[-1]
-            args = args[:-1]
-        else:
-            assert "value" in kwargs
+        if "value" in kwargs:
             value = kwargs["value"]
             del kwargs["value"]
-        assert isinstance(value, object)
+        else:
+            args, value = args[:-1], args[-1]
+        assert isinstance(value, type(self).value_cls)
         kwargs = self.keys2kwargs(*args, **kwargs)
         self._main_cache()
         for keynames in self._cache:

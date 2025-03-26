@@ -49,10 +49,11 @@ class Comparisons(MultiKeyTable):
     def series2value(self, previous_value: Any, row: Series) -> Comparison:
         return Comparison.from_series(row)
 
-    def _keys(self, *args, **kwargs) -> tuple[tuple, tuple]:
+    def _keys(self, *args, keynames: Optional[str]=None, **kwargs) -> tuple[tuple, tuple]:
+        keynames = keynames or self.keynames
         kwargs = self.keys2kwargs(*args, **kwargs)
         keys1, keys2 = list(), list()
-        for keyname in self.keynames:
+        for keyname in keynames:
             keys1.append(kwargs[keyname])
             if keyname in {"entity_name", "left_name"}:
                 keys2.append(kwargs["other_name" if keyname == "entity_name" else "right_name"])
@@ -68,57 +69,47 @@ class Comparisons(MultiKeyTable):
         """
         if self.keynames in self._cache:
             return self._cache[self.keynames]
-        if self._cache:
-            keynames, d = next(iter(self._cache.items()))
-            assert set(keynames) == set(self.keynames), (keynames, self.keynames)
-            self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
-            for d_keys, value in d:
-                kwargs = { kn: d_keys[kn] for kn in keynames }
-                keys1, keys2 = self._keys(**kwargs)
-                self._cache[self.keynames][keys1] = value
-                self._cache[self.keynames][keys2] = - value
+        d = self._init_data_to_dict()
         self._cache[self.keynames] = NestedDict(type(self).value_factory, self.depth)
-        if self.init_data is None:
-            return self._cache[self.keynames]
-        if isinstance(self.init_data, DataFrame):
-            for _, row in self.init_data.iterrows():
-                keys = tuple(row[kn] for kn in self.keynames)
-                value = self.series2value(self._cache[self.keynames][keys], row)
-                keys1, keys2 = self._keys(*keys)
-                self._cache[self.keynames][keys1] = value
-                self._cache[self.keynames][keys2] = - value
-            return self._cache[self.keynames]
-        kns_and_nd = isinstance(self.init_data, tuple) and len(self.init_data) == 2 
-        kns_and_nd = kns_and_nd and isinstance(self.init_data[0], tuple)
-        kns_and_nd = kns_and_nd and isinstance(self.init_data[1], NestedDict)
-        if kns_and_nd:
-            keynames, nested_dict = self.init_data
-            for keys, value in nested_dict:
-                kwargs = dict(zip(keynames, keys))
-                keys1, keys2 = self._keys(**kwargs)
-                self._cache[self.keynames][keys1] = value
-                self._cache[self.keynames][keys2] = - value
-        if isinstance(self.init_data, list):
-            for entry in self.init_data:
-                assert len(entry) == self.depth + 1
-                if isinstance(entry, (tuple, list)):
-                    keys, value = tuple(entry[:-1]), entry[-1]
-                elif isinstance(entry, dict):
-                    assert len(entry) == self.depth + 1
-                    keys, value = tuple(entry[kn] for kn in self.keynames), entry["value"]
-                keys1, keys2 = self._keys(*keys)
-                self._cache[self.keynames][keys1] = value
-                self._cache[self.keynames][keys2] = - value
-            return self._cache[self.keynames]
-        if isinstance(self.init_data, dict):
-            for keys, value in self.init_data.items():
-                keys1, keys2 = self._keys(*keys)
-                self._cache[self.keynames][keys1] = value
-                self._cache[self.keynames][keys2] = - value
-            return self._cache[self.keynames]
-        raise ValueError(f"Type {type(self.init_data)} of raw data {self.init_data} not handled")
+        for keys, value in d.items():
+            keys1, keys2 = self._keys(*keys)
+            self._cache[self.keynames][keys1] = value
+            self._cache[self.keynames][keys2] = - value
+        return self._cache[self.keynames]
 
+    def set(self, *args, **kwargs) -> None:
+        """ args is assumed to list keys and then value, 
+        though some may be specified through kwargs """
+        assert len(args) + len(kwargs) == self.depth + 1
+        if "value" in kwargs:
+            value = kwargs["value"]
+            del kwargs["value"]
+        else:
+            args, value = args[:-1], args[-1]
+        assert isinstance(value, type(self).value_cls)
+        kwargs = self.keys2kwargs(*args, **kwargs)
+        self._main_cache()
+        for keynames in self._cache:
+            keys1, keys2 = self._keys(keynames=keynames, **kwargs)
+            self._cache[keynames][keys1] = value
+            self._cache[keynames][keys2] = - value
+        if self.parent: # Required because child may have created a cache absent from parent
+            kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
+            self.parent.set(value, **kwargs)
     
+    def delete(self, *args, tolerate_key_error: bool=False, **kwargs) -> None:
+        kwargs = self.keys2kwargs(*args, **kwargs)
+        for keynames in self._cache:
+            keys = [kwargs[kn] for kn in keynames]
+            try:
+                del self._cache[keynames][keys]
+            except KeyError as e:
+                if not tolerate_key_error:
+                    raise e
+        if self.parent: # Required because parent may have created a cache absent from child
+            kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
+            self.parent.delete(tolerate_key_error=True, **kwargs)
+
     def to_df(self) -> DataFrame:
         try:
             entity_name_index = self.keynames.index("entity_name")
@@ -138,6 +129,9 @@ class Comparisons(MultiKeyTable):
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set:
         self.nested_dict("entity_name", "username")
         return self.get(entity_name=str(entity)).keys("username")
+
+    def __len__(self) -> int:
+        return super().__len__() // 2
 
     def left_right_indices(self, entities: "Entities") -> tuple[list[int], list[int]]:
         """ Returns a dict, where dict[i] is a list of j,

@@ -169,31 +169,31 @@ def test_min_voting_right_more_than_min_trust(n_random_users):
 
 def test_voting_rights_abstraction():
     voting_rights = VotingRights()
-    voting_rights.set(3, 46, "default", 0.4)
-    voting_rights.set(3, 46, "default", 2 * voting_rights.get(3, 46, "default"))
-    assert voting_rights.get(3, 46, "default") == 0.8
+    voting_rights[3, 46, "default"] = 0.4
+    voting_rights[3, 46, "default"] *= 2
+    assert voting_rights[3, 46, "default"] == 0.8
 
 
 def test_affine_overtrust():
     users = Users(dict(username=list(range(5)), trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
     entities = Entities(list(range(6)))
     made_public = MadePublic()
-    made_public.set("0", "0", True)
-    made_public.set("0", "3", True)
-    made_public.set("1", "5", True)
-    made_public.set("2", "1", True)
-    made_public.set("4", "3", True)
+    made_public["0", "0"] = True
+    made_public["0", "3"] = True
+    made_public["1", "5"] = True
+    made_public["2", "1"] = True
+    made_public["4", "3"] = True
     
     assessments = Assessments()
-    assessments.add_row("0", "default", "0", value=2)
-    assessments.add_row("3", "default", "0", value=-1)
-    assessments.add_row("3", "default", "1", value=0)
-    assessments.add_row("4", "default", "3", value=5)
+    assessments["0", "default", "0"] = Assessment(2)
+    assessments["3", "default", "0"] = Assessment(-1)
+    assessments["3", "default", "1"] = Assessment(0)
+    assessments["4", "default", "3"] = Assessment(5)
     
     comparisons = Comparisons()
-    comparisons.add_row("0", "default", "3", "5", value=-1)
-    comparisons.add_row("1", "default", "1", "5", value=1)
-    comparisons.add_row("2", "default", "0", "1", value=5)
+    comparisons["0", "default", "3", "5"] = Comparison(-1)
+    comparisons["1", "default", "1", "5"] = Comparison(1)
+    comparisons["2", "default", "0", "1"] = Comparison(5)
     
     ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)
     entities, voting_rights = ao(users, entities, made_public, assessments, comparisons)
@@ -206,11 +206,11 @@ def test_affine_overtrust():
     ]
 
     # Voting rights are assigned only on entities where evaluations have been made.
-    assert set(voting_rights["entity_name"]) == {"0", "1", "3", "5"}
+    assert voting_rights.keys("entity_name") == {"0", "1", "3", "5"}
 
 
-# @pytest.mark.parametrize("seed", range(5))
-# def test_affine_overtrust_test_data(seed):
-    # entities, voting_rights = ao.state2objects_function(states[seed])
-    # for (username, entity_name, criterion), voting_right in voting_rights:
-        # assert voting_right >= 0
+@pytest.mark.parametrize("seed", range(5))
+def test_affine_overtrust_test_data(seed):
+    entities, voting_rights = ao.state2objects_function(states[seed])
+    for (username, entity_name, criterion), voting_right in voting_rights:
+        assert voting_right >= 0

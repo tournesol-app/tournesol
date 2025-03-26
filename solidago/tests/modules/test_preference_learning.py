@@ -2,7 +2,6 @@ import pytest
 
 from solidago import *
 from solidago.modules.preference_learning import NumbaUniformGBT, LBFGSUniformGBT
-from pandas import DataFrame
 
 
 @pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
@@ -44,18 +43,13 @@ def test_gbt_score_monotonicity(GBT):
 
 def test_uniform_gbt():
     s = State.load(f"tests/saved/0")
-    user_models = dict()
-    for index, optimizer in enumerate((NumbaUniformGBT, LBFGSUniformGBT)):
-        preference_learning = optimizer(
-            prior_std_dev=7.0,
-            uncertainty_nll_increase=1.0,
-            max_uncertainty=1e3,
-            last_comparison_only=True,
-        )
-        user_models[index] = preference_learning.state2objects_function(s)
+    kwargs = dict(prior_std_dev=7.0, uncertainty_nll_increase=1.0, max_uncertainty=1e3)
+    GBTs = (NumbaUniformGBT, LBFGSUniformGBT)
+    user_models_tuple = tuple(GBT(**kwargs).state2objects_function(s) for GBT in GBTs)
     for user in s.users:
         for entity in s.entities:
-            for criterion, score in user_models[0][user](entity):
-                lbfgs_score = user_models[1][user](entity, criterion)
-                assert score.to_triplet() == pytest.approx(lbfgs_score.to_triplet(), abs=2e-1)
+            for (criterion,), score in user_models_tuple[0][user](entity):
+                lbfgs_score = user_models_tuple[1][user](entity, criterion)
+                args = (str(user), str(entity), criterion, score, lbfgs_score)
+                assert score.to_triplet() == pytest.approx(lbfgs_score.to_triplet(), abs=2e-1), args
 

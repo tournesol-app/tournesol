@@ -13,7 +13,7 @@ def test_import():
     assert len(t.assessments) == 0
     assert len(t.comparisons) == 2268
     assert len(t.comparisons["amatissart"]) == 19
-    assert t.comparisons.get(entity_name="Tt5AwEU_BiM").keys("username") == {'amatissart', 'biscuissec'}
+    assert t.comparisons.get(entity_name="Tt5AwEU_BiM").keys("username") == {'amatissart', 'biscuissec', 'white'}
     assert t.comparisons.get_evaluators("N8G-KGqn2Lg") == {'amatissart'}
     assert t.voting_rights["Tit0uan", "xMxo9pIC0GA", "largely_recommended"] == 0.86
     assert len(t.voting_rights["Tit0uan"]) == 3
@@ -53,7 +53,7 @@ def test_reimport():
     assert len(t.assessments) == 0
     assert len(t.comparisons) == 2268
     assert len(t.comparisons["amatissart"]) == 19
-    assert t.comparisons.get(entity_name="Tt5AwEU_BiM").keys("username") == {'amatissart', 'biscuissec'}
+    assert t.comparisons.get(entity_name="Tt5AwEU_BiM").keys("username") == {'amatissart', 'biscuissec', 'white'}
     assert t.comparisons.get_evaluators("N8G-KGqn2Lg") == {'amatissart'}
     assert t.voting_rights["Tit0uan", "xMxo9pIC0GA", "largely_recommended"] == 0.86
     assert len(t.voting_rights["Tit0uan"]) == 3

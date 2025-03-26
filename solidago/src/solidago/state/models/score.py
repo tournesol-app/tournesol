@@ -180,10 +180,27 @@ class MultiScore(MultiKeyTable):
     def nan(cls) -> "MultiScore":
         return MultiScore()
 
-    def __setitem__(self, keys: Union[str, tuple], score: Score) -> None:
-        if not score.isnan():
-            super().__setitem__(keys, score)
-
+    def set(self, *args, **kwargs) -> None:
+        """ args is assumed to list keys and then value, 
+        though some may be specified through kwargs """
+        assert len(args) + len(kwargs) == self.depth + 1
+        if "value" in kwargs:
+            value = kwargs["value"]
+            del kwargs["value"]
+        else:
+            args, value = args[:-1], args[-1]
+        assert isinstance(value, type(self).value_cls)
+        if value.isnan():
+            return None
+        kwargs = self.keys2kwargs(*args, **kwargs)
+        self._main_cache()
+        for keynames in self._cache:
+            keys = tuple(kwargs[kn] for kn in keynames)
+            self._cache[keynames][keys] = value
+        if self.parent: # Required because child may have created a cache absent from parent
+            kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
+            self.parent.set(value, **kwargs)
+    
     def __eq__(self, other: "MultiScore") -> bool:
         for keys in set(self.keys()) | set(other.keys()):
             if self[keys] != other[keys]:
