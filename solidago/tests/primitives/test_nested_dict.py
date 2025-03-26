@@ -13,6 +13,7 @@ def test_nested_dict():
     assert (0, 1, 3) not in d
     assert len(d) == 2
     del d[0, 2, 2]
+    assert 2 not in d[0]._dict
     assert (0, 2, 2) not in d
     d2 = NestedDict(lambda: 0, 3)
     d2[1, 1, 1] = 1
