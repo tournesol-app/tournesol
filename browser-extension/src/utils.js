@@ -102,7 +102,7 @@ export const addRateLaterBulk = async (videoIds) => {
     success: rateLaterBulkResponse.ok,
     status: rateLaterBulkResponse.status,
     body: responseJson,
-  }
+  };
 };
 
 /**

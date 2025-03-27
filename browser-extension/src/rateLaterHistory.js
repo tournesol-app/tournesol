@@ -179,10 +179,9 @@ const addRateLaterBulk = async (videoIds) =>
       },
       (response) => {
         if (response.success) {
-          resolve(response.body)
-        }
-        else {
-          reject(response)
+          resolve(response.body);
+        } else {
+          reject(response);
         }
       }
     );

@@ -123,7 +123,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.message == 'addRateLaterBulk') {
-    addRateLaterBulk(request.videoIds).then(sendResponse)
+    addRateLaterBulk(request.videoIds).then(sendResponse);
     return true;
   }
 
