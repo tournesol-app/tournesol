@@ -91,7 +91,7 @@ export const addRateLater = async (video_id) => {
 
 export const addRateLaterBulk = async (videoIds) => {
   const rateLaterBulkResponse = await fetchTournesolApi(
-    'users/me/rate_later/videos/_bulk_create/',
+    'users/me/rate_later/videos/_bulk_create',
     {
       method: 'POST',
       data: videoIds.map((videoId) => ({ entity: { uid: 'yt:' + videoId } })),
