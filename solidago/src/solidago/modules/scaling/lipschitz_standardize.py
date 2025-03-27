@@ -20,7 +20,7 @@ class LipschitzStandardize(StateFunction):
         self.error = error
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
-        scales = MultiScore(key_names=["depth", "kind", "criterion"])
+        scales = MultiScore(key_names=["kind", "criterion"])
         for criterion in user_models.criteria():
             logger.info(f"Lipschitz Standardize for criterion={criterion}")
             start = timeit.default_timer()
@@ -28,21 +28,26 @@ class LipschitzStandardize(StateFunction):
             end = timeit.default_timer()
             logger.info(f"    Computed all user scores in {int(end - start)} seconds for criterion={criterion}")
             start = end
-            weights = 1 / scores.groupby("username").transform("size")
+            n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
+            values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
+            lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
+            for index, ((username, entity_name), score) in enumerate(scores):
+                values[index], lefts[index], rights[index] = score.to_triplet()
+                voting_rights[index] = 1. / n_scored_entities[username]
             end = timeit.default_timer()
             logger.info(f"    Computed weights in {int(end - start)} seconds for criterion={criterion}")
             start = end
             std_dev = qr_standard_deviation(
                 lipschitz=self.lipschitz,
-                values=scores["value"].to_numpy(),
+                values=values,
                 quantile_dev=self.dev_quantile,
-                voting_rights=weights.to_numpy(),
-                left_uncertainties=scores["left_unc"].to_numpy(),
-                right_uncertainties=scores["right_unc"].to_numpy(),
+                voting_rights=voting_rights,
+                left_uncertainties=lefts,
+                right_uncertainties=rights,
                 default_dev=1.0,
                 error=self.error,
             )
             end = timeit.default_timer()
             logger.info(f"    Computed standard deviation in {int(end - start)} seconds for criterion={criterion}")
-            scales.set(0, "multiplier", criterion, 1/std_dev, 0, 0)
+            scales["multiplier", criterion] = Score(1./std_dev, 0, 0)
         return user_models.scale(scales, note="lipschitz_standardardize")

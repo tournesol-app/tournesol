@@ -7,21 +7,36 @@ class NestedDict:
         assert isinstance(value_factory, Callable) and isinstance(depth, int)
         self.value_factory = value_factory
         self.depth = depth
-        self._dict = dict()
+        self._dict = dict() # self._dict[key] must be dict
         
     def deepcopy(self) -> "NestedDict":
         copy = NestedDict(self.value_factory, self.depth)
         copy._dict = deepcopy(self._dict)
         return copy
         
-    def __getitem__(self, keys: Union[tuple, str, int]) -> Union["NestedDict", "Value"]:
+    def __getitem__(self, keys: Union[tuple, str, int, set]) -> Union["NestedDict", "Value"]:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
+        if isinstance(keys, set) or (len(keys) == 1 and isinstance(keys[0], set)):
+            key_set = keys if isinstance(keys, set) else keys[0]
+            filtered = NestedDict(self.value_factory, self.depth)
+            filtered._dict = {key: subdict for key, subdict in self._dict.items() if key in key_set}
+            return filtered
         assert len(keys) <= self.depth
         if not keys:
             return self
         if self.depth == 1:
             assert len(keys) == 1
             return self._dict[keys[0]] if keys[0] in self._dict else self.value_factory()
+        if isinstance(keys[0], set):
+            nonset_keys = [k for k in keys if not isinstance(k, set)]
+            nested_dict = NestedDict(self.value_factory, self.depth - len(nonset_keys))
+            for key, subdict_dict in self._dict.items():
+                if key in keys[0]:
+                    subdict = NestedDict(self.value_factory, self.depth - 1)
+                    subdict._dict = subdict_dict
+                    v = subdict[keys[1:]]
+                    nested_dict._dict[key] = v._dict if isinstance(v, NestedDict) else v
+            return nested_dict
         if keys[0] not in self._dict:
             if len(keys) == self.depth:
                 return self.value_factory()

@@ -12,6 +12,9 @@ def test_multi_key_table():
     assert t["user_9", "entity_1"] is None
     assert t["user_9", "entity_2"] == 2
     assert t["user_9"]["entity_2"] == 2
+    assert len(t[{"user_9"}]) == 2
+    assert len(t["user_9", {"entity_0", "entity_2"}]) == 2
+    assert len(t["user_9", {"entity_1", "entity_2"}]) == 1
     assert "user_9" in t.get(entity_name="entity_0")
     assert len(t) == len(t.to_df())
     assert t

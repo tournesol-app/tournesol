@@ -178,7 +178,8 @@ class MultiKeyTable:
     def keys2kwargs(self, *args, **kwargs) -> dict:
         """ args is assumed to list keys, though some may be specified through kwargs """
         assert len(args) + len(kwargs) <= self.depth
-        f = lambda v: v if isinstance(v, (str, int)) else str(v)
+        assert all({keyname in self.keynames for keyname in kwargs})
+        f = lambda v: v if isinstance(v, (str, int, set)) else str(v)
         kwargs = { k: f(v) for k, v in kwargs.items() }
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
         return kwargs | { k: f(v) for k, v in zip(other_keynames, args) }
@@ -190,20 +191,41 @@ class MultiKeyTable:
     
     def get(self, *args, **kwargs) -> Union["MultiKeyTable", "Value"]:
         kwargs = self.keys2kwargs(*args, **kwargs)
+        set_keynames = [kn for kn in kwargs if isinstance(kwargs[kn], set)]
+        if set_keynames:
+            nonset_keynames = [kn for kn in kwargs if not isinstance(kwargs[kn], set)]
+            kwargs_keynames = nonset_keynames + set_keynames
+            keynames_set = self.get_matching_prefix_caches(*kwargs_keynames)
+            parent_keynames = next(iter(keynames_set))[:len(nonset_keynames)]
+            parent_keys = tuple(kwargs[kn] for kn in parent_keynames)
+            other_keynames = [kn for kn in self.keynames if kn not in kwargs]
+            to_keys = lambda keynames: tuple(kwargs[kn] for kn in keynames[:len(kwargs)])
+            def to_keys_list(keynames): 
+                keys_list = [parent_keys]
+                for keyname in set_keynames:
+                    prekeys_list, keys_list = keys_list, list()
+                    for prekeys in prekeys_list:
+                        for key in kwargs[keyname]:
+                            keys_list.append(prekeys + key)
+                return keys_list
+            return type(self)(tuple(set_keynames + other_keynames), {
+                keynames[len(nonset_keynames):]: self._cache[keynames][to_keys(keynames)]
+                for keynames in keynames_set
+            }, (self, parent_keynames, parent_keys))
         if len(kwargs) == self.depth:
             keys = tuple(kwargs[kn] for kn in self.keynames)
             return self.nested_dict()[keys]
         other_keynames = [kn for kn in self.keynames if kn not in kwargs]
         keynames_set = self.get_matching_prefix_caches(*kwargs.keys())
-        to_keys = lambda keynames: [kwargs[kn] for kn in keynames[:len(kwargs)]]
         parent_keynames = next(iter(keynames_set))[:len(kwargs)]
         parent_keys = tuple(kwargs[kn] for kn in parent_keynames)
+        to_keys = lambda keynames: tuple(kwargs[kn] for kn in keynames[:len(kwargs)])
         return type(self)(other_keynames, {
-            keynames[len(kwargs):]: self._cache[keynames][*to_keys(keynames)]
+            keynames[len(kwargs):]: self._cache[keynames][to_keys(keynames)]
             for keynames in keynames_set
         }, (self, parent_keynames, parent_keys))
-
-    def __getitem__(self, keys: Union[str, tuple, list]) -> Union["MultiKeyTable", "Value"]:
+    
+    def __getitem__(self, keys: Union[str, tuple, list, set]) -> Union["MultiKeyTable", "Value"]:
         keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         return self.get(*keys)
             
@@ -246,6 +268,7 @@ class MultiKeyTable:
             args, value = args[:-1], args[-1]
         assert isinstance(value, type(self).value_cls)
         kwargs = self.keys2kwargs(*args, **kwargs)
+        assert all({isinstance(v, (str, int)) for v in kwargs.values()})
         self._main_cache()
         for keynames in self._cache:
             keys = tuple(kwargs[kn] for kn in keynames)
@@ -275,7 +298,19 @@ class MultiKeyTable:
         keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         self.delete(*keys)
 
-    def prepend_keyname(self, keyname: str, key: Union[int, str]) -> "MultiKeyTable":
+    def prepend(self, **kwargs) -> "MultiKeyTable":
+        assert self.parent is None, "Cannot prepend keyname to MultiKeyTablel with a parent"
+        keys = list(kwargs.values())
+        nd = NestedDict(type(self).value_factory, self.depth + len(kwargs))
+        subdict = nd._dict
+        for key in keys[:-1]:
+            if key not in subdict:
+                subdict[key] = dict()
+            subdict = subdict[key]
+        subdict[keys[-1]] = self._cache
+        return type(self)((*kwargs.keys(), *self.keynames), nd)
+
+    def _prepend_keyname(self, keyname: str, key: Union[int, str]) -> "MultiKeyTable":
         assert self.parent is None, "Cannot prepend keyname to MultiKeyTablel with a parent"
         nd = NestedDict(type(self).value_factory, self.depth + 1)
         nd._dict[key] = self._cache

@@ -36,30 +36,35 @@ class LipschitzQuantileShift(StateFunction):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        scales = MultiScore(key_names=["depth", "kind", "criterion"])
+        scales = MultiScore(key_names=["kind", "criterion"])
         for criterion in user_models.criteria():
             logger.info(f"Lipschitz Quantile Shift for criterion={criterion}")
             start = timeit.default_timer()
-            scores = user_models(entities, criterion) # key_names == ["username", "entity_name"]
+            scores = user_models(entities, criterion) # keynames == ["username", "entity_name"]
             end = timeit.default_timer()
             logger.info(f"    Computed all user scores in {int(end - start)} seconds for criterion={criterion}")
             start = end
-            weights = 1 / scores.groupby("username").transform("size")
+            n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
+            values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
+            lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
+            for index, ((username, entity_name), score) in enumerate(scores):
+                values[index], lefts[index], rights[index] = score.to_triplet()
+                voting_rights[index] = 1. / n_scored_entities[username]
             end = timeit.default_timer()
             logger.info(f"    Computed weights in {int(end - start)} seconds for criterion={criterion}")
             start = end
             translation_value = - qr_quantile(
                 lipschitz=self.lipschitz,
                 quantile=self.quantile,
-                values=np.array(scores["value"], dtype=np.float64),
-                voting_rights=np.array(weights, dtype=np.float64),
-                left_uncertainties=np.array(scores["left_unc"], dtype=np.float64),
-                right_uncertainties=np.array(scores["right_unc"], dtype=np.float64),
+                values=values,
+                voting_rights=voting_rights,
+                left_uncertainties=lefts,
+                right_uncertainties=rights,
                 error=self.error,
             ) + self.target_score
             end = timeit.default_timer()
             logger.info(f"    Computed shift in {int(end - start)} seconds for criterion={criterion}")
-            scales.set(0, "translation", criterion, translation_value, 0, 0)
+            scales["translation", criterion] = Score(translation_value, 0, 0)
         return user_models.scale(scales, note="lipschitz_quantile_shift")
 
 
