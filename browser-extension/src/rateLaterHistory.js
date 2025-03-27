@@ -429,7 +429,10 @@ const addRateLaterHistoryButton = () => {
   const menuContents = document.querySelector(
     'ytd-browse-feed-actions-renderer #contents'
   );
-  menuContents.prepend(button);
+  if (menuContents) {
+    // The menu may not be found yet when the History page is the entry page.
+    menuContents.prepend(button);
+  }
 };
 
 onYoutubeReady(() => {
