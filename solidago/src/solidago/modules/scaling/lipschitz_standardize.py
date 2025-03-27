@@ -2,6 +2,8 @@ import timeit
 import logging
 logger = logging.getLogger(__name__)
 
+import numpy as np
+
 from solidago.primitives import qr_standard_deviation
 from solidago.state import *
 from solidago.modules.base import StateFunction

@@ -36,7 +36,7 @@ class LipschitzQuantileShift(StateFunction):
         out[user]: ScoringModel
             Will be scaled by the Scaling method
         """
-        scales = MultiScore(key_names=["kind", "criterion"])
+        scales = MultiScore(["kind", "criterion"])
         for criterion in user_models.criteria():
             logger.info(f"Lipschitz Quantile Shift for criterion={criterion}")
             start = timeit.default_timer()

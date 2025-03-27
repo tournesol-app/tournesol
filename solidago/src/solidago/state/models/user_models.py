@@ -136,7 +136,7 @@ class UserModels:
             for username, model_cls in self.user_model_cls_dict.items():
                 add_scales_to(self.user_scales, self.height(username) + 1)
                 self.user_model_cls_dict[username] = ("ScaledModel", kwargs | {"parent": model_cls})
-        assert all({ not isinstance(v, MultiKeyTable) for v in kwargs.values() })
+        assert all({ not isinstance(v, MultiScore) for v in kwargs.values() })
         self.default_model_cls = ("ScaledModel", kwargs | {"parent": self.default_model_cls})
         self._cache_users = None
     
