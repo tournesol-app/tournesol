@@ -109,7 +109,7 @@ function openOptionsPage() {
 }
 
 function rateLaterHistory() {
-  browser.tabs.create({
+  chrome.tabs.create({
     url: 'https://www.youtube.com/feed/history',
   });
 }

@@ -178,10 +178,11 @@ const addRateLaterBulk = async (videoIds) =>
         videoIds,
       },
       (response) => {
-        if (response === undefined)
-          reject(new Error('addRateLaterBulk failed'));
-        else if (response instanceof Error) reject(response);
-        else resolve(response);
+        if (response.success) {
+          resolve(response.body);
+        } else {
+          reject(response);
+        }
       }
     );
   });
@@ -258,7 +259,7 @@ const addVideoIdsToRateLater = async (videoIds) => {
     } catch (e) {
       console.error(e);
       chunk.forEach((videoId) => failedSet.add(videoId));
-      if (e?.message === 'http429') {
+      if (e?.status === 429) {
         tooManyRequests = true;
         break;
       }
@@ -427,7 +428,10 @@ const addRateLaterHistoryButton = () => {
   const menuContents = document.querySelector(
     'ytd-browse-feed-actions-renderer #contents'
   );
-  menuContents.prepend(button);
+  if (menuContents) {
+    // The menu may not be found yet when the History page is the entry page.
+    menuContents.prepend(button);
+  }
 };
 
 onYoutubeReady(() => {

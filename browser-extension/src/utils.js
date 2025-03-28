@@ -90,22 +90,19 @@ export const addRateLater = async (video_id) => {
 };
 
 export const addRateLaterBulk = async (videoIds) => {
-  const ratingStatusReponse = await fetchTournesolApi(
+  const rateLaterBulkResponse = await fetchTournesolApi(
     'users/me/rate_later/videos/_bulk_create',
     {
       method: 'POST',
       data: videoIds.map((videoId) => ({ entity: { uid: 'yt:' + videoId } })),
     }
   );
-  if (!ratingStatusReponse?.ok) {
-    if (ratingStatusReponse?.status === 429) {
-      throw new Error('http429');
-    } else {
-      throw new Error('addRateLaterBulk request failed');
-    }
-  }
-
-  return await ratingStatusReponse.json();
+  const responseJson = await rateLaterBulkResponse.json();
+  return {
+    success: rateLaterBulkResponse.ok,
+    status: rateLaterBulkResponse.status,
+    body: responseJson,
+  };
 };
 
 /**
