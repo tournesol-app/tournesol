@@ -14,6 +14,9 @@
   "menuPreferences": {
     "message": "Preferences"
   },
+  "menuRateLaterHistory": {
+    "message": "Import YouTube watch history"
+  },
   "recommendedByTournesol": {
     "message": "Recommended by Tournesol",
     "description": "Title of the main Tournesol container."
@@ -149,5 +152,53 @@
   "watchOnTournesolButtonLabel": {
     "message": "Watch on Tournesol",
     "description": "Label of the button displayed on video pages."
+  },
+  "rateLaterHistoryImportButton": {
+    "message": "Import history to Tournesol",
+    "description": "Label of the button displayed on the YouTube history page to import the history into your 'rate later' list."
+  },
+  "rateLaterHistoryStatusBoxTitle": {
+    "message": "Import of the YouTube history",
+    "description": "Title of the the rate later history import status box."
+  },
+  "rateLaterHistoryStatusBox429AlertP1" : {
+    "message": "The import is complete.",
+    "description": "First paragraph of the alert message, displayed when the daily import limit is reached."
+  },
+  "rateLaterHistoryStatusBox429AlertP2" : {
+    "message": "You have imported the maximum number of videos allowed today. You can start a new import in 24 hours.",
+    "description": "Second paragraph of the alert message, displayed when the daily import limit is reached."
+  },
+  "rateLaterHistoryStatusBoxMessage": {
+    "message": "Press Stop when the visible videos count doesn't increase anymore or when you think enough videos have been imported.",
+    "description": "Instructions displayed on the rate later history import status box."
+  },
+  "rateLaterHistoryVideoCount": {
+    "message": "Videos visible in history:",
+    "description": "Label showing the count of videos found in the YouTube history during import."
+  },
+  "rateLaterHistoryProcessedCount": {
+    "message": "Videos processed during the import:",
+    "description": "Label showing the count of videos processed by the import."
+  },
+  "rateLaterHistorySentCount": {
+    "message": "imported videos:",
+    "description": "Label showing the number of sent videos successfully imported in the rate later list (including those already present)."
+  },
+  "rateLaterHistorySkippedCount": {
+    "message": "skipped videos (previously imported):",
+    "description": "Label showing the number of videos that have NOT been sent to the Tournesol server, because they were present in the cache of previously imported videos."
+  },
+  "rateLaterHistoryFailureCount": {
+    "message": "failures:",
+    "description": "Label showing the count of sent videos that failed to be added to the rate later list, because of a server error."
+  },
+  "rateLaterHistoryCloseButtonLabel": {
+    "message": "Close",
+    "description": "Label of the button to close the import status box, when the import is over."
+  },
+  "rateLaterHistoryStopButtonLabel": {
+    "message": "Stop",
+    "description": "Label of the button to stop the YouTube history import process."
   }
 }
