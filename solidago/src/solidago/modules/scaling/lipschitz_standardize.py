@@ -22,7 +22,7 @@ class LipschitzStandardize(StateFunction):
         self.error = error
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
-        scales = MultiScore(key_names=["kind", "criterion"])
+        scales = MultiScore(keynames=["kind", "criterion"])
         for criterion in user_models.criteria():
             logger.info(f"Lipschitz Standardize for criterion={criterion}")
             start = timeit.default_timer()
