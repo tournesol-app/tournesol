@@ -65,3 +65,6 @@ export const KKBBTournesolFrUrl =
 
 // Papers
 export const whitePaperUrl = 'https://arxiv.org/abs/2107.07334';
+
+// Solidago
+export const solidagoDocsUrl = 'https://solidago.tournesol.app';

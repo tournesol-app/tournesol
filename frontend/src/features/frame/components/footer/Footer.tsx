@@ -21,6 +21,7 @@ import {
   KKBBTournesolEnUrl,
   KKBBTournesolFrUrl,
   paypalTournesolUrl,
+  solidagoDocsUrl,
   tournesolTalksMailingListUrl,
   whitePaperUrl,
   tournesolTalksYTPlaylist,
@@ -112,6 +113,10 @@ const Footer = () => {
         {
           name: t('footer.tournesolTalksYTPlaylist'),
           to: tournesolTalksYTPlaylist,
+        },
+        {
+          name: 'Solidago (Python library)',
+          to: solidagoDocsUrl,
         },
       ],
     },

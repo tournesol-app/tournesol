@@ -1,4 +1,4 @@
-""" **Step 3 of the pipeline**
+""" **Step 2 in pipeline**
     
 Preference learning infers, for each user and based on their data,
 a model of the user's preferences.
