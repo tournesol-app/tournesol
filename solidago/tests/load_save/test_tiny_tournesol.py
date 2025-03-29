@@ -25,7 +25,7 @@ def test_import():
 
 def test_export():
     t = TournesolExport("tests/tiny_tournesol.zip")
-    t.user_models.scale(
+    t.user_models = t.user_models.scale(
         MultiScore(["username", "kind", "criterion"], {
             (username, "multiplier", "largely_recommended"): Score(2, 0, 0)
             for username, model in t.user_models
@@ -34,7 +34,7 @@ def test_export():
             for username, model in t.user_models
         }, note="user_scale_test_export")
     )
-    t.user_models.scale(
+    t.user_models = t.user_models.scale(
         MultiScore(["kind", "criterion"], {
             ("translation", "importance"): Score(2, 0, 0)
         }, note="common_scale_test_export")

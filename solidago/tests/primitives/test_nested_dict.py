@@ -27,3 +27,6 @@ def test_nested_dict():
     d3 = NestedDict(list, 3)
     d3.get_value(4, 1, 2).append(2)
     assert d3[4, 1, 2][0] == 2
+    del d2[1]
+    assert len(d2) == 0
+    d[0, 2, 1] = 1

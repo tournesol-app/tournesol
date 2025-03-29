@@ -29,6 +29,7 @@ class MultiKeyTable:
         # self.keynames defines the default caching
         self.keynames = (keynames,) if isinstance(keynames, str) else tuple(keynames)
         self._cache = dict() # No cache at initialization for fast instantation
+        # self._cache[keynames] is a NestedDict object, where keynames is tuple of str
         self.init_data = init_data
         if isinstance(init_data, MultiKeyTable):
             assert self.depth == init_data.depth
@@ -51,6 +52,12 @@ class MultiKeyTable:
                 if self.keynames not in self._cache:
                     self.init_data = next(iter(self._cache.items()))
         self.parent, self.parent_keynames, self.parent_keys = parent_tuple or (None, None, None)
+    
+    def deepcopy(self) -> "MultiKeyTable":
+        copy = type(self)(self.keynames)
+        for keys, value in self:
+            copy[keys] = value
+        return copy
     
     @property
     def depth(self) -> int:
@@ -158,12 +165,13 @@ class MultiKeyTable:
         keynames = (keynames,) if isinstance(keynames, str) else keynames
         keynames = keynames if keynames else self.keynames
         other_keynames = [kn for kn in self.keynames if kn not in keynames]
+        assert len(keynames) + len(other_keynames) == self.depth, (keynames, self.keynames)
         for keys, value in self.nested_dict(*keynames).iter(len(keynames)):
             if len(keynames) == self.depth:
                 yield keys, value
             else:
                 init_data = dict()
-                yield keys, self.get(*keys)
+                yield keys, self.get(**dict(zip(keynames, keys)))
         
     def __iter__(self) -> Iterable:
         return self.iter()
@@ -180,9 +188,9 @@ class MultiKeyTable:
         assert len(args) + len(kwargs) <= self.depth
         assert all({keyname in self.keynames for keyname in kwargs})
         f = lambda v: v if isinstance(v, (str, int, set)) else str(v)
-        kwargs = { k: f(v) for k, v in kwargs.items() }
+        kwargs = { k: f(v) for k, v in kwargs.items() if v is not all }
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
-        return kwargs | { k: f(v) for k, v in zip(other_keynames, args) }
+        return kwargs | { k: f(v) for k, v in zip(other_keynames, args) if v is not all }
     
     def keys2tuple(self, *args, keynames: Optional[tuple]=None, **kwargs) -> tuple:
         keynames = keynames or self.keynames
@@ -283,6 +291,19 @@ class MultiKeyTable:
 
     def delete(self, *args, tolerate_key_error: bool=False, **kwargs) -> None:
         kwargs = self.keys2kwargs(*args, **kwargs)
+        nonset_keynames = [kn for kn in kwargs if not isinstance(kwargs[kn], set)]
+        if len(nonset_keynames) < self.depth:
+            keynames = next(iter(self.get_matching_prefix_caches(*nonset_keynames)))
+            parent_keys = [kwargs[kn] for kn in keynames[:len(nonset_keynames)]]
+            def matching_sub_keys(sub_keys):
+                for key, keyname in zip(sub_keys, keynames[len(nonset_keynames):]):
+                    if keyname in kwargs and key != kwargs[keyname] and key not in kwargs[keyname]:
+                        return False
+                return True
+            sub_nested_dict = self.nested_dict(*keynames)[parent_keys]
+            for sub_keys in [sk for sk, _ in sub_nested_dict if matching_sub_keys(sk)]:
+                self.delete(**dict(zip(keynames, parent_keys + list(sub_keys))))
+            return None
         for keynames in self._cache:
             keys = [kwargs[kn] for kn in keynames]
             try:

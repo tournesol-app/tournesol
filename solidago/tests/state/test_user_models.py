@@ -13,22 +13,22 @@ def test_user_models():
         ("le_science4all", "entity_1", "importance"): Score(-3, 1, 1),
         ("le_science4all", "entity_2", "default"): Score(-1, 0, 1),
     }))
-    user_models.scale(MultiScore(["username", "kind", "criterion"], {
+    scaled = user_models.scale(MultiScore(["username", "kind", "criterion"], {
         ("aidjango", "multiplier", "default"): Score(2, 0.1, 1),
         ("aidjango", "translation", "default"): Score(-1, 1, 1),
         ("aidjango", "multiplier", "importance"): Score(1, 0, 0),
         ("aidjango", "translation", "importance"): Score(0, 0, 0),
         ("le_science4all", "multiplier", "default"): Score(1, 0, 0),
         ("le_science4all", "translation", "default"): Score(1, 1, 1),
-    }, note="second"))
-    user_models.scale(MultiScore(["kind", "criterion"], {
+    }), note="second")
+    rescaled = scaled.scale(MultiScore(["kind", "criterion"], {
         ("multiplier", "default"): Score(2, 0, 0),
         ("translation", "default"): Score(1, 0, 0),
         ("multiplier", "importance"): Score(1, 0, 1),
         ("translation", "importance"): Score(3, 2, 2),
-    }, note="third"))
-    user_models.post_process("SquashedModel", max_score=100., note="squash")
+    }), note="third")
+    processed = rescaled.post_process("SquashedModel", score_max=100., note="squash")
     
-    assert user_models(entities)["le_science4all", "entity_1", "importance"].value == 0
-    assert user_models["aidjango"]("entity_3")["importance"].isnan()
-    assert user_models["aidjango"]("entity_2")["importance"] > 0
+    assert processed(entities)["le_science4all", "entity_1", "importance"].value == 0
+    assert processed["aidjango"]("entity_3")["importance"].isnan()
+    assert processed["aidjango"]("entity_2")["importance"] > 0

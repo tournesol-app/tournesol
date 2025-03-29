@@ -9,6 +9,7 @@ import json
 from .base import ScoringModel
 from .score import MultiScore
 from .direct import DirectScoring
+from .scaled import ScaledModel
 
 
 class UserModels:
@@ -62,16 +63,16 @@ class UserModels:
     
     def __delitem__(self, user: Union[str, "User"]) -> None:
         if user in self.user_directs:
-            del self.user_directs[user]
+            del self.user_directs[str(user)]
         if user in self.user_scales:
-            del self.user_scales[user]
+            del self.user_scales[str(user)]
         if str(user) in self.user_model_cls_dict:
             del self.user_model_cls_dict[str(user)]
         if self._cache_users is not None and str(user) in self._cache_users:
             del self._cache_users[str(user)]
         
     def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
-        del self[user]
+        del self[str(user)]
         for keys, value in model.get_directs():
             self.user_directs[str(user), *keys] = value
         for keys, value in model.get_scales():
@@ -121,30 +122,40 @@ class UserModels:
             return self.default_height()
         return ScoringModel.model_cls_height(self.user_model_cls_dict[str(user)])
     
-    def scale(self, scales: MultiScore, **kwargs) -> None:
+    def scale(self, scales: MultiScore, **kwargs) -> "UserModels":
+        scaled = UserModels(self.user_directs, self.user_scales.deepcopy(), self.common_scales.deepcopy())
         def add_scales_to(table, height):
             for keys, value in scales:
                 keys_kwargs = scales.keys2kwargs(*keys)
                 keys_kwargs["height"] = height
                 new_keys = tuple(keys_kwargs[kn] for kn in table.keynames)
                 table[new_keys] = value
-        if "username" in scales.keynames:
+        if "username" in scales.keynames: # Only update user_scales
             for username in scales.keys("username"):
-                add_scales_to(self.user_scales, self.height(username) + 1)
-        else:
-            add_scales_to(self.common_scales, self.default_height() + 1)
+                add_scales_to(scaled.user_scales, self.height(username) + 1)
+        else: # Updates common_scales and user_scales when needed
+            add_scales_to(scaled.common_scales, self.default_height() + 1)
             for username, model_cls in self.user_model_cls_dict.items():
-                add_scales_to(self.user_scales, self.height(username) + 1)
-                self.user_model_cls_dict[username] = ("ScaledModel", kwargs | {"parent": model_cls})
-        assert all({ not isinstance(v, MultiScore) for v in kwargs.values() })
-        self.default_model_cls = ("ScaledModel", kwargs | {"parent": self.default_model_cls})
-        self._cache_users = None
+                add_scales_to(scaled.user_scales, self.height(username) + 1)
+                scaled.user_model_cls_dict[username] = ("ScaledModel", kwargs | {"parent": model_cls})
+        scaled.default_model_cls = ("ScaledModel", kwargs | {"parent": self.default_model_cls})
+        scaled._cache_users = dict()
+        for username, model in self:
+            user_scales = scaled.user_scales[username] | scaled.common_scales
+            scaled._cache_users[username] = ScaledModel(model, user_scales)
+        return scaled
     
-    def post_process(self, cls_name: str, **kwargs) -> None:
+    def post_process(self, cls_name: str, **kwargs) -> "UserModels":
+        processed = UserModels(self.user_directs, self.user_scales, self.common_scales)
         for username, model_cls in self.user_model_cls_dict.items():
-            self.user_model_cls_dict[username] = (cls_name, kwargs | {"parent": model_cls})
-        self.default_model_cls = (cls_name, kwargs | {"parent": self.default_model_cls})
-        self._cache_users = None
+            processed.user_model_cls_dict[username] = (cls_name, kwargs | {"parent": model_cls})
+        processed.default_model_cls = (cls_name, kwargs | {"parent": self.default_model_cls})
+        if self._cache_users is not None:
+            processed._cache_users = dict()
+            for username, model in self:
+                import solidago.state.models as models
+                processed._cache_users[username] = getattr(models, cls_name)(model, **kwargs)
+        return processed
     
     @classmethod
     def load(cls, directory: str, **kwargs) -> "UserModels":

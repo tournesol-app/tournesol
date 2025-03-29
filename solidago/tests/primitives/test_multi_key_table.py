@@ -32,3 +32,11 @@ def test_multi_key_table():
     assert t["user_9", "entity_2"] is None
     d = t.nested_dict("entity_name")
     assert "user_9" in d["entity_0"]
+    del t["user_9"]
+    assert not t
+    t["user_9", "entity_2"] = 2
+    t["user_9", "entity_0"] = 1
+    t["user_5", "entity_2"] = 2
+    t["user_3", "entity_0"] = 1
+    del t[all, {"entity_2"}]
+    assert t.keys("entity_name") == {"entity_0"}

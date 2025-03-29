@@ -1,4 +1,4 @@
-from typing import Union, Optional, Callable, Any, Iterable
+from typing import Union, Optional, Callable, Any, Iterable, Literal
 from copy import deepcopy
 
 
@@ -14,12 +14,16 @@ class NestedDict:
         copy._dict = deepcopy(self._dict)
         return copy
         
-    def __getitem__(self, keys: Union[tuple, str, int, set]) -> Union["NestedDict", "Value"]:
+    def __getitem__(self, keys: Union[tuple, str, int, set, Literal[all]]) -> Union["NestedDict", "Value"]:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
-        if isinstance(keys, set) or (len(keys) == 1 and isinstance(keys[0], set)):
-            key_set = keys if isinstance(keys, set) else keys[0]
+        is_set_or_all = lambda key: isinstance(key, set) or key is all
+        if is_set_or_all(keys) or (len(keys) == 1 and is_set_or_all(keys[0])):
+            key_set = keys if is_set_or_all(keys) else keys[0]
             filtered = NestedDict(self.value_factory, self.depth)
-            filtered._dict = {key: subdict for key, subdict in self._dict.items() if key in key_set}
+            filtered._dict = {
+                key: subdict for key, subdict in self._dict.items() 
+                if key_set is all or key in key_set
+            }
             return filtered
         assert len(keys) <= self.depth
         if not keys:
@@ -27,11 +31,11 @@ class NestedDict:
         if self.depth == 1:
             assert len(keys) == 1
             return self._dict[keys[0]] if keys[0] in self._dict else self.value_factory()
-        if isinstance(keys[0], set):
-            nonset_keys = [k for k in keys if not isinstance(k, set)]
+        if is_set_or_all(keys[0]):
+            nonset_keys = [key for key in keys if not is_set_or_all(key)]
             nested_dict = NestedDict(self.value_factory, self.depth - len(nonset_keys))
             for key, subdict_dict in self._dict.items():
-                if key in keys[0]:
+                if keys[0] is all or key in keys[0]:
                     subdict = NestedDict(self.value_factory, self.depth - 1)
                     subdict._dict = subdict_dict
                     v = subdict[keys[1:]]
@@ -73,12 +77,12 @@ class NestedDict:
     
     def __delitem__(self, keys: tuple) -> None:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
-        assert len(keys) == self.depth
+        assert len(keys) <= self.depth
         subdict_list = [self._dict]
         for key in keys[:-1]:
             subdict_list.append(subdict_list[-1][key])
         del subdict_list[-1][keys[-1]]
-        for index in range(1, len(keys) - 1):
+        for index in range(1, len(keys)):
             if not subdict_list[-index]:
                 del subdict_list[-index-1][keys[-index-1]]
     
