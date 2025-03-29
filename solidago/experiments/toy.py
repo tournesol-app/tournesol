@@ -26,7 +26,7 @@ from solidago.primitives.optimize import *
 # states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
 # processed_states = [ pipeline(states[seed], f"tests/saved/{seed}") for seed in range(5) ]
 
-# s = State.load("tests/saved/0")
+s = State.load("tests/saved/0")
 # s = generator(seed=0)
 # s = TournesolExport("tests/tiny_tournesol.zip")
 # s = TournesolExport("experiments/tournesol.zip")
@@ -40,43 +40,58 @@ from solidago.primitives.optimize import *
 # s5 = pipeline.aggregation.state2state_function(s4)
 # s6 = pipeline.post_process.state2state_function(s5)
 
-# init = MultiScore("entity_name")
-# GBT.get_partial_derivative_args(entities, comparisons)
+users, entities, vouches, made_public = s.users, s.entities, s.vouches, s.made_public
+assessments, comparisons, voting_rights = s.assessments, s.comparisons, s.voting_rights
+user_models, global_model = s.user_models, s.global_model
 
-# from solidago.modules.preference_learning import NumbaUniformGBT, LBFGSUniformGBT
-# import torch
+self = solidago.modules.scaling.Mehestan(
+    lipschitz=1., 
+    min_scaler_activity=1.,
+    n_scalers_max=5, 
+    privacy_penalty=0.5,
+    user_comparison_lipschitz=10.,
+    p_norm_for_multiplicative_resilience=4.0,
+    n_entity_to_fully_compare_max=100,
+    error=1e-5
+)
 
-s = State.load(f"tests/saved/0")
-# entities = s.entities
-# comparisons = s.comparisons["user_0", "default"]
-# prior_std_dev = 7.0
-# kwargs = dict(prior_std_dev=prior_std_dev, uncertainty_nll_increase=1.0, max_uncertainty=1e3)
+scales = MultiScore(keynames=["username", "kind", "criterion"])
+for criterion in user_models.criteria():
+    scores = user_models(entities, criterion)
+    output = self.scale_criterion(users, entities, made_public, scores)
+    subscales, activities, is_scaler = output
+    scales |= subscales.prepend(criterion=criterion)
+    users[f"activities_{criterion}"] = activities
+    users[f"is_scaler_{criterion}"] = is_scaler
+        
+# criterion = next(iter(user_models.criteria()))
+# scores = user_models(entities, criterion)
+# activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
+# scalers, nonscalers = set(), set()
+# for index, user in enumerate(users):
+    # (scalers if is_scaler[index] else nonscalers).add(str(user))
+# scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
+# scalee_scores, scalees_are_scalers = scaler_scores, True
 
-# left_indices, right_indices = comparisons.left_right_indices(entities)
-# normalized_comparisons = torch.tensor(comparisons.normalized_comparison_list())
-# negative_log_posterior_args = left_indices, right_indices, normalized_comparisons
-# indices = comparisons.compared_entity_indices(entities) # defaultdict[int, list]
-# indices = [ indices[i] for i in range(len(entities)) ]
-# entity_normalized_comparisons = comparisons.entity_normalized_comparisons(entities) # defaultdict
-# entity_normalized_comparisons = [ np.array(entity_normalized_comparisons[i]) for i in range(len(entities)) ]
+# scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
+# ratio_weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
+# ratio_args = users, ratio_weight_lists, ratio_lists, self.default_multiplier_dev
+# voting_rights, ratios = self.aggregate_scaler_scores(*ratio_args)
+# multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
 
-# GBTs = [GBT(**kwargs) for GBT in (NumbaUniformGBT, LBFGSUniformGBT)]
-# user_models = [gbt.state2objects_function(s) for gbt in GBTs]
-# values = [GBTs[0].init_values(entities, um["user_0"](entities, "default")) for um in user_models]
-# numbaGradients = [GBTs[0].gradient(v, entities, comparisons) for v in values]
-# lbfgsGradients = list()
-# for i in range(2):
-    # v = torch.tensor(values[i])
-    # v.requires_grad = True
-    # l = GBTs[1].negative_log_posterior(v, left_indices, right_indices, normalized_comparisons)
-    # l.backward()
-    # lbfgsGradients.append(v.grad.detach())
+# for (scalee_name, entity_name), score in scalee_scores:
+    # scalee_scores[scalee_name, entity_name] = score * multipliers[scalee_name]
+# if scalees_are_scalers:
+    # scaler_scores = scalee_scores
 
-# numbaPriorGradients = [v / prior_std_dev**2 for v in values]
-# lbfgsPriorGradients = list()
-# for i in range(2):
-    # v = torch.tensor(values[i])
-    # v.requires_grad = True
-    # l = (v**2).sum() / (2 * prior_std_dev**2)
-    # l.backward()
-    # lbfgsPriorGradients.append(v.grad.detach())
+# diff_weight_lists, diff_lists = self.diffs(made_public, scaler_scores, scalee_scores)
+# diff_args = users, diff_weight_lists, diff_lists, self.default_translation_dev
+# voting_rights, diffs = self.aggregate_scaler_scores(*diff_args)
+# translations = self.compute_translations(voting_rights, diffs)
+
+# for (scalee_name, entity_name), score in scalee_scores:
+    # scalee_scores[scalee_name, entity_name] = score + translations[scalee_name]
+
+# multipliers = multipliers.prepend(kind="multiplier")
+# translations = translations.prepend(kind="translation")
+# scalee_scales = (multipliers | translations).reoroder("username", "kind")

@@ -14,15 +14,12 @@ class Average(StateFunction):
         """ Returns weighted average of user's scores """
         global_model = DirectScoring(note="average")
         multiscores = user_models(entities)
-        voting_rights = voting_rights.to_dict(["entity_name", "criterion"])
 
-        for (entity_name, criterion), scores in multiscores.to_dict(["entity_name", "criterion"]):
-            weighted_sum = sum([
-                score * voting_rights[entity_name, criterion].get(username)
-                for username, score in scores
-            ], Score(0, 0, 0))
-            sum_of_weights = voting_rights[entity_name, criterion]["voting_right"].sum()
-            global_model.set(entity_name, criterion, weighted_sum / sum_of_weights)
+        for (entity_name, criterion), scores in multiscores.iter("entity_name", "criterion"):
+            v = voting_rights.get(entity_name=entity_name, criterion=criterion)
+            weighted_sum = sum([score * v[username] for username, score in scores], Score(0, 0, 0))
+            sum_of_weights = sum([v[username] for username, _ in scores])
+            global_model[entity_name, criterion] = weighted_sum / sum_of_weights
         
         return global_model
         

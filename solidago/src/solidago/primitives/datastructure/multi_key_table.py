@@ -81,7 +81,7 @@ class MultiKeyTable:
             return dict()
         if self._cache:
             keynames, d = next(iter(self._cache.items()))
-            return { self.keys2tuple(keys): value for keys, value in d }
+            return { self.keys2tuple(**dict(zip(keynames, keys))): value for keys, value in d }
         if isinstance(self.init_data, DataFrame):
             d = defaultdict(lambda: None)
             for _, row in self.init_data.iterrows():
@@ -106,7 +106,7 @@ class MultiKeyTable:
             return d
         if isinstance(self.init_data, dict):
             return self.init_data
-        raise ValueError(f"Type {type(self.init_data)} of raw data {self.init_data} not handled")
+        raise ValueError(f"Type {type(self.init_data)} of raw init_data {self.init_data} not handled")
     
     def _main_cache(self) -> NestedDict:
         """ This method is complicated because it handles multiple structures of self.init_data 
@@ -182,7 +182,7 @@ class MultiKeyTable:
 
     def values(self) -> list:
         return [ value for _, value in self ]
-        
+
     def keys2kwargs(self, *args, **kwargs) -> dict:
         """ args is assumed to list keys, though some may be specified through kwargs """
         assert len(args) + len(kwargs) <= self.depth
@@ -258,12 +258,13 @@ class MultiKeyTable:
             result[tuple(kwargs[kn] for kn in self.keynames)] = value
         return result
         
-    def __ior__(self, other: "MultiKeyTable") -> None:
+    def __ior__(self, other: "MultiKeyTable") -> "MultiKeyTable":
         assert set(self.keynames) == set(other.keynames)
         for keys, value in other:
             kwargs = dict(zip(other.keynames, keys))
             new_keys = tuple(kwargs[kn] for kn in self.keynames)
             self[new_keys] = value
+        return self
         
     def set(self, *args, **kwargs) -> None:
         """ args is assumed to list keys and then value, 
@@ -321,21 +322,21 @@ class MultiKeyTable:
 
     def prepend(self, **kwargs) -> "MultiKeyTable":
         assert self.parent is None, "Cannot prepend keyname to MultiKeyTablel with a parent"
-        keys = list(kwargs.values())
-        nd = NestedDict(type(self).value_factory, self.depth + len(kwargs))
-        subdict = nd._dict
-        for key in keys[:-1]:
-            if key not in subdict:
-                subdict[key] = dict()
+        prekeynames, prekeys = tuple(kwargs.keys()), tuple(kwargs.values())
+        keynames = (*prekeynames, *self.keynames)
+        result = type(self)(keynames)
+        result._cache[keynames] = NestedDict(type(self).value_factory, self.depth + len(kwargs))
+        subdict = result._cache[keynames]._dict
+        for key in prekeys[:-1]:
+            subdict[key] = dict()
             subdict = subdict[key]
-        subdict[keys[-1]] = self._cache
-        return type(self)((*kwargs.keys(), *self.keynames), nd)
+        subdict[prekeys[-1]] = self._cache[self.keynames]._dict
+        return result
 
-    def _prepend_keyname(self, keyname: str, key: Union[int, str]) -> "MultiKeyTable":
-        assert self.parent is None, "Cannot prepend keyname to MultiKeyTablel with a parent"
-        nd = NestedDict(type(self).value_factory, self.depth + 1)
-        nd._dict[key] = self._cache
-        return type(self)((keyname, *self.keynames), nd)
+    def reoroder(self, *keynames) -> "MultiKeyTable":
+        keynames = list(keynames) + [kn for kn in self.keynames if kn not in keynames]
+        assert len(keynames) == self.depth
+        return type(self)(keynames, self._cache)
     
     @classmethod
     def load(cls, directory: str, name: Optional[str]=None, **kwargs) -> "MultiKeyTable":

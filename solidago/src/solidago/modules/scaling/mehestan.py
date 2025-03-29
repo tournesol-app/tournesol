@@ -95,7 +95,8 @@ class Mehestan(StateFunction):
         for criterion in user_models.criteria():
             logger.info(f"Mehestan for {criterion}.")
             scores = user_models(entities, criterion)
-            subscales, activities, is_scaler = self.scale_criterion(users, entities, made_public, scores)
+            output = self.scale_criterion(users, entities, made_public, scores)
+            subscales, activities, is_scaler = output
             scales |= subscales.prepend(criterion=criterion)
             users[f"activities_{criterion}"] = activities
             users[f"is_scaler_{criterion}"] = is_scaler
@@ -121,14 +122,13 @@ class Mehestan(StateFunction):
             f"Terminated in {int(end_step1 - start)} seconds")
         
         logger.info(f"  Mehestan 2. Collaborative scaling of scalers")
-        scaler_scores = scores[scalers]
+        scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
         scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
         scaler_scales, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
         end_step2 = timeit.default_timer()
         logger.info(f"  Mehestan 2. Terminated in {int(end_step2 - end_step1)} seconds")
 
         logger.info(f"  Mehestan 3. Scaling of non-scalers")
-        nonscaler_scores = scores[nonscalers]
         scale_nonscalers_to_scalers_args = (users, made_public, scaler_scores, nonscaler_scores)
         nonscaler_scales, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
         end = timeit.default_timer()
@@ -186,8 +186,8 @@ class Mehestan(StateFunction):
         ratio_weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
         end_b = timeit.default_timer()
         logger.info(f"    Mehestan {s}b. Entity ratios in {int(end_b - end_a)} seconds")
-        voting_rights, ratios = self.aggregate_scaler_scores(users, ratio_weight_lists, 
-            ratio_lists, self.default_multiplier_dev)
+        ratio_args = users, ratio_weight_lists, ratio_lists, self.default_multiplier_dev
+        voting_rights, ratios = self.aggregate_scaler_scores(*ratio_args)
         end_c = timeit.default_timer()
         logger.info(f"    Mehestan {s}c. Aggregate ratios in {int(end_c - end_b)} seconds")
         multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
@@ -202,8 +202,8 @@ class Mehestan(StateFunction):
         diff_weight_lists, diff_lists = self.diffs(made_public, scaler_scores, scalee_scores)
         end_e = timeit.default_timer()
         logger.info(f"    Mehestan {s}e. Entity diffs in {int(end_e - end_d)} seconds")
-        voting_rights, diffs = self.aggregate_scaler_scores(users, diff_weight_lists, 
-            diff_lists, self.default_translation_dev)
+        diff_args = users, diff_weight_lists, diff_lists, self.default_translation_dev
+        voting_rights, diffs = self.aggregate_scaler_scores(*diff_args)
         end_f = timeit.default_timer()
         logger.info(f"    Mehestan {s}f. Aggregate diffs in {int(end_f - end_e)} seconds")
         translations = self.compute_translations(voting_rights, diffs)
@@ -215,7 +215,7 @@ class Mehestan(StateFunction):
         
         multipliers = multipliers.prepend(kind="multiplier")
         translations = translations.prepend(kind="translation")
-        scalee_scales = MultiScore(["username", "kind"], multipliers | translations)
+        scalee_scales = (multipliers | translations).reoroder("username", "kind")
 
         return scalee_scales, scalee_scores
 
@@ -321,8 +321,8 @@ class Mehestan(StateFunction):
             for scaler_name in set.union(*[entity_scaler_scorers(e) for e in entity_names]):
                 
                 if scalee_name == scaler_name:
-                    weight_lists[scalee_name, scaler_name] = [1.0]
-                    comparison_lists[scalee_name, scaler_name] = [default_value]
+                    weight_lists[scalee_name][scaler_name] = [1.0]
+                    comparison_lists[scalee_name][scaler_name] = [default_value]
                     continue
                 
                 scaler_scores = scalers_scores[scaler_name] # keynames == ["entity_name"]
@@ -535,8 +535,8 @@ class Mehestan(StateFunction):
         l = lambda scalee_name: self.lipschitz / (8 * (1e-9 + model_norms[scalee_name]))
         r = lambda scalee_name: ratios.get(scalee_name=scalee_name)
         return MultiScore(["username"], {
-            name: self.aggregate_scalers(weights, r(name), l(name), **kwargs)
-            for name, weights in voting_rights.iter(["scalee_name"])
+            (name,): self.aggregate_scalers(weights, r(name), l(name), **kwargs)
+            for (name,), weights in voting_rights.iter("scalee_name")
         })
 
     ############################################
