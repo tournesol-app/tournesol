@@ -112,11 +112,12 @@ class StateFunction:
             if isinstance(value, StateFunction) 
         }
     
-    def save_result(self, result: State, directory: Optional[Union[str, Path]]=None) -> None:
+    def save_result(self, state: State, directory: Optional[str]=None) -> None:
         """ result should be the result of the main function """
         if directory is None:
             return None
-        result.save_objects(type(self).__call__.__annotations__["return"], directory)
+        state.save_objects(type(self).__call__.__annotations__["return"], directory)
+        return state.save_instructions(directory)
 
     def json_keys(self) -> list:
         return list(

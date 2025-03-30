@@ -60,6 +60,7 @@
     "voting_rights": [
         "VotingRights",
         {
+            "name": "voting_rights.csv",
             "keynames": [
                 "username",
                 "entity_name",

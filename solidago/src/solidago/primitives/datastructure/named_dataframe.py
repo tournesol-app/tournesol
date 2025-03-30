@@ -53,11 +53,15 @@ class NamedDataFrame(DataFrame):
     def load(cls, directory: str, df_name: str):
         return cls(pd.read_csv(f"{directory}/{df_name}", keep_default_na=False))
 
-    def save(self, directory: Union[Path, str]) -> tuple[str, dict]:
-        path = Path(directory) / self.save_filename
-        self.to_csv(path)
-        return type(self).__name__, dict(df_name=self.save_filename)
+    def save(self, directory: Optional[str]=None) -> tuple[str, dict]:
+        if directory is not None:
+            path = Path(directory) / self.save_filename
+            self.to_csv(path)
+        return self.save_instructions()
 
+    def save_instructions(self) -> tuple[str, dict]:
+        return type(self).__name__, dict(df_name=self.save_filename)
+        
     def get(self, 
         key: Union[str, NamedSeries, Iterable, dict],
         ignore_missing_keys: bool=True

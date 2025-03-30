@@ -74,10 +74,15 @@ class VectorDataFrame(NamedDataFrame):
 
     def save(self, directory: Union[Path, str]) -> tuple[str, dict]:
         assert self.meta.save_vector_filename is not None
-        vectors_path = Path(directory) / self.meta.save_vector_filename
-        np.savetxt(vectors_path, self.vectors, delimiter=",")
-        class_name, df_path_dict = super().save(directory)
-        return type(self).__name__, df_path_dict | dict(vector_name=self.meta.save_vector_filename)
+        if directory is not None:
+            vectors_path = Path(directory) / self.meta.save_vector_filename
+            np.savetxt(vectors_path, self.vectors, delimiter=",")
+            super().save(directory)
+        return self.save_instructions()
+
+    def save_instructions(self) -> tuple[str, dict]:
+        kwargs = dict(df_name=self.save_filename, vector_name=self.meta.save_vector_filename)
+        return type(self).__name__, kwargs
 
     def get(self, key: Union[str, NamedSeries, Iterable, dict]) -> Union[VectorSeries, "VectorDataFrame"]:
         """ Extract carefully typed objects given index names (default) or attributes

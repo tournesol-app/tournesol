@@ -64,16 +64,18 @@ class State:
     
     def save(self, directory: Optional[str]=None) -> tuple:
         """ Returns instructions to load content (but which is also already saved) """
-        instructions = dict()
         if directory is not None:
             Path(directory).mkdir(parents=True, exist_ok=True)
-        for key, value in self.__dict__.items():
-            instructions[key] = value.save(directory)
+        self.save_instructions(directory)
+        return { key: value.save(directory) for key, value in self.__dict__.items() }
+    
+    def save_instructions(self, directory: Optional[str]=None) -> tuple[str, dict]:
+        instructions = { key: value.save_instructions() for key, value in self.__dict__.items() }
         if directory is not None:
             with open(Path(directory) / "state.json", "w") as f:
                 json.dump(instructions, f, indent=4)
         return instructions
-    
+
     def save_objects(self, types: type, directory: str) -> Union[list, tuple]:
         if directory is not None:
             Path(directory).mkdir(parents=True, exist_ok=True)

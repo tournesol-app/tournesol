@@ -23,3 +23,6 @@ class Squash(StateFunction):
             user_models.post_process("SquashedModel", score_max=self.score_max, note="squash"),
             SquashedModel(global_model, self.score_max, note="squash")
         )
+
+    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+        return state.save_instructions(directory)

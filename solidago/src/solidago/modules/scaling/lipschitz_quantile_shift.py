@@ -1,4 +1,4 @@
-from typing import Mapping
+from typing import Optional
 
 import numpy as np
 import timeit
@@ -67,6 +67,10 @@ class LipschitzQuantileShift(StateFunction):
             scales["translation", criterion] = Score(translation_value, 0, 0)
         return user_models.scale(scales, note="lipschitz_quantile_shift")
 
+    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+        if directory is not None:
+            state.user_models.common_scales.save(directory, "common_scales")
+        return state.save_instructions(directory)
 
 class LipschitzQuantileZeroShift(LipschitzQuantileShift):
     def __init__(self,

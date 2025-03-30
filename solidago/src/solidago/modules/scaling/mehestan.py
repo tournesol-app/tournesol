@@ -101,6 +101,12 @@ class Mehestan(StateFunction):
             users[f"activities_{criterion}"] = activities
             users[f"is_scaler_{criterion}"] = is_scaler
         return users, user_models.scale(scales, note="mehestan")
+
+    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+        if directory is not None:
+            state.users.save(directory)
+            state.user_models.user_scales.save(directory, "user_scales")
+        return state.save_instructions(directory)
     
     def scale_criterion(self, 
         users: Users,

@@ -1,3 +1,4 @@
+from typing import Optional
 import timeit
 import logging
 logger = logging.getLogger(__name__)
@@ -53,3 +54,8 @@ class LipschitzStandardize(StateFunction):
             logger.info(f"    Computed standard deviation in {int(end - start)} seconds for criterion={criterion}")
             scales["multiplier", criterion] = Score(1./std_dev, 0, 0)
         return user_models.scale(scales, note="lipschitz_standardardize")
+
+    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+        if directory is not None:
+            state.user_models.common_scales.save(directory, "common_scales")
+        return state.save_instructions(directory)

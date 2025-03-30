@@ -25,6 +25,7 @@
     "made_public": [
         "AllPublic",
         {
+            "name": "made_public.csv",
             "keynames": [
                 "username",
                 "entity_name"
@@ -34,6 +35,7 @@
     "assessments": [
         "Assessments",
         {
+            "name": "assessments.csv",
             "keynames": [
                 "username",
                 "criterion",

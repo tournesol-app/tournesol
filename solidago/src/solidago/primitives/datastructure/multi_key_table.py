@@ -355,11 +355,15 @@ class MultiKeyTable:
         ])
 
     def save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
-        if not self:
-            return type(self).__name__, dict(keynames=self.keynames)
         name = name or f"{self.name}.csv"
+        if not directory:
+            return self.save_instructions(name)
         filename = f"{directory}/{name}"
         self.to_df().to_csv(filename, index=False)
+        return self.save_instructions(name)
+    
+    def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:
+        name = name or f"{self.name}.csv"
         return type(self).__name__, dict(name=name, keynames=self.keynames)
 
     def __repr__(self) -> str:

@@ -33,18 +33,15 @@ class Sequential(StateFunction):
         return self(state, save_directory)
 
     def __call__(self, state: State, save_directory: Optional[str]=None, skip_steps: set[int]={}) -> State:
-        result = state.copy()
-        if save_directory is not None:
-            result.save(save_directory)
-        start = timeit.default_timer()
+        result = state
         for step, (key, module) in enumerate(self.modules.items()):
             if step in skip_steps:
                 continue
+            start = timeit.default_timer()
             logger.info(f"Step {step + 1} of {self.name}. Doing {key} with {type(module).__name__}")
             result = module.state2state_function(result, save_directory)
             stop = timeit.default_timer()
             logger.info(f"Step {step + 1} of {self.name}. Terminated in {round(stop - start, 2)} seconds")
-            start = stop
         return result
     
     def args_save(self):

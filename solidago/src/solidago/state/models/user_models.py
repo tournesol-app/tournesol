@@ -28,8 +28,7 @@ class UserModels:
         user_models_dict: Optional[dict[str, ScoringModel]]=None
     ):
         for name, table in zip(self.table_keynames, (user_directs, user_scales, common_scales)):
-            setattr(self, name, table or MultiScore(self.table_keynames[name]))
-            getattr(self, name).name = name
+            setattr(self, name, MultiScore(self.table_keynames[name]) if table is None else table)
         self.default_model_cls = default_model_cls or ("DirectScoring", dict())
         self.user_model_cls_dict = user_model_cls_dict or dict()
         self._cache_users = user_models_dict
@@ -167,25 +166,26 @@ class UserModels:
 
     def save_tables(self, directory: Union[Path, str], table_name: str) -> str:
         if getattr(self, table_name):
-            getattr(self, table_name).save(directory)
+            getattr(self, table_name).save(directory, f"{table_name}.csv")
             return f"{table_name}.csv"
         return None
     
-    def save(self, directory: Union[Path, str], json_dump: bool=False) -> tuple[str, dict]:
-        j = type(self).__name__, dict()
+    def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
         for table_name in self.table_keynames:
             filename = self.save_tables(directory, table_name)
-            if filename is not None:
-                j[1][table_name] = filename
+        return self.save_instructions(directory, json_dump)
+    
+    def save_instructions(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
+        kwargs = { name: f"{name}.csv" for name in self.table_keynames if getattr(self, name) }
         if self.default_model_cls is not None:
-            j[1]["default_model_cls"] = self.default_model_cls
+            kwargs["default_model_cls"] = self.default_model_cls
         if len(self.user_model_cls_dict) > 0:
-            j[1]["user_model_cls_dict"] = self.user_model_cls_dict
-        if json_dump:
-            with open(directory / "user_models.json", "w") as f:
-                json.dump(j, f)
-        return j
-
+            kwargs["user_model_cls_dict"] = self.user_model_cls_dict
+        if directory is not None and json_dump:
+            with open(Path(directory) / "user_models.json", "w") as f:
+                json.dump([type(self).__name__, kwargs], f)
+        return type(self).__name__, kwargs
+        
     def __repr__(self) -> str:
         return "\n\n".join([repr(getattr(self, table_name)) for table_name in self.table_keynames])
         

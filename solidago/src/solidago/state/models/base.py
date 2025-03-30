@@ -104,18 +104,23 @@ class ScoringModel(ABC):
             kwargs[name] = MultiScore(kwargs[name]["keynames"], init_data)
         return cls(**kwargs)
 
-    def save(self, directory: Optional[Union[str, Path]]=None, json_dump: bool=False) -> tuple[str, dict]:
+    def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
         """ save must be given a filename_root (typically without extension),
         as multiple csv files may be saved, with a name derived from the filename_root
         (in addition to the json description) """
-        kwargs = self.saved_kwargs()
-        if directory is None:
-            return type(self).__name__, kwargs
         for table_name in ("directs", "scales"):
             table = getattr(self, f"get_{table_name}")()
             if table:
-                kwargs[table_name] = table.save(directory, f"{table_name}.csv")[1]
-        if json_dump:
+                table.save(directory, f"{table_name}.csv")
+        return self.save_instructions(directory, json_dump)
+
+    def save_instructions(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
+        kwargs = self.saved_kwargs()
+        for table_name in ("directs", "scales"):
+            table = getattr(self, f"get_{table_name}")()
+            if table:
+                kwargs[table_name] = { "name": f"{table_name}.csv", "keynames": table.keynames }
+        if directory is not None and json_dump:
             with open(Path(directory) / "model.json", "w") as f:
                 json.dump([type(self).__name__, kwargs], f, indent=4)
         return type(self).__name__, kwargs
