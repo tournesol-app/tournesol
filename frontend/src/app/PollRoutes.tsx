@@ -13,8 +13,8 @@ import CriteriaPage from 'src/pages/criteria/CriteriaPage';
 import FeedbackPage from 'src/pages/personal/feedback/FeedbackPage';
 import EntityAnalysisPage from 'src/pages/entities/EntityAnalysisPage';
 import HomePage from 'src/pages/home/Home';
-import PersonalStatsPage from 'src/pages/me/stats/PersonalStatsPage';
 import ProofByKeywordPage from 'src/pages/me/proof/ProofByKeywordPage';
+import UserActivityStatsPage from 'src/pages/me/stats/UserActivityStatsPage';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
@@ -148,7 +148,7 @@ const PollRoutes = ({ pollName }: Props) => {
     {
       id: RouteID.MyStats,
       url: 'me/stats',
-      page: PersonalStatsPage,
+      page: UserActivityStatsPage,
       type: PrivateRoute,
     },
     {

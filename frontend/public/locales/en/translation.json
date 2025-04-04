@@ -1020,6 +1020,13 @@
     "proofByKeyword": "Proof by keyword",
     "proofFor": "Proof for:"
   },
+  "userActivityStats": {
+    "comparisons": {
+      "title": "Comparisons",
+      "theLast30Days": "<0>{{value1}}</0> the last 30 days",
+      "total": "<0>{{value2}}</0> in total"
+    }
+  },
   "myFeedbackPage": {
     "title": "My results",
     "presidentielle2022": {

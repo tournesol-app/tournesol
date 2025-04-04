@@ -2,21 +2,20 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { Box } from '@mui/material';
-
 import { ContentBox, ContentHeader } from 'src/components';
+import UserActivityStats from './UserActivityStats';
 
-const ProofByKeywordPage = () => {
+const PersonalStatsPage = () => {
   const { t } = useTranslation();
 
   return (
     <>
-      <ContentHeader title="Mes statistiques" />
+      <ContentHeader title={t('personalMenu.myActivityStats')} />
       <ContentBox maxWidth="xl">
-        <Box></Box>
+        <UserActivityStats />
       </ContentBox>
     </>
   );
 };
 
-export default ProofByKeywordPage;
+export default PersonalStatsPage;
