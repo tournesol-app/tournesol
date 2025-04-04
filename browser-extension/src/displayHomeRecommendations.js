@@ -1,3 +1,59 @@
+const getYoutubeVideosPerRow = () => {
+  const youtubeThumbnails = Array.from(
+    document.querySelectorAll(
+      '#primary #contents > ytd-rich-item-renderer.ytd-rich-grid-renderer'
+    )
+  );
+  const youtubeThumbnailsY = youtubeThumbnails
+    .map((e) => e.getBoundingClientRect().y)
+    .filter((y) => y !== 0);
+
+  if (youtubeThumbnailsY.length === 0) {
+    return undefined;
+  }
+
+  // We get the maximum number of thumbnails on a row because
+  // sometimes YouTube renders some rows with fewer thumbnails.
+  const counts = {};
+  let maxCount = 0;
+  for (const y of youtubeThumbnailsY) {
+    const key = y.toString();
+    const count = (counts[key] || 0) + 1;
+    counts[key] = count;
+    if (count > maxCount) maxCount = count;
+  }
+  return maxCount;
+};
+
+const getHomeRecommendationsLayout = () =>
+  new Promise((resolve) => {
+    const startTime = new Date();
+    const maximumSecondsWaitingForThumbnails = 5;
+    const millisecondsBetweenRetries = 300;
+    const defaultLayout = { videosPerRow: 4, rowsWhenExpanded: 3 };
+
+    const getLayout = () => {
+      const elapsedSeconds = (new Date() - startTime) / 1000;
+      if (elapsedSeconds > maximumSecondsWaitingForThumbnails) {
+        resolve(defaultLayout);
+        return;
+      }
+
+      const youtubeVideosPerRow = getYoutubeVideosPerRow();
+
+      if (youtubeVideosPerRow === undefined) {
+        setTimeout(getLayout, millisecondsBetweenRetries);
+        return;
+      }
+
+      const videosPerRow = youtubeVideosPerRow;
+      const rowsWhenExpanded = 3;
+      resolve({ videosPerRow, rowsWhenExpanded });
+    };
+
+    getLayout();
+  });
+
 (async () => {
   let homeRecommendations;
 
@@ -16,9 +72,12 @@
 
     const banner = await fetchBanner();
 
+    const { videosPerRow, rowsWhenExpanded } =
+      await getHomeRecommendationsLayout();
+
     const options = new TournesolRecommendationsOptions({
-      videosPerRow: 4,
-      rowsWhenExpanded: 3,
+      videosPerRow,
+      rowsWhenExpanded,
       banner,
       parentComponentQuery: '#primary > ytd-rich-grid-renderer',
       displayCriteria: false,
