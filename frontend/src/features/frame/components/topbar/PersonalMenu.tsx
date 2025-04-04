@@ -10,7 +10,12 @@ import {
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { Logout, VideoLibrary, HowToReg } from '@mui/icons-material';
+import {
+  HowToReg,
+  Logout,
+  QueryStats,
+  VideoLibrary,
+} from '@mui/icons-material';
 import { TournesolMenuItemType, settingsMenu } from 'src/utils/menus';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 
@@ -72,6 +77,17 @@ const PersonalMenu = ({
             <HowToReg fontSize="small" />
           </ListItemIcon>
           <ListItemText>{t('personalMenu.vouching')}</ListItemText>
+        </MenuItem>
+        <MenuItem
+          key="my-activity-stats"
+          component={RouterLink}
+          to="/me/stats"
+          onClick={onItemClick}
+        >
+          <ListItemIcon>
+            <QueryStats fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t('personalMenu.myActivityStats')}</ListItemText>
         </MenuItem>
         <Divider key="my-things-divider" />
         {/* -- settings section -- */}
