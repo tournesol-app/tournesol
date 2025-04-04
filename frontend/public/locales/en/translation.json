@@ -346,7 +346,8 @@
   "joinUsButton": "Join us",
   "personalMenu": {
     "yourRecommendations": "My recommendations",
-    "vouching": "Vouch for other users"
+    "vouching": "Vouch for other users",
+    "myActivityStats": "My stats"
   },
   "logoutButton": "Logout",
   "pwaBanner": {

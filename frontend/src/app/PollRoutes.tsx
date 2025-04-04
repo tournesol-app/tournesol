@@ -13,6 +13,7 @@ import CriteriaPage from 'src/pages/criteria/CriteriaPage';
 import FeedbackPage from 'src/pages/personal/feedback/FeedbackPage';
 import EntityAnalysisPage from 'src/pages/entities/EntityAnalysisPage';
 import HomePage from 'src/pages/home/Home';
+import PersonalStatsPage from 'src/pages/me/stats/PersonalStatsPage';
 import ProofByKeywordPage from 'src/pages/me/proof/ProofByKeywordPage';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
@@ -142,6 +143,12 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.MyProofByKeyword,
       url: 'me/proof/:keyword',
       page: ProofByKeywordPage,
+      type: PrivateRoute,
+    },
+    {
+      id: RouteID.MyStats,
+      url: 'me/stats',
+      page: PersonalStatsPage,
       type: PrivateRoute,
     },
     {

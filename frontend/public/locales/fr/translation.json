@@ -353,7 +353,8 @@
   "joinUsButton": "S'inscrire",
   "personalMenu": {
     "yourRecommendations": "Mes recommandations",
-    "vouching": "Me porter garant"
+    "vouching": "Me porter garant",
+    "myActivityStats": "Mes statistiques"
   },
   "logoutButton": "Se déconnecter",
   "pwaBanner": {
