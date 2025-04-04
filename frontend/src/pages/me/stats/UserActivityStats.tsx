@@ -2,10 +2,11 @@ import React from 'react';
 
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { TitledPaper } from 'src/components';
+import ComparisonChart from 'src/features/charts/AreaChart';
 
 interface KeyIndicatorProps {
   children: React.ReactNode;
@@ -13,8 +14,6 @@ interface KeyIndicatorProps {
 }
 
 const KeyIndicator = ({ children, variant }: KeyIndicatorProps) => {
-  const { t } = useTranslation();
-
   let color = 'secondary.main';
   let fontSize = '4rem';
 
@@ -40,6 +39,7 @@ const KeyIndicator = ({ children, variant }: KeyIndicatorProps) => {
 
 /**
  * TODO: make this component generic
+ * TODO: move this component in the components folder
  */
 const UserActivityStats = () => {
   const { t } = useTranslation();
@@ -49,35 +49,46 @@ const UserActivityStats = () => {
 
   return (
     <TitledPaper title={t('userActivityStats.comparisons.title')}>
-      <Grid container>
-        <Grid xs={4}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="left"
-          >
-            <Box display="flex" alignItems="flex-end" gap={1}>
-              <KeyIndicator>
-                <Trans
-                  t={t}
-                  i18nKey="userActivityStats.comparisons.theLast30Days"
-                >
-                  <strong>{{ value1 }}</strong> the last 30 days
-                </Trans>
-              </KeyIndicator>
-            </Box>
-            <Box display="flex" alignItems="flex-end" gap={1}>
-              <KeyIndicator variant="secondary">
-                <Trans t={t} i18nKey="userActivityStats.comparisons.total">
-                  <strong>{{ value2 }}</strong> in total
-                </Trans>
-              </KeyIndicator>
-            </Box>
+      <Grid container minHeight="300px">
+        <Grid
+          xs={12}
+          sm={12}
+          md={4}
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+        >
+          <Box display="flex" alignItems="flex-end" gap={1}>
+            <KeyIndicator>
+              <Trans
+                t={t}
+                i18nKey="userActivityStats.comparisons.theLast30Days"
+              >
+                <strong>{{ value1 }}</strong> the last 30 days
+              </Trans>
+            </KeyIndicator>
+          </Box>
+          <Box display="flex" alignItems="flex-end" gap={1}>
+            <KeyIndicator variant="secondary">
+              <Trans t={t} i18nKey="userActivityStats.comparisons.total">
+                <strong>{{ value2 }}</strong> in total
+              </Trans>
+            </KeyIndicator>
           </Box>
         </Grid>
-        <Grid xs={8}></Grid>
+        <Grid xs={12} sm={12} md={8}>
+        </Grid>
       </Grid>
+      {/* TODO: create a dedicated component */}
+      <Box mt={2} display="flex" flexDirection="column" gap={2}>
+        <Alert severity="success">
+          🏅 You are one of the top 10 contributors this month.
+        </Alert>
+        <Alert severity="success">
+          🏆 You are one of the top 10% of all-time contributors.
+          Congratulations!
+        </Alert>
+      </Box>
     </TitledPaper>
   );
 };
