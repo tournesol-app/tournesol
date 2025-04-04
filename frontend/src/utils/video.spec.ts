@@ -4,11 +4,16 @@ describe('video module', () => {
   describe('function - extractVideoId', () => {
     const videoId = 'lYXQvHhfKuM';
 
-    const ytUrlPatternLive =
-      'https://www.youtube.com/live/lYXQvHhfKuM?feature=share';
-    const ytUrlPatternMobile = 'https://m.youtube.com/watch?v=lYXQvHhfKuM';
-    const ytUrlPatternShort = 'https://youtu.be/lYXQvHhfKuM';
-    const ytUrlPatternWatch = 'https://www.youtube.com/watch?v=lYXQvHhfKuM';
+    const validUrls = [
+      'https://www.youtube.com/watch?v=lYXQvHhfKuM',
+      'https://youtube.com/watch?v=lYXQvHhfKuM',
+      'https://www.youtube.com/live/lYXQvHhfKuM?feature=share',
+      'https://youtube.com/live/lYXQvHhfKuM?feature=share',
+      'https://m.youtube.com/watch?v=lYXQvHhfKuM',
+      'https://youtu.be/lYXQvHhfKuM',
+      'https://www.youtube.com/v/lYXQvHhfKuM',
+      'https://www.youtube.com/shorts/lYXQvHhfKuM',
+    ];
 
     it('handles video id', () => {
       const id1 = extractVideoId(videoId);
@@ -27,42 +32,14 @@ describe('video module', () => {
       expect(id2).toEqual(videoId);
     });
 
-    it("handles the pattern 'live'", () => {
-      const id1 = extractVideoId(ytUrlPatternLive);
-      expect(id1).toEqual(videoId);
+    test.each(validUrls)('handles URL %s', (validUrl) => {
+      const extractedVideoId = extractVideoId(validUrl);
+      expect(extractedVideoId).toEqual(videoId);
 
-      const id2 = extractVideoId(ytUrlPatternLive.replace('://www.', '://'));
-      expect(id2).toEqual(videoId);
-
-      const id3 = extractVideoId(ytUrlPatternLive, { ignoreVideoId: true });
-      expect(id3).toEqual(videoId);
-    });
-
-    it("handles the pattern 'mobile'", () => {
-      const id = extractVideoId(ytUrlPatternMobile);
-      expect(id).toEqual(videoId);
-
-      const id2 = extractVideoId(ytUrlPatternMobile, { ignoreVideoId: true });
-      expect(id2).toEqual(videoId);
-    });
-
-    it("handles the pattern 'watch'", () => {
-      const id1 = extractVideoId(ytUrlPatternWatch);
-      expect(id1).toEqual(videoId);
-
-      const id2 = extractVideoId(ytUrlPatternWatch.replace('://www.', '://'));
-      expect(id2).toEqual(videoId);
-
-      const id3 = extractVideoId(ytUrlPatternWatch, { ignoreVideoId: true });
-      expect(id3).toEqual(videoId);
-    });
-
-    it("handles the pattern 'youtu.be'", () => {
-      const id = extractVideoId(ytUrlPatternShort);
-      expect(id).toEqual(videoId);
-
-      const id2 = extractVideoId(ytUrlPatternShort, { ignoreVideoId: true });
-      expect(id2).toEqual(videoId);
+      const extractedVideoId2 = extractVideoId(validUrl, {
+        ignoreVideoId: true,
+      });
+      expect(extractedVideoId2).toEqual(videoId);
     });
   });
 });
