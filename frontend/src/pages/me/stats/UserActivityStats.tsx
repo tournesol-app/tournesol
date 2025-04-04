@@ -6,7 +6,6 @@ import { Alert, Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { TitledPaper } from 'src/components';
-import ComparisonChart from 'src/features/charts/AreaChart';
 
 interface KeyIndicatorProps {
   children: React.ReactNode;
