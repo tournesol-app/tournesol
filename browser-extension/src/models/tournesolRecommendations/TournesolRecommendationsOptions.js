@@ -1,7 +1,7 @@
 export class TournesolRecommendationsOptions {
   constructor({
     videosPerRow,
-    rowsWhenCollapsed,
+    rowsWhenCollapsed = 1,
     rowsWhenExpanded,
     banner,
     parentComponentQuery,
