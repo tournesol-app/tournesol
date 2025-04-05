@@ -1,3 +1,77 @@
+const getYoutubeVideosPerRow = () => {
+  const youtubeThumbnails = Array.from(
+    document.querySelectorAll(
+      '#primary #contents > ytd-rich-item-renderer.ytd-rich-grid-renderer'
+    )
+  );
+  const youtubeThumbnailsY = youtubeThumbnails
+    .map((e) => e.getBoundingClientRect().y)
+    .filter((y) => y !== 0);
+
+  if (youtubeThumbnailsY.length === 0) {
+    return undefined;
+  }
+
+  // We get the maximum number of thumbnails on a row because
+  // sometimes YouTube renders some rows with fewer thumbnails.
+  const counts = {};
+  let maxCount = 0;
+  for (const y of youtubeThumbnailsY) {
+    const key = y.toString();
+    const count = (counts[key] || 0) + 1;
+    counts[key] = count;
+    if (count > maxCount) maxCount = count;
+  }
+  return maxCount;
+};
+
+const getHomeRecommendationsLayout = () =>
+  new Promise((resolve) => {
+    const startTime = new Date();
+    const maximumSecondsWaitingForThumbnails = 5;
+    const millisecondsBetweenRetries = 300;
+    const defaultLayout = {
+      videosPerRow: 4,
+      rowsWhenCollapsed: 1,
+      rowsWhenExpanded: 3,
+    };
+    const layoutByYoutubeVideosPerRow = {
+      1: { rowsWhenCollapsed: 2, rowsWhenExpanded: 12 },
+      2: { rowsWhenCollapsed: 2, rowsWhenExpanded: 6 },
+      3: { rowsWhenCollapsed: 1, rowsWhenExpanded: 4 },
+      4: { rowsWhenCollapsed: 1, rowsWhenExpanded: 3 },
+      5: { rowsWhenCollapsed: 1, rowsWhenExpanded: 2 },
+      6: { rowsWhenCollapsed: 1, rowsWhenExpanded: 2 },
+    };
+
+    const getLayout = () => {
+      const elapsedSeconds = (new Date() - startTime) / 1000;
+      if (elapsedSeconds > maximumSecondsWaitingForThumbnails) {
+        resolve(defaultLayout);
+        return;
+      }
+
+      const youtubeVideosPerRow = getYoutubeVideosPerRow();
+
+      if (youtubeVideosPerRow === undefined) {
+        setTimeout(getLayout, millisecondsBetweenRetries);
+        return;
+      }
+
+      const layout = layoutByYoutubeVideosPerRow[youtubeVideosPerRow];
+      if (layout === undefined) {
+        resolve(defaultLayout);
+        return;
+      }
+
+      const videosPerRow = youtubeVideosPerRow;
+      const { rowsWhenCollapsed, rowsWhenExpanded } = layout;
+      resolve({ videosPerRow, rowsWhenCollapsed, rowsWhenExpanded });
+    };
+
+    getLayout();
+  });
+
 (async () => {
   let homeRecommendations;
 
@@ -16,9 +90,13 @@
 
     const banner = await fetchBanner();
 
+    const { videosPerRow, rowsWhenCollapsed, rowsWhenExpanded } =
+      await getHomeRecommendationsLayout();
+
     const options = new TournesolRecommendationsOptions({
-      videosPerRow: 4,
-      rowsWhenExpanded: 3,
+      videosPerRow,
+      rowsWhenCollapsed,
+      rowsWhenExpanded,
       banner,
       parentComponentQuery: '#primary > ytd-rich-grid-renderer',
       displayCriteria: false,

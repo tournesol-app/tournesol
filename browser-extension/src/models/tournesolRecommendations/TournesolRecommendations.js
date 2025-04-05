@@ -13,6 +13,7 @@ export class TournesolRecommendations {
     this.tournesolContainer = new TournesolContainer(this, options.banner);
 
     this.videosPerRow = options.videosPerRow;
+    this.rowsWhenCollapsed = options.rowsWhenCollapsed;
     this.rowsWhenExpanded = options.rowsWhenExpanded;
     this.parentComponentQuery = options.parentComponentQuery;
     this.displayCriteria = options.displayCriteria;
@@ -113,8 +114,9 @@ export class TournesolRecommendations {
   }) {
     this.areRecommendationsLoading = false;
     this.areRecommendationsLoaded = true;
-    this.videos = videosResponse.slice(0, this.videosPerRow);
-    this.additionalVideos = videosResponse.slice(this.videosPerRow);
+    const videoCountWhenCollapsed = this.videosPerRow * this.rowsWhenCollapsed;
+    this.videos = videosResponse.slice(0, videoCountWhenCollapsed);
+    this.additionalVideos = videosResponse.slice(videoCountWhenCollapsed);
     this.recommandationsLanguages = languagesString;
 
     if (this.isPageLoaded) {
@@ -130,8 +132,9 @@ export class TournesolRecommendations {
     chrome.runtime.sendMessage(
       {
         message: 'getTournesolRecommendations',
-        videosNumber: this.videosPerRow,
-        additionalVideosNumber: this.videosPerRow * (this.rowsWhenExpanded - 1),
+        videosNumber: this.videosPerRow * this.rowsWhenCollapsed,
+        additionalVideosNumber:
+          this.videosPerRow * (this.rowsWhenExpanded - this.rowsWhenCollapsed),
         queryParamBundle: this.varyQueryParamBundle(),
       },
       this.handleResponse
