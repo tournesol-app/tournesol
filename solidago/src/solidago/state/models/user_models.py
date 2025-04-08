@@ -5,7 +5,11 @@ from copy import deepcopy
 
 import pandas as pd
 import json
+import logging
 
+logger = logging.getLogger(__name__)
+
+from solidago.primitives.timer import time
 from .base import ScoringModel
 from .score import MultiScore
 from .direct import DirectScoring
@@ -122,22 +126,31 @@ class UserModels:
         return ScoringModel.model_cls_height(self.user_model_cls_dict[str(user)])
     
     def scale(self, scales: MultiScore, **kwargs) -> "UserModels":
-        scaled = UserModels(self.user_directs, self.user_scales.deepcopy(), self.common_scales.deepcopy())
-        def add_scales_to(table, height):
+        user_scales, common_scales = self.user_scales.deepcopy(), self.common_scales.deepcopy()
+        scaled = UserModels(self.user_directs, user_scales, common_scales)
+        if "username" in scales.keynames: # Only update user_scales
             for keys, value in scales:
                 keys_kwargs = scales.keys2kwargs(*keys)
-                keys_kwargs["height"] = height
-                new_keys = tuple(keys_kwargs[kn] for kn in table.keynames)
-                table[new_keys] = value
-        if "username" in scales.keynames: # Only update user_scales
-            for username in scales.keys("username"):
-                add_scales_to(scaled.user_scales, self.height(username) + 1)
+                keys_kwargs["height"] = self.height(keys_kwargs["username"]) + 1
+                new_keys = tuple(keys_kwargs[kn] for kn in scaled.user_scales.keynames)
+                scaled.user_scales[new_keys] = value
         else: # Updates common_scales and user_scales when needed
-            add_scales_to(scaled.common_scales, self.default_height() + 1)
+            for keys, value in scales:
+                keys_kwargs = scales.keys2kwargs(*keys)
+                keys_kwargs["height"] = self.default_height() + 1
+                new_keys = tuple(keys_kwargs[kn] for kn in scaled.common_scales.keynames)
+                scaled.common_scales[new_keys] = value
             for username, model_cls in self.user_model_cls_dict.items():
-                add_scales_to(scaled.user_scales, self.height(username) + 1)
-                scaled.user_model_cls_dict[username] = ("ScaledModel", kwargs | {"parent": model_cls})
+                for keys, value in scales:
+                    keys_kwargs = scales.keys2kwargs(*keys)
+                    keys_kwargs["username"] = username
+                    keys_kwargs["height"] = self.height(username) + 1
+                    new_keys = tuple(keys_kwargs[kn] for kn in scaled.user_scales.keynames)
+                    scaled.user_scales[new_keys] = value
+                user_kwargs = kwargs | {"parent": model_cls}
+                scaled.user_model_cls_dict[username] = ("ScaledModel", user_kwargs)
         scaled.default_model_cls = ("ScaledModel", kwargs | {"parent": self.default_model_cls})
+        
         scaled._cache_users = dict()
         for username, model in self:
             user_scales = scaled.user_scales[username] | scaled.common_scales

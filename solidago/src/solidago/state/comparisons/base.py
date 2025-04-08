@@ -17,8 +17,15 @@ class Comparison:
     def from_series(cls, row: Series) -> "Comparison":
         return cls(**dict(row))
 
+    @property
+    def keynames(self) -> tuple:
+        return "value", "max"
+
+    def to_tuple(self) -> tuple:
+        return self.value, self.max
+    
     def to_series(self) -> Series:
-        return Series(dict(value=self.value, max=self.max))
+        return Series(dict(zip(self.keynames, self.to_tuple())))
     
     def __neg__(self) -> "Comparison":
         location = "right" if self.location == "left" else "left"
@@ -43,8 +50,12 @@ class Comparisons(MultiKeyTable):
             init_data = init_data.rename(columns={"left_name": "entity_name", "right_name": "other_name"})
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
 
-    def value2series(self, comparison: Comparison) -> Series:
-        return comparison.to_series()
+    @property
+    def valuenames(self) -> tuple:
+        return self.value_cls().keynames
+
+    def value2tuple(self, comparison: Comparison) -> tuple:
+        return comparison.to_tuple()
     
     def series2value(self, previous_value: Any, row: Series) -> Comparison:
         return Comparison.from_series(row)

@@ -17,6 +17,13 @@ class Vouches(MultiKeyTable):
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
 
+    @property
+    def valuenames(self) -> tuple[str, str]:
+        return "weight", "priority"
+
+    def value2tuple(self, value: tuple[float, float]) -> [float, float]:
+        return value
+        
     def value2series(self, value: tuple[float, float]) -> Series:
         return Series(dict(weight=value[0], priority=value[1]))
     

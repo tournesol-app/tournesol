@@ -3,11 +3,11 @@ from pathlib import Path
 from pandas import Series
 
 import json
-import timeit
 import logging
 
 logger = logging.getLogger(__name__)
 
+from solidago.primitives.timer import time
 from solidago.state import *
 from .base import StateFunction
 
@@ -29,20 +29,21 @@ class Sequential(StateFunction):
     def modules(self):
         return { key: value for key, value in self.__dict__.items() if isinstance(value, StateFunction) }
     
-    def state_function(self, state: State, save_directory: Optional[str]=None) -> State:
+    def state2state_function(self, state: State, save_directory: Optional[str]=None) -> State:
         return self(state, save_directory)
 
-    def __call__(self, state: State, save_directory: Optional[str]=None, skip_steps: set[int]={}) -> State:
+    def __call__(self, state: State, save_directory: Optional[str]=None, skip_steps: set={}) -> State:
         result = state
         for step, (key, module) in enumerate(self.modules.items()):
-            if step in skip_steps:
+            if step in skip_steps or key in skip_steps:
                 continue
-            start = timeit.default_timer()
-            logger.info(f"Step {step + 1} of {self.name}. Doing {key} with {type(module).__name__}")
-            result = module.state2state_function(result, save_directory)
-            stop = timeit.default_timer()
-            logger.info(f"Step {step + 1} of {self.name}. Terminated in {round(stop - start, 2)} seconds")
+            log = f"{self.name} {step+1}. {key} with {type(module).__name__}"
+            with time(logger, log):
+                result = module.state2state_function(result, save_directory)
         return result
+    
+    def save_result(self, state: State, directory: Optional[str]=None) -> None:
+        return state.save_instructions(directory)
     
     def args_save(self):
         return [ module.save() for module in self.modules ]

@@ -17,8 +17,9 @@ class MadePublic(MultiKeyTable):
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
 
-    def value2series(self, value: bool) -> Series:
-        return Series(dict(public=value))
+    @property
+    def valuenames(self) -> tuple:
+        return ("public",)
     
     def series2value(self, previous_value: Any, row: Series) -> bool:
         return row["public"]

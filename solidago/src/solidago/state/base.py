@@ -6,6 +6,9 @@ from pandas import DataFrame
 
 import json
 import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
 
 from .users.base import Users
 from .vouches.base import Vouches
@@ -80,6 +83,7 @@ class State:
         if directory is not None:
             Path(directory).mkdir(parents=True, exist_ok=True)
         if types == State:
+            logger.info(f"Saving full state")
             return self.save(directory)
         if hasattr(types, "__args__"):
             return [ self.save_objects(t, directory) for t in types.__args__ ]
@@ -91,6 +95,7 @@ class State:
             state_json = self.save()
         for key, value in self.__init__.__annotations__.items():
             if issubclass(types, value) and getattr(self, key) is not None:
+                logger.info(f"Saving state's {key}")
                 state_json[key] = getattr(self, key).save(directory)
         with open(Path(directory) / "state.json", "w") as f:
             json.dump(state_json, f, indent=4)

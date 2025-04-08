@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import pandas as pd
 import math
+import csv
 
 from solidago.primitives.datastructure.nested_dict import NestedDict
 
@@ -68,14 +69,22 @@ class MultiKeyTable:
         return self.parent, self.parent_keynames, self.parent_keys
     
     """ The following methods could be worth redefining in derived classes """
-    def value2series(self, value: "Value") -> Series:
-        return Series(dict(value=value))
+    @property
+    def valuenames(self) -> tuple:
+        return ("value",)
     
+    def value2tuple(self, value: "Value") -> tuple:
+        return (value,)
+            
     def series2value(self, previous_value: Any, row: Series) -> "Value":
         """ previous_value may be used, e.g. if it a list, and we want to append row """
-        return row["value"]
+        values = tuple(row[name] for name in self.valuenames)
+        return values[0] if len(values) == 1 else values
 
     """ The following methods are are more standard """
+    def value2series(self, value: "Value") -> Series:
+        return Series(dict(zip(self.valuenames, self.value2tuple(value))))
+        
     def _init_data_to_dict(self) -> dict:
         if self.init_data is None and not self._cache:
             return dict()
@@ -333,7 +342,7 @@ class MultiKeyTable:
         subdict[prekeys[-1]] = self._cache[self.keynames]._dict
         return result
 
-    def reoroder(self, *keynames) -> "MultiKeyTable":
+    def reorder(self, *keynames) -> "MultiKeyTable":
         keynames = list(keynames) + [kn for kn in self.keynames if kn not in keynames]
         assert len(keynames) == self.depth
         return type(self)(keynames, self._cache)
@@ -354,12 +363,24 @@ class MultiKeyTable:
             for keys, value in self
         ])
 
-    def save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
+    def df_save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
         name = name or f"{self.name}.csv"
         if not directory:
             return self.save_instructions(name)
         filename = f"{directory}/{name}"
         self.to_df().to_csv(filename, index=False)
+        return self.save_instructions(name)
+    
+    def save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
+        name = name or f"{self.name}.csv"
+        if not directory:
+            return self.save_instructions(name)
+        filename = f"{directory}/{name}"
+        with open(filename, 'w', newline='') as f:
+            w = csv.writer(f, delimiter=',')
+            w.writerow(list(self.keynames) + list(self.valuenames))
+            for keys, value in self:
+                w.writerow(list(keys) + list(self.value2tuple(value)))
         return self.save_instructions(name)
     
     def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:

@@ -19,8 +19,15 @@ class Assessment:
     def from_series(cls, row: Series) -> "Assessment":
         return cls(**dict(row))
 
+    @property
+    def keynames(self) -> tuple:
+        return "value", "min", "max"
+
+    def to_tuple(self) -> tuple:
+        return self.value, self.min, self.max
+    
     def to_series(self) -> Series:
-        return Series(dict(value=self.value, min=self.min, max=self.max))
+        return Series(dict(zip(self.keynames, self.to_tuple())))
 
     def __repr__(self) -> str:
         return f"{self.value} (min={self.min}, max={self.max})"
@@ -39,8 +46,12 @@ class Assessments(MultiKeyTable):
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
 
-    def value2series(self, assessment: Assessment) -> Series:
-        return assessment.to_series()
+    @property
+    def valuenames(self) -> tuple:
+        return self.value_cls().keynames
+
+    def value2tuple(self, assessment: Assessment) -> tuple:
+        return assessment.to_tuple()
     
     def series2value(self, previous_stored_value: Any, row: Series) -> Assessment:
         return Assessment.from_series(row)

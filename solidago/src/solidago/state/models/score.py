@@ -169,9 +169,13 @@ class MultiScore(MultiKeyTable):
         {'clarity', 'correctness', 'originality', 'rating'}. """
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
         self.name = name or type(self).name
+
+    @property
+    def valuenames(self) -> tuple:
+        return ("value", "left_unc", "right_unc")
     
-    def value2series(self, score: Score) -> Series:
-        return Series(score.to_dict())
+    def value2tuple(self, score: Score) -> tuple:
+        return score.to_triplet()
     
     def series2value(self, previous_value: Any, row: Series) -> Score:
         return Score(row)

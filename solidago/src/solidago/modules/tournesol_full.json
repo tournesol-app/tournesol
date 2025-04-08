@@ -6,7 +6,7 @@
         "sink_vouch": 5.0, 
         "error": 1e-08
     }], 
-    "preference_learning": ["NumbaUniformGBT", {
+    "preference_learning": ["LBFGSUniformGBT", {
         "prior_std_dev": 7, 
         "uncertainty_nll_increase": 1.0,
         "max_uncertainty": 1e3,

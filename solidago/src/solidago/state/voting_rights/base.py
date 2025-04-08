@@ -18,8 +18,9 @@ class VotingRights(MultiKeyTable):
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
 
-    def value2series(self, value: float) -> Series:
-        return Series(dict(voting_right=value))
-    
+    @property
+    def valuenames(self) -> tuple[str, str]:
+        return ("voting_right",)
+
     def series2value(self, previous_value: Any, row: Series) -> float:
         return row["voting_right"]

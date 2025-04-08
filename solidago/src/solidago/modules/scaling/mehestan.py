@@ -4,7 +4,6 @@ from collections import defaultdict
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-import timeit
 import logging
 
 logger = logging.getLogger(__name__)
@@ -12,6 +11,7 @@ logger = logging.getLogger(__name__)
 from solidago.primitives.lipschitz import qr_median, qr_uncertainty, lipschitz_resilient_mean
 from solidago.primitives.datastructure.multi_key_table import MultiKeyTable
 from solidago.primitives.pairs import UnorderedPairs
+from solidago.primitives.timer import time
 from solidago.state import *
 from solidago.modules.base import StateFunction
 
@@ -93,20 +93,27 @@ class Mehestan(StateFunction):
 
         scales = MultiScore(keynames=["username", "kind", "criterion"])
         for criterion in user_models.criteria():
-            logger.info(f"Mehestan for {criterion}.")
-            scores = user_models(entities, criterion)
-            output = self.scale_criterion(users, entities, made_public, scores)
-            subscales, activities, is_scaler = output
-            scales |= subscales.prepend(criterion=criterion)
-            users[f"activities_{criterion}"] = activities
-            users[f"is_scaler_{criterion}"] = is_scaler
-        return users, user_models.scale(scales, note="mehestan")
+            with time(logger, f"Mehestan for {criterion}"):
+                scores = user_models(entities, criterion)
+                output = self.scale_criterion(users, entities, made_public, scores)
+                subscales, activities, is_scaler = output
+                scales |= subscales.prepend(criterion=criterion)
+                users[f"activities_{criterion}"] = activities
+                users[f"is_scaler_{criterion}"] = is_scaler
+        with time(logger, "Scaling user models"):
+            scaled_models = user_models.scale(scales, note="mehestan")
+        return users, scaled_models
 
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+        logger.info(f"Mehestan result saving in directory {directory}")
         if directory is not None:
-            state.users.save(directory)
-            state.user_models.user_scales.save(directory, "user_scales")
-        return state.save_instructions(directory)
+            with time(logger, "Saving users"):
+                state.users.save(directory)
+            with time(logger, "Saving user scales"):
+                state.user_models.user_scales.save(directory, "user_scales")
+        with time(logger, "Saving state.json"):
+            instructions = state.save_instructions(directory)
+        return instructions
     
     def scale_criterion(self, 
         users: Users,
@@ -114,33 +121,24 @@ class Mehestan(StateFunction):
         made_public: MadePublic, # keynames == ["username", "entity_name"]
         scores: MultiScore, # keynames == ["username", "entity_name"]
     ) -> tuple[MultiScore, npt.NDArray, npt.NDArray]: # scales, activies, is_scaler
-        start = timeit.default_timer()
-        logger.info(f"  Mehestan 1. Select scalers.")
-        activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
-        if not any(is_scaler):
-            logger.warning("  No user qualifies as a scaler. No scaling performed.")
-            return MultiScore(keynames=["username", "kind"]), activities, is_scaler
-        scalers, nonscalers = set(), set()
-        for index, user in enumerate(users):
-            (scalers if is_scaler[index] else nonscalers).add(str(user))
-        end_step1 = timeit.default_timer()
-        logger.info(f"  Mehestan 1. Selected {len(scalers)} scalers. " \
-            f"Terminated in {int(end_step1 - start)} seconds")
+        with time(logger, "  1. Scaler selection"):
+            activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
+            if not any(is_scaler):
+                logger.warning("  No user qualifies as a scaler. No scaling performed.")
+                return MultiScore(keynames=["username", "kind"]), activities, is_scaler
+            scalers, nonscalers = set(), set()
+            for index, user in enumerate(users):
+                (scalers if is_scaler[index] else nonscalers).add(str(user))
         
-        logger.info(f"  Mehestan 2. Collaborative scaling of scalers")
-        scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
-        scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
-        scaler_scales, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
-        end_step2 = timeit.default_timer()
-        logger.info(f"  Mehestan 2. Terminated in {int(end_step2 - end_step1)} seconds")
+        with time(logger, "  2. Collaborative scaler scaling"):
+            scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
+            scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
+            scaler_scales, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
 
-        logger.info(f"  Mehestan 3. Scaling of non-scalers")
-        scale_nonscalers_to_scalers_args = (users, made_public, scaler_scores, nonscaler_scores)
-        nonscaler_scales, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
-        end = timeit.default_timer()
-        logger.info(f"  Mehestan 3. Terminated in {int(end - end_step2)} seconds")
+        with time(logger, "  3. Scaling of non-scalers"):
+            scale_nonscalers_to_scalers_args = (users, made_public, scaler_scores, nonscaler_scores)
+            nonscaler_scales, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
         
-        logger.info(f"  Succesful Mehestan scaling in {int(end - start)} seconds")
         return (scaler_scales | nonscaler_scales), activities, is_scaler
 
     ############################################
@@ -184,44 +182,27 @@ class Mehestan(StateFunction):
         scalees_are_scalers: bool=False
     ) -> tuple[MultiScore, MultiScore]: # scalee_scales, scalee_scores
         s = "2" if scalees_are_scalers else "3"
-        start = timeit.default_timer()
         scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
-        end_a = timeit.default_timer()
-        logger.info(f"    Mehestan {s}a. Model norms in {int(end_a - start)} seconds")
-
+    
         ratio_weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
-        end_b = timeit.default_timer()
-        logger.info(f"    Mehestan {s}b. Entity ratios in {int(end_b - end_a)} seconds")
         ratio_args = users, ratio_weight_lists, ratio_lists, self.default_multiplier_dev
         voting_rights, ratios = self.aggregate_scaler_scores(*ratio_args)
-        end_c = timeit.default_timer()
-        logger.info(f"    Mehestan {s}c. Aggregate ratios in {int(end_c - end_b)} seconds")
         multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
-        end_d = timeit.default_timer()
-        logger.info(f"    Mehestan {s}d. Multiplicators in {int(end_d - end_c)} seconds")
-
         for (scalee_name, entity_name), score in scalee_scores:
             scalee_scores[scalee_name, entity_name] = score * multipliers[scalee_name]
         if scalees_are_scalers:
             scaler_scores = scalee_scores
-        
+    
         diff_weight_lists, diff_lists = self.diffs(made_public, scaler_scores, scalee_scores)
-        end_e = timeit.default_timer()
-        logger.info(f"    Mehestan {s}e. Entity diffs in {int(end_e - end_d)} seconds")
         diff_args = users, diff_weight_lists, diff_lists, self.default_translation_dev
         voting_rights, diffs = self.aggregate_scaler_scores(*diff_args)
-        end_f = timeit.default_timer()
-        logger.info(f"    Mehestan {s}f. Aggregate diffs in {int(end_f - end_e)} seconds")
         translations = self.compute_translations(voting_rights, diffs)
-        end_g = timeit.default_timer()
-        logger.info(f"    Mehestan {s}g. Translations in {int(end_g - end_f)} seconds")
-        
         for (scalee_name, entity_name), score in scalee_scores:
             scalee_scores[scalee_name, entity_name] = score + translations[scalee_name]
-        
+    
         multipliers = multipliers.prepend(kind="multiplier")
         translations = translations.prepend(kind="translation")
-        scalee_scales = (multipliers | translations).reoroder("username", "kind")
+        scalee_scales = (multipliers | translations).reorder("username", "kind")
 
         return scalee_scales, scalee_scores
 
