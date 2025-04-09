@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +12,11 @@ from solidago.state import *
 from solidago.modules.base import StateFunction
 
 
+
 class PreferenceLearning(StateFunction, ABC):
+    def __init__(self, max_workers: int=1):
+        self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
+    
     def __call__(self, 
         users: Users,
         entities: Entities,
@@ -19,12 +25,14 @@ class PreferenceLearning(StateFunction, ABC):
         user_models: UserModels
     ) -> UserModels:
         """ Learns a scoring model, given user judgments of entities """
-        result = UserModels()
-        for user in users:
-            logger.info(f"  Learning user {user}'s base model")
-            user_args = assessments[user], comparisons[user], user_models[user].base_model()
-            result[user] = self.user_learn(user, entities, *user_args)
-        return result
+        learned_models = UserModels()
+        def args(user):
+            return user, entities, assessments[user], comparisons[user], user_models[user].base_model()
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = [ executor.submit(self.user_learn, *args(user)) for user in users ]
+            for user, future in zip(users, as_completed(futures)):
+                learned_models[user] = future.result()
+        return learned_models
 
     @abstractmethod
     def user_learn(self,

@@ -10,7 +10,7 @@ from .voting_rights import *
 from .models import *
 
 from .base import State
-from .tournesol import TournesolExport
+from .tournesol_export import TournesolExport
 
 __all__ = [
     "User", "Users", "VectorUser", "VectorUsers",

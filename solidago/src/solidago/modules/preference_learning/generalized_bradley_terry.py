@@ -17,6 +17,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         prior_std_dev: float=7.0,
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
+        max_workers: int=1,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -40,6 +41,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         max_uncertainty: float=1e3
             Replaces infinite uncertainties with max_uncertainty
         """
+        super().__init__(max_workers)
         self.prior_std_dev = prior_std_dev
         self.uncertainty_nll_increase = uncertainty_nll_increase
         self.max_uncertainty = max_uncertainty
@@ -248,6 +250,7 @@ class UniformGBT(GeneralizedBradleyTerry):
         prior_std_dev: float = 7.0,
         uncertainty_nll_increase: float = 1.0,
         max_uncertainty: float=1e3,
+        max_workers: int=1,
     ):
         """ UniformGBT is the specific instance of the generalized Bradley-Terry models
         with a uniform distribution over [-1, 1] as a root law. Find out more 
@@ -272,6 +275,7 @@ class UniformGBT(GeneralizedBradleyTerry):
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
+            max_workers=max_workers,
         )
     
     def cumulant_generating_function(self, value_diffs: npt.NDArray) -> npt.NDArray:

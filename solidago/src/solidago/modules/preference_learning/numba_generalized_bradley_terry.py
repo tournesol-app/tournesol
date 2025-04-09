@@ -18,6 +18,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
+        max_workers: int=1,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -45,6 +46,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
+            max_workers=max_workers,
         )
         self.convergence_error = convergence_error
 
@@ -139,6 +141,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
+        max_workers: int=1,
     ):
         """ Generalized Bradley Terry with a uniform root law is a straightforward
         instance of the models introduced in the paper "Generalized Bradley-Terry 
@@ -167,6 +170,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             convergence_error=convergence_error,
+            max_workers=max_workers,
         )
 
     @cached_property

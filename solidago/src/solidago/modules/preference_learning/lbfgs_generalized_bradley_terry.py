@@ -28,6 +28,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         convergence_error: float=1e-5,
         max_iter: int=100,
         device: torch.device=default_device,
+        max_workers: int=1,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
         introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
@@ -58,6 +59,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
             prior_std_dev=prior_std_dev,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
+            max_workers=max_workers,
         )
         self.convergence_error = convergence_error
         self.max_iter = max_iter
@@ -148,6 +150,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         max_iter: int=100,
         device: torch.device=default_device,
         cgf_epsilon: float=1e-8,
+        max_workers: int=1,
     ):
         """ Generalized Bradley Terry with a uniform root law is a straightforward
         instance of the models introduced in the paper "Generalized Bradley-Terry 
@@ -179,6 +182,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
             convergence_error=convergence_error,
             max_iter=max_iter,
             device=device,
+            max_workers=max_workers,
         )
         self.cgf_epsilon = cgf_epsilon
 

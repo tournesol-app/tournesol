@@ -5,13 +5,8 @@ from functools import cache
 from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from solidago.aggregation import EntitywiseQrQuantile
-from solidago.pipeline import Pipeline
-from solidago.post_process.squash import Squash
-from solidago.preference_learning import UniformGBT
-from solidago.scaling import Mehestan, QuantileShift, ScalingCompose, Standardize
-from solidago.trust_propagation import LipschiTrust, NoopTrust
-from solidago.voting_rights import AffineOvertrust
+
+import solidago
 
 from ml.inputs import MlInputFromDb
 from ml.outputs import TournesolPollOutput, save_tournesol_scores
@@ -21,48 +16,7 @@ from tournesol.models.poll import ALGORITHM_MEHESTAN, DEFAULT_POLL_NAME
 
 @cache
 def get_solidago_pipeline(run_trust_propagation: bool = True):
-    if run_trust_propagation:
-        trust_algo = LipschiTrust()
-    else:
-        trust_algo = NoopTrust()
-
-    aggregation_lipshitz = 0.1
-
-    return Pipeline(
-        trust_propagation=trust_algo,
-        voting_rights=AffineOvertrust(),
-        # TODO: use LBFGS (faster) implementation.
-        # Currently requires to install Solidago with "torch" extra.
-        preference_learning=UniformGBT(
-            prior_std_dev=7.0,
-            convergence_error=1e-5,
-            cumulant_generating_function_error=1e-5,
-            high_likelihood_range_threshold=0.25,
-            # max_iter=300,
-        ),
-        scaling=ScalingCompose(
-            Mehestan(),
-            Standardize(
-                dev_quantile=0.9,
-                lipschitz=0.1,
-            ),
-            QuantileShift(
-                quantile=0.1,
-                # target_score is defined to be the recommendability
-                # threshold, i.e the therorical max score that can be
-                # reached by an entity with 2 contributors.
-                target_score=2*aggregation_lipshitz,
-                lipschitz=0.1,
-                error=1e-5,
-            ),
-        ),
-        aggregation=EntitywiseQrQuantile(
-            quantile=0.5,
-            lipschitz=aggregation_lipshitz,
-            error=1e-5,
-        ),
-        post_process=Squash(score_max=100.)
-    )
+    return solidago.Sequential.load("ml/management/commands/tournesol_full.json")
 
 
 class Command(BaseCommand):
