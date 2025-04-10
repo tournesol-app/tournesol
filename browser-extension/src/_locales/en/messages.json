@@ -141,6 +141,22 @@
     "message": "Close icon",
     "description": "Alt text of the close icon displayed when there's a banner"
   },
+  "alertNotYoutubeVideo": {
+    "message": "This is not a YouTube video.",
+    "description": "Alert shown when trying to use on a non-YouTube video link/page"
+  },
+  "alertVideoAdded": {
+    "message": "Video added!",
+    "description": "Alert message indicating a video was added successfully"
+  },
+  "alertAlreadyAdded": {
+    "message": "Video already added.",
+    "description": "Alert message indicating a video was already added"
+  },
+  "alertFailed": {
+    "message": "Failed.",
+    "description": "Alert message indicating an action failed"
+  },
   "rateNowButtonLabel": {
     "message": "Rate Now",
     "description": "Label of the button displayed on video pages."

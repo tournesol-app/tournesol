@@ -81,7 +81,10 @@ function addToRateLaterAction(event) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a YouTube video page.');
+      button.setAttribute(
+        'data-error',
+        chrome.i18n.getMessage('alertNotYoutubeVideo')
+      );
     }
   );
 }
@@ -99,7 +102,10 @@ function openAnalysisPageAction(event) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a YouTube video page.');
+      button.setAttribute(
+        'data-error',
+        chrome.i18n.getMessage('alertNotYoutubeVideo')
+      );
     }
   );
 }

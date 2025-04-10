@@ -33,7 +33,7 @@ export const alertOnCurrentTab = async (msg, tab) => {
 };
 
 export const alertUseOnLinkToYoutube = (tab) => {
-  alertOnCurrentTab('This must be used on a link to a youtube video', tab);
+  alertOnCurrentTab(chrome.i18n.getMessage('alertNotYoutubeVideo'), tab);
 };
 
 export const fetchTournesolApi = async (path, options = {}) => {
@@ -74,18 +74,18 @@ export const addRateLater = async (video_id) => {
   if (ratingStatusReponse && ratingStatusReponse.ok) {
     return {
       success: true,
-      message: 'Done!',
+      message: chrome.i18n.getMessage('alertVideoAdded'),
     };
   }
   if (ratingStatusReponse && ratingStatusReponse.status === 409) {
     return {
       success: true,
-      message: 'Already added.',
+      message: chrome.i18n.getMessage('alertAlreadyAdded'),
     };
   }
   return {
     success: false,
-    message: 'Failed.',
+    message: chrome.i18n.getMessage('alertFailed'),
   };
 };
 
@@ -298,7 +298,7 @@ export function extractVideoId(url) {
   const matchUrl = url.match(
     new RegExp(
       `^${protocol.source}${subdomain.source}` +
-        `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})?` +
+        `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})` +
         `${videoIdOrUid.source}`
     )
   );
