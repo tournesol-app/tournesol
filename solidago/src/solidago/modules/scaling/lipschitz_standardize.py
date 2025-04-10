@@ -11,13 +11,14 @@ from solidago.modules.base import StateFunction
 
 
 class LipschitzStandardize(StateFunction):
-    def __init__(self, dev_quantile: float=0.9, lipschitz: float=0.1, error: float=1e-5):
+    def __init__(self, dev_quantile: float=0.9, lipschitz: float=0.1, error: float=1e-5, *args, **kwargs):
         """ The scores are shifted so that their quantile zero_quantile equals zero
         
         Parameters
         ----------
         dev_quantile: float
         """
+        super().__init__(*args, **kwargs)
         self.dev_quantile = dev_quantile
         self.lipschitz = lipschitz
         self.error = error
@@ -51,6 +52,6 @@ class LipschitzStandardize(StateFunction):
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")
-            state.user_models.common_scales.save(directory, "common_scales")
+            state.user_models.common_scales.save(directory, "common_scales.csv")
         logger.info("Saving state.json")
         return state.save_instructions(directory)

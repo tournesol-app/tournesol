@@ -3,7 +3,7 @@ from solidago.modules.base import StateFunction
 
 
 class Trust2VotingRights(StateFunction):
-    def __init__(self, privacy_penalty: float=0.5):
+    def __init__(self, privacy_penalty: float=0.5, *args, **kwargs):
         """ Computes voting_rights simply as the user trust scores,
         potentially multiplied by the privacy penalty if the vote is private.
         
@@ -12,6 +12,7 @@ class Trust2VotingRights(StateFunction):
         privacy_penalty: float
             Penalty on private entity evaluation
         """
+        super().__init__(*args, **kwargs)
         self.privacy_penalty = privacy_penalty
     
     def __call__(self, 

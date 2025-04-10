@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +13,8 @@ from solidago.modules.base import StateFunction
 
 
 class PreferenceLearning(StateFunction, ABC):
-    def __init__(self, max_workers: int=1):
-        self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
     def __call__(self, 
         users: Users,

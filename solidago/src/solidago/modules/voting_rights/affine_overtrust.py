@@ -1,4 +1,5 @@
 from typing import Union
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 import pandas as pd
@@ -13,6 +14,7 @@ class AffineOvertrust(StateFunction):
         privacy_penalty: float = 0.5, 
         min_overtrust: float = 2.0,
         overtrust_ratio: float = 0.1,
+        *args, **kwargs,
     ):
         """ Computes voting_rights using the affine overtrust algorithm described in 
         "Solidago: A Modular Pipeline for Collaborative Scoring" by Lê Nguyên Hoang, 
@@ -24,6 +26,7 @@ class AffineOvertrust(StateFunction):
         privacy_penalty: float
             Penalty on private entity evaluation
         """
+        super().__init__(*args, **kwargs)
         self.privacy_penalty = privacy_penalty
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
@@ -44,30 +47,34 @@ class AffineOvertrust(StateFunction):
             return None
 
         voting_rights = VotingRights()
-        assessments.cache("criterion", "entity_name", "username")
-        comparisons.cache("criterion", "entity_name", "username", "other_name")
+        assessments = assessments.reorder("criterion", "entity_name", "username")
+        comparisons = comparisons.reorder("criterion", "entity_name", "username", "other_name")
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
         
-        for criterion in assessments.keys("criterion") | comparisons.keys("criterion"):
-            entity_names = lambda judgments: judgments.get(criterion=criterion).keys("entity_name")
-            for entity_name in entity_names(assessments) | entity_names(comparisons):
-                kwargs = dict(criterion=criterion, entity_name=entity_name)
-                evaluators = assessments.get(**kwargs).keys("username")
-                evaluators |= comparisons.get(**kwargs).keys("username")
-                trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
-                public = { u: made_public.get(u, entity_name) for u in evaluators }
-                
-                sub_voting_rights, statistics = self.sub_main(trust_scores, public)
+        entity_names = lambda criterion, judgments: judgments[criterion].keys("entity_name")
+        fixed_args = users, made_public, assessments, comparisons
+        varying_args = [
+            (c, entity_name)
+            for c in assessments.keys("criterion") | comparisons.keys("criterion") 
+            for entity_name in entity_names(c, assessments) | entity_names(c, comparisons)
+        ]
+        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+            futures = [e.submit(self.main, *fixed_args, *v_args) for v_args in varying_args]
+            for (criterion, entity_name), future in zip(varying_args, as_completed(futures)):
+                sub_voting_rights, statistics = future.result()
                 for username, voting_right in sub_voting_rights.items():
                     voting_rights[username, entity_name, criterion] = voting_right
-                keys = [ f"{criterion}_{name}" for name in stat_names ]
                 entities.loc[entity_name, [ f"{criterion}_{n}" for n in stat_names ]] = statistics
-                
-        return entities, voting_rights
 
-    def sub_main(self, 
-        trust_scores: dict[str, float],
-        public: dict[str, bool],
+        return entities, voting_rights
+    
+    def main(self, 
+        users: Users, 
+        made_public: MadePublic,
+        assessments: Assessments, 
+        comparisons: Comparisons, 
+        criterion: str, 
+        entity_name: str,
     ) -> tuple[dict[str, float], tuple[float, float, float]]:
         """ Computes the allocated voting rights and some statistics of these voting rights
         
@@ -78,6 +85,11 @@ class AffineOvertrust(StateFunction):
         statistics: dict[str, float]
             statistics[statistics_name] is the value of statistics_name
         """
+        evaluators = assessments[criterion, entity_name].keys("username")
+        evaluators |= comparisons[criterion, entity_name].keys("username")
+        trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
+        public = { u: made_public.get(u, entity_name) for u in evaluators }
+
         voting_rights_np, statistics = self.computing_voting_rights_and_statistics(
             trust_scores=np.nan_to_num(np.array(list(trust_scores.values())), nan=0.0),
             privacy_weights=( np.array(list(public.values())) * (1 - self.privacy_penalty) + self.privacy_penalty )

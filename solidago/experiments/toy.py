@@ -27,8 +27,8 @@ with time(logger, "Loading input states"):
     # s = State.load("tests/saved/0")
     # s = generator(seed=0)
     # s = TournesolExport("tests/tiny_tournesol.zip")
-    # dfs = TournesolExport.load_dfs("experiments/tournesol.zip")
-    # s = TournesolExport("experiments/tournesol.zip")
+    # dfs = TournesolExport.load_dfs("experiments/tournesol_dataset.zip")
+    # s = TournesolExport("experiments/tournesol_dataset.zip")
     # s.save("experiments/tournesol_processed")
     s = State.load("experiments/tournesol_processed")
     
