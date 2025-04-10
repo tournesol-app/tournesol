@@ -17,6 +17,10 @@
   "menuRateLaterHistory": {
     "message": "Import YouTube watch history"
   },
+  "contextMenuRateLater": {
+    "message": "Rate later on Tournesol",
+    "description": "Label of the rate-later menu item (after right-click on a link)."
+  },
   "recommendedByTournesol": {
     "message": "Recommended by Tournesol",
     "description": "Title of the main Tournesol container."

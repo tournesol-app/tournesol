@@ -17,6 +17,10 @@
   "menuRateLaterHistory": {
     "message": "Importer l'historique YouTube"
   },
+  "contextMenuRateLater": {
+    "message": "Comparer plus tard sur Tournesol",
+    "description": "Label du menu permettant d'ajouter une vidéo à sa liste à Comparer plus tard (lors d'un clic droit sur un lien)."
+  },
   "recommendedByTournesol": {
     "message": "Recommandées par Tournesol",
     "description": "Titre du conteneur principal affichant les recommandations."

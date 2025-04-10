@@ -284,3 +284,23 @@ export const getSingleSetting = async (
 
   return settings.body?.[scope]?.[name] ?? default_;
 };
+
+export function extractVideoId(url) {
+  const protocol = /(?:https?:\/\/)?/;
+  const subdomain = /(?:www\.|m\.)?/;
+  const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/|v\/|shorts\/))/;
+  const youtubeShortUrl = /(?:youtu\.be\/)/;
+  const tournesolEntityUrl = /(?:[.\w]+\/entities\/)/;
+
+  const videoId = /([A-Za-z0-9-_]{11})/;
+  const videoIdOrUid = new RegExp(`(?:yt:)?${videoId.source}`);
+
+  const matchUrl = url.match(
+    new RegExp(
+      `^${protocol.source}${subdomain.source}` +
+        `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})?` +
+        `${videoIdOrUid.source}`
+    )
+  );
+  return matchUrl ? matchUrl[1] : null;
+}
