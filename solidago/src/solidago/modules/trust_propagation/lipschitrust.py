@@ -17,6 +17,7 @@ class LipschiTrust(StateFunction):
         decay: float = 0.8,
         sink_vouch: float = 5.0,
         error: float = 1e-8,
+        *args, **kwargs,
     ):
         """A robustified variant of PageRank.
         In this algorithm, we leverage pre-trust (e.g., based on email domains) and
@@ -57,6 +58,7 @@ class LipschiTrust(StateFunction):
         assert sink_vouch >= 0
         assert error > 0
 
+        super().__init__(*args, **kwargs)
         self.pretrust_value = pretrust_value
         self.decay = decay
         self.sink_vouch = sink_vouch

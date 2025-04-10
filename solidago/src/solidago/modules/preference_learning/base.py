@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +13,8 @@ from solidago.modules.base import StateFunction
 
 
 class PreferenceLearning(StateFunction, ABC):
-    def __init__(self, max_workers: int=1):
-        self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
     def __call__(self, 
         users: Users,
@@ -26,10 +25,9 @@ class PreferenceLearning(StateFunction, ABC):
     ) -> UserModels:
         """ Learns a scoring model, given user judgments of entities """
         learned_models = UserModels()
-        def args(user):
-            return user, entities, assessments[user], comparisons[user], user_models[user].base_model()
-        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            futures = [ executor.submit(self.user_learn, *args(user)) for user in users ]
+        args = lambda user: (assessments[user], comparisons[user], user_models[user].base_model())
+        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+            futures = [ e.submit(self.user_learn, user, entities, *args(user)) for user in users ]
             for user, future in zip(users, as_completed(futures)):
                 learned_models[user] = future.result()
         return learned_models

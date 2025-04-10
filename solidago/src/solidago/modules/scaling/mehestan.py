@@ -1,5 +1,6 @@
 from typing import Callable, Optional, Iterable
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 import numpy.typing as npt
@@ -28,7 +29,8 @@ class Mehestan(StateFunction):
         n_diffs_sample_max: float=1000,
         default_multiplier_dev: float=0.5,
         default_translation_dev: float=1.,
-        error: float=1e-5
+        error: float=1e-5,
+        *args, **kwargs,
     ):
         """ Mehestan performs Lipschitz-resilient collaborative scaling.
         It is based on "Robust Sparse Voting", by Youssef Allouah, 
@@ -60,6 +62,7 @@ class Mehestan(StateFunction):
         error: float
             Error bound
         """
+        super().__init__(*args, **kwargs)
         self.lipschitz = lipschitz
         self.min_scaler_activity = min_scaler_activity
         self.n_scalers_max = n_scalers_max
@@ -92,25 +95,22 @@ class Mehestan(StateFunction):
         assert "trust_score" in users.columns, "No trust scores. Consider running TrustAll first."
 
         scales = MultiScore(keynames=["username", "kind", "criterion"])
-        for criterion in user_models.criteria():
-            with time(logger, f"Mehestan for {criterion}"):
-                scores = user_models(entities, criterion)
-                output = self.scale_criterion(users, entities, made_public, scores)
-                subscales, activities, is_scaler = output
-                scales |= subscales.prepend(criterion=criterion)
-                users[f"activities_{criterion}"] = activities
-                users[f"is_scaler_{criterion}"] = is_scaler
-        with time(logger, "Scaling user models"):
-            scaled_models = user_models.scale(scales, note="mehestan")
-        return users, scaled_models
+        args = users, entities, made_public, user_models
+        criteria = user_models.criteria()
+        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+            futures = [ e.submit(self.scale_criterion, *args, c) for c in criteria ]
+            for c, future in zip(criteria, as_completed(futures)):
+                subscales, activities, is_scaler = future.result()
+                scales |= subscales.prepend(criterion=c)
+                users[f"activities_{c}"] = activities
+                users[f"is_scaler_{c}"] = is_scaler
+        return users, user_models.scale(scales, note="mehestan")
 
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         logger.info(f"Mehestan result saving in directory {directory}")
         if directory is not None:
-            with time(logger, "Saving users"):
-                state.users.save(directory)
-            with time(logger, "Saving user scales"):
-                state.user_models.user_scales.save(directory, "user_scales")
+            state.users.save(directory)
+            state.user_models.user_scales.save(directory, "user_scales.csv")
         with time(logger, "Saving state.json"):
             instructions = state.save_instructions(directory)
         return instructions
@@ -119,25 +119,24 @@ class Mehestan(StateFunction):
         users: Users,
         entities: Entities,
         made_public: MadePublic, # keynames == ["username", "entity_name"]
-        scores: MultiScore, # keynames == ["username", "entity_name"]
+        user_models: UserModels,
+        criterion: str,
     ) -> tuple[MultiScore, npt.NDArray, npt.NDArray]: # scales, activies, is_scaler
-        with time(logger, "  1. Scaler selection"):
-            activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
-            if not any(is_scaler):
-                logger.warning("  No user qualifies as a scaler. No scaling performed.")
-                return MultiScore(keynames=["username", "kind"]), activities, is_scaler
-            scalers, nonscalers = set(), set()
-            for index, user in enumerate(users):
-                (scalers if is_scaler[index] else nonscalers).add(str(user))
+        scores = user_models(entities, criterion) # keynames == ["username", "entity_name"]
+        activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
+        if not any(is_scaler):
+            logger.warning("  No user qualifies as a scaler. No scaling performed.")
+            return MultiScore(keynames=["username", "kind"]), activities, is_scaler
+        scalers, nonscalers = set(), set()
+        for index, user in enumerate(users):
+            (scalers if is_scaler[index] else nonscalers).add(str(user))
         
-        with time(logger, "  2. Collaborative scaler scaling"):
-            scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
-            scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
-            scaler_scales, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
+        scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
+        scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
+        scaler_scales, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
 
-        with time(logger, "  3. Scaling of non-scalers"):
-            scale_nonscalers_to_scalers_args = (users, made_public, scaler_scores, nonscaler_scores)
-            nonscaler_scales, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
+        scale_nonscalers_to_scalers_args = (users, made_public, scaler_scores, nonscaler_scores)
+        nonscaler_scales, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
         
         return (scaler_scales | nonscaler_scales), activities, is_scaler
 
@@ -202,9 +201,7 @@ class Mehestan(StateFunction):
     
         multipliers = multipliers.prepend(kind="multiplier")
         translations = translations.prepend(kind="translation")
-        scalee_scales = (multipliers | translations).reorder("username", "kind")
-
-        return scalee_scales, scalee_scores
+        return (multipliers | translations), scalee_scores
 
     ############################################
     ##    Methods to estimate the scalers     ##
@@ -232,7 +229,7 @@ class Mehestan(StateFunction):
             where i is the iloc of the user in users
         """
         return np.array([
-            self.compute_user_activities(user["trust_score"], made_public[user], scores[user])
+            self.compute_user_activities(float(user["trust_score"]), made_public[user], scores[user])
             for user in users
         ])
     

@@ -7,7 +7,7 @@ from solidago.modules.base import StateFunction
 
 
 class EntitywiseQrQuantile(StateFunction):
-    def __init__(self, quantile: float=0.2, lipschitz: float=0.1, error: float=1e-5):
+    def __init__(self, quantile: float=0.2, lipschitz: float=0.1, error: float=1e-5, *args, **kwargs):
         """ Aggregates scores using the quadratically regularized quantile,
         for each entity and each criterion.
         
@@ -17,6 +17,7 @@ class EntitywiseQrQuantile(StateFunction):
         lipschitz: float
         error: float
         """
+        super().__init__(*args, **kwargs)
         self.quantile = quantile
         self.lipschitz = lipschitz
         self.error = error

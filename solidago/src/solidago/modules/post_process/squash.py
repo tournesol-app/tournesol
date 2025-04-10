@@ -8,8 +8,9 @@ from solidago.modules.base import StateFunction
 
 
 class Squash(StateFunction):
-    def __init__(self, score_max: float = 100.0):
+    def __init__(self, score_max: float = 100.0, *args, **kwargs):
         assert score_max > 0
+        super().__init__(*args, **kwargs)
         self.score_max = score_max
     
     def __call__(self, 

@@ -57,7 +57,7 @@ class TournesolExport(State):
         for username in missing_usernames:
             users.loc[len(users)] = [username, 0.]
 
-        users["is_pretrusted"] = users["trust_score"] >= 0.8
+        users["is_pretrusted"] = pd.to_numeric(users["trust_score"]) >= 0.8
         vouches["kind"] = "Personhood"
         vouches["priority"] = 0
         user_scores["depth"] = 0

@@ -16,6 +16,7 @@ class LipschitzQuantileShift(StateFunction):
         target_score: float = 0.0,
         lipschitz: float = 0.1,
         error: float = 1e-5,
+        *args, **kwargs,
     ):
         """ The scores are shifted so that their quantile zero_quantile equals zero
 
@@ -23,6 +24,7 @@ class LipschitzQuantileShift(StateFunction):
         ----------
         zero_quantile: float
         """
+        super().__init__(*args, **kwargs)
         self.quantile = quantile
         self.target_score = target_score
         self.lipschitz = lipschitz
@@ -63,7 +65,7 @@ class LipschitzQuantileShift(StateFunction):
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")
-            state.user_models.common_scales.save(directory, "common_scales")
+            state.user_models.common_scales.save(directory, "common_scales.csv")
         logger.info("Saving state.json")
         return state.save_instructions(directory)
 

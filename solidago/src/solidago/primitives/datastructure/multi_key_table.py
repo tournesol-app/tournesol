@@ -339,7 +339,7 @@ class MultiKeyTable:
         for key in prekeys[:-1]:
             subdict[key] = dict()
             subdict = subdict[key]
-        subdict[prekeys[-1]] = self._cache[self.keynames]._dict
+        subdict[prekeys[-1]] = self.nested_dict()._dict
         return result
 
     def reorder(self, *keynames) -> "MultiKeyTable":
@@ -357,11 +357,13 @@ class MultiKeyTable:
         except (pd.errors.EmptyDataError, ValueError):
             return cls(**kwargs)
     
-    def to_df(self) -> DataFrame:
-        return DataFrame([ 
-            Series(dict(zip(self.keynames, keys)) | dict(self.value2series(value)))
-            for keys, value in self
-        ])
+    def to_df(self, max_values: Union[int, float]=float("inf")) -> DataFrame:
+        df_list = list()
+        for index, (keys, value) in enumerate(self):
+            if index >= max_values:
+                break
+            df_list.append(Series(dict(zip(self.keynames, keys)) | dict(self.value2series(value))))
+        return DataFrame(df_list)
 
     def df_save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
         name = name or f"{self.name}.csv"
@@ -388,5 +390,5 @@ class MultiKeyTable:
         return type(self).__name__, dict(name=name, keynames=self.keynames)
 
     def __repr__(self) -> str:
-        return f"name={self.name}\nkeynames={self.keynames}\n\n{self.to_df()}"
+        return f"name={self.name}\nkeynames={self.keynames}\n\n{self.to_df(5)}\n\n... ({len(self)} items)"
     

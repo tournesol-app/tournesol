@@ -10,8 +10,10 @@ class Average(StateFunction):
         entities: Entities,
         voting_rights: VotingRights,
         user_models: UserModels,
+        *args, **kwargs,
     ) -> ScoringModel:
         """ Returns weighted average of user's scores """
+        super().__init__(*args, **kwargs)
         global_model = DirectScoring(note="average")
         multiscores = user_models(entities)
 
