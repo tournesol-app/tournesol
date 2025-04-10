@@ -26,10 +26,9 @@ class PreferenceLearning(StateFunction, ABC):
     ) -> UserModels:
         """ Learns a scoring model, given user judgments of entities """
         learned_models = UserModels()
-        def args(user):
-            return user, entities, assessments[user], comparisons[user], user_models[user].base_model()
-        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            futures = [ executor.submit(self.user_learn, *args(user)) for user in users ]
+        args = lambda user: (assessments[user], comparisons[user], user_models[user].base_model())
+        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+            futures = [ e.submit(self.user_learn, user, entities, *args(user)) for user in users ]
             for user, future in zip(users, as_completed(futures)):
                 learned_models[user] = future.result()
         return learned_models
