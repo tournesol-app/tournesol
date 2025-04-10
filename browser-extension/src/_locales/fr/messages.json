@@ -17,6 +17,10 @@
   "menuRateLaterHistory": {
     "message": "Importer l'historique YouTube"
   },
+  "contextMenuRateLater": {
+    "message": "Comparer plus tard sur Tournesol",
+    "description": "Label du menu permettant d'ajouter une vidéo à sa liste à Comparer plus tard (lors d'un clic droit sur un lien)."
+  },
   "recommendedByTournesol": {
     "message": "Recommandées par Tournesol",
     "description": "Titre du conteneur principal affichant les recommandations."
@@ -134,6 +138,22 @@
   "closeIconAlt": {
     "message": "Icône de fermeture",
     "description": "Texte alternatif à l'icône de fermeture de la bannière"
+  },
+  "alertNotYoutubeVideo": {
+    "message": "Ceci n'est pas une vidéo YouTube.",
+    "description": "Alerte affichée lorsqu'on tente d'utiliser un lien/une page qui n'est pas une vidéo YouTube"
+  },
+  "alertVideoAdded": {
+    "message": "Vidéo ajoutée !",
+    "description": "Message d'alerte indiquant qu'une vidéo a été ajoutée avec succès"
+  },
+  "alertAlreadyAdded": {
+    "message": "Vidéo déjà ajoutée.",
+    "description": "Message d'alerte indiquant qu'une vidéo a déjà été ajoutée"
+  },
+  "alertFailed": {
+    "message": "Échec.",
+    "description": "Message d'alerte indiquant qu'une action a échoué"
   },
   "rateNowButtonLabel": {
     "message": "Comparer",

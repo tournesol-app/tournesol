@@ -280,8 +280,7 @@ const forEachVisibleVideoId = (callback) => {
   previews.forEach((preview) => {
     const title = preview.querySelector('#video-title');
     const href = title.getAttribute('href');
-    const params = new URLSearchParams(href.replace(/.*\?/, ''));
-    const videoId = params.get('v');
+    const videoId = new URL(href).searchParams.get('v');
     if (videoId) callback(videoId);
   });
 };
