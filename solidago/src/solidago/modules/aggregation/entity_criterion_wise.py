@@ -18,10 +18,15 @@ class EntityCriterionWise(StateFunction):
         """ Returns weighted average of user's scores """
         global_model = DirectScoring(note="average")
         voting_rights = voting_rights.reorder("criterion", "entity_name", "username")
+        scores = user_models(entities, max_workers=self.max_workers)
+        scores = scores.reorder("criterion", "entity_name", "username")
         
         def aggregate(criterion):
             return {
-                str(entity): self.aggregate(user_models, voting_rights[criterion, entity], criterion, entity) 
+                str(entity): self.aggregate(
+                    scores[criterion, entity], 
+                    voting_rights[criterion, entity], 
+                ) 
                 for entity in entities
             }
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
@@ -35,9 +40,7 @@ class EntityCriterionWise(StateFunction):
     
     @abstractmethod
     def aggregate(self, 
-        user_models: UserModels, 
+        scores: MultiScore, # keynames == "username"
         voting_rights: VotingRights, # keynames == "username"
-        criterion: str,
-        entity: Entity, 
-    ) -> float:
+    ) -> Score:
         raise NotImplemented

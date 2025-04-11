@@ -6,13 +6,7 @@ class Average(EntityCriterionWise):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
-    def aggregate(self, 
-        user_models: UserModels, 
-        voting_rights: VotingRights, # keynames == "username"
-        criterion: str,
-        entity: Entity, 
-    ) -> float:
-        scores = user_models(entity, criterion)
+    def aggregate(self, scores: MultiScore, voting_rights: VotingRights) -> Score:
         if len(scores) == 0:
             return Score.nan()
         weighted_sum = sum([score * voting_rights[u] for (u,), score in scores], Score(0, 0, 0))

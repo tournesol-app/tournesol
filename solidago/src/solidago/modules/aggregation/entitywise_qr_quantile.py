@@ -22,13 +22,7 @@ class EntitywiseQrQuantile(EntityCriterionWise):
         self.lipschitz = lipschitz
         self.error = error
 
-    def aggregate(self, 
-        user_models: UserModels, 
-        voting_rights: VotingRights, # keynames == "username"
-        criterion: str,
-        entity: Entity, 
-    ) -> float:
-        scores = user_models(entity, criterion)
+    def aggregate(self, scores: MultiScore, voting_rights: VotingRights) -> Score:
         if len(scores) == 0:
             return Score.nan()
         kwargs = dict(lipschitz=self.lipschitz, error=self.error) | dict(
