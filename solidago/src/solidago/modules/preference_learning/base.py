@@ -25,16 +25,19 @@ class PreferenceLearning(StateFunction, ABC):
     ) -> UserModels:
         """ Learns a scoring model, given user judgments of entities """
         learned_models = UserModels()
-        args_list = [
-            (user, entities, assessments[user], comparisons[user], user_models[user].base_model())
-            for user in users
-        ]
+        batches = [list() for _ in range(2*self.max_workers)]
+        args = lambda u: (u, entities, assessments[u], comparisons[u], user_models[u].base_model())
+        for index, user in enumerate(users):
+            batches[index % len(batches)].append(args(user))
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.user_learn, *args): args for args in args_list}
+            futures = {e.submit(self.batch_learn, batch) for batch in batches}
             for f in as_completed(futures):
-                user = futures[f][0]
-                learned_models[user] = f.result()
+                for username, model in f.result().items():
+                    learned_models[username] = model
         return learned_models
+
+    def batch_learn(self, args_list: list) -> dict[str, ScoringModel]:
+        return {str(args[0]): self.user_learn(*args) for args in args_list}        
 
     @abstractmethod
     def user_learn(self,

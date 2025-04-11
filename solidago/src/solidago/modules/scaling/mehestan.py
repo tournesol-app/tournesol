@@ -95,19 +95,21 @@ class Mehestan(StateFunction):
         assert "trust_score" in users.columns, "No trust scores. Consider running TrustAll first."
 
         scales = MultiScore(keynames=["username", "kind", "criterion"])
-        args = users, entities, made_public, user_models
+        scores = user_models(entities, max_workers=self.max_workers)
+        fixed_args = users, entities, made_public
+        args_list = [(c, scores.get(criterion=c)) for c in user_models.criteria()]
+        results = list()
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.scale_criterion, *args, c): c for c in user_models.criteria()}
+            futures = {e.submit(self.scale_criterion, *fixed_args, s): c for c, s in args_list}
             for f in as_completed(futures):
-                criterion = futures[f]
-                subscales, activities, is_scaler = f.result()
-                scales |= subscales.prepend(criterion=criterion)
-                users[f"activities_{criterion}"] = activities
-                users[f"is_scaler_{criterion}"] = is_scaler
+                results.append((futures[f], f.result()))
+        for criterion, (subscales, activities, is_scaler) in results:
+            scales |= subscales.prepend(criterion=criterion)
+            users[f"activities_{criterion}"] = activities
+            users[f"is_scaler_{criterion}"] = is_scaler
         return users, user_models.scale(scales, note="mehestan")
 
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
-        logger.info(f"Mehestan result saving in directory {directory}")
         if directory is not None:
             state.users.save(directory)
             state.user_models.user_scales.save(directory, "user_scales.csv")
@@ -119,10 +121,8 @@ class Mehestan(StateFunction):
         users: Users,
         entities: Entities,
         made_public: MadePublic, # keynames == ["username", "entity_name"]
-        user_models: UserModels,
-        criterion: str,
+        scores: MultiScore,
     ) -> tuple[MultiScore, npt.NDArray, npt.NDArray]: # scales, activies, is_scaler
-        scores = user_models(entities, criterion) # keynames == ["username", "entity_name"]
         activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
         if not any(is_scaler):
             logger.warning("  No user qualifies as a scaler. No scaling performed.")

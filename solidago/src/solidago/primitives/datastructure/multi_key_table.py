@@ -253,7 +253,15 @@ class MultiKeyTable:
         return keys in self.nested_dict(*keynames)
 
     def __len__(self) -> int:
-        return len(self._main_cache())
+        if self.keynames in self._cache:
+            return len(self.nested_dict())
+        elif self._cache:
+            nested_dict = next(iter(self._cache.values()))
+            return len(nested_dict)
+        try:
+            return len(self.init_data)
+        except TypeError:
+            return len(self._main_cache())
     
     def __bool__(self) -> bool:
         return bool(self._main_cache())
@@ -346,6 +354,10 @@ class MultiKeyTable:
         keynames = list(keynames) + [kn for kn in self.keynames if kn not in keynames]
         assert len(keynames) == self.depth
         return type(self)(keynames, self._cache)
+    
+    def detach(self) -> "MultiKeyTable":
+        """ Removes reference to parent """
+        return type(self)(self.keynames, self._cache)
     
     @classmethod
     def load(cls, directory: str, name: Optional[str]=None, **kwargs) -> "MultiKeyTable":

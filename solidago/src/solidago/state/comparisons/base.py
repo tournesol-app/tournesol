@@ -19,10 +19,10 @@ class Comparison:
 
     @property
     def keynames(self) -> tuple:
-        return "value", "max"
+        return "value", "max", "location"
 
     def to_tuple(self) -> tuple:
-        return self.value, self.max
+        return self.value, self.max, self.location
     
     def to_series(self) -> Series:
         return Series(dict(zip(self.keynames, self.to_tuple())))
@@ -142,6 +142,8 @@ class Comparisons(MultiKeyTable):
         return self.get(entity_name=str(entity)).keys("username")
 
     def __len__(self) -> int:
+        if isinstance(self.init_data, DataFrame) and "location" not in self.init_data.columns:
+            return len(self.init_data)
         return super().__len__() // 2
 
     def left_right_indices(self, entities: "Entities") -> tuple[list[int], list[int]]:

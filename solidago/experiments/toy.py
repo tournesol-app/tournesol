@@ -26,7 +26,11 @@ with time(logger, "Loading input states"):
     # processed_states = [ pipeline(states[seed], f"tests/saved/{seed}") for seed in range(5) ]
     # s = State.load("tests/saved/0")
     # s = generator(seed=0)
+    
     # s = TournesolExport("tests/tiny_tournesol.zip")
+    # s.save("experiments/tiny_tournesol_processed")
+    # s = State.load("experiments/tiny_tournesol_processed")
+    
     # dfs = TournesolExport.load_dfs("experiments/tournesol_dataset.zip")
     # s = TournesolExport("experiments/tournesol_dataset.zip")
     # s.save("experiments/tournesol_processed")

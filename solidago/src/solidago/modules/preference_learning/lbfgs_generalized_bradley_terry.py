@@ -4,6 +4,9 @@ from typing import Optional
 import pandas as pd
 import numpy as np
 import numpy.typing as npt
+import logging
+
+logger = logging.getLogger(__name__)
 
 try:
     import torch
@@ -121,7 +124,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
 
         n_iter = lbfgs.state_dict()["state"][0]["n_iter"]
         if n_iter >= self.max_iter:
-            raise RuntimeError(f"LBFGS failed to converge in {n_iter} iterations")
+            logger.warning(f"LBFGS failed to converge in {n_iter} iterations")
 
         values = values.detach()
         if values.isnan().any():

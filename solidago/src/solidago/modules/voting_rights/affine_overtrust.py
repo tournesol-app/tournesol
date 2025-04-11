@@ -53,18 +53,17 @@ class AffineOvertrust(StateFunction):
         
         entity_names = lambda criterion, judgments: judgments[criterion].keys("entity_name")
         args_list = [
-            (users, made_public, assessments, comparisons, c, entity_name)
-            for c in assessments.keys("criterion") | comparisons.keys("criterion") 
-            for entity_name in entity_names(c, assessments) | entity_names(c, comparisons)
+            (users, made_public, assessments, comparisons, criterion)
+            for criterion in assessments.keys("criterion") | comparisons.keys("criterion") 
         ]
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.main, *args): args for args in args_list}
+            futures = {e.submit(self.main, *args): args[-1] for args in args_list}
             for f in as_completed(futures):
-                _, _, _, _, criterion, entity_name = futures[f]
-                sub_voting_rights, statistics = f.result()
-                for username, voting_right in sub_voting_rights.items():
-                    voting_rights[username, entity_name, criterion] = voting_right
-                entities.loc[entity_name, [ f"{criterion}_{n}" for n in stat_names ]] = statistics
+                criterion = futures[f]
+                for entity_name, (sub_voting_rights, statistics) in f.result().items():
+                    for username, voting_right in sub_voting_rights.items():
+                        voting_rights[username, entity_name, criterion] = voting_right
+                    entities.loc[entity_name, [ f"{criterion}_{n}" for n in stat_names ]] = statistics
 
         return entities, voting_rights
     
@@ -74,7 +73,6 @@ class AffineOvertrust(StateFunction):
         assessments: Assessments, 
         comparisons: Comparisons, 
         criterion: str, 
-        entity_name: str,
     ) -> tuple[dict[str, float], tuple[float, float, float]]:
         """ Computes the allocated voting rights and some statistics of these voting rights
         
@@ -85,17 +83,21 @@ class AffineOvertrust(StateFunction):
         statistics: dict[str, float]
             statistics[statistics_name] is the value of statistics_name
         """
-        evaluators = assessments[criterion, entity_name].keys("username")
-        evaluators |= comparisons[criterion, entity_name].keys("username")
-        trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
-        public = { u: made_public.get(u, entity_name) for u in evaluators }
-
-        voting_rights_np, statistics = self.computing_voting_rights_and_statistics(
-            trust_scores=np.nan_to_num(np.array(list(trust_scores.values())), nan=0.0),
-            privacy_weights=( np.array(list(public.values())) * (1 - self.privacy_penalty) + self.privacy_penalty )
-        )
-        voting_rights = {username: voting_rights_np[i] for i, username in enumerate(trust_scores)}
-        return voting_rights, statistics
+        entity_names = lambda criterion, judgments: judgments[criterion].keys("entity_name")
+        results = dict()
+        for entity_name in entity_names(criterion, assessments) | entity_names(criterion, comparisons):
+            evaluators = assessments[criterion, entity_name].keys("username")
+            evaluators |= comparisons[criterion, entity_name].keys("username")
+            trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
+            public = { u: made_public.get(u, entity_name) for u in evaluators }
+    
+            voting_rights_np, statistics = self.computing_voting_rights_and_statistics(
+                trust_scores=np.nan_to_num(np.array(list(trust_scores.values())), nan=0.0),
+                privacy_weights=( np.array(list(public.values())) * (1 - self.privacy_penalty) + self.privacy_penalty )
+            )
+            voting_rights = {u: voting_rights_np[i] for i, u in enumerate(trust_scores)}
+            results[entity_name] = voting_rights, statistics
+        return results
 
     def computing_voting_rights_and_statistics(self,
         trust_scores: np.ndarray,

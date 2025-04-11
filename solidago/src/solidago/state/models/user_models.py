@@ -2,6 +2,7 @@ from typing import Union, Optional, Iterable
 from pathlib import Path
 from pandas import DataFrame
 from copy import deepcopy
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import json
@@ -89,28 +90,44 @@ class UserModels:
     def __call__(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
+        max_workers: int=1,
     ) -> MultiScore:
-        return self.score(entities, criterion)
+        return self.score(entities, criterion, max_workers)
     
     def score(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
+        max_workers: int=1,
     ) -> MultiScore:
         keynames = ["username"]
         from solidago.state.entities import Entities
         keynames += ["entity_name"] if isinstance(entities, Entities) else list()
         keynames += ["criterion"] if criterion is None else list()
         results = MultiScore(keynames)
-        for username, model in self:
-            scores = model(entities, criterion)
-            if isinstance(scores, Score): # keys == tuple()
-                results[username] = scores
-            else:
-                for keys, score in scores:
-                    results[username, *keys] = score
+        
+        batches = [list() for _ in range(2*max_workers)]
+        for index, (user, model) in enumerate(self):
+            batches[index % len(batches)].append((user, model))
+        def user_score(batch):
+            return {str(user): model(entities, criterion) for user, model in batch}
+        with ThreadPoolExecutor(max_workers=max_workers) as e:
+            futures = {e.submit(user_score, batch) for batch in batches}
+            for f in as_completed(futures):
+                for username, scores in f.result().items():
+                    if isinstance(scores, Score): # results.keynames == ["username"]
+                        results[username] = scores
+                    else:
+                        assert isinstance(scores, MultiScore)
+                        for keys, score in scores:
+                            results[username, *keys] = score
         return results
 
     def __len__(self) -> int:
+        if self._cache_users is None:
+            try:
+                return len(set(self.user_directs.init_data["username"]))
+            except TypeError:
+                return len(self.to_dict())
         return len(self.to_dict())
     
     def __contains__(self, user: Union[str, "User"]) -> bool:

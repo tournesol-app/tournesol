@@ -8,9 +8,9 @@ class Average(EntityCriterionWise):
     
     def aggregate(self, 
         user_models: UserModels, 
-        entity: Entity, 
-        criterion: str,
         voting_rights: VotingRights, # keynames == "username"
+        criterion: str,
+        entity: Entity, 
     ) -> float:
         scores = user_models(entity, criterion)
         if len(scores) == 0:
