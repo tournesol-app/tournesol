@@ -23,11 +23,8 @@ class EntityCriterionWise(StateFunction):
         
         def aggregate(criterion):
             return {
-                str(entity): self.aggregate(
-                    scores[criterion, entity], 
-                    voting_rights[criterion, entity], 
-                ) 
-                for entity in entities
+                str(e): self.aggregate(scores[criterion, e], voting_rights[criterion, e]) 
+                for e in entities
             }
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(aggregate, c): c for c in user_models.criteria()}
