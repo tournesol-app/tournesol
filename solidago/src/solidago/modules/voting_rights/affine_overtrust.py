@@ -52,16 +52,15 @@ class AffineOvertrust(StateFunction):
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
         
         entity_names = lambda criterion, judgments: judgments[criterion].keys("entity_name")
-        fixed_args = users, made_public, assessments, comparisons
-        varying_args = [
-            (c, entity_name)
+        args_list = [
+            (users, made_public, assessments, comparisons, c, entity_name)
             for c in assessments.keys("criterion") | comparisons.keys("criterion") 
             for entity_name in entity_names(c, assessments) | entity_names(c, comparisons)
         ]
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = [e.submit(self.main, *fixed_args, *v_args) for v_args in varying_args]
-            for (criterion, entity_name), future in zip(varying_args, as_completed(futures)):
-                sub_voting_rights, statistics = future.result()
+            futures = [e.submit(self.main, *args) for args in args_list]
+            for (_, _, _, _, criterion, entity_name), f in zip(args_list, as_completed(futures)):
+                sub_voting_rights, statistics = f.result()
                 for username, voting_right in sub_voting_rights.items():
                     voting_rights[username, entity_name, criterion] = voting_right
                 entities.loc[entity_name, [ f"{criterion}_{n}" for n in stat_names ]] = statistics

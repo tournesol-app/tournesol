@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives.timer import time
 from .base import ScoringModel
-from .score import MultiScore
+from .score import Score, MultiScore
 from .direct import DirectScoring
 from .scaled import ScaledModel
 
@@ -103,8 +103,11 @@ class UserModels:
         results = MultiScore(keynames)
         for username, model in self:
             scores = model(entities, criterion)
-            for keys, score in scores:
-                results[username, *keys] = score
+            if isinstance(scores, Score): # keys == tuple()
+                results[username] = scores
+            else:
+                for keys, score in scores:
+                    results[username, *keys] = score
         return results
 
     def __len__(self) -> int:

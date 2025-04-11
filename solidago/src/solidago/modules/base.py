@@ -85,22 +85,6 @@ class StateFunction:
                     f"of `{type(self).__name__}`, " \
                     f"whose annotation is currently `{annotations}`"
     
-    @classmethod
-    def load(cls, filename: Optional[Union[str, Path, list, dict]]=None) -> "StateFunction":
-        if filename is None:
-            return cls()
-        if isinstance(filename, (str, Path)):
-            with open(filename) as f:
-                args = json.load(f)
-        else:
-            args = filename
-        import solidago.modules as modules
-        if isinstance(args, list):
-            return cls(*[ getattr(modules, m[0])(m[1]) for m in args ])
-        else:
-            assert isinstance(args, dict)
-            return cls(**{ key: getattr(modules, m[0])(m[1]) for key, m in args.items() })
-
     def save(self, filename: Optional[Union[str, Path]]=None) -> tuple[str, Optional[Union[dict, list]]]:
         j = type(self).__name__, self.args_save()
         if filename is not None:

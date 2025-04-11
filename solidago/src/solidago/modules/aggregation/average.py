@@ -1,27 +1,22 @@
-import pandas as pd
-
 from solidago.state import *
-from solidago.modules.base import StateFunction
+from solidago.modules.aggregation.entity_criterion_wise import EntityCriterionWise
 
 
-class Average(StateFunction):
-    
-    def __call__(self, 
-        entities: Entities,
-        voting_rights: VotingRights,
-        user_models: UserModels,
-        *args, **kwargs,
-    ) -> ScoringModel:
-        """ Returns weighted average of user's scores """
+class Average(EntityCriterionWise):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        global_model = DirectScoring(note="average")
-        multiscores = user_models(entities)
-
-        for (entity_name, criterion), scores in multiscores.iter("entity_name", "criterion"):
-            v = voting_rights.get(entity_name=entity_name, criterion=criterion)
-            weighted_sum = sum([score * v[username] for username, score in scores], Score(0, 0, 0))
-            sum_of_weights = sum([v[username] for username, _ in scores])
-            global_model[entity_name, criterion] = weighted_sum / sum_of_weights
+    
+    def aggregate(self, 
+        user_models: UserModels, 
+        entity: Entity, 
+        criterion: str,
+        voting_rights: VotingRights, # keynames == "username"
+    ) -> float:
+        scores = user_models(entity, criterion)
+        if len(scores) == 0:
+            return Score.nan()
+        weighted_sum = sum([score * voting_rights[u] for (u,), score in scores], Score(0, 0, 0))
+        sum_of_weights = sum([voting_rights[username] for (username,), _ in scores])
+        return weighted_sum / sum_of_weights
         
-        return global_model
         

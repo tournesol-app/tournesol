@@ -13,8 +13,8 @@ from .base import StateFunction
 
 
 class Sequential(StateFunction):
-    def __init__(self, name: Optional[str]=None, **kwargs):
-        super().__init__()
+    def __init__(self, name: Optional[str]=None, max_workers: Optional[int]=None, **kwargs):
+        super().__init__(max_workers)
         self.name = "Sequential" if name is None else name
         for key, value in kwargs.items():
             if isinstance(value, StateFunction):
@@ -23,11 +23,12 @@ class Sequential(StateFunction):
                 import solidago.modules as modules
                 setattr(self, key, getattr(modules, value[0])(**value[1]))
             else:
-                print(f"Sequential.__init__: Got unhandled input key={key}, type(value)={type(value).__name__}")
+                value_type = type(value).__name__
+                print(f"Sequential.__init__: Unhandled input key={key}, type(value)={value_type}")
     
     @property
     def modules(self):
-        return { key: value for key, value in self.__dict__.items() if isinstance(value, StateFunction) }
+        return {k: v for k, v in self.__dict__.items() if isinstance(v, StateFunction) }
     
     def state2state_function(self, state: State, save_directory: Optional[str]=None) -> State:
         return self(state, save_directory)
@@ -49,28 +50,15 @@ class Sequential(StateFunction):
         return [ module.save() for module in self.modules ]
 
     @classmethod
-    def load(cls, d: Union[dict, str], submodule=None) -> "Sequential":
+    def load(cls, d: Union[dict, str], max_workers: Optional[int]=None) -> "Sequential":
         if isinstance(d, str):
             with open(d) as f:
                 d = json.load(f)
-        return cls(**{ 
-            key: cls.load_module(key if submodule is None else submodule, value[0], value[1]) 
-            for key, value in d.items() if key not in Sequential.__init__.__annotations__
-        }, **{ key: value 
-            for key, value in d.items() if key in Sequential.__init__.__annotations__ 
-        })
-        
-    @classmethod
-    def load_module(cls, key: str, cls_name: str, kwargs: dict) -> StateFunction:
-        if cls_name == "Sequential":
-            return cls.load(kwargs, key)
         import solidago.modules
-        if cls_name == "Identity":
-            return solidago.modules.Identity()
-        return getattr(getattr(solidago.modules, key), cls_name)(**kwargs)
-
+        return cls(**{ 
+            key: getattr(solidago.modules, value[0])(max_workers=max_workers, **value[1]) 
+            for key, value in d.items() if key not in cls.__init__.__annotations__
+        }, **{ key: value for key, value in d.items() if key in cls.__init__.__annotations__ })
+        
     def json_keys(self) -> list:
-        return list(
-            key for key in self.__dict__
-            if key[0] != "_" and hasattr(self, key)
-        )
+        return [key for key in self.__dict__ if key[0] != "_" and hasattr(self, key)]

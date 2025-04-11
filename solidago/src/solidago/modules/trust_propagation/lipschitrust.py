@@ -68,7 +68,7 @@ class LipschiTrust(StateFunction):
         if len(users) == 0:
             users["trust_score"] = list()
             return users
-                                
+
         personhood_vouches = vouches.nested_dict("kind", "by", "to")["Personhood"]
         total_vouches = defaultdict(lambda: 0)
         for (voucher_name, _), (weight, _) in personhood_vouches:
