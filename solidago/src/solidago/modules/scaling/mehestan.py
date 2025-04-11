@@ -96,14 +96,14 @@ class Mehestan(StateFunction):
 
         scales = MultiScore(keynames=["username", "kind", "criterion"])
         args = users, entities, made_public, user_models
-        criteria = user_models.criteria()
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = [ e.submit(self.scale_criterion, *args, c) for c in criteria ]
-            for c, future in zip(criteria, as_completed(futures)):
-                subscales, activities, is_scaler = future.result()
-                scales |= subscales.prepend(criterion=c)
-                users[f"activities_{c}"] = activities
-                users[f"is_scaler_{c}"] = is_scaler
+            futures = {e.submit(self.scale_criterion, *args, c): c for c in user_models.criteria()}
+            for f in as_completed(futures):
+                criterion = futures[f]
+                subscales, activities, is_scaler = f.result()
+                scales |= subscales.prepend(criterion=criterion)
+                users[f"activities_{criterion}"] = activities
+                users[f"is_scaler_{criterion}"] = is_scaler
         return users, user_models.scale(scales, note="mehestan")
 
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:

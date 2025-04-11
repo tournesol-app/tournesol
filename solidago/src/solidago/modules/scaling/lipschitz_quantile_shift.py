@@ -1,4 +1,5 @@
 from typing import Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 import logging
@@ -39,28 +40,33 @@ class LipschitzQuantileShift(StateFunction):
             Will be scaled by the Scaling method
         """
         scales = MultiScore(["kind", "criterion"])
-        for criterion in user_models.criteria():
-            with time(logger, f"Lipschitz Quantile Shift for criterion={criterion}"):
-                scores = user_models(entities, criterion) # keynames == ["username", "entity_name"]
-                n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
-                values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
-                lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
-                for index, ((username, entity_name), score) in enumerate(scores):
-                    values[index], lefts[index], rights[index] = score.to_triplet()
-                    voting_rights[index] = 1. / n_scored_entities[username]
-                translation_value = - qr_quantile(
-                    lipschitz=self.lipschitz,
-                    quantile=self.quantile,
-                    values=values,
-                    voting_rights=voting_rights,
-                    left_uncertainties=lefts,
-                    right_uncertainties=rights,
-                    error=self.error,
-                ) + self.target_score
-                scales["translation", criterion] = Score(translation_value, 0, 0)
-        with time(logger, "    Add common scales to user models"):
-            scaled_models = user_models.scale(scales, note="lipschitz_quantile_shift")
-        return scaled_models
+        args = entities, user_models
+        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+            futures = {e.submit(self.translation, *args, c): c for c in user_models.criteria()}
+            for f in as_completed(futures):
+                criterion = futures[f]
+                scales["translation", criterion] = f.result()
+        return user_models.scale(scales, note="lipschitz_quantile_shift")
+    
+    def translation(self, entities: Entities, user_models: UserModels, criterion: str) -> Score:
+        scores = user_models(entities, criterion) # keynames == ["username", "entity_name"]
+        n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
+        values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
+        lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
+        for index, ((username, entity_name), score) in enumerate(scores):
+            values[index], lefts[index], rights[index] = score.to_triplet()
+            voting_rights[index] = 1. / n_scored_entities[username]
+        translation_value = - qr_quantile(
+            lipschitz=self.lipschitz,
+            quantile=self.quantile,
+            values=values,
+            voting_rights=voting_rights,
+            left_uncertainties=lefts,
+            right_uncertainties=rights,
+            error=self.error,
+        ) + self.target_score
+        return Score(translation_value, 0, 0)
+        
 
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
@@ -68,6 +74,7 @@ class LipschitzQuantileShift(StateFunction):
             state.user_models.common_scales.save(directory, "common_scales.csv")
         logger.info("Saving state.json")
         return state.save_instructions(directory)
+
 
 class LipschitzQuantileZeroShift(LipschitzQuantileShift):
     def __init__(self,

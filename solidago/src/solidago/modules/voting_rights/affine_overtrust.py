@@ -58,8 +58,9 @@ class AffineOvertrust(StateFunction):
             for entity_name in entity_names(c, assessments) | entity_names(c, comparisons)
         ]
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = [e.submit(self.main, *args) for args in args_list]
-            for (_, _, _, _, criterion, entity_name), f in zip(args_list, as_completed(futures)):
+            futures = {e.submit(self.main, *args): args for args in args_list}
+            for f in as_completed(futures):
+                _, _, _, _, criterion, entity_name = futures[f]
                 sub_voting_rights, statistics = f.result()
                 for username, voting_right in sub_voting_rights.items():
                     voting_rights[username, entity_name, criterion] = voting_right

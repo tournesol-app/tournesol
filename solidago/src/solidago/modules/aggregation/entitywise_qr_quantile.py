@@ -31,7 +31,7 @@ class EntitywiseQrQuantile(EntityCriterionWise):
         scores = user_models(entity, criterion)
         if len(scores) == 0:
             return Score.nan()
-        kwargs = common_kwargs | dict(
+        kwargs = dict(lipschitz=self.lipschitz, error=self.error) | dict(
             values=np.array([ s.value for _, s in scores ], dtype=np.float64),
             voting_rights=np.array([ voting_rights[u] for (u,), _ in scores ], np.float64),
             left_uncertainties=np.array([ s.left_unc for _, s in scores ], dtype=np.float64),

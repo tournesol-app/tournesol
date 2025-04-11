@@ -25,9 +25,10 @@ class EntityCriterionWise(StateFunction):
         ]
         
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = [e.submit(self.aggregate, *args) for args in args_list]
-            for (_, entity, criterion, _), future in zip(args_list, as_completed(futures)):
-                global_model[entity, criterion] = future.result()
+            futures = {e.submit(self.aggregate, *args): args for args in args_list}
+            for f in as_completed(futures):
+                _, entity, criterion, _ = futures[f]
+                global_model[entity, criterion] = f.result()
 
         return global_model
     
