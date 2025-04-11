@@ -37,7 +37,7 @@ class Comparison:
 
 class Comparisons(MultiKeyTable):
     name: str="comparisons"
-    value_factory: Callable=lambda: None
+    value_factory: Callable=Comparison
     value_cls: type=Comparison
     
     def __init__(self, 
