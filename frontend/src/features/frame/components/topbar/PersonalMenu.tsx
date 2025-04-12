@@ -82,6 +82,7 @@ const PersonalMenu = ({
             to={item.to}
             onClick={onItemClick}
             selected={item.to === location.pathname}
+            data-testid={item.id}
           >
             <ListItemIcon>
               <item.icon fontSize="small" />

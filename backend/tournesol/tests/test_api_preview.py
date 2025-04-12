@@ -454,35 +454,42 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
 class DynamicRecommendationsPreviewTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.preview_url = "/preview/recommendations"
         self.preview_internal_url = "/preview/_recommendations"
+        self.preview_urls = [
+            "/preview/search",
+            "/preview/feed/top",
+            "/preview/recommendations",
+        ]
 
-    def test_recommendations_preview_query_redirection(self):
-        response = self.client.get(f"{self.preview_url}/?language=fr&date=Month")
-        self.assertEqual(response.status_code, 302)
-        self.assertRegex(
-            response.headers["location"],
-            rf"{self.preview_internal_url}/\?metadata%5Blanguage%5D=fr&date_gte=.*",
-        )
-
-    def test_recommendations_preview_query_redirection_all_languages_filter(self):
-        response = self.client.get(f"{self.preview_url}/?language=")
-        self.assertEqual(response.status_code, 302)
-        # No filter should be present in the redirection
-        self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
-
-    def test_recommendations_preview_empty_fields(self):
-        response = self.client.get(f"{self.preview_url}/?duration_lte&duration_gte")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
-
-    def test_recommendations_preview_internal_route(self):
+    def test_preview_internal_route(self):
         response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         self.assertNotIn("Content-Disposition", response.headers)
 
-    def test_recommendations_preview_without_tournesol_score(self):
+    def test_preview_redirection(self):
+        for url in self.preview_urls:
+            response = self.client.get(f"{url}/?language=fr&date=Month")
+            self.assertEqual(response.status_code, 302)
+            self.assertRegex(
+                response.headers["location"],
+                rf"{self.preview_internal_url}/\?metadata%5Blanguage%5D=fr&date_gte=.*",
+            )
+
+    def test_preview_redirection_with_all_languages(self):
+        for url in self.preview_urls:
+            response = self.client.get(f"{url}/?language=")
+            self.assertEqual(response.status_code, 302)
+            # No filter should be present in the redirection
+            self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
+
+    def test_preview_redirection_with_empty_parameters(self):
+        for url in self.preview_urls:
+            response = self.client.get(f"{url}/?duration_lte&duration_gte")
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.headers["location"], f"{self.preview_internal_url}/?")
+
+    def test_preview_entities_without_tournesol_score(self):
         """
         The API shouldn't fail when displaying entities without computed
         Tournesol score.

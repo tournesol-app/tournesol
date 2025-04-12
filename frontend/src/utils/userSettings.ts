@@ -1,86 +1,20 @@
 import {
   BlankEnum,
+  FeedForyou_dateEnum,
   Notifications_langEnum,
   Recommendations_defaultDateEnum,
   TournesolUserSettings,
   VideosPollUserSettings,
 } from 'src/services/openapi';
 
+import { FEED_LANG_KEY as FEED_TOPITEMS_LANG_KEY } from 'src/pages/feed/FeedTopItems';
+
 import { YOUTUBE_POLL_NAME } from './constants';
+import {
+  getInitialRecoLanguages,
+  getInitialRecoLanguagesForFilterableFeed,
+} from './recommendationsLanguages';
 import { SelectablePoll, PollUserSettingsKeys } from './types';
-
-/**
- * Cast the value of the setting recommendations__default_date to a value
- * expected by the recommendations' search filter 'date'.
- */
-const recoDefaultDateToSearchFilter = (
-  setting: Recommendations_defaultDateEnum | BlankEnum
-): string => {
-  if (setting === Recommendations_defaultDateEnum.ALL_TIME) {
-    return '';
-  }
-
-  return setting.charAt(0) + setting.slice(1).toLowerCase();
-};
-
-/**
- * Cast the value of the setting recommendations__default_languages to a value
- * expected by the recommendations' search filter 'language'.
- */
-const recoDefaultLanguagesToSearchFilter = (setting: string[]): string => {
-  return setting.join(',');
-};
-
-export const buildVideosDefaultRecoSearchParams = (
-  searchParams: URLSearchParams,
-  userSettings: VideosPollUserSettings | undefined
-) => {
-  const advancedFilters: string[] = [];
-  if (userSettings?.recommendations__default_unsafe) {
-    advancedFilters.push('unsafe');
-  }
-  if (userSettings?.recommendations__default_exclude_compared_entities) {
-    advancedFilters.push('exclude_compared');
-  }
-  if (advancedFilters.length > 0) {
-    searchParams.set('advanced', advancedFilters.join(','));
-  }
-
-  if (userSettings?.recommendations__default_date != undefined) {
-    searchParams.set(
-      'date',
-      recoDefaultDateToSearchFilter(userSettings.recommendations__default_date)
-    );
-  }
-
-  if (userSettings?.recommendations__default_languages != undefined) {
-    searchParams.set(
-      'language',
-      recoDefaultLanguagesToSearchFilter(
-        userSettings.recommendations__default_languages
-      )
-    );
-  }
-};
-
-export const getDefaultRecommendationsSearchParams = (
-  pollName: string,
-  pollOptions: SelectablePoll | undefined,
-  userSettings: TournesolUserSettings
-) => {
-  const searchParams = new URLSearchParams(
-    pollOptions?.defaultRecoSearchParams
-  );
-
-  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
-
-  if (pollName === YOUTUBE_POLL_NAME) {
-    buildVideosDefaultRecoSearchParams(searchParams, userPollSettings);
-  }
-
-  const strSearchParams = searchParams.toString();
-  return searchParams ? '?' + strSearchParams : '';
-};
 
 /**
  * Cast `lang` to a value of `Notifications_langEnum` if possible, else
@@ -102,4 +36,151 @@ export const resolvedLangToNotificationsLang = (
   }
 
   return Notifications_langEnum.EN;
+};
+
+/**
+ * Cast the value of the setting feed_foryou__date (or similar) to a value
+ * expected by the search filter 'date'.
+ */
+const settingDateToSearchFilter = (
+  setting: FeedForyou_dateEnum | Recommendations_defaultDateEnum | BlankEnum
+): string => {
+  if (setting === FeedForyou_dateEnum.ALL_TIME) {
+    return '';
+  }
+
+  return setting.charAt(0) + setting.slice(1).toLowerCase();
+};
+
+/**
+ * Cast the value of a date filter to a value expected by the setting
+ * feed_foryou__date.
+ */
+export const searchFilterToSettingDate = (
+  filter: string | null
+): FeedForyou_dateEnum | BlankEnum => {
+  if (filter == null) {
+    return FeedForyou_dateEnum.ALL_TIME;
+  }
+
+  const setting =
+    FeedForyou_dateEnum[filter.toUpperCase() as FeedForyou_dateEnum];
+  return setting === undefined ? FeedForyou_dateEnum.ALL_TIME : setting;
+};
+
+/**
+ * Cast the value of the setting feed_foryou__languages (or similar) to a
+ * value expected by the search filter 'language'.
+ */
+const settingLanguagesToSearchFilter = (setting: string[]): string => {
+  return setting.join(',');
+};
+
+export const buildVideosFeedForYouSearchParams = (
+  searchParams: URLSearchParams,
+  userSettings: VideosPollUserSettings | undefined,
+  langsDiscovery = false
+) => {
+  const advancedFilters = new Set(searchParams.get('advanced')?.split(','));
+
+  if (userSettings?.feed_foryou__exclude_compared_entities != undefined) {
+    if (userSettings.feed_foryou__exclude_compared_entities === true) {
+      advancedFilters.add('exclude_compared');
+    } else {
+      advancedFilters.delete('exclude_compared');
+    }
+  }
+
+  if (userSettings?.feed_foryou__unsafe != undefined) {
+    if (userSettings.feed_foryou__unsafe === true) {
+      advancedFilters.add('unsafe');
+    } else {
+      advancedFilters.delete('unsafe');
+    }
+  }
+
+  searchParams.set('advanced', Array.from(advancedFilters).join(','));
+
+  if (userSettings?.feed_foryou__date != undefined) {
+    searchParams.set(
+      'date',
+      settingDateToSearchFilter(userSettings.feed_foryou__date)
+    );
+  }
+
+  if (userSettings?.feed_foryou__languages != undefined) {
+    searchParams.set(
+      'language',
+      settingLanguagesToSearchFilter(userSettings.feed_foryou__languages)
+    );
+  } else if (langsDiscovery) {
+    searchParams.set('language', getInitialRecoLanguages());
+  }
+};
+
+export const getFeedForYouDefaultSearchParams = (
+  pollName: string,
+  pollOptions: SelectablePoll | undefined,
+  userSettings: TournesolUserSettings | undefined,
+  langsDiscovery = false
+): URLSearchParams => {
+  const searchParams = new URLSearchParams(
+    pollOptions?.defaultFiltersFeedForYou
+  );
+
+  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
+
+  if (pollName === YOUTUBE_POLL_NAME) {
+    buildVideosFeedForYouSearchParams(
+      searchParams,
+      userPollSettings,
+      langsDiscovery
+    );
+  }
+
+  return searchParams;
+};
+
+export const buildVideosFeedTopItemsSearchParams = (
+  pollName: string,
+  searchParams: URLSearchParams,
+  userSettings: VideosPollUserSettings | undefined,
+  langsDiscovery = false
+) => {
+  if (userSettings?.feed_topitems__languages != undefined) {
+    searchParams.set(
+      'language',
+      settingLanguagesToSearchFilter(userSettings.feed_topitems__languages)
+    );
+  } else if (langsDiscovery) {
+    searchParams.set(
+      'language',
+      getInitialRecoLanguagesForFilterableFeed(pollName, FEED_TOPITEMS_LANG_KEY)
+    );
+  }
+};
+
+export const getFeedTopItemsDefaultSearchParams = (
+  pollName: string,
+  pollOptions: SelectablePoll | undefined,
+  userSettings: TournesolUserSettings | undefined,
+  langsDiscovery = false
+) => {
+  const searchParams = new URLSearchParams(
+    pollOptions?.defaultFiltersFeedTopItems
+  );
+
+  const userPollSettings = userSettings?.[pollName as PollUserSettingsKeys];
+
+  if (pollName === YOUTUBE_POLL_NAME) {
+    buildVideosFeedTopItemsSearchParams(
+      pollName,
+      searchParams,
+      userPollSettings,
+      langsDiscovery
+    );
+  }
+
+  const strSearchParams = searchParams.toString();
+  return searchParams ? '?' + strSearchParams : '';
 };

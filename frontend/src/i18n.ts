@@ -7,6 +7,14 @@ import packageJson from '../package.json';
 
 export const SUPPORTED_LANGUAGES = packageJson.config.supported_languages;
 
+export const langIsSupported = (langCode: string) => {
+  return SUPPORTED_LANGUAGES.map((l) => l.code).includes(langCode);
+};
+
+export const someLangsAreSupported = (langs: string[]) => {
+  return langs.some(langIsSupported);
+};
+
 i18n
   // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
   // learn more: https://github.com/i18next/i18next-http-backend
