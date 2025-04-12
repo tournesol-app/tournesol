@@ -1,9 +1,8 @@
-import zipfile
-from functools import cached_property
 from typing import BinaryIO, Optional, Union
 from urllib.request import urlretrieve
 from pandas import DataFrame, Series
 
+import zipfile
 import pandas as pd
 
 from .base import *
