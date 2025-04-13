@@ -1,7 +1,7 @@
 import pytest
 from solidago import *
 
-pipeline = Sequential.load("tests/modules/test_pipeline.json")
+pipeline = Sequential.load("tests/modules/test_pipeline.json", max_workers=2)
 
 
 def test_pipeline_generated_data():

@@ -23,7 +23,7 @@ def test_lipschitrust_simple():
 
 @pytest.mark.parametrize("seed", range(4))
 def test_lipschitrust_generative(seed):
-    trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
+    trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8,)
 
     users = trust_propagator(states[seed].users, states[seed].vouches)
     for user in users:

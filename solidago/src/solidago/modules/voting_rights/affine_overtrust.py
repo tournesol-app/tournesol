@@ -1,5 +1,4 @@
 from typing import Union
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 import pandas as pd
@@ -47,35 +46,54 @@ class AffineOvertrust(StateFunction):
             return entities, VotingRights()
 
         voting_rights = VotingRights()
-        assessments = assessments.reorder("criterion", "entity_name", "username")
-        comparisons = comparisons.reorder("criterion", "entity_name", "username", "other_name")
+        assessments = assessments.reorder("entity_name", "criterion", "username")
+        comparisons = comparisons.reorder("entity_name", "criterion", "username", "other_name")
+        made_public = made_public.reorder("entity_name", "username")
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
-        
-        entity_names = lambda criterion, judgments: judgments[criterion].keys("entity_name")
-        args_list = [
-            (users, made_public, assessments, comparisons, criterion)
-            for criterion in assessments.keys("criterion") | comparisons.keys("criterion") 
-        ]
-        column_kwargs = dict()
-        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.main, *args): args[-1] for args in args_list}
-            for f in as_completed(futures):
-                criterion = futures[f]
-                for entity_name, (sub_voting_rights, statistics) in f.result().items():
-                    for username, voting_right in sub_voting_rights.items():
-                        voting_rights[username, entity_name, criterion] = voting_right
-                    for i, n in enumerate(stat_names):
-                        column_kwargs[f"{criterion}_{n}"] = dict()
-                        column_kwargs[f"{criterion}_{n}"][entity_name] = statistics[i]
+        entities = entities.deepcopy()
+        eval_entities = entities[assessments.keys("entity_name") | comparisons.keys("entity_name")]
+        args = users, eval_entities, made_public, assessments, comparisons
 
-        return entities.assign(**column_kwargs), voting_rights
+        if self.max_workers == 1:
+            for (entity_name, criterion), (vrights, statistics) in self.batch(0, *args).items():
+                for username, voting_right in vrights.items():
+                    voting_rights[username, entity_name, criterion] = voting_right
+                for name, stat in zip(stat_names, statistics):
+                    entities[entity_name][f"{criterion}_{name}"] = stat
+            return entities, voting_rights
+
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
+            futures = {e.submit(self.batch, i, *args) for i in range(self.max_workers)}
+            for f in as_completed(futures):
+                for (entity_name, criterion), (vrights, statistics) in f.result().items():
+                    for username, voting_right in vrights.items():
+                        voting_rights[username, entity_name, criterion] = voting_right
+                    for name, stat in zip(stat_names, statistics):
+                        entities[entity_name][f"{criterion}_{name}"] = stat
+        return entities, voting_rights
+    
+    def batch(self, 
+        batch_number: int,
+        users: Users,
+        entities: Entities, 
+        made_public: MadePublic, # keynames == ["entity_name", "username"]
+        assessments: Assessments, # keynames == ["entity_name", "criterion", "username"]
+        comparisons: Comparisons, # keynames == ["entity_name", "criterion", "username", "other_name"]
+    ) -> dict[tuple[str, str], dict[str, float], tuple[float, float, float]]:
+        indices = range(batch_number, len(entities), self.max_workers)
+        batch_entities = {entities.get_by_index(i) for i in indices}
+        return {
+            (e.name, c): self.main(users, made_public[e], assessments[e, c], comparisons[e, c]) 
+            for e in batch_entities
+            for c in assessments[e].keys("criterion") | comparisons[e].keys("criterion")
+        }
     
     def main(self, 
         users: Users, 
-        made_public: MadePublic,
-        assessments: Assessments, 
-        comparisons: Comparisons, 
-        criterion: str, 
+        made_public: MadePublic, # keynames == ["username"]
+        assessments: Assessments, # keynames == ["username"] 
+        comparisons: Comparisons, # keynames == ["username"]
     ) -> tuple[dict[str, float], tuple[float, float, float]]:
         """ Computes the allocated voting rights and some statistics of these voting rights
         
@@ -86,31 +104,26 @@ class AffineOvertrust(StateFunction):
         statistics: dict[str, float]
             statistics[statistics_name] is the value of statistics_name
         """
-        entity_names = lambda criterion, judgments: judgments[criterion].keys("entity_name")
-        results = dict()
-        for entity_name in entity_names(criterion, assessments) | entity_names(criterion, comparisons):
-            evaluators = assessments[criterion, entity_name].keys("username")
-            evaluators |= comparisons[criterion, entity_name].keys("username")
-            trust_scores = { u: users[u].trust for u in evaluators }
-            public = { u: made_public.get(u, entity_name) for u in evaluators }
-    
-            voting_rights_np, statistics = self.computing_voting_rights_and_statistics(
-                trust_scores=np.nan_to_num(np.array(list(trust_scores.values())), nan=0.0),
-                privacy_weights=( np.array(list(public.values())) * (1 - self.privacy_penalty) + self.privacy_penalty )
-            )
-            voting_rights = {u: voting_rights_np[i] for i, u in enumerate(trust_scores)}
-            results[entity_name] = voting_rights, statistics
-        return results
+        evaluators = users[assessments.keys("username") | comparisons.keys("username")]
+        trusts = {user.name: user.trust for user in evaluators}
+        public = {user.name: made_public[user] for user in evaluators}
+
+        voting_rights_np, statistics = self.computing_voting_rights_and_statistics(
+            trusts=np.nan_to_num(np.array(list(trusts.values())), nan=0.0),
+            privacy_weights=( np.array(list(public.values())) * (1 - self.privacy_penalty) + self.privacy_penalty )
+        )
+        voting_rights = {username: voting_rights_np[i] for i, username in enumerate(trusts)}
+        return voting_rights, statistics
 
     def computing_voting_rights_and_statistics(self,
-        trust_scores: np.ndarray,
+        trusts: np.ndarray,
         privacy_weights: np.ndarray,
     ) -> tuple[np.ndarray, tuple[float, float, float]]:
         """ Computes voting rights and statistics without having to care about usernames """
-        cumulative_trust = (trust_scores * privacy_weights).sum()
+        cumulative_trust = (trusts * privacy_weights).sum()
         max_overtrust = self.maximal_overtrust(cumulative_trust)
-        min_voting_right = self.min_voting_right(max_overtrust, trust_scores, privacy_weights)
-        voting_rights = privacy_weights * trust_scores.clip(min=min_voting_right)
+        min_voting_right = self.min_voting_right(max_overtrust, trusts, privacy_weights)
+        voting_rights = privacy_weights * trusts.clip(min=min_voting_right)
         return voting_rights, (cumulative_trust, min_voting_right, voting_rights.sum() - cumulative_trust)
 
     def maximal_overtrust(self, cumulative_trust: float) -> float:
@@ -120,14 +133,14 @@ class AffineOvertrust(StateFunction):
 
     def min_voting_right(self,
         max_overtrust: float,
-        trust_scores: np.ndarray,
+        trusts: np.ndarray,
         privacy_weights: np.ndarray,
     ) -> float:
         """ Returns the minimal voting rights that corresponds to max_overtrust """
         assert max_overtrust >= 0
 
         def overtrust(min_voting_right):
-            return self.overtrust(min_voting_right, trust_scores, privacy_weights)
+            return self.overtrust(min_voting_right, trusts, privacy_weights)
 
         if overtrust(1) <= max_overtrust:
             return 1.
@@ -136,7 +149,7 @@ class AffineOvertrust(StateFunction):
 
     def overtrust(self,
         min_voting_right: float,
-        trust_scores: np.ndarray,
+        trusts: np.ndarray,
         privacy_weights: np.ndarray,
     ) -> float:
         """ Returns the overtrust, if min_voting_right is enforced upon all raters.
@@ -145,8 +158,8 @@ class AffineOvertrust(StateFunction):
         ----------
         min_voting_right: float
             Overtrust for min_voting_right
-        trust_scores: Series with index user_id (int)
-            values: trust_score (float)
+        trusts: Series with index user_id (int)
+            values: trusts (float)
         privacy_weights: Series with index user_id (int)
             values: privacy weight of user
 
@@ -154,7 +167,7 @@ class AffineOvertrust(StateFunction):
         -------
         out: float
         """
-        return (privacy_weights * (min_voting_right - trust_scores))[
-            min_voting_right > trust_scores
+        return (privacy_weights * (min_voting_right - trusts))[
+            min_voting_right > trusts
         ].sum()
 

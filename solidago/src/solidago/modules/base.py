@@ -13,7 +13,7 @@ class StateFunction:
     state_cls: type=State
     
     def __init__(self, max_workers: Optional[int]=None):
-        max_workers = os.cpu_count() if max_workers is None else max_workers
+        max_workers = (os.cpu_count() - 1) if max_workers is None else max_workers
         self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
         assert "return" in self.__call__.__annotations__, f"{type(self).__name__} must have a return type"
         for key in self.__call__.__annotations__:

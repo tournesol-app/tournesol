@@ -24,14 +24,14 @@ user_models = UserModels(
 )
 
 def test_average_simple_instance():
-    global_model = Average()(entities, voting_rights, user_models)
+    global_model = Average(max_workers=2)(entities, voting_rights, user_models)
     assert global_model("entity_0", "default").value == 0.4
     assert global_model("entity_1")["default"].value == 1
     assert global_model("entity_2")["default"].value == -.3
     assert global_model("entity_3", "default").to_triplet() == pytest.approx((0.3, .4, .3), abs=1e-2)
 
 def test_qr_quantile_simple_instance():
-    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5)
+    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5, max_workers=2)
     global_model = aggregator(entities, voting_rights, user_models)
     assert global_model("entity_0", "default").value < -1
     assert global_model("entity_1", "default").value == pytest.approx(1., abs=1e-2)
@@ -40,10 +40,10 @@ def test_qr_quantile_simple_instance():
 
 @pytest.mark.parametrize( "seed", list(range(5)) )
 def test_average(seed):
-    global_model = Average().state2objects_function(states[seed])
+    global_model = Average(max_workers=2).state2objects_function(states[seed])
 
 @pytest.mark.parametrize( "seed", list(range(5)) )
 def test_aggregation(seed):
-    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5)
+    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5, max_workers=2)
     global_model = aggregator.state2objects_function(states[seed])
 

@@ -19,7 +19,7 @@ with time(logger, "Loading packages and modules"):
     
     # generator = Generator.load("tests/generators/test_generator.json")
     # pipeline = Sequential.load("tests/modules/test_pipeline.json")
-    pipeline = Sequential.load("src/solidago/modules/tournesol_full.json")
+    pipeline = Sequential.load("src/solidago/modules/tournesol_full.json", max_workers=os.cpu_count() - 1)
 
 with time(logger, "Loading input states"):
     # states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]

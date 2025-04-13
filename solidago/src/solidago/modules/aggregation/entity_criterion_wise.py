@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from solidago.state import *
 from solidago.modules.base import StateFunction
@@ -17,24 +16,35 @@ class EntityCriterionWise(StateFunction):
     ) -> ScoringModel:
         """ Returns weighted average of user's scores """
         global_model = DirectScoring(note="average")
-        voting_rights = voting_rights.reorder("criterion", "entity_name", "username")
-        scores = user_models(entities).reorder("criterion", "entity_name", "username")
-        kwargs = {c: (entities, voting_rights[c], scores[c]) for c in user_models.criteria()}
+        voting_rights = voting_rights.reorder("entity_name", "criterion", "username")
+        args = entities, voting_rights, user_models
+        
+        if self.max_workers == 1:
+            for (entity_name, score), score in self.batch(0, *args):
+                global_model[entity_name, criterion] = score
+            return global_model
+        
+        from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.aggregate_criterion, *args): c for c, args in kwargs.items()}
+            futures = {e.submit(self.batch, i, *args) for i in range(self.max_workers)}
             for f in as_completed(futures):
-                criterion = futures[f]
-                for entity_name, score in f.result().items():
+                for (entity_name, criterion), score in f.result().items():
                     global_model[entity_name, criterion] = score
-
         return global_model
     
-    def aggregate_criterion(self, 
+    def batch(self, 
+        batch_number: int,
         entities: Entities, 
         voting_rights: VotingRights, # keynames == ["entity_name", "username"]
-        scores: MultiScore, # keynames == ["entity_name", "username"]
-    ) -> dict[str, Score]:
-        return {e.name: self.aggregate(scores[e], voting_rights[e]) for e in entities}
+        user_models: UserModels, # keynames == ["entity_name", "username"]
+    ) -> dict[tuple[str, str], Score]:
+        indices = range(batch_number, len(entities), self.max_workers)
+        batch_entities = {entities.get_by_index(i) for i in indices}
+        return {
+            (e.name, c): self.aggregate(user_models(e, c), voting_rights[e, c]) 
+            for e in batch_entities
+            for c in user_models.criteria()
+        }
         
     @abstractmethod
     def aggregate(self, 

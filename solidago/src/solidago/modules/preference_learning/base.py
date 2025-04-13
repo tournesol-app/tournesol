@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import pandas as pd
 import logging
@@ -25,22 +24,40 @@ class PreferenceLearning(StateFunction, ABC):
     ) -> UserModels:
         """ Learns a scoring model, given user judgments of entities """
         learned_models = UserModels()
-        results = list()
-        batches = [list() for _ in range(self.max_workers)]
-        args = lambda u: (u, entities, assessments[u], comparisons[u], user_models[u].base_model())
-        for index, user in enumerate(users):
-            batches[index % len(batches)].append(args(user))
+        args = users, entities, assessments, comparisons, user_models
+
+        if self.max_workers == 1:
+            for username, score in self.batch(0, *args).items():
+                learned_models[username] = score
+            return learned_models
+
+        from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.batch_learn, batch) for batch in batches}
+            futures = {e.submit(self.batch, i, *args) for i in range(self.max_workers)}
             for f in as_completed(futures):
                 for username, model in f.result().items():
-                    results.append((username, model))
-        for username, model in results:
-            learned_models[username] = model
+                    learned_models[username] = model
         return learned_models
 
-    def batch_learn(self, args_list: list) -> dict[str, ScoringModel]:
-        return {args[0].name: self.user_learn(*args) for args in args_list}        
+    def batch(self, 
+        batch_number: int,
+        users: Users,
+        entities: Entities,
+        assessments: Assessments, # key_names == ["username", "criterion", "entity_name"]
+        comparisons: Comparisons, # key_names == ["username", "criterion", "entity_name"]
+        user_models: UserModels, # key_names == ["username", "criterion", "entity_name"]
+    ) -> dict[str, ScoringModel]:
+        indices = range(batch_number, len(users), self.max_workers)
+        batch_users = {users.get_by_index(i) for i in indices}
+        return {
+            user.name: self.user_learn(
+                user, 
+                entities, 
+                assessments[user], 
+                comparisons[user], 
+                user_models[user].base_model()
+            ) for user in batch_users
+        }
 
     @abstractmethod
     def user_learn(self,

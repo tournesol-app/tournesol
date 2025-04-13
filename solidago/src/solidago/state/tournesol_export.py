@@ -23,7 +23,7 @@ class TournesolExport(State):
                     # such as "NA" are converted to float NaN.
                     return pd.read_csv(f, keep_default_na=False).rename(columns=columns)
                 
-            users = load("users", { "public_username": "username" })
+            users = load("users", { "public_username": "username", "trust_score": "trust" })
             vouches = load("vouchers", { 
                 "by_username": "by", 
                 "to_username": "to", 
@@ -56,7 +56,7 @@ class TournesolExport(State):
         for username in missing_usernames:
             users.loc[len(users)] = [username, 0.]
 
-        users["is_pretrusted"] = pd.to_numeric(users["trust_score"]) >= 0.8
+        users["is_pretrusted"] = pd.to_numeric(users["trust"]) >= 0.8
         vouches["kind"] = "Personhood"
         vouches["priority"] = 0
         user_scores["depth"] = 0

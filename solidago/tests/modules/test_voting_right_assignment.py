@@ -18,7 +18,7 @@ def test_is_trust(seed):
             assert voting_right == 0.5 * states[seed].users[username].trust
 
 
-ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)
+ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=2)
 
 def test_empty_input():
     np.testing.assert_array_equal(
@@ -177,7 +177,7 @@ def test_voting_rights_abstraction():
 def test_affine_overtrust():
     users = Users([str(i) for i in range(5)])
     users = users.assign(trust=[0.5, 0.6, 0.0, 0.4, 1])
-    entities = Entities(list(range(6)))
+    entities = Entities([str(i) for i in range(6)])
     made_public = MadePublic()
     made_public["0", "0"] = True
     made_public["0", "3"] = True
@@ -196,7 +196,7 @@ def test_affine_overtrust():
     comparisons["1", "default", "1", "5"] = Comparison(1)
     comparisons["2", "default", "0", "1"] = Comparison(5)
     
-    ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)
+    ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=2)
     entities, voting_rights = ao(users, entities, made_public, assessments, comparisons)
 
     assert len(entities) == 6  # 6 entities
