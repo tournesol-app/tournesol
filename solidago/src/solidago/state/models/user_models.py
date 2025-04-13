@@ -2,7 +2,7 @@ from typing import Union, Optional, Iterable
 from pathlib import Path
 from pandas import DataFrame
 from copy import deepcopy
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import pandas as pd
 import json
@@ -90,36 +90,26 @@ class UserModels:
     def __call__(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
-        max_workers: int=1,
     ) -> MultiScore:
-        return self.score(entities, criterion, max_workers)
+        return self.score(entities, criterion)
     
     def score(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
-        max_workers: int=1,
     ) -> MultiScore:
         keynames = ["username"]
         from solidago.state.entities import Entities
         keynames += ["entity_name"] if isinstance(entities, Entities) else list()
         keynames += ["criterion"] if criterion is None else list()
         results = MultiScore(keynames)
-        
-        batches = [list() for _ in range(2*max_workers)]
-        for index, (user, model) in enumerate(self):
-            batches[index % len(batches)].append((user, model))
-        def user_score(batch):
-            return {str(user): model(entities, criterion) for user, model in batch}
-        with ThreadPoolExecutor(max_workers=max_workers) as e:
-            futures = {e.submit(user_score, batch) for batch in batches}
-            for f in as_completed(futures):
-                for username, scores in f.result().items():
-                    if isinstance(scores, Score): # results.keynames == ["username"]
-                        results[username] = scores
-                    else:
-                        assert isinstance(scores, MultiScore)
-                        for keys, score in scores:
-                            results[username, *keys] = score
+        for username, model in self:
+            scores = model(entities, criterion)
+            if isinstance(scores, Score): # results.keynames == ["username"]
+                results[username] = scores
+            else:
+                assert isinstance(scores, MultiScore)
+                for keys, score in scores:
+                    results[username, *keys] = score
         return results
 
     def __len__(self) -> int:

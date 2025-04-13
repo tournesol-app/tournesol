@@ -8,7 +8,6 @@ from .base import ScoringModel, DerivedModel
 
 class Multiplier(MultiScore):
     name: str="multipliers"
-    value_factory: Callable=lambda: Score(1, 0, 0)
     
     def __init__(self, 
         keynames: list[str]=["criterion"], 
@@ -21,11 +20,14 @@ class Multiplier(MultiScore):
         For scientific peer reviewing, it could be the criteria may be
         {'clarity', 'correctness', 'originality', 'rating'}. """
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    @classmethod
+    def value_factory(cls):
+        return Score(1, 0, 0)
 
 
 class Translation(MultiScore):
     name: str="translations"
-    value_factory: Callable=lambda: Score(0, 0, 0)
     
     def __init__(self, 
         keynames: list[str]=["criterion"], 
@@ -38,6 +40,10 @@ class Translation(MultiScore):
         For scientific peer reviewing, it could be the criteria may be
         {'clarity', 'correctness', 'originality', 'rating'}. """
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    @classmethod
+    def value_factory(cls):
+        return Score(0, 0, 0)
 
 
 class ScaledModel(DerivedModel):

@@ -6,7 +6,6 @@ from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 class MadePublic(MultiKeyTable):
     name: str="made_public"
-    value_factory: Callable=lambda: False
     value_cls: type=bool
     
     def __init__(self, 
@@ -17,6 +16,10 @@ class MadePublic(MultiKeyTable):
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
 
+    @classmethod
+    def value_factory(cls):
+        return False
+        
     @property
     def valuenames(self) -> tuple:
         return ("public",)

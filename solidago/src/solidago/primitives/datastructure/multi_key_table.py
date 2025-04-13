@@ -12,7 +12,6 @@ from solidago.primitives.datastructure.nested_dict import NestedDict
 
 class MultiKeyTable:
     name: str="multi_key_table"
-    value_factory: Callable=lambda: None
     value_cls: type=object
     
     def __init__(self, 
@@ -69,6 +68,10 @@ class MultiKeyTable:
         return self.parent, self.parent_keynames, self.parent_keys
     
     """ The following methods could be worth redefining in derived classes """
+    @classmethod
+    def value_factory(cls):
+        return None
+    
     @property
     def valuenames(self) -> tuple:
         return ("value",)

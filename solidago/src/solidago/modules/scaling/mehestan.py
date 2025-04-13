@@ -95,7 +95,7 @@ class Mehestan(StateFunction):
         assert "trust_score" in users.columns, "No trust scores. Consider running TrustAll first."
 
         scales = MultiScore(keynames=["username", "kind", "criterion"])
-        scores = user_models(entities, max_workers=self.max_workers)
+        scores = user_models(entities)
         fixed_args = users, entities, made_public
         args_list = [(c, scores.get(criterion=c)) for c in user_models.criteria()]
         results = list()

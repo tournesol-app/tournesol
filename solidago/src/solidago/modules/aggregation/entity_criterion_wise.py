@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from solidago.state import *
 from solidago.modules.base import StateFunction
@@ -18,19 +18,10 @@ class EntityCriterionWise(StateFunction):
         """ Returns weighted average of user's scores """
         global_model = DirectScoring(note="average")
         voting_rights = voting_rights.reorder("criterion", "entity_name", "username")
-        scores = user_models(entities, max_workers=self.max_workers)
-        scores = scores.reorder("criterion", "entity_name", "username")
-        
-        def aggregate(criterion):
-            return {
-                str(entity): self.aggregate(
-                    scores[criterion, entity], 
-                    voting_rights[criterion, entity], 
-                ) 
-                for entity in entities
-            }
-        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(aggregate, c): c for c in user_models.criteria()}
+        scores = user_models(entities).reorder("criterion", "entity_name", "username")
+        kwargs = {c: (entities, voting_rights[c], scores[c]) for c in user_models.criteria()}
+        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
+            futures = {e.submit(self.aggregate_criterion, *args): c for c, args in kwargs.items()}
             for f in as_completed(futures):
                 criterion = futures[f]
                 for entity_name, score in f.result().items():
@@ -38,6 +29,13 @@ class EntityCriterionWise(StateFunction):
 
         return global_model
     
+    def aggregate_criterion(self, 
+        entities: Entities, 
+        voting_rights: VotingRights, # keynames == ["entity_name", "username"]
+        scores: MultiScore, # keynames == ["entity_name", "username"]
+    ) -> dict[str, Score]:
+        return {str(e): self.aggregate(scores[e], voting_rights[e]) for e in entities}
+        
     @abstractmethod
     def aggregate(self, 
         scores: MultiScore, # keynames == "username"

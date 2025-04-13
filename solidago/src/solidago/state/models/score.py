@@ -153,7 +153,6 @@ class Score:
 
 
 class MultiScore(MultiKeyTable):
-    value_factory: Callable=Score.nan
     value_cls: type=Score
     
     def __init__(self, 
@@ -169,6 +168,10 @@ class MultiScore(MultiKeyTable):
         {'clarity', 'correctness', 'originality', 'rating'}. """
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
         self.name = name or type(self).name
+
+    @classmethod
+    def value_factory(cls):
+        return Score.nan()
 
     @property
     def valuenames(self) -> tuple:

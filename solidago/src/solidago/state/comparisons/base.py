@@ -37,7 +37,6 @@ class Comparison:
 
 class Comparisons(MultiKeyTable):
     name: str="comparisons"
-    value_factory: Callable=lambda: None
     value_cls: type=Comparison
     
     def __init__(self, 
@@ -151,7 +150,7 @@ class Comparisons(MultiKeyTable):
         which correspond to the indices of the entities that i was compared to """
         lk_index, rk_index = self.keynames.index("entity_name"), self.keynames.index("other_name")
         return tuple([
-            entities.name2index[keys[key_index]]
+            entities.name2index(keys[key_index])
             for keys, comparison in self.left_right_iter()
         ] for key_index in (lk_index, rk_index))
 
@@ -164,14 +163,14 @@ class Comparisons(MultiKeyTable):
         ek_index, ok_index = self.keynames.index("entity_name"), self.keynames.index("other_name")
         d = defaultdict(list)
         for keys in self.keys():
-            entity_index = entities.name2index[keys[ek_index]]
-            d[entity_index].append(entities.name2index[keys[ok_index]])
+            entity_index = entities.name2index(keys[ek_index])
+            d[entity_index].append(entities.name2index(keys[ok_index]))
         return d
         
     def entity_normalized_comparisons(self, entities: "Entities") -> defaultdict[int, list]:
         entity_keys_index = self.keynames.index("entity_name")
         d = defaultdict(list)
         for keys, comparison in self:
-            entity_index = entities.name2index[keys[entity_keys_index]]
+            entity_index = entities.name2index(keys[entity_keys_index])
             d[entity_index].append(float(comparison.value / comparison.max))
         return d
