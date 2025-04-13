@@ -17,12 +17,13 @@ def test_objects():
         ["object1", 5, 1.2, 0, -1],
         ["object2", 1, 1/3, 0.31, -2],
         ["object3", 2, 2/3, -.12, 10],
+        ["object4", 2, 2/3, -.12, 10],
     ], columns=["name", "n_actions", "vector_0", "vector_1", "vector_2"]))
-    assert len(embedded_objects) == 3
+    assert len(embedded_objects) == 4
     assert len(embedded_objects["object1"].vector) == 3
     embedded_objects2 = embedded_objects.assign(
-        trust=[1.2, 2.2, 3], 
-        n_houses={"object1": 2, "object2": 5, "object3": 0}
+        trust=[1.2, 2.2, 3, 1], 
+        n_houses={"object1": 2, "object2": 5, "object3": 0, "object4": 1}
     )
     assert embedded_objects2["object3"].trust == 3
     assert embedded_objects2["object2"].n_houses == 5

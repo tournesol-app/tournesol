@@ -1,16 +1,13 @@
-from typing import Iterable, Callable, Union
+from typing import Iterable, Callable, Optional, Union
 from numpy.random import normal
 
 import numpy as np
 
-from typing import Optional, Callable
-from solidago.state import VectorEntity, VectorEntities
+from solidago.state import *
 from .base import EntityGen
 
 
 class NormalEntity(EntityGen):
-    entities_cls: type=VectorEntities
-    
     def __init__(self, 
         n_entities: int=100,
         mean: Optional[Union[int, float, list[float]]]=None, 
@@ -37,8 +34,8 @@ class NormalEntity(EntityGen):
             mean = np.zeros(dimension)
         self.mean = mean
     
-    def sample(self, entity_name: str) -> VectorEntity:
-        return self.entities_cls.series_cls(self.sample_vector(), name=entity_name)
+    def sample(self, entity_name: str) -> Entity:
+        return Entity(entity_name, self.sample_vector())
 
     def sample_vector(self) -> np.ndarray:
         return np.random.normal(0, 1, len(self.mean)) + self.mean

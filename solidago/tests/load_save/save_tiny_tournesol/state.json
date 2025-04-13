@@ -2,13 +2,13 @@
     "users": [
         "Users",
         {
-            "df_name": "users.csv"
+            "name": "users"
         }
     ],
     "entities": [
         "Entities",
         {
-            "df_name": "entities.csv"
+            "name": "entities"
         }
     ],
     "vouches": [

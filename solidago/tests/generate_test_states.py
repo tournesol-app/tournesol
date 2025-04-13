@@ -35,5 +35,5 @@ if __name__ == "__main__":
                 if f.is_file():
                     f.unlink()
     save_generated_data()
-    save_pipeline_results(skip_steps={3, 4, 5})
+    save_pipeline_results(skip_steps={0, 1, 2, 3, 4, 5})
 

@@ -195,14 +195,17 @@ class MultiKeyTable:
     def values(self) -> list:
         return [ value for _, value in self ]
 
+    def convert_key(key) -> Union[int, str, set]:
+        return key if isinstance(key, (str, int, set)) else key.name
+
     def keys2kwargs(self, *args, **kwargs) -> dict:
         """ args is assumed to list keys, though some may be specified through kwargs """
         assert len(args) + len(kwargs) <= self.depth
         assert all({keyname in self.keynames for keyname in kwargs})
-        f = lambda v: v if isinstance(v, (str, int, set)) else str(v)
-        kwargs = { k: f(v) for k, v in kwargs.items() if v is not all }
+        f = MultiKeyTable.convert_key
+        kwargs = { kn: f(key) for kn, key in kwargs.items() if key is not all }
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
-        return kwargs | { k: f(v) for k, v in zip(other_keynames, args) if v is not all }
+        return kwargs | { kn: f(key) for kn, key in zip(other_keynames, args) if key is not all }
     
     def keys2tuple(self, *args, keynames: Optional[tuple]=None, **kwargs) -> tuple:
         keynames = keynames or self.keynames

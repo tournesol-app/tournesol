@@ -14,7 +14,7 @@ class AssessmentGen(StateFunction):
         """ Fills in the assessments """
         result = Assessments()
         for (username, criterion, entity_name), assessment in assessments:
-            user, entity = users.get(username), entities.get(entity_name)
+            user, entity = users[username], entities[entity_name]
             assessment = self.sample(assessment, user, entity, made_public[user, entity], criterion)
             result[username, criterion, entity_name] = assessment
         return result

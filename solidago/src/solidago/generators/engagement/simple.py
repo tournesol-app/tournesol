@@ -39,7 +39,7 @@ class SimpleEngagement(EngagementGen):
 
     def sample_evaluated_entities(self, user: User, entities: Entities) -> Entities:
         if user["n_comparisons"] <= 0:
-            return type(entities)()
+            return Entities()
         
         n_eval_entities = int(2 * user["n_comparisons"] / user["n_comparisons_per_entity"] )
         n_eval_entities = min(len(entities), n_eval_entities)
@@ -50,8 +50,8 @@ class SimpleEngagement(EngagementGen):
         noisy_scores = - user["engagement_bias"] * scores + normal(0, 1, len(scores))
         argsort = np.argsort(noisy_scores)
         if self._entity_index2id is None:
-            self._entity_index2id = { index: str(entity) for index, entity in enumerate(entities) }
-        return [ self._entity_index2id[argsort[i]] for i in range(n_eval_entities) ]
+            self._entity_index2id = { index: entity for index, entity in enumerate(entities) }
+        return entities[[self._entity_index2id[argsort[i]] for i in range(n_eval_entities)]]
 
     def public(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
         return random() < self.p_public

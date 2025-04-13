@@ -8,8 +8,6 @@ from .base import UserGen
 
 
 class NormalUser(UserGen):
-    users_cls: type=VectorUsers
-    
     def __init__(
         self,
         n_users: int=30,
@@ -87,7 +85,7 @@ class NormalUser(UserGen):
         return np.random.normal(0, 1, len(self.mean)) + np.array(self.mean)
 
     def sample(self, username: str):
-        user = self.users_cls.series_cls(self.vector_sample(), name=username)
+        user = User(username, self.vector_sample(), 0)
         user["is_trustworthy"] = (random() < self.p_trustworthy)
         user["is_pretrusted"] = (random() < self.p_pretrusted) if user["is_trustworthy"] else False
         user["n_expected_vouches"] = zipf(self.zipf_vouch) - 1

@@ -17,6 +17,6 @@ class NormalAssessment(AssessmentGen):
         criterion: str
     ) -> Assessment:
         score = user.vector @ entity.vector / sqrt(user.vector.size)
-        malicious = "is_trustworthy" in user and not user["is_trustworthy"]
+        malicious = "is_trustworthy" in user and not user.is_trustworthy
         score = - score if malicious else score + self.error_size * normal()
         return Assessment(score)

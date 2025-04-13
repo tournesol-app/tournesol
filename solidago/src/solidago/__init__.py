@@ -9,9 +9,8 @@ from solidago.generators import *
 
 __all__ = [
     "NestedDict", "MultiKeyTable",
-    "User", "Users", "VectorUser", "VectorUsers",
+    "User", "Users", "Entity", "Entities",
     "Vouches",
-    "Entity", "Entities", "VectorEntity", "VectorEntities",
     "MadePublic", "AllPublic",
     "Assessment", "Assessments",
     "Comparison", "Comparisons",

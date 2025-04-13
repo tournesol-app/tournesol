@@ -17,7 +17,7 @@ class ThurstonComparison(ComparisonGen):
         assert comparison_max > 0
         self.comparison_max = comparison_max
     
-    def score_matrix(self, users: VectorUsers, entities: VectorEntities):
+    def score_matrix(self, users: Users, entities: Entities):
         return users.vectors @ entities.vectors.T / users.vectors.shape[1]
     
     def sample(self, comparison: Comparison, user: User, left: Entity, right: Entity, 

@@ -3,7 +3,7 @@ from solidago.primitives.datastructure.objects import Object, Objects
 
 
 class User(Object):
-    def __init__(self, name: Union[str, int], trust: float=1, vector: list=[], **kwargs):
+    def __init__(self, name: Union[str, int], vector: list=[], trust: float=1., **kwargs):
         super().__init__(name, vector, **kwargs)
         self.trust = trust
 

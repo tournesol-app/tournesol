@@ -29,6 +29,12 @@ class Object:
     def __getitem__(self, key: str) -> Any:
         return getattr(self, key)
     
+    def __setitem__(self, key: str, value: Any) -> None:
+        setattr(self, key, value)
+
+    def __contains__(self, key: str) -> bool:
+        return hasattr(self, key)
+    
     def to_dict(self) -> dict:
         kwargs = {key: value for key, value in self.__dict__.items()}
         del kwargs["vector"]
@@ -60,8 +66,6 @@ class Objects:
             self._name2index, self._index2name = None, None
             for index, (name, obj) in enumerate(self.init_data.items()):
                 self._dict[name] = type(self).object_cls.load(name)
-                self._name2index[name] = index
-                self._index2name[index] = name
         elif isinstance(self.init_data, pd.DataFrame):
             self._name2index, self._index2name = None, None
             self.init_data = self.init_data.set_index(type(self).index_name)
@@ -92,6 +96,11 @@ class Objects:
         for index, obj in enumerate(self):
             self._name2index[obj.name] = index
             self._index2name.append(obj.name)
+    
+    @property
+    def vectors(self) -> np.ndarray:
+        self._cache()
+        return np.array([obj.vector for obj in self])
     
     def name2index(self, name: Union[int, str, Object]) -> int:
         self._cache_name2index()
@@ -133,7 +142,7 @@ class Objects:
         self._cache()
         self._dict[obj.name] = obj
         self._name2index[obj.name] = len(self._dict)
-        self._index2name[len(self._dict)] = obj.name
+        self._index2name.append(obj.name)
     
     def deepcopy(self) -> "Objects":
         return type(self)([obj.deepcopy() for obj in self])
@@ -163,10 +172,11 @@ class Objects:
         self._cache()
         data = dict()
         for index, obj in enumerate(self):
-            if index > n_max:
+            if n_max is not None and index > n_max:
                 break
             data[obj.name] = obj.to_dict()
-        return pd.DataFrame(data).T
+        index_name = type(self).index_name
+        return pd.DataFrame(data).T.rename(columns={"name": index_name}).set_index(index_name)
 
     @classmethod
     def load(cls, directory: str, name: Optional[str]=None):

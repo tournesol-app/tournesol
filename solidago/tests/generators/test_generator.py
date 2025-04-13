@@ -13,7 +13,7 @@ def test_erdos_renyi_vouch_generator():
     users = generators.user.NormalUser(n_users=10, p_trustworthy=0.8, p_pretrusted=0.2, dimension=5)()
     vouches = generators.vouch.ErdosRenyiVouch()(users)
     for (voucher_name, vouchee_name, kind), (weight, priority) in vouches:
-        assert users.get(voucher_name)["is_trustworthy"] == users.get(vouchee_name)["is_trustworthy"]
+        assert users[voucher_name].is_trustworthy == users[vouchee_name].is_trustworthy
     
 def test_svd_entity_generator():
     entities = generators.entity.NormalEntity(n_entities=100, dimension=5)()

@@ -18,11 +18,11 @@ class ErdosRenyiVouch(VouchGen):
         vouches = Vouches()
         
         for trustworthy in (True, False):
-            usernames_subset = set(users[users["is_trustworthy"] == trustworthy].index)
+            usernames_subset = {user.name for user in users if user.is_trustworthy == trustworthy}
             if len(usernames_subset) <= 1: continue
             
             for voucher_name in usernames_subset:
-                p_vouch = users.loc[voucher_name, "n_expected_vouches"] / (len(usernames_subset) - 1)
+                p_vouch = users[voucher_name].n_expected_vouches / (len(usernames_subset) - 1)
                 for vouchee_name in usernames_subset:
                     if (voucher_name != vouchee_name) and (random() < p_vouch):
                         vouches[voucher_name, vouchee_name, "Personhood"] = (1 - random()**2, 0)

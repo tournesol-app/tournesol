@@ -16,8 +16,7 @@ class ComparisonGen(StateFunction):
         """ Fills in the comparisons """
         result = Comparisons()
         for (username, criterion, left_name, right_name), comparison in comparisons:
-            user = users.get(username)
-            left, right = entities.get(left_name), entities.get(right_name)
+            user, left, right = users[username], entities[left_name], entities[right_name]
             left_public, right_public = made_public[user, left], made_public[user, right]
             comparison = self.sample(comparison, user, left, right, left_public, right_public, criterion)
             result[username, criterion, left_name, right_name] = comparison

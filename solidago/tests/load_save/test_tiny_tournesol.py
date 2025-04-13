@@ -5,7 +5,7 @@ def test_import():
     t = TournesolExport("tests/tiny_tournesol.zip")
     
     assert "biscuissec" in t.users, t.users
-    assert t.users.loc["le_science4all", "trust_score"] == 1
+    assert t.users["le_science4all"].trust_score == 1
     assert "NatNgs" in set(t.vouches["aidjango"].keys("to"))
     assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
     assert "aBdymwisfb4" in t.entities
@@ -45,7 +45,7 @@ def test_reimport():
     t = State.load("tests/load_save/save_tiny_tournesol")
     
     assert "biscuissec" in t.users, t.users
-    assert t.users.loc["le_science4all", "trust_score"] == 1
+    assert t.users["le_science4all"].trust_score == 1
     assert "NatNgs" in set(t.vouches["aidjango"].keys("to"))
     assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
     assert "aBdymwisfb4" in t.entities

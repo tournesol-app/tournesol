@@ -1,16 +1,14 @@
 {
     "users": [
-        "VectorUsers",
+        "Users",
         {
-            "df_name": "users.csv",
-            "vector_name": "user_vectors.csv"
+            "name": "users"
         }
     ],
     "entities": [
-        "VectorEntities",
+        "Entities",
         {
-            "df_name": "entities.csv",
-            "vector_name": "entity_vectors.csv"
+            "name": "entities"
         }
     ],
     "vouches": [

@@ -13,7 +13,7 @@ def test_generative_model():
     s2 = State.load("tests/load_save/generated_state")
     
     assert "user_7" in s2.users
-    assert s.users.get("user_5")["n_comparisons"] == s2.users.get("user_5")["n_comparisons"]
+    assert s.users["user_5"].n_comparisons == s2.users["user_5"].n_comparisons
     assert s.vouches["user_4", "user_3", "Personhood"] == s2.vouches["user_4", "user_3", "Personhood"]
     assert "entity_3" in s2.entities
     assert len(s2.entities) == 20

@@ -66,14 +66,13 @@ class LipschiTrust(StateFunction):
 
     def __call__(self, users: Users, vouches: Vouches) -> Users:
         if len(users) == 0:
-            users["trust_score"] = list()
-            return users
+            return users.assign(trust=list())
 
         personhood_vouches = vouches.nested_dict("kind", "by", "to")["Personhood"]
         total_vouches = defaultdict(lambda: 0)
         for (voucher_name, _), (weight, _) in personhood_vouches:
             total_vouches[voucher_name] += weight
-        pretrusts = users["is_pretrusted"] * self.pretrust_value
+        pretrusts = np.array(users.values("is_pretrusted")) * self.pretrust_value
         trusts = pretrusts.copy()
 
         n_iterations = -np.log(len(users) / self.error) / np.log(self.decay)
@@ -83,19 +82,20 @@ class LipschiTrust(StateFunction):
             new_trusts = pretrusts.copy()
             # Propagate trust through vouches
             for (voucher_name, vouchee_name), (weight, _) in personhood_vouches:
+                voucher_index = users.name2index(voucher_name)
+                vouchee_index = users.name2index(vouchee_name)
                 discount = self.decay * weight / total_vouches[voucher_name]
-                new_trusts.loc[vouchee_name] += discount * trusts.loc[voucher_name]
+                new_trusts[vouchee_index] += discount * trusts[voucher_index]
 
             # Bound trusts for Lipschitz resilience
-            new_trusts = new_trusts.clip(upper=1.0)
+            new_trusts = new_trusts.clip(max=1.0)
 
             delta = np.linalg.norm(new_trusts - trusts, ord=1)
             trusts = new_trusts
             if delta < self.error:
                 break
         
-        users["trust_score"] = trusts
-        return users
+        return users.assign(trust=trusts)
 
     def args_save(self) -> dict[str, float]:
         return dict(

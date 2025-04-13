@@ -10,6 +10,7 @@ class EngagementGen(StateFunction):
         for user in users:
             eval_entities = self.sample_evaluated_entities(user, entities)
             for index, entity in enumerate(eval_entities):
+                assert isinstance(entity, Entity)
                 public = self.public(user, entity, eval_entities)
                 made_public[user, entity] = public
                 assess = self.assess(user, entity, eval_entities)
@@ -26,7 +27,7 @@ class EngagementGen(StateFunction):
         return made_public, assessments, comparisons
         
     def sample_evaluated_entities(self, user: User, entities: Entities) -> Entities:
-        return type(entities)([ e for e in entities if random() < 0.5 ])
+        return Entities([ e for e in entities if random() < 0.5 ])
 
     def public(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
         return random() < 0.5

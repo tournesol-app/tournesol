@@ -7,17 +7,18 @@ states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 
 def test_lipschitrust_simple():
-    users = Users({"username": list(range(5)), "is_pretrusted": [True, True, False, False, False]})
+    users0 = Users(range(5))
+    users0 = users0.assign(is_pretrusted=[True, True, False, False, False])
     vouches = Vouches(init_data={
-        ("0", "1", "Personhood"): (1, 0),
-        ("0", "2", "Personhood"): (1, 0),
-        ("2", "3", "Personhood"): (1, 0),
-        ("3", "4", "Personhood"): (1, 0)
+        (0, 1, "Personhood"): (1, 0),
+        (0, 2, "Personhood"): (1, 0),
+        (2, 3, "Personhood"): (1, 0),
+        (3, 4, "Personhood"): (1, 0)
     })
-    users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)(users, vouches)
-    assert users.get("0")["trust_score"] == 0.8
-    assert users.get("4")["trust_score"] > 0
-    assert users.get("2")["trust_score"] == pytest.approx(0.8 * 0.8 / 2), users
+    users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)(users0, vouches)
+    assert users[0].trust == 0.8
+    assert users[4].trust > 0
+    assert users[2].trust == pytest.approx(0.8 * 0.8 / 2), users
 
 
 @pytest.mark.parametrize("seed", range(4))
@@ -26,14 +27,12 @@ def test_lipschitrust_generative(seed):
 
     users = trust_propagator(states[seed].users, states[seed].vouches)
     for user in users:
-        assert user["is_trustworthy"] or (user["trust_score"] == 0)
+        assert user.is_trustworthy or (user.trust == 0)
 
 
 def test_lipschitrust_ten_users():
-    users = Users({
-        "username": list(range(10)),
-        "is_pretrusted": [False, True, False, True, False, False, True, False, False, False]
-    })
+    users = Users([str(i) for i in range(10)])
+    users = users.assign(is_pretrusted=[False, True, False, True, False, False, True, False, False, False])
     vouches = Vouches(init_data={
         ("1", "0", "Personhood"): (1, 0),
         ("1", "3", "Personhood"): (1, 0),
@@ -52,15 +51,15 @@ def test_lipschitrust_ten_users():
     
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
     users = trust_propagator(users, vouches)
-    assert users.get("1")["trust_score"] > 0.8
-    assert users.get("2")["trust_score"] > 0.0
-    assert users.get("8")["trust_score"] == 0.0
-    assert users.get("9")["trust_score"] == 0.0
+    assert users["1"]["trust"] > 0.8
+    assert users["2"]["trust"] > 0.0
+    assert users["8"]["trust"] == 0.0
+    assert users["9"]["trust"] == 0.0
 
     # Add one vouch: 1 -> 8
     vouches["1", "8", "Personhood"] = (1, 0)
     users = trust_propagator(users, vouches)
-    assert users.get("8")["trust_score"] > 0.0
+    assert users["8"].trust > 0.0
 
 
 @pytest.mark.parametrize("seed", range(4))
@@ -68,11 +67,12 @@ def test_lipschitrust_test_data(seed):
     pipeline = Sequential.load("tests/modules/test_pipeline.json")
     users = pipeline.trust_propagation(states[seed].users, states[seed].vouches)
     for user in users:
-        assert user["is_trustworthy"] or (user["trust_score"] == 0)
+        assert user["is_trustworthy"] or (user.trust == 0)
 
 
 def test_trust_all():
-    users = Users({"username": list(range(5)), "is_pretrusted": [True, True, False, False, False]})
+    users = Users(range(5))
+    users = users.assign(is_pretrusted=[True, True, False, False, False])
     vouches = Vouches({
         "0": {
             "1": { "Personhood": (1, 0) },
@@ -87,5 +87,5 @@ def test_trust_all():
     })
     out_users = TrustAll()(users, vouches)
     for user in out_users:
-        assert user["trust_score"] == 1.0
+        assert user.trust == 1.0
         

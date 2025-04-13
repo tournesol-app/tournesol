@@ -13,9 +13,9 @@ from .base import State
 from .tournesol_export import TournesolExport
 
 __all__ = [
-    "User", "Users", "VectorUser", "VectorUsers",
+    "User", "Users",
     "Vouches",
-    "Entity", "Entities", "VectorEntity", "VectorEntities",
+    "Entity", "Entities",
     "MadePublic", "AllPublic",
     "Assessment", "Assessments",
     "Comparison", "Comparisons",
