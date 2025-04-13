@@ -1,14 +1,18 @@
-from solidago.primitives.datastructure.named_dataframe import NamedSeries, NamedDataFrame
+from typing import Union
+from solidago.primitives.datastructure.objects import Object, Objects
 
 
-class Entity(NamedSeries):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class Entity(Object):
+    def __init__(self, name: Union[str, int], trust: float=1, vector: list=[], **kwargs):
+        super().__init__(name, vector, **kwargs)
+        self.trust = trust
 
 
-class Entities(NamedDataFrame):
-    index_name = "entity_name"
-    series_cls = Entity
+class Entities(Objects):
+    name: str="entities"
+    index_name: str="entity_name"
+    object_cls: type=Entity
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, save_filename="entities.csv", **kwargs)
+    def __init__(self, init_data=None):
+        super().__init__(init_data)
+

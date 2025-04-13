@@ -35,7 +35,6 @@ class Assessment:
 
 class Assessments(MultiKeyTable):
     name: str="assessments"
-    value_factory: Callable=lambda: None
     value_cls: type=Assessment
     
     def __init__(self, 

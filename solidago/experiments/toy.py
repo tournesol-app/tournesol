@@ -29,12 +29,12 @@ with time(logger, "Loading input states"):
     
     # s = TournesolExport("tests/tiny_tournesol.zip")
     # s.save("experiments/tiny_tournesol_processed")
-    # s = State.load("experiments/tiny_tournesol_processed")
+    s = State.load("experiments/tiny_tournesol_processed")
     
     # dfs = TournesolExport.load_dfs("experiments/tournesol_dataset.zip")
     # s = TournesolExport("experiments/tournesol_dataset.zip")
     # s.save("experiments/tournesol_processed")
-    s = State.load("experiments/tournesol_processed")
+    # s = State.load("experiments/tournesol_processed")
     
     # users, entities, vouches, made_public = s.users, s.entities, s.vouches, s.made_public
     # assessments, comparisons, voting_rights = s.assessments, s.comparisons, s.voting_rights
@@ -42,7 +42,8 @@ with time(logger, "Loading input states"):
 
 with time(logger, "Running the pipeline"):
     # s.user_models = UserModels() # Does not use current scores as init
-    t = pipeline(s, "experiments/tournesol_processed")
+    t = pipeline(s, "experiments/tiny_tournesol_processed")
+    # t = pipeline(s, "experiments/tournesol_processed")
     
     # s1 = pipeline.trust_propagation.state2state_function(s)
     # s2 = pipeline.preference_learning.state2state_function(s1)

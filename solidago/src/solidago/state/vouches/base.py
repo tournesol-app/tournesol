@@ -6,7 +6,6 @@ from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
 class Vouches(MultiKeyTable):
     name: str="vouches"
-    value_factory: Callable=lambda: (0, - float("inf"))
     value_cls: type=tuple
     
     def __init__(self, 
@@ -16,6 +15,10 @@ class Vouches(MultiKeyTable):
         *args, **kwargs
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    @classmethod
+    def value_factory(cls):
+        return 0, - float("inf")
 
     @property
     def valuenames(self) -> tuple[str, str]:

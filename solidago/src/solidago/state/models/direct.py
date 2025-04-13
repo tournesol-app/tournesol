@@ -48,7 +48,7 @@ class DirectScoring(BaseModel):
 
     def evaluated_entities(self, entities: "Entities", criterion: Optional[str]=None) -> "Entities":
         multiscore = self.directs if criterion is None else self.directs.get(criterion=criterion)
-        return entities.get(multiscore.keys("entity_name"))
+        return entities[multiscore.keys("entity_name")]
     
     def __setitem__(self, keys: tuple, value: Score) -> None:
         self.directs[keys] = value

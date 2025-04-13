@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import pandas as pd
 import logging
@@ -29,7 +29,7 @@ class PreferenceLearning(StateFunction, ABC):
         args = lambda u: (u, entities, assessments[u], comparisons[u], user_models[u].base_model())
         for index, user in enumerate(users):
             batches[index % len(batches)].append(args(user))
-        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.batch_learn, batch) for batch in batches}
             for f in as_completed(futures):
                 for username, model in f.result().items():

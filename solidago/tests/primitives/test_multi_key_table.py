@@ -3,6 +3,7 @@ from pandas import DataFrame
 
 from solidago.primitives.datastructure.multi_key_table import MultiKeyTable
 
+
 def test_multi_key_table():
     t = MultiKeyTable(["username", "entity_name"])
     assert t.depth == 2
