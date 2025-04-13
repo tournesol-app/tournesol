@@ -15,7 +15,8 @@ class DirectScoring(BaseModel):
         
     def __call__(self, 
         entities: Union["Entity", "Entities"], 
-        criterion: Optional[str]=None
+        criterion: Optional[str]=None,
+        n_sampled_entities: Optional[int]=None,
     ) -> MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
         
@@ -32,13 +33,12 @@ class DirectScoring(BaseModel):
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
         from solidago.state.entities import Entities
-        if not isinstance(entities, Entities) and criterion is not None:
-            return self.score(entities, criterion)
-        if not isinstance(entities, Entities):
-            return self.directs[entities]
+        if isinstance(entities, Entities) and n_sampled_entities is not None and n_sampled_entities < len(entities):
+            entities = entities.sample(n_sampled_entities)
+        e = {e.name for e in entities} if isinstance(entities, Entities) else entities
         if criterion is None:
-            return self.directs
-        return self.directs.get(criterion=criterion)
+            return self.directs[e]
+        return self.directs[e, criterion]
     
     def score(self, entity: Union[str, "Entity"], criterion: str) -> Score:
         return self.directs[entity, criterion]

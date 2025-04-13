@@ -1,5 +1,4 @@
 from typing import Optional
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 import logging
@@ -17,6 +16,7 @@ class LipschitzQuantileShift(StateFunction):
         target_score: float = 0.0,
         lipschitz: float = 0.1,
         error: float = 1e-5,
+        n_sampled_entities_per_user: int=100,
         *args, **kwargs,
     ):
         """ The scores are shifted so that their quantile zero_quantile equals zero
@@ -30,6 +30,7 @@ class LipschitzQuantileShift(StateFunction):
         self.target_score = target_score
         self.lipschitz = lipschitz
         self.error = error
+        self.n_sampled_entities_per_user = n_sampled_entities_per_user
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
         """ Returns scaled user models
@@ -41,15 +42,23 @@ class LipschitzQuantileShift(StateFunction):
         """
         scales = MultiScore(["kind", "criterion"])
         args = entities, user_models
+
+        if self.max_workers == 1:
+            for criterion in user_models.criteria():
+                scales["translation", criterion] = self.translation(*args, criterion)
+            return user_models.scale(scales, note="lipschitz_quantile_shift")
+
+        from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.translation, *args, c): c for c in user_models.criteria()}
             for f in as_completed(futures):
                 criterion = futures[f]
                 scales["translation", criterion] = f.result()
         return user_models.scale(scales, note="lipschitz_quantile_shift")
-    
+
     def translation(self, entities: Entities, user_models: UserModels, criterion: str) -> Score:
-        scores = user_models(entities, criterion) # keynames == ["username", "entity_name"]
+        scores = user_models(entities, criterion, self.n_sampled_entities_per_user)
+        # scores.keynames == ["username", "entity_name"]
         n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
         values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
         lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
@@ -67,7 +76,6 @@ class LipschitzQuantileShift(StateFunction):
         ) + self.target_score
         return Score(translation_value, 0, 0)
         
-
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")

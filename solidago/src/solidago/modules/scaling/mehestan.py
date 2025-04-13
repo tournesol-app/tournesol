@@ -1,6 +1,5 @@
 from typing import Callable, Optional, Iterable
 from collections import defaultdict
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 import numpy.typing as npt
@@ -92,16 +91,26 @@ class Mehestan(StateFunction):
             Scaled user models
         """
         logger.info("Starting Mehestan's collaborative scaling")
-        scales = MultiScore(keynames=["username", "kind", "criterion"])
         scores = user_models(entities)
         fixed_args = users, entities, made_public
         args_list = [(c, scores.get(criterion=c)) for c in user_models.criteria()]
-        results = list()
+
+        if self.max_workers == 1:
+            results = [(c, self.scale_criterion(*fixed_args, s)) for c, s in args_list]
+            return self.results2output(users, user_models, results)
+
+        from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.scale_criterion, *fixed_args, s): c for c, s in args_list}
-            for f in as_completed(futures):
-                results.append((futures[f], f.result()))
-        kwargs = dict()
+            results = [(futures[f], f.result()) for f in as_completed(futures)]
+        return self.results2output(users, user_models, results)
+    
+    def results2output(self, 
+        users: Users, 
+        user_models: UserModels, 
+        results: list
+    ) -> tuple[Users, UserModels]:
+        scales, kwargs = MultiScore(keynames=["username", "kind", "criterion"]), dict()
         for criterion, (subscales, activities, is_scaler) in results:
             scales |= subscales.prepend(criterion=criterion)
             kwargs[f"activities_{criterion}"] = activities

@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import random
 
 
 class Object:
@@ -68,7 +69,8 @@ class Objects:
                 self._dict[name] = type(self).object_cls.load(name)
         elif isinstance(self.init_data, pd.DataFrame):
             self._name2index, self._index2name = None, None
-            self.init_data = self.init_data.set_index(type(self).index_name)
+            if type(self).index_name in self.init_data.columns:
+                self.init_data = self.init_data.set_index(type(self).index_name)
             vector_dim, vector_columns = 0, list()
             while f"vector_{vector_dim}" in self.init_data.columns:
                 vector_columns.append(f"vector_{vector_dim}")
@@ -123,12 +125,19 @@ class Objects:
             return self._dict[name]
         return type(self)([obj for obj in name])
     
+    def sample(self, n_items: int) -> "Objects":
+        return self[random.sample(self.keys(), n_items)]
+    
     def __delitem__(self, obj: Union[int, str, Object, Iterable]) -> Object:
         self._cache()
         if isinstance(obj, type(self).object_cls):
-            del obj.name
-        if isinstance(name, (str, int)):
-            return self._dict[name]
+            del self._dict[obj.name]
+        elif isinstance(obj, (str, int)):
+            del self._dict[obj]
+        else:
+            assert isinstance(obj, Iterable)
+            for o in obj:
+                del self[o]
     
     def keys(self) -> list:
         return [obj.name for obj in self]

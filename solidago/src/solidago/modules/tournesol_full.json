@@ -35,13 +35,15 @@
         "common_multiplicator": ["LipschitzStandardize", {
             "dev_quantile": 0.9, 
             "lipschitz": 0.1, 
-            "error": 1e-05
+            "error": 1e-05,
+            "n_sampled_entities_per_user": 100
         }],
         "common_translation": ["LipschitzQuantileShift", {
             "quantile": 0.15, 
             "lipschitz": 0.1, 
             "error": 1e-05,
-            "target_score": 0.21
+            "target_score": 0.21,
+            "n_sampled_entities_per_user": 100
         }]
     }],
     "aggregation": ["EntitywiseQrQuantile", {

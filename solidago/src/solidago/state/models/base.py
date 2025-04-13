@@ -21,7 +21,8 @@ class ScoringModel(ABC):
 
     def __call__(self, 
         entities: Union["Entity", "Entities"], 
-        criterion: Optional[str]=None
+        criterion: Optional[str]=None,
+        n_sampled_entities: Optional[int]=None,
     ) -> MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
         
@@ -41,6 +42,8 @@ class ScoringModel(ABC):
         if not isinstance(entities, Entities) and criterion is not None:
             return self.score(entities, criterion)
         entities = self.evaluated_entities(entities) if isinstance(entities, Entities) else [entities]
+        if n_sampled_entities is not None and n_sampled_entities < len(entities):
+            entities = entities.sample(n_sampled_entities)
         keynames = ["entity_name"] if isinstance(entities, Entities) else list()
         criteria = self.criteria() if criterion is None else { criterion }
         keynames += ["criterion"] if criterion is None else list()

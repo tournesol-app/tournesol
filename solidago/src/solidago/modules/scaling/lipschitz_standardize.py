@@ -1,5 +1,4 @@
 from typing import Optional
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 import logging
@@ -13,7 +12,13 @@ from solidago.modules.base import StateFunction
 
 
 class LipschitzStandardize(StateFunction):
-    def __init__(self, dev_quantile: float=0.9, lipschitz: float=0.1, error: float=1e-5, *args, **kwargs):
+    def __init__(self, 
+        dev_quantile: float=0.9, 
+        lipschitz: float=0.1, 
+        error: float=1e-5, 
+        n_sampled_entities_per_user: int=100,
+        *args, **kwargs
+    ):
         """ The scores are shifted so that their quantile zero_quantile equals zero
         
         Parameters
@@ -24,10 +29,18 @@ class LipschitzStandardize(StateFunction):
         self.dev_quantile = dev_quantile
         self.lipschitz = lipschitz
         self.error = error
+        self.n_sampled_entities_per_user = n_sampled_entities_per_user
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
         scales = MultiScore(["kind", "criterion"])
         args = entities, user_models
+
+        if self.max_workers == 1:
+            for criterion in user_models.criteria():
+                scales["multiplier", criterion] = self.multiplier(*args, criterion)
+            return user_models.scale(scales, note="lipschitz_quantile_shift")
+
+        from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.multiplier, *args, c): c for c in user_models.criteria()}
             for f in as_completed(futures):
@@ -36,7 +49,8 @@ class LipschitzStandardize(StateFunction):
         return user_models.scale(scales, note="lipschitz_standardardize")
     
     def multiplier(self, entities: Entities, user_models: UserModels, criterion: str) -> Score:
-        scores = user_models(entities, criterion) # keynames == ["username", "entity_name"]
+        scores = user_models(entities, criterion, self.n_sampled_entities_per_user)
+        # scores.keynames == ["username", "entity_name"]
         n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
         values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
         lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))

@@ -27,9 +27,10 @@ class EntityCriterionWise(StateFunction):
         from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.batch, i, *args) for i in range(self.max_workers)}
-            for f in as_completed(futures):
-                for (entity_name, criterion), score in f.result().items():
-                    global_model[entity_name, criterion] = score
+            results = [f.result() for f in as_completed(futures)]
+        for result in results:
+            for (entity_name, criterion), score in result.items():
+                global_model[entity_name, criterion] = score
         return global_model
     
     def batch(self, 

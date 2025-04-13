@@ -18,7 +18,7 @@ with time(logger, "Loading packages and modules"):
     from solidago.primitives.optimize import *
     
     # generator = Generator.load("tests/generators/test_generator.json")
-    # pipeline = Sequential.load("tests/modules/test_pipeline.json")
+    # pipeline = Sequential.load("tests/modules/test_pipeline.json", max_workers=os.cpu_count() - 1)
     pipeline = Sequential.load("src/solidago/modules/tournesol_full.json", max_workers=os.cpu_count() - 1)
 
 with time(logger, "Loading input states"):

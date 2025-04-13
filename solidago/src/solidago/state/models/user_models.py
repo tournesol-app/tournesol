@@ -90,12 +90,14 @@ class UserModels:
     def __call__(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
+        n_sampled_entities_per_user: Optional[int]=None,
     ) -> MultiScore:
-        return self.score(entities, criterion)
+        return self.score(entities, criterion, n_sampled_entities_per_user)
     
     def score(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
+        n_sampled_entities_per_user: Optional[int]=None,
     ) -> MultiScore:
         keynames = ["username"]
         from solidago.state.entities import Entities
@@ -103,7 +105,7 @@ class UserModels:
         keynames += ["criterion"] if criterion is None else list()
         results = MultiScore(keynames)
         for username, model in self:
-            scores = model(entities, criterion)
+            scores = model(entities, criterion, n_sampled_entities_per_user)
             if isinstance(scores, Score): # results.keynames == ["username"]
                 results[username] = scores
             else:
