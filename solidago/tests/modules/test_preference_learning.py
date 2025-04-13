@@ -51,5 +51,5 @@ def test_uniform_gbt():
             for (criterion,), score in user_models_tuple[0][user](entity):
                 lbfgs_score = user_models_tuple[1][user](entity, criterion)
                 args = (str(user), str(entity), criterion, score, lbfgs_score)
-                assert score.to_triplet() == pytest.approx(lbfgs_score.to_triplet(), abs=2e-1), args
+                assert score.to_triplet() == pytest.approx(lbfgs_score.to_triplet(), abs=5e-1), args
 

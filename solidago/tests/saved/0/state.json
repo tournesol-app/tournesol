@@ -72,20 +72,27 @@
             "user_directs": "user_directs.csv",
             "common_scales": "common_scales.csv",
             "default_model_cls": [
-                "ScaledModel",
+                "SquashedModel",
                 {
-                    "note": "lipschitz_quantile_shift",
+                    "score_max": 100,
+                    "note": "squash",
                     "parent": [
                         "ScaledModel",
                         {
-                            "note": "lipschitz_standardardize",
+                            "note": "lipschitz_quantile_shift",
                             "parent": [
                                 "ScaledModel",
                                 {
-                                    "note": "mehestan",
+                                    "note": "lipschitz_standardardize",
                                     "parent": [
-                                        "DirectScoring",
-                                        {}
+                                        "ScaledModel",
+                                        {
+                                            "note": "mehestan",
+                                            "parent": [
+                                                "DirectScoring",
+                                                {}
+                                            ]
+                                        }
                                     ]
                                 }
                             ]
@@ -96,9 +103,23 @@
         }
     ],
     "global_model": [
-        "DirectScoring",
+        "SquashedModel",
         {
-            "note": "None"
+            "note": "squash",
+            "score_max": 100,
+            "parent": [
+                "DirectScoring",
+                {
+                    "note": "average"
+                }
+            ],
+            "directs": {
+                "name": "directs.csv",
+                "keynames": [
+                    "entity_name",
+                    "criterion"
+                ]
+            }
         }
     ]
 }

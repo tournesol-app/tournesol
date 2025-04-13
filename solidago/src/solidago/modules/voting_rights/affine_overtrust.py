@@ -1,5 +1,5 @@
 from typing import Union
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 import pandas as pd
@@ -57,7 +57,7 @@ class AffineOvertrust(StateFunction):
             for criterion in assessments.keys("criterion") | comparisons.keys("criterion") 
         ]
         column_kwargs = dict()
-        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.main, *args): args[-1] for args in args_list}
             for f in as_completed(futures):
                 criterion = futures[f]
