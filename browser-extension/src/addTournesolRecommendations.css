@@ -248,8 +248,10 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 .video_card {
   position: relative;
 
-  --ytd-rich-item-row-usable-width: calc(100% - var(--ytd-rich-grid-gutter-margin)*2);
-  width: calc(var(--ytd-rich-item-row-usable-width)/var(--ytd-rich-grid-items-per-row) - var(--ytd-rich-grid-item-margin) - .01px);
+  width: calc(
+    100% / var(--ytd-rich-grid-items-per-row)
+    - var(--ytd-rich-grid-item-margin) / 2
+  );
 }
 
 .video_thumb {
