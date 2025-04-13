@@ -1,0 +1,1342 @@
+username,entity_name,criterion,value,left_unc,right_unc
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_3,default,8.750696,3.1433105,20.111084
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_13,default,6.265632,2.2888184,3.6315918
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_11,default,-12.103084,6.072998,2.960205
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_19,default,-3.1676853,4.6691895,2.6550293
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_12,default,0.38110918,2.8381348,2.6550293
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_0,default,-17.322197,153.35083,2.2888184
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_14,default,3.4200418,2.0446777,2.166748
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_17,default,10.313572,2.5939941,18.157959
+"User user_0
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 29
+n_comparisons_per_entity = 6
+multiplier = 0.7036947917953755
+engagement_bias = -0.841747365656204
+trust = 0.0",entity_10,default,3.4622939,1.8005371,2.2277832
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_5,default,16.476013,2.7160645,1000.0
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_11,default,-0.3528044,1.6174316,1.739502
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_15,default,-10.355774,14.129639,2.7770996
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_12,default,-4.218579,2.7770996,1.6784668
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_18,default,-1.0267074,1.373291,1.373291
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_19,default,2.1846986,1.8005371,2.7770996
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_14,default,-2.1787853,1.8615723,1.5563965
+"User user_2
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 1
+n_comparisons = 28
+n_comparisons_per_entity = 7
+multiplier = 0.742477928949466
+engagement_bias = 1.515840912755234
+trust = 0.0",entity_17,default,-0.5276482,1.9836426,1.9836426
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_4,default,0.53580546,1.2512207,1.373291
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_3,default,-4.29424,4.547119,2.2888184
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_13,default,2.4560947,2.2277832,2.7770996
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_16,default,0.22860767,1.8615723,1.739502
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_8,default,-4.0081363,9.063721,3.1433105
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_19,default,1.9723548,2.105713,2.89917
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_12,default,6.9657755,2.8381348,9.002686
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_18,default,5.771777,2.2888184,5.5236816
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_1,default,-0.51221323,2.5939941,2.3498535
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_2,default,-5.7713127,6.134033,2.3498535
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_0,default,-2.9215908,3.2653809,3.326416
+"User user_7
+is_trustworthy = True
+is_pretrusted = True
+n_expected_vouches = 0
+n_comparisons = 30
+n_comparisons_per_entity = 5
+multiplier = 0.5540242108154312
+engagement_bias = 0.1183512436506283
+trust = 0.8",entity_17,default,-0.42238113,2.7160645,2.2277832
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_19,default,-3.8289907,21.270752,5.340576
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_18,default,-12.443259,36.712646,2.7160645
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_17,default,-2.5558379,2.6550293,1.9226074
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_4,default,5.4527493,2.2277832,2.7770996
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_15,default,-0.79118776,2.5939941,3.692627
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_12,default,-17.264988,92.437744,2.4719238
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_1,default,2.7183197,2.4719238,2.5939941
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_3,default,-0.8023997,4.058838,3.0822754
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_6,default,9.337939,1.6784668,3.0212402
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_11,default,-9.418783,4.180908,1.739502
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_7,default,12.459045,2.166748,14.556885
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_10,default,9.143766,1.4953613,2.105713
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_13,default,0.43514144,2.89917,4.119873
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_16,default,-5.117549,7.171631,5.645752
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_8,default,9.017138,1.4343262,2.0446777
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_2,default,10.494248,2.532959,19.439697
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_0,default,-7.0508447,3.0822754,2.4108887
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_5,default,6.980505,2.4719238,2.4719238
+"User user_4
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 57
+n_comparisons_per_entity = 6
+multiplier = 0.3062242942136661
+engagement_bias = -1.3845186665358649
+trust = 0.0",entity_14,default,-6.7662487,3.0822754,2.6550293
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_19,default,1.7931769,4.058838,2.89917
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_18,default,-13.680271,3.5095215,1.6784668
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_17,default,-0.38632035,6.3171387,4.425049
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_4,default,7.260571,2.8381348,17.608643
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_15,default,-9.6238,4.3640137,2.7160645
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_12,default,-0.5329203,9.185791,4.3640137
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_1,default,-2.1851602,7.7209473,3.9367676
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_3,default,-2.7107303,6.5612793,9.246826
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_6,default,2.05548,4.6081543,5.4626465
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_11,default,3.8625295,1.8615723,2.2888184
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_9,default,8.504259,2.89917,3.6315918
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_7,default,-4.6560464,21.636963,4.486084
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_10,default,11.105814,2.2277832,15.655518
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_13,default,4.821365,1.5563965,2.2888184
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_16,default,-13.919083,4.79126,1.739502
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_8,default,5.836693,6.6223145,1000.0
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_2,default,7.5219874,4.3029785,64.2395
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_0,default,3.8229144,3.8146973,3.692627
+"User user_5
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 35
+n_comparisons_per_entity = 2
+multiplier = 0.9925232900583056
+engagement_bias = 1.122089844197508
+trust = 0.0",entity_5,default,3.8545544,2.8381348,2.7770996
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_4,default,-3.5331357,3.2653809,2.2277832
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_3,default,11.577338,2.2888184,3.753662
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_11,default,3.240639,3.8146973,3.1433105
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_8,default,14.4452505,2.0446777,21.942139
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_19,default,-9.002629,2.532959,1.9836426
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_12,default,-12.8844385,9.124756,1.9226074
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_18,default,-10.02561,2.7770996,1.739502
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_1,default,6.090593,2.2277832,4.058838
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_0,default,-0.9060912,2.960205,3.9978027
+"User user_9
+is_trustworthy = False
+is_pretrusted = False
+n_expected_vouches = 2
+n_comparisons = 35
+n_comparisons_per_entity = 7
+multiplier = 0.2338285513091478
+engagement_bias = 0.7565021430525523
+trust = 0.0",entity_17,default,0.9981656,3.6315918,4.058838
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_4,default,-3.3899393,2.5939941,2.0446777
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_13,default,-3.0158813,3.3874512,2.7160645
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_6,default,-2.802102,2.6550293,2.5939941
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_11,default,-6.2527485,23.956299,3.9978027
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_8,default,-7.607765,22.857666,3.0822754
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_19,default,0.15071128,2.2888184,2.0446777
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_18,default,9.004125,1.9226074,5.0354004
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_9,default,7.3016763,2.166748,2.7770996
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_7,default,9.526084,3.4484863,25.909424
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_1,default,3.4235024,2.3498535,2.960205
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_14,default,0.39028916,1.9836426,2.2888184
+"User user_1
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 31
+n_comparisons_per_entity = 5
+multiplier = 2.202921348684173
+engagement_bias = -0.3083744374565056
+trust = 0.0",entity_10,default,-6.727796,9.429932,2.7160645
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_19,default,-10.84524,2.0446777,1.3122559
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_18,default,9.573058,1.4343262,1.8615723
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_17,default,13.72347,1.4953613,2.960205
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_4,default,-24.843254,30.975342,1.6174316
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_15,default,29.357267,1.5563965,211.15112
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_12,default,-17.997534,3.5095215,1.6784668
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_1,default,-9.745,1.8005371,1.4343262
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_3,default,-4.824078,2.0446777,1.4953613
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_6,default,-10.084997,1.8005371,1.373291
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_11,default,5.874822,2.166748,2.532959
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_9,default,16.673256,1.6784668,5.0354004
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_7,default,9.936489,1.373291,1.8615723
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_10,default,-20.464575,4.852295,1.5563965
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_13,default,-3.365591,1.6174316,1.373291
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_16,default,-2.7408628,1.5563965,1.4343262
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_8,default,1.8279229,2.166748,2.5939941
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_2,default,-1.8398787,1.5563965,1.6784668
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_0,default,-13.874085,3.326416,1.6174316
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_5,default,22.378757,1.8005371,8.2092285
+"User user_8
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 3
+n_comparisons = 564
+n_comparisons_per_entity = 6
+multiplier = 0.025524417706864
+engagement_bias = -1.232097935038745
+trust = 0.0",entity_14,default,11.279652,1.3122559,2.166748
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_19,default,-14.926175,3.2653809,1.6174316
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_18,default,9.966713,1.5563965,3.5705566
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_17,default,0.3110596,2.6550293,1.8615723
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_4,default,-4.545176,11.138916,4.6691895
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_15,default,-8.856614,3.692627,1.9226074
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_12,default,2.14181,2.532959,4.7302246
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_1,default,7.001047,1.3122559,1.739502
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_3,default,1.0532863,2.2888184,2.7770996
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_6,default,2.8002844,2.3498535,3.0212402
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_11,default,-17.58406,19.989014,1.8005371
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_9,default,0.34212857,2.2888184,2.0446777
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_7,default,17.82232,2.4108887,187.95776
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_10,default,-8.389239,2.7770996,2.0446777
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_13,default,4.5404086,2.3498535,2.8381348
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_16,default,6.783472,1.9226074,2.3498535
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_8,default,3.9932714,5.279541,11.688232
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_2,default,8.526079,2.2277832,2.89917
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_0,default,-13.4832115,3.3874512,1.9226074
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_5,default,6.9972095,1.9226074,2.4108887
+"User user_3
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 55
+n_comparisons_per_entity = 5
+multiplier = 0.8006831838190048
+engagement_bias = 0.0462555231416969
+trust = 0.0",entity_14,default,-4.496344,7.9040527,3.2653809
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_19,default,4.867876,3.4484863,3.692627
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_18,default,7.5687213,5.0354004,1000.0
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_17,default,5.2305717,2.6550293,3.5095215
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_4,default,-3.5382702,39.70337,6.500244
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_15,default,-11.198142,11.871338,2.2888184
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_12,default,4.0762014,1.6784668,2.3498535
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_1,default,1.9651664,2.0446777,3.3874512
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_3,default,-10.275206,8.392334,2.105713
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_6,default,-4.667901,2.7160645,2.4108887
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_11,default,-5.1977406,2.6550293,1.6784668
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_9,default,-2.966021,2.89917,3.5095215
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_7,default,3.4868226,1.8615723,2.166748
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_10,default,-2.5268157,25.970459,5.279541
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_13,default,8.63262,2.166748,6.5612793
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_16,default,1.6383263,3.5095215,2.532959
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_8,default,-1.0629909,4.3640137,2.532959
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_2,default,0.16069736,3.4484863,2.2277832
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_0,default,3.5424244,8.758545,1000.0
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_5,default,8.2005,2.6550293,13.946533
+"User user_6
+is_trustworthy = True
+is_pretrusted = False
+n_expected_vouches = 0
+n_comparisons = 44
+n_comparisons_per_entity = 4
+multiplier = 0.2608117076754005
+engagement_bias = -0.9288919245238192
+trust = 0.0",entity_14,default,-7.937073,2.6550293,2.4719238

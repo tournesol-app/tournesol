@@ -34,7 +34,7 @@ class EntityCriterionWise(StateFunction):
         voting_rights: VotingRights, # keynames == ["entity_name", "username"]
         scores: MultiScore, # keynames == ["entity_name", "username"]
     ) -> dict[str, Score]:
-        return {str(e): self.aggregate(scores[e], voting_rights[e]) for e in entities}
+        return {e.name: self.aggregate(scores[e], voting_rights[e]) for e in entities}
         
     @abstractmethod
     def aggregate(self, 

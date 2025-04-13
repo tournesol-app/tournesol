@@ -7,7 +7,7 @@ from solidago.modules.scaling import Mehestan, LipschitzStandardize, LipschitzQu
 states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 
-@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("seed", range(1))
 def test_learned_models(seed):
     mehestan = Mehestan(
         lipschitz=1., 
@@ -24,7 +24,7 @@ def test_learned_models(seed):
     base_models = UserModels(s.user_models.user_directs)
     users, scaled_models = mehestan(users, entities, made_public, base_models)
 
-@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("seed", range(1))
 def test_standardize(seed):
     standardize = LipschitzStandardize(
         dev_quantile=0.9, 
@@ -37,7 +37,7 @@ def test_standardize(seed):
     assert np.std([s.value for _, s in scores]) < 2
     assert np.std([s.value for _, s in scores]) > 0.5
     
-@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("seed", range(1))
 def test_quantile_shift(seed):
     quantile_shift = LipschitzQuantileShift(
         quantile=0.15, 

@@ -1,6 +1,6 @@
 from typing import Callable, Optional, Iterable
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 import numpy.typing as npt
@@ -92,22 +92,21 @@ class Mehestan(StateFunction):
             Scaled user models
         """
         logger.info("Starting Mehestan's collaborative scaling")
-        assert "trust_score" in users.columns, "No trust scores. Consider running TrustAll first."
-
         scales = MultiScore(keynames=["username", "kind", "criterion"])
         scores = user_models(entities)
         fixed_args = users, entities, made_public
         args_list = [(c, scores.get(criterion=c)) for c in user_models.criteria()]
         results = list()
-        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.scale_criterion, *fixed_args, s): c for c, s in args_list}
             for f in as_completed(futures):
                 results.append((futures[f], f.result()))
+        kwargs = dict()
         for criterion, (subscales, activities, is_scaler) in results:
             scales |= subscales.prepend(criterion=criterion)
-            users[f"activities_{criterion}"] = activities
-            users[f"is_scaler_{criterion}"] = is_scaler
-        return users, user_models.scale(scales, note="mehestan")
+            kwargs[f"activities_{criterion}"] = activities
+            kwargs[f"is_scaler_{criterion}"] = is_scaler
+        return users.assign(**kwargs), user_models.scale(scales, note="mehestan")
 
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
@@ -229,7 +228,7 @@ class Mehestan(StateFunction):
             where i is the iloc of the user in users
         """
         return np.array([
-            self.compute_user_activities(float(user["trust_score"]), made_public[user], scores[user])
+            self.compute_user_activities(user.trust, made_public[user], scores[user])
             for user in users
         ])
     
@@ -357,7 +356,7 @@ class Mehestan(StateFunction):
                 value = qr_median(**kwargs)
                 uncertainty = qr_uncertainty(median=value, default_dev=default_dev, **kwargs)
                 multiscores[scalee_name, scaler_name] = Score(value, uncertainty, uncertainty)
-                voting_rights[scalee_name, scaler_name] = users.get(scaler_name)["trust_score"]
+                voting_rights[scalee_name, scaler_name] = users[scaler_name].trust
                 
         return voting_rights, multiscores
 

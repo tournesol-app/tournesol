@@ -1,5 +1,5 @@
 from typing import Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 import logging
@@ -28,7 +28,7 @@ class LipschitzStandardize(StateFunction):
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
         scales = MultiScore(["kind", "criterion"])
         args = entities, user_models
-        with ThreadPoolExecutor(max_workers=self.max_workers) as e:
+        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.multiplier, *args, c): c for c in user_models.criteria()}
             for f in as_completed(futures):
                 criterion = futures[f]

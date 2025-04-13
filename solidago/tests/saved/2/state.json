@@ -69,9 +69,29 @@
     "user_models": [
         "UserModels",
         {
+            "user_directs": "user_directs.csv",
+            "common_scales": "common_scales.csv",
             "default_model_cls": [
-                "DirectScoring",
-                {}
+                "ScaledModel",
+                {
+                    "note": "lipschitz_quantile_shift",
+                    "parent": [
+                        "ScaledModel",
+                        {
+                            "note": "lipschitz_standardardize",
+                            "parent": [
+                                "ScaledModel",
+                                {
+                                    "note": "mehestan",
+                                    "parent": [
+                                        "DirectScoring",
+                                        {}
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
             ]
         }
     ],
