@@ -118,7 +118,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             criterion_entity_names = criterion_comparisons.keys("entity_name")
             if len(criterion_entity_names) <= 1:
                 continue
-            criterion_entities = entities.get(criterion_entity_names) # Restrict to compared entities
+            criterion_entities = entities[criterion_entity_names] # Restrict to compared entities
             init = init_model(criterion_entities, criterion)
             scores = self.user_learn_criterion(criterion_entities, criterion_comparisons, init)
             for (entity_name,), score in scores:
@@ -141,14 +141,14 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         values = self.compute_values(entities, comparisons, init)
         lefts, rights = self.compute_uncertainties(entities, comparisons, values)
         return MultiScore("entity_name", {
-            entities.iloc[i].name: Score(values[i], lefts[i], rights[i])
-            for i in range(len(values)) 
+            entity.name: Score(values[i], lefts[i], rights[i])
+            for i, entity in enumerate(entities)
             if not (lefts[i] == self.max_uncertainty and lefts[i] == self.max_uncertainty)
         })
 
     def init_values(self, entities: Entities, init: MultiScore) -> npt.NDArray:
         values = np.zeros(len(entities), dtype=np.float64)
-        for entity, index in entities.name2index.items():
+        for index, entity in enumerate(entities):
             if not np.isnan(init[entity].value):
                 values[index] = init[entity].value
         return values

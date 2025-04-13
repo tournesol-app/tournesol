@@ -13,9 +13,9 @@ def test_is_trust(seed):
     voting_rights = Trust2VotingRights().state2objects_function(states[seed])
     for (username, entity_name, criterion), voting_right in voting_rights:
         if states[seed].made_public.get(username, entity_name):
-            assert voting_right == states[seed].users.get(username)["trust_score"]
+            assert voting_right == states[seed].users[username].trust
         else:
-            assert voting_right == 0.5 * states[seed].users.get(username)["trust_score"]
+            assert voting_right == 0.5 * states[seed].users[username].trust
 
 
 ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)
@@ -175,7 +175,8 @@ def test_voting_rights_abstraction():
 
 
 def test_affine_overtrust():
-    users = Users(dict(username=list(range(5)), trust_score=[0.5, 0.6, 0.0, 0.4, 1]))
+    users = Users([str(i) for i in range(5)])
+    users = users.assign(trust=[0.5, 0.6, 0.0, 0.4, 1])
     entities = Entities(list(range(6)))
     made_public = MadePublic()
     made_public["0", "0"] = True
@@ -199,7 +200,7 @@ def test_affine_overtrust():
     entities, voting_rights = ao(users, entities, made_public, assessments, comparisons)
 
     assert len(entities) == 6  # 6 entities
-    assert list(entities.columns) == [
+    assert list(entities.to_df().columns) == [
         'default_cumulative_trust', 
         'default_min_voting_right', 
         'default_overtrust'

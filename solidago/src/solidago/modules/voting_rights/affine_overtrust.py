@@ -44,7 +44,7 @@ class AffineOvertrust(StateFunction):
         an affine function of the total trusts of users who evaluated the entity on the criterion.
         """
         if len(users) == 0 or len(entities) == 0:
-            return None
+            return entities, VotingRights()
 
         voting_rights = VotingRights()
         assessments = assessments.reorder("criterion", "entity_name", "username")
@@ -56,6 +56,7 @@ class AffineOvertrust(StateFunction):
             (users, made_public, assessments, comparisons, criterion)
             for criterion in assessments.keys("criterion") | comparisons.keys("criterion") 
         ]
+        column_kwargs = dict()
         with ThreadPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.main, *args): args[-1] for args in args_list}
             for f in as_completed(futures):
@@ -63,9 +64,11 @@ class AffineOvertrust(StateFunction):
                 for entity_name, (sub_voting_rights, statistics) in f.result().items():
                     for username, voting_right in sub_voting_rights.items():
                         voting_rights[username, entity_name, criterion] = voting_right
-                    entities.loc[entity_name, [ f"{criterion}_{n}" for n in stat_names ]] = statistics
+                    for i, n in enumerate(stat_names):
+                        column_kwargs[f"{criterion}_{n}"] = dict()
+                        column_kwargs[f"{criterion}_{n}"][entity_name] = statistics[i]
 
-        return entities, voting_rights
+        return entities.assign(**column_kwargs), voting_rights
     
     def main(self, 
         users: Users, 
@@ -88,7 +91,7 @@ class AffineOvertrust(StateFunction):
         for entity_name in entity_names(criterion, assessments) | entity_names(criterion, comparisons):
             evaluators = assessments[criterion, entity_name].keys("username")
             evaluators |= comparisons[criterion, entity_name].keys("username")
-            trust_scores = { u: users.loc[u, "trust_score"] for u in evaluators }
+            trust_scores = { u: users[u].trust for u in evaluators }
             public = { u: made_public.get(u, entity_name) for u in evaluators }
     
             voting_rights_np, statistics = self.computing_voting_rights_and_statistics(
