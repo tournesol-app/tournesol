@@ -1,28 +1,19 @@
 const getYoutubeVideosPerRow = () => {
-  const youtubeThumbnails = Array.from(
-    document.querySelectorAll(
-      '#primary #contents > ytd-rich-item-renderer.ytd-rich-grid-renderer'
-    )
+  const youtubeThumbnail = document.querySelector(
+    '#primary #contents > ytd-rich-item-renderer.ytd-rich-grid-renderer'
   );
-  const youtubeThumbnailsY = youtubeThumbnails
-    .map((e) => e.getBoundingClientRect().y)
-    .filter((y) => y !== 0);
-
-  if (youtubeThumbnailsY.length === 0) {
+  if (!youtubeThumbnail) {
     return undefined;
   }
 
-  // We get the maximum number of thumbnails on a row because
-  // sometimes YouTube renders some rows with fewer thumbnails.
-  const counts = {};
-  let maxCount = 0;
-  for (const y of youtubeThumbnailsY) {
-    const key = y.toString();
-    const count = (counts[key] || 0) + 1;
-    counts[key] = count;
-    if (count > maxCount) maxCount = count;
+  const itemsPerRowCssValue = window
+    .getComputedStyle(youtubeThumbnail)
+    .getPropertyValue('--ytd-rich-grid-items-per-row');
+  if (!itemsPerRowCssValue) {
+    return undefined;
   }
-  return maxCount;
+
+  return Number(itemsPerRowCssValue);
 };
 
 const getHomeRecommendationsLayout = () =>
