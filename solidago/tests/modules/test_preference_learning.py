@@ -43,7 +43,7 @@ def test_gbt_score_monotonicity(GBT):
 
 def test_uniform_gbt():
     s = State.load(f"tests/saved/0")
-    kwargs = dict(prior_std_dev=7.0, uncertainty_nll_increase=1.0, max_uncertainty=1e3, max_workers=2)
+    kwargs = dict(prior_std_dev=7.0, uncertainty_nll_increase=1.0, max_uncertainty=1e3, max_workers=1)
     GBTs = (NumbaUniformGBT, LBFGSUniformGBT)
     user_models_tuple = tuple(GBT(**kwargs).state2objects_function(s) for GBT in GBTs)
     for user in s.users:

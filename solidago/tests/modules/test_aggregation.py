@@ -23,14 +23,29 @@ user_models = UserModels(
     }, name="user_directs")
 )
 
-def test_average_simple_instance():
+def test_average_simple_instance1():
+    global_model = Average(max_workers=1)(entities, voting_rights, user_models)
+    assert global_model("entity_0", "default").value == 0.4
+    assert global_model("entity_1")["default"].value == 1
+    assert global_model("entity_2")["default"].value == -.3
+    assert global_model("entity_3", "default").to_triplet() == pytest.approx((0.3, .4, .3), abs=1e-2)
+
+def test_average_simple_instance2():
     global_model = Average(max_workers=2)(entities, voting_rights, user_models)
     assert global_model("entity_0", "default").value == 0.4
     assert global_model("entity_1")["default"].value == 1
     assert global_model("entity_2")["default"].value == -.3
     assert global_model("entity_3", "default").to_triplet() == pytest.approx((0.3, .4, .3), abs=1e-2)
 
-def test_qr_quantile_simple_instance():
+def test_qr_quantile_simple_instance1():
+    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5, max_workers=1)
+    global_model = aggregator(entities, voting_rights, user_models)
+    assert global_model("entity_0", "default").value < -1
+    assert global_model("entity_1", "default").value == pytest.approx(1., abs=1e-2)
+    assert global_model("entity_2", "default").value == pytest.approx(-.3, abs=1e-2)
+    assert global_model("entity_3", "default").value > 0.2
+
+def test_qr_quantile_simple_instance2():
     aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5, max_workers=2)
     global_model = aggregator(entities, voting_rights, user_models)
     assert global_model("entity_0", "default").value < -1

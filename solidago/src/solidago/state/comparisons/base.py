@@ -120,14 +120,16 @@ class Comparisons(MultiKeyTable):
             kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
             self.parent.delete(tolerate_key_error=True, **kwargs)
 
-    def to_df(self) -> DataFrame:
+    def to_df(self, max_values: Optional[int]=None) -> DataFrame:
         try:
             entity_name_index = self.keynames.index("entity_name")
             other_name_index = self.keynames.index("other_name")
-            return DataFrame([ 
-                Series(dict(zip(self.keynames, keys)) | dict(self.value2series(comparison)))
-                for keys, comparison in self.left_right_iter()
-            ]).rename({ "entity_name": "left_name", "other_name": "right_name" })
+            data = list()
+            for index, (keys, comparison) in enumerate(self.left_right_iter()):
+                data.append(Series(dict(zip(self.keynames, keys)) | dict(self.value2series(comparison))))
+                if max_values is not None and index > max_values:
+                    break
+            return DataFrame(data).rename({ "entity_name": "left_name", "other_name": "right_name" })
         except ValueError:
             return super().to_df()
 
@@ -138,7 +140,9 @@ class Comparisons(MultiKeyTable):
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set:
         self.nested_dict("entity_name", "username")
-        return self.get(entity_name=str(entity)).keys("username")
+        from solidago.state.entities import Entity
+        entity_name = entity.name if isinstance(entity, Entity) else entity
+        return self.get(entity_name=entity_name).keys("username")
 
     def __len__(self) -> int:
         if isinstance(self.init_data, DataFrame) and "location" not in self.init_data.columns:

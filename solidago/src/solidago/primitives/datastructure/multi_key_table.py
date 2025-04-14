@@ -218,7 +218,7 @@ class MultiKeyTable:
         if set_keynames:
             nonset_keynames = [kn for kn in kwargs if not isinstance(kwargs[kn], set)]
             kwargs_keynames = nonset_keynames + set_keynames
-            keynames_set = self.get_matching_prefix_caches(*kwargs_keynames)
+            keynames_set = self.get_matching_prefix_caches(*nonset_keynames)
             parent_keynames = next(iter(keynames_set))[:len(nonset_keynames)]
             parent_keys = tuple(kwargs[kn] for kn in parent_keynames)
             other_keynames = [kn for kn in self.keynames if kn not in kwargs]
@@ -357,6 +357,7 @@ class MultiKeyTable:
         return result
 
     def reorder(self, *keynames) -> "MultiKeyTable":
+        self._main_cache()
         keynames = list(keynames) + [kn for kn in self.keynames if kn not in keynames]
         assert len(keynames) == self.depth
         return type(self)(keynames, self._cache)

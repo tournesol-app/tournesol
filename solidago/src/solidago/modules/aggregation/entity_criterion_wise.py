@@ -1,7 +1,12 @@
 from abc import abstractmethod
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 from solidago.state import *
 from solidago.modules.base import StateFunction
+from solidago.primitives.timer import time
 
 
 class EntityCriterionWise(StateFunction):
@@ -17,10 +22,13 @@ class EntityCriterionWise(StateFunction):
         """ Returns weighted average of user's scores """
         global_model = DirectScoring(note="average")
         voting_rights = voting_rights.reorder("entity_name", "criterion", "username")
-        args = entities, voting_rights, user_models, user_models.criteria()
+        with time(logger, "Precomputing scores"):
+            scores = user_models(entities, max_workers=self.max_workers)
+            scores = scores.reorder("entity_name", "criterion", "username")
+            args = entities, voting_rights, scores, user_models.criteria()
         
         if self.max_workers == 1:
-            for (entity_name, score), score in self.batch(0, *args):
+            for (entity_name, criterion), score in self.batch(0, *args).items():
                 global_model[entity_name, criterion] = score
             return global_model
         
@@ -36,16 +44,19 @@ class EntityCriterionWise(StateFunction):
     def batch(self, 
         batch_number: int,
         entities: Entities, 
-        voting_rights: VotingRights, # keynames == ["entity_name", "username"]
-        user_models: UserModels, # keynames == ["entity_name", "username"]
+        voting_rights: VotingRights, # keynames == ["entity_name", "criterion", "username"]
+        scores: MultiScore, # keynames == ["entity_name", "criterion", "username"]
         criteria: list[str],
     ) -> dict[tuple[str, str], Score]:
         indices = range(batch_number, len(entities), self.max_workers)
         batch_entities = {entities.get_by_index(i) for i in indices}
         results = dict()
-        for e in batch_entities:
+        print(f"Batch {batch_number}: computations started")
+        for index, e in enumerate(batch_entities):
+            if index % 100 == 0:
+                print(f"Batch {batch_number}: Handling entity {index} out of {len(batch_entities)}")
             for c in criteria:
-                results[(e.name, c)] = self.aggregate(user_models(e, c), voting_rights[e, c])
+                results[(e.name, c)] = self.aggregate(scores[e, c], voting_rights[e, c])
         print(f"Batch {batch_number}: computations terminated")
         return results
         

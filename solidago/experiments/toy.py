@@ -20,6 +20,7 @@ with time(logger, "Loading packages and modules"):
     # generator = Generator.load("tests/generators/test_generator.json")
     # pipeline = Sequential.load("tests/modules/test_pipeline.json", max_workers=os.cpu_count() - 1)
     pipeline = Sequential.load("src/solidago/modules/tournesol_full.json", max_workers=os.cpu_count() - 1)
+    # pipeline = Sequential.load("src/solidago/modules/tournesol_full.json", max_workers=1)
 
 with time(logger, "Loading input states"):
     # states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
@@ -51,3 +52,48 @@ with time(logger, "Running the pipeline"):
     # s4 = pipeline.scaling.state2state_function(s3)
     # s5 = pipeline.aggregation.state2state_function(s4)
     # s6 = pipeline.post_process.state2state_function(s5)
+
+import numpy as np
+from solidago import *
+from solidago.modules.scaling import Mehestan, LipschitzStandardize, LipschitzQuantileShift
+
+states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
+seed = 0
+self = Mehestan(
+    lipschitz=1., 
+    min_scaler_activity=1.,
+    n_scalers_max=5, 
+    privacy_penalty=0.5,
+    user_comparison_lipschitz=10.,
+    p_norm_for_multiplicative_resilience=4.0,
+    n_entity_to_fully_compare_max=100,
+    error=1e-5,
+    max_workers=1
+)
+s = states[seed]
+users, entities, made_public = s.users, s.entities, s.made_public
+user_models = UserModels(s.user_models.user_directs)
+scores = user_models(entities)
+fixed_args = users, entities, made_public
+args_list = [(c, scores.get(criterion=c)) for c in user_models.criteria()]
+criterion, scores = next(iter(args_list))
+activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
+scalers, nonscalers = set(), set()
+for index, user in enumerate(users):
+    (scalers if is_scaler[index] else nonscalers).add(user.name)
+scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
+scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
+scalee_scores = scaler_scores
+username = next(iter(scores.keys("username")))
+made_public = made_public[username]
+scores = scores[username]
+
+scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
+
+scaler_scales, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
+scale_nonscalers_to_scalers_args = (users, made_public, scaler_scores, nonscaler_scores)
+nonscaler_scales, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
+
+self.scale_criterion(*fixed_args, s)
+self.results2output(users, user_models, results)
+users, scaled_models = self(users, entities, made_public, user_models)

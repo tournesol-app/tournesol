@@ -11,6 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from solidago.primitives.timer import time
+from solidago.state.users import User, Users
 from .base import ScoringModel
 from .score import Score, MultiScore
 from .direct import DirectScoring
@@ -38,9 +39,10 @@ class UserModels:
         self.user_model_cls_dict = user_model_cls_dict or dict()
         self._cache_users = user_models_dict
     
-    def model_cls(self, user: Union[str, "User"]) -> tuple[str, dict]:
-        if str(user) in self.user_model_cls_dict:
-            return self.user_model_cls_dict[str(user)]
+    def model_cls(self, user: Union[int, str, "User"]) -> tuple[str, dict]:
+        username = user.name if isinstance(user, User) else user
+        if username in self.user_model_cls_dict:
+            return self.user_model_cls_dict[username]
         return deepcopy(self.default_model_cls)
 
     def criteria(self) -> set[str]:
@@ -58,43 +60,71 @@ class UserModels:
         return self._cache_users
 
     def __getitem__(self, user: Union[str, "User"]) -> ScoringModel:
+        username = user.name if isinstance(user, User) else user
         d = self.to_dict()
-        if str(user) in d:
-            return d[str(user)]
-        constructor_name, kwargs = self.model_cls(str(user))
+        if username in d:
+            return d[username]
+        constructor_name, kwargs = self.model_cls(username)
         import solidago.state.models as models
         return getattr(models, constructor_name)(**kwargs)
     
     def __delitem__(self, user: Union[str, "User"]) -> None:
+        username = user.name if isinstance(user, User) else user
         if user in self.user_directs:
-            del self.user_directs[str(user)]
+            del self.user_directs[username]
         if user in self.user_scales:
-            del self.user_scales[str(user)]
-        if str(user) in self.user_model_cls_dict:
-            del self.user_model_cls_dict[str(user)]
-        if self._cache_users is not None and str(user) in self._cache_users:
-            del self._cache_users[str(user)]
+            del self.user_scales[username]
+        if username in self.user_model_cls_dict:
+            del self.user_model_cls_dict[username]
+        if self._cache_users is not None and username in self._cache_users:
+            del self._cache_users[username]
         
     def __setitem__(self, user: Union[str, "User"], model: ScoringModel) -> None:
-        del self[str(user)]
+        username = user.name if isinstance(user, User) else user
+        del self[username]
         for keys, value in model.get_directs():
-            self.user_directs[str(user), *keys] = value
+            self.user_directs[username, *keys] = value
         for keys, value in model.get_scales():
             if keys not in self.common_scales:
-                self.user_scales[str(user), *keys] = value
+                self.user_scales[username, *keys] = value
         if not model.is_cls(self.default_model_cls):
-            self.user_model_cls_dict[str(user)] = model.save()
+            self.user_model_cls_dict[username] = model.save()
         if self._cache_users is not None:
-            self._cache_users[str(user)] = model
+            self._cache_users[username] = model
 
     def __call__(self, 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
         n_sampled_entities_per_user: Optional[int]=None,
+        max_workers: int=1,
     ) -> MultiScore:
-        return self.score(entities, criterion, n_sampled_entities_per_user)
+        return self.score(entities, criterion, n_sampled_entities_per_user, max_workers)
     
     def score(self, 
+        entities: Union[str, "Entity", "Entities"],
+        criterion: Optional[str]=None,
+        n_sampled_entities_per_user: Optional[int]=None,
+        max_workers: int=1,
+    ) -> MultiScore:
+        if max_workers == 1:
+            return type(self)._score(self, entities, criterion, n_sampled_entities_per_user)
+        
+        batches = [list() for _ in range(max_workers)]
+        for index, (username, model) in enumerate(self):
+            batches[index % max_workers].append((username, model))
+        args = entities, criterion, n_sampled_entities_per_user
+        print(f"Ready for score parallelization")
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        with ProcessPoolExecutor(max_workers=max_workers) as e:
+            futures = {e.submit(UserModels._score, batch, *args) for batch in batches}
+            batch_results = [f.result() for f in as_completed(futures)]
+        results = MultiScore(next(iter(batch_results)).keynames)
+        for result in batch_results:
+            results |= result
+        return results
+    
+    def _score(
+        user_models: Union["UserModels", list[tuple[str, ScoringModel]]], 
         entities: Union[str, "Entity", "Entities"],
         criterion: Optional[str]=None,
         n_sampled_entities_per_user: Optional[int]=None,
@@ -104,7 +134,7 @@ class UserModels:
         keynames += ["entity_name"] if isinstance(entities, Entities) else list()
         keynames += ["criterion"] if criterion is None else list()
         results = MultiScore(keynames)
-        for username, model in self:
+        for username, model in user_models:
             scores = model(entities, criterion, n_sampled_entities_per_user)
             if isinstance(scores, Score): # results.keynames == ["username"]
                 results[username] = scores
@@ -123,7 +153,8 @@ class UserModels:
         return len(self.to_dict())
     
     def __contains__(self, user: Union[str, "User"]) -> bool:
-        return str(user) in self.to_dict()
+        username = user.name if isinstance(user, User) else user
+        return username in self.to_dict()
     
     def __iter__(self) -> Iterable:
         for username, model in self.to_dict().items():
@@ -133,9 +164,10 @@ class UserModels:
         return ScoringModel.model_cls_height(self.default_model_cls)
     
     def height(self, user: Optional[Union[str, "User"]]=None) -> int:
-        if user is None or str(user) not in self.user_model_cls_dict:
+        username = user.name if isinstance(user, User) else user
+        if username is None or username not in self.user_model_cls_dict:
             return self.default_height()
-        return ScoringModel.model_cls_height(self.user_model_cls_dict[str(user)])
+        return ScoringModel.model_cls_height(self.user_model_cls_dict[username])
     
     def scale(self, scales: MultiScore, **kwargs) -> "UserModels":
         user_scales, common_scales = self.user_scales.deepcopy(), self.common_scales.deepcopy()

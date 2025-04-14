@@ -18,7 +18,7 @@ def test_learned_models(seed):
         p_norm_for_multiplicative_resilience=4.0,
         n_entity_to_fully_compare_max=100,
         error=1e-5,
-        max_workers=2
+        max_workers=1
     )
     s = states[seed]
     users, entities, made_public = s.users, s.entities, s.made_public
@@ -31,7 +31,7 @@ def test_standardize(seed):
         dev_quantile=0.9, 
         lipschitz=10.0, 
         error=1e-05,
-        max_workers=2
+        max_workers=1
     )
     s = states[seed]
     standardized_models = standardize.state2objects_function(states[seed])
@@ -46,7 +46,7 @@ def test_quantile_shift(seed):
         lipschitz=10.0, 
         error=1e-05,
         target_score=0.21,
-        max_workers=2
+        max_workers=1
     )
     shifted_models = quantile_shift.state2objects_function(states[seed])
     assert np.median([s.value for _, s in shifted_models(states[seed].entities)]) > 0

@@ -30,5 +30,6 @@ def test_user_models():
     processed = rescaled.post_process("SquashedModel", score_max=100., note="squash")
     
     assert processed(entities)["le_science4all", "entity_1", "importance"].value == 0
+    assert processed(entities, "default")["le_science4all", "entity_2"].value > 70
     assert processed["aidjango"]("entity_3")["importance"].isnan()
     assert processed["aidjango"]("entity_2")["importance"] > 0
