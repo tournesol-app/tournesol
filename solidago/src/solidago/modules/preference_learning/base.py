@@ -34,9 +34,10 @@ class PreferenceLearning(StateFunction, ABC):
         from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=self.max_workers) as e:
             futures = {e.submit(self.batch, i, *args) for i in range(self.max_workers)}
-            for f in as_completed(futures):
-                for username, model in f.result().items():
-                    learned_models[username] = model
+            results = [f.result() for f in as_completed(futures)]
+        for result in results:
+            for username, model in result.items():
+                learned_models[username] = model
         return learned_models
 
     def batch(self, 
