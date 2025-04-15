@@ -1,26 +1,33 @@
+from typing import Optional
+from django.db.models import F, Q
+
+import pandas as pd
 import solidago
+
+from tournesol.models import Voucher
 
 
 class Vouches(solidago.Vouches):
-    def __init__(self, 
-        keynames=["by", "to", "kind"], 
-        init_data=None,
-        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
-        *args, **kwargs
-    ):
-        if init_data is None:
-            init_data = self.query_init_data()
-        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    def query_init_data(self):
+    @classmethod
+    def load(cls, *args, **kwargs) -> "Vouches":
         values = Voucher.objects.filter(
             by__is_active=True,
             to__is_active=True,
         ).values(
-            voucher=F("by__id"),
-            vouchee=F("to__id"),
-            vouch=F("value"),
+            by=F("by__id"),
+            to=F("to__id"),
+            weight=F("value"),
         )
-        df = pd.DataFrame(values, columns=["by", "to", "weight"])
-        df["priority"] = 0
-        return df
+        if len(values) > 0:
+            init_data = pd.DataFrame(values)
+            init_data["priority"] = 0
+        else:
+            init_data = pd.DataFrame(columns=["by", "to", "weight", "priority"])
+        return cls(init_data, *args, **kwargs)
+
+    def save(self, name: str="vouches", **kwargs) -> tuple[str, dict]:
+        # Solidago must not modify vouches
+        raise NotImplemented

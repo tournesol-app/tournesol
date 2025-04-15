@@ -200,7 +200,7 @@ class Objects:
         name = name or type(self).name
         if directory is not None:
             self.to_df().to_csv(Path(directory) / f"{name}.csv")
-        return self.save_instructions()
+        return self.save_instructions(name)
 
     def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:
         name = name or type(self).name

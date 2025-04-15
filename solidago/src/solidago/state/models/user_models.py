@@ -31,10 +31,10 @@ class UserModels:
         common_scales: Optional[MultiScore]=None,
         default_model_cls: Optional[tuple[str, dict]]=None,
         user_model_cls_dict: Optional[dict[str, tuple]]=None,
-        user_models_dict: Optional[dict[str, ScoringModel]]=None
+        user_models_dict: Optional[dict[str, ScoringModel]]=None,
     ):
         for name, table in zip(self.table_keynames, (user_directs, user_scales, common_scales)):
-            setattr(self, name, MultiScore(self.table_keynames[name]) if table is None else table)
+            setattr(self, name, MultiScore(self.table_keynames[name], name=name) if table is None else table)
         self.default_model_cls = default_model_cls or ("DirectScoring", dict())
         self.user_model_cls_dict = user_model_cls_dict or dict()
         self._cache_users = user_models_dict
@@ -113,7 +113,6 @@ class UserModels:
         for index, (username, model) in enumerate(self):
             batches[index % max_workers].append((username, model))
         args = entities, criterion, n_sampled_entities_per_user
-        print(f"Ready for score parallelization")
         from concurrent.futures import ProcessPoolExecutor, as_completed
         with ProcessPoolExecutor(max_workers=max_workers) as e:
             futures = {e.submit(UserModels._score, batch, *args) for batch in batches}
@@ -220,16 +219,10 @@ class UserModels:
                 df = pd.read_csv(f"{directory}/{kwargs[name]}", keep_default_na=False)
                 kwargs[name] = MultiScore(keynames, df, name=name)
         return cls(**kwargs)
-
-    def save_tables(self, directory: Union[Path, str], table_name: str) -> str:
-        if getattr(self, table_name):
-            getattr(self, table_name).save(directory, f"{table_name}.csv")
-            return f"{table_name}.csv"
-        return None
     
     def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
         for table_name in self.table_keynames:
-            filename = self.save_tables(directory, table_name)
+            filename = self.save_table(directory, table_name)
         return self.save_instructions(directory, json_dump)
     
     def save_instructions(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
@@ -242,7 +235,26 @@ class UserModels:
             with open(Path(directory) / "user_models.json", "w") as f:
                 json.dump([type(self).__name__, kwargs], f)
         return type(self).__name__, kwargs
-        
+        return cls(**kwargs)
+    
+    def save_table(self, directory: Union[Path, str], table_name: str) -> str:
+        if getattr(self, table_name):
+            getattr(self, table_name).save(directory, f"{table_name}.csv")
+            return f"{table_name}.csv"
+        return None
+    
+    def save_base_models(self, directory: Optional[str]=None) -> str:
+        return self.save_tables(directory, "user_directs")
+    
+    def save_user_scales(self, directory: Optional[str]=None) -> str:
+        return self.save_tables(directory, "user_scales")
+    
+    def save_common_scales(self, directory: Optional[str]=None) -> str:
+        return self.save_tables(directory, "common_scales")
+
     def __repr__(self) -> str:
-        return "\n\n".join([repr(getattr(self, table_name)) for table_name in self.table_keynames])
+        return "\n\n".join([
+            f"{table_name}\n{repr(getattr(self, table_name))}" 
+            for table_name in self.table_keynames
+        ])
         

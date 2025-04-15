@@ -120,7 +120,7 @@ class Mehestan(StateFunction):
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             state.users.save(directory)
-            state.user_models.user_scales.save(directory, "user_scales.csv")
+            state.user_models.save_user_scales(directory)
         with time(logger, "Saving state.json"):
             instructions = state.save_instructions(directory)
         return instructions
