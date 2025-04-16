@@ -3,6 +3,8 @@ from solidago.modules.aggregation.entity_criterion_wise import EntityCriterionWi
 
 
 class Average(EntityCriterionWise):
+    note: str="average"
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     

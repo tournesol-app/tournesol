@@ -126,6 +126,8 @@ class Objects:
         return type(self)([obj for obj in name])
     
     def sample(self, n_items: int) -> "Objects":
+        if len(self) >= n_items:
+            return self.deepcopy()
         return self[random.sample(self.keys(), n_items)]
     
     def __delitem__(self, obj: Union[int, str, Object, Iterable]) -> Object:

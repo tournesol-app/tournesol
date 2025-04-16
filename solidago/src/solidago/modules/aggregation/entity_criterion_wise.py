@@ -11,7 +11,7 @@ from solidago.primitives.timer import time
 
 class EntityCriterionWise(StateFunction):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)       
+        super().__init__(*args, **kwargs)
     
     def __call__(self, 
         entities: Entities,
@@ -20,7 +20,7 @@ class EntityCriterionWise(StateFunction):
         *args, **kwargs,
     ) -> ScoringModel:
         """ Returns weighted average of user's scores """
-        global_model = DirectScoring(note="average")
+        global_model = DirectScoring(note=type(self).note)
         voting_rights = voting_rights.reorder("entity_name", "criterion", "username")
         scores = user_models(entities, max_workers=self.max_workers)
         scores = scores.reorder("entity_name", "criterion", "username")

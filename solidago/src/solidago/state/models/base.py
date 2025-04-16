@@ -1,7 +1,7 @@
-from abc import abstractmethod, ABC
 from typing import Optional, Union, Any
 from pathlib import Path
 from pandas import DataFrame
+from math import sqrt
 
 import pandas as pd
 import logging
@@ -12,18 +12,66 @@ logger = logging.getLogger(__name__)
 from .score import Score, MultiScore
 
 
-class ScoringModel(ABC):
-    saved_argsnames: list[str]=["note"]
+class Multipliers(MultiScore):
+    name: str="multipliers"
     
-    def __init__(self, height: int=0, note: str="None", *args, **kwargs):
-        self.height = height
-        self.note = note
+    def __init__(self, 
+        keynames: list[str]=["criterion"], 
+        init_data: Optional[Union[Any]]=None,
+        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        *args, **kwargs
+    ):
+        """ We consider the possibility of multidimensional scoring.
+        In the context of Tournesol, for instance, the dimensions are the criteria.
+        For scientific peer reviewing, it could be the criteria may be
+        {'clarity', 'correctness', 'originality', 'rating'}. """
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    @classmethod
+    def value_factory(cls):
+        return Score(1, 0, 0)
+
+
+class Translations(MultiScore):
+    name: str="translations"
+    
+    def __init__(self, 
+        keynames: list[str]=["criterion"], 
+        init_data: Optional[Union[Any]]=None,
+        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        *args, **kwargs
+    ):
+        """ We consider the possibility of multidimensional scoring.
+        In the context of Tournesol, for instance, the dimensions are the criteria.
+        For scientific peer reviewing, it could be the criteria may be
+        {'clarity', 'correctness', 'originality', 'rating'}. """
+        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+
+    @classmethod
+    def value_factory(cls):
+        return Score(0, 0, 0)
+
+
+class ScoringModel:
+    def __init__(self, 
+        composition: list=[("direct", {})],
+        directs: Optional[MultiScore]=None,
+        scales: Optional[MultiScore]=None,
+        *args, **kwargs
+    ):
+        """ The composition of the Tournesol pipeline global model is [
+            ("direct", {"note": "entitywise_qr_quantile"}),
+            ("squash", {"note": "squash", "score_max": 100}),
+        ] """
+        self.composition = composition
+        self.directs = MultiScore(["entity_name", "criterion"], name="directs") if directs is None else directs
+        self.scales = MultiScore(["height", "kind", "criterion"], name="scales") if scales is None else scales
 
     def __call__(self, 
         entities: Union["Entity", "Entities"], 
         criterion: Optional[str]=None,
         n_sampled_entities: Optional[int]=None,
-    ) -> MultiScore:
+    ) -> Union[Score, MultiScore]:
         """ Assigns a score to an entity, or to multiple entities.
         
         Parameters
@@ -38,61 +86,121 @@ class ScoringModel(ABC):
             If entities: Entities with unidimensional scoring, then out[entity_name] is a Score.
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
+        return self.score(entities, criteria, n_sampled_entities)
+    
+    def score(self, 
+        entities: Union[str, "Entity", "Entities", type]=all, 
+        criteria: Union[str, set, type]=all,
+        n_sampled_entities: Optional[int]=None,
+    ) -> Union[Score, MultiScore]:
         from solidago.state.entities import Entities
-        if not isinstance(entities, Entities) and criterion is not None:
-            return self.score(entities, criterion)
-        entities = self.evaluated_entities(entities) if isinstance(entities, Entities) else [entities]
-        if n_sampled_entities is not None and n_sampled_entities < len(entities):
+        if n_sampled_entities is not None:
+            if entities is all:
+                entities = Entities(list(self.evaluated_entity_names(criteria)))
+            assert isinstance(entity, Entities)
             entities = entities.sample(n_sampled_entities)
-        keynames = ["entity_name"] if isinstance(entities, Entities) else list()
-        criteria = self.criteria() if criterion is None else { criterion }
-        keynames += ["criterion"] if criterion is None else list()
-        result = MultiScore(keynames)
-        all_keynames = ["entity_name", "criterion"]
-        to_keys = lambda e, c: tuple(k for kn, k in zip(all_keynames, (e, c)) if kn in keynames)
-        for e in entities:
-            for c in criteria:
-                score = self.score(e, c)
-                if not score.isnan():
-                    result[to_keys(e, c)] = score
-        return result
+        score = self.base_score(entities, criteria)
+        for height in range(1, len(self.composition)):
+            score = self.score_process(score, height, entities, criteria)
+        return score
     
-    @abstractmethod
-    def score(self, entity: "Entity", criterion: str) -> Score:
-        raise NotImplementedError
+    def base_score(self, 
+        entities: Union[str, "Entity", "Entities", type]=all, 
+        criteria: Union[str, set, type]=all,
+    ) -> Union[Score, MultiScore]:
+        entities = {e.name for e in entities} if isinstance(entities, Entities) else entities
+        base, kwargs = self.composition[0]
+        if base == "direct":
+            return self.directs[entity, criteria]
+        raise ValueError(f"Model composition {self.composition} has invalid base")
     
+    def score_process(self, 
+        scores: Union[Score, MultiScore], 
+        height: int,
+        entities: Union[str, "Entity", "Entities", type]=all, 
+        criteria: Union[str, set, type]=all,
+    ) -> Union[Score, MultiScore]:
+        operation, kwargs = self.composition[height]
+        if operation == "scale":
+            return scores * self.multiplier(height, criteria) + self.translation(height, criteria)
+        if operation == "squash":
+            f = lambda: x: kwargs["score_max"] * x / sqrt(1 + x**2)
+            if isinstance(score, Score):
+                value, extremes = f(score.value), [f(score.max), f(score.min)]
+                return Score(value, value - min(extremes), max(extremes) - value)
+            assert isinstance(score, MultiScore)
+            return MultiScore(["criterion"], { c: self.score_process(s, height) for c, s in score })
+        raise ValueError(f"Model composition {self.composition} has invalid height {height}")
+
+    def multiplier(self, height: int, criteria: Union[str, set, type]=all) -> Union[Score, Multipliers]:
+        multiplier = self.scales[height, "multiplier", criteria]
+        if isinstance(criteria, str):
+            assert isinstance(multiplier, Score)
+            return Score(1, 0, 0) if multiplier.isnan() else multiplier
+        return Multipliers(multiplier.keynames, multiplier)
+
+    def translation(self, height: int, criteria: Union[str, set, type]=all) -> Union[Score, Translations]:
+        translation = self.scales[height, "translation", criteria]
+        if isinstance(criteria, str):
+            assert isinstance(translation, Score)
+            return Score(0, 0, 0) if translation.isnan() else translation
+        return Translations(translation.keynames, translation)        
+
     def criteria(self) -> set[str]:
-        return self.parent.criteria()
+        base, kwargs = self.composition[0]
+        if base == "direct":
+            return self.directs.keys("criterion")
+        raise ValueError(f"Model composition {self.composition} has invalid base")
     
-    def evaluated_entities(self, entities: "Entities", criterion: Optional[str]=None) -> "Entities":
-        return self.parent.evaluated_entities(entities, criterion)
+    def evaluated_entity_names(self, criteria: Union[str, set, type]=all) -> set[str]:
+        base, kwargs = self.composition[0]
+        if base == "direct":
+            if criteria is all:
+                return self.directs.keys("entity_name")
+            return self.directs.get(criterion=criteria).keys("entity_name")
+        raise ValueError(f"Model composition {self.composition} has invalid base")
     
-    def is_base(self) -> bool:
-        return not hasattr(self, "parent")
+    def evaluated_entities(self, entities: "Entities", criteria: Union[str, set, type]=all) -> "Entities":
+        return entities[self.evaluated_entities(criteria)]
     
     def to_direct(self, entities: "Entities") -> "DirectScoring":
-        from .direct import DirectScoring
-        direct_scoring = DirectScoring()
+        model = ScoringModel()
         for (entity, criterion), score in self(entities):
             if not score.isnan():
-                direct_scoring[entity, criterion] = score
-        return direct_scoring
-        
-    def saved_kwargs(self) -> dict:
-        kwargs = { name: getattr(self, name) for name in self.saved_argsnames }
-        if not self.is_base():
-            kwargs["parent"] = (type(self.parent).__name__, self.parent.saved_kwargs())
-        return kwargs
+                model[entity, criterion] = score
+        return model
 
-    def get_directs(self) -> MultiScore:
-        if not self.is_base():
-            return self.parent.get_directs()
-        MultiScore(["entity_name", "criterion"])
+    def __setitem__(self, keys: tuple, score: Score) -> None:
+        assert isinstance(keys, tuple) and len(keys) == 2
+        self.set_direct(*keys, score)
+
+    def set_direct(self, entity: Union[str, "Entity"], criterion: str, score: Score) -> None:
+        assert self.composition[0][0] == "direct"
+        self.directs[entity, criterion] = score
+
+    def set_scale(self, height: int, kind: str, criterion: str, scale: Score) -> None:
+        self.scales[height, kind, criterion] = scale
+
+    def set_multiplier(self, height: int, criterion: str, multiplier: Score) -> None:
+        self.set_scale(height, "multiplier", criterion, multiplier)
         
-    def get_scales(self) -> MultiScore:
-        if not self.is_base():
-            return self.parent.get_scales()
-        return MultiScore(["height", "kind", "criterion"])
+    def set_translation(self, height: int, criterion: str, translation: Score) -> None:
+        self.set_scale(height, "translation", criterion, translation)
+    
+    def scale(self, scales: MultiScore, note: str="scale") -> "ScoringModel":
+        assert isinstance(scales, MultiScore)
+        return ScoringModel(
+            self.composition + [("scale", dict(note=note))],
+            self.directs,
+            self.scales | scales.prepend(height=len(self.composition)),
+        )
+    
+    def squash(self, score_max: float, note: str="scale") -> "ScoringModel":
+        return ScoringModel(
+            self.composition + [("squash", dict(score_max=score_max, note=note))],
+            self.directs,
+            self.scales,
+        )
 
     @classmethod
     def load(cls, directory: Union[str, Path], **kwargs) -> "ScoringModel":
@@ -118,7 +226,7 @@ class ScoringModel(ABC):
         return self.save_instructions(directory, json_dump)
 
     def save_instructions(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
-        kwargs = self.saved_kwargs()
+        kwargs = dict(composition=self.composition)
         for table_name in ("directs", "scales"):
             table = getattr(self, f"get_{table_name}")()
             if table:
@@ -128,68 +236,26 @@ class ScoringModel(ABC):
                 json.dump([type(self).__name__, kwargs], f, indent=4)
         return type(self).__name__, kwargs
 
-    def model_cls_height(model_cls) -> int:
-        height, cls = 0, model_cls
-        while True:
-            if "parent" not in cls[1]:
-                return height
-            cls = cls[1]["parent"]
-            height += 1
-            
-    def is_cls(self, cls: tuple[str, dict]) -> bool:
-        if type(self).__name__ != cls[0]:
+    def matches_composition(self, composition: list) -> bool:
+        if len(self.composition) != len(composition):
             return False
-        if any({ getattr(self, key) != value for key, value in cls[1].items() if key != "parent" }):
-            return False
-        return self.is_base() or self.parent.is_cls(cls[1]["parent"])
+        for height, (operation, kwargs) in enumerate(composition):
+            self_operation, self_kwargs = self.composition[height]
+            if self_operation != operation:
+                return False
+            if operation == "squash" and kwargs["score_max"] != self_kwargs["score_max"]:
+                return False
+        return True
     
-    def base_model(self) -> "BaseModel":
-        return self if self.is_base() else self.parent.base_model()
+    def base_model(self) -> "ScoringModel":
+        return ScoringModel([self.composition[0]], self.directs)
 
     def __str__(self) -> str:
-        return type(self).__name__
+        return type(self).__name__ + ": " + " > ".join([operation for operation, _ in self.composition])
     
     def __repr__(self) -> str:
-        types, parent = list(), self
-        while True:
-            types.append(type(parent).__name__)
-            if parent.is_base():
-                break
-            parent = parent.parent
-        r = " > ".join(types)
-        tables = self.get_directs(), self.get_scales()
-        for name, table in zip(("Directs", "Scales"), tables):
+        r = str(self) + "\n"
+        for name in ("directs", "scales"):
             if table:
-                r += f"\n\n{name}\n{repr(table)}"
+                r += f"\n\n{name}\n{repr(getattr(self, name))}"
         return r
-
-
-class BaseModel(ScoringModel):
-    def __init__(self, note: str="None", *args, **kwargs):
-        super().__init__(height=0, note=note, *args, **kwargs)
-
-    @abstractmethod
-    def score(self, entity: "Entity", criterion: str) -> Score:
-        raise NotImplementedError
-    
-    @abstractmethod
-    def criteria(self) -> set[str]:
-        raise NotImplementedError
-    
-    @abstractmethod
-    def evaluated_entities(self, entities: "Entities", criterion: Optional[str]=None) -> "Entities":
-        raise NotImplementedError
-
-
-class DerivedModel(ScoringModel):
-    def __init__(self, parent: Union[ScoringModel, list, tuple], note: str="None", *args, **kwargs):
-        if isinstance(parent, ScoringModel):
-            self.parent = parent
-        elif isinstance(parent, (list, tuple)):
-            assert len(parent) == 2 and isinstance(parent[0], str) and isinstance(parent[1], dict)
-            parent_cls, parent_kwargs = parent
-            import solidago.state.models as models
-            self.parent = getattr(models, parent_cls)(*args, **(kwargs | parent_kwargs))
-        else:
-            raise ValueError(f"{parent} has unhandled type {type(parent)}")
-        super().__init__(self.parent.height + 1, note, *args, **kwargs)
