@@ -4,20 +4,20 @@ from tournesol.models import ContributorRatingCriteriaScore
 import solidago
 
 
-DEFAULT_CLS_MODEL = ["SquashedModel", {
+DEFAULT_CLS_MODEL = ("SquashedModel", {
     "score_max": 100,
     "note": "squash",
-    "parent": ["ScaledModel", {
+    "parent": ("ScaledModel", {
         "note": "lipschitz_quantile_shift",
-        "parent": ["ScaledModel", {
+        "parent": ("ScaledModel", {
             "note": "lipschitz_standardardize",
-            "parent": ["ScaledModel", {
+            "parent": ("ScaledModel", {
                 "note": "mehestan",
-                "parent": ["DirectScoring", {}]
-            }]
-        }]
-    }]
-}]
+                "parent": ("DirectScoring", {})
+            })
+        })
+    })
+})
 
 class UserModels(solidago.UserModels):
     def __init__(self, *args, **kwargs):

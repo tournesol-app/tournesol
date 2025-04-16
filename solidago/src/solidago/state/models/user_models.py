@@ -244,13 +244,13 @@ class UserModels:
         return None
     
     def save_base_models(self, directory: Optional[str]=None) -> str:
-        return self.save_tables(directory, "user_directs")
+        return self.save_table(directory, "user_directs")
     
     def save_user_scales(self, directory: Optional[str]=None) -> str:
-        return self.save_tables(directory, "user_scales")
+        return self.save_table(directory, "user_scales")
     
     def save_common_scales(self, directory: Optional[str]=None) -> str:
-        return self.save_tables(directory, "common_scales")
+        return self.save_table(directory, "common_scales")
 
     def __repr__(self) -> str:
         return "\n\n".join([

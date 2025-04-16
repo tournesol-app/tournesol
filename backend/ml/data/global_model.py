@@ -1,13 +1,19 @@
 import solidago
 
 
+DEFAULT_CLS_MODEL = ("SquashedModel", {
+    "note": "squash",
+    "score_max": 100,
+    "parent": ["DirectScoring", { "note": "average" }],
+    "directs": { "keynames": ["entity_name", "criterion"] }
+})
 
-class GlobalModel(solidago.ScoringModel):
+class SquashedGlobalModel(solidago.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def load(cls, directory: str, *args, **kwargs) -> "ScoringModel":
+    def load(cls, directory: str, cls_model: tuple=DEFAULT_CLS_MODEL, *args, **kwargs) -> "GlobalModel":
         for name in ("directs", "scales"):
             if name not in kwargs:
                 continue
