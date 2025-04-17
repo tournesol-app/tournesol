@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.models.entity import Entity
-from twitterbot.models.tweeted import TweetInfo
+from twitterbot.models.history import TweetInfo
 
 
 class Command(BaseCommand):

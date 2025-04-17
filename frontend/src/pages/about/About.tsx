@@ -19,9 +19,6 @@ const useStyles = makeStyles(() => ({
     padding: '32px 0px 32px 0px',
     justifyContent: 'center',
   },
-  noMaxWidth: {
-    maxWidth: '100%',
-  },
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -32,7 +29,7 @@ const useStyles = makeStyles(() => ({
     boxShadow:
       '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
     borderRadius: 4,
-    padding: 8,
+    padding: '16px',
     width: '100%',
     background: '#FFFFFF',
   },
@@ -94,6 +91,7 @@ const ContributorCard = ({
       underline="none"
       color="inherit"
       variant="inherit"
+      display="flex"
     >
       <Card className={classes.card}>
         <Grid container spacing={2}>
@@ -121,16 +119,18 @@ const ContributorCard = ({
 const ContentBox = ({
   children,
   className,
+  maxWidth = '640px',
 }: {
   children?: React.ReactNode;
   className?: string;
+  maxWidth?: string;
 }) => {
   return (
     <Box
       className={className}
       display="flex"
       flexDirection="column"
-      maxWidth="640px"
+      maxWidth={maxWidth}
       alignItems="flex-start"
     >
       {children}
@@ -261,7 +261,14 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
 
-        <Grid container item xs={12} md={9} className={classes.container}>
+        <Grid
+          container
+          item
+          xs={12}
+          md={8}
+          xl={6}
+          className={classes.container}
+        >
           <Grid item xs={12} sm={4} className={classes.container}>
             <CoreTeamCard
               name="Lê Nguyên Hoang"
@@ -352,11 +359,7 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      <Grid
-        container
-        className={classes.root}
-        // sx={{ bgcolor: 'background.menu' }}
-      >
+      <Grid container className={classes.root}>
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
             <Typography variant="h3">
@@ -388,11 +391,7 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      <Grid
-        container
-        className={classes.root}
-        sx={{ bgcolor: 'background.menu' }}
-      >
+      <Grid container className={classes.root} maxWidth="1000px" margin="auto">
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
             <Typography variant="h1">
@@ -402,7 +401,7 @@ const AboutPage = () => {
         </Grid>
 
         <Grid item xs={12} className={classes.container}>
-          <ContentBox className={classes.card}>
+          <ContentBox className={classes.card} maxWidth="100%">
             <img height="84px" src="/logos/EPFL_Logo.png" />
             <Typography variant="h4">
               {t('about.partnershipWithEpfl')}
@@ -413,13 +412,14 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
 
-        <Grid item xs={12} md={4} className={classes.container}>
+        <Grid item xs={12} md={6} className={classes.container}>
           <Link
             href="https://www.polyconseil.fr/"
             rel="noopener"
             underline="none"
             color="inherit"
             variant="inherit"
+            display="flex"
           >
             <ContentBox className={classes.card}>
               <img
@@ -437,13 +437,14 @@ const AboutPage = () => {
           </Link>
         </Grid>
 
-        <Grid item xs={12} md={4} className={classes.container}>
+        <Grid item xs={12} md={6} className={classes.container}>
           <Link
             href="https://kleis.ch/"
             rel="noopener"
             underline="none"
             color="inherit"
             variant="inherit"
+            display="flex"
           >
             <ContentBox className={classes.card}>
               <img height="64px" src="/logos/Kleis_Logo.svg" />
@@ -456,13 +457,26 @@ const AboutPage = () => {
             </ContentBox>
           </Link>
         </Grid>
+
+        <Grid item xs={12} className={classes.container}>
+          <Link
+            href="https://www.devoxx.fr/"
+            rel="noopener"
+            underline="none"
+            color="inherit"
+            variant="inherit"
+          >
+            <ContentBox className={classes.card} maxWidth="100%">
+              <img height="64px" src="/logos/devoxx_france_logo.png" />
+              <Typography paragraph>
+                {t('about.collaborationWithDevoxx')}
+              </Typography>
+            </ContentBox>
+          </Link>
+        </Grid>
       </Grid>
 
-      <Grid
-        container
-        className={classes.root}
-        sx={{ bgcolor: 'background.menu' }}
-      >
+      <Grid container className={classes.root}>
         <Grid item xs={12} md={6} className={classes.container}>
           <ContentBox>
             <img height="64px" src="/logos/Foss_Logo.png" />
@@ -491,18 +505,16 @@ const AboutPage = () => {
           xs={12}
           sm={12}
           md={10}
-          lg={8}
-          xl={8}
+          lg={6}
+          xl={6}
           className={classes.container}
         >
-          <ContentBox className={classes.noMaxWidth}>
-            <Paper
-              sx={{ bgcolor: 'background.emphatic', color: 'white', p: 2 }}
-              square
-            >
-              <PublicDownloadSection />
-            </Paper>
-          </ContentBox>
+          <Paper
+            sx={{ bgcolor: 'background.emphatic', color: 'white', p: 2 }}
+            square
+          >
+            <PublicDownloadSection />
+          </Paper>
         </Grid>
       </Grid>
     </>
