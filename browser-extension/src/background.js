@@ -185,14 +185,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const extraNbr = request.additionalVideosNumber;
 
       const recentToLoadRow1 = Math.round(nbrPerRow * RECENT_VIDEOS_RATIO);
-      const oldToLoadRow1 = Math.round(nbrPerRow * (1 - RECENT_VIDEOS_RATIO));
+      const oldToLoadRow1 = nbrPerRow - recentToLoadRow1;
 
       const recentToLoadExtra = Math.round(
         extraNbr * RECENT_VIDEOS_EXTRA_RATIO
       );
-      const oldToLoadExtra = Math.round(
-        extraNbr * (1 - RECENT_VIDEOS_EXTRA_RATIO)
-      );
+      const oldToLoadExtra = extraNbr - recentToLoadExtra;
 
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();
