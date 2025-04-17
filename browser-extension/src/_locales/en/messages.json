@@ -17,6 +17,10 @@
   "menuRateLaterHistory": {
     "message": "Import YouTube watch history"
   },
+  "contextMenuRateLater": {
+    "message": "Rate later on Tournesol",
+    "description": "Label of the rate-later menu item (after right-click on a link)."
+  },
   "recommendedByTournesol": {
     "message": "Recommended by Tournesol",
     "description": "Title of the main Tournesol container."
@@ -136,6 +140,22 @@
   "closeIconAlt": {
     "message": "Close icon",
     "description": "Alt text of the close icon displayed when there's a banner"
+  },
+  "alertNotYoutubeVideo": {
+    "message": "This is not a YouTube video.",
+    "description": "Alert shown when trying to use on a non-YouTube video link/page"
+  },
+  "alertVideoAdded": {
+    "message": "Video added!",
+    "description": "Alert message indicating a video was added successfully"
+  },
+  "alertAlreadyAdded": {
+    "message": "Video already added.",
+    "description": "Alert message indicating a video was already added"
+  },
+  "alertFailed": {
+    "message": "Failed.",
+    "description": "Alert message indicating an action failed"
   },
   "rateNowButtonLabel": {
     "message": "Rate Now",

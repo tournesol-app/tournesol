@@ -3,6 +3,7 @@ import {
   addRateLaterBulk,
   alertOnCurrentTab,
   alertUseOnLinkToYoutube,
+  extractVideoId,
   fetchTournesolApi,
   getAccessToken,
   getRandomSubarray,
@@ -27,13 +28,18 @@ const createContextMenu = function createContextMenu() {
   chrome.contextMenus.removeAll(function () {
     chrome.contextMenus.create({
       id: 'tournesol_add_rate_later',
-      title: 'Rate later on Tournesol',
+      title: chrome.i18n.getMessage('contextMenuRateLater'),
       contexts: ['link'],
+      targetUrlPatterns: [
+        '*://*.youtube.com/*',
+        '*://*.youtu.be/*',
+        '*://tournesol.app/*',
+      ],
     });
   });
 
   chrome.contextMenus.onClicked.addListener(function (e, tab) {
-    var videoId = new URL(e.linkUrl).searchParams.get('v');
+    const videoId = extractVideoId(e.linkUrl);
     if (!videoId) {
       alertUseOnLinkToYoutube(tab);
     } else {
