@@ -2,6 +2,7 @@ from django.db.models import F, Q
 from pandas import DataFrame
 
 import solidago
+from tournesol.models import Entity
 
 
 class Entities(solidago.Entities):

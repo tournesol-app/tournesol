@@ -4,27 +4,24 @@ from tournesol.models import ContributorRatingCriteriaScore
 import solidago
 
 
-DEFAULT_CLS_MODEL = ("SquashedModel", {
-    "score_max": 100,
-    "note": "squash",
-    "parent": ("ScaledModel", {
-        "note": "lipschitz_quantile_shift",
-        "parent": ("ScaledModel", {
-            "note": "lipschitz_standardardize",
-            "parent": ("ScaledModel", {
-                "note": "mehestan",
-                "parent": ("DirectScoring", {})
-            })
-        })
-    })
-})
+DEFAULT_COMPOSITION = [
+    ("direct", dict(note="uniform_gbt")),
+    ("scale", dict(note="mehestan")),
+    ("scale", dict(note="lipschitz_standardize")),
+    ("scale", dict(note="lipschitz_quantile_shift")),
+    ("squash", dict(score_max=100, note="squash")),
+]
 
 class UserModels(solidago.UserModels):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
     @classmethod
-    def load(cls, directory: str, default_cls_model: dict=DEFAULT_CLS_MODEL, *args, **kwargs) -> "UserModels":
+    def load(cls, 
+        directory: str, 
+        default_composition: list=DEFAULT_COMPOSITION, 
+        *args, **kwargs
+    ) -> "UserModels":
         return cls(
             user_directs=cls.load_user_directs(directory),
             user_scales=cls.load_user_scales(directory),
@@ -45,10 +42,12 @@ class UserModels(solidago.UserModels):
             scores_queryset = scores_queryset.filter(contributor_rating__user_id=user_id)
 
         values = scores_queryset.values(
-            value="raw_score",
             criterion=F("criteria"),
             entity_name=F("contributor_rating__entity_id"),
             username=F("contributor_rating__user_id"),
+            value="score",
+            left_unc=F("left_uncertainty"),
+            right_unc=F("right_uncertainty"),
         )
         if len(values) == 0:
             return solidago.MultiScore(cls.table_keynames["user_directs"])
