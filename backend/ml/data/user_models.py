@@ -49,13 +49,13 @@ class UserModels(solidago.UserModels):
             left_unc=F("left_uncertainty"),
             right_unc=F("right_uncertainty"),
         )
-        if len(values) == 0:
-            return solidago.MultiScore(cls.table_keynames["user_directs"])
-        return solidago.MultiScore(cls.table_keynames["user_directs"], pd.DataFrame(values))
+        init_value = pd.DataFrame(values) if len(values) > 0 else None
+        # keynames == ("username", "entity_name", "criterion")
+        return solidago.MultiScore(cls.table_keynames["user_directs"], init_value)
 
     @classmethod
     def load_user_scales(cls, directory: str, user_id=None) -> solidago.MultiScore:
-        """ TODO Fetch saved invidiual scalings
+        """ TODO Fetch saved individual scalings
         Returns:
         - ratings_df: DataFrame with columns
             * `user_id`: int
@@ -65,7 +65,6 @@ class UserModels(solidago.UserModels):
             * `translation`: float
             * `translation_uncertainty`: float
         """
-
         scalings = ContributorScaling.objects.filter(poll__name=directory)
         if user_id is not None:
             scalings = scalings.filter(user_id=user_id)
@@ -77,13 +76,14 @@ class UserModels(solidago.UserModels):
             "translation_uncertainty",
             criterion=F("criteria"),
         )
-        if len(values) == 0:
-            return solidago.MultiScore(cls.table_keynames["user_scales"])
-        return pd.DataFrame(cls.table_keynames["user_scales"], values)
+        # TODO : Change columns to match ("username", "height", "kind", "criterion")
+        init_data = pd.DataFrame(values) if len(values) > 0 else None
+        return solidago.MultiScore(cls.table_keynames["user_scales"], init_data)
     
     @classmethod
     def load_common_scales(cls, directory: str) -> solidago.MultiScore:
         """ TODO """
+        # TODO : Change columns to match ("height", "kind", "criterion")
         raise NotImplemented
     
     def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:

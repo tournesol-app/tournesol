@@ -9,7 +9,7 @@ DEFAULT_COMPOSITION = [
     ("squash", dict(score_max=100, note="squash")),
 ]
 
-class SquashedGlobalModel(solidago.Model):
+class GlobalModel(solidago.ScoringModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -27,16 +27,18 @@ class SquashedGlobalModel(solidago.Model):
             scores_queryset = scores_queryset.filter(criteria=criterion)
 
         values = scores_queryset.values(
-            criterion=F("criteria"),
             entity_name=F("contributor_rating__entity_id"),
+            criterion=F("criteria"),
             value=F("raw_score"),
             left_unc=F("left_uncertainty"),
             right_unc=F("right_uncertainty"),
         )
+        # keynames == ("entity_name", "criterion")
         directs = solidago.MultiScore(cls.table_keynames["directs"], pd.DataFrame(values))
         return cls(composition, directs)
 
     def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
+        poll = Poll.objects.get(name=directory)
         def entities_iterator():
             for entity in (
                 Entity.objects.filter(all_criteria_scores__poll=poll)

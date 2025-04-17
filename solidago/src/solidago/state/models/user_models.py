@@ -155,6 +155,23 @@ class UserModels:
         if username is None or username not in self.user_composition:
             return self.default_height()
         return len(self.user_composition[username])
+
+    def to_matrices(self, 
+        users: Users, 
+        entities: Entities, 
+        criterion: str
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        value_matrix = np.full((len(users), len(entities)), np.nan)
+        left_matrix = np.full((len(users), len(entities)), np.nan)
+        right_matrix = np.full((len(users), len(entities)), np.nan)
+        for username, model in user_models:
+            user_index = users.name2index(username)
+            for entity_name, score in model(entities, criterion):
+                entity_index = entities.name2index(entity_name)
+                value_matrix[user_index, entity_index] = score.value
+                left_matrix[user_index, entity_index] = score.left_unc
+                right_matrix[user_index, entity_index] = score.right_unc
+        return value_matrix, left_matrix, right_matrix
     
     def scale(self, scales: MultiScore, note: str="scale", **kwargs) -> "UserModels":
         user_scales, common_scales = self.user_scales.deepcopy(), self.common_scales.deepcopy()
