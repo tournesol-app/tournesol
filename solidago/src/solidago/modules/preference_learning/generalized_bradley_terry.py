@@ -109,10 +109,10 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         assessments: Assessments, # Not used
         comparisons: Comparisons, # keynames == ["criterion", "entity_name", "other_name"]
         init_model: Optional[ScoringModel]=None,
-    ) -> DirectScoring:
+    ) -> ScoringModel:
         """ Learns only based on comparisons """
-        init_model = DirectScoring() if init_model is None else init_model
-        model = DirectScoring()
+        init_model = ScoringModel() if init_model is None else init_model
+        model = ScoringModel(note=type(self).__name__)
         comparisons = comparisons.reorder("criterion", "entity_name", "other_name")
         for criterion in comparisons.keys("criterion"):
             criterion_entities = entities[comparisons[criterion].keys("entity_name")]

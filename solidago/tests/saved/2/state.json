@@ -70,48 +70,58 @@
         "UserModels",
         {
             "user_directs": "user_directs.csv",
+            "user_scales": "user_scales.csv",
             "common_scales": "common_scales.csv",
-            "default_model_cls": [
-                "SquashedModel",
-                {
-                    "score_max": 100,
-                    "note": "squash",
-                    "parent": [
-                        "ScaledModel",
-                        {
-                            "note": "lipschitz_quantile_shift",
-                            "parent": [
-                                "ScaledModel",
-                                {
-                                    "note": "lipschitz_standardardize",
-                                    "parent": [
-                                        "ScaledModel",
-                                        {
-                                            "note": "mehestan",
-                                            "parent": [
-                                                "DirectScoring",
-                                                {}
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
+            "default_composition": [
+                [
+                    "direct",
+                    {}
+                ],
+                [
+                    "scale",
+                    {
+                        "note": "mehestan"
+                    }
+                ],
+                [
+                    "scale",
+                    {
+                        "note": "lipschitz_standardardize"
+                    }
+                ],
+                [
+                    "scale",
+                    {
+                        "note": "lipschitz_quantile_shift"
+                    }
+                ],
+                [
+                    "squash",
+                    {
+                        "score_max": 100,
+                        "note": "squash"
+                    }
+                ]
             ]
         }
     ],
     "global_model": [
-        "SquashedModel",
+        "ScoringModel",
         {
-            "note": "squash",
-            "score_max": 100,
-            "parent": [
-                "DirectScoring",
-                {
-                    "note": "average"
-                }
+            "composition": [
+                [
+                    "direct",
+                    {
+                        "note": "entitywise_qr_quantile"
+                    }
+                ],
+                [
+                    "squash",
+                    {
+                        "score_max": 100,
+                        "note": "squash"
+                    }
+                ]
             ],
             "directs": {
                 "name": "directs.csv",

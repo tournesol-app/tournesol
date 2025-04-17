@@ -20,9 +20,6 @@ __all__ = [
     "Assessment", "Assessments",
     "Comparison", "Comparisons",
     "VotingRights",
-    "Score", "MultiScore",
-    "ScoringModel", "DirectScoring", "ScaledModel",
-    "PostProcessedModel", "SquashedModel",
-    "UserModels",
+    "Score", "MultiScore", "ScoringModel", "UserModels",
     "State", "TournesolExport",
 ]

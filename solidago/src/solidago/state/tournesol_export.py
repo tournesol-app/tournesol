@@ -4,6 +4,7 @@ from pandas import DataFrame, Series
 
 import zipfile
 import pandas as pd
+import numpy as np
 
 from .base import *
 
@@ -47,8 +48,8 @@ class TournesolExport(State):
                 "criteria": "criterion", 
                 "video": "entity_name",
                 "public_username": "username",
-                "score": "value",
-                "uncertainty": "left_unc",                
+                "score": "squashed_value",
+                "uncertainty": "squashed_left_unc",                
             })
         
         missing_usernames = set(vouches["by"]) | set(vouches["to"]) | set(user_scores["username"])
@@ -61,6 +62,10 @@ class TournesolExport(State):
         vouches["priority"] = 0
         user_scores["depth"] = 0
         global_scores["depth"] = 0
+        unsquash = lambda x: np.clip(x, a_min=-99.9, a_max=99.9) / np.sqrt(100**2 - np.clip(x, a_min=-99.9, a_max=99.9)**2)
+        user_scores["value"] = unsquash(user_scores["squashed_value"])
+        max_values = user_scores["squashed_value"] + user_scores["squashed_left_unc"]
+        user_scores["left_unc"] = unsquash(max_values) - user_scores["value"]
         user_scores["right_unc"] = user_scores["left_unc"]
         global_scores["right_unc"] = global_scores["left_unc"]
         from solidago.primitives.date import week_date_to_week_number as to_week_number
@@ -78,7 +83,7 @@ class TournesolExport(State):
         dfs = TournesolExport.load_dfs(dataset_zip)
         from solidago.state import (
             Users, Vouches, Entities, AllPublic, Comparisons, 
-            VotingRights, UserModels, DirectScoring, MultiScore
+            VotingRights, UserModels, ScoringModel, MultiScore
         )
         user_directs = MultiScore(UserModels.table_keynames["user_directs"], dfs["user_scores"])
         directs = MultiScore(["entity_name", "criterion"], dfs["global_scores"])
@@ -90,7 +95,7 @@ class TournesolExport(State):
             comparisons=Comparisons(init_data=dfs["comparisons"]),
             voting_rights=VotingRights(init_data=dfs["voting_rights"]),
             user_models=UserModels(user_directs=user_directs),
-            global_model=DirectScoring(directs=directs)
+            global_model=ScoringModel(directs=directs)
         )
 
     @classmethod

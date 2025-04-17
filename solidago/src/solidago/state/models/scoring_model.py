@@ -57,19 +57,29 @@ class ScoringModel:
         composition: list=[("direct", {})],
         directs: Optional[MultiScore]=None,
         scales: Optional[MultiScore]=None,
+        note: Optional[str]=None,
         *args, **kwargs
     ):
         """ The composition of the Tournesol pipeline global model is [
             ("direct", {"note": "entitywise_qr_quantile"}),
             ("squash", {"note": "squash", "score_max": 100}),
         ] """
+        if composition[0][0] == "direct" and isinstance(note, str):
+            composition[0][1]["note"] = note
         self.composition = composition
         self.directs = MultiScore(["entity_name", "criterion"], name="directs") if directs is None else directs
         self.scales = MultiScore(["height", "kind", "criterion"], name="scales") if scales is None else scales
 
     def __call__(self, 
-        entities: Union["Entity", "Entities"], 
-        criterion: Optional[str]=None,
+        entities: Union[str, "Entity", "Entities", type]=all, 
+        criteria: Union[str, set, type]=all,
+        n_sampled_entities: Optional[int]=None,
+    ) -> Union[Score, MultiScore]:
+        return self.score(entities, criteria, n_sampled_entities)
+    
+    def score(self, 
+        entities: Union[str, "Entity", "Entities", type]=all, 
+        criteria: Union[str, set, type]=all,
         n_sampled_entities: Optional[int]=None,
     ) -> Union[Score, MultiScore]:
         """ Assigns a score to an entity, or to multiple entities.
@@ -86,18 +96,11 @@ class ScoringModel:
             If entities: Entities with unidimensional scoring, then out[entity_name] is a Score.
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
-        return self.score(entities, criteria, n_sampled_entities)
-    
-    def score(self, 
-        entities: Union[str, "Entity", "Entities", type]=all, 
-        criteria: Union[str, set, type]=all,
-        n_sampled_entities: Optional[int]=None,
-    ) -> Union[Score, MultiScore]:
         from solidago.state.entities import Entities
         if n_sampled_entities is not None:
             if entities is all:
                 entities = Entities(list(self.evaluated_entity_names(criteria)))
-            assert isinstance(entity, Entities)
+            assert isinstance(entities, Entities)
             entities = entities.sample(n_sampled_entities)
         score = self.base_score(entities, criteria)
         for height in range(1, len(self.composition)):
@@ -108,10 +111,11 @@ class ScoringModel:
         entities: Union[str, "Entity", "Entities", type]=all, 
         criteria: Union[str, set, type]=all,
     ) -> Union[Score, MultiScore]:
+        from solidago.state.entities import Entities
         entities = {e.name for e in entities} if isinstance(entities, Entities) else entities
         base, kwargs = self.composition[0]
         if base == "direct":
-            return self.directs[entity, criteria]
+            return self.directs[entities, criteria]
         raise ValueError(f"Model composition {self.composition} has invalid base")
     
     def score_process(self, 
@@ -124,12 +128,13 @@ class ScoringModel:
         if operation == "scale":
             return scores * self.multiplier(height, criteria) + self.translation(height, criteria)
         if operation == "squash":
-            f = lambda: x: kwargs["score_max"] * x / sqrt(1 + x**2)
-            if isinstance(score, Score):
+            f = lambda x: kwargs["score_max"] * x / sqrt(1 + x**2)
+            if isinstance(scores, Score):
+                score = scores
                 value, extremes = f(score.value), [f(score.max), f(score.min)]
                 return Score(value, value - min(extremes), max(extremes) - value)
-            assert isinstance(score, MultiScore)
-            return MultiScore(["criterion"], { c: self.score_process(s, height) for c, s in score })
+            assert isinstance(scores, MultiScore)
+            return MultiScore(scores.keynames, { c: self.score_process(s, height) for c, s in scores })
         raise ValueError(f"Model composition {self.composition} has invalid height {height}")
 
     def multiplier(self, height: int, criteria: Union[str, set, type]=all) -> Union[Score, Multipliers]:
@@ -163,7 +168,7 @@ class ScoringModel:
     def evaluated_entities(self, entities: "Entities", criteria: Union[str, set, type]=all) -> "Entities":
         return entities[self.evaluated_entities(criteria)]
     
-    def to_direct(self, entities: "Entities") -> "DirectScoring":
+    def to_direct(self, entities: "Entities") -> "ScoringModel":
         model = ScoringModel()
         for (entity, criterion), score in self(entities):
             if not score.isnan():
@@ -195,7 +200,7 @@ class ScoringModel:
             self.scales | scales.prepend(height=len(self.composition)),
         )
     
-    def squash(self, score_max: float, note: str="scale") -> "ScoringModel":
+    def squash(self, score_max: float, note: str="squash") -> "ScoringModel":
         return ScoringModel(
             self.composition + [("squash", dict(score_max=score_max, note=note))],
             self.directs,
@@ -220,7 +225,7 @@ class ScoringModel:
         as multiple csv files may be saved, with a name derived from the filename_root
         (in addition to the json description) """
         for table_name in ("directs", "scales"):
-            table = getattr(self, f"get_{table_name}")()
+            table = getattr(self, table_name)
             if table:
                 table.save(directory, f"{table_name}.csv")
         return self.save_instructions(directory, json_dump)
@@ -228,7 +233,7 @@ class ScoringModel:
     def save_instructions(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
         kwargs = dict(composition=self.composition)
         for table_name in ("directs", "scales"):
-            table = getattr(self, f"get_{table_name}")()
+            table = getattr(self, table_name)
             if table:
                 kwargs[table_name] = { "name": f"{table_name}.csv", "keynames": table.keynames }
         if directory is not None and json_dump:
@@ -254,8 +259,9 @@ class ScoringModel:
         return type(self).__name__ + ": " + " > ".join([operation for operation, _ in self.composition])
     
     def __repr__(self) -> str:
-        r = str(self) + "\n"
+        r = str(self)
         for name in ("directs", "scales"):
+            table = getattr(self, name)
             if table:
-                r += f"\n\n{name}\n{repr(getattr(self, name))}"
+                r += f"\n\n{name}\n{repr(table)}"
         return r

@@ -21,7 +21,7 @@ class Sequential(StateFunction):
                 setattr(self, key, value)
             elif isinstance(value, (list, tuple)) and len(value) == 2:
                 import solidago.modules as modules
-                setattr(self, key, getattr(modules, value[0])(**value[1]))
+                setattr(self, key, getattr(modules, value[0])(max_workers=max_workers, **value[1]))
             else:
                 value_type = type(value).__name__
                 print(f"Sequential.__init__: Unhandled input key={key}, type(value)={value_type}")

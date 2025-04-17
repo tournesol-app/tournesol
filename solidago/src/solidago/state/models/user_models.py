@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives.timer import time
 from solidago.state.users import User, Users
-from .base import ScoringModel
+from .scoring_model import ScoringModel
 from .score import Score, MultiScore
 
 
@@ -27,7 +27,7 @@ class UserModels:
         user_directs: Optional[MultiScore]=None,
         user_scales: Optional[MultiScore]=None,
         common_scales: Optional[MultiScore]=None,
-        default_composition: tuple[str, dict]=("direct", {}),
+        default_composition: tuple[str, dict]=[("direct", {})],
         user_composition: Optional[dict[str, tuple]]=None,
         user_models_dict: Optional[dict[str, ScoringModel]]=None,
     ):
@@ -49,7 +49,6 @@ class UserModels:
     def to_dict(self) -> dict[str, ScoringModel]:
         if self._cache_users is None:
             self._cache_users = dict()
-            import solidago.state.models as models
             for username in self.user_directs.keys("username") | self.user_scales.keys("username"):
                 self._cache_users[username] = ScoringModel(
                     self.get_composition(username),
@@ -89,11 +88,11 @@ class UserModels:
 
     def __call__(self, 
         entities: Union[str, "Entity", "Entities", type]=all,
-        criteria: Union[str]=None,
+        criteria: Union[str, set, type]=all,
         n_sampled_entities_per_user: Optional[int]=None,
         max_workers: int=1,
     ) -> MultiScore:
-        return self.score(entities, criterion, n_sampled_entities_per_user, max_workers)
+        return self.score(entities, criteria, n_sampled_entities_per_user, max_workers)
     
     def score(self, 
         entities: Union[str, "Entity", "Entities", type]=all, 
@@ -102,8 +101,7 @@ class UserModels:
         max_workers: int=1,
     ) -> MultiScore:
         if max_workers == 1:
-            return type(self)._score(self, entities, criterion, n_sampled_entities_per_user)
-        
+            return type(self)._score(self, entities, criteria, n_sampled_entities_per_user)
         batches = [list() for _ in range(max_workers)]
         for index, (username, model) in enumerate(self):
             batches[index % max_workers].append((username, model))
@@ -129,13 +127,8 @@ class UserModels:
         keynames += ["criterion"] if isinstance(criteria, set) or criteria is all else list()
         results = MultiScore(keynames)
         for username, model in user_models:
-            scores = model(entities, criteria, n_sampled_entities_per_user)
-            if isinstance(scores, Score): # results.keynames == ["username"]
-                results[username] = scores
-            else:
-                assert isinstance(scores, MultiScore)
-                for keys, score in scores:
-                    results[username, *keys] = score
+            for keys, score in model(entities, criteria, n_sampled_entities_per_user):
+                results[username, *keys] = score
         return results
 
     def __len__(self) -> int:
@@ -171,20 +164,20 @@ class UserModels:
         if "username" in scales.keynames: # Only update user_scales
             for keys, value in scales:
                 keys_kwargs = scales.keys2kwargs(*keys)
-                keys_kwargs["height"] = self.height(keys_kwargs["username"]) + 1
+                keys_kwargs["height"] = self.height(keys_kwargs["username"])
                 new_keys = tuple(keys_kwargs[kn] for kn in scaled.user_scales.keynames)
                 scaled.user_scales[new_keys] = value
         else: # Updates common_scales and user_scales when needed
             for keys, value in scales:
                 keys_kwargs = scales.keys2kwargs(*keys)
-                keys_kwargs["height"] = self.default_height() + 1
+                keys_kwargs["height"] = self.default_height()
                 new_keys = tuple(keys_kwargs[kn] for kn in scaled.common_scales.keynames)
                 scaled.common_scales[new_keys] = value
             for username, model_cls in self.user_composition.items():
                 for keys, value in scales:
                     keys_kwargs = scales.keys2kwargs(*keys)
                     keys_kwargs["username"] = username
-                    keys_kwargs["height"] = self.height(username) + 1
+                    keys_kwargs["height"] = self.height(username)
                     new_keys = tuple(keys_kwargs[kn] for kn in scaled.user_scales.keynames)
                     scaled.user_scales[new_keys] = value
         
@@ -194,7 +187,7 @@ class UserModels:
         scaled._cache_users = dict()
         for username, model in self:
             scaled._cache_users[username] = ScoringModel(
-                self.get_composition(username),
+                scaled.get_composition(username),
                 model.directs,
                 scaled.user_scales[username] | scaled.common_scales,
             )
@@ -204,15 +197,14 @@ class UserModels:
     def squash(self, score_max: float, note: str="squash", **kwargs) -> "UserModels":
         new_composition = ("squash", dict(score_max=score_max, note=note))
         default_composition = self.default_composition + [new_composition]
-        processed = UserModels(self.user_directs, self.user_scales, self.common_scales, default_composition)
+        squashed = UserModels(self.user_directs, self.user_scales, self.common_scales, default_composition)
         for username, composition in self.user_composition.items():
-            scaled.user_compositions[username] = composition + [new_composition]
-        if self._cache_users is not None:
-            processed._cache_users = dict()
-            for username, model in self:
-                composition = self.get_composition(username)
-                processed._cache_users[username] = ScoringModel(composition, model.directs, model.scales)
-        return processed
+            squashed.user_compositions[username] = composition + [new_composition]
+        squashed._cache_users = dict()
+        for username, model in self:
+            composition = squashed.get_composition(username)
+            squashed._cache_users[username] = ScoringModel(composition, model.directs, model.scales)
+        return squashed
     
     @classmethod
     def load(cls, directory: str, **kwargs) -> "UserModels":
@@ -254,7 +246,8 @@ class UserModels:
         return self.save_table(directory, "common_scales")
 
     def __repr__(self) -> str:
-        return "\n\n".join([
+        r = type(self).__name__ + ": " + " < ".join([o for o, _ in self.default_composition])
+        return r + "\n\n" + "\n\n".join([
             f"{table_name}\n{repr(getattr(self, table_name))}" 
             for table_name in self.table_keynames
         ])

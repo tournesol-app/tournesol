@@ -1,7 +1,7 @@
 import math
 import numbers
 
-from typing import Optional, Union, Any, Callable
+from typing import Optional, Union, Any, Callable, Iterable
 from pandas import Series, DataFrame
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
@@ -150,6 +150,18 @@ class Score:
 
     def __contains__(self, value: float) -> bool:
         return self.min <= value and value <= self.max
+    
+    # The three following methods allow to treat Score like a MultiScore object to simplify code
+    @property
+    def keynames(self) -> tuple:
+        return tuple()
+
+    def __iter__(self) -> Iterable:
+        yield tuple(), self
+    
+    def get(self, *args, **kwargs) -> "Score":
+        assert not args and not kwargs
+        return self
 
 
 class MultiScore(MultiKeyTable):
@@ -227,12 +239,19 @@ class MultiScore(MultiKeyTable):
         other: Union[Score, "MultiScore"], 
         score_operation: Callable
     ) -> "MultiScore":
-        result = MultiScore(self.keynames)
-        for keys, score in self:
-            other_score = other if isinstance(other, (numbers.Number, Score)) else other[keys]
-            s = score_operation(score, other_score)
-            if not s.isnan():
-                result[keys] = s
+        common_keynames = [kn for kn in self.keynames if kn in other.keynames]
+        keynames = list(self.keynames) + [kn for kn in other.keynames if kn not in common_keynames]
+        result = MultiScore(keynames)
+        for self_full_keys, self_score in self:
+            self_full_kwargs = dict(zip(self.keynames, self_full_keys))
+            common_kwargs = {kn: self_full_kwargs[kn] for kn in common_keynames}
+            self_keys = [key for kn, key in self_full_kwargs.items() if kn in keynames]
+            for other_keys, other_score in other.get(**common_kwargs):
+                score = score_operation(self_score, other_score)
+                if not keynames:
+                    return score
+                if not score.isnan():
+                    result[tuple(self_keys + list(other_keys))] = score
         return result
     
     def __add__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":

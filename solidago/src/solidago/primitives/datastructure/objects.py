@@ -125,8 +125,8 @@ class Objects:
             return self._dict[name]
         return type(self)([obj for obj in name])
     
-    def sample(self, n_items: int) -> "Objects":
-        if len(self) >= n_items:
+    def sample(self, n_items: Optional[int]=None) -> "Objects":
+        if n_items is None or len(self) < n_items:
             return self.deepcopy()
         return self[random.sample(self.keys(), n_items)]
     

@@ -20,10 +20,7 @@ class Squash(StateFunction):
         """ Post-processes user models and global models,
         typically to yield human-readible scores, 
         by squashing scores into [-self.score_max, self.score_max] """
-        return (
-            user_models.post_process("SquashedModel", score_max=self.score_max, note="squash"),
-            SquashedModel(global_model, self.score_max, note="squash")
-        )
+        return user_models.squash(self.score_max, "squash"), global_model.squash(self.score_max, "squash")
 
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         return state.save_instructions(directory)

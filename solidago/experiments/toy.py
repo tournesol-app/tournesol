@@ -33,16 +33,17 @@ with time(logger, "Loading input states"):
     # s = State.load("experiments/tiny_tournesol_processed")
     
     # dfs = TournesolExport.load_dfs("experiments/tournesol_dataset.zip")
-    # s = TournesolExport("experiments/tournesol_dataset.zip")
-    # s.save("experiments/tournesol_processed")
-    s = State.load("experiments/tournesol_processed")
+    s = TournesolExport("experiments/tournesol_dataset.zip")
+    s.save("experiments/tournesol_processed")
+    # s = State.load("experiments/tournesol_processed")
     
     # users, entities, vouches, made_public = s.users, s.entities, s.vouches, s.made_public
     # assessments, comparisons, voting_rights = s.assessments, s.comparisons, s.voting_rights
     # user_models, global_model = s.user_models, s.global_model
 
 with time(logger, "Running the pipeline"):
-    # s.user_models = UserModels() # Does not use current scores as init
+    s.user_models = UserModels() # Does not use current scores as init
+    
     # t = pipeline(s, "experiments/tiny_tournesol_processed")
     t = pipeline(s, "experiments/tournesol_processed")
 

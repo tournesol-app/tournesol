@@ -19,20 +19,25 @@ def test_multiscore():
     assert (s*t)["default"] == s["default"]
     assert (s*t)["importance"].isnan()
     assert (s+t)["default"].average_uncertainty() == 3
+    u = MultiScore(["entity_names", "criterion"], init_data={("entity_1", "default"): Score(1, 0, 0)})
+    assert (s+u)["default", "entity_1"] == Score(2, 4, 2)
+
 
 def test_direct():
-    direct = DirectScoring()
+    direct = ScoringModel()
     entities = Entities(["entity_1", "entity_2"])
     direct["entity_1", "default"] = Score(1, 5, 2)
     direct["entity_2", "default"] = Score(2, 3, 1)
     direct["entity_2", "importance"] = Score(2, 0, 1)
-    scaled = ScaledModel(direct)
-    scaled["multiplier", "default"] = Score(1, 0, 0)
-    scaled["translation", "default"] = Score(1, 0, 0)
-    scaled["multiplier", "importance"] = Score(2, 1, 1)
-    scaled["translation", "importance"] = Score(3, 2, 0)
-    post_process = SquashedModel(scaled, 100)
-    assert post_process("entity_1")["importance"].isnan()
-    assert post_process("entity_2")["importance"] > 0
-    assert len(post_process(entities)) == 3
+    scaled = direct.scale(MultiScore(["kind", "criterion"], {
+        ("multiplier", "default"): Score(1, 0, 0),
+        ("translation", "default"): Score(1, 0, 0),
+        ("multiplier", "importance"): Score(2, 1, 1),
+        ("translation", "importance"): Score(3, 2, 0),
+    }))
+    squashed = scaled.squash(100)
+    assert squashed("entity_1")["importance"].isnan()
+    assert squashed("entity_2")["importance"].value > 98
+    assert squashed("entity_2")["importance"] < 100
+    assert len(squashed(entities)) == 3
     assert scaled(entities)["entity_1", "default"] == Score(2, 5, 2)
