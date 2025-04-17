@@ -1,13 +1,20 @@
 const getYoutubeVideosPerRow = () => {
-  const youtubeThumbnail = document.querySelector(
+  let youtubeThumbnailReference = document.querySelector(
     '#primary #contents > ytd-rich-item-renderer.ytd-rich-grid-renderer'
   );
-  if (!youtubeThumbnail) {
-    return undefined;
+  if (!youtubeThumbnailReference) {
+    // When Youtube personal history is disabled, no thumbnail will be visible
+    // on the homepage. Let's use the "nudge" banner as the reference instead.
+    youtubeThumbnailReference = document.querySelector(
+      'ytd-feed-nudge-renderer'
+    );
+    if (!youtubeThumbnailReference) {
+      return undefined;
+    }
   }
 
   const itemsPerRowCssValue = window
-    .getComputedStyle(youtubeThumbnail)
+    .getComputedStyle(youtubeThumbnailReference)
     .getPropertyValue('--ytd-rich-grid-items-per-row');
   if (!itemsPerRowCssValue) {
     return undefined;
