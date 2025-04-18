@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Grid } from '@mui/material';
+import { Alert, Grid2 } from '@mui/material';
 
 import SettingsHeading from 'src/features/settings/preferences/SettingsHeading';
 import { BlankEnum, FeedForyou_dateEnum } from 'src/services/openapi';
@@ -36,20 +36,20 @@ const FeedForYou = ({
   const { t } = useTranslation();
   return (
     <>
-      <Grid item>
+      <Grid2>
         <SettingsHeading
           id={`${scope}-feed-foryou`}
           text={t('videosUserSettingsForm.feed.forYou.feedForYou')}
         />
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <Alert severity="info">
           {t(
             'videosUserSettingsForm.feed.forYou.customizeItemsAppearingInTheFeedForYou'
           )}
         </Alert>
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <ItemsLanguages
           label={t('videosUserSettingsForm.feed.forYou.forYouVideosLanguages')}
           helpText={t(
@@ -58,16 +58,15 @@ const FeedForYou = ({
           value={forYouLanguages}
           onChange={setForYouLanguages}
         />
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <FeedForYouDate
           scope={scope}
           value={forYouUploadDate}
           onChange={setForYouUploadDate}
         />
-      </Grid>
-      <Grid
-        item
+      </Grid2>
+      <Grid2
         container
         spacing={1}
         direction="column"
@@ -75,7 +74,7 @@ const FeedForYou = ({
           alignItems: 'stretch',
         }}
       >
-        <Grid item>
+        <Grid2>
           <BooleanField
             scope={scope}
             name="feed_foryou__unsafe"
@@ -83,8 +82,8 @@ const FeedForYou = ({
             value={forYouUnsafe}
             onChange={setForYouUnsafe}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <BooleanField
             scope={scope}
             name="feed_foryou__exclude_compared_entities"
@@ -92,8 +91,8 @@ const FeedForYou = ({
             value={forYouExcludeCompared}
             onChange={setForYouExcludeCompared}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </>
   );
 };

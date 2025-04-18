@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { Box, Collapse, Grid, Paper, Typography } from '@mui/material';
+import { Box, Collapse, Grid2, Paper, Typography } from '@mui/material';
 
 import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
@@ -57,35 +57,35 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
         }}
       >
         {/* Entity section, with its player, title, scores and actions. */}
-        <Grid
+        <Grid2
           container
           spacing={2}
           sx={{
             justifyContent: 'center',
           }}
         >
-          <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
+          <Grid2 sx={{ aspectRatio: '16 / 9' }} size={12}>
             <VideoPlayer
               videoId={entity.metadata.video_id}
               duration={entity.metadata.duration}
               controls
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <VideoAnalysisActionBar video={video} />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
-          </Grid>
+          </Grid2>
           {video.entity_contexts.length > 0 && (
-            <Grid item xs={12}>
+            <Grid2 size={12}>
               <EntityContextBox
                 uid={video.entity.uid}
                 contexts={video.entity_contexts}
               />
-            </Grid>
+            </Grid2>
           )}
-          <Grid item xs={12}>
+          <Grid2 size={12}>
             <CollapseButton
               expanded={descriptionCollapsed}
               onClick={() => {
@@ -115,13 +115,19 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                 />
               </Typography>
             </Collapse>
-          </Grid>
+          </Grid2>
 
           {/* Data visualization. */}
           {shouldDisplayCharts && (
             <SelectedCriterionProvider>
               <PersonalCriteriaScoresContextProvider uid={entity.uid}>
-                <Grid item xs={12} sm={12} md={6}>
+                <Grid2
+                  size={{
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                  }}
+                >
                   <Paper>
                     <Box
                       sx={{
@@ -151,8 +157,14 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                       <CriteriaBarChart reco={video} />
                     </Box>
                   </Paper>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6}>
+                </Grid2>
+                <Grid2
+                  size={{
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                  }}
+                >
                   <Paper sx={{ height: '100%' }}>
                     <Box
                       sx={{
@@ -174,11 +186,11 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                       <CriteriaScoresDistribution reco={video} />
                     </Box>
                   </Paper>
-                </Grid>
+                </Grid2>
               </PersonalCriteriaScoresContextProvider>
             </SelectedCriterionProvider>
           )}
-        </Grid>
+        </Grid2>
       </Box>
       <Box
         sx={{

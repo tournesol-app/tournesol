@@ -7,7 +7,7 @@ import {
   Box,
   Checkbox,
   Divider,
-  Grid,
+  Grid2,
   IconButton,
   Typography,
 } from '@mui/material';
@@ -55,7 +55,7 @@ const OrderableCriterionRow = ({
   };
 
   return (
-    <Grid
+    <Grid2
       container
       direction="row"
       wrap="nowrap"
@@ -64,8 +64,7 @@ const OrderableCriterionRow = ({
         justifyContent: 'space-between',
       }}
     >
-      <Grid
-        item
+      <Grid2
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -81,10 +80,9 @@ const OrderableCriterionRow = ({
         />
         <CriteriaIcon criteriaName={criterionName} sx={{ marginRight: 1 }} />
         <Typography>{criterionLabel}</Typography>
-      </Grid>
+      </Grid2>
       {checked && (
-        <Grid
-          item
+        <Grid2
           sx={{
             display: 'flex',
             flexWrap: 'nowrap',
@@ -110,9 +108,9 @@ const OrderableCriterionRow = ({
           >
             <KeyboardArrowDown />
           </IconButton>
-        </Grid>
+        </Grid2>
       )}
-    </Grid>
+    </Grid2>
   );
 };
 
@@ -151,14 +149,14 @@ const ComparisonOptionalCriteriaDisplayed = ({
   };
 
   return (
-    <Grid
+    <Grid2
       container
       spacing={2}
       sx={{
         flexDirection: 'row',
       }}
     >
-      <Grid item xs={12}>
+      <Grid2 size={12}>
         <Typography
           sx={{
             mb: 0,
@@ -168,15 +166,16 @@ const ComparisonOptionalCriteriaDisplayed = ({
             {t('pollUserSettingsForm.selectTheCriteriaYouWantToDisplay')}
           </strong>
         </Typography>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={12}
-        md={12}
-        lg={6}
+      </Grid2>
+      <Grid2
         sx={{
           minHeight: { xs: 'initial', sm: 410 },
+        }}
+        size={{
+          xs: 12,
+          sm: 12,
+          md: 12,
+          lg: 6,
         }}
       >
         <Box
@@ -217,15 +216,16 @@ const ComparisonOptionalCriteriaDisplayed = ({
             </Typography>
           </Alert>
         )}
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={12}
-        md={12}
-        lg={6}
+      </Grid2>
+      <Grid2
         sx={{
           minHeight: { xs: 'initial', sm: 410 },
+        }}
+        size={{
+          xs: 12,
+          sm: 12,
+          md: 12,
+          lg: 6,
         }}
       >
         <Box
@@ -268,8 +268,8 @@ const ComparisonOptionalCriteriaDisplayed = ({
             </Typography>
           </Alert>
         )}
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };
 

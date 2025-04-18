@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 } from '@mui/material';
 
 import {
   ApiError,
@@ -90,7 +90,7 @@ const VideosPollUserSettingsForm = ({
         rowGap: 6,
       }}
     >
-      <Grid
+      <Grid2
         container
         spacing={4}
         direction="column"
@@ -98,21 +98,20 @@ const VideosPollUserSettingsForm = ({
           alignItems: 'stretch',
         }}
       >
-        <Grid item>
+        <Grid2>
           <SettingsHeading
             id="comparison_page"
             text={t('pollUserSettingsForm.comparisonPage')}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <WeeklyCollectiveGoalDisplayField
             value={compUiWeeklyColGoalDisplay}
             onChange={setCompUiWeeklyColGoalDisplay}
             pollName={pollName}
           />
-        </Grid>
-        <Grid
-          item
+        </Grid2>
+        <Grid2
           container
           spacing={1}
           direction="column"
@@ -120,7 +119,7 @@ const VideosPollUserSettingsForm = ({
             alignItems: 'stretch',
           }}
         >
-          <Grid item>
+          <Grid2>
             <BooleanField
               scope={pollName}
               name="comparison_ui__weekly_collective_goal_mobile"
@@ -128,8 +127,8 @@ const VideosPollUserSettingsForm = ({
               value={compUiWeeklyColGoalMobile}
               onChange={setCompUiWeeklyColGoalMobile}
             />
-          </Grid>
-          <Grid item>
+          </Grid2>
+          <Grid2>
             <BooleanField
               scope={pollName}
               name="comparison__auto_select_entities"
@@ -137,8 +136,8 @@ const VideosPollUserSettingsForm = ({
               value={compAutoSelectEntities}
               onChange={setCompAutoSelectEntities}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
         {/*
           Ideally the following field could be displayed under the title
           Comparison, instead of Comparison (page). Updating the optinal
@@ -147,14 +146,14 @@ const VideosPollUserSettingsForm = ({
           to customize the comparisons (not the page), consider the creation of
           a section Comparison.
         */}
-        <Grid item>
+        <Grid2>
           <ComparisonOptionalCriteriaDisplayed
             displayedCriteria={displayedCriteria}
             onChange={setDisplayedCriteria}
           />
-        </Grid>
-      </Grid>
-      <Grid
+        </Grid2>
+      </Grid2>
+      <Grid2
         container
         spacing={4}
         direction="column"
@@ -162,21 +161,21 @@ const VideosPollUserSettingsForm = ({
           alignItems: 'stretch',
         }}
       >
-        <Grid item>
+        <Grid2>
           <SettingsHeading
             id="extension_youtube"
             text={t('pollUserSettingsForm.extensionYoutube')}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <ExtSearchRecommendation
             value={extSearchRecommendation}
             onChange={setExtSearchRecommendation}
             pollName={pollName}
           />
-        </Grid>
-      </Grid>
-      <Grid
+        </Grid2>
+      </Grid2>
+      <Grid2
         container
         spacing={4}
         direction="column"
@@ -189,8 +188,8 @@ const VideosPollUserSettingsForm = ({
           topItemsLanguages={topVideosLanguages}
           setTopItemsLangauges={setTopVideosLangauges}
         />
-      </Grid>
-      <Grid
+      </Grid2>
+      <Grid2
         container
         spacing={4}
         direction="column"
@@ -209,8 +208,8 @@ const VideosPollUserSettingsForm = ({
           forYouExcludeCompared={forYouExcludeCompared}
           setForYouExcludeCompared={setForYouExcludeCompared}
         />
-      </Grid>
-      <Grid
+      </Grid2>
+      <Grid2
         container
         spacing={4}
         direction="column"
@@ -218,21 +217,21 @@ const VideosPollUserSettingsForm = ({
           alignItems: 'stretch',
         }}
       >
-        <Grid item>
+        <Grid2>
           <SettingsHeading
             id="rate_later"
             text={t('pollUserSettingsForm.rateLater')}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <RateLaterAutoRemoveField
             apiErrors={apiErrors}
             value={rateLaterAutoRemoval}
             onChange={setRateLaterAutoRemoval}
             pollName={pollName}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };
