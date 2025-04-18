@@ -66,7 +66,6 @@ const QuestionRow = ({
               alignItems: 'center',
               color: '#fff',
               bgcolor: 'background.emphatic',
-              borderRadius: 20,
               borderRadius: 1,
             }}
           >
