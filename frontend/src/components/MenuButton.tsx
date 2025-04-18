@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Menu } from '@mui/material';
+import { Button, Menu, Theme } from '@mui/material';
 import { ArrowDropDown } from '@mui/icons-material';
 
 interface Props {
@@ -45,7 +45,7 @@ const MenuButton = ({
           list: {
             onClick: () => closeMenu(),
             sx: {
-              backgroundColor: (t) => t.palette.background.menu,
+              backgroundColor: (t: Theme) => t.palette.background.menu,
               '& .MuiListItemIcon-root': { color: '#CDCABC' },
             },
           },
