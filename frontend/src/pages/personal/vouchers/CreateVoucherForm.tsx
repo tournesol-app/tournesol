@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { TextField, Button, Typography, Grid } from '@mui/material';
+import { TextField, Button, Grid2, Typography } from '@mui/material';
 import { HowToReg } from '@mui/icons-material';
 
 import { useNotifications } from 'src/hooks';
@@ -49,7 +49,7 @@ const CreateVoucherForm = () => {
       >
         {t('personalVouchers.introduction')}
       </Typography>
-      <Grid
+      <Grid2
         container
         sx={{
           gap: 2,
@@ -75,7 +75,7 @@ const CreateVoucherForm = () => {
         >
           {t('personalVouchers.submitButton')}
         </Button>
-      </Grid>
+      </Grid2>
     </form>
   );
 };

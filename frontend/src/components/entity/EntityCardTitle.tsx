@@ -31,10 +31,8 @@ const EntityCardTitle = ({
         lineHeight: '1.3',
         overflowWrap: 'anywhere',
         fontSize: compact ? '1em !important' : undefined,
-
         // Limit text to 3 lines and show ellipsis
         display: '-webkit-box',
-
         overflow: 'hidden',
         WebkitLineClamp: titleMaxLines,
         WebkitBoxOrient: 'vertical',
