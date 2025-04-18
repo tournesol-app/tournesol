@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 
 import { AccountsService, ApiError } from 'src/services/openapi';
@@ -54,7 +54,7 @@ const PasswordForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid
+      <Grid2
         container
         spacing={2}
         direction="column"
@@ -62,7 +62,7 @@ const PasswordForm = () => {
           alignItems: 'stretch',
         }}
       >
-        <Grid item>
+        <Grid2>
           <TextField
             required
             fullWidth
@@ -78,8 +78,8 @@ const PasswordForm = () => {
               htmlInput: { 'data-testid': 'old_password' },
             }}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <TextField
             required
             fullWidth
@@ -96,8 +96,8 @@ const PasswordForm = () => {
               htmlInput: { 'data-testid': 'password' },
             }}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <TextField
             required
             fullWidth
@@ -120,8 +120,8 @@ const PasswordForm = () => {
               htmlInput: { 'data-testid': 'password_confirm' },
             }}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <Button
             fullWidth
             type="submit"
@@ -131,8 +131,8 @@ const PasswordForm = () => {
           >
             {t('settings.updatePassword')}
           </Button>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </form>
   );
 };

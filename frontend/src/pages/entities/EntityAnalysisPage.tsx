@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TFunction, useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
-import { Box, Button, Container, Grid, Typography } from '@mui/material';
+import { Box, Button, Container, Grid2, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { useCurrentPoll, useLoginState, useDocumentTitle } from 'src/hooks';
@@ -74,20 +74,20 @@ const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
   }
 
   return (
-    <Grid
+    <Grid2
       container
       sx={{
         justifyContent: 'center',
         textAlign: 'center',
       }}
     >
-      <Grid item xs={12}>
+      <Grid2 size={12}>
         <Typography variant="h2">{title}</Typography>
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <Typography variant="subtitle1">{message}</Typography>
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <Box
           sx={{
             mt: 2,
@@ -97,8 +97,8 @@ const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
             {t('pageNotFound.backToHomePage')}
           </Button>
         </Box>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };
 

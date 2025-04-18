@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import {
-  Grid,
+  Grid2,
   Link as MuiLink,
   Button,
   Typography,
@@ -174,7 +174,7 @@ const Signup = () => {
           <SignupSuccess email={successEmailAddress} />
         ) : (
           <form onSubmit={handleSubmit}>
-            <Grid
+            <Grid2
               container
               spacing={3}
               direction="column"
@@ -183,7 +183,7 @@ const Signup = () => {
               }}
             >
               {formError && (
-                <Grid item xs={12}>
+                <Grid2 size={12}>
                   <Typography color="error">
                     {t('signup.accountCreationFailed')}
                     <br />
@@ -191,9 +191,9 @@ const Signup = () => {
                       <Lines messages={formError.non_field_errors} />
                     )}
                   </Typography>
-                </Grid>
+                </Grid2>
               )}
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <FormTextField
                   name="email"
                   label={t('emailAddress')}
@@ -201,8 +201,8 @@ const Signup = () => {
                   formError={formError}
                   helperText={t('signup.anActivationEmailWillBeSent')}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <FormTextField
                   name="username"
                   label={t('username')}
@@ -211,8 +211,8 @@ const Signup = () => {
                     'settings.captionUsernameWillAppearInPublicDatabase'
                   )}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <FormTextField
                   name="password"
                   label={t('password')}
@@ -220,8 +220,8 @@ const Signup = () => {
                   autoComplete="new-password"
                   formError={formError}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <FormTextField
                   name="password_confirm"
                   label={t('confirmYourPassword')}
@@ -229,15 +229,14 @@ const Signup = () => {
                   autoComplete="new-password"
                   formError={formError}
                 />
-              </Grid>
-              <Grid
-                item
-                xs={12}
+              </Grid2>
+              <Grid2
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
                 }}
+                size={12}
               >
                 <Checkbox
                   name="accept_terms"
@@ -264,8 +263,8 @@ const Signup = () => {
                     </Trans>
                   </Typography>
                 </span>
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <Box
                   sx={{
                     py: 2,
@@ -282,20 +281,20 @@ const Signup = () => {
                     </Box>
                   </Divider>
                 </Box>
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <NotificationsEmailResearch
                   value={notififResearch}
                   onChange={(value) => setNotififResearch(value)}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <NotificationsEmailNewFeatures
                   value={notifNewFeatures}
                   onChange={(value) => setNnotifNewFeatures(value)}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <Button
                   type="submit"
                   color="secondary"
@@ -305,8 +304,8 @@ const Signup = () => {
                 >
                   {t('signUpButton')}
                 </Button>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </form>
         )}
       </ContentBox>
