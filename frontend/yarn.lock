@@ -670,14 +670,14 @@
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-6.4.11.tgz#0752eea024d8ff0f120b0f26aee4342c79112847"
   integrity sha512-CzAQs9CTzlwbsF9ZYB4o4lLwBv1/qNE264NjuYao+ctAXsmlPtYa8RtER4UsUXSMxNN9Qi+aQdYcKl2sUpnmAw==
 
-"@mui/icons-material@6.4.11":
+"@mui/icons-material@^6.4.11":
   version "6.4.11"
   resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-6.4.11.tgz#add406d3d1c82e7aaf49002a8d456fa992e7f3db"
   integrity sha512-+jjJGIrB1awNbMv4ZVPPdN/p7O1UKFZ+xqRvNIQ8B1KnlID5hPMPBLM6UUbRF4bu3UDCbu79rn9Nye5LGNzmeA==
   dependencies:
     "@babel/runtime" "^7.26.0"
 
-"@mui/material@6.4.11":
+"@mui/material@^6.4.11":
   version "6.4.11"
   resolved "https://registry.yarnpkg.com/@mui/material/-/material-6.4.11.tgz#ac5c42c25fc807545eef4de0e88a47b52de8ed75"
   integrity sha512-k2D3FLJS+/qD0qnd6ZlAjGFvaaxe1Dl10NyvpeDzIebMuYdn8VqYe6XBgGueEAtnzSJM4V03VD9kb5Fi24dnTA==
@@ -716,7 +716,7 @@
     csstype "^3.1.3"
     prop-types "^15.8.1"
 
-"@mui/styles@6.4.11":
+"@mui/styles@^6.4.11":
   version "6.4.11"
   resolved "https://registry.yarnpkg.com/@mui/styles/-/styles-6.4.11.tgz#e0c89985daffe61e4aa17309643d9a5432f910bf"
   integrity sha512-tuF8UT5d6gO4u2pKyYrgVGzbQtIJodILkBwB3iBy7Pg2htvX5ecNyEcKI2d0LQPNHt1ouECaF72GVuQTWLH0dA==
