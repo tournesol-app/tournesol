@@ -54,12 +54,7 @@ const Thumb = ({
       ) : (
         <RadioButtonUncheckedIcon color="disabled" />
       )}
-      <Typography
-        mb={0}
-        sx={{
-          marginBottom: '16px',
-        }}
-      >
+      <Typography sx={{ mb: 0 }}>
         {up ? upDescription : downDescription}
       </Typography>
     </Stack>
