@@ -5,7 +5,7 @@ import { Vector2 } from '@use-gesture/core/types';
 
 import {
   Box,
-  Grid,
+  Grid2,
   Slide,
   Theme,
   Typography,
@@ -424,7 +424,7 @@ const EntitySelectorInnerAuth = ({
                     </Typography>
                   </Box>
                 )}
-              <Grid
+              <Grid2
                 container
                 sx={{
                   ...entityCardMainSx,
@@ -437,10 +437,8 @@ const EntitySelectorInnerAuth = ({
                       : 'flex',
                 }}
               >
-                <Grid
+                <Grid2
                   container
-                  item
-                  xs={12}
                   spacing={1}
                   wrap="wrap"
                   sx={{
@@ -449,14 +447,16 @@ const EntitySelectorInnerAuth = ({
                     aspectRatio: '16 / 9',
                     backgroundColor: '#fafafa',
                   }}
+                  size={12}
                 >
-                  <Grid
+                  <Grid2
                     container
-                    item
-                    xs={12}
-                    sm={5}
                     sx={{
                       justifyContent: 'center',
+                    }}
+                    size={{
+                      xs: 12,
+                      sm: 5,
                     }}
                   >
                     <EntitySelectButton
@@ -465,14 +465,15 @@ const EntitySelectorInnerAuth = ({
                       otherUid={otherUid}
                       variant="full"
                     />
-                  </Grid>
-                  <Grid
+                  </Grid2>
+                  <Grid2
                     container
-                    item
-                    xs={12}
-                    sm={5}
                     sx={{
                       justifyContent: 'center',
+                    }}
+                    size={{
+                      xs: 12,
+                      sm: 5,
                     }}
                   >
                     <AutoEntityButton
@@ -480,9 +481,9 @@ const EntitySelectorInnerAuth = ({
                       onClick={slideUp}
                       variant="full"
                     />
-                  </Grid>
-                </Grid>
-              </Grid>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
             </>
           )}
         </Box>

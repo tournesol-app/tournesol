@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 } from '@mui/material';
 
 import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 
@@ -50,7 +50,7 @@ const EntitySelectorControls = ({
         justifyContent: 'space-between',
       }}
     >
-      <Grid
+      <Grid2
         container
         spacing={{ xs: 2, sm: 1 }}
         direction={alignment === 'left' ? 'row' : 'row-reverse'}
@@ -59,15 +59,15 @@ const EntitySelectorControls = ({
           justifyContent: 'flex-start',
         }}
       >
-        <Grid item>
+        <Grid2>
           <EntitySelectButton
             value={inputValue || uid || ''}
             onChange={onEntitySelect}
             otherUid={otherUid}
             history={history}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <AutoEntityButton
             disabled={disabled}
             onClick={onAutoClick}
@@ -78,8 +78,8 @@ const EntitySelectorControls = ({
             }
             compactLabelLoc={alignment === 'left' ? 'right' : 'left'}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };
