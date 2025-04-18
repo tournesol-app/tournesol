@@ -37,18 +37,31 @@ const FAQEntryList = ({
           onVisibilityChange={onEntryVisibilityChange}
         />
       ))}
-
       {/* Always display an extra entry to explain how to ask more questions. */}
-      <Box mb={4}>
+      <Box
+        sx={{
+          mb: 4,
+        }}
+      >
         <Typography id="no_answer_found" variant="h4" gutterBottom>
           {t('faqPage.iDidFindTheAnswers')}
         </Typography>
 
-        <Typography paragraph textAlign="justify">
+        <Typography
+          sx={{
+            textAlign: 'justify',
+            marginBottom: 2,
+          }}
+        >
           {t('faqPage.comeAndAskYourQuestionsOnDiscord')}
         </Typography>
       </Box>
-      <Box display="flex" justifyContent="flex-end">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
         <Button
           href="https://discord.gg/TvsFB8RNBV"
           color="secondary"

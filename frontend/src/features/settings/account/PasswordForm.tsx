@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 
 import { AccountsService, ApiError } from 'src/services/openapi';
@@ -54,8 +54,15 @@ const PasswordForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={2} direction="column" alignItems="stretch">
-        <Grid item>
+      <Grid2
+        container
+        spacing={2}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
+        <Grid2>
           <TextField
             required
             fullWidth
@@ -67,10 +74,12 @@ const PasswordForm = () => {
             variant="outlined"
             value={oldPassword}
             onChange={(event) => setOldPassword(event.target.value)}
-            inputProps={{ 'data-testid': 'old_password' }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'old_password' },
+            }}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <TextField
             required
             fullWidth
@@ -82,11 +91,13 @@ const PasswordForm = () => {
             variant="outlined"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            inputProps={{ 'data-testid': 'password' }}
             autoComplete="new-password"
+            slotProps={{
+              htmlInput: { 'data-testid': 'password' },
+            }}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <TextField
             required
             fullWidth
@@ -104,11 +115,13 @@ const PasswordForm = () => {
             }
             error={passwordConfirm !== '' && !passwordConfirmMatches}
             onChange={(event) => setPasswordConfirm(event.target.value)}
-            inputProps={{ 'data-testid': 'password_confirm' }}
             autoComplete="new-password"
+            slotProps={{
+              htmlInput: { 'data-testid': 'password_confirm' },
+            }}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <Button
             fullWidth
             type="submit"
@@ -118,8 +131,8 @@ const PasswordForm = () => {
           >
             {t('settings.updatePassword')}
           </Button>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </form>
   );
 };

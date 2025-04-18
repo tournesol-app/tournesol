@@ -24,10 +24,10 @@ const TitledPaper = ({
     <Paper sx={sx}>
       <Box
         id={titleId}
-        p={2}
-        color="#fff"
-        bgcolor="background.emphatic"
         sx={{
+          p: 2,
+          color: '#fff',
+          bgcolor: 'background.emphatic',
           borderTopLeftRadius: 'inherit',
           borderTopRightRadius: 'inherit',
         }}
@@ -38,7 +38,13 @@ const TitledPaper = ({
           title
         )}
       </Box>
-      <Box p={contentBoxPadding}>{children}</Box>
+      <Box
+        sx={{
+          p: contentBoxPadding,
+        }}
+      >
+        {children}
+      </Box>
     </Paper>
   );
 };

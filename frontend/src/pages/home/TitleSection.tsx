@@ -68,11 +68,12 @@ const TitleSection = ({ title, children }: Props) => {
           {title}
         </Typography>
         <Box
-          display="flex"
-          flexDirection="column"
-          maxWidth="min(100%, 800px)"
-          alignItems="flex-start"
           sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            maxWidth: 'min(100%, 800px)',
+            alignItems: 'flex-start',
+
             [theme.breakpoints.down('md')]: {
               alignSelf: 'center',
             },

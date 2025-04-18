@@ -50,18 +50,41 @@ const RecommendationsSection = () => {
         dividerColor={titleColor}
         headingId="recommendations"
       />
-
-      <Grid container justifyContent="center" spacing={4}>
+      <Grid
+        container
+        spacing={4}
+        sx={{
+          justifyContent: 'center',
+        }}
+      >
         <Grid item lg={3} xl={3}>
           <Paper elevation={0}>
-            <Box p={2} borderRadius={1}>
-              <Typography paragraph fontSize={17}>
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: 1,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: 17,
+                  marginBottom: 2,
+                }}
+              >
                 {t('recommendationsSection.eachComparisonHelps')}
               </Typography>
-              <Box pb={2}>
+              <Box
+                sx={{
+                  pb: 2,
+                }}
+              >
                 <Divider />
               </Box>
-              <Box textAlign="center">
+              <Box
+                sx={{
+                  textAlign: 'center',
+                }}
+              >
                 <Metrics
                   text={comparedEntitiesTitle}
                   count={pollStats?.compared_entities.total ?? 0}
@@ -76,17 +99,24 @@ const RecommendationsSection = () => {
         </Grid>
         <Grid item lg={9} xl={6}>
           <Box
-            display="flex"
-            justifyContent="center"
-            flexDirection="column"
-            gap={2}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              gap: 2,
+            }}
           >
             <RecommendationsSubset
               language={currentLang}
               displayControls
               onRecoDateChange={onRecoDateChangeCallback}
             />
-            <Box display="flex" justifyContent="center">
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <Button
                 variant="contained"
                 component={Link}

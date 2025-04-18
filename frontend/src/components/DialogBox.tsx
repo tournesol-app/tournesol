@@ -38,9 +38,20 @@ const DialogBox = ({
       >
         {title}
       </DialogTitle>
-      <Box py={2} px={3}>
+      <Box
+        sx={{
+          py: 2,
+          px: 3,
+        }}
+      >
         <Box>{content}</Box>
-        <Box display="flex" justifyContent="flex-end" gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
+        >
           {additionalActionButton}
           <Button variant="contained" onClick={handleClose}>
             {t('dialogBox.continue')}

@@ -61,12 +61,22 @@ const StorageError = () => {
   const browser = getWebBrowser();
 
   return (
-    <Box maxWidth="sm" my={3} mx="auto">
+    <Box
+      sx={{
+        maxWidth: 'sm',
+        my: 3,
+        mx: 'auto',
+      }}
+    >
       <img src="/svg/LogoSmall.svg" alt="logo" />
       <Typography variant="h4" gutterBottom>
         {t('frame.tournesolInFrameIsCurrentlyBlocked')}
       </Typography>
-      <Typography my={2}>
+      <Typography
+        sx={{
+          my: 2,
+        }}
+      >
         <Trans t={t} i18nKey="frame.thirdPartyStorageIsBlockedAddException">
           It seems that using third-party storage is blocked on your browser. In
           order to access all features provided by the Tournesol web extension,
@@ -75,14 +85,22 @@ const StorageError = () => {
           in your browser settings, by following the instructions below.
         </Trans>
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         {browser === 'firefox' ? (
           <FirefoxInstructions />
         ) : (
           <ChromeInstructions />
         )}
       </Box>
-      <Typography my={2}>
+      <Typography
+        sx={{
+          my: 2,
+        }}
+      >
         {t('frame.storageErrorReloadPageAfterApplyingChanges')}
       </Typography>
     </Box>

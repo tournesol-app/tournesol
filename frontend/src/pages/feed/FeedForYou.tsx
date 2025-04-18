@@ -110,17 +110,24 @@ const FeedForYou = () => {
       />
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box
-          px={{ xs: 2, sm: 0 }}
-          mb={1}
-          display="flex"
-          justifyContent="flex-end"
-          gap={1}
+          sx={{
+            px: { xs: 2, sm: 0 },
+            mb: 1,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
         >
           <SearchIconButtonLink params={userPreferences.toString()} />
           <PreferencesIconButtonLink hash={`#${pollName}-feed-foryou`} />
         </Box>
         {!isLoading && entities.count === 0 && (
-          <Box mb={1} px={{ xs: 2, sm: 0 }}>
+          <Box
+            sx={{
+              mb: 1,
+              px: { xs: 2, sm: 0 },
+            }}
+          >
             {loadingError ? (
               <Alert severity="warning">
                 {t('genericError.errorOnLoadingTryAgainLater')}

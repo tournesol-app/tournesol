@@ -19,10 +19,21 @@ const OrganisationToDonateTo = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <Box display="flex" flexDirection="column" gap={4}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+      }}
+    >
       {organizations.map((organisation, idx) => (
         <Box key={`organization_${idx}`}>
-          <Box display="flex" gap={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+            }}
+          >
             <Typography variant="h6" gutterBottom>
               {organisation.name}
             </Typography>
@@ -83,12 +94,23 @@ const Donate = () => {
 
   return (
     <Box>
-      <Typography variant="h4" fontStyle="italic" gutterBottom id="donate">
+      <Typography
+        variant="h4"
+        gutterBottom
+        id="donate"
+        sx={{
+          fontStyle: 'italic',
+        }}
+      >
         {t(
           'actionsPage.donate.donateToOrganisationsFightingForQualityOfInformation'
         )}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info" icon={false}>
           {t('actionsPage.donate.hereIsAlist')}
         </Alert>

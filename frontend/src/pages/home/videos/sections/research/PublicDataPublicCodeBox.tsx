@@ -18,10 +18,18 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
         sx={{ mb: 2 }}
       >
         <>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('publicDataPublicCodeBox.weHopeThatOtherProjectsCanBenefitEtc')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             <Trans i18nKey="publicDataPublicCodeBox.theseDataArePublishedUnderODCBY">
               These data are published under the terms of the Open Data Commons
               Attribution License
@@ -30,7 +38,12 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               </ExternalLink>
             </Trans>
           </Typography>
-          <Box display="flex" justifyContent="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               variant="contained"
               component={Link}
@@ -47,12 +60,21 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
         sx={{ mb: 2 }}
       >
         <>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t(
               'publicDataPublicCodeBox.ourAlgorithmsAndAllOurCodeAreFreeSoftware'
             )}
           </Typography>
-          <Box display="flex" justifyContent="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               variant="contained"
               component={Link}

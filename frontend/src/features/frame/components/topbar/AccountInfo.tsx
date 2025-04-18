@@ -85,10 +85,12 @@ const AccountInfo = () => {
       item
       md={4}
       xs="auto"
-      padding={1}
-      display="flex"
-      justifyContent="flex-end"
-      gap={1}
+      sx={{
+        padding: 1,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: 1,
+      }}
     >
       {isLoggedIn ? <LoggedInActions /> : <LoggedOutActions />}
     </Grid>

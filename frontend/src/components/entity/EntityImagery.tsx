@@ -27,28 +27,30 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
 
   return (
     <Box
-      position="relative"
-      height="100%"
-      width="100%"
       onClick={() => setIsDurationVisible(false)}
       ref={ref}
+      sx={{
+        position: 'relative',
+        height: '100%',
+        width: '100%',
+      }}
     >
       {isDurationVisible && formattedDuration && (
         <Box
-          position="absolute"
-          bottom={0}
-          right={0}
-          color="#fff"
-          bgcolor="rgba(0,0,0,0.5)"
-          px={1}
-          fontFamily="system-ui, arial, sans-serif"
-          fontSize="0.8rem"
-          fontWeight="bold"
-          lineHeight={1.5}
-          // Prevent the duration to be hidden by an additional layer
-          // displayed on top of it (like the unavailable box).
-          zIndex={theme.zIndex.videoCardDuration}
-          sx={{ pointerEvents: 'none' }}
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            color: '#fff',
+            bgcolor: 'rgba(0,0,0,0.5)',
+            px: 1,
+            fontFamily: 'system-ui, arial, sans-serif',
+            fontSize: '0.8rem',
+            fontWeight: 'bold',
+            lineHeight: 1.5,
+            zIndex: theme.zIndex.videoCardDuration,
+            pointerEvents: 'none',
+          }}
         >
           {formattedDuration}
         </Box>
@@ -122,11 +124,12 @@ const EntityImagery = ({
 
     return (
       <Box
-        display="flex"
-        alignItems="center"
-        bgcolor="black"
-        width="100%"
         sx={{
+          display: 'flex',
+          alignItems: 'center',
+          bgcolor: 'black',
+          width: '100%',
+
           '& img': {
             // prevent the InternalLink to add few extra pixels
             display: 'block',
@@ -149,10 +152,11 @@ const EntityImagery = ({
   if (entity.type === TypeEnum.CANDIDATE_FR_2022) {
     return (
       <Box
-        display="flex"
-        maxHeight="280px"
-        justifyContent="center"
         sx={{
+          display: 'flex',
+          maxHeight: '280px',
+          justifyContent: 'center',
+
           '& > img': {
             flex: 1,
             objectFit: 'contain',

@@ -20,21 +20,31 @@ const PrivacyPolicyPage = () => {
           <Typography
             id="what-personal-data-tournesol-collects-and-why"
             variant="h4"
-            fontStyle="italic"
             gutterBottom
+            sx={{
+              fontStyle: 'italic',
+            }}
           >
             {t('privacyPolicy.whatPersonalDataTournesolCollectAndWhy')}
           </Typography>
           <Typography id="ratings" variant="h5" gutterBottom>
             {t('privacyPolicy.ratings')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.whyTournesolCollectsRatings')}
           </Typography>
           <Typography id="search" variant="h5" gutterBottom>
             {t('privacyPolicy.search')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.whyTournesolCollectsSearchQueries')}
           </Typography>
           <Typography
@@ -44,19 +54,31 @@ const PrivacyPolicyPage = () => {
           >
             {t('privacyPolicy.contributorProfile')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.whyTournesolCollectsContributorProfile')}
           </Typography>
           <Typography id="contact-form" variant="h5" gutterBottom>
             {t('privacyPolicy.contactForm')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.thereIsNoContactForm')}
           </Typography>
           <Typography id="login-information" variant="h5" gutterBottom>
             {t('privacyPolicy.loginInformation')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.loginInformationDetails')}
           </Typography>
           <Typography
@@ -66,7 +88,11 @@ const PrivacyPolicyPage = () => {
           >
             {t('privacyPolicy.embeddedContentFromOtherWebsites')}
           </Typography>
-          <Typography paragraph mb={0}>
+          <Typography
+            sx={{
+              mb: 0,
+            }}
+          >
             {t('privacyPolicy.whatDataCollectEmbeddedWebsites')}
           </Typography>
         </LegalPaper>
@@ -79,7 +105,11 @@ const PrivacyPolicyPage = () => {
           >
             {t('privacyPolicy.whoTournesolSharesUsersNContributorsDataWith')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t(
               'privacyPolicy.whoTournesolSharesUsersNContributorsDataWithParagraph'
             )}
@@ -87,19 +117,31 @@ const PrivacyPolicyPage = () => {
           <Typography id="public-data" variant="h5">
             {t('privacyPolicy.publicData')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.whereGoPublicData')}
           </Typography>
           <Typography id="aggregate-data" variant="h5">
             {t('privacyPolicy.aggregateData')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.whereGoAggregateData')}
           </Typography>
           <Typography id="research-purposes" variant="h5">
             {t('privacyPolicy.researchPurposes')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('privacyPolicy.researchPurposesParagraph')}
           </Typography>
         </LegalPaper>
@@ -112,7 +154,11 @@ const PrivacyPolicyPage = () => {
           >
             {t('privacyPolicy.howLongTournesolRetainsContributorsData')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t(
               'privacyPolicy.howLongTournesolRetainsContributorsDataParagraph'
             )}
@@ -127,7 +173,11 @@ const PrivacyPolicyPage = () => {
           >
             {t('privacyPolicy.whatRightsContributorsHaveOverTheirData')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t(
               'privacyPolicy.whatRightsContributorsHaveOverTheirDataParagraph'
             )}

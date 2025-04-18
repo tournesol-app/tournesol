@@ -11,9 +11,11 @@ const OrientYourCareer = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="orient-your-career"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('actionsPage.orientYourCareer.orientYourCareerToImprove')}
       </Typography>

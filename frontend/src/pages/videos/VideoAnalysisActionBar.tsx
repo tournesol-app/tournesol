@@ -57,7 +57,13 @@ const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
     `${window.location.toString()}`;
 
   return (
-    <Box display="flex" justifyContent="flex-end" gap={2}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: 2,
+      }}
+    >
       <ButtonGroup variant="outlined" color="secondary">
         <Button onClick={() => openTwitterPopup(getTweet())}>
           <Twitter />

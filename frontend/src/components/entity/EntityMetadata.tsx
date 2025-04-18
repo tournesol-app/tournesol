@@ -56,7 +56,12 @@ export const VideoMetadata = ({
       }}
     >
       {uploader && (
-        <Box component="span" flexShrink={flexShrink}>
+        <Box
+          component="span"
+          sx={{
+            flexShrink: flexShrink,
+          }}
+        >
           {withLinks ? (
             <Tooltip
               title={`${t('video.seeRecommendedVideosSameUploader')}`}
@@ -81,12 +86,22 @@ export const VideoMetadata = ({
         </Box>
       )}
       {variant === 'wrap' && publicationDate && (
-        <Box component="span" flexShrink={flexShrink}>
+        <Box
+          component="span"
+          sx={{
+            flexShrink: flexShrink,
+          }}
+        >
           {displayedDate}
         </Box>
       )}
       {variant === 'wrap' && views && (
-        <Box component="span" flexShrink={flexShrink}>
+        <Box
+          component="span"
+          sx={{
+            flexShrink: flexShrink,
+          }}
+        >
           <Trans t={t} i18nKey="video.nbViews">
             {{
               nbViews: Intl.NumberFormat(i18n.resolvedLanguage, {

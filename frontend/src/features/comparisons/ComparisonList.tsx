@@ -25,11 +25,13 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
 
   return (
     <Box
-      mb={2}
-      display="flex"
-      justifyContent="space-between"
-      alignItems="stretch"
-      gap={1}
+      sx={{
+        mb: 2,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'stretch',
+        gap: 1,
+      }}
     >
       <EntityCard
         compact
@@ -41,10 +43,12 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         displayContextAlert={true}
       />
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        position="relative"
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'relative',
+        }}
       >
         <div
           style={{

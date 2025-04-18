@@ -74,19 +74,39 @@ function SearchFilter({
   );
 
   return (
-    <Box color="text.secondary" marginBottom={2}>
-      <Box display="flex" justifyContent="space-between">
+    <Box
+      sx={{
+        color: 'text.secondary',
+        marginBottom: 2,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <CollapseButton
           expanded={expanded}
           onClick={handleExpandClick}
           showBadge={isFilterActive()}
           variant="mainOptions"
         />
-        <Box color="secondary.main">{extraActions}</Box>
+        <Box
+          sx={{
+            color: 'secondary.main',
+          }}
+        >
+          {extraActions}
+        </Box>
       </Box>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         {filterParams.get(pollVideosFilters.uploader) && (
-          <Box marginBottom={1}>
+          <Box
+            sx={{
+              marginBottom: 1,
+            }}
+          >
             <UploaderFilter
               value={filterParams.get(pollVideosFilters.uploader) ?? ''}
               onDelete={() => setFilter(pollVideosFilters.uploader, null)}
@@ -108,7 +128,11 @@ function SearchFilter({
                   onChange={(value) => setFilter(pollVideosFilters.date, value)}
                 />
                 {!disableAdvanced && (
-                  <Box mt={2}>
+                  <Box
+                    sx={{
+                      mt: 2,
+                    }}
+                  >
                     <AdvancedFilter
                       value={filterParams.get('advanced') ?? ''}
                       onChange={(value) => setFilter('advanced', value)}
@@ -128,7 +152,11 @@ function SearchFilter({
                   onChange={handleLanguageChange}
                 />
                 {!disableDuration && (
-                  <Box mt={2}>
+                  <Box
+                    sx={{
+                      mt: 2,
+                    }}
+                  >
                     <DurationFilter
                       valueMax={filterParams.get('duration_lte') ?? ''}
                       valueMin={filterParams.get('duration_gte') ?? ''}

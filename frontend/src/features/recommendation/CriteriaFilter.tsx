@@ -146,9 +146,11 @@ function MultipleCriteriaFilter({ setFilter }: FilterProps) {
                   item
                   xs={12}
                   direction="row"
-                  justifyContent="flex-start"
-                  alignItems="center"
                   container
+                  sx={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                  }}
                 >
                   <CriteriaIcon
                     criteriaName={criteria.name}
@@ -174,9 +176,11 @@ function MultipleCriteriaFilter({ setFilter }: FilterProps) {
                   item
                   xs={6}
                   direction="row"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
                   container
+                  sx={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                  }}
                 >
                   <Typography
                     sx={{
@@ -198,9 +202,11 @@ function MultipleCriteriaFilter({ setFilter }: FilterProps) {
                   item
                   xs={12}
                   direction="row"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
                   container
+                  sx={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                  }}
                 >
                   <CustomSlider
                     data-testid={'filter-criterion-slider-' + criteria.name}

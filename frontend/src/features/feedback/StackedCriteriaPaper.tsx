@@ -102,12 +102,30 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
       ))}
       actions={
         <>
-          <Box pt={2} pb={1} px={2}>
-            <Typography paragraph variant="body2" textAlign="justify">
+          <Box
+            sx={{
+              pt: 2,
+              pb: 1,
+              px: 2,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                textAlign: 'justify',
+                marginBottom: 2,
+              }}
+            >
               {t('stackedCriteriaPaper.ifYourRankingSeemsOff')}
             </Typography>
           </Box>
-          <Grid container spacing={1} justifyContent="flex-end">
+          <Grid
+            container
+            spacing={1}
+            sx={{
+              justifyContent: 'flex-end',
+            }}
+          >
             {active && (
               <Grid item xs={6} sx={{ px: 1 }}>
                 <Button

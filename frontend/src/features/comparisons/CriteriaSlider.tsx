@@ -161,10 +161,12 @@ const CriteriaSlider = ({
           item
           xs={12}
           direction="row"
-          justifyContent="center"
-          alignItems="center"
-          flexWrap="nowrap"
           container
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexWrap: 'nowrap',
+          }}
         >
           <CriteriaIcon
             criteriaName={criteria}
@@ -172,7 +174,11 @@ const CriteriaSlider = ({
               marginRight: '8px',
             }}
           />
-          <Typography fontSize={{ xs: '90%', sm: '100%' }}>
+          <Typography
+            sx={{
+              fontSize: { xs: '90%', sm: '100%' },
+            }}
+          >
             <CriteriaLabel criteria={criteria} criteriaLabel={criteriaLabel} />
             {criteriaValue === undefined && (
               <Chip
@@ -183,7 +189,12 @@ const CriteriaSlider = ({
               />
             )}
           </Typography>
-          <Box component="span" flexGrow={1} />
+          <Box
+            component="span"
+            sx={{
+              flexGrow: 1,
+            }}
+          />
           {(criteriaByName[criteria]?.optional ||
             criteriaValue == undefined) && (
             <Checkbox

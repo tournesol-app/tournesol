@@ -42,8 +42,10 @@ const RateLaterAutoRemoveField = ({
                 <Typography
                   key={`${pollName}_rate_later__auto_remove_error_${idx}`}
                   color="red"
-                  display="block"
                   variant="caption"
+                  sx={{
+                    display: 'block',
+                  }}
                 >
                   {error}
                 </Typography>
@@ -58,9 +60,11 @@ const RateLaterAutoRemoveField = ({
       variant="outlined"
       value={value}
       onChange={(event) => onChange(Number(event.target.value))}
-      inputProps={{
-        min: 1,
-        'data-testid': `${pollName}_rate_later__auto_remove`,
+      slotProps={{
+        htmlInput: {
+          min: 1,
+          'data-testid': `${pollName}_rate_later__auto_remove`,
+        },
       }}
     />
   );

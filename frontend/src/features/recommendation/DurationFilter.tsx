@@ -104,20 +104,22 @@ function DurationFilter({
         label={t('filter.duration.min.label')}
         value={minDuration}
         onChange={handleChangeMin}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={t('filter.duration.min.clearAriaLabel')}
-                edge="end"
-                onClick={clearMinDuration}
-              >
-                <Clear />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
         data-testid="filter-duration-gte"
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={t('filter.duration.min.clearAriaLabel')}
+                  edge="end"
+                  onClick={clearMinDuration}
+                >
+                  <Clear />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
+        }}
       />
       <TextField
         margin="dense"
@@ -130,20 +132,22 @@ function DurationFilter({
         label={t('filter.duration.max.label')}
         value={maxDuration}
         onChange={handleChangeMax}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={t('filter.duration.max.clearAriaLabel')}
-                edge="end"
-                onClick={clearMaxDuration}
-              >
-                <Clear />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
         data-testid="filter-duration-lte"
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={t('filter.duration.max.clearAriaLabel')}
+                  edge="end"
+                  onClick={clearMaxDuration}
+                >
+                  <Clear />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
+        }}
       />
     </TitledSection>
   );

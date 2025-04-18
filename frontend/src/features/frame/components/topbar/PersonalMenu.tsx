@@ -43,8 +43,10 @@ const PersonalMenu = ({
       open={open}
       anchorEl={menuAnchor}
       onClose={onClose}
-      MenuListProps={{
-        'aria-labelledby': 'basic-button',
+      slotProps={{
+        list: {
+          'aria-labelledby': 'basic-button',
+        },
       }}
     >
       <MenuList dense sx={{ py: 0 }}>

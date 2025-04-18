@@ -203,18 +203,31 @@ const CriteriaButtons = ({
 
   if (uidA == uidB) {
     return (
-      <Box mt={2}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <ItemsAreSimilar />
       </Box>
     );
   }
 
   return (
-    <Box display="flex" flexDirection="column" rowGap={1} ref={containerRef}>
+    <Box
+      ref={containerRef}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: 1,
+      }}
+    >
       <Box
-        display="flex"
-        justifyContent="center"
-        visibility={navigationDisabled ? 'hidden' : 'visible'}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          visibility: navigationDisabled ? 'hidden' : 'visible',
+        }}
       >
         <MobileIconButton
           color="secondary"
@@ -257,11 +270,12 @@ const CriteriaButtons = ({
           </Fade>
         </div>
       </Slide>
-
       <Box
-        display="flex"
-        justifyContent="center"
-        visibility={navigationDisabled ? 'hidden' : 'visible'}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          visibility: navigationDisabled ? 'hidden' : 'visible',
+        }}
       >
         <MobileIconButton
           color="secondary"

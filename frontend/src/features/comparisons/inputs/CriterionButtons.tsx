@@ -112,16 +112,28 @@ const CriterionButtons = React.forwardRef(function (
   return (
     <Box ref={ref}>
       <Paper sx={{ py: 2, px: 1 }}>
-        <Box display="flex" justifyContent="center" mb={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mb: 2,
+          }}
+        >
           <CriteriaIcon criteriaName={critName} sx={{ mr: 1 }} />
-          <Typography fontSize={{ xs: '90%', sm: '100%' }}>
+          <Typography
+            sx={{
+              fontSize: { xs: '90%', sm: '100%' },
+            }}
+          >
             <CriteriaLabel criteria={critName} criteriaLabel={critLabel} />
           </Typography>
         </Box>
         <Box
-          width="100%"
-          display="flex"
-          sx={{ justifyContent: { xs: 'space-between', md: 'space-around' } }}
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: { xs: 'space-between', md: 'space-around' },
+          }}
         >
           {scoreButtons.map((btn, idx) => (
             <ScoreButton
