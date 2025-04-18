@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import { Grid } from '@mui/material';
+import { Grid2 } from '@mui/material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import { useNotifications } from 'src/hooks';
@@ -60,7 +60,7 @@ const PreferencePage = () => {
         title={`${t('settings.title')} > ${t('preferences.preferences')}`}
       />
       <ContentBox maxWidth="xl">
-        <Grid
+        <Grid2
           container
           spacing={4}
           sx={{
@@ -68,16 +68,16 @@ const PreferencePage = () => {
           }}
         >
           {!isEmbedded && (
-            <Grid item {...settingsMenuBreakpoints}>
+            <Grid2 size={settingsMenuBreakpoints}>
               <SettingsMenu />
-            </Grid>
+            </Grid2>
           )}
-          <Grid item {...mainSectionBreakpoints}>
+          <Grid2 size={mainSectionBreakpoints}>
             <LoaderWrapper isLoading={loading}>
               <TournesolUserSettingsForm />
             </LoaderWrapper>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </ContentBox>
     </>
   );
