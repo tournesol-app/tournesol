@@ -1,4 +1,4 @@
-import { addRateLater } from '../utils.js';
+import { addRateLater, extractVideoId } from '../utils.js';
 import { frontendUrl } from '../config.js';
 
 const i18n = chrome.i18n;
@@ -7,7 +7,7 @@ function get_current_tab_video_id() {
   function get_tab_video_id(tabs) {
     for (let tab of tabs) {
       // only one tab is returned
-      var video_id = new URL(tab.url).searchParams.get('v');
+      const video_id = extractVideoId(tab.url);
       if (video_id == null || video_id === '') {
         return Promise.reject(new Error('not a video id'));
       }
@@ -81,7 +81,10 @@ function addToRateLaterAction(event) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a YouTube video page.');
+      button.setAttribute(
+        'data-error',
+        chrome.i18n.getMessage('alertNotYoutubeVideo')
+      );
     }
   );
 }
@@ -99,7 +102,10 @@ function openAnalysisPageAction(event) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a YouTube video page.');
+      button.setAttribute(
+        'data-error',
+        chrome.i18n.getMessage('alertNotYoutubeVideo')
+      );
     }
   );
 }
