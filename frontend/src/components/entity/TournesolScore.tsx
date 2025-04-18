@@ -17,18 +17,18 @@ const TournesolScore = ({
   return (
     <Tooltip title={tooltip} placement="right">
       <Box
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          alignSelf: 'baseline',
-          ...sx,
-        }}
-        {...(unsafe && {
-          sx: {
+        sx={[
+          {
+            display: 'inline-flex',
+            alignItems: 'center',
+            alignSelf: 'baseline',
+          },
+          ...(Array.isArray(sx) ? sx : [sx]),
+          unsafe && {
             filter: 'grayscale(100%)',
             opacity: 0.6,
           },
-        })}
+        ]}
       >
         <img
           alt="sunflower icon"

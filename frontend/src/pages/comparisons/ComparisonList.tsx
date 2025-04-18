@@ -84,7 +84,6 @@ function ComparisonsPage() {
       variant="subtitle1"
       sx={{
         textAlign: 'center',
-
         '& strong': {
           color: 'secondary.main',
           fontSize: '1.4em',

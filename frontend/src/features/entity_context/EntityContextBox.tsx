@@ -65,7 +65,7 @@ const EntityContextTextList = ({
               <Typography
                 component="div"
                 sx={{
-                  marginBottom: 2,
+                  marginBottom: 1,
                 }}
               >
                 <Box
