@@ -85,7 +85,9 @@ const ProfileForm = () => {
             variant="outlined"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            inputProps={{ 'data-testid': 'username' }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'username' },
+            }}
           />
           <Typography variant="caption">
             {t('settings.captionUsernameWillAppearInPublicDatabase')}

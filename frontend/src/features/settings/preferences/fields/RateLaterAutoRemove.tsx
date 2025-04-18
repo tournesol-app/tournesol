@@ -60,9 +60,11 @@ const RateLaterAutoRemoveField = ({
       variant="outlined"
       value={value}
       onChange={(event) => onChange(Number(event.target.value))}
-      inputProps={{
-        min: 1,
-        'data-testid': `${pollName}_rate_later__auto_remove`,
+      slotProps={{
+        htmlInput: {
+          min: 1,
+          'data-testid': `${pollName}_rate_later__auto_remove`,
+        },
       }}
     />
   );

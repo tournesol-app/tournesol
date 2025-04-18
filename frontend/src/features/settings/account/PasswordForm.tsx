@@ -74,7 +74,9 @@ const PasswordForm = () => {
             variant="outlined"
             value={oldPassword}
             onChange={(event) => setOldPassword(event.target.value)}
-            inputProps={{ 'data-testid': 'old_password' }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'old_password' },
+            }}
           />
         </Grid>
         <Grid item>
@@ -89,8 +91,10 @@ const PasswordForm = () => {
             variant="outlined"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            inputProps={{ 'data-testid': 'password' }}
             autoComplete="new-password"
+            slotProps={{
+              htmlInput: { 'data-testid': 'password' },
+            }}
           />
         </Grid>
         <Grid item>
@@ -111,8 +115,10 @@ const PasswordForm = () => {
             }
             error={passwordConfirm !== '' && !passwordConfirmMatches}
             onChange={(event) => setPasswordConfirm(event.target.value)}
-            inputProps={{ 'data-testid': 'password_confirm' }}
             autoComplete="new-password"
+            slotProps={{
+              htmlInput: { 'data-testid': 'password_confirm' },
+            }}
           />
         </Grid>
         <Grid item>

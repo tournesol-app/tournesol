@@ -252,17 +252,19 @@ const EntitySearchInput = ({
                 borderBottomRightRadius: 0,
               },
             }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label={t('entitySearchInput.closeSearch')}
-                    onClick={closeSearch}
-                  >
-                    <Close />
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={t('entitySearchInput.closeSearch')}
+                      onClick={closeSearch}
+                    >
+                      <Close />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
           />
           <IconButton

@@ -65,25 +65,27 @@ const ProofOfVote = ({
           color="secondary"
           fullWidth
           value={code}
-          InputProps={{
-            readOnly: true,
-            sx: {
-              bgcolor: 'white',
-              fontFamily: 'monospace',
-            },
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label={t('proofOfVote.copyTheProof')}
-                  edge="end"
-                  onClick={copyToClipboard}
-                >
-                  {feedback ? <Check /> : <ContentCopy />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
           onFocus={(e) => e.target.select()}
+          slotProps={{
+            input: {
+              readOnly: true,
+              sx: {
+                bgcolor: 'white',
+                fontFamily: 'monospace',
+              },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={t('proofOfVote.copyTheProof')}
+                    edge="end"
+                    onClick={copyToClipboard}
+                  >
+                    {feedback ? <Check /> : <ContentCopy />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
         />
       )}
     </Box>

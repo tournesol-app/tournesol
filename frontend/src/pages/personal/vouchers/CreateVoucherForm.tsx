@@ -54,10 +54,12 @@ const CreateVoucherForm = () => {
           label={t('personalVouchers.usernameLabel')}
           value={username}
           onChange={handleUsernameChange}
-          inputProps={inputProps}
           size="small"
           variant="outlined"
           required
+          slotProps={{
+            htmlInput: inputProps,
+          }}
         />
         <Button
           type="submit"
