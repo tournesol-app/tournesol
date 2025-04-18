@@ -17,6 +17,7 @@ const TournesolScore = ({
   return (
     <Tooltip title={tooltip} placement="right">
       <Box
+        data-testid="video-card-overall-score"
         sx={[
           {
             display: 'inline-flex',

@@ -160,7 +160,6 @@ const EntityCardScores = ({
               score={result.collective_rating.tournesol_score}
               tooltip={tournesolScoreTitle}
               unsafe={isUnsafe}
-              data-testid="video-card-overall-score"
               sx={{
                 fontSize: '2rem',
               }}
