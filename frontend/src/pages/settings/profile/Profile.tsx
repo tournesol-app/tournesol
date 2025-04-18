@@ -29,11 +29,9 @@ function ProfilePage() {
             direction="column"
             spacing={mainSectionGridSpacing}
             size={mainSectionBreakpoints}
-            sx={[
-              {
-                alignItems: 'stretch',
-              },
-            ]}
+            sx={{
+              alignItems: 'stretch',
+            }}
           >
             <SettingsSection title={t('profile')} {...subSectionBreakpoints}>
               <ProfileForm />
