@@ -62,7 +62,12 @@ const EntityContextTextList = ({
           const text = linkifyStr(context.text || '', linkifyOpts);
           return (
             <Box key={`context_${uid}_${origin_}_p${idx}`}>
-              <Typography paragraph component="div">
+              <Typography
+                component="div"
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 <Box
                   dangerouslySetInnerHTML={{ __html: text }}
                   sx={{
@@ -159,10 +164,10 @@ const EntityContextList = ({
       <Collapse in={displayText}>
         {entityName && (
           <Typography
-            paragraph
             variant="body2"
             sx={{
               fontStyle: 'italic',
+              marginBottom: '16px',
             }}
           >
             {t('entityContext.about')} « {entityName} »

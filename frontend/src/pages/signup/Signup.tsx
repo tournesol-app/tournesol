@@ -46,10 +46,10 @@ const SignupSuccess = ({ email }: { email: string }) => {
         </Typography>
       </Alert>
       <Typography
-        paragraph
         sx={{
           px: 1,
           textAlign: 'center',
+          marginBottom: '16px',
         }}
       >
         <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">

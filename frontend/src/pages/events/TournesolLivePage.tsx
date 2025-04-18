@@ -14,7 +14,11 @@ const Header = () => {
       <Typography component="h2" variant="h4" gutterBottom>
         {t('tournesolLivePage.whatAreTheTournesolLive')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('tournesolLivePage.tournesolLiveIntroduction')}
       </Typography>
     </Box>

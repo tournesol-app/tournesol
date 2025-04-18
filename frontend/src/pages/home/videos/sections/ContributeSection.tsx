@@ -20,7 +20,13 @@ const ContributeSection = () => {
       <Typography variant="h2" gutterBottom>
         {t('home.contributeTitle')}
       </Typography>
-      <Typography paragraph>{t('home.contributeDetail')}</Typography>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
+        {t('home.contributeDetail')}
+      </Typography>
       <Button
         color="primary"
         variant="contained"

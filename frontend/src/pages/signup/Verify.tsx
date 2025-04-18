@@ -84,7 +84,11 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
     <>
       <ContentHeader title={title} />
       <ContentBox maxWidth="sm">
-        <Typography paragraph>
+        <Typography
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           {verificationState == 'loading' && <CircularProgress />}
           {verificationState == 'fail' && t('verify.verificationFailed')}
           {verificationState == 'success' && successMessage}

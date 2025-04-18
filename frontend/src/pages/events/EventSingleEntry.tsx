@@ -263,9 +263,9 @@ const EventSingleEntry = ({ event }: { event: TournesolEvent }) => {
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
             key={`${event.title}_p${index}`}
-            paragraph
             sx={{
               textAlign: 'justify',
+              marginBottom: '16px',
             }}
           >
             {abstractParagraph}

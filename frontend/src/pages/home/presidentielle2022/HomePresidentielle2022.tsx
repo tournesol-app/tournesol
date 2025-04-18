@@ -32,13 +32,25 @@ const HomePresidentielle2022Page = () => {
         }}
       >
         <TitleSection title={t('home.presidentielle2022.title')}>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t('home.presidentielle2022.tournesolDescription')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t('home.presidentielle2022.whyCompareCandidates')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t('home.presidentielle2022.dataUsage')}
           </Typography>
 
@@ -82,9 +94,9 @@ const HomePresidentielle2022Page = () => {
             >
               <Divider sx={{ my: 1 }} />
               <Typography
-                paragraph
                 sx={{
                   color: '#666',
+                  marginBottom: '16px',
                 }}
               >
                 {t('home.generic.pollIsClosed')}

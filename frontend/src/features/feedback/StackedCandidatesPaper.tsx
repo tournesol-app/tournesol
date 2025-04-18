@@ -149,10 +149,10 @@ const StackedCandidatesPaper = ({
             }}
           >
             <Typography
-              paragraph
               variant="body2"
               sx={{
                 textAlign: 'justify',
+                marginBottom: '16px',
               }}
             >
               {t('stackedCandidatesPaper.ifYourRankingSeemsOff')}

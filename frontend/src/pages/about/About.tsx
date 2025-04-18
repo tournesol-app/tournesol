@@ -170,7 +170,11 @@ const AboutPage = () => {
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
             <Typography variant="h1">{t('about.whatIsTournesol')}</Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: '16px',
+              }}
+            >
               <Trans t={t} i18nKey="about.introductionTournesol">
                 Tournesol is an open source platform which aims to
                 collaboratively identify top videos of public interest by
@@ -211,17 +215,32 @@ const AboutPage = () => {
             <Typography variant="h4">{t('about.tournesolVision')}</Typography>
             <ul>
               <li>
-                <Typography paragraph className={classes.important}>
+                <Typography
+                  className={classes.important}
+                  sx={{
+                    marginBottom: '16px',
+                  }}
+                >
                   {t('about.tournesolVisionRaisingAwareness')}
                 </Typography>
               </li>
               <li>
-                <Typography paragraph className={classes.important}>
+                <Typography
+                  className={classes.important}
+                  sx={{
+                    marginBottom: '16px',
+                  }}
+                >
                   {t('about.tournesolVisionCollaborativePlatform')}
                 </Typography>
               </li>
               <li>
-                <Typography paragraph className={classes.important}>
+                <Typography
+                  className={classes.important}
+                  sx={{
+                    marginBottom: '16px',
+                  }}
+                >
                   {t('about.tournesolVisionResearchOnEthicsOfAlgorithms')}
                 </Typography>
               </li>
@@ -239,10 +258,18 @@ const AboutPage = () => {
             <Typography variant="h1">
               {t('about.whoBuildsTournesol')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: '16px',
+              }}
+            >
               {t('about.tournesolTransparency')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: '16px',
+              }}
+            >
               <Trans t={t} i18nKey="about.considerHelpingWithDonation">
                 If you can, please consider helping us{' '}
                 <InternalLink
@@ -269,7 +296,11 @@ const AboutPage = () => {
             <Typography variant="h4">
               {t('about.tournesolAssociation')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: '16px',
+              }}
+            >
               {t('about.tournesolAssociationDetail')}
             </Typography>
           </ContentBox>
@@ -378,7 +409,11 @@ const AboutPage = () => {
             <Typography variant="h3">
               {t('about.significantContributors')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: '16px',
+              }}
+            >
               {t('about.weThankOurContributors')}
             </Typography>
           </ContentBox>
@@ -425,7 +460,11 @@ const AboutPage = () => {
             <Typography variant="h4">
               {t('about.partnershipWithEpfl')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: '16px',
+              }}
+            >
               {t('about.partenershipWithEpflDetail')}
             </Typography>
           </ContentBox>
@@ -451,7 +490,11 @@ const AboutPage = () => {
               <Typography variant="h4">
                 {t('about.partnershipWithPolyconseil')}
               </Typography>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 {t('about.partnershipWithPolyconseilDetail')}
               </Typography>
             </ContentBox>
@@ -474,7 +517,11 @@ const AboutPage = () => {
               <Typography variant="h4">
                 {t('about.partnershipWithKleis')}
               </Typography>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 {t('about.partnershipWithKleisDetail')}
               </Typography>
             </ContentBox>
@@ -491,7 +538,11 @@ const AboutPage = () => {
           >
             <ContentBox className={classes.card} maxWidth="100%">
               <img height="64px" src="/logos/devoxx_france_logo.png" />
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 {t('about.collaborationWithDevoxx')}
               </Typography>
             </ContentBox>
@@ -505,7 +556,11 @@ const AboutPage = () => {
             <Typography variant="h4">
               {t('about.openSourceContributions')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: '16px',
+              }}
+            >
               <Trans t={t} i18nKey="about.openSourceContributors">
                 As Tournesol is an open source project, we have been lucky to
                 benefit from contributions by multiple volunteers. Find our

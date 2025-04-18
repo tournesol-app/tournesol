@@ -32,33 +32,57 @@ const AccountTerms = () => {
       <Typography variant="h5" gutterBottom id="account-controls">
         {t('terms.accountTerms.accountControls')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('terms.accountTerms.userRetainsUltimateAdministrativeControl')}
       </Typography>
       <Typography variant="h5" gutterBottom id="account-requirements">
         {t('terms.accountTerms.accountRequirements')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('terms.accountTerms.inOrderToCreateAccount')}
       </Typography>
       <ul>
         <li>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t('terms.accountTerms.aUserMayNotUseMoreThanOneAccount')}
           </Typography>
         </li>
         <li>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t('terms.accountTerms.aUserLoginMayNotBeShared')}
           </Typography>
         </li>
         <li>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t('terms.accountTerms.aUserMustProvideAValidEmailAddress')}
           </Typography>
         </li>
         <li>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t('terms.accountTerms.userMustBeALeast15')}
           </Typography>
         </li>
@@ -66,7 +90,11 @@ const AccountTerms = () => {
       <Typography variant="h5" gutterBottom id="account-security">
         {t('terms.accountTerms.accountSecurity')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('terms.accountTerms.userIsResponsibleFor')}
       </Typography>
     </Box>

@@ -110,10 +110,10 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
             }}
           >
             <Typography
-              paragraph
               variant="body2"
               sx={{
                 textAlign: 'justify',
+                marginBottom: '16px',
               }}
             >
               {t('stackedCriteriaPaper.ifYourRankingSeemsOff')}

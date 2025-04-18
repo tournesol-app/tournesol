@@ -16,7 +16,11 @@ const ReceivedVoucherList = () => {
 
   if (receivedVouchers.length === 0)
     return (
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('personalVouchers.noVoucherReceived')}
       </Typography>
     );

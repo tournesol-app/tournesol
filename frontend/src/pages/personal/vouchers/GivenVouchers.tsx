@@ -38,7 +38,13 @@ const GivenVoucherList = () => {
 
   if (givenVouchers.length === 0)
     return (
-      <Typography paragraph>{t('personalVouchers.noVoucherGiven')}</Typography>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
+        {t('personalVouchers.noVoucherGiven')}
+      </Typography>
     );
 
   return (

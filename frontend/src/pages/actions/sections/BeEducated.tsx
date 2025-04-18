@@ -219,7 +219,11 @@ const BeEducated = () => {
           }}
         >
           <ImportContacts />
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             {t(
               'actionsPage.beEducated.readAndOfferBooksResultingFromAssociationWorks'
             )}{' '}

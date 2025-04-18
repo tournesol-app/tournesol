@@ -101,9 +101,9 @@ const FAQSingleEntry = ({
                 answerParagraphs.map((paragraph, index) => (
                   <Typography
                     key={`$a_{entry.name}_p${index}`}
-                    paragraph
                     sx={{
                       textAlign: 'justify',
+                      marginBottom: '16px',
                     }}
                   >
                     {paragraph}

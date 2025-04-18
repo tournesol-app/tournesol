@@ -16,7 +16,11 @@ const TalksBox = () => {
       sx={{ mb: 2 }}
     >
       <>
-        <Typography paragraph>
+        <Typography
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           {t('publicDataPublicCodeBox.weOrganizePublicEvents')}
         </Typography>
         <Box

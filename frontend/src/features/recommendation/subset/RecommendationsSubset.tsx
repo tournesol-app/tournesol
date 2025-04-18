@@ -87,10 +87,10 @@ const RecommendationsSubset = ({
       <LoaderWrapper isLoading={isLoading}>
         {entities.length === 0 ? (
           <Typography
-            paragraph
             sx={{
               textAlign: 'center',
               color: '#fff',
+              marginBottom: '16px',
             }}
           >
             {t('recommendationsSubset.noRecommendationHasBeenFound')}

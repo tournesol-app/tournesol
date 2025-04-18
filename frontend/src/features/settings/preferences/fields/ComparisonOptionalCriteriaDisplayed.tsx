@@ -160,7 +160,6 @@ const ComparisonOptionalCriteriaDisplayed = ({
     >
       <Grid item xs={12}>
         <Typography
-          paragraph
           sx={{
             mb: 0,
           }}

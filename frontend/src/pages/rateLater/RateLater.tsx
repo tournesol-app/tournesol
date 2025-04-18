@@ -53,7 +53,11 @@ const WhereToFindVideosDialog = ({
     title: t('ratelater.findVideosTitle'),
     content: (
       <>
-        <Typography paragraph>
+        <Typography
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           <Trans t={t} i18nKey="ratelater.findVideosYoutube">
             You can search them in your{' '}
             <ExternalLink href="https://www.youtube.com/feed/history">
@@ -66,7 +70,13 @@ const WhereToFindVideosDialog = ({
             .
           </Trans>
         </Typography>
-        <Typography paragraph>{t('ratelater.findVideosTournesol')}</Typography>
+        <Typography
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
+          {t('ratelater.findVideosTournesol')}
+        </Typography>
       </>
     ),
   };
@@ -256,7 +266,11 @@ const RateLaterPage = () => {
             }}
           >
             <Paper sx={{ p: 2, width: '100%' }}>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 {t('ratelater.addVideosToYourListToCompareThemLater')}
               </Typography>
               <Divider />
@@ -276,7 +290,6 @@ const RateLaterPage = () => {
                 </li>
                 <li>
                   <Typography
-                    paragraph
                     sx={{
                       mt: 2,
                       mb: 0,

@@ -33,10 +33,18 @@ const ChangesToTheseTerms = () => {
           {t('terms.changesToTheseTerms.shortVersion')}
         </Alert>
       </Box>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('terms.changesToTheseTerms.weMayAmendTheseTermsAtAnyTime')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         <Trans t={t} i18nKey="terms.changesToTheseTerms.weWillNotifyTheUsers">
           We will notify the Users of material changes to this Agreement, at
           least 30 days prior to the change taking effect by posting a notice on

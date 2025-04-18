@@ -35,7 +35,12 @@ const PersonalVouchersPage = () => {
           >
             <Card>
               <CardContent>
-                <Typography paragraph color="secondary">
+                <Typography
+                  color="secondary"
+                  sx={{
+                    marginBottom: '16px',
+                  }}
+                >
                   {t('personalVouchers.aboutVouchingMechanism')}
                 </Typography>
                 <Divider sx={{ my: 2 }} />

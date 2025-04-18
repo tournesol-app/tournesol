@@ -75,14 +75,17 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
               ) : (
                 <Campaign fontSize="large" color="secondary" />
               )}
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 <strong>{banner.title}</strong>
               </Typography>
               {security && <Warning fontSize="large" color="error" />}
             </Stack>
             <Box>
               <Typography
-                paragraph
                 dangerouslySetInnerHTML={{
                   __html: linkifyStr(banner.text, linkifyOpts),
                 }}

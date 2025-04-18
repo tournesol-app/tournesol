@@ -53,7 +53,12 @@ function ComparisonsPage() {
 
   const noComparisonMessage = (
     <>
-      <Typography variant="h5" paragraph>
+      <Typography
+        variant="h5"
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('myComparisonsPage.noComparisonYet')}
       </Typography>
       <Box

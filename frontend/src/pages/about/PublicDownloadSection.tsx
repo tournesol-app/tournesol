@@ -25,7 +25,11 @@ const PublicDownloadSection = () => {
   return (
     <>
       <Typography variant="h1">{t('about.publicDatabase')}</Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         <Trans t={t} i18nKey="about.publicDatabaseDetailAndLicense">
           Contributors on Tournesol can decide to make their data public. We
           hope this important data will prove useful for researchers on ethics
@@ -40,7 +44,11 @@ const PublicDownloadSection = () => {
           .
         </Trans>
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         <Trans t={t} i18nKey="about.publicDatabaseThanksToContributors">
           Finally, we would like to thank all the contributors who compared
           videos on Tournesol. We count so far about {{ userCount }} users who
@@ -48,7 +56,6 @@ const PublicDownloadSection = () => {
           {{ comparedEntityCount }} videos.
         </Trans>
       </Typography>
-
       <Button
         component="a"
         href={`${api_url}/exports/all/`}

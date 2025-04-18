@@ -43,9 +43,9 @@ const ComparisonSection = () => {
               }}
             >
               <Typography
-                paragraph
                 sx={{
                   fontSize: 17,
+                  marginBottom: '16px',
                 }}
               >
                 {t('comparisonSection.theSimpliestWayToContribute')}

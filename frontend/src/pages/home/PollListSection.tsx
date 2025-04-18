@@ -19,7 +19,11 @@ const PollListSection = () => {
       <Typography id="explore" variant="h4" gutterBottom>
         {t('home.exploreTournesolPossibilities')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('home.tournesolToComparedMultipleTypesOfAlternatives')}
       </Typography>
       <PollList />

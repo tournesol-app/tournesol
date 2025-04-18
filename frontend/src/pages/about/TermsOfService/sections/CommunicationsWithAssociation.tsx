@@ -38,16 +38,28 @@ const CommunicationsWithAssociation = () => {
           'terms.communicationsWithAssociation.titles.1electronicCommunicationRequired'
         )}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('terms.communicationsWithAssociation.p.youConsentToReceiveEmails')}
       </Typography>
       <Typography variant="h5" gutterBottom id="necessary-emails">
         {t('terms.communicationsWithAssociation.titles.2necessaryEmails')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('terms.communicationsWithAssociation.p.necessaryEmails')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('terms.communicationsWithAssociation.p.additionalNecessaryEmails')}
       </Typography>
     </Box>

@@ -145,10 +145,10 @@ const FeedbackPagePresidentielle2022 = () => {
               {t('myFeedbackPage.presidentielle2022.welcomeOnYourResultPage')}
             </Typography>
             <Typography
-              paragraph
               sx={{
                 mt: 2,
                 textAlign: 'justify',
+                marginBottom: '16px',
               }}
             >
               <Trans
@@ -202,9 +202,9 @@ const FeedbackPagePresidentielle2022 = () => {
               }
             />
             <Typography
-              paragraph
               sx={{
                 textAlign: 'right',
+                marginBottom: '16px',
               }}
             >
               <Button
@@ -253,12 +253,20 @@ const FeedbackPagePresidentielle2022 = () => {
                     title={t('myFeedbackPage.generic.whatsNext')}
                   />
                   <CardContent>
-                    <Typography paragraph>
+                    <Typography
+                      sx={{
+                        marginBottom: '16px',
+                      }}
+                    >
                       {t(
                         'myFeedbackPage.presidentielle2022.opinionsOnOnlineSharedContent'
                       )}
                     </Typography>
-                    <Typography paragraph>
+                    <Typography
+                      sx={{
+                        marginBottom: '16px',
+                      }}
+                    >
                       {t(
                         'myFeedbackPage.presidentielle2022.discoverTournesolVideos'
                       )}

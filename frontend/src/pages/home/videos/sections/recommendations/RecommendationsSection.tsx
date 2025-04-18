@@ -66,9 +66,9 @@ const RecommendationsSection = () => {
               }}
             >
               <Typography
-                paragraph
                 sx={{
                   fontSize: 17,
+                  marginBottom: '16px',
                 }}
               >
                 {t('recommendationsSection.eachComparisonHelps')}

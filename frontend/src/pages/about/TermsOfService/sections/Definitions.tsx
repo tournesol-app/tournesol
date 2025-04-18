@@ -30,13 +30,14 @@ const Section = ({
         {num}
       </Typography>
       <Typography
-        paragraph
         sx={{
           '& span.pre': {
             unicodeBidi: 'embed',
             fontFamily: 'monospace',
             whiteSpace: 'pre',
           },
+
+          marginBottom: '16px',
         }}
       >
         {text}

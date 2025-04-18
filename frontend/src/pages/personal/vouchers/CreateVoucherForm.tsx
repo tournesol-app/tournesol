@@ -42,7 +42,13 @@ const CreateVoucherForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Typography paragraph>{t('personalVouchers.introduction')}</Typography>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
+        {t('personalVouchers.introduction')}
+      </Typography>
       <Grid
         container
         sx={{

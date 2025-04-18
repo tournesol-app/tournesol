@@ -52,7 +52,6 @@ const Tip = ({ tip, tipId }: TipProps) => {
             .map((message, index) => (
               <Typography
                 key={`tip_${index}`}
-                paragraph
                 sx={{
                   mb: 1,
                 }}
@@ -67,7 +66,6 @@ const Tip = ({ tip, tipId }: TipProps) => {
           return (
             <Typography
               key={`tip_${index}`}
-              paragraph
               sx={{
                 mb: 1,
               }}

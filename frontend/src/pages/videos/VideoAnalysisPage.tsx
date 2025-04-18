@@ -96,10 +96,10 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
             </CollapseButton>
             <Collapse in={descriptionCollapsed} timeout="auto" unmountOnExit>
               <Typography
-                paragraph
                 component="div"
                 sx={{
                   mt: 2,
+                  marginBottom: '16px',
                 }}
               >
                 <Box

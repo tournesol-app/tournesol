@@ -142,7 +142,6 @@ const TempStudyBanner = () => {
               >
                 <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
                 <Typography
-                  paragraph
                   sx={{
                     mb: 0,
                   }}

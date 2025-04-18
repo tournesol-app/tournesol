@@ -37,18 +37,18 @@ const HomeVideosPage = () => {
       >
         <TitleSection title={t('home.collaborativeContentRecommendations')}>
           <Typography
-            paragraph
             sx={{
               fontSize: '1.1em',
+              marginBottom: '16px',
             }}
           >
             {t('home.tournesolIsAParticipatoryResearchProject')}
           </Typography>
 
           <Typography
-            paragraph
             sx={{
               fontSize: '1.1em',
+              marginBottom: '16px',
             }}
           >
             {t('home.helpUsAdvanceResearch')}
@@ -93,7 +93,11 @@ const HomeVideosPage = () => {
               }}
             >
               <Divider sx={{ my: 1 }} />
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 {t('home.generic.pollIsClosed')}
               </Typography>
               <Stack spacing={2} direction="row">

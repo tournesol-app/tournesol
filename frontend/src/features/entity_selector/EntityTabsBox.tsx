@@ -57,7 +57,6 @@ const getIndividualScores = (res: EntityResult) => {
 const TabError = ({ message }: { message: string }) => (
   <Typography
     variant="subtitle1"
-    paragraph
     sx={{
       m: 2,
       color: 'neutral.main',

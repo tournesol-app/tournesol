@@ -78,7 +78,6 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
               </Grid>
               <Grid item xl={9}>
                 <Typography
-                  paragraph
                   sx={{
                     m: 0,
                     textAlign: 'justify',

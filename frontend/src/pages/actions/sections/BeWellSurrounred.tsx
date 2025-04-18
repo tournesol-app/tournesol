@@ -38,7 +38,11 @@ const BeWellSurrounred = () => {
           </Typography>
         </li>
       </ul>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: '16px',
+        }}
+      >
         {t('actionsPage.beWellSurrounded.takeCareMentalHealth')}
       </Typography>
     </Box>

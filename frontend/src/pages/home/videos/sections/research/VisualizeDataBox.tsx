@@ -16,7 +16,11 @@ const VisualizeDataBox = () => {
           '& img': { maxWidth: '100%' },
         }}
       >
-        <Typography paragraph>
+        <Typography
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           <Trans i18nKey="visualizeDataBox.youCanQuicklyExploreEtc">
             You can quickly explore our public database with our appplication
             <ExternalLink href="https://github.com/tournesol-app/tournesol/tree/main/data-visualization">

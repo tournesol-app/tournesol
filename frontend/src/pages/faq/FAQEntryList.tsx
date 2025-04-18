@@ -48,9 +48,9 @@ const FAQEntryList = ({
         </Typography>
 
         <Typography
-          paragraph
           sx={{
             textAlign: 'justify',
+            marginBottom: '16px',
           }}
         >
           {t('faqPage.comeAndAskYourQuestionsOnDiscord')}
