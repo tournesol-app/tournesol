@@ -131,12 +131,10 @@ const HomeVideosPage = () => {
           <ComparisonSection />
         </Grid2>
         <Grid2
-          sx={[
-            {
-              bgcolor: 'background.emphatic',
-            },
-            ...(Array.isArray(homeSectionSx) ? homeSectionSx : [homeSectionSx]),
-          ]}
+          sx={{
+            bgcolor: 'background.emphatic',
+            ...homeSectionSx,
+          }}
         >
           <RecommendationsSection />
         </Grid2>

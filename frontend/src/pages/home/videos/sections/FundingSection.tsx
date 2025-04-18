@@ -20,6 +20,8 @@ const FundingSection = ({
   const { t } = useTranslation();
 
   const motivationSx = {
+    m: 0,
+    textAlign: 'center',
     '& span': {
       color: theme.palette.primary.main,
       textTransform: 'uppercase',
@@ -80,18 +82,7 @@ const FundingSection = ({
                 borderRadius: 1,
               }}
             >
-              <Typography
-                variant="h4"
-                sx={[
-                  {
-                    m: 0,
-                    textAlign: 'center',
-                  },
-                  ...(Array.isArray(motivationSx)
-                    ? motivationSx
-                    : [motivationSx]),
-                ]}
-              >
+              <Typography variant="h4" sx={motivationSx}>
                 <Trans i18nKey="fundingSection.guaranteeTheProjectsIndependence">
                   <span>guarantee</span> the project&apos;s independance
                 </Trans>
@@ -120,18 +111,7 @@ const FundingSection = ({
                 borderRadius: 1,
               }}
             >
-              <Typography
-                variant="h4"
-                sx={[
-                  {
-                    m: 0,
-                    textAlign: 'center',
-                  },
-                  ...(Array.isArray(motivationSx)
-                    ? motivationSx
-                    : [motivationSx]),
-                ]}
-              >
+              <Typography variant="h4" sx={motivationSx}>
                 <Trans i18nKey="fundingSection.participateInTheCreationOfCommons">
                   <span>participate</span> in the creation of commons
                 </Trans>
@@ -160,18 +140,7 @@ const FundingSection = ({
                 borderRadius: 1,
               }}
             >
-              <Typography
-                variant="h4"
-                sx={[
-                  {
-                    m: 0,
-                    textAlign: 'center',
-                  },
-                  ...(Array.isArray(motivationSx)
-                    ? motivationSx
-                    : [motivationSx]),
-                ]}
-              >
+              <Typography variant="h4" sx={motivationSx}>
                 <Trans i18nKey="fundingSection.actForTheEthicsOfInformation">
                   <span>act</span> for the ethics of information
                 </Trans>

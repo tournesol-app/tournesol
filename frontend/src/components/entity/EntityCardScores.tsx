@@ -159,9 +159,11 @@ const EntityCardScores = ({
             <TournesolScore
               score={result.collective_rating.tournesol_score}
               tooltip={tournesolScoreTitle}
-              fontSize="2rem"
               unsafe={isUnsafe}
               data-testid="video-card-overall-score"
+              sx={{
+                fontSize: '2rem',
+              }}
             />
           )}
 

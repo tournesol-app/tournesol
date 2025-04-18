@@ -144,13 +144,11 @@ const HomePresidentielle2022Page = () => {
         }}
       >
         <Grid2
-          sx={[
-            {
-              display: 'flex',
-              justifyContent: 'center',
-            },
-            ...(Array.isArray(homeSectionSx) ? homeSectionSx : [homeSectionSx]),
-          ]}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            ...homeSectionSx,
+          }}
         >
           <PollListSection />
         </Grid2>
