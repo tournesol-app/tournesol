@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, Button, Grid } from '@mui/material';
+import { Box, Button, Grid2 } from '@mui/material';
 import { Save } from '@mui/icons-material';
 
 import { SettingsSection } from 'src/components';
@@ -285,7 +285,7 @@ const TournesolUserSettingsForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid
+      <Grid2
         container
         direction="column"
         spacing={mainSectionGridSpacing}
@@ -336,7 +336,7 @@ const TournesolUserSettingsForm = () => {
             apiErrors={apiErrors}
           />
         </SettingsSection>
-      </Grid>
+      </Grid2>
       <Box
         sx={{
           mt: 4,
@@ -346,8 +346,8 @@ const TournesolUserSettingsForm = () => {
           bgcolor: '#fafafa',
         }}
       >
-        <Grid container>
-          <Grid item {...subSectionBreakpoints}>
+        <Grid2 container>
+          <Grid2 size={subSectionBreakpoints}>
             <Button
               fullWidth
               type="submit"
@@ -358,8 +358,8 @@ const TournesolUserSettingsForm = () => {
             >
               {t('pollUserSettingsForm.updatePreferences')}
             </Button>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Box>
     </form>
   );
