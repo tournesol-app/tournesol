@@ -98,8 +98,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
               <Typography
                 component="div"
                 sx={{
-                  mt: 2,
-                  marginBottom: '16px',
+                  my: 2,
                 }}
               >
                 <Box

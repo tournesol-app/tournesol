@@ -44,7 +44,7 @@ const CreateVoucherForm = () => {
     <form onSubmit={handleSubmit}>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('personalVouchers.introduction')}

@@ -34,7 +34,7 @@ const AccountTerms = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.accountTerms.userRetainsUltimateAdministrativeControl')}
@@ -44,7 +44,7 @@ const AccountTerms = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.accountTerms.inOrderToCreateAccount')}
@@ -53,7 +53,7 @@ const AccountTerms = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.accountTerms.aUserMayNotUseMoreThanOneAccount')}
@@ -62,7 +62,7 @@ const AccountTerms = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.accountTerms.aUserLoginMayNotBeShared')}
@@ -71,7 +71,7 @@ const AccountTerms = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.accountTerms.aUserMustProvideAValidEmailAddress')}
@@ -80,7 +80,7 @@ const AccountTerms = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.accountTerms.userMustBeALeast15')}
@@ -92,7 +92,7 @@ const AccountTerms = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.accountTerms.userIsResponsibleFor')}

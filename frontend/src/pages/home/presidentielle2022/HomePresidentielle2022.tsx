@@ -34,21 +34,21 @@ const HomePresidentielle2022Page = () => {
         <TitleSection title={t('home.presidentielle2022.title')}>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('home.presidentielle2022.tournesolDescription')}
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('home.presidentielle2022.whyCompareCandidates')}
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('home.presidentielle2022.dataUsage')}
@@ -96,7 +96,7 @@ const HomePresidentielle2022Page = () => {
               <Typography
                 sx={{
                   color: '#666',
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 {t('home.generic.pollIsClosed')}

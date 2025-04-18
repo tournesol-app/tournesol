@@ -103,7 +103,7 @@ const FAQSingleEntry = ({
                     key={`$a_{entry.name}_p${index}`}
                     sx={{
                       textAlign: 'justify',
-                      marginBottom: '16px',
+                      marginBottom: 2,
                     }}
                   >
                     {paragraph}

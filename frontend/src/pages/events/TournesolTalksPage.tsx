@@ -18,7 +18,7 @@ const Header = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('tournesolTalksPage.tournesolTalksIntroduction')}

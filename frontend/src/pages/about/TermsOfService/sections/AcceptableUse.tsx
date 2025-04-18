@@ -41,7 +41,7 @@ const AcceptableUse = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.acceptableUse.p.complianceWithLawsAndRegulation')}
@@ -51,7 +51,7 @@ const AcceptableUse = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.acceptableUse.p.userSafetyIntro')}
@@ -60,7 +60,7 @@ const AcceptableUse = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.acceptableUse.p.isUnlawlfulOrPromoteUnlawful')}
@@ -69,7 +69,7 @@ const AcceptableUse = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.acceptableUse.p.isFalseInaccurateOrDeceptive')}
@@ -78,7 +78,7 @@ const AcceptableUse = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             <Trans
@@ -99,7 +99,7 @@ const AcceptableUse = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.acceptableUse.p.inauthenticActivityAndSpamIntro')}

@@ -90,7 +90,7 @@ const RecommendationsSubset = ({
             sx={{
               textAlign: 'center',
               color: '#fff',
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('recommendationsSubset.noRecommendationHasBeenFound')}

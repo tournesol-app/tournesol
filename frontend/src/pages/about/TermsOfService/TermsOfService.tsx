@@ -41,7 +41,7 @@ const TermsOfServicePage = () => {
         <LegalPaper>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.copying.thisDocumentIsInspiredByTheGitHubTos')}

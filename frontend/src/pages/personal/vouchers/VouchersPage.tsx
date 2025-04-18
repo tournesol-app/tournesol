@@ -38,7 +38,7 @@ const PersonalVouchersPage = () => {
                 <Typography
                   color="secondary"
                   sx={{
-                    marginBottom: '16px',
+                    marginBottom: 2,
                   }}
                 >
                   {t('personalVouchers.aboutVouchingMechanism')}

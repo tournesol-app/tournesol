@@ -77,7 +77,7 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
               )}
               <Typography
                 sx={{
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 <strong>{banner.title}</strong>

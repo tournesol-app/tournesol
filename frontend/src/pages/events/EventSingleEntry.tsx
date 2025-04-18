@@ -265,7 +265,7 @@ const EventSingleEntry = ({ event }: { event: TournesolEvent }) => {
             key={`${event.title}_p${index}`}
             sx={{
               textAlign: 'justify',
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {abstractParagraph}

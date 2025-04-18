@@ -20,14 +20,14 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
         <>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('publicDataPublicCodeBox.weHopeThatOtherProjectsCanBenefitEtc')}
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             <Trans i18nKey="publicDataPublicCodeBox.theseDataArePublishedUnderODCBY">
@@ -62,7 +62,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
         <>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t(

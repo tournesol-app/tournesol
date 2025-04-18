@@ -37,7 +37,7 @@ const Section = ({
             whiteSpace: 'pre',
           },
 
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {text}

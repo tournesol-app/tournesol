@@ -31,7 +31,7 @@ const ComparisonHelperPresidentielle2022 = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', p: 3 }}>
         <Typography
           sx={{
-            marginBottom: '16px',
+            marginBottom: 2,
           }}
         >
           Si vous ne connaissez pas suffisamment bien les candidat·es et leurs

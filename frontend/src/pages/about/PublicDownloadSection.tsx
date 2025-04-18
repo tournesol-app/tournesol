@@ -27,7 +27,7 @@ const PublicDownloadSection = () => {
       <Typography variant="h1">{t('about.publicDatabase')}</Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         <Trans t={t} i18nKey="about.publicDatabaseDetailAndLicense">
@@ -46,7 +46,7 @@ const PublicDownloadSection = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         <Trans t={t} i18nKey="about.publicDatabaseThanksToContributors">

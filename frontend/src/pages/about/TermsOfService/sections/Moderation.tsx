@@ -31,14 +31,14 @@ const Moderation = () => {
       </Box>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.moderation.p.theTournesolAssociationWill')}
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.moderation.p.dependingOnTheSeverityWe')}
@@ -47,7 +47,7 @@ const Moderation = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.moderation.p.accountSuspension')}
@@ -56,7 +56,7 @@ const Moderation = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.moderation.p.accountTermination')}
@@ -65,7 +65,7 @@ const Moderation = () => {
         <li>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('terms.moderation.p.removalOfAddedContents')}

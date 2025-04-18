@@ -32,7 +32,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.whyTournesolCollectsRatings')}
@@ -42,7 +42,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.whyTournesolCollectsSearchQueries')}
@@ -56,7 +56,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.whyTournesolCollectsContributorProfile')}
@@ -66,7 +66,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.thereIsNoContactForm')}
@@ -76,7 +76,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.loginInformationDetails')}
@@ -107,7 +107,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t(
@@ -119,7 +119,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.whereGoPublicData')}
@@ -129,7 +129,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.whereGoAggregateData')}
@@ -139,7 +139,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('privacyPolicy.researchPurposesParagraph')}
@@ -156,7 +156,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t(
@@ -175,7 +175,7 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t(

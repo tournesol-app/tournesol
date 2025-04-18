@@ -55,7 +55,7 @@ const WhereToFindVideosDialog = ({
       <>
         <Typography
           sx={{
-            marginBottom: '16px',
+            marginBottom: 2,
           }}
         >
           <Trans t={t} i18nKey="ratelater.findVideosYoutube">
@@ -72,7 +72,7 @@ const WhereToFindVideosDialog = ({
         </Typography>
         <Typography
           sx={{
-            marginBottom: '16px',
+            marginBottom: 2,
           }}
         >
           {t('ratelater.findVideosTournesol')}
@@ -268,7 +268,7 @@ const RateLaterPage = () => {
             <Paper sx={{ p: 2, width: '100%' }}>
               <Typography
                 sx={{
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 {t('ratelater.addVideosToYourListToCompareThemLater')}

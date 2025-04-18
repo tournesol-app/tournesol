@@ -49,7 +49,7 @@ const SignupSuccess = ({ email }: { email: string }) => {
         sx={{
           px: 1,
           textAlign: 'center',
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">

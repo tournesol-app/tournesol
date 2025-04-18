@@ -81,7 +81,7 @@ const DescriptionDialog = ({
           <Typography
             key={index}
             sx={{
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {message}

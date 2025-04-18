@@ -40,7 +40,7 @@ const BeWellSurrounred = () => {
       </ul>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('actionsPage.beWellSurrounded.takeCareMentalHealth')}

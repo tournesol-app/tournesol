@@ -65,7 +65,7 @@ const EntityContextTextList = ({
               <Typography
                 component="div"
                 sx={{
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 <Box
@@ -167,7 +167,7 @@ const EntityContextList = ({
             variant="body2"
             sx={{
               fontStyle: 'italic',
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('entityContext.about')} « {entityName} »

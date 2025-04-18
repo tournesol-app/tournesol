@@ -68,7 +68,7 @@ const RecommendationsSection = () => {
               <Typography
                 sx={{
                   fontSize: 17,
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 {t('recommendationsSection.eachComparisonHelps')}

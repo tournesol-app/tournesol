@@ -56,7 +56,7 @@ function ComparisonsPage() {
       <Typography
         variant="h5"
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('myComparisonsPage.noComparisonYet')}

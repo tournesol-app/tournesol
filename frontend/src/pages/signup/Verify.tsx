@@ -86,7 +86,7 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
       <ContentBox maxWidth="sm">
         <Typography
           sx={{
-            marginBottom: '16px',
+            marginBottom: 2,
           }}
         >
           {verificationState == 'loading' && <CircularProgress />}

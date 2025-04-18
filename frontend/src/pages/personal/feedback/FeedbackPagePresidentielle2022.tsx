@@ -148,7 +148,7 @@ const FeedbackPagePresidentielle2022 = () => {
               sx={{
                 mt: 2,
                 textAlign: 'justify',
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               <Trans
@@ -204,7 +204,7 @@ const FeedbackPagePresidentielle2022 = () => {
             <Typography
               sx={{
                 textAlign: 'right',
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               <Button
@@ -255,7 +255,7 @@ const FeedbackPagePresidentielle2022 = () => {
                   <CardContent>
                     <Typography
                       sx={{
-                        marginBottom: '16px',
+                        marginBottom: 2,
                       }}
                     >
                       {t(
@@ -264,7 +264,7 @@ const FeedbackPagePresidentielle2022 = () => {
                     </Typography>
                     <Typography
                       sx={{
-                        marginBottom: '16px',
+                        marginBottom: 2,
                       }}
                     >
                       {t(

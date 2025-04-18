@@ -172,7 +172,7 @@ const AboutPage = () => {
             <Typography variant="h1">{t('about.whatIsTournesol')}</Typography>
             <Typography
               sx={{
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               <Trans t={t} i18nKey="about.introductionTournesol">
@@ -218,7 +218,7 @@ const AboutPage = () => {
                 <Typography
                   className={classes.important}
                   sx={{
-                    marginBottom: '16px',
+                    marginBottom: 2,
                   }}
                 >
                   {t('about.tournesolVisionRaisingAwareness')}
@@ -228,7 +228,7 @@ const AboutPage = () => {
                 <Typography
                   className={classes.important}
                   sx={{
-                    marginBottom: '16px',
+                    marginBottom: 2,
                   }}
                 >
                   {t('about.tournesolVisionCollaborativePlatform')}
@@ -238,7 +238,7 @@ const AboutPage = () => {
                 <Typography
                   className={classes.important}
                   sx={{
-                    marginBottom: '16px',
+                    marginBottom: 2,
                   }}
                 >
                   {t('about.tournesolVisionResearchOnEthicsOfAlgorithms')}
@@ -260,14 +260,14 @@ const AboutPage = () => {
             </Typography>
             <Typography
               sx={{
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               {t('about.tournesolTransparency')}
             </Typography>
             <Typography
               sx={{
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               <Trans t={t} i18nKey="about.considerHelpingWithDonation">
@@ -298,7 +298,7 @@ const AboutPage = () => {
             </Typography>
             <Typography
               sx={{
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               {t('about.tournesolAssociationDetail')}
@@ -411,7 +411,7 @@ const AboutPage = () => {
             </Typography>
             <Typography
               sx={{
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               {t('about.weThankOurContributors')}
@@ -462,7 +462,7 @@ const AboutPage = () => {
             </Typography>
             <Typography
               sx={{
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               {t('about.partenershipWithEpflDetail')}
@@ -492,7 +492,7 @@ const AboutPage = () => {
               </Typography>
               <Typography
                 sx={{
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 {t('about.partnershipWithPolyconseilDetail')}
@@ -519,7 +519,7 @@ const AboutPage = () => {
               </Typography>
               <Typography
                 sx={{
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 {t('about.partnershipWithKleisDetail')}
@@ -540,7 +540,7 @@ const AboutPage = () => {
               <img height="64px" src="/logos/devoxx_france_logo.png" />
               <Typography
                 sx={{
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 {t('about.collaborationWithDevoxx')}
@@ -558,7 +558,7 @@ const AboutPage = () => {
             </Typography>
             <Typography
               sx={{
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               <Trans t={t} i18nKey="about.openSourceContributors">

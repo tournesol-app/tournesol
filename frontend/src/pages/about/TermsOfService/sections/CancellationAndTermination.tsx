@@ -34,7 +34,7 @@ const CancellationAndTermination = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.cancellationAndTermination.p.accountCancellation')}
@@ -44,7 +44,7 @@ const CancellationAndTermination = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.cancellationAndTermination.p.weWillDelete')}
@@ -60,14 +60,14 @@ const CancellationAndTermination = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.cancellationAndTermination.p.theAssociationWillCancel')}
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t(
@@ -76,7 +76,7 @@ const CancellationAndTermination = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.cancellationAndTermination.p.suspendAllAccessInCaseOfThreat')}

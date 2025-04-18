@@ -113,7 +113,7 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
               variant="body2"
               sx={{
                 textAlign: 'justify',
-                marginBottom: '16px',
+                marginBottom: 2,
               }}
             >
               {t('stackedCriteriaPaper.ifYourRankingSeemsOff')}

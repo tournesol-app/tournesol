@@ -39,7 +39,7 @@ const HomeVideosPage = () => {
           <Typography
             sx={{
               fontSize: '1.1em',
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('home.tournesolIsAParticipatoryResearchProject')}
@@ -48,7 +48,7 @@ const HomeVideosPage = () => {
           <Typography
             sx={{
               fontSize: '1.1em',
-              marginBottom: '16px',
+              marginBottom: 2,
             }}
           >
             {t('home.helpUsAdvanceResearch')}
@@ -95,7 +95,7 @@ const HomeVideosPage = () => {
               <Divider sx={{ my: 1 }} />
               <Typography
                 sx={{
-                  marginBottom: '16px',
+                  marginBottom: 2,
                 }}
               >
                 {t('home.generic.pollIsClosed')}

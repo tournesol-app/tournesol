@@ -40,7 +40,7 @@ const CommunicationsWithAssociation = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.communicationsWithAssociation.p.youConsentToReceiveEmails')}
@@ -50,14 +50,14 @@ const CommunicationsWithAssociation = () => {
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.communicationsWithAssociation.p.necessaryEmails')}
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.communicationsWithAssociation.p.additionalNecessaryEmails')}

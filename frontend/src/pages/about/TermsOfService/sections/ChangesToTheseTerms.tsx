@@ -35,14 +35,14 @@ const ChangesToTheseTerms = () => {
       </Box>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('terms.changesToTheseTerms.weMayAmendTheseTermsAtAnyTime')}
       </Typography>
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         <Trans t={t} i18nKey="terms.changesToTheseTerms.weWillNotifyTheUsers">

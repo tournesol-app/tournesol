@@ -40,7 +40,7 @@ const GivenVoucherList = () => {
     return (
       <Typography
         sx={{
-          marginBottom: '16px',
+          marginBottom: 2,
         }}
       >
         {t('personalVouchers.noVoucherGiven')}
