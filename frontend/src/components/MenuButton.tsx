@@ -40,14 +40,16 @@ const MenuButton = ({
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={closeMenu}
-        MenuListProps={{
-          onClick: () => closeMenu(),
-          sx: {
-            backgroundColor: (t) => t.palette.background.menu,
-            '& .MuiListItemIcon-root': { color: '#CDCABC' },
+        {...menuProps}
+        slotProps={{
+          list: {
+            onClick: () => closeMenu(),
+            sx: {
+              backgroundColor: (t) => t.palette.background.menu,
+              '& .MuiListItemIcon-root': { color: '#CDCABC' },
+            },
           },
         }}
-        {...menuProps}
       >
         {menuContent}
       </Menu>
