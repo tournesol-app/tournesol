@@ -41,16 +41,29 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
 
   return (
     <Box
-      p={2}
-      display="flex"
-      flexDirection="row"
-      flexWrap="wrap"
-      gap="16px"
-      justifyContent="space-between"
+      sx={{
+        p: 2,
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: '16px',
+        justifyContent: 'space-between',
+      }}
     >
-      <Box flex={2} minWidth={{ xs: '100%', md: null }}>
+      <Box
+        sx={{
+          flex: 2,
+          minWidth: { xs: '100%', md: null },
+        }}
+      >
         {/* Entity section, with its player, title, scores and actions. */}
-        <Grid container spacing={2} justifyContent="center">
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            justifyContent: 'center',
+          }}
+        >
           <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
             <VideoPlayer
               videoId={entity.metadata.video_id}
@@ -82,7 +95,13 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
               {t('entityAnalysisPage.video.description')}
             </CollapseButton>
             <Collapse in={descriptionCollapsed} timeout="auto" unmountOnExit>
-              <Typography paragraph component="div" mt={2}>
+              <Typography
+                paragraph
+                component="div"
+                sx={{
+                  mt: 2,
+                }}
+              >
                 <Box
                   style={
                     descriptionCollapsed
@@ -90,8 +109,10 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                       : { display: 'none' }
                   }
                   dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
-                  fontSize="0.9em"
-                  whiteSpace="pre-wrap"
+                  sx={{
+                    fontSize: '0.9em',
+                    whiteSpace: 'pre-wrap',
+                  }}
                 />
               </Typography>
             </Collapse>
@@ -104,19 +125,30 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                 <Grid item xs={12} sm={12} md={6}>
                   <Paper>
                     <Box
-                      p={1}
-                      bgcolor="rgb(238, 238, 238)"
-                      display="flex"
-                      justifyContent="center"
+                      sx={{
+                        p: 1,
+                        bgcolor: 'rgb(238, 238, 238)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                      }}
                     >
                       <Typography variant="h5">
                         {t('entityAnalysisPage.chart.criteriaScores.title')}
                       </Typography>
                     </Box>
-                    <Box px={2} pt={1}>
+                    <Box
+                      sx={{
+                        px: 2,
+                        pt: 1,
+                      }}
+                    >
                       <PersonalScoreCheckbox />
                     </Box>
-                    <Box p={1}>
+                    <Box
+                      sx={{
+                        p: 1,
+                      }}
+                    >
                       <CriteriaBarChart reco={video} />
                     </Box>
                   </Paper>
@@ -124,16 +156,22 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                 <Grid item xs={12} sm={12} md={6}>
                   <Paper sx={{ height: '100%' }}>
                     <Box
-                      p={1}
-                      bgcolor="rgb(238, 238, 238)"
-                      display="flex"
-                      justifyContent="center"
+                      sx={{
+                        p: 1,
+                        bgcolor: 'rgb(238, 238, 238)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                      }}
                     >
                       <Typography variant="h5">
                         {t('criteriaScoresDistribution.title')}
                       </Typography>
                     </Box>
-                    <Box p={1}>
+                    <Box
+                      sx={{
+                        p: 1,
+                      }}
+                    >
                       <CriteriaScoresDistribution reco={video} />
                     </Box>
                   </Paper>
@@ -143,7 +181,11 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
           )}
         </Grid>
       </Box>
-      <Box flex={1}>
+      <Box
+        sx={{
+          flex: 1,
+        }}
+      >
         <ContextualRecommendations
           contextUid={entity.uid}
           uploader={entity.metadata.uploader || undefined}

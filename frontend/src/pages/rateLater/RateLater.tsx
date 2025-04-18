@@ -182,25 +182,49 @@ const RateLaterPage = () => {
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
       <ContentBox maxWidth="lg">
-        <Box display={'flex'} justifyContent={'end'} mb={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'end',
+            mb: 2,
+          }}
+        >
           <PreferencesIconButtonLink hash="#rate_later" />
         </Box>
         <Grid
           container
           direction="row"
           spacing={2}
-          justifyContent="space-between"
-          alignItems="stretch"
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'stretch',
+          }}
         >
-          <Grid item sm={6} display="flex" width="100%">
+          <Grid
+            item
+            sm={6}
+            sx={{
+              display: 'flex',
+              width: '100%',
+            }}
+          >
             <Paper sx={{ p: 2, display: 'flex', width: '100%' }}>
               <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="stretch"
-                justifyContent="space-around"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
+                  justifyContent: 'space-around',
+                }}
               >
-                <Stack direction="row" alignItems="center" mb={2} spacing={1}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                    mb: 2,
+                  }}
+                >
                   <Typography variant="h6">
                     {t('ratelater.addVideosToRateLaterList')}
                   </Typography>
@@ -212,14 +236,25 @@ const RateLaterPage = () => {
                     onClose={onWhereToFindVideosDialogClose}
                   />
                 </Stack>
-                <Box pt={2}>
+                <Box
+                  sx={{
+                    pt: 2,
+                  }}
+                >
                   <RateLaterAddForm addVideo={addToRateLater} />
                 </Box>
               </Box>
             </Paper>
           </Grid>
 
-          <Grid item sm={6} display="flex" width="100%">
+          <Grid
+            item
+            sm={6}
+            sx={{
+              display: 'flex',
+              width: '100%',
+            }}
+          >
             <Paper sx={{ p: 2, width: '100%' }}>
               <Typography paragraph>
                 {t('ratelater.addVideosToYourListToCompareThemLater')}
@@ -240,7 +275,13 @@ const RateLaterPage = () => {
                   </Trans>
                 </li>
                 <li>
-                  <Typography paragraph mt={2} mb={0}>
+                  <Typography
+                    paragraph
+                    sx={{
+                      mt: 2,
+                      mb: 0,
+                    }}
+                  >
                     {t('ratelater.orCopyPasteVideoUrlHere')}
                   </Typography>
                 </li>
@@ -253,10 +294,11 @@ const RateLaterPage = () => {
           {entityCount !== null && (
             <Typography
               variant="subtitle1"
-              m={2}
-              textAlign="center"
-              lineHeight="1.5em"
               sx={{
+                m: 2,
+                textAlign: 'center',
+                lineHeight: '1.5em',
+
                 '& strong': {
                   color: 'secondary.main',
                   fontSize: '1.4em',
@@ -275,7 +317,11 @@ const RateLaterPage = () => {
             </Typography>
           )}
 
-          <Box width="100%">
+          <Box
+            sx={{
+              width: '100%',
+            }}
+          >
             <LoaderWrapper isLoading={isLoading}>
               <EntityList
                 entities={rateLaterList}

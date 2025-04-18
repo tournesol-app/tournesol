@@ -74,7 +74,13 @@ const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
   }
 
   return (
-    <Grid container justifyContent="center" textAlign="center">
+    <Grid
+      container
+      sx={{
+        justifyContent: 'center',
+        textAlign: 'center',
+      }}
+    >
       <Grid item xs={12}>
         <Typography variant="h2">{title}</Typography>
       </Grid>
@@ -82,7 +88,11 @@ const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
         <Typography variant="subtitle1">{message}</Typography>
       </Grid>
       <Grid item xs={12}>
-        <Box mt={2}>
+        <Box
+          sx={{
+            mt: 2,
+          }}
+        >
           <Button variant="contained" component={Link} to={path}>
             {t('pageNotFound.backToHomePage')}
           </Button>
@@ -185,7 +195,11 @@ const EntityAnalysisPage = () => {
         </>
       ) : (
         <Container>
-          <Box py={2}>
+          <Box
+            sx={{
+              py: 2,
+            }}
+          >
             <EntityNotFound apiError={apiError} />
           </Box>
         </Container>

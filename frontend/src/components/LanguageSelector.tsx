@@ -18,7 +18,11 @@ const LanguageSelector = ({ languageName = true }: LanguageSelectorProps) => {
   const currentLanguage = i18n.resolvedLanguage || i18n.language;
 
   return (
-    <Box color="neutral.main">
+    <Box
+      sx={{
+        color: 'neutral.main',
+      }}
+    >
       <MenuButton
         startIcon={<Language />}
         sx={{
@@ -60,10 +64,12 @@ const LanguageSelector = ({ languageName = true }: LanguageSelectorProps) => {
       >
         {languageName && (
           <Box
-            flexGrow={1}
-            textAlign="left"
-            fontWeight="bold"
-            sx={{ textTransform: 'capitalize' }}
+            sx={{
+              flexGrow: 1,
+              textAlign: 'left',
+              fontWeight: 'bold',
+              textTransform: 'capitalize',
+            }}
           >
             {codeToLanguage[currentLanguage]?.name ?? currentLanguage}
           </Box>

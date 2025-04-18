@@ -9,13 +9,19 @@ const AccountTerms = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="account-terms"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.accountTerms.accountTerms')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>

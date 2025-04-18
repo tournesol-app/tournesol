@@ -28,9 +28,16 @@ function ProfilePage() {
             container
             item
             direction="column"
-            alignItems="stretch"
             spacing={mainSectionGridSpacing}
             {...mainSectionBreakpoints}
+            sx={[
+              {
+                alignItems: 'stretch',
+              },
+              ...(Array.isArray(mainSectionBreakpoints.sx)
+                ? mainSectionBreakpoints.sx
+                : [mainSectionBreakpoints.sx]),
+            ]}
           >
             <SettingsSection title={t('profile')} {...subSectionBreakpoints}>
               <ProfileForm />

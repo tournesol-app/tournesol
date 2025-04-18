@@ -90,7 +90,12 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
           {verificationState == 'success' && successMessage}
         </Typography>
         {verify === 'user' && verificationState === 'success' && (
-          <Box display="flex" justifyContent="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               component={RouterLink}
               to={`${baseUrl}/comparison`}

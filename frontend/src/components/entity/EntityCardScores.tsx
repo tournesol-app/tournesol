@@ -90,9 +90,21 @@ const EntityCardScores = ({
 
   const tournesolScoreTitle =
     isUnsafe && unsafeReasons.length > 0 ? (
-      <Stack direction="row" alignItems="center" gap={1}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
         <WarningIcon />
-        <Box display="flex" flexDirection="column" gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+          }}
+        >
           {unsafeReasons.map((reason) => (
             <span key={reason}>{reason}</span>
           ))}
@@ -110,8 +122,18 @@ const EntityCardScores = ({
   return (
     <>
       {showTotalScore && totalScore != null && (
-        <Box display="flex" alignItems="center" columnGap={1}>
-          <Typography color="text.secondary">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            columnGap: 1,
+          }}
+        >
+          <Typography
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Score : <strong>{totalScore.toFixed(2)}</strong>
             {''}
           </Typography>
@@ -124,11 +146,13 @@ const EntityCardScores = ({
         </Box>
       )}
       <Box
-        display="flex"
-        flexWrap="wrap"
-        alignItems="center"
-        columnGap="10px"
-        paddingTop={1.5}
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          columnGap: '10px',
+          paddingTop: 1.5,
+        }}
       >
         {showTournesolScore &&
           result.collective_rating?.tournesol_score != null && (
@@ -144,9 +168,11 @@ const EntityCardScores = ({
         {nbRatings != null && nbRatings > 0 && (
           <Box
             data-testid="video-card-ratings"
-            display="flex"
-            flexDirection="column"
-            fontSize="0.9rem"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              fontSize: '0.9rem',
+            }}
           >
             <span className={classes.ratings}>
               <Trans t={t} i18nKey="video.nbComparisonsBy" count={nbRatings}>
@@ -168,10 +194,10 @@ const EntityCardScores = ({
         {max_criteria !== '' && (
           <Box
             data-testid="video-card-minmax-criterias"
-            display="flex"
-            flexDirection="column"
-            rowGap="2px"
             sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              rowGap: '2px',
               borderLeft: '1px solid',
               borderColor: 'divider',
               paddingLeft: 1,
@@ -180,7 +206,13 @@ const EntityCardScores = ({
             }}
           >
             {max_score > 0 && (
-              <Box display="flex" alignItems="center" columnGap={1}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  columnGap: 1,
+                }}
+              >
                 {t('video.criteriaRatedHigh')}
                 <CriteriaIcon
                   criteriaName={max_criteria}
@@ -194,7 +226,13 @@ const EntityCardScores = ({
             )}
             <span />
             {min_score < 0 && (
-              <Box display="flex" alignItems="center" columnGap={1}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  columnGap: 1,
+                }}
+              >
                 {t('video.criteriaRatedLow')}
                 <CriteriaIcon
                   criteriaName={min_criteria}

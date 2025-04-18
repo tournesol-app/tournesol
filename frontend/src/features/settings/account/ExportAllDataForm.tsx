@@ -70,7 +70,14 @@ const ExportAllDataForm = () => {
   };
 
   return (
-    <Grid container spacing={2} direction="column" alignItems="stretch">
+    <Grid
+      container
+      spacing={2}
+      direction="column"
+      sx={{
+        alignItems: 'stretch',
+      }}
+    >
       <Grid item md={6}>
         <Typography>{t('settings.downloadAllComparisons')}</Typography>
       </Grid>

@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Collapse,
+  Grid2,
   IconButton,
   useTheme,
   useMediaQuery,
   Stack,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
@@ -111,26 +111,33 @@ const EntityCard = ({
   };
 
   return (
-    <Grid
+    <Grid2
       container
       sx={entityCardMainSx}
       direction={compact ? 'column' : 'row'}
     >
       {!isAvailable && (
-        <Grid
-          xs={12}
+        <Grid2
           container
-          justifyContent="space-between"
-          alignItems="center"
+          size={12}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
         >
-          <Grid pl={1} py={2}>
+          <Grid2
+            sx={{
+              pl: 1,
+              py: 2,
+            }}
+          >
             <Typography>
               {entity.type == TypeEnum.VIDEO
                 ? t('video.notAvailableAnymore')
                 : t('entityCard.thisElementIsNotAvailable')}
             </Typography>
-          </Grid>
-          <Grid>
+          </Grid2>
+          <Grid2>
             <IconButton onClick={toggleEntityVisibility}>
               {contentDisplayed ? (
                 <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
@@ -138,18 +145,20 @@ const EntityCard = ({
                 <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
               )}
             </IconButton>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       )}
       {contentDisplayed && (
         <>
-          <Grid
-            xs={12}
-            sm={compact ? 12 : 'auto'}
+          <Grid2
             sx={{
               display: 'flex',
               justifyContent: 'center',
               ...(compact ? {} : { maxWidth: { sm: '240px' } }),
+            }}
+            size={{
+              xs: 12,
+              sm: compact ? 12 : 'auto',
             }}
           >
             <EntityImagery
@@ -157,15 +166,17 @@ const EntityCard = ({
               compact={compact}
               config={entityTypeConfig}
             />
-          </Grid>
-          <Grid
-            xs={true} // Grow and fill the container height when two cards are side by side
-            p={1}
+          </Grid2>
+          <Grid2
             data-testid="video-card-info"
             container
             direction="column"
-            flexWrap="nowrap"
-            lineHeight="1.2"
+            size="grow"
+            sx={{
+              p: 1,
+              flexWrap: 'nowrap',
+              lineHeight: '1.2',
+            }}
           >
             <EntityCardTitle
               uid={entity.uid}
@@ -174,10 +185,8 @@ const EntityCard = ({
             />
             <EntityMetadata entity={entity} />
             {displayEntityCardScores()}
-          </Grid>
-          <Grid
-            xs={12}
-            sm={compact ? 12 : 1}
+          </Grid2>
+          <Grid2
             sx={{
               display: 'flex',
               alignItems: 'end',
@@ -186,6 +195,10 @@ const EntityCard = ({
               [theme.breakpoints.down('sm')]: {
                 flexDirection: 'row',
               },
+            }}
+            size={{
+              xs: 12,
+              sm: compact ? 12 : 1,
             }}
           >
             {actions.map((Action, index) =>
@@ -197,7 +210,11 @@ const EntityCard = ({
             )}
             {isSmallScreen && showRatingControl && (
               <>
-                <Box flexGrow={1} />
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                  }}
+                />
                 <IconButton
                   size="small"
                   aria-label={t('video.labelShowSettings')}
@@ -207,23 +224,25 @@ const EntityCard = ({
                 </IconButton>
               </>
             )}
-          </Grid>
+          </Grid2>
 
           {displayContextAlert && unsafeContext && (
-            <Grid xs={12}>
+            <Grid2 size={12}>
               <EntityCardContextAlert uid={entity.uid} />
-            </Grid>
+            </Grid2>
           )}
 
           {showRatingControl && (
-            <Grid xs={12}>
+            <Grid2 size={12}>
               <Collapse in={ratingVisible || !isSmallScreen}>
                 <Box
-                  paddingY={1}
-                  borderTop="1px solid rgba(0, 0, 0, 0.12)"
-                  display="flex"
-                  gap="16px"
-                  color="text.secondary"
+                  sx={{
+                    paddingY: 1,
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                    display: 'flex',
+                    gap: '16px',
+                    color: 'text.secondary',
+                  }}
                 >
                   {'individual_rating' in result && (
                     <RatingControl
@@ -236,11 +255,11 @@ const EntityCard = ({
                   )}
                 </Box>
               </Collapse>
-            </Grid>
+            </Grid2>
           )}
         </>
       )}
-    </Grid>
+    </Grid2>
   );
 };
 
@@ -260,12 +279,15 @@ export const RowEntityCard = ({
   const entity = result.entity;
   return (
     <Box
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
-      gap={1}
-      height="90px"
-      sx={{ ...entityCardMainSx, bgcolor: 'transparent' }}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 1,
+        height: '90px',
+        ...entityCardMainSx,
+        bgcolor: 'transparent',
+      }}
     >
       <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
         <EntityImagery
@@ -278,7 +300,14 @@ export const RowEntityCard = ({
           }}
         />
       </Box>
-      <Stack gap="4px" alignSelf="start" marginTop={1} width="100%">
+      <Stack
+        sx={{
+          gap: '4px',
+          alignSelf: 'start',
+          marginTop: 1,
+          width: '100%',
+        }}
+      >
         <EntityCardTitle
           uid={entity.uid}
           title={entity.metadata.name}
@@ -296,7 +325,14 @@ export const RowEntityCard = ({
           />
         )}
 
-        <Box pr={1} display="flex" justifyContent="flex-end" gap={1}>
+        <Box
+          sx={{
+            pr: 1,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
+        >
           {displayEntityContextChip && 'entity_contexts' in result && (
             <EntityContextChip
               uid={result.entity.uid}

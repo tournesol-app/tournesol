@@ -288,8 +288,10 @@ const TournesolUserSettingsForm = () => {
       <Grid
         container
         direction="column"
-        alignItems="stretch"
         spacing={mainSectionGridSpacing}
+        sx={{
+          alignItems: 'stretch',
+        }}
       >
         <SettingsSection
           title={t('preferences.generalPreferences')}
@@ -336,11 +338,13 @@ const TournesolUserSettingsForm = () => {
         </SettingsSection>
       </Grid>
       <Box
-        mt={4}
-        position="sticky"
-        bottom={theme.spacing(2)}
-        zIndex={theme.zIndex.fab}
-        bgcolor="#fafafa"
+        sx={{
+          mt: 4,
+          position: 'sticky',
+          bottom: theme.spacing(2),
+          zIndex: theme.zIndex.fab,
+          bgcolor: '#fafafa',
+        }}
       >
         <Grid container>
           <Grid item {...subSectionBreakpoints}>

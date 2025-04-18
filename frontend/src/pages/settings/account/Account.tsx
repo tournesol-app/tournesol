@@ -33,9 +33,16 @@ export const AccountPage = () => {
             container
             item
             direction="column"
-            alignItems="stretch"
             spacing={mainSectionGridSpacing}
             {...mainSectionBreakpoints}
+            sx={[
+              {
+                alignItems: 'stretch',
+              },
+              ...(Array.isArray(mainSectionBreakpoints.sx)
+                ? mainSectionBreakpoints.sx
+                : [mainSectionBreakpoints.sx]),
+            ]}
           >
             <SettingsSection
               title={t('settings.changeEmailAddress')}
@@ -55,7 +62,11 @@ export const AccountPage = () => {
             >
               <ExportAllDataForm />
             </SettingsSection>
-            <Box mt={8}></Box>
+            <Box
+              sx={{
+                mt: 8,
+              }}
+            ></Box>
             <SettingsSection
               title={
                 <Typography

@@ -65,7 +65,14 @@ const ProfileForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={2} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={2}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid item>
           <TextField
             required

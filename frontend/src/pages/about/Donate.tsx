@@ -7,11 +7,11 @@ import {
   Box,
   Button,
   Divider,
+  Grid2,
   Stack,
   Typography,
   Paper,
 } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import makeStyles from '@mui/styles/makeStyles';
 
 import {
@@ -42,24 +42,33 @@ const QuestionRow = ({
 }) => {
   return (
     <Grid2
-      py={2}
       container
       spacing={4}
-      justifyContent="center"
-      alignItems="stretch"
+      sx={{
+        py: 2,
+        justifyContent: 'center',
+        alignItems: 'stretch',
+      }}
     >
-      <Grid2 xs={12} md={5}>
+      <Grid2
+        size={{
+          xs: 12,
+          md: 5,
+        }}
+      >
         <Paper elevation={3} sx={{ borderRadius: 1, height: '100%' }}>
           <Box
-            p={3}
-            height="100%"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            color="#fff"
-            bgcolor="background.emphatic"
-            borderRadius={20}
-            sx={{ borderRadius: 1 }}
+            sx={{
+              p: 3,
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: '#fff',
+              bgcolor: 'background.emphatic',
+              borderRadius: 20,
+              borderRadius: 1,
+            }}
           >
             <Typography variant="h5" align="center">
               {questionText}
@@ -67,9 +76,20 @@ const QuestionRow = ({
           </Box>
         </Paper>
       </Grid2>
-      <Grid2 xs={12} md={7}>
+      <Grid2
+        size={{
+          xs: 12,
+          md: 7,
+        }}
+      >
         <Paper elevation={1} sx={{ borderRadius: 1, p: 2, height: '100%' }}>
-          <Typography fontWeight={600}>{answerText}</Typography>
+          <Typography
+            sx={{
+              fontWeight: 600,
+            }}
+          >
+            {answerText}
+          </Typography>
         </Paper>
       </Grid2>
     </Grid2>
@@ -108,10 +128,12 @@ const DonatePage = () => {
       <ContentBox maxWidth="lg">
         <Grid2
           container
-          width="100%"
-          gap={6}
-          flexDirection="column"
-          alignItems="center"
+          sx={{
+            width: '100%',
+            gap: 6,
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
         >
           <Grid2 sx={donateSectionSx}>
             <FundingSection linkToDonatePage={false} fullWidth />
@@ -123,16 +145,29 @@ const DonatePage = () => {
               </Alert>
               <Grid2
                 container
-                gap={2}
-                alignItems="stretch"
-                justifyContent="space-evenly"
+                sx={{
+                  gap: 2,
+                  alignItems: 'stretch',
+                  justifyContent: 'space-evenly',
+                }}
               >
-                <Grid2 width="100%" xs={12} sm={12} md={5}>
+                <Grid2
+                  size={{
+                    xs: 12,
+                    sm: 12,
+                    md: 5,
+                  }}
+                  sx={{
+                    width: '100%',
+                  }}
+                >
                   <Stack
                     spacing={2}
                     direction="column"
-                    alignItems="center"
                     justify-content="space-between"
+                    sx={{
+                      alignItems: 'center',
+                    }}
                   >
                     <ExternalLink
                       href={
@@ -159,12 +194,23 @@ const DonatePage = () => {
                     </Button>
                   </Stack>
                 </Grid2>
-                <Grid2 width="100%" xs={12} sm={12} md={5}>
+                <Grid2
+                  size={{
+                    xs: 12,
+                    sm: 12,
+                    md: 5,
+                  }}
+                  sx={{
+                    width: '100%',
+                  }}
+                >
                   <Stack
                     spacing={2}
                     direction="column"
-                    alignItems="center"
                     justify-content="space-between"
+                    sx={{
+                      alignItems: 'center',
+                    }}
                   >
                     <ExternalLink
                       href={paypalDonateTournesolUrl}
@@ -216,7 +262,11 @@ const DonatePage = () => {
             </TitledPaper>
           </Grid2>
         </Grid2>
-        <Grid2 py={4}>
+        <Grid2
+          sx={{
+            py: 4,
+          }}
+        >
           <QuestionRow
             questionText={t('donate.whatDoWeDoQuestion')}
             answerText={t('donate.whatDoWeDoAnswer')}

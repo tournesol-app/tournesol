@@ -9,13 +9,19 @@ const CancellationAndTermination = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="cancellation-and-termination"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.cancellationAndTermination.cancellationAndTermination')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>

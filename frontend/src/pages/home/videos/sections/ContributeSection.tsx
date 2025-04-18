@@ -10,10 +10,12 @@ const ContributeSection = () => {
   const { t } = useTranslation();
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      maxWidth="640px"
-      alignItems="flex-start"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: '640px',
+        alignItems: 'flex-start',
+      }}
     >
       <Typography variant="h2" gutterBottom>
         {t('home.contributeTitle')}

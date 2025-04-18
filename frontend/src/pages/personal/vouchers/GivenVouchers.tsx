@@ -44,11 +44,13 @@ const GivenVoucherList = () => {
   return (
     <Stack
       direction="row"
-      flexWrap="wrap"
-      gap={1}
-      sx={{ py: 2 }}
       role="list"
       data-testid="given-vouchers-list"
+      sx={{
+        flexWrap: 'wrap',
+        gap: 1,
+        py: 2,
+      }}
     >
       {givenVouchers.map(({ to }) => (
         <GivenVoucherChip key={to} username={to} />
@@ -61,7 +63,11 @@ const GivenVouchers = () => {
   const { t } = useTranslation();
 
   return (
-    <Box py={2}>
+    <Box
+      sx={{
+        py: 2,
+      }}
+    >
       <Typography variant="h6">
         {t('personalVouchers.givenVouchersTitle')}
       </Typography>

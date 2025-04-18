@@ -3,12 +3,12 @@ import React from 'react';
 import {
   Box,
   Divider,
+  Grid2,
   List,
   ListItemButton,
   ListItemText,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
 import { GridSize } from '@mui/system';
 
 interface Props {
@@ -36,8 +36,19 @@ const FooterSection = ({
   trailingDivider = true,
 }: Props) => {
   return (
-    <Grid xs={xs} sm={sm} lg={lg}>
-      <Typography variant="h6" fontSize={14}>
+    <Grid2
+      size={{
+        xs: xs,
+        sm: sm,
+        lg: lg,
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          fontSize: 14,
+        }}
+      >
         {title}
       </Typography>
       <List dense={true}>
@@ -56,7 +67,7 @@ const FooterSection = ({
           <Divider sx={{ backgroundColor: '#fff' }} />
         </Box>
       )}
-    </Grid>
+    </Grid2>
   );
 };
 

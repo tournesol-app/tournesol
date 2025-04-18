@@ -79,7 +79,12 @@ const BooksToReadAndOffer = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Box display="flex" gap={2}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+        }}
+      >
         <AutoStories />
         <Typography>
           {t('actionsPage.beEducated.readAndOfferMoreBooksLike')}
@@ -91,7 +96,13 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
-                <Box display="flex" flexWrap="wrap" columnGap={1}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    columnGap: 1,
+                  }}
+                >
                   <ExternalLink href={book.href}>{book.text}</ExternalLink>
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
@@ -104,7 +115,13 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferFr.map((book, idx) => (
               <li key={`book_fr_${idx}`}>
-                <Box display="flex" flexWrap="wrap" columnGap={1}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    columnGap: 1,
+                  }}
+                >
                   <ExternalLink href={book.href}>{book.text}</ExternalLink>
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
@@ -121,7 +138,12 @@ const VideosToWatchAndShare = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Box display="flex" gap={2}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+        }}
+      >
         <YouTube />
         <Typography>
           {t('actionsPage.beEducated.watchAndShareVideosFrom')}{' '}
@@ -163,16 +185,39 @@ const BeEducated = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Typography variant="h4" fontStyle="italic" gutterBottom id="be-educated">
+      <Typography
+        variant="h4"
+        gutterBottom
+        id="be-educated"
+        sx={{
+          fontStyle: 'italic',
+        }}
+      >
         {t('actionsPage.beEducated.beTrainedAndTrainOthers')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info" icon={false}>
           {t('actionsPage.beEducated.why')}
         </Alert>
       </Box>
-      <Box display="flex" flexDirection="column" gap={2} mt={2}>
-        <Box display="flex" gap={2}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          mt: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+          }}
+        >
           <ImportContacts />
           <Typography paragraph>
             {t(
@@ -186,7 +231,12 @@ const BeEducated = () => {
         </Box>
         <BooksToReadAndOffer />
         <VideosToWatchAndShare />
-        <Box display="flex" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+          }}
+        >
           <Podcasts />
           <Typography>
             {t('actionsPage.beEducated.listenAndSharePodcastsLike')}{' '}
@@ -196,7 +246,12 @@ const BeEducated = () => {
             .
           </Typography>
         </Box>
-        <Box display="flex" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+          }}
+        >
           <VideogameAsset />
           <Typography>
             <Trans

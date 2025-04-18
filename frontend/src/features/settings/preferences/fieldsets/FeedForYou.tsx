@@ -66,7 +66,15 @@ const FeedForYou = ({
           onChange={setForYouUploadDate}
         />
       </Grid>
-      <Grid item container spacing={1} direction="column" alignItems="stretch">
+      <Grid
+        item
+        container
+        spacing={1}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid item>
           <BooleanField
             scope={scope}

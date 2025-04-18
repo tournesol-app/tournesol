@@ -45,7 +45,13 @@ const SignupSuccess = ({ email }: { email: string }) => {
           </Trans>
         </Typography>
       </Alert>
-      <Typography paragraph px={1} textAlign="center">
+      <Typography
+        paragraph
+        sx={{
+          px: 1,
+          textAlign: 'center',
+        }}
+      >
         <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">
           If your email address is incorrect, simply{' '}
           <MuiLink
@@ -76,11 +82,26 @@ const WelcomePaper = () => {
         backgroundColor: 'background.emphatic',
       }}
     >
-      <Box display="flex" flexDirection="column" gap={1}>
-        <Typography variant="h3" textAlign="center">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+        }}
+      >
+        <Typography
+          variant="h3"
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           {t('signup.welcomeToTournesol')}
         </Typography>
-        <Typography textAlign="center">
+        <Typography
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           {t('signup.weVeBeenWaitingForYou')}
         </Typography>
       </Box>
@@ -153,7 +174,14 @@ const Signup = () => {
           <SignupSuccess email={successEmailAddress} />
         ) : (
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={3} direction="column" alignItems="stretch">
+            <Grid
+              container
+              spacing={3}
+              direction="column"
+              sx={{
+                alignItems: 'stretch',
+              }}
+            >
               {formError && (
                 <Grid item xs={12}>
                   <Typography color="error">
@@ -202,7 +230,15 @@ const Signup = () => {
                   formError={formError}
                 />
               </Grid>
-              <Grid item xs={12} display="flex" alignItems="center" gap={1}>
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
                 <Checkbox
                   name="accept_terms"
                   color="secondary"
@@ -230,9 +266,18 @@ const Signup = () => {
                 </span>
               </Grid>
               <Grid item xs={12}>
-                <Box py={2}>
+                <Box
+                  sx={{
+                    py: 2,
+                  }}
+                >
                   <Divider>
-                    <Box display="flex" alignItems="center">
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
                       <EmailIcon color="secondary" />
                     </Box>
                   </Divider>

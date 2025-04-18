@@ -43,7 +43,13 @@ const CreateVoucherForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Typography paragraph>{t('personalVouchers.introduction')}</Typography>
-      <Grid container gap={2} justifyContent="flex-start">
+      <Grid
+        container
+        sx={{
+          gap: 2,
+          justifyContent: 'flex-start',
+        }}
+      >
         <TextField
           label={t('personalVouchers.usernameLabel')}
           value={username}

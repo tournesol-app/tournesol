@@ -7,10 +7,21 @@ const Moderation = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Typography variant="h4" fontStyle="italic" gutterBottom id="moderation">
+      <Typography
+        variant="h4"
+        gutterBottom
+        id="moderation"
+        sx={{
+          fontStyle: 'italic',
+        }}
+      >
         {t('terms.moderation.moderation')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>

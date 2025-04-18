@@ -55,7 +55,14 @@ const getIndividualScores = (res: EntityResult) => {
 };
 
 const TabError = ({ message }: { message: string }) => (
-  <Typography variant="subtitle1" paragraph m={2} color="neutral.main">
+  <Typography
+    variant="subtitle1"
+    paragraph
+    sx={{
+      m: 2,
+      color: 'neutral.main',
+    }}
+  >
     {message}
   </Typography>
 );
@@ -226,7 +233,6 @@ const EntityTabsBox = ({
           onResultSelect={onSelectEntity}
         />
       )}
-
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"
@@ -272,7 +278,12 @@ const EntityTabsBox = ({
             }
           />
         ) : (
-          <Box display="flex" justifyContent="flex-end">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
             <IconButton onClick={handleToggleDescription} color="info">
               <InfoOutlined />
             </IconButton>

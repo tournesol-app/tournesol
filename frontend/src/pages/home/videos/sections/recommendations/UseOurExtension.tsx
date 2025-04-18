@@ -17,7 +17,11 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
 
   return (
     <Box>
-      <Box my={6}>
+      <Box
+        sx={{
+          my: 6,
+        }}
+      >
         <SectionTitle
           title={t('home.useOurExtension')}
           color={titleColor}
@@ -25,12 +29,36 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
           headingId="use-extension"
         />
       </Box>
-      <Grid container flexDirection="column" alignItems="center">
+      <Grid
+        container
+        sx={{
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Grid item xl={9}>
           <Paper sx={{ p: 2 }}>
-            <Grid container flexDirection="column" alignItems="center" gap={3}>
-              <Grid item lg={7} width="100%">
-                <Box display="flex" justifyContent="space-evenly">
+            <Grid
+              container
+              sx={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 3,
+              }}
+            >
+              <Grid
+                item
+                lg={7}
+                sx={{
+                  width: '100%',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-evenly',
+                  }}
+                >
                   <img
                     width="64px"
                     src="/logos/Fx-Browser-icon-fullColor.svg"
@@ -49,13 +77,24 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
                 </Box>
               </Grid>
               <Grid item xl={9}>
-                <Typography paragraph m={0} textAlign="justify">
+                <Typography
+                  paragraph
+                  sx={{
+                    m: 0,
+                    textAlign: 'justify',
+                  }}
+                >
                   {t('home.webExtensionDescription')}
                 </Typography>
               </Grid>
               <Grid item xl={9}>
                 {webExtensionUrl ? (
-                  <Box display="flex" justifyContent="center">
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
                     <Button
                       color="primary"
                       variant="contained"

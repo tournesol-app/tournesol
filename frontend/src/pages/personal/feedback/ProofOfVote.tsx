@@ -53,7 +53,11 @@ const ProofOfVote = ({
   }, [keyword, pollName]);
 
   return (
-    <Box my={2}>
+    <Box
+      sx={{
+        my: 2,
+      }}
+    >
       {code && (
         <TextField
           label={label ?? t('proofOfVote.proof')}

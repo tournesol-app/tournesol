@@ -21,8 +21,20 @@ const ContentHeader = ({
   chipLabel?: string;
 }) => {
   return (
-    <Box px={[2, 4]} pt={2} color="text.secondary">
-      <Grid container spacing={1} justifyContent="space-between">
+    <Box
+      sx={{
+        px: [2, 4],
+        pt: 2,
+        color: 'text.secondary',
+      }}
+    >
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         <Grid item>
           <Typography
             variant="h4"
@@ -53,7 +65,15 @@ const ContentHeader = ({
           </>
         )}
       </Grid>
-      {subtitle && <Typography mt={1}>{subtitle}</Typography>}
+      {subtitle && (
+        <Typography
+          sx={{
+            mt: 1,
+          }}
+        >
+          {subtitle}
+        </Typography>
+      )}
     </Box>
   );
 };

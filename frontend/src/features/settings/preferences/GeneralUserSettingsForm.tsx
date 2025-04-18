@@ -34,7 +34,14 @@ const GeneralUserSettingsForm = ({
   const { t } = useTranslation();
 
   return (
-    <Grid container spacing={4} direction="column" alignItems="stretch">
+    <Grid
+      container
+      spacing={4}
+      direction="column"
+      sx={{
+        alignItems: 'stretch',
+      }}
+    >
       <Grid item>
         <SettingsHeading
           id="notifications"
@@ -57,7 +64,15 @@ const GeneralUserSettingsForm = ({
           onChange={setNotificationsLang}
         />
       </Grid>
-      <Grid item container spacing={1} direction="column" alignItems="stretch">
+      <Grid
+        item
+        container
+        spacing={1}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid item>
           <NotificationsEmailResearch
             value={notificationsEmailResearch}

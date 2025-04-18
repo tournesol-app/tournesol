@@ -2,8 +2,7 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import { Box, Button, Paper, Typography, useTheme } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import { Box, Button, Grid2, Paper, Typography, useTheme } from '@mui/material';
 import { VolunteerActivism } from '@mui/icons-material';
 
 import SectionTitle from './SectionTitle';
@@ -34,31 +33,64 @@ const FundingSection = ({
         dividerWidthXl={fullWidth ? '100%' : undefined}
         headingId="funding"
       />
-      <Box display="flex" justifyContent="center" mb={6}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          mb: 6,
+        }}
+      >
         <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
-          <Typography variant="h3" textAlign="center" letterSpacing="0.8px">
+          <Typography
+            variant="h3"
+            sx={{
+              textAlign: 'center',
+              letterSpacing: '0.8px',
+            }}
+          >
             {t('fundingSection.tournesolExistsThanksToYourInvolvement')}
           </Typography>
         </Box>
       </Box>
-      <Grid2 container spacing={4} justifyContent="center">
-        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
+      <Grid2
+        container
+        spacing={4}
+        sx={{
+          justifyContent: 'center',
+        }}
+      >
+        <Grid2
+          size={{
+            sm: 12,
+            md: 4,
+            lg: 4,
+            xl: fullWidth ? 4 : 3,
+          }}
+        >
           <Paper elevation={0}>
             <Box
-              p={2}
-              height="110px"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              color="#fff"
-              bgcolor="#1282B2"
-              borderRadius={1}
+              sx={{
+                p: 2,
+                height: '110px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#fff',
+                bgcolor: '#1282B2',
+                borderRadius: 1,
+              }}
             >
               <Typography
-                m={0}
                 variant="h4"
-                textAlign="center"
-                sx={motivationSx}
+                sx={[
+                  {
+                    m: 0,
+                    textAlign: 'center',
+                  },
+                  ...(Array.isArray(motivationSx)
+                    ? motivationSx
+                    : [motivationSx]),
+                ]}
               >
                 <Trans i18nKey="fundingSection.guaranteeTheProjectsIndependence">
                   <span>guarantee</span> the project&apos;s independance
@@ -67,23 +99,38 @@ const FundingSection = ({
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
+        <Grid2
+          size={{
+            sm: 12,
+            md: 4,
+            lg: 4,
+            xl: fullWidth ? 4 : 3,
+          }}
+        >
           <Paper elevation={0}>
             <Box
-              p={2}
-              height="110px"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              color="#fff"
-              bgcolor="#1282B2"
-              borderRadius={1}
+              sx={{
+                p: 2,
+                height: '110px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#fff',
+                bgcolor: '#1282B2',
+                borderRadius: 1,
+              }}
             >
               <Typography
-                m={0}
                 variant="h4"
-                textAlign="center"
-                sx={motivationSx}
+                sx={[
+                  {
+                    m: 0,
+                    textAlign: 'center',
+                  },
+                  ...(Array.isArray(motivationSx)
+                    ? motivationSx
+                    : [motivationSx]),
+                ]}
               >
                 <Trans i18nKey="fundingSection.participateInTheCreationOfCommons">
                   <span>participate</span> in the creation of commons
@@ -92,23 +139,38 @@ const FundingSection = ({
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 sm={12} md={4} lg={4} xl={fullWidth ? 4 : 3}>
+        <Grid2
+          size={{
+            sm: 12,
+            md: 4,
+            lg: 4,
+            xl: fullWidth ? 4 : 3,
+          }}
+        >
           <Paper elevation={0}>
             <Box
-              p={2}
-              height="110px"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              color="#fff"
-              bgcolor="#1282B2"
-              borderRadius={1}
+              sx={{
+                p: 2,
+                height: '110px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#fff',
+                bgcolor: '#1282B2',
+                borderRadius: 1,
+              }}
             >
               <Typography
-                m={0}
                 variant="h4"
-                textAlign="center"
-                sx={motivationSx}
+                sx={[
+                  {
+                    m: 0,
+                    textAlign: 'center',
+                  },
+                  ...(Array.isArray(motivationSx)
+                    ? motivationSx
+                    : [motivationSx]),
+                ]}
               >
                 <Trans i18nKey="fundingSection.actForTheEthicsOfInformation">
                   <span>act</span> for the ethics of information
@@ -118,7 +180,13 @@ const FundingSection = ({
           </Paper>
         </Grid2>
         {linkToDonatePage && (
-          <Grid2 xs={9} display="flex" justifyContent="center">
+          <Grid2
+            size={9}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               variant="contained"
               size="large"

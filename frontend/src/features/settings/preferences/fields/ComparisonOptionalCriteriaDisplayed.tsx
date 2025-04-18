@@ -58,11 +58,19 @@ const OrderableCriterionRow = ({
     <Grid
       container
       direction="row"
-      alignItems="center"
-      justifyContent="space-between"
       wrap="nowrap"
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
     >
-      <Grid item display="flex" alignItems="center">
+      <Grid
+        item
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <Checkbox
           id={`id_selected_optional_${criterionName}`}
           checked={checked}
@@ -75,7 +83,13 @@ const OrderableCriterionRow = ({
         <Typography>{criterionLabel}</Typography>
       </Grid>
       {checked && (
-        <Grid item display="flex" flexWrap="nowrap">
+        <Grid
+          item
+          sx={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+          }}
+        >
           <IconButton
             aria-label={`${t(
               'pollUserSettingsForm.moveTheFollowingCriterionUp'
@@ -137,9 +151,20 @@ const ComparisonOptionalCriteriaDisplayed = ({
   };
 
   return (
-    <Grid flexDirection="row" container spacing={2}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        flexDirection: 'row',
+      }}
+    >
       <Grid item xs={12}>
-        <Typography paragraph mb={0}>
+        <Typography
+          paragraph
+          sx={{
+            mb: 0,
+          }}
+        >
           <strong>
             {t('pollUserSettingsForm.selectTheCriteriaYouWantToDisplay')}
           </strong>
@@ -151,13 +176,25 @@ const ComparisonOptionalCriteriaDisplayed = ({
         sm={12}
         md={12}
         lg={6}
-        minHeight={{ xs: 'initial', sm: 410 }}
+        sx={{
+          minHeight: { xs: 'initial', sm: 410 },
+        }}
       >
-        <Box mb={1}>
+        <Box
+          sx={{
+            mb: 1,
+          }}
+        >
           <Typography>{t('pollUserSettingsForm.optionalCriteria')}</Typography>
           <Divider />
         </Box>
-        <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: { xs: 2, sm: 0 },
+          }}
+        >
           {criterias
             .filter((c) => !displayedCriteria.includes(c.name) && c.optional)
             .map((criterion, index) => (
@@ -188,15 +225,27 @@ const ComparisonOptionalCriteriaDisplayed = ({
         sm={12}
         md={12}
         lg={6}
-        minHeight={{ xs: 'initial', sm: 410 }}
+        sx={{
+          minHeight: { xs: 'initial', sm: 410 },
+        }}
       >
-        <Box mb={1}>
+        <Box
+          sx={{
+            mb: 1,
+          }}
+        >
           <Typography>
             {t('pollUserSettingsForm.alwaysDisplayedCriteria')}
           </Typography>
           <Divider />
         </Box>
-        <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: { xs: 2, sm: 0 },
+          }}
+        >
           {displayedCriteria.map((criterion, index) => (
             <OrderableCriterionRow
               key={criterion}

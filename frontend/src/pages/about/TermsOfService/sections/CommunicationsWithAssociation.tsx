@@ -9,13 +9,19 @@ const CommunicationsWithAssociation = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="communication-with-the-association"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.communicationsWithAssociation.communicationsWithAssociation')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>

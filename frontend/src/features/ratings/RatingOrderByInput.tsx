@@ -95,7 +95,12 @@ function RatingOrderByInput(props: FilterProps) {
           {/* Metadata available for any kind of entity type. */}
           {genericItems.map((item) => (
             <MenuItem key={item.value} value={item.value}>
-              <Box display="flex" alignItems="center">
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
                 <ListItemText>{item.label}</ListItemText>
                 &nbsp;
                 <item.icon fontSize="small" />
@@ -106,7 +111,12 @@ function RatingOrderByInput(props: FilterProps) {
           {/* Metadata specific to the displayed entity type. */}
           {extraMetadataOrderBy.map((metadata) => [
             <MenuItem key={`${metadata}`} value={`${metadata}`}>
-              <Box display="flex" alignItems="center">
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
                 <ListItemText>
                   {getMetadataName(t, pollName, metadata)}
                 </ListItemText>
@@ -115,7 +125,12 @@ function RatingOrderByInput(props: FilterProps) {
               </Box>
             </MenuItem>,
             <MenuItem key={`-${metadata}`} value={`-${metadata}`}>
-              <Box display="flex" alignItems="center">
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
                 <ListItemText>
                   {getMetadataName(t, pollName, metadata)}
                 </ListItemText>

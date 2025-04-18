@@ -64,8 +64,10 @@ const EntityContextTextList = ({
             <Box key={`context_${uid}_${origin_}_p${idx}`}>
               <Typography paragraph component="div">
                 <Box
-                  whiteSpace="pre-wrap"
                   dangerouslySetInnerHTML={{ __html: text }}
+                  sx={{
+                    whiteSpace: 'pre-wrap',
+                  }}
                 />
               </Typography>
               {idx < contexts.length - 1 && <Divider sx={{ mb: 2 }} />}
@@ -73,7 +75,12 @@ const EntityContextTextList = ({
           );
         }
       })}
-      <Box display="flex" justifyContent="flex-end">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
         <InternalLink to="/faq?scrollTo=are_recommendations_moderated_by_the_association">
           {t('entityContextTextList.whyThisMessage')}
         </InternalLink>
@@ -121,7 +128,12 @@ const EntityContextList = ({
         ...alertSx,
       }}
     >
-      <Box display="flex" justifyContent="space-between">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <AlertTitle>
           {diclaimer ? (
             diclaimer
@@ -144,10 +156,15 @@ const EntityContextList = ({
           </IconButton>
         )}
       </Box>
-
       <Collapse in={displayText}>
         {entityName && (
-          <Typography paragraph variant="body2" fontStyle="italic">
+          <Typography
+            paragraph
+            variant="body2"
+            sx={{
+              fontStyle: 'italic',
+            }}
+          >
             {t('entityContext.about')} « {entityName} »
           </Typography>
         )}

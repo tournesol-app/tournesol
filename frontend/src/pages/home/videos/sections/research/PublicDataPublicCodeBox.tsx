@@ -30,7 +30,12 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               </ExternalLink>
             </Trans>
           </Typography>
-          <Box display="flex" justifyContent="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               variant="contained"
               component={Link}
@@ -52,7 +57,12 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               'publicDataPublicCodeBox.ourAlgorithmsAndAllOurCodeAreFreeSoftware'
             )}
           </Typography>
-          <Box display="flex" justifyContent="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               variant="contained"
               component={Link}

@@ -35,7 +35,12 @@ const ComparisonHelperPresidentielle2022 = () => {
           ci-dessous differentes sources d&apos;information que nous avons
           trouvées utiles.
         </Typography>
-        <Grid container justifyContent="space-between">
+        <Grid
+          container
+          sx={{
+            justifyContent: 'space-between',
+          }}
+        >
           <Grid item>
             <Typography variant="h4" color="secondary">
               Sites web officiels des candidat·es

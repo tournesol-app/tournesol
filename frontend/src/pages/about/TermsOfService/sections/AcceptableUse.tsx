@@ -12,13 +12,19 @@ const AcceptableUse = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="acceptable-use"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.acceptableUse.acceptableUse')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>

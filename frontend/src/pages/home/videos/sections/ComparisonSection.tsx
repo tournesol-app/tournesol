@@ -25,22 +25,43 @@ const ComparisonSection = () => {
         title={t('comparisonSection.contribute')}
         headingId="contribute"
       />
-      <Grid container justifyContent="center" spacing={4}>
+      <Grid
+        container
+        spacing={4}
+        sx={{
+          justifyContent: 'center',
+        }}
+      >
         <Grid item lg={3} xl={3}>
           <Paper elevation={0}>
             <Box
-              p={2}
-              bgcolor="background.emphatic"
-              color={color}
-              borderRadius={1}
+              sx={{
+                p: 2,
+                bgcolor: 'background.emphatic',
+                color: color,
+                borderRadius: 1,
+              }}
             >
-              <Typography paragraph fontSize={17}>
+              <Typography
+                paragraph
+                sx={{
+                  fontSize: 17,
+                }}
+              >
                 {t('comparisonSection.theSimpliestWayToContribute')}
               </Typography>
-              <Box pb={2}>
+              <Box
+                sx={{
+                  pb: 2,
+                }}
+              >
                 <Divider sx={{ backgroundColor: color }} />
               </Box>
-              <Box textAlign="center">
+              <Box
+                sx={{
+                  textAlign: 'center',
+                }}
+              >
                 <Metrics
                   text={t('stats.comparisons')}
                   count={pollStats?.comparisons.total ?? 0}
@@ -53,8 +74,20 @@ const ComparisonSection = () => {
             </Box>
           </Paper>
         </Grid>
-        <Grid item lg={9} xl={6} width="100%">
-          <Box display="flex" justifyContent="center">
+        <Grid
+          item
+          lg={9}
+          xl={6}
+          sx={{
+            width: '100%',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <HomeComparison />
           </Box>
         </Grid>

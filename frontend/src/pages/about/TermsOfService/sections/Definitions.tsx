@@ -13,12 +13,19 @@ const Section = ({
   text: string | React.ReactElement;
 }) => {
   return (
-    <Box display="flex" gap={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 1,
+      }}
+    >
       <Typography
-        px={2}
-        color="secondary.main"
-        fontSize="1.2em"
-        fontWeight="bold"
+        sx={{
+          px: 2,
+          color: 'secondary.main',
+          fontSize: '1.2em',
+          fontWeight: 'bold',
+        }}
       >
         {num}
       </Typography>
@@ -42,10 +49,21 @@ const Definitions = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Typography variant="h4" fontStyle="italic" gutterBottom id="definitions">
+      <Typography
+        variant="h4"
+        gutterBottom
+        id="definitions"
+        sx={{
+          fontStyle: 'italic',
+        }}
+      >
         {t('terms.definitions.definitions')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>

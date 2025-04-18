@@ -83,8 +83,21 @@ const VideosPollUserSettingsForm = ({
   const { t } = useTranslation();
 
   return (
-    <Box display="flex" flexDirection="column" rowGap={6}>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: 6,
+      }}
+    >
+      <Grid
+        container
+        spacing={4}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid item>
           <SettingsHeading
             id="comparison_page"
@@ -103,7 +116,9 @@ const VideosPollUserSettingsForm = ({
           container
           spacing={1}
           direction="column"
-          alignItems="stretch"
+          sx={{
+            alignItems: 'stretch',
+          }}
         >
           <Grid item>
             <BooleanField
@@ -139,7 +154,14 @@ const VideosPollUserSettingsForm = ({
           />
         </Grid>
       </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={4}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid item>
           <SettingsHeading
             id="extension_youtube"
@@ -154,14 +176,28 @@ const VideosPollUserSettingsForm = ({
           />
         </Grid>
       </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={4}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <FeedTopItems
           scope={pollName}
           topItemsLanguages={topVideosLanguages}
           setTopItemsLangauges={setTopVideosLangauges}
         />
       </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={4}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <FeedForYou
           scope={pollName}
           forYouLanguages={forYouLanguages}
@@ -174,7 +210,14 @@ const VideosPollUserSettingsForm = ({
           setForYouExcludeCompared={setForYouExcludeCompared}
         />
       </Grid>
-      <Grid container spacing={4} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={4}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid item>
           <SettingsHeading
             id="rate_later"

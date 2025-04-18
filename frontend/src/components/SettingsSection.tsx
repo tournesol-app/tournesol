@@ -27,7 +27,11 @@ const SettingsSection = ({
   return (
     <Grid item container>
       <Grid item xs={12}>
-        <Box marginBottom={2}>
+        <Box
+          sx={{
+            marginBottom: 2,
+          }}
+        >
           {sectionTitle}
           <Divider />
         </Box>

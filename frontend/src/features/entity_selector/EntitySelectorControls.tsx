@@ -35,25 +35,29 @@ const EntitySelectorControls = ({
 
   return (
     <Box
-      display="flex"
-      flexDirection={
-        uid
+      sx={{
+        display: 'flex',
+
+        flexDirection: uid
           ? alignment === 'left'
             ? 'row'
             : 'row-reverse'
           : alignment !== 'left'
           ? 'row'
-          : 'row-reverse'
-      }
-      alignItems="center"
-      justifyContent="space-between"
+          : 'row-reverse',
+
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
     >
       <Grid
         container
         spacing={{ xs: 2, sm: 1 }}
-        display={uid ? 'flex' : 'none'}
         direction={alignment === 'left' ? 'row' : 'row-reverse'}
-        justifyContent="flex-start"
+        sx={{
+          display: uid ? 'flex' : 'none',
+          justifyContent: 'flex-start',
+        }}
       >
         <Grid item>
           <EntitySelectButton

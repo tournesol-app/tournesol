@@ -47,9 +47,11 @@ const JoinMovements = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="join-movements"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('actionsPage.joinMovements.getInvolvedInDigitalDemocracyMovements')}
       </Typography>

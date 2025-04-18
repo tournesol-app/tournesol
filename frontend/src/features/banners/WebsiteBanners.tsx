@@ -59,7 +59,12 @@ const WebsiteBanners = () => {
   }
 
   return (
-    <Box pt={3} bgcolor={theme.palette.background.emphatic}>
+    <Box
+      sx={{
+        pt: 3,
+        bgcolor: theme.palette.background.emphatic,
+      }}
+    >
       <WebsiteBanner banner={banners[0]} />
     </Box>
   );

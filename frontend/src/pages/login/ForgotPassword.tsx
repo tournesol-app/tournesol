@@ -72,7 +72,9 @@ const ForgotPassword = () => {
                 container
                 spacing={3}
                 direction="column"
-                alignItems="stretch"
+                sx={{
+                  alignItems: 'stretch',
+                }}
               >
                 {formError && (
                   <Grid item xs={12}>
@@ -105,7 +107,11 @@ const ForgotPassword = () => {
                 </Grid>
               </Grid>
             </form>
-            <Box my={2}>
+            <Box
+              sx={{
+                my: 2,
+              }}
+            >
               <InternalLink to="/login">{t('reset.backToLogIn')}</InternalLink>
             </Box>
           </>

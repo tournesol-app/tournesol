@@ -42,8 +42,10 @@ const RateLaterAutoRemoveField = ({
                 <Typography
                   key={`${pollName}_rate_later__auto_remove_error_${idx}`}
                   color="red"
-                  display="block"
                   variant="caption"
+                  sx={{
+                    display: 'block',
+                  }}
                 >
                   {error}
                 </Typography>

@@ -33,7 +33,14 @@ function MarkAllRatings({ onChange }: { onChange: () => void }) {
 
   return (
     <TitledSection title={t('ratings.updateVisibility')}>
-      <Box display="flex" flexDirection="column" gap="8px" py={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          py: 1,
+        }}
+      >
         <Button
           color="primary"
           variant="contained"

@@ -10,7 +10,12 @@ const VisualizeDataBox = () => {
 
   return (
     <TitledPaper title={t('visualizeDataBox.visualizeTheData')}>
-      <Box mb={2} sx={{ '& img': { maxWidth: '100%' } }}>
+      <Box
+        sx={{
+          mb: 2,
+          '& img': { maxWidth: '100%' },
+        }}
+      >
         <Typography paragraph>
           <Trans i18nKey="visualizeDataBox.youCanQuicklyExploreEtc">
             You can quickly explore our public database with our appplication
@@ -25,7 +30,12 @@ const VisualizeDataBox = () => {
           alt={t('visualizeDataBox.personCorrelationCoefficientMatrix')}
         />
       </Box>
-      <Box display="flex" justifyContent="center">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         <Typography variant="caption">
           {t('visualizeDataBox.personCorrelationCoefficientMatrix')}
         </Typography>

@@ -341,7 +341,11 @@ const EntitySelectorInnerAuth = ({
   return (
     <>
       {showEntityInput && !smallScreen && (
-        <Box mb={1}>
+        <Box
+          sx={{
+            mb: 1,
+          }}
+        >
           <EntitySelectorControls
             alignment={alignment}
             uid={uid}
@@ -366,12 +370,14 @@ const EntitySelectorInnerAuth = ({
       >
         <Box
           {...bindDrag()}
-          sx={{ touchAction: 'none' }}
-          // "flex" properties allow the cards to be flexible and both cards to keep the same height.
-          // "position: relative" is required to correctly display the entity unavailable box.
-          display="flex"
-          flex={1}
-          position="relative"
+          sx={{
+            // "flex" properties allow the cards to be flexible and both cards to keep the same height.
+            // "position: relative" is required to correctly display the entity unavailable box.
+            display: 'flex',
+            flex: 1,
+            position: 'relative',
+            touchAction: 'none',
+          }}
         >
           {rating ? (
             <EntityCard
@@ -390,22 +396,28 @@ const EntitySelectorInnerAuth = ({
               {!loading &&
                 entityAvailability === ENTITY_AVAILABILITY.UNAVAILABLE && (
                   <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    position="absolute"
-                    top="0"
-                    color="white"
-                    bgcolor="rgba(0,0,0,.6)"
-                    width="100%"
                     sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      position: 'absolute',
+                      top: '0',
+                      color: 'white',
+                      bgcolor: 'rgba(0,0,0,.6)',
+                      width: '100%',
                       aspectRatio: '16/9',
+
                       [theme.breakpoints.down('sm')]: {
                         fontSize: '0.8rem',
                       },
                     }}
                   >
-                    <Typography textAlign="center" fontSize="inherit">
+                    <Typography
+                      sx={{
+                        textAlign: 'center',
+                        fontSize: 'inherit',
+                      }}
+                    >
                       {pollName === YOUTUBE_POLL_NAME
                         ? t('entitySelector.youtubeVideoUnavailable')
                         : t('entityCard.thisElementIsNotAvailable')}
@@ -429,16 +441,24 @@ const EntitySelectorInnerAuth = ({
                   container
                   item
                   xs={12}
+                  spacing={1}
+                  wrap="wrap"
                   sx={{
+                    alignItems: 'center',
+                    justifyContent: 'space-around',
                     aspectRatio: '16 / 9',
                     backgroundColor: '#fafafa',
                   }}
-                  spacing={1}
-                  alignItems="center"
-                  justifyContent="space-around"
-                  wrap="wrap"
                 >
-                  <Grid container item xs={12} sm={5} justifyContent="center">
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    sm={5}
+                    sx={{
+                      justifyContent: 'center',
+                    }}
+                  >
                     <EntitySelectButton
                       value={inputValue || uid || ''}
                       onChange={handleChange}
@@ -446,7 +466,15 @@ const EntitySelectorInnerAuth = ({
                       variant="full"
                     />
                   </Grid>
-                  <Grid container item xs={12} sm={5} justifyContent="center">
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    sm={5}
+                    sx={{
+                      justifyContent: 'center',
+                    }}
+                  >
                     <AutoEntityButton
                       disabled={loading}
                       onClick={slideUp}
@@ -460,7 +488,11 @@ const EntitySelectorInnerAuth = ({
         </Box>
       </Slide>
       {showEntityInput && smallScreen && (
-        <Box mt={1}>
+        <Box
+          sx={{
+            mt: 1,
+          }}
+        >
           <EntitySelectorControls
             alignment={alignment}
             uid={uid}

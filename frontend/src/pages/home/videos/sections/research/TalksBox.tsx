@@ -19,7 +19,12 @@ const TalksBox = () => {
         <Typography paragraph>
           {t('publicDataPublicCodeBox.weOrganizePublicEvents')}
         </Typography>
-        <Box display="flex" justifyContent="center">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
           <Button
             variant="contained"
             color="primary"

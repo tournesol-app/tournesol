@@ -136,10 +136,21 @@ const FeedbackPagePresidentielle2022 = () => {
       <LoaderWrapper isLoading={isLoading}>
         {comparisonsNbr < minComparisons ? (
           <>
-            <Typography variant="h2" textAlign="center">
+            <Typography
+              variant="h2"
+              sx={{
+                textAlign: 'center',
+              }}
+            >
               {t('myFeedbackPage.presidentielle2022.welcomeOnYourResultPage')}
             </Typography>
-            <Typography paragraph mt={2} textAlign="justify">
+            <Typography
+              paragraph
+              sx={{
+                mt: 2,
+                textAlign: 'justify',
+              }}
+            >
               <Trans
                 t={t}
                 i18nKey="myFeedbackPage.presidentielle2022.notEnoughComparisons"
@@ -151,7 +162,13 @@ const FeedbackPagePresidentielle2022 = () => {
                 on the button below, and follow the instructions to continue.
               </Trans>
             </Typography>
-            <Box mt={2} display="flex" justifyContent="center">
+            <Box
+              sx={{
+                mt: 2,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <Button
                 variant="contained"
                 component={RouterLink}
@@ -163,7 +180,12 @@ const FeedbackPagePresidentielle2022 = () => {
           </>
         ) : (
           <>
-            <Typography variant="h3" textAlign="center">
+            <Typography
+              variant="h3"
+              sx={{
+                textAlign: 'center',
+              }}
+            >
               {t(
                 'myFeedbackPage.presidentielle2022.thanksForComparingCandidates'
               )}
@@ -179,7 +201,12 @@ const FeedbackPagePresidentielle2022 = () => {
                 </Trans>
               }
             />
-            <Typography paragraph textAlign="right">
+            <Typography
+              paragraph
+              sx={{
+                textAlign: 'right',
+              }}
+            >
               <Button
                 color="secondary"
                 variant="contained"
@@ -192,8 +219,10 @@ const FeedbackPagePresidentielle2022 = () => {
             <Grid
               container
               spacing={2}
-              justifyContent="center"
-              textAlign="center"
+              sx={{
+                justifyContent: 'center',
+                textAlign: 'center',
+              }}
             >
               <Grid item xs={12} sm={12} md={6}>
                 <StackedCriteriaPaper
@@ -207,7 +236,12 @@ const FeedbackPagePresidentielle2022 = () => {
                   recommendations={recommendations}
                 />
               </Grid>
-              <Grid item textAlign="left">
+              <Grid
+                item
+                sx={{
+                  textAlign: 'left',
+                }}
+              >
                 <Card>
                   <CardHeader
                     sx={{

@@ -13,13 +13,19 @@ const ChangesToTheseTerms = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="changes-to-these-terms"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.changesToTheseTerms.changesToTheseTerms')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>

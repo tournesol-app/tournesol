@@ -89,7 +89,6 @@ const StackedCandidatesPaper = ({
                 />
               </InternalLink>
             </ListItemAvatar>
-
             {/* To stay mobile friendly, only the avatar is clickable. The
                 primary text is too close to the comparisons link, making it
                 clickalbe makes it easy to click on the wrong link. */}
@@ -98,10 +97,12 @@ const StackedCandidatesPaper = ({
               secondary={
                 <>
                   <Typography
-                    sx={{ display: 'inline' }}
                     component="span"
                     variant="body2"
-                    color="text.primary"
+                    sx={{
+                      color: 'text.primary',
+                      display: 'inline',
+                    }}
                   >
                     <InternalLink
                       color="inherit"
@@ -127,19 +128,42 @@ const StackedCandidatesPaper = ({
       })}
       actions={
         <>
-          <Box pt={2} pb={1} px={2}>
+          <Box
+            sx={{
+              pt: 2,
+              pb: 1,
+              px: 2,
+            }}
+          >
             <Typography>{t('stackedCandidatesPaper.onCriteria')}</Typography>
             <CriteriaSelector
               criteria={sortingCriteria}
               setCriteria={setSortingCriteria}
             />
           </Box>
-          <Box pt={2} pb={1} px={2}>
-            <Typography paragraph variant="body2" textAlign="justify">
+          <Box
+            sx={{
+              pt: 2,
+              pb: 1,
+              px: 2,
+            }}
+          >
+            <Typography
+              paragraph
+              variant="body2"
+              sx={{
+                textAlign: 'justify',
+              }}
+            >
               {t('stackedCandidatesPaper.ifYourRankingSeemsOff')}
             </Typography>
           </Box>
-          <Grid container justifyContent="flex-end">
+          <Grid
+            container
+            sx={{
+              justifyContent: 'flex-end',
+            }}
+          >
             <Grid item xs={6} sx={{ px: 1 }}>
               <Button
                 color="secondary"

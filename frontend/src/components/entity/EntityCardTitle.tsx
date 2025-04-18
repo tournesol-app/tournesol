@@ -24,27 +24,37 @@ const EntityCardTitle = ({
 
   const titleNode = (
     <Typography
-      color="text.primary"
-      lineHeight="1.3"
-      sx={{
-        overflowWrap: 'anywhere',
-        fontSize: compact ? '1em !important' : undefined,
-        // Limit text to 3 lines and show ellipsis
-        display: '-webkit-box',
-        overflow: 'hidden',
-        WebkitLineClamp: titleMaxLines,
-        WebkitBoxOrient: 'vertical',
-      }}
       variant={compact ? 'body1' : 'h5'}
       title={title}
       {...rest}
+      sx={[
+        {
+          color: 'text.primary',
+          lineHeight: '1.3',
+          overflowWrap: 'anywhere',
+          fontSize: compact ? '1em !important' : undefined,
+
+          // Limit text to 3 lines and show ellipsis
+          display: '-webkit-box',
+
+          overflow: 'hidden',
+          WebkitLineClamp: titleMaxLines,
+          WebkitBoxOrient: 'vertical',
+        },
+        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+      ]}
     >
       {title}
     </Typography>
   );
 
   return (
-    <Box display="flex" flexWrap="wrap">
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+      }}
+    >
       {withLink ? (
         <InternalLink to={`${baseUrl}/entities/${uid}`} underline="none">
           {titleNode}

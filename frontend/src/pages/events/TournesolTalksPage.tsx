@@ -19,7 +19,12 @@ const Header = () => {
       <Typography paragraph>
         {t('tournesolTalksPage.tournesolTalksIntroduction')}
       </Typography>
-      <Box display="flex" justifyContent="flex-end">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
         <Button
           size="small"
           variant="contained"

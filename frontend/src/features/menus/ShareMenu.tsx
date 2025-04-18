@@ -81,7 +81,11 @@ const ShareMenu = ({
       <MenuList dense sx={{ py: 0 }}>
         <MenuItem onClick={shareCurrentUrl}>
           <ListItemIcon>
-            <Link fontSize="small" />
+            <Link
+              sx={{
+                fontSize: 'small',
+              }}
+            />
           </ListItemIcon>
           <ListItemText>
             {navigatorCanShare
@@ -112,7 +116,11 @@ const ShareMenu = ({
         {navigatorCanShare && !!youtubeLink && (
           <MenuItem onClick={shareYoutubeLink}>
             <ListItemIcon>
-              <Link fontSize="small" />
+              <Link
+                sx={{
+                  fontSize: 'small',
+                }}
+              />
             </ListItemIcon>
             <ListItemText>{t('shareMenu.shareYoutubeLink')}</ListItemText>
           </MenuItem>

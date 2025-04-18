@@ -91,11 +91,20 @@ const ContributorCard = ({
       underline="none"
       color="inherit"
       variant="inherit"
-      display="flex"
+      sx={{
+        display: 'flex',
+      }}
     >
       <Card className={classes.card}>
         <Grid container spacing={2}>
-          <Grid item xs={4} container alignItems="center">
+          <Grid
+            item
+            xs={4}
+            container
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <img
               src={image}
               width="100%"
@@ -108,7 +117,13 @@ const ContributorCard = ({
           </Grid>
           <Grid item xs={8}>
             <Typography variant="h3">{name}</Typography>
-            <Typography fontSize="90%">{description}</Typography>
+            <Typography
+              sx={{
+                fontSize: '90%',
+              }}
+            >
+              {description}
+            </Typography>
           </Grid>
         </Grid>
       </Card>
@@ -128,10 +143,12 @@ const ContentBox = ({
   return (
     <Box
       className={className}
-      display="flex"
-      flexDirection="column"
-      maxWidth={maxWidth}
-      alignItems="flex-start"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: maxWidth,
+        alignItems: 'flex-start',
+      }}
     >
       {children}
     </Box>
@@ -188,7 +205,6 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
       </Grid>
-
       <Grid container className={classes.root}>
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -213,7 +229,6 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
       </Grid>
-
       <Grid
         container
         className={classes.root}
@@ -243,7 +258,6 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
       </Grid>
-
       <Grid
         container
         className={classes.root}
@@ -358,7 +372,6 @@ const AboutPage = () => {
           </Grid>
         </Grid>
       </Grid>
-
       <Grid container className={classes.root}>
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -390,8 +403,14 @@ const AboutPage = () => {
           </Grid>
         </Grid>
       </Grid>
-
-      <Grid container className={classes.root} maxWidth="1000px" margin="auto">
+      <Grid
+        container
+        className={classes.root}
+        sx={{
+          maxWidth: '1000px',
+          margin: 'auto',
+        }}
+      >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
             <Typography variant="h1">
@@ -419,7 +438,9 @@ const AboutPage = () => {
             underline="none"
             color="inherit"
             variant="inherit"
-            display="flex"
+            sx={{
+              display: 'flex',
+            }}
           >
             <ContentBox className={classes.card}>
               <img
@@ -444,7 +465,9 @@ const AboutPage = () => {
             underline="none"
             color="inherit"
             variant="inherit"
-            display="flex"
+            sx={{
+              display: 'flex',
+            }}
           >
             <ContentBox className={classes.card}>
               <img height="64px" src="/logos/Kleis_Logo.svg" />
@@ -475,7 +498,6 @@ const AboutPage = () => {
           </Link>
         </Grid>
       </Grid>
-
       <Grid container className={classes.root}>
         <Grid item xs={12} md={6} className={classes.container}>
           <ContentBox>
@@ -498,7 +520,6 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
       </Grid>
-
       <Grid container className={classes.root}>
         <Grid
           item

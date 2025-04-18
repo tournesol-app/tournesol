@@ -20,8 +20,10 @@ const PrivacyPolicyPage = () => {
           <Typography
             id="what-personal-data-tournesol-collects-and-why"
             variant="h4"
-            fontStyle="italic"
             gutterBottom
+            sx={{
+              fontStyle: 'italic',
+            }}
           >
             {t('privacyPolicy.whatPersonalDataTournesolCollectAndWhy')}
           </Typography>
@@ -66,7 +68,12 @@ const PrivacyPolicyPage = () => {
           >
             {t('privacyPolicy.embeddedContentFromOtherWebsites')}
           </Typography>
-          <Typography paragraph mb={0}>
+          <Typography
+            paragraph
+            sx={{
+              mb: 0,
+            }}
+          >
             {t('privacyPolicy.whatDataCollectEmbeddedWebsites')}
           </Typography>
         </LegalPaper>

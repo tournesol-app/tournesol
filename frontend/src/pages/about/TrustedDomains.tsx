@@ -43,7 +43,11 @@ const TrustedDomains = () => {
         title={`${t('menu.about')} > ${t('about.trustedEmailDomains')}`}
       />
       <ContentBox maxWidth="md">
-        <Box marginBottom={6}>
+        <Box
+          sx={{
+            marginBottom: 6,
+          }}
+        >
           <Typography component="div">
             <p>{t('about.trustedDomainsToProtectTournesol')}</p>
             <p>

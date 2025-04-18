@@ -81,7 +81,13 @@ const Pagination = ({
         flexWrap: 'wrap',
       }}
     >
-      <Box width="100%" display="flex" justifyContent="center">
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         <Typography variant="body2">
           <Trans t={t} i18nKey="pagination.showingCounts" count={count}>
             Showing {{ firstElementIdx }} - {{ lastElementIdx }} of {{ count }}
@@ -104,12 +110,14 @@ const Pagination = ({
             }}
           />
           <Box
-            width="100%"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            flexWrap="wrap"
-            gap={1}
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 1,
+            }}
           >
             <Button
               id="pagination_1_prev"

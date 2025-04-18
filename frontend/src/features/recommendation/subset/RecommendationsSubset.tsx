@@ -72,7 +72,11 @@ const RecommendationsSubset = ({
   return (
     <Box>
       {displayControls && (
-        <Box mb={2}>
+        <Box
+          sx={{
+            mb: 2,
+          }}
+        >
           <RecommendationsSubsetControls
             controlsColor={controlsColor}
             selectedDate={recoDate}
@@ -82,12 +86,25 @@ const RecommendationsSubset = ({
       )}
       <LoaderWrapper isLoading={isLoading}>
         {entities.length === 0 ? (
-          <Typography paragraph textAlign="center" color="#fff">
+          <Typography
+            paragraph
+            sx={{
+              textAlign: 'center',
+              color: '#fff',
+            }}
+          >
             {t('recommendationsSubset.noRecommendationHasBeenFound')}
           </Typography>
         ) : (
           <Paper sx={{ p: 1, bgcolor: 'background.primary' }}>
-            <Grid container gap={1} direction="column" wrap="nowrap">
+            <Grid
+              container
+              direction="column"
+              wrap="nowrap"
+              sx={{
+                gap: 1,
+              }}
+            >
               {entities.map((reco) => (
                 <Grid
                   item

@@ -46,7 +46,13 @@ const TopBar = ({ beforeInstallPromptEvent }: Props) => {
           padding: '0 8px !important',
         }}
       >
-        <Grid container sx={{ width: '100%' }} alignItems="center">
+        <Grid
+          container
+          sx={{
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
           {isSmallScreen ? <TopBarMobile /> : <TopBarDesktop />}
         </Grid>
       </Toolbar>

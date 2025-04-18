@@ -28,9 +28,11 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
       <Grid
         container
         direction="row"
-        justifyContent="center"
-        alignItems="flex-start"
         spacing={2}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+        }}
       >
         <Grid item xs={9}>
           <TextField
