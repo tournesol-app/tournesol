@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 
 import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
@@ -20,30 +20,26 @@ function ProfilePage() {
     <>
       <ContentHeader title={`${t('settings.title')} > ${t('profile')}`} />
       <ContentBox maxWidth="xl">
-        <Grid container spacing={4}>
-          <Grid item {...settingsMenuBreakpoints}>
+        <Grid2 container spacing={4}>
+          <Grid2 size={settingsMenuBreakpoints}>
             <SettingsMenu />
-          </Grid>
-          <Grid
+          </Grid2>
+          <Grid2
             container
-            item
             direction="column"
             spacing={mainSectionGridSpacing}
-            {...mainSectionBreakpoints}
+            size={mainSectionBreakpoints}
             sx={[
               {
                 alignItems: 'stretch',
               },
-              ...(Array.isArray(mainSectionBreakpoints.sx)
-                ? mainSectionBreakpoints.sx
-                : [mainSectionBreakpoints.sx]),
             ]}
           >
             <SettingsSection title={t('profile')} {...subSectionBreakpoints}>
               <ProfileForm />
             </SettingsSection>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </ContentBox>
     </>
   );
